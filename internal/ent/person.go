@@ -66,6 +66,12 @@ type Person struct {
 	// EsignAccountID holds the value of the "esign_account_id" field.
 	// E签宝账户ID
 	EsignAccountID string `json:"esign_account_id,omitempty"`
+	// BaiduVerifyToken holds the value of the "baidu_verify_token" field.
+	// 百度人脸verify_token
+	BaiduVerifyToken string `json:"baidu_verify_token,omitempty"`
+	// BaiduLogID holds the value of the "baidu_log_id" field.
+	// 百度人脸log_id
+	BaiduLogID string `json:"baidu_log_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PersonQuery when eager-loading is set.
 	Edges PersonEdges `json:"edges"`
@@ -100,7 +106,7 @@ func (*Person) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case person.FieldID, person.FieldStatus, person.FieldIDCardType:
 			values[i] = new(sql.NullInt64)
-		case person.FieldRemark, person.FieldName, person.FieldIDCardNumber, person.FieldIDCardPortrait, person.FieldIDCardNational, person.FieldAuthFace, person.FieldEsignAccountID:
+		case person.FieldRemark, person.FieldName, person.FieldIDCardNumber, person.FieldIDCardPortrait, person.FieldIDCardNational, person.FieldAuthFace, person.FieldEsignAccountID, person.FieldBaiduVerifyToken, person.FieldBaiduLogID:
 			values[i] = new(sql.NullString)
 		case person.FieldCreatedAt, person.FieldUpdatedAt, person.FieldDeletedAt, person.FieldAuthAt:
 			values[i] = new(sql.NullTime)
@@ -235,6 +241,18 @@ func (pe *Person) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				pe.EsignAccountID = value.String
 			}
+		case person.FieldBaiduVerifyToken:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field baidu_verify_token", values[i])
+			} else if value.Valid {
+				pe.BaiduVerifyToken = value.String
+			}
+		case person.FieldBaiduLogID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field baidu_log_id", values[i])
+			} else if value.Valid {
+				pe.BaiduLogID = value.String
+			}
 		}
 	}
 	return nil
@@ -306,6 +324,10 @@ func (pe *Person) String() string {
 	}
 	builder.WriteString(", esign_account_id=")
 	builder.WriteString(pe.EsignAccountID)
+	builder.WriteString(", baidu_verify_token=")
+	builder.WriteString(pe.BaiduVerifyToken)
+	builder.WriteString(", baidu_log_id=")
+	builder.WriteString(pe.BaiduLogID)
 	builder.WriteByte(')')
 	return builder.String()
 }

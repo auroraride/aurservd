@@ -540,9 +540,21 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "店员ID, 店员端请求忽略此参数",
+                        "name": "employeeId",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
                         "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "企业ID",
+                        "name": "enterpriseId",
                         "in": "query"
                     },
                     {
@@ -2331,6 +2343,113 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/business": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M8004 业务记录",
+                "operationId": "ManagerBusinessList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "筛选业务对象 0:全部 1:个签 2:团签",
+                        "name": "aimed",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "店员ID, 店员端请求忽略此参数",
+                        "name": "employeeId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "企业ID",
+                        "name": "enterpriseId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选骑手姓名或电话",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "active",
+                            "pause",
+                            "continue",
+                            "unsubscribe"
+                        ],
+                        "type": "string",
+                        "description": "筛选业务类别 active:激活 pause:寄存 continue:结束寄存 unsubscribe:退订",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.BusinessListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -4528,6 +4647,16 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "换电方案 0:全部 1:满电 2:非满电",
                         "name": "alternative",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "KAIXIN",
+                            "YUNDONG"
+                        ],
+                        "type": "string",
+                        "description": "电柜类型, KAIXIN(凯信) YUNDONG(云动)",
+                        "name": "brand",
                         "in": "query"
                     },
                     {
@@ -10207,6 +10336,54 @@ const docTemplate = `{
         "model.BusinessEmployeeListRes": {
             "type": "object",
             "properties": {
+                "enterprise": {
+                    "description": "团签企业, 个签无此字段",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseBasic"
+                        }
+                    ]
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "骑手姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "骑手电话",
+                    "type": "string"
+                },
+                "plan": {
+                    "description": "骑士卡, 团签无此字段",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Plan"
+                        }
+                    ]
+                },
+                "time": {
+                    "description": "业务时间",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "业务类别",
+                    "type": "string"
+                }
+            }
+        },
+        "model.BusinessListRes": {
+            "type": "object",
+            "properties": {
+                "employee": {
+                    "description": "店员, 可能为空",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Employee"
+                        }
+                    ]
+                },
                 "enterprise": {
                     "description": "团签企业, 个签无此字段",
                     "allOf": [

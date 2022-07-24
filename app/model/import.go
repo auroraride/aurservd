@@ -7,7 +7,7 @@ package model
 
 import "fmt"
 
-type ImportRiderFromCsv struct {
+type ImportRiderFromExcel struct {
     Name  string `json:"name"`  // 姓名
     Phone string `json:"phone"` // 电话
     Plan  string `json:"plan"`  // 订阅
@@ -18,7 +18,7 @@ type ImportRiderFromCsv struct {
     End   string `json:"end"`   // 结束日期
 }
 
-func (r *ImportRiderFromCsv) String() string {
+func (r *ImportRiderFromExcel) String() string {
     return fmt.Sprintf("%s:%s -> 订阅:%s, 订阅天数:%s, 电池型号:%s, 城市:%s, 激活门店:%s, 结束日期:%s",
         r.Name,
         r.Phone,

@@ -1670,6 +1670,8 @@ var (
 		{Name: "auth_result", Type: field.TypeJSON, Comment: "实名认证结果详情", Nullable: true},
 		{Name: "auth_at", Type: field.TypeTime, Comment: "实名认证结果获取时间", Nullable: true},
 		{Name: "esign_account_id", Type: field.TypeString, Comment: "E签宝账户ID", Nullable: true},
+		{Name: "baidu_verify_token", Type: field.TypeString, Comment: "百度人脸verify_token", Nullable: true},
+		{Name: "baidu_log_id", Type: field.TypeString, Comment: "百度人脸log_id", Nullable: true},
 	}
 	// PersonTable holds the schema information for the "person" table.
 	PersonTable = &schema.Table{

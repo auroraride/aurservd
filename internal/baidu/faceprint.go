@@ -11,6 +11,7 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/go-resty/resty/v2"
+    log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -108,15 +109,17 @@ func (b *baiduClient) getFaceprintUrl(typ string) (url string, token string) {
         planId = cfg.FacePlanId
     }
 
+    var r *resty.Response
     // 获取 verify_token
     res := new(faceprintTokenResp)
-    _, err = resty.New().R().
+    r, err = resty.New().R().
         SetResult(res).
         SetBody(map[string]string{"plan_id": planId}).
         Post(fmt.Sprintf(faceprintTokenUrl, b.accessToken))
     if err != nil {
         snag.Panic(err)
     }
+    log.Infof("获取人脸核验URL: %s", r.Body())
     if !res.Success {
         snag.Panic("实名认证请求失败")
     }
@@ -135,7 +138,7 @@ func (b *baiduClient) getFaceprintUrl(typ string) (url string, token string) {
 func (b *baiduClient) GetFaceUrl(name, icNum string) (uri string, token string) {
     uri, token = b.getFaceprintUrl(TypeFace)
     res := new(faceprintSubmitResp)
-    _, err := resty.New().R().
+    r, err := resty.New().R().
         SetResult(res).
         SetBody(ar.Map{
             "verify_token":     token,
@@ -147,6 +150,7 @@ func (b *baiduClient) GetFaceUrl(name, icNum string) (uri string, token string) 
     if err != nil {
         snag.Panic(err)
     }
+    log.Infof("获取人脸校验URL: %s", r.Body())
     return
 }
 
@@ -158,13 +162,15 @@ func (b *baiduClient) GetAuthenticatorUrl() (string, string) {
 // FaceResult 获取人脸照片
 func (b *baiduClient) FaceResult(token string) (res *faceprintFaceResp, err error) {
     res = new(faceprintFaceResp)
-    _, err = resty.New().R().
+    var r *resty.Response
+    r, err = resty.New().R().
         SetResult(res).
         SetBody(ar.Map{"verify_token": token}).
         Post(fmt.Sprintf(faceprintSimpleUrl, b.accessToken))
     if err != nil {
         return
     }
+    log.Infof("获取人脸照片结果: %s", r.Body())
     return
 }
 
@@ -177,13 +183,15 @@ func (b *baiduClient) AuthenticatorResult(token string) (res *faceprintDetailRes
     }
 
     res = new(faceprintDetailResp)
-    _, err = resty.New().R().
+    var r *resty.Response
+    r, err = resty.New().R().
         SetResult(res).
         SetBody(map[string]string{"verify_token": token}).
         Post(fmt.Sprintf(faceprintResultUrl, b.accessToken))
     if err != nil {
         return
     }
+    log.Infof("获取实名认证结果: %s", r.Body())
     res.Result.FaceImg = simple.Result.Image
     return
 }

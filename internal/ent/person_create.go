@@ -230,6 +230,34 @@ func (pc *PersonCreate) SetNillableEsignAccountID(s *string) *PersonCreate {
 	return pc
 }
 
+// SetBaiduVerifyToken sets the "baidu_verify_token" field.
+func (pc *PersonCreate) SetBaiduVerifyToken(s string) *PersonCreate {
+	pc.mutation.SetBaiduVerifyToken(s)
+	return pc
+}
+
+// SetNillableBaiduVerifyToken sets the "baidu_verify_token" field if the given value is not nil.
+func (pc *PersonCreate) SetNillableBaiduVerifyToken(s *string) *PersonCreate {
+	if s != nil {
+		pc.SetBaiduVerifyToken(*s)
+	}
+	return pc
+}
+
+// SetBaiduLogID sets the "baidu_log_id" field.
+func (pc *PersonCreate) SetBaiduLogID(s string) *PersonCreate {
+	pc.mutation.SetBaiduLogID(s)
+	return pc
+}
+
+// SetNillableBaiduLogID sets the "baidu_log_id" field if the given value is not nil.
+func (pc *PersonCreate) SetNillableBaiduLogID(s *string) *PersonCreate {
+	if s != nil {
+		pc.SetBaiduLogID(*s)
+	}
+	return pc
+}
+
 // AddRiderIDs adds the "rider" edge to the Rider entity by IDs.
 func (pc *PersonCreate) AddRiderIDs(ids ...uint64) *PersonCreate {
 	pc.mutation.AddRiderIDs(ids...)
@@ -546,6 +574,22 @@ func (pc *PersonCreate) createSpec() (*Person, *sqlgraph.CreateSpec) {
 			Column: person.FieldEsignAccountID,
 		})
 		_node.EsignAccountID = value
+	}
+	if value, ok := pc.mutation.BaiduVerifyToken(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: person.FieldBaiduVerifyToken,
+		})
+		_node.BaiduVerifyToken = value
+	}
+	if value, ok := pc.mutation.BaiduLogID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: person.FieldBaiduLogID,
+		})
+		_node.BaiduLogID = value
 	}
 	if nodes := pc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -899,6 +943,42 @@ func (u *PersonUpsert) UpdateEsignAccountID() *PersonUpsert {
 // ClearEsignAccountID clears the value of the "esign_account_id" field.
 func (u *PersonUpsert) ClearEsignAccountID() *PersonUpsert {
 	u.SetNull(person.FieldEsignAccountID)
+	return u
+}
+
+// SetBaiduVerifyToken sets the "baidu_verify_token" field.
+func (u *PersonUpsert) SetBaiduVerifyToken(v string) *PersonUpsert {
+	u.Set(person.FieldBaiduVerifyToken, v)
+	return u
+}
+
+// UpdateBaiduVerifyToken sets the "baidu_verify_token" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateBaiduVerifyToken() *PersonUpsert {
+	u.SetExcluded(person.FieldBaiduVerifyToken)
+	return u
+}
+
+// ClearBaiduVerifyToken clears the value of the "baidu_verify_token" field.
+func (u *PersonUpsert) ClearBaiduVerifyToken() *PersonUpsert {
+	u.SetNull(person.FieldBaiduVerifyToken)
+	return u
+}
+
+// SetBaiduLogID sets the "baidu_log_id" field.
+func (u *PersonUpsert) SetBaiduLogID(v string) *PersonUpsert {
+	u.Set(person.FieldBaiduLogID, v)
+	return u
+}
+
+// UpdateBaiduLogID sets the "baidu_log_id" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateBaiduLogID() *PersonUpsert {
+	u.SetExcluded(person.FieldBaiduLogID)
+	return u
+}
+
+// ClearBaiduLogID clears the value of the "baidu_log_id" field.
+func (u *PersonUpsert) ClearBaiduLogID() *PersonUpsert {
+	u.SetNull(person.FieldBaiduLogID)
 	return u
 }
 
@@ -1278,6 +1358,48 @@ func (u *PersonUpsertOne) UpdateEsignAccountID() *PersonUpsertOne {
 func (u *PersonUpsertOne) ClearEsignAccountID() *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
 		s.ClearEsignAccountID()
+	})
+}
+
+// SetBaiduVerifyToken sets the "baidu_verify_token" field.
+func (u *PersonUpsertOne) SetBaiduVerifyToken(v string) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetBaiduVerifyToken(v)
+	})
+}
+
+// UpdateBaiduVerifyToken sets the "baidu_verify_token" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateBaiduVerifyToken() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateBaiduVerifyToken()
+	})
+}
+
+// ClearBaiduVerifyToken clears the value of the "baidu_verify_token" field.
+func (u *PersonUpsertOne) ClearBaiduVerifyToken() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearBaiduVerifyToken()
+	})
+}
+
+// SetBaiduLogID sets the "baidu_log_id" field.
+func (u *PersonUpsertOne) SetBaiduLogID(v string) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetBaiduLogID(v)
+	})
+}
+
+// UpdateBaiduLogID sets the "baidu_log_id" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateBaiduLogID() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateBaiduLogID()
+	})
+}
+
+// ClearBaiduLogID clears the value of the "baidu_log_id" field.
+func (u *PersonUpsertOne) ClearBaiduLogID() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearBaiduLogID()
 	})
 }
 
@@ -1821,6 +1943,48 @@ func (u *PersonUpsertBulk) UpdateEsignAccountID() *PersonUpsertBulk {
 func (u *PersonUpsertBulk) ClearEsignAccountID() *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
 		s.ClearEsignAccountID()
+	})
+}
+
+// SetBaiduVerifyToken sets the "baidu_verify_token" field.
+func (u *PersonUpsertBulk) SetBaiduVerifyToken(v string) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetBaiduVerifyToken(v)
+	})
+}
+
+// UpdateBaiduVerifyToken sets the "baidu_verify_token" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateBaiduVerifyToken() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateBaiduVerifyToken()
+	})
+}
+
+// ClearBaiduVerifyToken clears the value of the "baidu_verify_token" field.
+func (u *PersonUpsertBulk) ClearBaiduVerifyToken() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearBaiduVerifyToken()
+	})
+}
+
+// SetBaiduLogID sets the "baidu_log_id" field.
+func (u *PersonUpsertBulk) SetBaiduLogID(v string) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetBaiduLogID(v)
+	})
+}
+
+// UpdateBaiduLogID sets the "baidu_log_id" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateBaiduLogID() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateBaiduLogID()
+	})
+}
+
+// ClearBaiduLogID clears the value of the "baidu_log_id" field.
+func (u *PersonUpsertBulk) ClearBaiduLogID() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearBaiduLogID()
 	})
 }
 

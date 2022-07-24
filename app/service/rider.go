@@ -196,9 +196,11 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
     if err != nil {
         return
     }
+
+    status := model.PersonAuthenticated.Raw()
     success = data.Success
     if !success {
-        return
+        status = model.PersonAuthenticationFailed.Raw()
     }
 
     res := data.Result
@@ -217,23 +219,26 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
         LivenessScore:  res.VerifyResult.LivenessScore,
         Spoofing:       res.VerifyResult.Spoofing,
     }
-    // 判断用户是否被封禁
-    banned, _ := ent.Database.Person.QueryNotDeleted().Where(person.IDCardNumber(detail.IdCardNumber), person.Banned(true)).Exist(context.Background())
-    if banned {
-        snag.Panic(snag.StatusForbidden, ar.BannedMessage)
-    }
 
     // 上传图片到七牛云
+    var fm, pm, nm string
     oss := ali.NewOss()
     prefix := fmt.Sprintf("%s-%s/%s-", res.IdcardOcrResult.Name, res.IdcardOcrResult.IdCardNumber, time.Now().Format(carbon.ShortDateTimeLayout))
-    fm := oss.UploadUrlFile(prefix+"face.jpg", res.FaceImg)
-    pm := oss.UploadBase64ImageJpeg(prefix+"portrait.jpg", res.IdcardImages.FrontBase64)
-    nm := oss.UploadBase64ImageJpeg(prefix+"national.jpg", res.IdcardImages.BackBase64)
+    if res.FaceImg != "" {
+        fm = oss.UploadUrlFile(prefix+"face.jpg", res.FaceImg)
+    }
+    if res.IdcardImages.FrontBase64 != "" {
+        pm = oss.UploadBase64ImageJpeg(prefix+"portrait.jpg", res.IdcardImages.FrontBase64)
+    }
+    if res.IdcardImages.BackBase64 != "" {
+        nm = oss.UploadBase64ImageJpeg(prefix+"national.jpg", res.IdcardImages.BackBase64)
+    }
 
     icNum := vr.IdCardNumber
-    id, err := ent.Database.Person.
+    var id uint64
+    id, err = ent.Database.Person.
         Create().
-        SetStatus(model.PersonAuthenticated.Raw()).
+        SetStatus(status).
         SetIDCardNumber(icNum).
         SetName(vr.Name).
         SetAuthFace(fm).
@@ -243,25 +248,30 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
         SetAuthAt(time.Now()).
         OnConflictColumns(person.FieldIDCardNumber).
         UpdateNewValues().
+        SetBaiduLogID(data.LogId).
+        SetBaiduVerifyToken(token).
         ID(context.Background())
     if err != nil {
         snag.Panic(err)
     }
 
-    // 判断ID是否等于实名认证的ID, 如果不是, 则删除
-    if u.PersonID != nil && *u.PersonID != id {
-        _ = ent.Database.Person.DeleteOneID(*u.PersonID).Exec(s.ctx)
+    if success || u.PersonID == nil {
+        // 判断ID是否等于实名认证的ID, 如果不是, 则删除
+        if u.PersonID != nil && *u.PersonID != id {
+            _ = ent.Database.Person.DeleteOneID(*u.PersonID).Exec(s.ctx)
+        }
+        err = ent.Database.Rider.
+            UpdateOneID(u.ID).
+            SetPersonID(id).
+            SetLastFace(fm).
+            SetIsNewDevice(false).
+            Exec(context.Background())
+        if err != nil {
+            snag.Panic(err)
+        }
     }
-    err = ent.Database.Rider.
-        UpdateOneID(u.ID).
-        SetPersonID(id).
-        SetLastFace(fm).
-        SetIsNewDevice(false).
-        Exec(context.Background())
-    if err != nil {
-        snag.Panic(err)
-    }
-    return
+
+    return success
 }
 
 // FaceResult 获取人脸比对结果
@@ -472,6 +482,9 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
         } else {
             q.Where(rider.EnterpriseIDIsNil())
         }
+    }
+    if req.CityID != nil {
+        q.Where(rider.HasSubscribesWith(subscribe.CityID(*req.CityID)))
     }
 
     return model.ParsePaginationResponse[model.RiderItem, ent.Rider](

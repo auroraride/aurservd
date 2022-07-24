@@ -104,7 +104,8 @@ func (s *businessService) listBasicQuery(req *model.BusinessListReq) *ent.Busine
             rq.WithPerson()
         }).
         WithEnterprise().
-        WithPlan()
+        WithPlan().
+        Order(ent.Desc(business.FieldCreatedAt))
 
     if req.Type != nil {
         q.Where(business.TypeEQ(business.Type(*req.Type)))
@@ -116,6 +117,14 @@ func (s *businessService) listBasicQuery(req *model.BusinessListReq) *ent.Busine
 
     if req.End != nil {
         q.Where(business.CreatedAtLTE(tt.ParseDateStringX(*req.End)))
+    }
+
+    if req.EmployeeID != 0 {
+        q.Where(business.EmployeeID(s.employee.ID))
+    }
+
+    if req.EmployeeID != 0 {
+        q.Where(business.EnterpriseID(req.EnterpriseID))
     }
 
     switch req.Aimed {
@@ -130,38 +139,68 @@ func (s *businessService) listBasicQuery(req *model.BusinessListReq) *ent.Busine
     return q
 }
 
+func (s *businessService) basicDetail(item *ent.Business) (res model.BusinessEmployeeListRes) {
+    res = model.BusinessEmployeeListRes{
+        ID:    item.ID,
+        Name:  item.Edges.Rider.Edges.Person.Name,
+        Phone: item.Edges.Rider.Phone,
+        Type:  item.Type.String(),
+        Time:  item.CreatedAt.Format(carbon.DateTimeLayout),
+    }
+    p := item.Edges.Plan
+    if p != nil {
+        res.Plan = &model.Plan{
+            ID:   p.ID,
+            Name: p.Name,
+            Days: p.Days,
+        }
+    }
+
+    e := item.Edges.Enterprise
+    if e != nil {
+        res.Enterprise = &model.EnterpriseBasic{
+            ID:   e.ID,
+            Name: e.Name,
+        }
+    }
+
+    return
+}
+
 // ListEmployee 业务列表 - 门店
 func (s *businessService) ListEmployee(req *model.BusinessListReq) *model.PaginationRes {
-    q := s.listBasicQuery(req).Where(business.EmployeeID(s.employee.ID))
+    req.EmployeeID = s.employee.ID
+    q := s.listBasicQuery(req)
 
     return model.ParsePaginationResponse(
         q,
         req.PaginationReq,
         func(item *ent.Business) (res model.BusinessEmployeeListRes) {
-            res = model.BusinessEmployeeListRes{
-                ID:    item.ID,
-                Name:  item.Edges.Rider.Edges.Person.Name,
-                Phone: item.Edges.Rider.Phone,
-                Type:  item.Type.String(),
-                Time:  item.CreatedAt.Format(carbon.DateTimeLayout),
+            return s.basicDetail(item)
+        },
+    )
+}
+
+// ListManager 业务列表 - 后台
+func (s *businessService) ListManager(req *model.BusinessListReq) *model.PaginationRes {
+    q := s.listBasicQuery(req).WithEmployee()
+
+    return model.ParsePaginationResponse(
+        q,
+        req.PaginationReq,
+        func(item *ent.Business) (res model.BusinessListRes) {
+            res = model.BusinessListRes{
+                BusinessEmployeeListRes: s.basicDetail(item),
+                Employee:                nil,
             }
-            p := item.Edges.Plan
-            if p != nil {
-                res.Plan = &model.Plan{
-                    ID:   p.ID,
-                    Name: p.Name,
-                    Days: p.Days,
+            emp := item.Edges.Employee
+            if emp != nil {
+                res.Employee = &model.Employee{
+                    ID:    emp.ID,
+                    Name:  emp.Name,
+                    Phone: emp.Phone,
                 }
             }
-
-            e := item.Edges.Enterprise
-            if e != nil {
-                res.Enterprise = &model.EnterpriseBasic{
-                    ID:   e.ID,
-                    Name: e.Name,
-                }
-            }
-
             return
         },
     )

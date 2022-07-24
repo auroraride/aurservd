@@ -225,7 +225,6 @@ func (s *riderCabinetService) ProcessStepStart() {
 }
 
 // ProcessStepEnd 结束换电流程
-// TODO 换电超时
 func (s *riderCabinetService) ProcessStepEnd() {
     // 释放占用
     cache.Del(s.ctx, s.operating.Serial)
@@ -351,8 +350,8 @@ func (s *riderCabinetService) ProcessDoorBatteryStatus() (ds model.CabinetBinDoo
         // if s.info.Brand == model.CabinetBrandKaixin {
         //     bind = provider.NewKaixin().BatteryBind(s.rider.Edges.Person.Name+"-"+shortuuid.New(), s.info.Serial, s.model, s.operating.EmptyIndex)
         // }
-        // 判断是否有电池并且电压大于0
-        if bin.Battery && bin.Voltage > 0 {
+        // 判断是否 有电池 并且 (电压大于0 或 电量大于0)
+        if bin.Battery && (bin.Voltage > 0 || bin.Electricity > 0) {
             s.putInElectricity = bin.Electricity
             return model.CabinetBinDoorStatusClose
         }
@@ -412,6 +411,7 @@ func (s *riderCabinetService) ProcessDoorStatus() (res *model.RiderCabinetOperat
 
         // 超时标记为任务失败
         if time.Now().Sub(start).Seconds() > s.maxTime.Seconds() {
+            res.Message = "超时"
             return
         }
         time.Sleep(1 * time.Second)

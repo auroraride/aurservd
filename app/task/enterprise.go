@@ -29,7 +29,7 @@ func (t *enterpriseTask) Start() {
     c := cron.New()
     entryID, err := c.AddFunc("@daily", func() {
         log.Info("开始执行 @daily[enterprise] 定时任务")
-        t.Do()
+        go t.Do()
     })
     if err != nil {
         log.Fatal(err)
@@ -45,6 +45,6 @@ func (*enterpriseTask) Do() {
     // 获取当前所有生效的订阅
     items := srv.QueryAllCollaborated()
     for _, item := range items {
-        go srv.UpdateStatement(item)
+        srv.UpdateStatement(item)
     }
 }

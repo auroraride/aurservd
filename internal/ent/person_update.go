@@ -282,6 +282,46 @@ func (pu *PersonUpdate) ClearEsignAccountID() *PersonUpdate {
 	return pu
 }
 
+// SetBaiduVerifyToken sets the "baidu_verify_token" field.
+func (pu *PersonUpdate) SetBaiduVerifyToken(s string) *PersonUpdate {
+	pu.mutation.SetBaiduVerifyToken(s)
+	return pu
+}
+
+// SetNillableBaiduVerifyToken sets the "baidu_verify_token" field if the given value is not nil.
+func (pu *PersonUpdate) SetNillableBaiduVerifyToken(s *string) *PersonUpdate {
+	if s != nil {
+		pu.SetBaiduVerifyToken(*s)
+	}
+	return pu
+}
+
+// ClearBaiduVerifyToken clears the value of the "baidu_verify_token" field.
+func (pu *PersonUpdate) ClearBaiduVerifyToken() *PersonUpdate {
+	pu.mutation.ClearBaiduVerifyToken()
+	return pu
+}
+
+// SetBaiduLogID sets the "baidu_log_id" field.
+func (pu *PersonUpdate) SetBaiduLogID(s string) *PersonUpdate {
+	pu.mutation.SetBaiduLogID(s)
+	return pu
+}
+
+// SetNillableBaiduLogID sets the "baidu_log_id" field if the given value is not nil.
+func (pu *PersonUpdate) SetNillableBaiduLogID(s *string) *PersonUpdate {
+	if s != nil {
+		pu.SetBaiduLogID(*s)
+	}
+	return pu
+}
+
+// ClearBaiduLogID clears the value of the "baidu_log_id" field.
+func (pu *PersonUpdate) ClearBaiduLogID() *PersonUpdate {
+	pu.mutation.ClearBaiduLogID()
+	return pu
+}
+
 // AddRiderIDs adds the "rider" edge to the Rider entity by IDs.
 func (pu *PersonUpdate) AddRiderIDs(ids ...uint64) *PersonUpdate {
 	pu.mutation.AddRiderIDs(ids...)
@@ -616,6 +656,32 @@ func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: person.FieldEsignAccountID,
 		})
 	}
+	if value, ok := pu.mutation.BaiduVerifyToken(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: person.FieldBaiduVerifyToken,
+		})
+	}
+	if pu.mutation.BaiduVerifyTokenCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: person.FieldBaiduVerifyToken,
+		})
+	}
+	if value, ok := pu.mutation.BaiduLogID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: person.FieldBaiduLogID,
+		})
+	}
+	if pu.mutation.BaiduLogIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: person.FieldBaiduLogID,
+		})
+	}
 	if pu.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -938,6 +1004,46 @@ func (puo *PersonUpdateOne) SetNillableEsignAccountID(s *string) *PersonUpdateOn
 // ClearEsignAccountID clears the value of the "esign_account_id" field.
 func (puo *PersonUpdateOne) ClearEsignAccountID() *PersonUpdateOne {
 	puo.mutation.ClearEsignAccountID()
+	return puo
+}
+
+// SetBaiduVerifyToken sets the "baidu_verify_token" field.
+func (puo *PersonUpdateOne) SetBaiduVerifyToken(s string) *PersonUpdateOne {
+	puo.mutation.SetBaiduVerifyToken(s)
+	return puo
+}
+
+// SetNillableBaiduVerifyToken sets the "baidu_verify_token" field if the given value is not nil.
+func (puo *PersonUpdateOne) SetNillableBaiduVerifyToken(s *string) *PersonUpdateOne {
+	if s != nil {
+		puo.SetBaiduVerifyToken(*s)
+	}
+	return puo
+}
+
+// ClearBaiduVerifyToken clears the value of the "baidu_verify_token" field.
+func (puo *PersonUpdateOne) ClearBaiduVerifyToken() *PersonUpdateOne {
+	puo.mutation.ClearBaiduVerifyToken()
+	return puo
+}
+
+// SetBaiduLogID sets the "baidu_log_id" field.
+func (puo *PersonUpdateOne) SetBaiduLogID(s string) *PersonUpdateOne {
+	puo.mutation.SetBaiduLogID(s)
+	return puo
+}
+
+// SetNillableBaiduLogID sets the "baidu_log_id" field if the given value is not nil.
+func (puo *PersonUpdateOne) SetNillableBaiduLogID(s *string) *PersonUpdateOne {
+	if s != nil {
+		puo.SetBaiduLogID(*s)
+	}
+	return puo
+}
+
+// ClearBaiduLogID clears the value of the "baidu_log_id" field.
+func (puo *PersonUpdateOne) ClearBaiduLogID() *PersonUpdateOne {
+	puo.mutation.ClearBaiduLogID()
 	return puo
 }
 
@@ -1303,6 +1409,32 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: person.FieldEsignAccountID,
+		})
+	}
+	if value, ok := puo.mutation.BaiduVerifyToken(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: person.FieldBaiduVerifyToken,
+		})
+	}
+	if puo.mutation.BaiduVerifyTokenCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: person.FieldBaiduVerifyToken,
+		})
+	}
+	if value, ok := puo.mutation.BaiduLogID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: person.FieldBaiduLogID,
+		})
+	}
+	if puo.mutation.BaiduLogIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: person.FieldBaiduLogID,
 		})
 	}
 	if puo.mutation.RiderCleared() {

@@ -191,6 +191,20 @@ func EsignAccountID(v string) predicate.Person {
 	})
 }
 
+// BaiduVerifyToken applies equality check predicate on the "baidu_verify_token" field. It's identical to BaiduVerifyTokenEQ.
+func BaiduVerifyToken(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBaiduVerifyToken), v))
+	})
+}
+
+// BaiduLogID applies equality check predicate on the "baidu_log_id" field. It's identical to BaiduLogIDEQ.
+func BaiduLogID(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBaiduLogID), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
@@ -1589,6 +1603,256 @@ func EsignAccountIDEqualFold(v string) predicate.Person {
 func EsignAccountIDContainsFold(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldEsignAccountID), v))
+	})
+}
+
+// BaiduVerifyTokenEQ applies the EQ predicate on the "baidu_verify_token" field.
+func BaiduVerifyTokenEQ(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBaiduVerifyToken), v))
+	})
+}
+
+// BaiduVerifyTokenNEQ applies the NEQ predicate on the "baidu_verify_token" field.
+func BaiduVerifyTokenNEQ(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldBaiduVerifyToken), v))
+	})
+}
+
+// BaiduVerifyTokenIn applies the In predicate on the "baidu_verify_token" field.
+func BaiduVerifyTokenIn(vs ...string) predicate.Person {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Person(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldBaiduVerifyToken), v...))
+	})
+}
+
+// BaiduVerifyTokenNotIn applies the NotIn predicate on the "baidu_verify_token" field.
+func BaiduVerifyTokenNotIn(vs ...string) predicate.Person {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Person(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldBaiduVerifyToken), v...))
+	})
+}
+
+// BaiduVerifyTokenGT applies the GT predicate on the "baidu_verify_token" field.
+func BaiduVerifyTokenGT(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldBaiduVerifyToken), v))
+	})
+}
+
+// BaiduVerifyTokenGTE applies the GTE predicate on the "baidu_verify_token" field.
+func BaiduVerifyTokenGTE(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldBaiduVerifyToken), v))
+	})
+}
+
+// BaiduVerifyTokenLT applies the LT predicate on the "baidu_verify_token" field.
+func BaiduVerifyTokenLT(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldBaiduVerifyToken), v))
+	})
+}
+
+// BaiduVerifyTokenLTE applies the LTE predicate on the "baidu_verify_token" field.
+func BaiduVerifyTokenLTE(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldBaiduVerifyToken), v))
+	})
+}
+
+// BaiduVerifyTokenContains applies the Contains predicate on the "baidu_verify_token" field.
+func BaiduVerifyTokenContains(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldBaiduVerifyToken), v))
+	})
+}
+
+// BaiduVerifyTokenHasPrefix applies the HasPrefix predicate on the "baidu_verify_token" field.
+func BaiduVerifyTokenHasPrefix(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldBaiduVerifyToken), v))
+	})
+}
+
+// BaiduVerifyTokenHasSuffix applies the HasSuffix predicate on the "baidu_verify_token" field.
+func BaiduVerifyTokenHasSuffix(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldBaiduVerifyToken), v))
+	})
+}
+
+// BaiduVerifyTokenIsNil applies the IsNil predicate on the "baidu_verify_token" field.
+func BaiduVerifyTokenIsNil() predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldBaiduVerifyToken)))
+	})
+}
+
+// BaiduVerifyTokenNotNil applies the NotNil predicate on the "baidu_verify_token" field.
+func BaiduVerifyTokenNotNil() predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldBaiduVerifyToken)))
+	})
+}
+
+// BaiduVerifyTokenEqualFold applies the EqualFold predicate on the "baidu_verify_token" field.
+func BaiduVerifyTokenEqualFold(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldBaiduVerifyToken), v))
+	})
+}
+
+// BaiduVerifyTokenContainsFold applies the ContainsFold predicate on the "baidu_verify_token" field.
+func BaiduVerifyTokenContainsFold(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldBaiduVerifyToken), v))
+	})
+}
+
+// BaiduLogIDEQ applies the EQ predicate on the "baidu_log_id" field.
+func BaiduLogIDEQ(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBaiduLogID), v))
+	})
+}
+
+// BaiduLogIDNEQ applies the NEQ predicate on the "baidu_log_id" field.
+func BaiduLogIDNEQ(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldBaiduLogID), v))
+	})
+}
+
+// BaiduLogIDIn applies the In predicate on the "baidu_log_id" field.
+func BaiduLogIDIn(vs ...string) predicate.Person {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Person(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldBaiduLogID), v...))
+	})
+}
+
+// BaiduLogIDNotIn applies the NotIn predicate on the "baidu_log_id" field.
+func BaiduLogIDNotIn(vs ...string) predicate.Person {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Person(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldBaiduLogID), v...))
+	})
+}
+
+// BaiduLogIDGT applies the GT predicate on the "baidu_log_id" field.
+func BaiduLogIDGT(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldBaiduLogID), v))
+	})
+}
+
+// BaiduLogIDGTE applies the GTE predicate on the "baidu_log_id" field.
+func BaiduLogIDGTE(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldBaiduLogID), v))
+	})
+}
+
+// BaiduLogIDLT applies the LT predicate on the "baidu_log_id" field.
+func BaiduLogIDLT(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldBaiduLogID), v))
+	})
+}
+
+// BaiduLogIDLTE applies the LTE predicate on the "baidu_log_id" field.
+func BaiduLogIDLTE(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldBaiduLogID), v))
+	})
+}
+
+// BaiduLogIDContains applies the Contains predicate on the "baidu_log_id" field.
+func BaiduLogIDContains(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldBaiduLogID), v))
+	})
+}
+
+// BaiduLogIDHasPrefix applies the HasPrefix predicate on the "baidu_log_id" field.
+func BaiduLogIDHasPrefix(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldBaiduLogID), v))
+	})
+}
+
+// BaiduLogIDHasSuffix applies the HasSuffix predicate on the "baidu_log_id" field.
+func BaiduLogIDHasSuffix(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldBaiduLogID), v))
+	})
+}
+
+// BaiduLogIDIsNil applies the IsNil predicate on the "baidu_log_id" field.
+func BaiduLogIDIsNil() predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldBaiduLogID)))
+	})
+}
+
+// BaiduLogIDNotNil applies the NotNil predicate on the "baidu_log_id" field.
+func BaiduLogIDNotNil() predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldBaiduLogID)))
+	})
+}
+
+// BaiduLogIDEqualFold applies the EqualFold predicate on the "baidu_log_id" field.
+func BaiduLogIDEqualFold(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldBaiduLogID), v))
+	})
+}
+
+// BaiduLogIDContainsFold applies the ContainsFold predicate on the "baidu_log_id" field.
+func BaiduLogIDContainsFold(v string) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldBaiduLogID), v))
 	})
 }
 

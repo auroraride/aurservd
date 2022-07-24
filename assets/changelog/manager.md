@@ -1,3 +1,17 @@
+## 2022-07-24
+
+#### 接口新增
+
+- [M8004 业务记录](http://localhost:5533/docs#tag/M/operation/ManagerBusinessList)
+
+
+
+
+
+
+
+<br />
+
 ## 2022-07-16
 
 #### 接口新增
