@@ -18,10 +18,12 @@ type BusinessSubscribeID struct {
 type BusinessListReq struct {
     PaginationReq
 
-    Aimed   uint8   `json:"aimed" query:"aimed"`     // 筛选业务对象 0:全部 1:个签 2:团签
-    Start   *string `json:"start" query:"start"`     // 筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01
-    End     *string `json:"end" query:"end"`         // 筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01
-    Keyword *string `json:"keyword" query:"keyword"` // 筛选骑手姓名或电话
+    EmployeeID   uint64  `json:"employeeId" query:"employeeId"`     // 店员ID, 店员端请求忽略此参数
+    EnterpriseID uint64  `json:"enterpriseId" query:"enterpriseId"` // 企业ID
+    Aimed        uint8   `json:"aimed" query:"aimed"`               // 筛选业务对象 0:全部 1:个签 2:团签
+    Start        *string `json:"start" query:"start"`               // 筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01
+    End          *string `json:"end" query:"end"`                   // 筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01
+    Keyword      *string `json:"keyword" query:"keyword"`           // 筛选骑手姓名或电话
     // 筛选业务类别 active:激活 pause:寄存 continue:结束寄存 unsubscribe:退订
     Type *string `json:"type" enums:"active,pause,continue,unsubscribe" query:"type"`
 }
@@ -34,4 +36,9 @@ type BusinessEmployeeListRes struct {
     Time       string           `json:"time"`                 // 业务时间
     Plan       *Plan            `json:"plan,omitempty"`       // 骑士卡, 团签无此字段
     Enterprise *EnterpriseBasic `json:"enterprise,omitempty"` // 团签企业, 个签无此字段
+}
+
+type BusinessListRes struct {
+    BusinessEmployeeListRes
+    Employee *Employee `json:"employee,omitempty"` // 店员, 可能为空
 }
