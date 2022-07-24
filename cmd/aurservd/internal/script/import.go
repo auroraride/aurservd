@@ -6,6 +6,7 @@
 package script
 
 import (
+    "fmt"
     "github.com/auroraride/aurservd/app/service"
     "github.com/spf13/cobra"
 )
@@ -22,9 +23,12 @@ func importRiderCmd() *cobra.Command {
 
     cmd := &cobra.Command{
         Use:   "rider",
-        Short: "从csv中导入骑手",
+        Short: "从 excel 中导入骑手",
         Run: func(cmd *cobra.Command, args []string) {
-            service.NewImportRider().ParseCSV(path)
+            err := service.NewImportRider().BatchFile(path)
+            if err != nil {
+                fmt.Println(err)
+            }
         },
     }
 

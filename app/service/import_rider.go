@@ -7,7 +7,7 @@ package service
 
 import (
     "context"
-    "encoding/csv"
+    "errors"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
@@ -16,12 +16,12 @@ import (
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
-    "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
+    "github.com/auroraride/aurservd/pkg/utils"
     "github.com/golang-module/carbon/v2"
     log "github.com/sirupsen/logrus"
-    "io"
-    "os"
+    "github.com/xuri/excelize/v2"
+    "path/filepath"
     "strconv"
     "strings"
     "time"
@@ -31,11 +31,13 @@ type importRiderService struct {
     modifier *model.Modifier
     ctx      context.Context
     plan     *ent.Plan
+    epoch    time.Time
 }
 
 func NewImportRider() *importRiderService {
     return &importRiderService{
-        ctx: context.Background(),
+        ctx:   context.Background(),
+        epoch: time.Date(1899, time.December, 30, 0, 0, 0, 0, time.UTC),
     }
 }
 
@@ -46,89 +48,123 @@ func NewImportRiderWithModifier(m *model.Modifier) *importRiderService {
     return s
 }
 
-func (s *importRiderService) ParseCSV(path string) {
-    csvfile, _ := os.Open(path)
+func (s *importRiderService) BatchFile(path string) (err error) {
+    var xlsx *excelize.File
+    xlsx, err = excelize.OpenFile(path)
+    if err != nil {
+        return
+    }
+    defer func() {
+        // 关闭工作簿
+        _ = xlsx.Close()
+    }()
 
-    defer func(csvfile *os.File) {
-        _ = csvfile.Close()
-    }(csvfile)
+    var styleID int
+    styleID, err = xlsx.NewStyle(&excelize.Style{
+        Fill: excelize.Fill{
+            Type:    "pattern",
+            Color:   []string{"#EA3323"},
+            Pattern: 1,
+        },
+        Font: &excelize.Font{Color: "#FFFFFF"},
+    })
+    if err != nil {
+        return
+    }
 
-    r := csv.NewReader(csvfile)
+    err = xlsx.SetCellStyle("Sheet1", "H2", "H412", 0)
+    if err != nil {
+        return
+    }
 
-    i := 0
+    var rows [][]string
 
-    for {
-        record, err := r.Read()
-        if err == io.EOF {
-            break
-        }
-        if err != nil {
-            log.Fatal(err)
-        }
+    // 获取 Sheet1 上所有单元格
+    rows, err = xlsx.GetRows("Sheet1")
+    if err != nil {
+        return
+    }
 
-        i += 1
-        if i == 1 {
+    for i, record := range rows {
+        if i == 0 {
             continue
         }
-
         if record[0] == "" {
             continue
         }
 
-        t := strings.TrimSpace(record[7])
-        var end string
-        if strings.Contains(t, "/") {
-            arr := strings.Split(t, "/")
-            for i, str := range arr {
-                if i == 0 {
-                    continue
-                }
-                if len(str) != 2 {
-                    str = "0" + str
-                }
-                arr[i] = str
-            }
-            end = strings.Join(arr, "-")
-        }
-        end = tools.NewTime().ParseDateStringX(end).Format(carbon.DateLayout)
+        var item *model.ImportRiderFromExcel
+        item, err = s.parseRow(record)
 
-        item := &model.ImportRiderFromCsv{
-            Name:  strings.TrimSpace(record[0]),
-            Phone: strings.TrimSpace(record[1]),
-            Plan:  strings.TrimSpace(record[2]),
-            Days:  strings.TrimSpace(record[3]),
-            Model: strings.ToUpper(strings.TrimSpace(record[4])),
-            City:  strings.TrimSpace(record[5]),
-            Store: strings.TrimSpace(record[6]),
-            End:   end,
-        }
+        _ = xlsx.SetCellValue("Sheet1", fmt.Sprintf("H%d", i+1), item.End)
 
-        // 查找骑行卡
-        days, _ := strconv.Atoi(item.Days)
-        s.plan = ent.Database.Plan.QueryNotDeleted().Where(plan.Name(item.Plan), plan.Days(uint(days))).FirstX(s.ctx)
-
-        // 查找门店
-        qs := ent.Database.Store.QueryNotDeleted().Where(store.Name(item.Store)).FirstX(s.ctx)
-        if qs == nil {
-            snag.Panic(fmt.Sprintf("未找到门店: %s", item.Store))
-        }
-
-        // 查找城市
-        qc := ent.Database.City.QueryNotDeleted().Where(city.Name(item.City)).FirstX(s.ctx)
-        err = s.Create(&model.ImportRiderCreateReq{
-            Name:       item.Name,
-            Phone:      item.Phone,
-            PlanID:     s.plan.ID,
-            CityID:     qc.ID,
-            StoreID:    qs.ID,
-            EmployeeID: 38654705685,
-            End:        end,
-            Model:      item.Model,
-        })
         if err != nil {
             log.Errorf("[%s] 添加失败: %s", item, err)
+            // 设置错误
+            _ = xlsx.SetCellValue("Sheet1", fmt.Sprintf("I%d", i+1), err.Error())
+            _ = xlsx.SetCellStyle("Sheet1", fmt.Sprintf("A%d", i+1), fmt.Sprintf("I%d", i+1), styleID)
+            continue
         }
     }
+
+    // 保存结果
+    r := filepath.Join("runtime", "import", fmt.Sprintf("%s.xlsx", time.Now().Format(carbon.ShortDateTimeLayout)))
+    err = utils.NewFile(r).CreateDirectoryIfNotExist()
+    if err != nil {
+        return
+    }
+
+    return xlsx.SaveAs(r)
+}
+
+// parseRow 解析行
+func (s *importRiderService) parseRow(record []string) (item *model.ImportRiderFromExcel, err error) {
+    x, _ := strconv.Atoi(record[7])
+    end := s.epoch.Add(time.Second * time.Duration(x*86400)).Format(carbon.DateLayout)
+    item = &model.ImportRiderFromExcel{
+        Name:  strings.TrimSpace(record[0]),
+        Phone: strings.TrimSpace(record[1]),
+        Plan:  strings.TrimSpace(record[2]),
+        Days:  strings.TrimSpace(record[3]),
+        Model: strings.ToUpper(strings.TrimSpace(record[4])),
+        City:  strings.TrimSpace(record[5]),
+        Store: strings.TrimSpace(record[6]),
+        End:   end,
+    }
+
+    // 查找城市
+    qc := ent.Database.City.QueryNotDeleted().Where(city.Name(item.City)).FirstX(s.ctx)
+
+    // 查找骑行卡
+    days, _ := strconv.Atoi(item.Days)
+    s.plan, _ = ent.Database.Plan.QueryNotDeleted().Where(
+        plan.Name(item.Plan),
+        plan.Days(uint(days)),
+        plan.HasCitiesWith(city.ID(qc.ID)),
+    ).First(s.ctx)
+    if s.plan == nil {
+        err = errors.New("未找到骑行卡")
+        return
+    }
+
+    // 查找门店
+    qs, _ := ent.Database.Store.QueryNotDeleted().Where(store.Name(item.Store)).First(s.ctx)
+    if qs == nil {
+        err = errors.New("未找到门店")
+        return
+    }
+
+    err = s.Create(&model.ImportRiderCreateReq{
+        Name:       item.Name,
+        Phone:      item.Phone,
+        PlanID:     s.plan.ID,
+        CityID:     qc.ID,
+        StoreID:    qs.ID,
+        EmployeeID: 38654705685,
+        End:        end,
+        Model:      item.Model,
+    })
+    return
 }
 
 // Create 手动添加骑手
@@ -140,8 +176,8 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
         var sub *ent.Subscribe
 
         if r, _ = ent.Database.Rider.QueryNotDeleted().WithPerson().Where(rider.Phone(req.Phone)).First(s.ctx); r != nil {
-            if exist, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.RiderID(r.ID)).Exist(s.ctx); exist {
-                snag.Panic(fmt.Sprintf("%s:%s 已存在", req.Phone, req.Name))
+            if existSub, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.RiderID(r.ID)).First(s.ctx); existSub != nil {
+                return fmt.Errorf("%s:%s 已存在 <%d>", req.Phone, req.Name, existSub.ID)
             }
         }
 
