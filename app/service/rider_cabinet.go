@@ -225,7 +225,6 @@ func (s *riderCabinetService) ProcessStepStart() {
 }
 
 // ProcessStepEnd 结束换电流程
-// TODO 换电超时
 func (s *riderCabinetService) ProcessStepEnd() {
     // 释放占用
     cache.Del(s.ctx, s.operating.Serial)
@@ -412,6 +411,7 @@ func (s *riderCabinetService) ProcessDoorStatus() (res *model.RiderCabinetOperat
 
         // 超时标记为任务失败
         if time.Now().Sub(start).Seconds() > s.maxTime.Seconds() {
+            res.Message = "超时"
             return
         }
         time.Sleep(1 * time.Second)
@@ -526,6 +526,9 @@ func (s *riderCabinetService) ProcessStatus(req *model.RiderCabinetOperateStatus
 func (s *riderCabinetService) ProcessLog(res *model.RiderCabinetOperateRes) bool {
     res.Step = s.step
     res.Stop = s.step == model.RiderCabinetOperateStepPutOut || res.Status == model.RiderCabinetOperateStatusFail
+    if res.Message != "" {
+        res.Message = fmt.Sprintf("%s [%s]", res.Message, s.step)
+    }
 
     // 前两步是空仓, 后两步是满电仓位
     index := s.operating.EmptyIndex
