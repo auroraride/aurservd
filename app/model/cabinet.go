@@ -83,11 +83,12 @@ type CabinetItem struct {
     ID uint64 `json:"id"` // 电柜ID
     Sn string `json:"sn"` // 平台编码
     Cabinet
-    Models    []string `json:"models"`              // 电池型号
-    City      *City    `json:"city,omitempty"`      // 城市
-    CreatedAt string   `json:"createdAt,omitempty"` // 创建时间
-    SimSn     string   `json:"simSn,omitempty"`     // SIM卡号
-    SimDate   string   `json:"simDate,omitempty"`   // SIM卡到期日期, 例: 2022-06-01
+    Models      []string `json:"models"`              // 电池型号
+    City        *City    `json:"city,omitempty"`      // 城市
+    CreatedAt   string   `json:"createdAt,omitempty"` // 创建时间
+    SimSn       string   `json:"simSn,omitempty"`     // SIM卡号
+    SimDate     string   `json:"simDate,omitempty"`   // SIM卡到期日期, 例: 2022-06-01
+    Transferred bool     `json:"transferred"`         // 是否初始化过调拨
 }
 
 // CabinetQueryReq 电柜查询请求

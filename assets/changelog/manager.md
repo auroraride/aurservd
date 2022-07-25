@@ -1,3 +1,24 @@
+## 2022-07-25
+
+#### 接口新增
+
+- [M5011 初始化电柜调拨](http://localhost:5533/docs#tag/M/operation/ManagerCabinetTransfer)
+
+#### 接口调整
+
+- M5002 查询电柜
+  - 新增字段`transferred`是否初始化过调拨(电柜只有初始化过调拨之后才可调拨)
+- M1015 调拨物资
+  - 新增字段 `outBoundTarget`(调出目标 0:平台 1:门店 2:电柜) / `inboundTarget`(调入目标 0:平台 1:门店 2:电柜)
+
+
+
+
+
+
+
+<br />
+
 ## 2022-07-24
 
 #### 接口新增
