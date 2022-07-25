@@ -120,10 +120,10 @@ func (s *businessService) listBasicQuery(req *model.BusinessListReq) *ent.Busine
     }
 
     if req.EmployeeID != 0 {
-        q.Where(business.EmployeeID(s.employee.ID))
+        q.Where(business.EmployeeID(req.EmployeeID))
     }
 
-    if req.EmployeeID != 0 {
+    if req.EnterpriseID != 0 {
         q.Where(business.EnterpriseID(req.EnterpriseID))
     }
 
