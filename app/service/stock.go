@@ -256,6 +256,9 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
     if req.InboundID == 0 && req.OutboundID == 0 {
         snag.Panic("平台之间无法调拨物资")
     }
+    if req.InboundTarget == model.StockTargetCabinet && req.OutBoundTarget == model.StockTargetCabinet {
+        snag.Panic("电柜之间无法调拨")
+    }
     if (req.InboundTarget == model.StockTargetStore && req.InboundID == 0) || (req.InboundTarget == model.StockTargetPlaform && req.InboundID != 0) {
         snag.Panic("调入参数错误")
     }
