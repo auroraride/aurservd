@@ -7956,10 +7956,8 @@ paths:
         type: integer
       - description: 订阅剩余天数区间, 逗号分隔, 例如 `0,7`
         in: query
-        items:
-          type: integer
         name: remaining
-        type: array
+        type: string
       - description: '注册开始时间, 格式为: 2022-01-01'
         in: query
         name: start

@@ -240,7 +240,7 @@ func (s *subscribeService) QueryAllRidersEffective() []*ent.Subscribe {
             subscribe.EnterpriseIDIsNil(),
         ).
         WithPauses(func(spq *ent.SubscribePauseQuery) {
-            spq.Where(subscribepause.EndAtIsNil())
+            spq.Order(ent.Desc(subscribepause.FieldCreatedAt))
         }).
         All(s.ctx)
     return items
@@ -249,17 +249,25 @@ func (s *subscribeService) QueryAllRidersEffective() []*ent.Subscribe {
 // UpdateStatus 更新订阅状态
 func (s *subscribeService) UpdateStatus(item *ent.Subscribe) {
     tt := tools.NewTime()
-    pauseDays := item.PauseDays
+    pauseDays := 0
     // 已用天数
     pastDays := tt.UsedDaysToNow(*item.StartAt)
     status := item.Status
     // 寄存中
-    if item.PausedAt != nil && item.Edges.Pauses != nil {
-        p := item.Edges.Pauses[0]
+    for _, p := range item.Edges.Pauses {
+        pe := time.Now()
+        if p.EndAt.IsZero() {
+            pe = p.EndAt
+        }
         // 寄存已过时间需要尽可能的少算
-        diff := s.PausedDays(p.StartAt, time.Now())
-        pauseDays += diff
+        pauseDays += s.PausedDays(p.StartAt, pe)
     }
+    // if item.PausedAt != nil && item.Edges.Pauses != nil {
+    //     p := item.Edges.Pauses[0]
+    //     // 寄存已过时间需要尽可能的少算
+    //     diff := s.PausedDays(p.StartAt, time.Now())
+    //     pauseDays += diff
+    // }
     // 剩余天数
     remaining := item.InitialDays + item.AlterDays + item.OverdueDays + item.RenewalDays + pauseDays - pastDays
     if remaining < 0 {
