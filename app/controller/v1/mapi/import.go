@@ -20,7 +20,7 @@ var Import = new(importApi)
 // Rider
 // @ID           ManagerImportRider
 // @Router       /manager/v1/import/rider [POST]
-// @Summary      ME001 导入骑手
+// @Summary      ME001 单个导入骑手
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json

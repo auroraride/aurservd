@@ -4773,7 +4773,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "ME001 导入骑手",
+                "summary": "ME001 单个导入骑手",
                 "operationId": "ManagerImportRider",
                 "parameters": [
                     {
