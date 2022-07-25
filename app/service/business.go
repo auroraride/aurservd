@@ -10,6 +10,8 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/business"
+    "github.com/auroraride/aurservd/internal/ent/person"
+    "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
@@ -125,6 +127,15 @@ func (s *businessService) listBasicQuery(req *model.BusinessListReq) *ent.Busine
 
     if req.EnterpriseID != 0 {
         q.Where(business.EnterpriseID(req.EnterpriseID))
+    }
+
+    if req.Keyword != nil {
+        q.Where(business.HasRiderWith(
+            rider.Or(
+                rider.PhoneContainsFold(*req.Keyword),
+                rider.HasPersonWith(person.NameContainsFold(*req.Keyword)),
+            ),
+        ))
     }
 
     switch req.Aimed {
