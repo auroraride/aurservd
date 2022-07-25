@@ -397,7 +397,7 @@ func (p *yundong) GetOperateState(opId, serial, start, end string) (state bool) 
         }
     }
     // 重复30次查询
-    if !state {
+    if !state && p.operateRetryTimes < 60 {
         time.Sleep(2 * time.Second)
         p.operateRetryTimes += 1
         return p.GetOperateState(opId, serial, start, end)
