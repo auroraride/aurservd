@@ -117,7 +117,7 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
         Brand:                      model.CabinetBrand(cab.Brand),
     }
 
-    tools.NewLog().Infof("[换电信息] %s, %s", uid, res)
+    tools.NewLog().Infof("[换电信息:%s]\n%s\n", uid, res)
 
     err := cache.Set(s.ctx, uid, res, s.maxTime).Err()
     if err != nil {
@@ -522,6 +522,18 @@ func (s *riderCabinetService) ProcessStatus(req *model.RiderCabinetOperateStatus
     }
 }
 
+func (s *riderCabinetService) logProcessRes(index int, res *model.RiderCabinetOperateRes) {
+    log.Infof(`[换电步骤 - 结果]: {step:%s} %s - %d, 用户电话: %s, 状态: %s, 消息: %s, 终止: %t`,
+        s.step,
+        s.cabinet.Serial,
+        index,
+        s.rider.Phone,
+        res.Status,
+        res.Message,
+        res.Stop,
+    )
+}
+
 // ProcessLog 处理步骤日志
 func (s *riderCabinetService) ProcessLog(res *model.RiderCabinetOperateRes) bool {
     res.Step = s.step
@@ -535,7 +547,7 @@ func (s *riderCabinetService) ProcessLog(res *model.RiderCabinetOperateRes) bool
         be = s.operating.Electricity
     }
 
-    tools.NewLog().Infof("[换电步骤] {step:%s} %s", s.step, res)
+    s.logProcessRes(index, res)
 
     s.logger.Clone().
         SetBin(index).

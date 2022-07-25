@@ -106,6 +106,17 @@ const (
     RiderCabinetOperateStatusFail                                            // 失败
 )
 
+func (s RiderCabinetOperateStatus) String() string {
+    switch s {
+    case RiderCabinetOperateStatusSuccess:
+        return "成功"
+    case RiderCabinetOperateStatusFail:
+        return "失败"
+    default:
+        return "处理中"
+    }
+}
+
 // RiderCabinetOperateRes 换电操作步骤返回
 type RiderCabinetOperateRes struct {
     Step    RiderCabinetOperateStep   `json:"step"`    // 操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池
