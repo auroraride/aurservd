@@ -1445,6 +1445,9 @@ definitions:
         - 1
         - 2
         type: integer
+      transferred:
+        description: 是否初始化过调拨
+        type: boolean
     required:
     - brand
     - name
@@ -1619,6 +1622,9 @@ definitions:
         - 1
         - 2
         type: integer
+      transferred:
+        description: 是否初始化过调拨
+        type: boolean
     required:
     - brand
     - name
@@ -3800,6 +3806,10 @@ definitions:
         type: integer
       inboundTarget:
         description: 调入目标 0:平台 1:门店 2:电柜
+        enum:
+        - 0
+        - 1
+        - 2
         type: integer
       model:
         description: 电池型号 (和`物资名称`不能同时存在, 也不能同时为空)
@@ -3812,6 +3822,10 @@ definitions:
         type: integer
       outBoundTarget:
         description: 调出目标 0:平台 1:门店 2:电柜
+        enum:
+        - 0
+        - 1
+        - 2
         type: integer
       outboundId:
         description: 调出自 0:平台

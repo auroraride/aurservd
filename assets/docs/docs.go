@@ -10812,6 +10812,10 @@ const docTemplate = `{
                         1,
                         2
                     ]
+                },
+                "transferred": {
+                    "description": "是否初始化过调拨",
+                    "type": "boolean"
                 }
             }
         },
@@ -11060,6 +11064,10 @@ const docTemplate = `{
                         1,
                         2
                     ]
+                },
+                "transferred": {
+                    "description": "是否初始化过调拨",
+                    "type": "boolean"
                 }
             }
         },
@@ -14214,7 +14222,12 @@ const docTemplate = `{
                 },
                 "inboundTarget": {
                     "description": "调入目标 0:平台 1:门店 2:电柜",
-                    "type": "integer"
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ]
                 },
                 "model": {
                     "description": "电池型号 (和` + "`" + `物资名称` + "`" + `不能同时存在, 也不能同时为空)",
@@ -14230,7 +14243,12 @@ const docTemplate = `{
                 },
                 "outBoundTarget": {
                     "description": "调出目标 0:平台 1:门店 2:电柜",
-                    "type": "integer"
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ]
                 },
                 "outboundId": {
                     "description": "调出自 0:平台",
