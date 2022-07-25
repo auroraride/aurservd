@@ -556,6 +556,9 @@ func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
     if req.Days != nil {
         q.Where(order.InitialDaysGTE(*req.Days))
     }
+    if req.Payway != nil {
+        q.Where(order.Payway(*req.Payway))
+    }
     if req.Refund > 0 {
         switch req.Refund {
         case 1:
