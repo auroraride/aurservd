@@ -15,7 +15,6 @@ import (
     "github.com/labstack/echo/v4"
     log "github.com/sirupsen/logrus"
     "io"
-    "io/fs"
     "io/ioutil"
     "net"
     "net/http"
@@ -168,16 +167,6 @@ func BodyDumpWithInterval(config BodyDumpConfig) echo.MiddlewareFunc {
         d := "runtime/logs/api"
         p := filepath.Join(d, fmt.Sprintf("%s.log", now.Format(carbon.DateLayout)))
         _ = utils.NewFile(p).CreateDirectoryIfNotExist()
-        // 删除七天之前的日志文件
-        _ = filepath.Walk(d, func(path string, info fs.FileInfo, err error) error {
-            if info == nil || info.IsDir() {
-                return nil
-            }
-            if now.Sub(info.ModTime()).Seconds() > 604800.0 {
-                _ = os.Remove(path)
-            }
-            return nil
-        })
         b := logBuffer(config, c, reqBody, resBody)
         f, err := os.OpenFile(p, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
         if err != nil {
