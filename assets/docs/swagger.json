@@ -5606,6 +5606,15 @@
                         "in": "query"
                     },
                     {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "description": "订阅剩余天数区间, 逗号分隔, 例如 `0,7`",
+                        "name": "remaining",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "注册开始时间, 格式为: 2022-01-01",
                         "name": "start",
