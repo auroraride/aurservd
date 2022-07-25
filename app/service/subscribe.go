@@ -252,7 +252,7 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe) {
     pauseDays := item.PauseDays
     // 已用天数
     pastDays := tt.UsedDaysToNow(*item.StartAt)
-    status := model.SubscribeStatusUsing
+    status := item.Status
     // 寄存中
     if item.PausedAt != nil && item.Edges.Pauses != nil {
         p := item.Edges.Pauses[0]

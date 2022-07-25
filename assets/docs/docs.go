@@ -5053,6 +5053,17 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "支付方式 0:手动 1:支付宝 2:微信, 不携带此参数为获取全部",
+                        "name": "payway",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "退款查询 0:查询全部 1:查询未申请退款 2:查询已申请退款(包含退款中/已退款/已拒绝)",
                         "name": "refund",
@@ -5641,6 +5652,15 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "骑士卡",
                         "name": "planId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "description": "订阅剩余天数区间, 逗号分隔, 例如 ` + "`" + `0,7` + "`" + `",
+                        "name": "remaining",
                         "in": "query"
                     },
                     {
@@ -13312,6 +13332,10 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.Store"
                         }
                     ]
+                },
+                "tradeNo": {
+                    "description": "订单编号 (支付平台)",
+                    "type": "string"
                 },
                 "type": {
                     "description": "订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金",

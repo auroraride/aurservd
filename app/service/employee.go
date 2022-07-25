@@ -198,7 +198,7 @@ func (s *employeeService) Activity(req *model.EmployeeActivityListReq) *model.Pa
         })
     }
     if req.End != nil {
-        re := tt.ParseDateStringX(*req.End).AddDate(0, 0, 1)
+        re := tt.ParseNextDateStringX(*req.End)
         q.WithExchanges(func(query *ent.ExchangeQuery) {
             query.Where(exchange.CreatedAtLT(re))
         }).WithCommissions(func(query *ent.CommissionQuery) {

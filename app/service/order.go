@@ -530,7 +530,7 @@ func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
         q.Where(order.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
     }
     if req.End != nil {
-        q.Where(order.CreatedAtLTE(tt.ParseDateStringX(*req.End)))
+        q.Where(order.CreatedAtLT(tt.ParseNextDateStringX(*req.End)))
     }
     if req.Type != nil {
         q.Where(order.Type(*req.Type))
@@ -555,6 +555,9 @@ func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
     }
     if req.Days != nil {
         q.Where(order.InitialDaysGTE(*req.Days))
+    }
+    if req.Payway != nil {
+        q.Where(order.Payway(*req.Payway))
     }
     if req.Refund > 0 {
         switch req.Refund {

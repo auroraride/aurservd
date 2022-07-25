@@ -203,7 +203,8 @@ func (s *riderMgrService) ContinueSubscribe(subscribeID uint64) {
         _, err = tx.Subscribe.UpdateOne(sub).
             SetStatus(model.SubscribeStatusUsing).
             AddPauseDays(days).
-            ClearPausedAt().Save(s.ctx)
+            ClearPausedAt().
+            Save(s.ctx)
         snag.PanicIfError(err)
 
         // 电池出库

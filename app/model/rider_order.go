@@ -14,6 +14,7 @@ type RiderOrder struct {
     PayAt      string     `json:"payAt"`              // 支付时间
     Amount     float64    `json:"amount"`             // 支付金额
     OutTradeNo string     `json:"outTradeNo"`         // 订单编号
+    TradeNo    string     `json:"tradeNo"`            // 订单编号 (支付平台)
     City       City       `json:"city"`               // 城市
     Rider      RiderBasic `json:"rider"`              // 骑手
     Plan       *Plan      `json:"plan,omitempty"`     // 骑士卡, 非骑士卡订阅订单无此字段 (可为空)

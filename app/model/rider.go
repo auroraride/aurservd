@@ -87,6 +87,7 @@ type RiderListReq struct {
     SubscribeStatus *uint8            `json:"subscribeStatus" enums:"0,1,2,3,4,5,11,99" query:"subscribeStatus"` // 业务状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期 99:未使用
     AuthStatus      *PersonAuthStatus `json:"authStatus" enums:"0,1,2,3" query:"authStatus"`                     // 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
     PlanID          *uint64           `json:"planId" query:"planId"`                                             // 骑士卡
+    Remaining       []int             `json:"remaining" query:"remaining"`                                       // 订阅剩余天数区间, 逗号分隔, 例如 `0,7`
 }
 
 // RiderItemSubscribe 骑手骑士卡简单信息

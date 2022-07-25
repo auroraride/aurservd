@@ -109,7 +109,7 @@ func (s *assistanceService) List(req *model.AssistanceListReq) *model.Pagination
         q.Where(assistance.CreatedAtGTE(tt.ParseDateStringX(req.Start)))
     }
     if req.End != "" {
-        q.Where(assistance.CreatedAtLT(carbon.Time2Carbon(tt.ParseDateStringX(req.Start)).StartOfDay().Tomorrow().Carbon2Time()))
+        q.Where(assistance.CreatedAtLT(tt.ParseNextDateStringX(req.End)))
     }
     if req.CityID != 0 {
         q.Where(assistance.CityID(req.CityID))

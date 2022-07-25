@@ -20,6 +20,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/contract"
     "github.com/auroraride/aurservd/internal/ent/order"
     "github.com/auroraride/aurservd/internal/ent/person"
+    "github.com/auroraride/aurservd/internal/ent/predicate"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/pkg/cache"
@@ -485,6 +486,16 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
     }
     if req.CityID != nil {
         q.Where(rider.HasSubscribesWith(subscribe.CityID(*req.CityID)))
+    }
+    if len(req.Remaining) > 0 {
+        var subqs []predicate.Subscribe
+        r1 := req.Remaining[0]
+        subqs = append(subqs, subscribe.RemainingGTE(r1))
+        if len(req.Remaining) > 1 {
+            r2 := req.Remaining[1]
+            subqs = append(subqs, subscribe.RemainingLTE(r2))
+        }
+        q.Where(rider.HasSubscribesWith(subqs...))
     }
 
     return model.ParsePaginationResponse[model.RiderItem, ent.Rider](

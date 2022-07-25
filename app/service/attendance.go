@@ -190,7 +190,7 @@ func (s *attendanceService) List(req *model.AttendanceListReq) *model.Pagination
         q.Where(attendance.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
     }
     if req.End != nil {
-        q.Where(attendance.CreatedAtLT(carbon.Time2Carbon(tt.ParseDateStringX(*req.Start)).StartOfDay().Tomorrow().Carbon2Time()))
+        q.Where(attendance.CreatedAtLT(tt.ParseNextDateStringX(*req.End)))
     }
     if req.Keyword != nil {
         q.Where(

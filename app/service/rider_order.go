@@ -79,6 +79,7 @@ func (s *riderOrderService) Detail(item *ent.Order) model.RiderOrder {
         PayAt:      item.CreatedAt.Format(carbon.DateTimeLayout),
         Amount:     item.Amount,
         OutTradeNo: item.OutTradeNo,
+        TradeNo:    item.TradeNo,
         City: model.City{
             ID:   rc.ID,
             Name: rc.Name,
