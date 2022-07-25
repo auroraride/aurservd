@@ -487,12 +487,17 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
     if req.CityID != nil {
         q.Where(rider.HasSubscribesWith(subscribe.CityID(*req.CityID)))
     }
-    if len(req.Remaining) > 0 {
+    if req.Remaining != "" {
+        arr := strings.Split(req.Remaining, ",")
+
         var subqs []predicate.Subscribe
-        r1 := req.Remaining[0]
+        r1, _ := strconv.Atoi(strings.TrimSpace(arr[0]))
         subqs = append(subqs, subscribe.RemainingGTE(r1))
-        if len(req.Remaining) > 1 {
-            r2 := req.Remaining[1]
+        if len(arr) > 1 {
+            r2, _ := strconv.Atoi(strings.TrimSpace(arr[1]))
+            if r1 > r2 {
+                snag.Panic("区间错误")
+            }
             subqs = append(subqs, subscribe.RemainingLTE(r2))
         }
         q.Where(rider.HasSubscribesWith(subqs...))

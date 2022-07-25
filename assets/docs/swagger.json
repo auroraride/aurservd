@@ -5606,10 +5606,7 @@
                         "in": "query"
                     },
                     {
-                        "type": "array",
-                        "items": {
-                            "type": "integer"
-                        },
+                        "type": "string",
                         "description": "订阅剩余天数区间, 逗号分隔, 例如 `0,7`",
                         "name": "remaining",
                         "in": "query"
