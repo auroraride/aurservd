@@ -530,7 +530,7 @@ func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
         q.Where(order.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
     }
     if req.End != nil {
-        q.Where(order.CreatedAtLTE(tt.ParseDateStringX(*req.End)))
+        q.Where(order.CreatedAtLT(tt.ParseNextDateStringX(*req.End)))
     }
     if req.Type != nil {
         q.Where(order.Type(*req.Type))
