@@ -7403,7 +7403,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: ME001 导入骑手
+      summary: ME001 单个导入骑手
       tags:
       - '[M]管理接口'
   /manager/v1/inventory:
