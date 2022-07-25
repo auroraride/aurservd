@@ -3,6 +3,7 @@
 #### 接口新增
 
 - [M5011 初始化电柜调拨](http://localhost:5533/docs#tag/M/operation/ManagerCabinetTransfer)
+- [MB012 筛选电柜电池](http://localhost:5533/docs#tag/M/operation/ManagerSelectionCabinetModel)
 
 #### 接口调整
 

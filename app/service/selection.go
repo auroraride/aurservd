@@ -12,6 +12,7 @@ import (
     "github.com/auroraride/aurservd/app/workwx"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/plan"
@@ -220,6 +221,34 @@ func cascaderLevel2[T any](res []T, cb cascader[T], params ...any) (items []*mod
     return
 }
 
+type cascaderX[T any] func(data T) (parent *model.CascaderOption, item *model.CascaderOption)
+
+func cascaderParser[T any](res []T, cb cascaderX[T]) (items []*model.CascaderOption) {
+    smap := make(map[any]*model.CascaderOption)
+    for _, r := range res {
+        p, c := cb(r)
+
+        ol, ok := smap[p.Value]
+        if !ok {
+            ol = &model.CascaderOption{
+                Value:    p.Value,
+                Label:    p.Label,
+                Children: tools.NewPointerInterface(make([]*model.CascaderOption, 0)),
+            }
+            smap[p.Value] = ol
+        }
+
+        *ol.Children = append(*ol.Children, c)
+    }
+
+    items = make([]*model.CascaderOption, 0)
+    for _, m := range smap {
+        items = append(items, m)
+    }
+
+    return
+}
+
 func selectOptionIDName[T model.IDName, K model.IDName](r T, pb func(r T) K, message string) (p model.SelectOption, c model.SelectOption) {
     parent := pb(r)
     if parent.GetID() == 0 {
@@ -327,4 +356,67 @@ func (s *selectionService) PlanModel(req *model.SelectionPlanModelReq) []string 
         items[i] = pm.Model
     }
     return items
+}
+
+func (s *selectionService) CabinetModel(req *model.SelectionCabinetModelReq) (items []string) {
+    cab, _ := ent.Database.Cabinet.QueryNotDeleted().
+        WithBms().
+        Where(cabinet.ID(req.CabinetID)).
+        First(s.ctx)
+    items = make([]string, 0)
+    if cab == nil {
+        return
+    }
+    for _, bm := range cab.Edges.Bms {
+        items = append(items, bm.Model)
+    }
+    return
+}
+
+// CabinetModelX 筛选电柜型号
+func (s *selectionService) CabinetModelX() (items []model.CascaderOption) {
+    res, _ := ent.Database.Cabinet.QueryNotDeleted().
+        WithCity().
+        WithBms().
+        All(s.ctx)
+
+    cmap := make(map[uint64]model.CascaderOption)
+
+    for _, r := range res {
+        c := r.Edges.City
+        if c == nil {
+            continue
+        }
+        if _, ok := cmap[c.ID]; !ok {
+            cmap[c.ID] = model.CascaderOption{
+                Value:    c.ID,
+                Label:    c.Name,
+                Children: tools.NewPointerInterface(make([]*model.CascaderOption, 0)),
+            }
+        }
+
+        l2c := cmap[c.ID].Children
+
+        children := make([]*model.CascaderOption, len(r.Edges.Bms))
+
+        for k, b := range r.Edges.Bms {
+            children[k] = &model.CascaderOption{
+                Value: b.Model,
+                Label: b.Model,
+            }
+        }
+
+        *l2c = append(*l2c, &model.CascaderOption{
+            Value:    r.ID,
+            Label:    r.Name,
+            Children: &children,
+        })
+    }
+
+    items = make([]model.CascaderOption, 0)
+    for _, m := range cmap {
+        items = append(items, m)
+    }
+
+    return
 }

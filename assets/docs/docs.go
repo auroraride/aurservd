@@ -6137,6 +6137,48 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/selection/cabinetmodel": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MB012 筛选电柜电池",
+                "operationId": "ManagerSelectionCabinetModel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "电柜ID ",
+                        "name": "cabinetId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "电池型号列表",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/selection/city": {
             "get": {
                 "consumes": [
@@ -6318,6 +6360,13 @@ const docTemplate = `{
                         "description": "管理员校验token",
                         "name": "X-Manager-Token",
                         "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "骑行卡ID ",
+                        "name": "planId",
+                        "in": "query",
                         "required": true
                     }
                 ],

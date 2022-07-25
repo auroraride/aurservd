@@ -167,8 +167,24 @@ func (*selection) WxEmployee(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query  model.SelectionPlanModelReq  true  "选项"
 // @Success      200  {object}  []string  "电池型号列表"
 func (*selection) PlanModel(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.SelectionPlanModelReq](c)
     return ctx.SendResponse(service.NewSelection().PlanModel(req))
+}
+
+// CabinetModel
+// @ID           ManagerSelectionCabinetModel
+// @Router       /manager/v1/selection/cabinetmodel [GET]
+// @Summary      MB012 筛选电柜电池
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query  model.SelectionCabinetModelReq  true  "选项"
+// @Success      200  {object}  []string  "电池型号列表"
+func (*selection) CabinetModel(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.SelectionCabinetModelReq](c)
+    return ctx.SendResponse(service.NewSelection().CabinetModel(req))
 }

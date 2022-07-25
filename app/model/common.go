@@ -106,3 +106,9 @@ type LngLat struct {
     Lng float64 `json:"lng"`
     Lat float64 `json:"lat"`
 }
+
+type CascaderOption struct {
+    Value    any                `json:"value"`              // 值
+    Label    string             `json:"label"`              // 名
+    Children *[]*CascaderOption `json:"children,omitempty"` // 子
+}

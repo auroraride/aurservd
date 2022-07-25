@@ -8273,6 +8273,34 @@ paths:
       summary: MB008 筛选电柜
       tags:
       - '[M]管理接口'
+  /manager/v1/selection/cabinetmodel:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSelectionCabinetModel
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: '电柜ID '
+        in: query
+        name: cabinetId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 电池型号列表
+          schema:
+            items:
+              type: string
+            type: array
+      summary: MB012 筛选电柜电池
+      tags:
+      - '[M]管理接口'
   /manager/v1/selection/city:
     get:
       consumes:
@@ -8392,6 +8420,11 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
+      - description: '骑行卡ID '
+        in: query
+        name: planId
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
