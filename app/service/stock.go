@@ -463,7 +463,7 @@ func (s *stockService) listBasicQuery(req *model.StockEmployeeListReq) *ent.Stoc
     }
 
     if req.End != nil {
-        q.Where(stock.CreatedAtLTE(tt.ParseDateStringX(*req.End)))
+        q.Where(stock.CreatedAtLTE(tt.ParseNextDateStringX(*req.End)))
     }
 
     return q

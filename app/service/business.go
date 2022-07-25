@@ -116,7 +116,7 @@ func (s *businessService) listBasicQuery(req *model.BusinessListReq) *ent.Busine
     }
 
     if req.End != nil {
-        q.Where(business.CreatedAtLTE(tt.ParseNextDateStringX(*req.End)))
+        q.Where(business.CreatedAtLT(tt.ParseNextDateStringX(*req.End)))
     }
 
     if req.EmployeeID != 0 {
