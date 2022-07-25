@@ -1,0 +1,14 @@
+[Unit]
+Description=aurlog - 极光出行日志管理
+After=network-online.target syslog.target
+Wants = network.target
+
+[Service]
+Type=simple
+PIDFile=/var/log/aurlog/aurlog.pid
+ExecStart=%s run -c /etc/aurlog/aurlog.yaml
+StandardOutput=append:/var/log/aurlog/aurlog.log
+StandardError=append:/var/log/aurlog/aurlog.log
+
+[Install]
+WantedBy=multi-user.target
