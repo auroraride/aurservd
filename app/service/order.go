@@ -523,9 +523,6 @@ func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
             sq.WithEmployee().WithStore()
         }).
         WithRefund()
-    if req.RiderID != nil {
-        q.Where(order.RiderID(*req.RiderID))
-    }
     if req.Start != nil {
         q.Where(order.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
     }
@@ -535,11 +532,13 @@ func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
     if req.Type != nil {
         q.Where(order.Type(*req.Type))
     }
-    if req.RiderName != nil {
-        q.Where(order.HasRiderWith(rider.HasPersonWith(person.NameContainsFold(*req.RiderName))))
-    }
-    if req.RiderPhone != nil {
-        q.Where(order.HasRiderWith(rider.PhoneContainsFold(*req.RiderPhone)))
+    if req.Keyword != nil {
+        q.Where(order.HasRiderWith(
+            rider.Or(
+                rider.HasPersonWith(person.NameContainsFold(*req.Keyword)),
+                rider.PhoneContainsFold(*req.Keyword),
+            ),
+        ))
     }
     if req.CityID != nil {
         q.Where(order.CityID(*req.CityID))
