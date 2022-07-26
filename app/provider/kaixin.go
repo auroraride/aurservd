@@ -194,7 +194,7 @@ func (p *kaixin) UpdateStatus(item *ent.Cabinet, params ...any) error {
         p.logger.Write(fmt.Sprintf("凯信状态解析失败, serial: %s, body: %s\n", item.Serial, r.Body()))
         return err
     }
-    p.logger.Write(res)
+    p.logger.Write(r.Body())
 
     if res.State == "ok" {
         doors := res.GetBins()

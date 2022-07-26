@@ -47,6 +47,9 @@ func (l *Logger) Write(message any) {
         buffer.Write(b.Bytes())
         break
     }
+    if buffer.Bytes()[len(buffer.Bytes())-1] != '\n' {
+        buffer.WriteRune('\n')
+    }
 
     // 写入文件
     path := fmt.Sprintf("runtime/logs/%s/%s.log", l.name, time.Now().Format(carbon.DateLayout))
