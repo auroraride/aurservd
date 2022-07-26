@@ -97,6 +97,8 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
     if !cs.Health(cab) {
         snag.Panic("电柜目前不可用")
     }
+    // 更新一次电柜状态
+    NewCabinet().UpdateStatus(cab)
     info := NewCabinet().Usable(cab)
     if info.EmptyBin == nil {
         snag.Panic("电柜仓位不可用")
