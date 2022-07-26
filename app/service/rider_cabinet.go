@@ -226,11 +226,25 @@ func (s *riderCabinetService) ProcessStepStart() {
 
 // ProcessStepEnd 结束换电流程
 func (s *riderCabinetService) ProcessStepEnd() {
+    var panicErr string
+    if r := recover(); r != nil {
+        log.Errorf("换电异常结束 -> %s {%s}: %v", s.operating.UUID, s.step, r)
+        panicErr = fmt.Sprintf("%v", r)
+    }
+
     // 释放占用
     cache.Del(s.ctx, s.operating.Serial)
 
     res := new(model.RiderCabinetOperateRes)
     _ = cache.Get(s.ctx, s.operating.UUID).Scan(res)
+    if panicErr != "" {
+        res.Message = "换电故障: " + panicErr
+        res.Stop = true
+        res.Status = model.RiderCabinetOperateStatusFail
+
+        index, _ := s.currentDoorInfo()
+        log.Errorf("换电异常结束 -> %s {%s}: %v", s.operating.UUID, res.Step, s.logProcessRes(index, res))
+    }
 
     now := time.Now()
 
@@ -522,8 +536,19 @@ func (s *riderCabinetService) ProcessStatus(req *model.RiderCabinetOperateStatus
     }
 }
 
-func (s *riderCabinetService) logProcessRes(index int, res *model.RiderCabinetOperateRes) {
-    log.Infof(`[换电步骤 - 结果]: {step:%s} %s - %d, 用户电话: %s, 状态: %s, 消息: %s, 终止: %t`,
+func (s *riderCabinetService) currentDoorInfo() (index int, be model.BatteryElectricity) {
+    // 前两步是空仓, 后两步是满电仓位
+    index = s.operating.EmptyIndex
+    be = s.putInElectricity
+    if s.step >= model.RiderCabinetOperateStepOpenFull {
+        index = s.operating.FullIndex
+        be = s.operating.Electricity
+    }
+    return
+}
+
+func (s *riderCabinetService) logProcessRes(index int, res *model.RiderCabinetOperateRes) string {
+    return fmt.Sprintf(`[换电步骤 - 结果]: {step:%s} %s - %d, 用户电话: %s, 状态: %s, 消息: %s, 终止: %t`,
         s.step,
         s.cabinet.Serial,
         index,
@@ -539,15 +564,9 @@ func (s *riderCabinetService) ProcessLog(res *model.RiderCabinetOperateRes) bool
     res.Step = s.step
     res.Stop = s.step == model.RiderCabinetOperateStepPutOut || res.Status == model.RiderCabinetOperateStatusFail
 
-    // 前两步是空仓, 后两步是满电仓位
-    index := s.operating.EmptyIndex
-    be := s.putInElectricity
-    if s.step >= model.RiderCabinetOperateStepOpenFull {
-        index = s.operating.FullIndex
-        be = s.operating.Electricity
-    }
+    index, be := s.currentDoorInfo()
 
-    s.logProcessRes(index, res)
+    log.Info(s.logProcessRes(index, res))
 
     s.logger.Clone().
         SetBin(index).

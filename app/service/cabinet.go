@@ -303,7 +303,7 @@ func (s *cabinetService) UpdateStatus(item *ent.Cabinet, params ...any) {
 // DoorOpenStatus 获取柜门状态
 func (s *cabinetService) DoorOpenStatus(item *ent.Cabinet, index int, params ...any) model.CabinetBinDoorStatus {
     s.UpdateStatus(item, params...)
-    if len(item.Bin) < index {
+    if len(item.Bin) == 0 || len(item.Bin) < index {
         return model.CabinetBinDoorStatusUnknown
     }
     bin := item.Bin[index]
