@@ -71,6 +71,10 @@ func (s *riderOrderService) List(riderID uint64, req model.PaginationReq) *model
 // Detail 订单详情
 func (s *riderOrderService) Detail(item *ent.Order) model.RiderOrder {
     rc := item.Edges.City
+    no := item.TradeNo
+    if item.Payway == model.OrderPaywayManual {
+        no = ""
+    }
     res := model.RiderOrder{
         ID:         item.ID,
         Type:       item.Type,
@@ -79,7 +83,7 @@ func (s *riderOrderService) Detail(item *ent.Order) model.RiderOrder {
         PayAt:      item.CreatedAt.Format(carbon.DateTimeLayout),
         Amount:     item.Amount,
         OutTradeNo: item.OutTradeNo,
-        TradeNo:    item.TradeNo,
+        TradeNo:    no,
         City: model.City{
             ID:   rc.ID,
             Name: rc.Name,
