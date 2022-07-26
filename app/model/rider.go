@@ -5,7 +5,10 @@
 
 package model
 
-import "errors"
+import (
+    "errors"
+    "fmt"
+)
 
 // RiderTokenPermission 骑手token权限, 以此判定登陆后动作
 type RiderTokenPermission uint8
@@ -64,6 +67,10 @@ type RiderContact struct {
     Relation string `json:"relation" validate:"required" trans:"关系"`
 }
 
+func (c *RiderContact) String() string {
+    return fmt.Sprintf("%s,%s,%s", c.Name, c.Relation, c.Phone)
+}
+
 // RiderSampleInfo 骑手简单信息
 type RiderSampleInfo struct {
     ID    uint64 `json:"id"`    // 骑手ID
@@ -74,6 +81,8 @@ type RiderSampleInfo struct {
 // RiderListReq 骑手列表请求
 type RiderListReq struct {
     PaginationReq
+
+    Export bool `json:"export" query:"export"` // 导出
 
     Keyword         *string           `json:"keyword" query:"keyword"`                                           // 搜索关键词
     Modified        *bool             `json:"modified" query:"modified"`                                         // 是否被修改过
@@ -101,7 +110,7 @@ type RiderItemSubscribe struct {
 // RiderItem 骑手信息
 type RiderItem struct {
     ID         uint64           `json:"id"`
-    Name       string           `json:"name"`               // 用户姓名
+    Name       string           `json:"name"`               // 姓名
     Phone      string           `json:"phone"`              // 手机号
     Status     uint8            `json:"status"`             // 用户状态, 优先显示状态值大的 1:正常 2:已禁用 3:黑名单
     AuthStatus PersonAuthStatus `json:"authStatus"`         // 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
@@ -110,7 +119,6 @@ type RiderItem struct {
     DeletedAt  string           `json:"deleteAt,omitempty"` // 账户删除时间
     Remark     string           `json:"remark"`             // 账户备注
     Contract   string           `json:"contract,omitempty"` // 合同(有可能不存在)
-    Model      string           `json:"model,omitempty"`    // 电池型号(有可能不存在)
     // 团签企业信息, 若无此字段则为个签用户
     Enterprise *EnterpriseBasic `json:"enterprise,omitempty"`
     // 当前有效订阅信息, 若无此字段则代表当前无有效订阅 (订阅 = 骑手骑士卡)

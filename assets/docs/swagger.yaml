@@ -3077,11 +3077,8 @@ definitions:
         description: 团签企业信息, 若无此字段则为个签用户
       id:
         type: integer
-      model:
-        description: 电池型号(有可能不存在)
-        type: string
       name:
-        description: 用户姓名
+        description: 姓名
         type: string
       person:
         allOf:
@@ -7881,6 +7878,10 @@ paths:
         in: query
         name: enterpriseId
         type: integer
+      - description: 导出
+        in: query
+        name: export
+        type: boolean
       - description: 搜索关键词
         in: query
         name: keyword

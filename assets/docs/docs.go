@@ -5578,6 +5578,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "boolean",
+                        "description": "导出",
+                        "name": "export",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "搜索关键词",
                         "name": "keyword",
@@ -13094,12 +13100,8 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "model": {
-                    "description": "电池型号(有可能不存在)",
-                    "type": "string"
-                },
                 "name": {
-                    "description": "用户姓名",
+                    "description": "姓名",
                     "type": "string"
                 },
                 "person": {
