@@ -373,7 +373,7 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
             )
         }).
         WithSubscribes(func(sq *ent.SubscribeQuery) {
-            sq.Order(ent.Desc(subscribe.FieldCreatedAt))
+            sq.WithCity().Order(ent.Desc(subscribe.FieldCreatedAt))
         }).
         WithContracts(func(cq *ent.ContractQuery) {
             cq.Where(contract.DeletedAtIsNil(), contract.Status(model.ContractStatusSuccess.Raw()))
@@ -566,6 +566,13 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
                 if sub.Status == model.SubscribeStatusUsing && sub.Remaining <= 3 {
                     ri.Subscribe.Status = 11
                 }
+                ri.City = &model.City{
+                    ID: sub.CityID,
+                }
+                if sub.Edges.City != nil {
+                    ri.City.Name = sub.Edges.City.Name
+                }
+                ri.Model = sub.Model
             }
             if item.DeletedAt != nil {
                 ri.DeletedAt = item.DeletedAt.Format(carbon.DateTimeLayout)

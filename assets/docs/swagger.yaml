@@ -3054,6 +3054,10 @@ definitions:
       authStatus:
         description: 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
         type: integer
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 所在城市, 有可能不存在
       contact:
         allOf:
         - $ref: '#/definitions/model.RiderContact'
@@ -3073,6 +3077,9 @@ definitions:
         description: 团签企业信息, 若无此字段则为个签用户
       id:
         type: integer
+      model:
+        description: 电池型号(有可能不存在)
+        type: string
       name:
         description: 用户姓名
         type: string
@@ -7494,6 +7501,10 @@ paths:
         in: query
         name: end
         type: string
+      - description: 骑手姓名
+        in: query
+        name: keyword
+        type: string
       - description: 电池型号
         in: query
         name: model
@@ -7514,18 +7525,6 @@ paths:
         in: query
         name: refund
         type: integer
-      - description: 骑手ID
-        in: query
-        name: riderId
-        type: integer
-      - description: 骑手姓名
-        in: query
-        name: riderName
-        type: string
-      - description: 骑手电话
-        in: query
-        name: riderPhone
-        type: string
       - description: '时间起始, 格式为: 2022-01-01'
         in: query
         name: start
@@ -7885,6 +7884,10 @@ paths:
       - description: 搜索关键词
         in: query
         name: keyword
+        type: string
+      - description: 电池型号筛选
+        in: query
+        name: model
         type: string
       - description: 是否被修改过
         in: query

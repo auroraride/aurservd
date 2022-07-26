@@ -5001,6 +5001,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "骑手姓名",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "电池型号",
                         "name": "model",
                         "in": "query"
@@ -5026,24 +5032,6 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "退款查询 0:查询全部 1:查询未申请退款 2:查询已申请退款(包含退款中/已退款/已拒绝)",
                         "name": "refund",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "骑手ID",
-                        "name": "riderId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "骑手姓名",
-                        "name": "riderName",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "骑手电话",
-                        "name": "riderPhone",
                         "in": "query"
                     },
                     {
@@ -5593,6 +5581,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "搜索关键词",
                         "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电池型号筛选",
+                        "name": "model",
                         "in": "query"
                     },
                     {
@@ -13061,6 +13055,14 @@ const docTemplate = `{
                     "description": "认证状态 0:未认证 1:认证中 2:已认证 3:认证失败",
                     "type": "integer"
                 },
+                "city": {
+                    "description": "所在城市, 有可能不存在",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
                 "contact": {
                     "description": "紧急联系人, 有可能不存在",
                     "allOf": [
@@ -13091,6 +13093,10 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "model": {
+                    "description": "电池型号(有可能不存在)",
+                    "type": "string"
                 },
                 "name": {
                     "description": "用户姓名",
