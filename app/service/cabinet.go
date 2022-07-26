@@ -22,6 +22,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/batterymodel"
     "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
+    "github.com/auroraride/aurservd/internal/ent/exchange"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
@@ -620,4 +621,16 @@ func (s *cabinetService) Data(req *model.CabinetDataReq) *model.PaginationRes {
 
         return res
     })
+}
+
+// Busy TODO 是否需要两次换电间隔
+func (s *cabinetService) Busy(cab *ent.Cabinet) bool {
+    if model.CabinetBusying(cab.Serial) {
+        return true
+    }
+    last, _ := ent.Database.Exchange.QueryNotDeleted().Where(exchange.CabinetID(cab.ID)).Order(ent.Desc(exchange.FieldCreatedAt)).First(s.ctx)
+    if last != nil {
+
+    }
+    return false
 }

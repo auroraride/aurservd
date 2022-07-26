@@ -44,6 +44,8 @@ type riderCabinetService struct {
     debug     bool
 
     start time.Time
+
+    ex *ent.Exchange
 }
 
 func NewRiderCabinet() *riderCabinetService {
@@ -178,7 +180,7 @@ func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
     }
 
     // 缓存步骤
-    if model.CabinetBusying(info.Serial) {
+    if model.CabinetBusying(cab.Serial) {
         snag.Panic("电柜忙")
     }
 
@@ -200,15 +202,42 @@ func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
     s.model = sub.Model
 
     // 更换UUID缓存内容为步骤状态
-    cache.Del(s.ctx, uid)
-    cache.Set(s.ctx, uid, &model.RiderCabinetOperateRes{
+    res := &model.RiderCabinetOperateRes{
         Step:   model.RiderCabinetOperateStepOpenEmpty,
         Status: model.RiderCabinetOperateStatusProcessing,
-    }, s.maxTime)
+    }
+    cache.Del(s.ctx, uid)
+    cache.Set(s.ctx, uid, res, s.maxTime)
 
     s.updateCabinetExchangeProcess()
 
     s.start = time.Now()
+
+    // 记录换电人
+    // TODO 超时处理
+    s.ex, _ = ent.Database.Exchange.
+        Create().
+        SetRiderID(s.rider.ID).
+        SetCityID(s.info.CityID).
+        SetDetail(&model.ExchangeCabinet{
+            Alternative: s.alternative,
+            Info:        s.operating,
+            Result:      res,
+        }).
+        SetUUID(s.operating.UUID).
+        SetCabinetID(s.operating.ID).
+        SetSuccess(false).
+        SetModel(s.subscribe.Model).
+        SetNillableEnterpriseID(s.subscribe.EnterpriseID).
+        SetNillableStationID(s.subscribe.StationID).
+        SetSubscribeID(s.subscribe.ID).
+        SetAlternative(s.alternative).
+        SetStartAt(s.start).
+        Save(s.ctx)
+
+    if s.ex == nil {
+        snag.Panic("换电失败")
+    }
 
     // 处理换电流程
     go s.ProcessByStep()
@@ -249,8 +278,7 @@ func (s *riderCabinetService) ProcessStepEnd() {
     now := time.Now()
 
     // 保存数据库
-    _, _ = ent.Database.Exchange.
-        Create().
+    _, _ = s.ex.Update().
         SetRiderID(s.rider.ID).
         SetCityID(s.info.CityID).
         SetDetail(&model.ExchangeCabinet{

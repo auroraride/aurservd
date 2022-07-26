@@ -12009,6 +12009,10 @@ const docTemplate = `{
                     "description": "骑手电话",
                     "type": "string"
                 },
+                "status": {
+                    "description": "换电状态 0:进行中 1:成功 2:失败",
+                    "type": "integer"
+                },
                 "store": {
                     "description": "门店, 电柜换电无此字段",
                     "allOf": [
@@ -12016,10 +12020,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.Store"
                         }
                     ]
-                },
-                "success": {
-                    "description": "是否成功",
-                    "type": "boolean"
                 },
                 "time": {
                     "description": "换电时间",
