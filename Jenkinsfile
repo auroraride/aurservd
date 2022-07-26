@@ -11,10 +11,10 @@ node {
         echo '完成Development环境部署'
     }
     stage('Production') {
-        timeout (time: 1, unit: 'HOURS' )  {
-            input 'Deploy to Production?'
-        }
         if (TAG == 'latest' || TAG == 'prod') {
+            timeout (time: 1, unit: 'HOURS' )  {
+                input 'Deploy to Production?'
+            }
             echo '开始部署Production环境'
             sshagent (credentials: ['Jenkins']) {
                 sh "ssh -o StrictHostKeyChecking=no root@39.106.77.239 '${deploy('api', TAG)}'"
