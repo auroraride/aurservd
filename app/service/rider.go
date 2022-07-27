@@ -29,7 +29,9 @@ import (
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/golang-module/carbon/v2"
     jsoniter "github.com/json-iterator/go"
+    "github.com/labstack/echo/v4"
     "github.com/rs/xid"
+    "path/filepath"
     "strconv"
     "strings"
     "time"
@@ -362,7 +364,7 @@ func (s *riderService) Status(u *ent.Rider) uint8 {
 }
 
 // List 骑手列表
-func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
+func (s *riderService) List(req *model.RiderListReq, w echo.Context) *model.PaginationRes {
     q := ent.Database.Rider.
         QueryNotDeleted().
         WithPerson().
@@ -373,12 +375,13 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
             )
         }).
         WithSubscribes(func(sq *ent.SubscribeQuery) {
-            sq.Order(ent.Desc(subscribe.FieldCreatedAt))
+            sq.WithCity().Order(ent.Desc(subscribe.FieldCreatedAt))
         }).
         WithContracts(func(cq *ent.ContractQuery) {
             cq.Where(contract.DeletedAtIsNil(), contract.Status(model.ContractStatusSuccess.Raw()))
         }).
-        WithEnterprise()
+        WithEnterprise().
+        Order(ent.Desc(rider.FieldCreatedAt))
     if req.Keyword != nil {
         // 判定是否id字段
         q.Where(
@@ -394,19 +397,10 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
         )
     }
     if req.Start != nil {
-        start := carbon.ParseByLayout(*req.Start, carbon.DateLayout)
-        if start.Error != nil {
-            snag.Panic("日期格式错误")
-        }
-        q.Where(rider.CreatedAtGTE(start.Carbon2Time()))
+        q.Where(rider.CreatedAtGTE(tools.NewTime().ParseDateStringX(*req.Start)))
     }
     if req.End != nil {
-        end := carbon.ParseByLayout(*req.End, carbon.DateLayout)
-        if end.Error != nil {
-            snag.Panic("日期格式错误")
-        }
-        end.AddDay()
-        q.Where(rider.CreatedAtLT(end.Carbon2Time()))
+        q.Where(rider.CreatedAtLT(tools.NewTime().ParseNextDateStringX(*req.End)))
     }
     if req.Modified != nil {
         m := *req.Modified
@@ -506,74 +500,152 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
         q.Where(rider.HasSubscribesWith(subqs...))
     }
 
+    if req.Export {
+        s.export(q, w)
+        return nil
+    }
+
     return model.ParsePaginationResponse[model.RiderItem, ent.Rider](
         q,
         req.PaginationReq,
         func(item *ent.Rider) model.RiderItem {
-            p := item.Edges.Person
-            ri := model.RiderItem{
-                ID:         item.ID,
-                Phone:      item.Phone,
-                Status:     model.RiderStatusNormal,
-                AuthStatus: model.PersonUnauthenticated,
-                Contact:    item.Contact,
-            }
-            e := item.Edges.Enterprise
-            if e != nil {
-                ri.Enterprise = &model.EnterpriseBasic{
-                    ID:   e.ID,
-                    Name: e.Name,
-                }
-            }
-
-            if item.Blocked {
-                ri.Status = model.RiderStatusBlocked
-            }
-            if p != nil {
-                ri.Name = p.Name
-                ri.AuthStatus = model.PersonAuthStatus(p.Status)
-                if p.Banned {
-                    ri.Status = model.RiderStatusBanned
-                }
-                if p.AuthResult != nil {
-                    ri.Address = p.AuthResult.Address
-                }
-                ri.Person = &model.Person{
-                    IDCardNumber:   p.IDCardNumber,
-                    IDCardPortrait: p.IDCardPortrait,
-                    IDCardNational: p.IDCardNational,
-                    AuthFace:       p.AuthFace,
-                }
-            }
-
-            // 获取合同
-            contracts := item.Edges.Contracts
-            if contracts != nil && len(contracts) > 0 {
-                ri.Contract = contracts[0].Files[0]
-            }
-
-            if item.Edges.Orders != nil && len(item.Edges.Orders) > 0 {
-                ri.Deposit = item.Edges.Orders[0].Amount
-            }
-            if item.Edges.Subscribes != nil && len(item.Edges.Subscribes) > 0 {
-                sub := item.Edges.Subscribes[0]
-                ri.Subscribe = &model.RiderItemSubscribe{
-                    ID:        sub.ID,
-                    Status:    sub.Status,
-                    Remaining: sub.Remaining,
-                    Model:     sub.Model,
-                }
-                if sub.Status == model.SubscribeStatusUsing && sub.Remaining <= 3 {
-                    ri.Subscribe.Status = 11
-                }
-            }
-            if item.DeletedAt != nil {
-                ri.DeletedAt = item.DeletedAt.Format(carbon.DateTimeLayout)
-                ri.Remark = item.Remark
-            }
-            return ri
+            return s.detailRiderItem(item)
         },
     )
+}
+
+func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
+    p := item.Edges.Person
+    ri := model.RiderItem{
+        ID:         item.ID,
+        Phone:      item.Phone,
+        Status:     model.RiderStatusNormal,
+        AuthStatus: model.PersonUnauthenticated,
+        Contact:    item.Contact,
+    }
+    e := item.Edges.Enterprise
+    if e != nil {
+        ri.Enterprise = &model.EnterpriseBasic{
+            ID:   e.ID,
+            Name: e.Name,
+        }
+    }
+
+    if item.Blocked {
+        ri.Status = model.RiderStatusBlocked
+    }
+    if p != nil {
+        ri.Name = p.Name
+        ri.AuthStatus = model.PersonAuthStatus(p.Status)
+        if p.Banned {
+            ri.Status = model.RiderStatusBanned
+        }
+        if p.AuthResult != nil {
+            ri.Address = p.AuthResult.Address
+        }
+        ri.Person = &model.Person{
+            IDCardNumber:   p.IDCardNumber,
+            IDCardPortrait: p.IDCardPortrait,
+            IDCardNational: p.IDCardNational,
+            AuthFace:       p.AuthFace,
+        }
+    }
+
+    // 获取合同
+    contracts := item.Edges.Contracts
+    if contracts != nil && len(contracts) > 0 {
+        ri.Contract = contracts[0].Files[0]
+    }
+
+    if item.Edges.Orders != nil && len(item.Edges.Orders) > 0 {
+        ri.Deposit = item.Edges.Orders[0].Amount
+    }
+    if item.Edges.Subscribes != nil && len(item.Edges.Subscribes) > 0 {
+        sub := item.Edges.Subscribes[0]
+        ri.Subscribe = &model.RiderItemSubscribe{
+            ID:        sub.ID,
+            Status:    sub.Status,
+            Remaining: sub.Remaining,
+            Model:     sub.Model,
+        }
+        ri.City = &model.City{
+            ID: sub.CityID,
+        }
+        if sub.Edges.City != nil {
+            ri.City.Name = sub.Edges.City.Name
+        }
+    }
+    if item.DeletedAt != nil {
+        ri.DeletedAt = item.DeletedAt.Format(carbon.DateTimeLayout)
+        ri.Remark = item.Remark
+    }
+    return ri
+}
+
+func (s *riderService) export(q *ent.RiderQuery, w echo.Context) {
+    items, _ := q.All(s.ctx)
+    if len(items) == 0 {
+        snag.Panic("无效筛选")
+    }
+
+    var rows [][]any
+    title := []any{
+        "城市",
+        "骑手",
+        "电话",
+        "证件",
+        "户籍",
+        "企业",
+        "押金",
+        "订阅",
+        "电池",
+        "剩余",
+        "状态",
+        "认证",
+        "紧急联系",
+        "注册时间",
+    }
+    rows = append(rows, title)
+    for _, item := range items {
+        detail := s.detailRiderItem(item)
+        row := []any{
+            "",
+            detail.Name,
+            detail.Phone,
+            "",
+            detail.Address,
+            "",
+            detail.Deposit,
+            "",
+            "",
+            "",
+            []string{"正常", "正常", "禁用", "黑名单"}[detail.Status],
+            detail.AuthStatus.String(),
+            "",
+            item.CreatedAt.Format(carbon.DateTimeLayout),
+        }
+        if detail.City != nil {
+            row[0] = detail.City.Name
+        }
+        if detail.Person != nil {
+            row[3] = detail.Person.IDCardNumber
+        }
+        if detail.Enterprise != nil {
+            row[5] = detail.Enterprise.Name
+        }
+        if detail.Subscribe != nil {
+            row[7] = model.SubscribeStatusText(detail.Subscribe.Status)
+            row[8] = detail.Subscribe.Model
+            row[9] = detail.Subscribe.Remaining
+        }
+        if item.Contact != nil {
+            row[12] = item.Contact.String()
+        }
+        rows = append(rows, row)
+    }
+    fp := filepath.Join("runtime/export/rider", fmt.Sprintf("骑手%s.xlsx", time.Now().Format(carbon.ShortDateTimeLayout)))
+    ex := tools.NewExcelExistsExport(w, fp)
+    ex.AddValues(rows).Done().Export()
 }
 
 func (s *riderService) Query(id uint64) *ent.Rider {

@@ -28,7 +28,7 @@ var Rider = new(rider)
 // @Success      200  {object}  model.PaginationRes{items=[]model.RiderItem} "请求成功"
 func (*rider) List(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.RiderListReq](c)
-    return ctx.SendResponse(service.NewRider().List(req))
+    return ctx.SendResponse(service.NewRider().List(req, c))
 }
 
 // Ban

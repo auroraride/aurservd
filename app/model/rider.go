@@ -5,7 +5,10 @@
 
 package model
 
-import "errors"
+import (
+    "errors"
+    "fmt"
+)
 
 // RiderTokenPermission 骑手token权限, 以此判定登陆后动作
 type RiderTokenPermission uint8
@@ -64,6 +67,10 @@ type RiderContact struct {
     Relation string `json:"relation" validate:"required" trans:"关系"`
 }
 
+func (c *RiderContact) String() string {
+    return fmt.Sprintf("%s,%s,%s", c.Name, c.Relation, c.Phone)
+}
+
 // RiderSampleInfo 骑手简单信息
 type RiderSampleInfo struct {
     ID    uint64 `json:"id"`    // 骑手ID
@@ -75,14 +82,16 @@ type RiderSampleInfo struct {
 type RiderListReq struct {
     PaginationReq
 
-    Keyword      *string `json:"keyword" query:"keyword"`           // 搜索关键词
-    Modified     *bool   `json:"modified" query:"modified"`         // 是否被修改过
-    Start        *string `json:"start" query:"start"`               // 注册开始时间, 格式为: 2022-01-01
-    End          *string `json:"end" query:"end"`                   // 注册结束时间, 格式为: 2022-01-01
-    Enterprise   *uint8  `json:"enterprise" query:"enterprise"`     // 是否团签, 0:全部 1:团签 2:个签
-    EnterpriseID *uint64 `json:"enterpriseId" query:"enterpriseId"` // 团签企业ID, `enterprise = 1`时才会生效
-    CityID       *uint64 `json:"cityId" query:"cityId"`             // 城市筛选
+    Export bool `json:"export" query:"export"` // 导出
 
+    Keyword         *string           `json:"keyword" query:"keyword"`                                           // 搜索关键词
+    Modified        *bool             `json:"modified" query:"modified"`                                         // 是否被修改过
+    Start           *string           `json:"start" query:"start"`                                               // 注册开始时间, 格式为: 2022-01-01
+    End             *string           `json:"end" query:"end"`                                                   // 注册结束时间, 格式为: 2022-01-01
+    Enterprise      *uint8            `json:"enterprise" query:"enterprise"`                                     // 是否团签, 0:全部 1:团签 2:个签
+    EnterpriseID    *uint64           `json:"enterpriseId" query:"enterpriseId"`                                 // 团签企业ID, `enterprise = 1`时才会生效
+    CityID          *uint64           `json:"cityId" query:"cityId"`                                             // 城市筛选
+    Model           string            `json:"model" query:"model"`                                               // 电池型号筛选
     Status          *uint8            `json:"status" enums:"0,1,2,3,4" query:"status"`                           // 用户状态 1:正常 2:已禁用 3:黑名单
     SubscribeStatus *uint8            `json:"subscribeStatus" enums:"0,1,2,3,4,5,11,99" query:"subscribeStatus"` // 业务状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期 99:未使用
     AuthStatus      *PersonAuthStatus `json:"authStatus" enums:"0,1,2,3" query:"authStatus"`                     // 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
@@ -101,7 +110,7 @@ type RiderItemSubscribe struct {
 // RiderItem 骑手信息
 type RiderItem struct {
     ID         uint64           `json:"id"`
-    Name       string           `json:"name"`               // 用户姓名
+    Name       string           `json:"name"`               // 姓名
     Phone      string           `json:"phone"`              // 手机号
     Status     uint8            `json:"status"`             // 用户状态, 优先显示状态值大的 1:正常 2:已禁用 3:黑名单
     AuthStatus PersonAuthStatus `json:"authStatus"`         // 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
@@ -118,6 +127,8 @@ type RiderItem struct {
     Person *Person `json:"person,omitempty"`
     // 紧急联系人, 有可能不存在
     Contact *RiderContact `json:"contact,omitempty"`
+    // 所在城市, 有可能不存在
+    City *City `json:"city,omitempty"`
 }
 
 // RiderBlockReq 封禁或解封骑手账号

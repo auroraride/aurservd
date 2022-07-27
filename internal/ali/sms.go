@@ -6,11 +6,13 @@
 package ali
 
 import (
+    "errors"
     openapi "github.com/alibabacloud-go/darabonba-openapi/client"
     dysmsapi "github.com/alibabacloud-go/dysmsapi-20170525/v2/client"
     "github.com/auroraride/aurservd/internal/ar"
     jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
+    "strings"
 )
 
 type smsClient struct {
@@ -63,8 +65,15 @@ func (c *smsClient) SendCode(phone string) (id string, err error) {
         TemplateParam: &c.data,
     }
     res, err := c.SendSms(req)
+    log.Infof("[%s] 短信发送结果: %s", phone, res)
     if err != nil {
         return
+    }
+    if res == nil || res.Body == nil {
+        return "", errors.New("短信发送失败")
+    }
+    if strings.ToUpper(*res.Body.Code) != "OK" {
+        return "", errors.New(*res.Body.Message)
     }
     id = *res.Body.BizId
     return

@@ -90,7 +90,7 @@ type ExchangeManagerListRes struct {
     Store       *Store            `json:"store,omitempty"`      // 门店, 电柜换电无此字段
     Cabinet     *CabinetBasicInfo `json:"cabinet,omitempty"`    // 电柜, 门店换电无此字段
     City        City              `json:"city"`                 // 城市
-    Success     bool              `json:"success"`              // 是否成功
+    Status      uint8             `json:"status"`               // 换电状态 0:进行中 1:成功 2:失败
     Full        string            `json:"full,omitempty"`       // 满电仓位信息, 门店换电不存在
     Empty       string            `json:"empty,omitempty"`      // 空仓位信息, 门店换电不存在
     Error       string            `json:"error,omitempty"`      // 换电失败原因

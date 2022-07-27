@@ -149,7 +149,7 @@ func (s *exchangeService) RiderList(riderID uint64, req model.PaginationReq) *mo
         func(item *ent.Exchange) (res model.ExchangeRiderListRes) {
             res = model.ExchangeRiderListRes{
                 ID:      item.ID,
-                Time:    item.CreatedAt.Format(carbon.DateTimeLayout),
+                Time:    item.StartAt.Format(carbon.DateTimeLayout),
                 Success: item.Success,
                 City: model.City{
                     ID:   item.Edges.City.ID,
@@ -328,7 +328,16 @@ func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.Paginat
             Time:        item.CreatedAt.Format(carbon.DateTimeLayout),
             Model:       item.Model,
             Alternative: item.Alternative,
-            Success:     item.Success,
+        }
+
+        if item.FinishAt.IsZero() && item.CabinetID != 0 {
+            res.Status = 0
+        } else {
+            if item.Success {
+                res.Status = 1
+            } else {
+                res.Status = 2
+            }
         }
 
         e := item.Edges.Enterprise
@@ -365,7 +374,7 @@ func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.Paginat
         if item.Detail != nil && item.Detail.Info != nil {
             res.Full = fmt.Sprintf("%d号仓, %.2f%%", item.Detail.Info.FullIndex+1, item.Detail.Info.Electricity)
             res.Empty = fmt.Sprintf("%d号仓, %.2f%%", item.Detail.Info.EmptyIndex+1, item.Detail.Info.RiderElectricity)
-            if !res.Success {
+            if !item.Success && !item.FinishAt.IsZero() {
                 res.Error = fmt.Sprintf("%s [%s]", item.Detail.Result.Message, item.Detail.Result.Step)
             }
         }

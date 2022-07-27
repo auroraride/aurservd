@@ -11,6 +11,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ali"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/auroraride/aurservd/pkg/tools"
     "github.com/h2non/filetype"
     "github.com/h2non/filetype/matchers"
     log "github.com/sirupsen/logrus"
@@ -75,7 +76,7 @@ func (*cscService) ParseNameListShiguangju(source *multipart.FileHeader) []*mode
                 Phone:   row[1],
                 Product: row[2],
             }
-            item.Status = ali.NewVms().SendVoiceMessageByTts(item.Phone, fmt.Sprintf(`{"name":"%s","product": "%s"}`, item.Name, item.Product), &tel, &tmpl)
+            item.Status = ali.NewVms().SendVoiceMessageByTts(tools.NewPointerInterface(item.Phone), tools.NewPointerInterface(fmt.Sprintf(`{"name":"%s","product": "%s"}`, item.Name, item.Product)), &tel, &tmpl)
             items[i-1] = item
         }
     }

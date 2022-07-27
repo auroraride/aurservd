@@ -22,6 +22,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/batterymodel"
     "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
+    "github.com/auroraride/aurservd/internal/ent/exchange"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
@@ -303,7 +304,7 @@ func (s *cabinetService) UpdateStatus(item *ent.Cabinet, params ...any) {
 // DoorOpenStatus 获取柜门状态
 func (s *cabinetService) DoorOpenStatus(item *ent.Cabinet, index int, params ...any) model.CabinetBinDoorStatus {
     s.UpdateStatus(item, params...)
-    if len(item.Bin) < index {
+    if len(item.Bin) == 0 || len(item.Bin) < index {
         return model.CabinetBinDoorStatusUnknown
     }
     bin := item.Bin[index]
@@ -661,4 +662,17 @@ func (s *cabinetService) transfer(cab *ent.Cabinet, m string) (err error) {
         Force:         true,
     })
     return
+
+}
+
+// Busy TODO 是否需要两次换电间隔
+func (s *cabinetService) Busy(cab *ent.Cabinet) bool {
+    if model.CabinetBusying(cab.Serial) {
+        return true
+    }
+    last, _ := ent.Database.Exchange.QueryNotDeleted().Where(exchange.CabinetID(cab.ID)).Order(ent.Desc(exchange.FieldCreatedAt)).First(s.ctx)
+    if last != nil {
+
+    }
+    return false
 }
