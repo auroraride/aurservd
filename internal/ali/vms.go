@@ -32,20 +32,32 @@ func NewVms() *vms {
     return &vms{client}
 }
 
+func (v *vms) log(phone, param *string, res any, err error) {
+    p := "<nil>"
+    pa := "<nil>"
+    if phone != nil {
+        p = *phone
+    }
+    if param != nil {
+        pa = *param
+    }
+    if err == nil {
+        log.Infof("%s, %s 发送语音通知结果: %v", p, pa, res)
+        return
+    }
+    log.Errorf("%s, %s 发送语音通知结果: %v, 错误信息: %v", p, pa, res, err)
+}
+
 // SendVoiceMessageByTts 发送语音通知
-func (v *vms) SendVoiceMessageByTts(phone, param string, tel, tmplate *string) bool {
+func (v *vms) SendVoiceMessageByTts(phone, param *string, tel, tmplate *string) bool {
     req := &dyvmsapi20170525.SingleCallByTtsRequest{
         CalledShowNumber: tel,
         TtsCode:          tmplate,
-        CalledNumber:     &phone,
-        TtsParam:         &param,
+        CalledNumber:     phone,
+        TtsParam:         param,
         Speed:            tea.Int32(-200),
     }
     res, err := v.client.SingleCallByTts(req)
-    if err == nil {
-        log.Infof("%s, %s 发送语音通知结果: %v", phone, param, res)
-    } else {
-        log.Errorf("%s, %s 发送语音通知结果: %v, 错误信息: %v", phone, param, res, err)
-    }
+    v.log(phone, param, res, err)
     return err == nil && *res.Body.Code == "OK"
 }

@@ -18,6 +18,7 @@ func Execute() {
         managerCmd,
         importCmd,
         serverCommand(),
+        customerCommand(),
     )
     _ = rootCmd.Execute()
 }
