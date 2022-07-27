@@ -271,21 +271,22 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
         name = req.Model
     }
 
-    // 调出检查
-    if req.OutboundID > 0 && s.Fetch(req.OutBoundTarget, req.OutboundID, name) < req.Num {
-        snag.Panic("操作失败, 调出物资大于库存物资")
-    }
-
     // 检查电柜是否初始化调拨过
     if !req.Force && req.InboundTarget == model.StockTargetCabinet {
         if !NewCabinet().QueryOne(req.InboundID).Transferred {
             snag.Panic("电柜未初始化调拨")
         }
     }
+
     if !req.Force && req.OutBoundTarget == model.StockTargetCabinet {
         if !NewCabinet().QueryOne(req.OutboundID).Transferred {
             snag.Panic("电柜未初始化调拨")
         }
+    }
+
+    // 调出检查
+    if req.OutboundID > 0 && s.Fetch(req.OutBoundTarget, req.OutboundID, name) < req.Num {
+        snag.Panic("操作失败, 调出物资大于库存物资")
     }
 
     sn := tools.NewUnique().NewSN()
