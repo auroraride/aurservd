@@ -51,6 +51,9 @@ func customerAppNotice() *cobra.Command {
             arr := strings.Split(string(b), "\n")
             for _, s := range arr {
                 s = strings.ReplaceAll(s, " ", "")
+                if s == "" {
+                    continue
+                }
                 state := "成功"
                 success := vms.SendVoiceMessageByTts(&s, nil, &tel, &tmpl)
                 if !success {
