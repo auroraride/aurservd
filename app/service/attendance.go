@@ -182,9 +182,12 @@ func (s *attendanceService) Create(req *model.AttendanceCreateReq) {
 }
 
 func (s *attendanceService) List(req *model.AttendanceListReq) *model.PaginationRes {
-    q := s.orm.QueryNotDeleted().WithStore(func(sq *ent.StoreQuery) {
-        sq.WithCity()
-    }).WithEmployee()
+    q := s.orm.QueryNotDeleted().
+        WithStore(func(sq *ent.StoreQuery) {
+            sq.WithCity()
+        }).
+        WithEmployee().
+        Order(ent.Desc(attendance.FieldCreatedAt))
     tt := tools.NewTime()
     if req.Start != nil {
         q.Where(attendance.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))

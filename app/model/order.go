@@ -54,6 +54,7 @@ type OrderCreateRes struct {
 type OrderListReq struct {
     PaginationReq
 
+    RiderID    *uint64 `json:"riderId" query:"riderId"`             // 骑手ID
     Type       *uint   `json:"type" query:"type"`                   // 订单类型 1:新签 2:续签 3:重签 4:更改电池 5:救援 6:滞纳金 7:押金
     CityID     *uint64 `json:"cityId" query:"cityId"`               // 城市ID
     Keyword    *string `json:"keyword" query:"keyword"`             // 骑手姓名

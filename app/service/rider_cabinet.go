@@ -47,6 +47,9 @@ type riderCabinetService struct {
     start time.Time
 
     ex *ent.Exchange
+
+    emptyCloseTime time.Time
+    fullCloseTime  time.Time
 }
 
 func NewRiderCabinet() *riderCabinetService {
@@ -390,28 +393,53 @@ func (s *riderCabinetService) ProcessDoorBatteryStatus() (ds model.CabinetBinDoo
 
     // 验证是否放入旧电池
     if step == model.RiderCabinetOperateStepPutInto {
-        // 凯信电柜需要绑定电池
+        // 获取骑手放入电池电量
+        s.operating.RiderElectricity = bin.Electricity
+
+        // 放入时间
+        if s.emptyCloseTime.IsZero() {
+            s.emptyCloseTime = time.Now()
+        }
+
+        // 凯信电柜需要绑定电池<已废弃>
         // bind := true
         // if s.info.Brand == model.CabinetBrandKaixin {
         //     bind = provider.NewKaixin().BatteryBind(s.rider.Edges.Person.Name+"-"+shortuuid.New(), s.info.Serial, s.model, s.operating.EmptyIndex)
         // }
+
         // 判断是否 有电池 并且 (电压大于0 或 电量大于0)
         if bin.Battery && (bin.Voltage > 0 || bin.Electricity > 0) {
             s.putInElectricity = bin.Electricity
             return model.CabinetBinDoorStatusClose
         }
 
-        // 骑手放入电池电量
-        s.operating.RiderElectricity = bin.Electricity
-        return model.CabinetBinDoorStatusBatteryEmpty
+        // 检测不到电池的情况下, 继续检测30s
+        if time.Now().Sub(s.emptyCloseTime).Seconds() > 30 {
+            return model.CabinetBinDoorStatusBatteryEmpty
+        } else {
+            time.Sleep(1 * time.Second)
+            return s.ProcessDoorBatteryStatus()
+        }
     }
 
     // 验证满电电池是否取走
     if step == model.RiderCabinetOperateStepPutOut {
-        if bin.Battery {
-            return model.CabinetBinDoorStatusBatteryFull
+        if s.fullCloseTime.IsZero() {
+            s.fullCloseTime = time.Now()
         }
-        return model.CabinetBinDoorStatusClose
+
+        // 如果已取走直接返回
+        if !bin.Battery {
+            return model.CabinetBinDoorStatusClose
+        }
+
+        // 如果未取走则继续检测30s
+        if time.Now().Sub(s.fullCloseTime).Seconds() > 30 {
+            return model.CabinetBinDoorStatusBatteryFull
+        } else {
+            time.Sleep(1 * time.Second)
+            return s.ProcessDoorBatteryStatus()
+        }
     }
 
     return ds
