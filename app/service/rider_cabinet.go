@@ -23,6 +23,7 @@ import (
 )
 
 // TODO 服务器崩溃后自动启动继续换电进程
+// TODO 电柜缓存优化
 
 type riderCabinetService struct {
     ctx      context.Context
