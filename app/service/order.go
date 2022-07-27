@@ -532,6 +532,9 @@ func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
     if req.Type != nil {
         q.Where(order.Type(*req.Type))
     }
+    if req.RiderID != nil {
+        q.Where(order.RiderID(*req.RiderID))
+    }
     if req.Keyword != nil {
         q.Where(order.HasRiderWith(
             rider.Or(
