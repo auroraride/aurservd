@@ -296,7 +296,10 @@ func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.Paginat
     }
 
     if req.Status != 0 {
-        q.Where(exchange.Success(req.Status == 1))
+        q.Where(
+            exchange.Success(req.Status == 1),
+            exchange.FinishAtNotNil(),
+        )
     }
 
     if req.Serial != "" {
