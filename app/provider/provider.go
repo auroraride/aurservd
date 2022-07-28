@@ -103,9 +103,24 @@ func delBinFault(serial string, index int) {
     cache.Del(context.Background(), fmt.Sprintf("AUTO-BINFAULT-%s-%d", serial, index))
 }
 
-// monitor 监控电柜变动
+// monitor 监控电柜
 // bins health num 旧数据
 func monitor(oldBins []model.CabinetBin, oldHealth uint8, oldNum uint, item *ent.Cabinet) {
+    // 提交日志
+    if item.Health == model.CabinetHealthStatusOnline {
+        go func() {
+            slsCfg := ar.Config.Aliyun.Sls
+            // 保存历史仓位信息(转换后的)
+            lg := GenerateSlsStatusLogGroup(item)
+            if lg != nil {
+                err := ali.NewSls().PutLogs(slsCfg.Project, slsCfg.CabinetLog, lg)
+                if err != nil {
+                    log.Errorf("阿里云SLS提交失败: %#v", err)
+                }
+            }
+        }()
+    }
+
     // 监控在线变化
     if oldHealth != item.Health {
         // 电柜在线变动日志
@@ -140,7 +155,6 @@ func monitor(oldBins []model.CabinetBin, oldHealth uint8, oldNum uint, item *ent
 
 // StartCabinetProvider 开始执行任务
 func StartCabinetProvider(providers ...Provider) {
-    slsCfg := ar.Config.Aliyun.Sls
     for _, p := range providers {
         provider := p
         times := 0
@@ -164,23 +178,7 @@ func StartCabinetProvider(providers ...Provider) {
                     }
 
                     // 更新电柜信息
-                    err = provider.UpdateStatus(item)
-
-                    if err == nil {
-                        // 提交日志
-                        if item.Health == model.CabinetHealthStatusOnline {
-                            go func() {
-                                // 保存历史仓位信息(转换后的)
-                                lg := GenerateSlsStatusLogGroup(item)
-                                if lg != nil {
-                                    err = ali.NewSls().PutLogs(slsCfg.Project, slsCfg.CabinetLog, lg)
-                                    if err != nil {
-                                        log.Errorf("阿里云SLS提交失败: %#v", err)
-                                    }
-                                }
-                            }()
-                        }
-                    }
+                    _ = provider.UpdateStatus(item)
 
                     time.Sleep(time.Duration((60000-int(time.Now().Sub(start).Milliseconds()))/len(items)) * time.Millisecond)
                 }
