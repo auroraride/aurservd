@@ -42,7 +42,3 @@ type BusinessListRes struct {
     BusinessEmployeeListRes
     Employee *Employee `json:"employee,omitempty"` // 店员, 可能为空
 }
-
-type BusinessRiderCabinet struct {
-    Serial string `json:"serial"` // 电柜编码
-}
