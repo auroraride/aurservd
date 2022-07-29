@@ -321,6 +321,7 @@ func (s *cabinetService) DoorOpenStatus(item *ent.Cabinet, index int, params ...
 func (s *cabinetService) Detail(id uint64) *model.CabinetDetailRes {
     item := s.orm.QueryNotDeleted().
         Where(cabinet.ID(id)).
+        WithBms().
         OnlyX(s.ctx)
     if item == nil {
         snag.Panic("未找到电柜")
@@ -328,6 +329,9 @@ func (s *cabinetService) Detail(id uint64) *model.CabinetDetailRes {
     s.UpdateStatus(item)
     res := new(model.CabinetDetailRes)
     _ = copier.Copy(res, item)
+    for _, bm := range item.Edges.Bms {
+        res.Models = append(res.Models, bm.Model)
+    }
     return res
 }
 
