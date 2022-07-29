@@ -71,11 +71,10 @@ func NewRiderCabinetWithRider(rider *ent.Rider) *riderCabinetService {
 func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) *model.RiderCabinetInfo {
     // 检查用户换电间隔
     iv := cache.Int(model.SettingExchangeInterval)
-    ml := time.Now().Add(-time.Duration(iv) * time.Minute)
     if exist, _ := ent.Database.Exchange.QueryNotDeleted().Where(
         exchange.RiderID(s.rider.ID),
         exchange.Success(true),
-        exchange.CreatedAtGTE(ml),
+        exchange.CreatedAtGTE(time.Now().Add(-time.Duration(cache.Int(model.SettingExchangeInterval))*time.Minute)),
     ).Exist(s.ctx); exist {
         snag.Panic(fmt.Sprintf("换电过于频繁, %d分钟可再次换电", iv))
     }
@@ -153,6 +152,16 @@ func (s *riderCabinetService) updateCabinetExchangeProcess() {
 func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
     // 检查用户是否可以办理业务
     NewRiderPermissionWithRider(s.rider).BusinessX()
+
+    // 校验换电信息
+    iv := cache.Int(model.SettingExchangeInterval)
+    if exist, _ := ent.Database.Exchange.QueryNotDeleted().Where(
+        exchange.RiderID(s.rider.ID),
+        exchange.Success(true),
+        exchange.CreatedAtGTE(time.Now().Add(-time.Duration(cache.Int(model.SettingExchangeInterval))*time.Minute)),
+    ).Exist(s.ctx); exist {
+        snag.Panic(fmt.Sprintf("换电过于频繁, %d分钟可再次换电", iv))
+    }
 
     info := new(model.RiderCabinetInfo)
     uid := *req.UUID
