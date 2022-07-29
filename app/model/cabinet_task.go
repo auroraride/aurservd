@@ -5,18 +5,21 @@
 
 package model
 
-import "time"
+import (
+    jsoniter "github.com/json-iterator/go"
+    "time"
+)
 
-// CabinetTaskType 业务类型
-type CabinetTaskType string
+// CabinetJob 电柜任务
+type CabinetJob string
 
 const (
-    CabinetTaskTypeRiderExchange    CabinetTaskType = "RDR_EXCHANGE"    // 骑手-换电
-    CabinetTaskTypeRiderActive                      = "RDR_ACTIVE"      // 骑手-激活
-    CabinetTaskTypeRiderUnSubscribe                 = "RDR_UNSUBSCRIBE" // 骑手-退租
-    CabinetTaskTypePause                            = "RDR_PAUSE"       // 骑手-寄存
-    CabinetTaskTypeContinue                         = "RDR_CONTINUE"    // 骑手-取消寄存
-    CabinetTaskTypeManagerOpen                      = "MGR_OPEN"        // 管理-开门
+    CabinetJobRiderExchange    CabinetJob = "RDR_EXCHANGE"    // 骑手-换电
+    CabinetJobRiderActive                 = "RDR_ACTIVE"      // 骑手-激活
+    CabinetJobRiderUnSubscribe            = "RDR_UNSUBSCRIBE" // 骑手-退租
+    CabinetJobPause                       = "RDR_PAUSE"       // 骑手-寄存
+    CabinetJobContinue                    = "RDR_CONTINUE"    // 骑手-取消寄存
+    CabinetJobManagerOpen                 = "MGR_OPEN"        // 管理-开门
 )
 
 type CabinetTaskSerial struct {
@@ -25,6 +28,42 @@ type CabinetTaskSerial struct {
 
 // CabinetTask 电柜任务详情
 type CabinetTask struct {
-    Type  CabinetTaskType // 业务类别
-    Start time.Time       // 开始时间
+    Task       CabinetJob `json:"task"`       // 任务类别
+    Start      time.Time  `json:"start"`      // 开始时间
+    Expiration time.Time  `json:"expiration"` // 过期时间
+    Finish     bool       `json:"finish"`     // 是否已结束
+
+    Exchange *CabinetTaskExchange `json:"exchange"` // 换电信息
+}
+
+func (c *CabinetTask) MarshalBinary() ([]byte, error) {
+    return jsoniter.Marshal(c)
+}
+
+func (c *CabinetTask) UnmarshalBinary(data []byte) error {
+    return jsoniter.Unmarshal(data, c)
+}
+
+// CabinetTaskDevice 任务电柜设备信息
+type CabinetTaskDevice struct {
+    Health         uint8 `json:"health"`         // 电柜健康状态 0离线 1正常 2故障
+    Doors          uint  `json:"doors"`          // 总仓位
+    BatteryNum     uint  `json:"batteryNum"`     // 总电池数
+    BatteryFullNum uint  `json:"batteryFullNum"` // 总满电电池数
+}
+
+// CabinetTaskExchange 换电信息
+type CabinetTaskExchange struct {
+    EmptyBin    CabinetBinBasicInfo     `json:"emptyBin"`    // 空仓位
+    FullBin     CabinetBinBasicInfo     `json:"fullBin"`     // 满电仓位
+    Alternative bool                    `json:"alternative"` // 是否备选方案
+    Success     bool                    `json:"success"`     // 是否成功
+    Step        RiderCabinetOperateStep `json:"step"`        // 当前步骤
+}
+
+// CabinetTaskExchangeBin 任务电柜仓位信息
+type CabinetTaskExchangeBin struct {
+    Index       int                `json:"index"`          // 仓位index
+    Electricity BatteryElectricity `json:"electricity"`    // 电量
+    Time        *time.Time         `json:"time,omitempty"` // 操作时间
 }
