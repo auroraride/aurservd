@@ -123,7 +123,7 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
 
     tools.NewLog().Infof("[换电信息:%s]\n%s\n", uid, res)
 
-    err := cache.Set(s.ctx, uid, res, s.maxTime).Err()
+    err := cache.Set(s.ctx, uid, res, 10*time.Second).Err()
     if err != nil {
         log.Error(err)
         snag.Panic("信息获取失败")
@@ -164,7 +164,7 @@ func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
     uid := *req.UUID
     err := cache.Get(s.ctx, uid).Scan(info)
     if err != nil || info == nil || info.EmptyBin == nil {
-        snag.Panic("未找到信息, 请重新操作")
+        snag.Panic("未找到信息, 请重新扫码")
     }
 
     // 是否有生效中套餐
