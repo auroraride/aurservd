@@ -6,8 +6,14 @@
 package model
 
 import (
+    "context"
+    "github.com/auroraride/aurservd/pkg/cache"
     jsoniter "github.com/json-iterator/go"
     "time"
+)
+
+const (
+    CabinetTaskCacheKey = "CABINET_TASK"
 )
 
 // CabinetJob 电柜任务
@@ -42,6 +48,10 @@ func (c *CabinetTask) MarshalBinary() ([]byte, error) {
 
 func (c *CabinetTask) UnmarshalBinary(data []byte) error {
     return jsoniter.Unmarshal(data, c)
+}
+
+func (c *CabinetTask) Save(serial string, maxTime int) {
+    cache.HSet(context.Background(), CabinetTaskCacheKey, serial, c)
 }
 
 // CabinetTaskDevice 任务电柜设备信息
