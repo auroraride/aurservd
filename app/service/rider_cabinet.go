@@ -276,11 +276,13 @@ func (s *riderCabinetService) ProcessStepEnd() {
         panicErr = fmt.Sprintf("%v", r)
     }
 
-    // 释放占用
-    cache.Del(s.ctx, s.operating.Serial)
-
     res := new(model.RiderCabinetOperateRes)
     _ = cache.Get(s.ctx, s.operating.UUID).Scan(res)
+
+    // 释放占用
+    cache.Del(s.ctx, s.operating.Serial)
+    cache.Del(s.ctx, s.operating.UUID)
+
     if panicErr != "" {
         res.Message = "换电故障: " + panicErr
         res.Stop = true
