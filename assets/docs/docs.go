@@ -5035,6 +5035,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "骑手ID",
+                        "name": "riderId",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "时间起始, 格式为: 2022-01-01",
                         "name": "start",
