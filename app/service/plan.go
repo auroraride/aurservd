@@ -16,6 +16,7 @@ import (
     "github.com/golang-module/carbon/v2"
     log "github.com/sirupsen/logrus"
     "sort"
+    "strings"
     "time"
 )
 
@@ -135,7 +136,7 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanWithComplexes {
     var parent *ent.Plan
     ent.WithTxPanic(s.ctx, func(tx *ent.Tx) error {
         creator := tx.Plan.Create().
-            SetName(req.Name).
+            SetName(strings.TrimSpace(req.Name)).
             SetEnable(req.Enable).
             AddCityIDs(req.Cities...).
             AddPms(pms...).

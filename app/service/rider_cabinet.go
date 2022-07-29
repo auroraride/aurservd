@@ -11,7 +11,6 @@ import (
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/provider"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/exchange"
     "github.com/auroraride/aurservd/pkg/cache"
@@ -42,7 +41,6 @@ type riderCabinetService struct {
     batteryNum       uint // 换电开始时电池数量, 业务时应该监听业务发生时的电池数量，当业务流程中电池数量变动大于1的时候视为异常
 
     subscribe *ent.Subscribe
-    debug     bool
 
     start time.Time
 
@@ -56,7 +54,6 @@ func NewRiderCabinet() *riderCabinetService {
     return &riderCabinetService{
         ctx:     context.Background(),
         maxTime: 180 * time.Second,
-        debug:   ar.Config.Cabinet.Debug,
     }
 }
 
@@ -126,7 +123,7 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
 
     tools.NewLog().Infof("[换电信息:%s]\n%s\n", uid, res)
 
-    err := cache.Set(s.ctx, uid, res, s.maxTime).Err()
+    err := cache.Set(s.ctx, uid, res, 10*time.Second).Err()
     if err != nil {
         log.Error(err)
         snag.Panic("信息获取失败")
@@ -167,7 +164,7 @@ func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
     uid := *req.UUID
     err := cache.Get(s.ctx, uid).Scan(info)
     if err != nil || info == nil || info.EmptyBin == nil {
-        snag.Panic("未找到信息, 请重新操作")
+        snag.Panic("未找到信息, 请重新扫码")
     }
 
     // 是否有生效中套餐
@@ -351,19 +348,6 @@ func (s *riderCabinetService) ProcessByStep() {
 
 // ProcessDoorBatteryStatus 格式化仓门状态, 电池放入取出检测
 func (s *riderCabinetService) ProcessDoorBatteryStatus() (ds model.CabinetBinDoorStatus) {
-    // DEBUG START
-    if s.debug {
-        start := time.Now()
-        ds = model.CabinetBinDoorStatusUnknown
-        for {
-            if time.Now().Sub(start).Seconds() > 2 {
-                return model.CabinetBinDoorStatusClose
-            }
-            time.Sleep(1 * time.Second)
-        }
-    }
-    // DEBUG END
-
     // 获取仓位index
     index := s.operating.EmptyIndex
     step := s.step
@@ -424,8 +408,8 @@ func (s *riderCabinetService) ProcessDoorBatteryStatus() (ds model.CabinetBinDoo
             return model.CabinetBinDoorStatusClose
         }
 
-        // 检测不到电池的情况下, 继续检测30s
-        if time.Now().Sub(s.emptyCloseTime).Seconds() > 30 {
+        // 检测不到电池的情况下, 继续检测60s
+        if time.Now().Sub(s.emptyCloseTime).Seconds() > 60 {
             return model.CabinetBinDoorStatusBatteryEmpty
         } else {
             time.Sleep(1 * time.Second)
@@ -444,8 +428,8 @@ func (s *riderCabinetService) ProcessDoorBatteryStatus() (ds model.CabinetBinDoo
             return model.CabinetBinDoorStatusClose
         }
 
-        // 如果未取走则继续检测30s
-        if time.Now().Sub(s.fullCloseTime).Seconds() > 30 {
+        // 如果未取走则继续检测60s
+        if time.Now().Sub(s.fullCloseTime).Seconds() > 60 {
             return model.CabinetBinDoorStatusBatteryFull
         } else {
             time.Sleep(1 * time.Second)
@@ -525,34 +509,20 @@ func (s *riderCabinetService) ProcessOpenBin() (res *model.RiderCabinetOperateRe
         Phone: r.Phone,
     }
 
-    if s.debug {
-        // DEBUG START
-        debug := time.Now()
-        for {
-            if time.Now().Sub(debug).Seconds() > 2 {
-                status = true
-                err = nil
-                break
-            }
-            time.Sleep(1 * time.Second)
-        }
-        // DEBUG END
-    } else {
-        // 开始处理
-        reason := model.RiderCabinetOperateReasonEmpty
-        if step == model.RiderCabinetOperateStepOpenFull {
-            reason = model.RiderCabinetOperateReasonFull
-        }
-        operation := model.CabinetDoorOperateOpen
-        status, err = NewCabinet().DoorOperate(&model.CabinetDoorOperateReq{
-            ID:        &id,
-            Index:     &index,
-            Remark:    fmt.Sprintf("骑手换电 - %s", reason),
-            Operation: &operation,
-        }, operator, true)
-        if err != nil {
-            snag.Panic(err)
-        }
+    // 开始处理
+    reason := model.RiderCabinetOperateReasonEmpty
+    if step == model.RiderCabinetOperateStepOpenFull {
+        reason = model.RiderCabinetOperateReasonFull
+    }
+    operation := model.CabinetDoorOperateOpen
+    status, err = NewCabinet().DoorOperate(&model.CabinetDoorOperateReq{
+        ID:        &id,
+        Index:     &index,
+        Remark:    fmt.Sprintf("骑手换电 - %s", reason),
+        Operation: &operation,
+    }, operator, true)
+    if err != nil {
+        snag.Panic(err)
     }
 
     log.Infof(`[换电步骤 - 仓门检测]: {step:%s} %d, 仓门Index: %d, 操作反馈: %t, 用户电话: %s`,
