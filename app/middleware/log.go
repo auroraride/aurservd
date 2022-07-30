@@ -74,12 +74,14 @@ func dump(handler bodyDumpHandler) echo.MiddlewareFunc {
             writer := &bodyDumpResponseWriter{Writer: mw, ResponseWriter: c.Response().Writer}
             c.Response().Writer = writer
 
+            // Callback
+            c.Response().After(func() {
+                handler(c, reqBody, resBody.Bytes())
+            })
+
             if err = next(c); err != nil {
                 resBody.WriteString(err.Error())
             }
-
-            // Callback
-            handler(c, reqBody, resBody.Bytes())
 
             return
         }
