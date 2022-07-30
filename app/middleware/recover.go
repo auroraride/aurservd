@@ -6,10 +6,10 @@
 package middleware
 
 import (
+    "fmt"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
-    mw "github.com/labstack/echo/v4/middleware"
     log "github.com/sirupsen/logrus"
     "runtime/debug"
 )
@@ -34,7 +34,8 @@ func Recover() echo.MiddlewareFunc {
                         break
                     default:
                         log.Error(stack)
-                        _ = mw.Recover()(next)(c)
+                        // _ = mw.Recover()(next)(c)
+                        c.Error(fmt.Errorf("%v", r))
                         break
                     }
                 }
