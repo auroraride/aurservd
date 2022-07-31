@@ -59,13 +59,13 @@ func (s *planService) Query(id uint64) *ent.Plan {
 
 // QueryEffectiveWithID 获取当前生效的骑行卡
 func (s *planService) QueryEffectiveWithID(id uint64) *ent.Plan {
-    now := time.Now()
+    today := carbon.Now().StartOfDay().Carbon2Time()
     item, err := s.orm.QueryNotDeleted().
         Where(
             plan.Enable(true),
             plan.ID(id),
-            plan.StartLTE(now),
-            plan.EndGTE(now),
+            plan.StartLTE(today),
+            plan.EndGTE(today),
         ).
         WithPms().
         Only(s.ctx)
