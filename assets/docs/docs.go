@@ -10633,6 +10633,10 @@ const docTemplate = `{
                 "index": {
                     "description": "仓位index",
                     "type": "integer"
+                },
+                "voltage": {
+                    "description": "电压",
+                    "type": "number"
                 }
             }
         },

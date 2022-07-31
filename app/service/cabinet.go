@@ -326,12 +326,15 @@ func (s *cabinetService) Detail(id uint64) *model.CabinetDetailRes {
     if item == nil {
         snag.Panic("未找到电柜")
     }
+    bms := item.Edges.Bms
+
     s.UpdateStatus(item)
     res := new(model.CabinetDetailRes)
     _ = copier.Copy(res, item)
-    for _, bm := range item.Edges.Bms {
+    for _, bm := range bms {
         res.Models = append(res.Models, bm.Model)
     }
+
     return res
 }
 
@@ -492,7 +495,7 @@ func (s *cabinetService) ModelInclude(item *ent.Cabinet, model string) bool {
 // Usable 获取换电可用仓位信息
 func (s *cabinetService) Usable(cab *ent.Cabinet) (op model.RiderCabinetOperateProcess) {
     sort.Slice(cab.Bin, func(i, j int) bool {
-        return cab.Bin[i].Electricity.Value() > cab.Bin[j].Electricity.Value()
+        return cab.Bin[i].Electricity.Value()+cab.Bin[i].Voltage*0.1 > cab.Bin[j].Electricity.Value()+cab.Bin[j].Voltage*0.1
     })
     // 查看电柜是否有满电
     var max *model.CabinetBinBasicInfo
@@ -515,6 +518,7 @@ func (s *cabinetService) Usable(cab *ent.Cabinet) (op model.RiderCabinetOperateP
             max = &model.CabinetBinBasicInfo{
                 Index:       bin.Index,
                 Electricity: bin.Electricity,
+                Voltage:     bin.Voltage,
             }
         }
         if max != nil && empty != nil {

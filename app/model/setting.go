@@ -16,6 +16,7 @@ const (
     SettingException        = "EXCEPTION"         // 物资异常
     SettingPauseMaxDays     = "PAUSE_MAX_DAYS"    // 最大寄存时间
     SettingExchangeInterval = "EXCHANGE_INTERVAL" // 限制换电间隔
+    SettingMaintain         = "MAINTAIN"          // 维护中
 )
 
 type SettingValueConvert func(content string) any
@@ -86,6 +87,10 @@ var Settings = map[string]SettingItem{
     SettingExchangeInterval: {
         Desc:    "限制换电间隔",
         Default: "20",
+    },
+    SettingMaintain: {
+        Desc:    "是否维护中",
+        Default: false,
     },
 }
 
