@@ -66,6 +66,11 @@ func NewRiderCabinetWithRider(rider *ent.Rider) *riderCabinetService {
 
 // GetProcess 获取待换电信息
 func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) *model.RiderCabinetInfo {
+    sm, _ := NewSetting().GetSetting(model.SettingMaintain).(bool)
+    if sm {
+        snag.Panic("系统维护中, 请稍后重试")
+    }
+
     // 检查用户换电间隔
     iv := cache.Int(model.SettingExchangeInterval)
     if exist, _ := ent.Database.Exchange.QueryNotDeleted().Where(
@@ -149,6 +154,11 @@ func (s *riderCabinetService) updateCabinetExchangeProcess() {
 func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
     // 检查用户是否可以办理业务
     NewRiderPermissionWithRider(s.rider).BusinessX()
+
+    sm, _ := NewSetting().GetSetting(model.SettingMaintain).(bool)
+    if sm {
+        snag.Panic("系统维护中, 请稍后重试")
+    }
 
     // 校验换电信息
     iv := cache.Int(model.SettingExchangeInterval)

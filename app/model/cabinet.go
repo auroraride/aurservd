@@ -277,6 +277,7 @@ type CabinetDoorOperateReq struct {
 // CabinetBinBasicInfo 电柜仓位基础属性
 type CabinetBinBasicInfo struct {
     Index       int                `json:"index"`       // 仓位index
+    Voltage     float64            `json:"voltage"`     // 电压
     Electricity BatteryElectricity `json:"electricity"` // 电量
 }
 
