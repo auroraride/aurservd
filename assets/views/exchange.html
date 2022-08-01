@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>电柜换电记录</title>
+    <style>
+      body {
+        padding: 0 20px;
+        margin: 0;
+        display: flex;
+      }
+
+      .container {
+        margin: 20px auto;
+      }
+
+      table {
+        border-collapse: collapse;
+        margin: 0;
+        font-size: 0.9em;
+        min-width: 400px;
+        border-radius: 5px 5px 0 0;
+        overflow: hidden;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+      }
+
+      table thead tr {
+        background-color: #009879;
+        color: #ffffff;
+        text-align: left;
+        font-weight: bold;
+      }
+
+      table th,
+      table td {
+        padding: 12px 15px;
+      }
+
+      table tbody tr {
+        border-bottom: 1px solid #dddddd;
+      }
+
+      table tbody tr:nth-of-type(even) {
+        background-color: #f3f3f3;
+      }
+
+      table tbody tr:last-of-type {
+        border-bottom: 2px solid #009879;
+      }
+
+      .city {
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        align-items: center;
+      }
+
+      .btn {
+        appearance: none;
+        background-color: #FAFBFC;
+        border: 1px solid rgba(27, 31, 35, 0.15);
+        border-radius: 6px;
+        box-shadow: rgba(27, 31, 35, 0.04) 0 1px 0, rgba(255, 255, 255, 0.25) 0 1px 0 inset;
+        box-sizing: border-box;
+        color: #24292E;
+        cursor: pointer;
+        display: inline-block;
+        font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 20px;
+        list-style: none;
+        padding: 6px 16px;
+        position: relative;
+        transition: background-color 0.2s cubic-bezier(0.3, 0, 0.5, 1);
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        vertical-align: middle;
+        white-space: nowrap;
+        word-wrap: break-word;
+      }
+
+      .btn:hover {
+        background-color: #F3F4F6;
+        text-decoration: none;
+        transition-duration: 0.1s;
+      }
+
+      .btn:disabled {
+        background-color: #FAFBFC;
+        border-color: rgba(27, 31, 35, 0.15);
+        color: #959DA5;
+        cursor: default;
+      }
+
+      .btn:active {
+        background-color: #EDEFF2;
+        box-shadow: rgba(225, 228, 232, 0.2) 0 1px 0 inset;
+        transition: none 0s;
+      }
+
+      .btn:focus {
+        outline: 1px transparent;
+      }
+
+      .btn:before {
+        display: none;
+      }
+
+      .btn::-webkit-details-marker {
+        display: none;
+      }
+
+      .date {
+        display: flex;
+        align-items: center;
+      }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <label class="date">
+        <span style="margin-right: 10px;">选择日期</span>
+        <input type="date" name="date" value="{{ .date }}" onchange="dateChange(this)">
+    </label>
+
+    {{ range $k, $data := .items }}
+        {{ $cv := index $.cities $k }}
+        <div style="margin-top: 20px;">
+            <div class="city">
+                <span>{{ $k }}</span>
+                <button class="btn" onclick="download(this)">下载</button>
+            </div>
+            <table>
+                <thead>
+                <th>电柜</th>
+                <th>满电</th>
+                <th>非满电</th>
+                </thead>
+                <tbody>
+                {{ range $c, $v := $data }}
+                    <tr>
+                        <td>{{ $c }}</td>
+                        <td>{{ $v.Full }}</td>
+                        <td>{{ $v.Alternative }}</td>
+                    </tr>
+                {{ end }}
+                <tr>
+                    <td>总计</td>
+                    <td>{{ $cv.Full }}</td>
+                    <td>{{ $cv.Alternative }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    {{ end }}
+
+</div>
+
+<script>
+    const current = '{{.date}}'
+
+    function updateQueryStringParameter(uri, key, value) {
+        const re = new RegExp('([?&])' + key + '=.*?(&|$)', 'i');
+        const separator = uri.indexOf('?') !== -1 ? '&' : '?';
+        if (uri.match(re)) {
+            return uri.replace(re, '$1' + key + '=' + value + '$2');
+        } else {
+            return uri + separator + key + '=' + value;
+        }
+    }
+
+    function dateChange(e) {
+        location.href = updateQueryStringParameter(location.href, 'date', e.value)
+    }
+
+    function download(e) {
+        const table = e.parentElement.nextElementSibling
+        let content = 'data:text/csv;charset=utf-8,'
+
+        for (let i = 0; i < table.rows.length; i++) {
+            const row = table.rows[i]
+            content += `${row.cells[0].innerText},${row.cells[1].innerText},${row.cells[2].innerText}\r\n`
+        }
+
+        const encodedUri = encodeURI(content)
+        const link = document.createElement('a')
+        link.setAttribute('href', encodedUri)
+        link.setAttribute('download', `${e.previousElementSibling.innerText}-${current}.csv`)
+        document.body.appendChild(link)
+        link.click()
+        link.remove()
+    }
+</script>
+</body>
+</html>
