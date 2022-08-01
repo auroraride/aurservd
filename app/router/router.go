@@ -11,6 +11,7 @@ import (
     "github.com/auroraride/aurservd/app/controller"
     "github.com/auroraride/aurservd/app/middleware"
     "github.com/auroraride/aurservd/app/request"
+    "github.com/auroraride/aurservd/assets"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
@@ -27,6 +28,8 @@ var (
 
 func Run() {
     e = echo.New()
+
+    e.Renderer = assets.Templates
 
     e.Static("/pages", "public/pages")
 
@@ -118,6 +121,7 @@ func Run() {
     loadRideRoutes()     // 骑手路由
     loadManagerRoutes()  // 管理员路由
     loadEmployeeRoutes() // 门店端路由
+    loadToolRoutes()
 
     log.Fatal(e.Start(cfg.Address))
 }

@@ -7,6 +7,7 @@ package boot
 
 import (
     "github.com/auroraride/aurservd/app/logging"
+    "github.com/auroraride/aurservd/assets"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/payment"
@@ -49,4 +50,7 @@ func Bootstrap() {
 
     // 初始化支付
     payment.Boot()
+
+    // 加载模板
+    assets.LoadTemplates()
 }
