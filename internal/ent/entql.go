@@ -632,6 +632,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			exchange.FieldCabinetID:    {Type: field.TypeUint64, Column: exchange.FieldCabinetID},
 			exchange.FieldSuccess:      {Type: field.TypeBool, Column: exchange.FieldSuccess},
 			exchange.FieldDetail:       {Type: field.TypeJSON, Column: exchange.FieldDetail},
+			exchange.FieldInfo:         {Type: field.TypeJSON, Column: exchange.FieldInfo},
 			exchange.FieldModel:        {Type: field.TypeString, Column: exchange.FieldModel},
 			exchange.FieldAlternative:  {Type: field.TypeBool, Column: exchange.FieldAlternative},
 			exchange.FieldStartAt:      {Type: field.TypeTime, Column: exchange.FieldStartAt},
@@ -6098,6 +6099,11 @@ func (f *ExchangeFilter) WhereSuccess(p entql.BoolP) {
 // WhereDetail applies the entql json.RawMessage predicate on the detail field.
 func (f *ExchangeFilter) WhereDetail(p entql.BytesP) {
 	f.Where(p.Field(exchange.FieldDetail))
+}
+
+// WhereInfo applies the entql json.RawMessage predicate on the info field.
+func (f *ExchangeFilter) WhereInfo(p entql.BytesP) {
+	f.Where(p.Field(exchange.FieldInfo))
 }
 
 // WhereModel applies the entql string predicate on the model field.

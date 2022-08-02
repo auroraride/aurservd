@@ -1214,6 +1214,20 @@ func DetailNotNil() predicate.Exchange {
 	})
 }
 
+// InfoIsNil applies the IsNil predicate on the "info" field.
+func InfoIsNil() predicate.Exchange {
+	return predicate.Exchange(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldInfo)))
+	})
+}
+
+// InfoNotNil applies the NotNil predicate on the "info" field.
+func InfoNotNil() predicate.Exchange {
+	return predicate.Exchange(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldInfo)))
+	})
+}
+
 // ModelEQ applies the EQ predicate on the "model" field.
 func ModelEQ(v string) predicate.Exchange {
 	return predicate.Exchange(func(s *sql.Selector) {

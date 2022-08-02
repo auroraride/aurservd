@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/app/actuator"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -242,6 +243,18 @@ func (eu *ExchangeUpdate) SetDetail(mc *model.ExchangeCabinet) *ExchangeUpdate {
 // ClearDetail clears the value of the "detail" field.
 func (eu *ExchangeUpdate) ClearDetail() *ExchangeUpdate {
 	eu.mutation.ClearDetail()
+	return eu
+}
+
+// SetInfo sets the "info" field.
+func (eu *ExchangeUpdate) SetInfo(ai *actuator.ExchangeInfo) *ExchangeUpdate {
+	eu.mutation.SetInfo(ai)
+	return eu
+}
+
+// ClearInfo clears the value of the "info" field.
+func (eu *ExchangeUpdate) ClearInfo() *ExchangeUpdate {
+	eu.mutation.ClearInfo()
 	return eu
 }
 
@@ -609,6 +622,19 @@ func (eu *ExchangeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Column: exchange.FieldDetail,
+		})
+	}
+	if value, ok := eu.mutation.Info(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: exchange.FieldInfo,
+		})
+	}
+	if eu.mutation.InfoCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: exchange.FieldInfo,
 		})
 	}
 	if value, ok := eu.mutation.Model(); ok {
@@ -1178,6 +1204,18 @@ func (euo *ExchangeUpdateOne) ClearDetail() *ExchangeUpdateOne {
 	return euo
 }
 
+// SetInfo sets the "info" field.
+func (euo *ExchangeUpdateOne) SetInfo(ai *actuator.ExchangeInfo) *ExchangeUpdateOne {
+	euo.mutation.SetInfo(ai)
+	return euo
+}
+
+// ClearInfo clears the value of the "info" field.
+func (euo *ExchangeUpdateOne) ClearInfo() *ExchangeUpdateOne {
+	euo.mutation.ClearInfo()
+	return euo
+}
+
 // SetModel sets the "model" field.
 func (euo *ExchangeUpdateOne) SetModel(s string) *ExchangeUpdateOne {
 	euo.mutation.SetModel(s)
@@ -1572,6 +1610,19 @@ func (euo *ExchangeUpdateOne) sqlSave(ctx context.Context) (_node *Exchange, err
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Column: exchange.FieldDetail,
+		})
+	}
+	if value, ok := euo.mutation.Info(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: exchange.FieldInfo,
+		})
+	}
+	if euo.mutation.InfoCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: exchange.FieldInfo,
 		})
 	}
 	if value, ok := euo.mutation.Model(); ok {

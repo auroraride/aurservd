@@ -43,7 +43,7 @@ func (*cabinet) GetProcess(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) Process(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.RiderCabinetOperateReq](c)
-    service.NewRiderCabinetWithRider(ctx.Rider).Process(req)
+    service.NewRiderCabinetWithRider(ctx.Rider).Start(req)
     return ctx.SendResponse()
 }
 

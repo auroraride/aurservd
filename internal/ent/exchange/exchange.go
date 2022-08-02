@@ -47,6 +47,8 @@ const (
 	FieldSuccess = "success"
 	// FieldDetail holds the string denoting the detail field in the database.
 	FieldDetail = "detail"
+	// FieldInfo holds the string denoting the info field in the database.
+	FieldInfo = "info"
 	// FieldModel holds the string denoting the model field in the database.
 	FieldModel = "model"
 	// FieldAlternative holds the string denoting the alternative field in the database.
@@ -153,6 +155,7 @@ var Columns = []string{
 	FieldCabinetID,
 	FieldSuccess,
 	FieldDetail,
+	FieldInfo,
 	FieldModel,
 	FieldAlternative,
 	FieldStartAt,

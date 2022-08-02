@@ -6,8 +6,6 @@
 package model
 
 import (
-    "context"
-    "github.com/auroraride/aurservd/pkg/cache"
     jsoniter "github.com/json-iterator/go"
     "go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -60,19 +58,19 @@ type RiderCabinetOperateReq struct {
     Alternative bool               `json:"alternative"`              // 是否使用备选方案
 }
 
-type RiderCabinetOperateStatus uint8
+type TaskStatus uint8
 
 const (
-    RiderCabinetOperateStatusProcessing RiderCabinetOperateStatus = iota + 1 // 处理中
-    RiderCabinetOperateStatusSuccess                                         // 成功
-    RiderCabinetOperateStatusFail                                            // 失败
+    TaskStatusProcessing TaskStatus = iota + 1 // 处理中
+    TaskStatusSuccess                          // 成功
+    TaskStatusFailFail                         // 失败
 )
 
-func (s RiderCabinetOperateStatus) String() string {
+func (s TaskStatus) String() string {
     switch s {
-    case RiderCabinetOperateStatusSuccess:
+    case TaskStatusSuccess:
         return "成功"
-    case RiderCabinetOperateStatusFail:
+    case TaskStatusFailFail:
         return "失败"
     default:
         return "处理中"
@@ -81,10 +79,10 @@ func (s RiderCabinetOperateStatus) String() string {
 
 // RiderCabinetOperateRes 换电操作步骤返回
 type RiderCabinetOperateRes struct {
-    Step    RiderCabinetOperateStep   `json:"step"`    // 操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池
-    Status  RiderCabinetOperateStatus `json:"status"`  // 状态 1:处理中 2:成功 3:失败
-    Message string                    `json:"message"` // 消息
-    Stop    bool                      `json:"stop"`    // 步骤是否终止
+    Step    uint8  `json:"step"`    // 操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池
+    Status  uint8  `json:"status"`  // 状态 1:处理中 2:成功 3:失败
+    Message string `json:"message"` // 消息
+    Stop    bool   `json:"stop"`    // 步骤是否终止
 }
 
 func (c *RiderCabinetOperateRes) MarshalBinary() ([]byte, error) {
@@ -98,20 +96,4 @@ func (c *RiderCabinetOperateRes) UnmarshalBinary(data []byte) error {
 // RiderCabinetOperateStatusReq 获取操作状态
 type RiderCabinetOperateStatusReq struct {
     UUID *string `json:"uuid" query:"uuid" trans:"操作ID"`
-}
-
-// CabinetProcessJob 获取电柜当前换电任务信息
-func CabinetProcessJob(serial string) (*CabinetExchangeProcess, bool) {
-    info := new(CabinetExchangeProcess)
-    err := cache.Get(context.Background(), serial).Scan(info)
-    if err != nil {
-        return nil, false
-    }
-    return info, info != nil && info.Step > 0 && info.Step <= 4
-}
-
-// CabinetBusying 查询电柜是否正在业务中
-func CabinetBusying(serial string) bool {
-    _, busy := CabinetProcessJob(serial)
-    return busy
 }

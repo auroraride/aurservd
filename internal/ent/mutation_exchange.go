@@ -10,6 +10,7 @@ import (
     "time"
     "github.com/auroraride/aurservd/internal/ent/exchange"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/actuator"
     "github.com/auroraride/aurservd/internal/ent/predicate"
 
     "entgo.io/ent"
@@ -31,6 +32,7 @@ type ExchangeMutation struct {
 	uuid              *string
 	success           *bool
 	detail            **model.ExchangeCabinet
+	info              **actuator.ExchangeInfo
 	model             *string
 	alternative       *bool
 	start_at          *time.Time
@@ -899,6 +901,55 @@ func (m *ExchangeMutation) ResetDetail() {
 	delete(m.clearedFields, exchange.FieldDetail)
 }
 
+// SetInfo sets the "info" field.
+func (m *ExchangeMutation) SetInfo(ai *actuator.ExchangeInfo) {
+	m.info = &ai
+}
+
+// Info returns the value of the "info" field in the mutation.
+func (m *ExchangeMutation) Info() (r *actuator.ExchangeInfo, exists bool) {
+	v := m.info
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInfo returns the old "info" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldInfo(ctx context.Context) (v *actuator.ExchangeInfo, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInfo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInfo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInfo: %w", err)
+	}
+	return oldValue.Info, nil
+}
+
+// ClearInfo clears the value of the "info" field.
+func (m *ExchangeMutation) ClearInfo() {
+	m.info = nil
+	m.clearedFields[exchange.FieldInfo] = struct{}{}
+}
+
+// InfoCleared returns if the "info" field was cleared in this mutation.
+func (m *ExchangeMutation) InfoCleared() bool {
+	_, ok := m.clearedFields[exchange.FieldInfo]
+	return ok
+}
+
+// ResetInfo resets all changes to the "info" field.
+func (m *ExchangeMutation) ResetInfo() {
+	m.info = nil
+	delete(m.clearedFields, exchange.FieldInfo)
+}
+
 // SetModel sets the "model" field.
 func (m *ExchangeMutation) SetModel(s string) {
 	m.model = &s
@@ -1366,7 +1417,7 @@ func (m *ExchangeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ExchangeMutation) Fields() []string {
-	fields := make([]string, 0, 22)
+	fields := make([]string, 0, 23)
 	if m.created_at != nil {
 		fields = append(fields, exchange.FieldCreatedAt)
 	}
@@ -1417,6 +1468,9 @@ func (m *ExchangeMutation) Fields() []string {
 	}
 	if m.detail != nil {
 		fields = append(fields, exchange.FieldDetail)
+	}
+	if m.info != nil {
+		fields = append(fields, exchange.FieldInfo)
 	}
 	if m.model != nil {
 		fields = append(fields, exchange.FieldModel)
@@ -1475,6 +1529,8 @@ func (m *ExchangeMutation) Field(name string) (ent.Value, bool) {
 		return m.Success()
 	case exchange.FieldDetail:
 		return m.Detail()
+	case exchange.FieldInfo:
+		return m.Info()
 	case exchange.FieldModel:
 		return m.Model()
 	case exchange.FieldAlternative:
@@ -1528,6 +1584,8 @@ func (m *ExchangeMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldSuccess(ctx)
 	case exchange.FieldDetail:
 		return m.OldDetail(ctx)
+	case exchange.FieldInfo:
+		return m.OldInfo(ctx)
 	case exchange.FieldModel:
 		return m.OldModel(ctx)
 	case exchange.FieldAlternative:
@@ -1666,6 +1724,13 @@ func (m *ExchangeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDetail(v)
 		return nil
+	case exchange.FieldInfo:
+		v, ok := value.(*actuator.ExchangeInfo)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInfo(v)
+		return nil
 	case exchange.FieldModel:
 		v, ok := value.(string)
 		if !ok {
@@ -1776,6 +1841,9 @@ func (m *ExchangeMutation) ClearedFields() []string {
 	if m.FieldCleared(exchange.FieldDetail) {
 		fields = append(fields, exchange.FieldDetail)
 	}
+	if m.FieldCleared(exchange.FieldInfo) {
+		fields = append(fields, exchange.FieldInfo)
+	}
 	if m.FieldCleared(exchange.FieldStartAt) {
 		fields = append(fields, exchange.FieldStartAt)
 	}
@@ -1828,6 +1896,9 @@ func (m *ExchangeMutation) ClearField(name string) error {
 		return nil
 	case exchange.FieldDetail:
 		m.ClearDetail()
+		return nil
+	case exchange.FieldInfo:
+		m.ClearInfo()
 		return nil
 	case exchange.FieldStartAt:
 		m.ClearStartAt()
@@ -1896,6 +1967,9 @@ func (m *ExchangeMutation) ResetField(name string) error {
 		return nil
 	case exchange.FieldDetail:
 		m.ResetDetail()
+		return nil
+	case exchange.FieldInfo:
+		m.ResetInfo()
 		return nil
 	case exchange.FieldModel:
 		m.ResetModel()

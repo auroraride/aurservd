@@ -6,7 +6,9 @@
 package actuator
 
 import (
+    "fmt"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/golang-module/carbon/v2"
     "time"
 )
 
@@ -33,6 +35,11 @@ func (ros ExchangeStep) String() string {
         return "第四步, 取出新电池并关闭仓门"
     }
     return "未知"
+}
+
+// Next 获取下个步骤
+func (ros ExchangeStep) Next() ExchangeStep {
+    return ExchangeStep(uint8(ros) + 1)
 }
 
 // ExchangeDoorStatus 柜门状态(处理换电用)
@@ -76,18 +83,57 @@ var ExchangeDoorError = map[ExchangeDoorStatus]string{
 // Exchange 换电信息
 type Exchange struct {
     Alternative bool         `json:"alternative" bson:"alternative"` // 是否备选方案
-    Success     bool         `json:"success" bson:"success"`         // 是否成功
-    Step        ExchangeStep `json:"step" bson:"step"`               // 当前步骤
-    Empty       BinInfo      `json:"empty" bson:"empty"`             // 空仓位
-    Fully       BinInfo      `json:"fully" bson:"fully"`             // 满电仓位
     Model       string       `json:"model" bson:"model"`             // 电池型号
+    Step        ExchangeStep `json:"step" bson:"step"`               // 当前步骤
+    Empty       *BinInfo     `json:"empty" bson:"empty"`             // 空仓位
+    Fully       *BinInfo     `json:"fully" bson:"fully"`             // 满电仓位
+}
+
+// SetNextStep 设置为下一个换电步骤
+func (e *Exchange) SetNextStep() {
+    if e.Step < ExchangeStepPutOut {
+        e.Step = e.Step.Next()
+    }
+}
+
+// CurrentBin 获取当前操作仓位信息
+func (e *Exchange) CurrentBin() *BinInfo {
+    if e.Step < ExchangeStepOpenFull {
+        return e.Empty
+    }
+    return e.Fully
 }
 
 // BinInfo 任务电柜仓位信息
 type BinInfo struct {
+    Success bool `json:"success" bson:"success"` // 是否成功
+
     Index       int                      `json:"index" bson:"index"`               // 仓位index
     Electricity model.BatteryElectricity `json:"electricity" bson:"electricity"`   // 电量
     Voltage     float64                  `json:"voltage" bson:"voltage"`           // 电压(V)
     OpenAt      *time.Time               `json:"openAt,omitempty" bson:"openAt"`   // 开门时间
     CloseAt     *time.Time               `json:"closeAt,omitempty" bson:"closeAt"` // 关门时间
+}
+
+func (b *BinInfo) String() string {
+    var o, c string
+    if b.OpenAt != nil {
+        o = b.OpenAt.Format(carbon.DateTimeLayout)
+    }
+    if b.CloseAt != nil {
+        o = b.CloseAt.Format(carbon.DateTimeLayout)
+    }
+    return fmt.Sprintf(
+        "%d号仓, 电压: %.2fV, 电流: %2.fA, 开时: %s, 关时: %s",
+        b.Index+1,
+        b.Voltage,
+        b.Electricity,
+        o,
+        c,
+    )
+}
+
+type ExchangeInfo struct {
+    Cabinet  Cabinet   `json:"cabinet"`  // 电柜信息
+    Exchange *Exchange `json:"exchange"` // 换电信息
 }

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/auroraride/aurservd/app/actuator"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -72,6 +73,9 @@ type Exchange struct {
 	// Detail holds the value of the "detail" field.
 	// 电柜换电信息
 	Detail *model.ExchangeCabinet `json:"detail,omitempty"`
+	// Info holds the value of the "info" field.
+	// 电柜换电信息
+	Info *actuator.ExchangeInfo `json:"info,omitempty"`
 	// Model holds the value of the "model" field.
 	// 电池型号
 	Model string `json:"model,omitempty"`
@@ -232,7 +236,7 @@ func (*Exchange) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case exchange.FieldCreator, exchange.FieldLastModifier, exchange.FieldDetail:
+		case exchange.FieldCreator, exchange.FieldLastModifier, exchange.FieldDetail, exchange.FieldInfo:
 			values[i] = new([]byte)
 		case exchange.FieldSuccess, exchange.FieldAlternative:
 			values[i] = new(sql.NullBool)
@@ -374,6 +378,14 @@ func (e *Exchange) assignValues(columns []string, values []interface{}) error {
 			} else if value != nil && len(*value) > 0 {
 				if err := json.Unmarshal(*value, &e.Detail); err != nil {
 					return fmt.Errorf("unmarshal field detail: %w", err)
+				}
+			}
+		case exchange.FieldInfo:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field info", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &e.Info); err != nil {
+					return fmt.Errorf("unmarshal field info: %w", err)
 				}
 			}
 		case exchange.FieldModel:
@@ -518,6 +530,8 @@ func (e *Exchange) String() string {
 	builder.WriteString(fmt.Sprintf("%v", e.Success))
 	builder.WriteString(", detail=")
 	builder.WriteString(fmt.Sprintf("%v", e.Detail))
+	builder.WriteString(", info=")
+	builder.WriteString(fmt.Sprintf("%v", e.Info))
 	builder.WriteString(", model=")
 	builder.WriteString(e.Model)
 	builder.WriteString(", alternative=")

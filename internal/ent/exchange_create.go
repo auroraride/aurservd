@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/app/actuator"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -210,6 +211,12 @@ func (ec *ExchangeCreate) SetNillableSuccess(b *bool) *ExchangeCreate {
 // SetDetail sets the "detail" field.
 func (ec *ExchangeCreate) SetDetail(mc *model.ExchangeCabinet) *ExchangeCreate {
 	ec.mutation.SetDetail(mc)
+	return ec
+}
+
+// SetInfo sets the "info" field.
+func (ec *ExchangeCreate) SetInfo(ai *actuator.ExchangeInfo) *ExchangeCreate {
+	ec.mutation.SetInfo(ai)
 	return ec
 }
 
@@ -556,6 +563,14 @@ func (ec *ExchangeCreate) createSpec() (*Exchange, *sqlgraph.CreateSpec) {
 			Column: exchange.FieldDetail,
 		})
 		_node.Detail = value
+	}
+	if value, ok := ec.mutation.Info(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: exchange.FieldInfo,
+		})
+		_node.Info = value
 	}
 	if value, ok := ec.mutation.Model(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -1075,6 +1090,24 @@ func (u *ExchangeUpsert) ClearDetail() *ExchangeUpsert {
 	return u
 }
 
+// SetInfo sets the "info" field.
+func (u *ExchangeUpsert) SetInfo(v *actuator.ExchangeInfo) *ExchangeUpsert {
+	u.Set(exchange.FieldInfo, v)
+	return u
+}
+
+// UpdateInfo sets the "info" field to the value that was provided on create.
+func (u *ExchangeUpsert) UpdateInfo() *ExchangeUpsert {
+	u.SetExcluded(exchange.FieldInfo)
+	return u
+}
+
+// ClearInfo clears the value of the "info" field.
+func (u *ExchangeUpsert) ClearInfo() *ExchangeUpsert {
+	u.SetNull(exchange.FieldInfo)
+	return u
+}
+
 // SetModel sets the "model" field.
 func (u *ExchangeUpsert) SetModel(v string) *ExchangeUpsert {
 	u.Set(exchange.FieldModel, v)
@@ -1514,6 +1547,27 @@ func (u *ExchangeUpsertOne) UpdateDetail() *ExchangeUpsertOne {
 func (u *ExchangeUpsertOne) ClearDetail() *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.ClearDetail()
+	})
+}
+
+// SetInfo sets the "info" field.
+func (u *ExchangeUpsertOne) SetInfo(v *actuator.ExchangeInfo) *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetInfo(v)
+	})
+}
+
+// UpdateInfo sets the "info" field to the value that was provided on create.
+func (u *ExchangeUpsertOne) UpdateInfo() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateInfo()
+	})
+}
+
+// ClearInfo clears the value of the "info" field.
+func (u *ExchangeUpsertOne) ClearInfo() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearInfo()
 	})
 }
 
@@ -2134,6 +2188,27 @@ func (u *ExchangeUpsertBulk) UpdateDetail() *ExchangeUpsertBulk {
 func (u *ExchangeUpsertBulk) ClearDetail() *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.ClearDetail()
+	})
+}
+
+// SetInfo sets the "info" field.
+func (u *ExchangeUpsertBulk) SetInfo(v *actuator.ExchangeInfo) *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetInfo(v)
+	})
+}
+
+// UpdateInfo sets the "info" field to the value that was provided on create.
+func (u *ExchangeUpsertBulk) UpdateInfo() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateInfo()
+	})
+}
+
+// ClearInfo clears the value of the "info" field.
+func (u *ExchangeUpsertBulk) ClearInfo() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearInfo()
 	})
 }
 

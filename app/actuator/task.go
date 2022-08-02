@@ -22,28 +22,49 @@ const (
     maxTime = 10.0
 )
 
-// TaskJob 电柜任务
-type TaskJob string
+// Job 电柜任务
+type Job string
 
 const (
-    JobExchange         TaskJob = "RDR_EXCHANGE"    // 骑手-换电
-    JobRiderActive              = "RDR_ACTIVE"      // 骑手-激活
-    JobRiderUnSubscribe         = "RDR_UNSUBSCRIBE" // 骑手-退租
-    JobPause                    = "RDR_PAUSE"       // 骑手-寄存
-    JobContinue                 = "RDR_CONTINUE"    // 骑手-取消寄存
-    JobManagerOpen              = "MGR_OPEN"        // 管理-开门
-    JobManagerExchange          = "MGR_EXCHANGE"    // 管理-换电
+    JobExchange         Job = "RDR_EXCHANGE"    // 骑手-换电
+    JobRiderActive          = "RDR_ACTIVE"      // 骑手-激活
+    JobRiderUnSubscribe     = "RDR_UNSUBSCRIBE" // 骑手-退租
+    JobPause                = "RDR_PAUSE"       // 骑手-寄存
+    JobContinue             = "RDR_CONTINUE"    // 骑手-取消寄存
+    JobManagerOpen          = "MGR_OPEN"        // 管理-开门
+    JobManagerExchange      = "MGR_EXCHANGE"    // 管理-换电
 )
+
+type TaskStatus uint8
+
+const (
+    TaskStatusProcessing TaskStatus = iota + 1 // 处理中
+    TaskStatusSuccess                          // 成功
+    TaskStatusFail                             // 失败
+)
+
+func (ts TaskStatus) String() string {
+    switch ts {
+    case TaskStatusSuccess:
+        return "成功"
+    case TaskStatusFail:
+        return "失败"
+    default:
+        return "处理中"
+    }
+}
 
 // Task 电柜任务详情
 // TODO 存储骑手信息
 type Task struct {
     field.DefaultField `bson:",inline"`
+    Deactivated        bool `json:"deactivated" bson:"deactivated"` // 是否已失效
 
-    Task        TaskJob    `json:"task" bson:"task"`                   // 任务类别
-    StartAt     *time.Time `json:"startAt,omitempty" bson:"startAt"`   // 开始时间
-    FinishAt    *time.Time `json:"finishAt,omitempty" bson:"finishAt"` // 结束时间
-    Deactivated bool       `json:"deactivated" bson:"deactivated"`     // 是否已失效
+    Task    Job        `json:"task" bson:"task"`                           // 任务类别
+    Status  TaskStatus `json:"status" bson:"status"`                       // 任务状态
+    StartAt *time.Time `json:"startAt,omitempty" bson:"startAt"`           // 开始时间
+    StopAt  *time.Time `json:"stopAt,omitempty" bson:"stopAt"`             // 结束时间
+    Message string     `json:"message,omitempty" bson:"message,omitempty"` // 失败消息
 
     Cabinet  Cabinet   `json:"cabinet" bson:"cabinet"`   // 电柜信息
     Exchange *Exchange `json:"exchange" bson:"exchange"` // 换电信息
@@ -57,6 +78,8 @@ func (t *Task) UnmarshalBinary(data []byte) error {
     return jsoniter.Unmarshal(data, t)
 }
 
+type TaskUpdater func(task *Task)
+
 // Cabinet 任务电柜设备信息
 type Cabinet struct {
     Serial         string `json:"serial" bson:"serial"`                 // 电柜编号
@@ -66,8 +89,8 @@ type Cabinet struct {
     BatteryFullNum uint   `json:"batteryFullNum" bson:"batteryFullNum"` // 总满电电池数
 }
 
-// Save 存储任务信息
-func (t *Task) Save() (string, error) {
+// Create 创建任务并存储
+func (t *Task) Create() (string, error) {
     r, err := mgo.CabinetTask.InsertOne(context.Background(), t)
     if err != nil {
         return "", err
@@ -75,8 +98,8 @@ func (t *Task) Save() (string, error) {
     return r.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
-func (t *Task) SaveX() string {
-    id, err := t.Save()
+func (t *Task) CreateX() string {
+    id, err := t.Create()
     if err != nil {
         log.Error(err)
         snag.Panic("任务存储失败")
@@ -85,15 +108,16 @@ func (t *Task) SaveX() string {
 }
 
 // Start 开始任务
-func (t *Task) Start() {
+func (t *Task) Start(cb ...TaskUpdater) {
     ctx := context.Background()
 
     // 更新任务开始时间
-    t.StartAt = Pointer(time.Now())
-    _ = mgo.CabinetTask.UpdateId(ctx, t.Id, bson.M{
-        operator.Set: bson.M{
-            "startAt": Pointer(time.Now()),
-        },
+    t.Update(func(t *Task) {
+        if len(cb) > 0 {
+            cb[0](t)
+        }
+        t.StartAt = Pointer(time.Now())
+        t.Status = TaskStatusProcessing
     })
 
     // 更新非当前任务为失效
@@ -104,14 +128,30 @@ func (t *Task) Start() {
     }, bson.M{"deactivated": true})
 }
 
+// Stop 结束任务
+func (t *Task) Stop(status TaskStatus) {
+    t.Update(func(t *Task) {
+        t.StopAt = Pointer(time.Now())
+        t.Status = status
+    })
+}
+
+// Update 更新任务
+func (t *Task) Update(cb TaskUpdater) {
+    cb(t)
+    _ = mgo.CabinetTask.UpdateId(context.Background(), t.Id, bson.M{
+        operator.Set: t,
+    })
+}
+
 // Deactive 设为失效
 func (t *Task) Deactive() {
     _ = mgo.CabinetTask.UpdateId(context.Background(), t.Id, bson.M{"deactivated": true})
 }
 
 type ObtainReq struct {
-    Serial      string             `json:"serial" bson:"serial"`
-    ID          primitive.ObjectID `json:"id" bson:"_id"`
+    Serial      string             `json:"serial,omitempty" bson:"serial,omitempty"`
+    ID          primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
     Deactivated bool               `json:"deactivated" bson:"deactivated"`
 }
 
