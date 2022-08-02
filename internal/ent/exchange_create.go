@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -209,8 +210,8 @@ func (ec *ExchangeCreate) SetNillableSuccess(b *bool) *ExchangeCreate {
 }
 
 // SetDetail sets the "detail" field.
-func (ec *ExchangeCreate) SetDetail(mc *model.ExchangeCabinet) *ExchangeCreate {
-	ec.mutation.SetDetail(mc)
+func (ec *ExchangeCreate) SetDetail(jm json.RawMessage) *ExchangeCreate {
+	ec.mutation.SetDetail(jm)
 	return ec
 }
 
@@ -1073,7 +1074,7 @@ func (u *ExchangeUpsert) UpdateSuccess() *ExchangeUpsert {
 }
 
 // SetDetail sets the "detail" field.
-func (u *ExchangeUpsert) SetDetail(v *model.ExchangeCabinet) *ExchangeUpsert {
+func (u *ExchangeUpsert) SetDetail(v json.RawMessage) *ExchangeUpsert {
 	u.Set(exchange.FieldDetail, v)
 	return u
 }
@@ -1530,7 +1531,7 @@ func (u *ExchangeUpsertOne) UpdateSuccess() *ExchangeUpsertOne {
 }
 
 // SetDetail sets the "detail" field.
-func (u *ExchangeUpsertOne) SetDetail(v *model.ExchangeCabinet) *ExchangeUpsertOne {
+func (u *ExchangeUpsertOne) SetDetail(v json.RawMessage) *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.SetDetail(v)
 	})
@@ -2171,7 +2172,7 @@ func (u *ExchangeUpsertBulk) UpdateSuccess() *ExchangeUpsertBulk {
 }
 
 // SetDetail sets the "detail" field.
-func (u *ExchangeUpsertBulk) SetDetail(v *model.ExchangeCabinet) *ExchangeUpsertBulk {
+func (u *ExchangeUpsertBulk) SetDetail(v json.RawMessage) *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.SetDetail(v)
 	})

@@ -7,9 +7,7 @@ package model
 
 // ExchangeCabinet 电柜换电
 type ExchangeCabinet struct {
-    Alternative bool                    `json:"alternative"` // 是否使用备选方案
-    Info        *RiderCabinetOperating  `json:"info"`        // 换电信息
-    Result      *RiderCabinetOperateRes `json:"result"`      // 换电结果
+    Alternative bool `json:"alternative"` // 是否使用备选方案
 }
 
 type ExchangeStoreReq struct {

@@ -72,7 +72,7 @@ type Exchange struct {
 	Success bool `json:"success,omitempty"`
 	// Detail holds the value of the "detail" field.
 	// 电柜换电信息
-	Detail *model.ExchangeCabinet `json:"detail,omitempty"`
+	Detail json.RawMessage `json:"detail,omitempty"`
 	// Info holds the value of the "info" field.
 	// 电柜换电信息
 	Info *actuator.ExchangeInfo `json:"info,omitempty"`

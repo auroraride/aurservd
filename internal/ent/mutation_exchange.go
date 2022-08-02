@@ -10,6 +10,7 @@ import (
     "time"
     "github.com/auroraride/aurservd/internal/ent/exchange"
     "github.com/auroraride/aurservd/app/model"
+    "encoding/json"
     "github.com/auroraride/aurservd/app/actuator"
     "github.com/auroraride/aurservd/internal/ent/predicate"
 
@@ -31,7 +32,7 @@ type ExchangeMutation struct {
 	remark            *string
 	uuid              *string
 	success           *bool
-	detail            **model.ExchangeCabinet
+	detail            *json.RawMessage
 	info              **actuator.ExchangeInfo
 	model             *string
 	alternative       *bool
@@ -853,12 +854,12 @@ func (m *ExchangeMutation) ResetSuccess() {
 }
 
 // SetDetail sets the "detail" field.
-func (m *ExchangeMutation) SetDetail(mc *model.ExchangeCabinet) {
-	m.detail = &mc
+func (m *ExchangeMutation) SetDetail(jm json.RawMessage) {
+	m.detail = &jm
 }
 
 // Detail returns the value of the "detail" field in the mutation.
-func (m *ExchangeMutation) Detail() (r *model.ExchangeCabinet, exists bool) {
+func (m *ExchangeMutation) Detail() (r json.RawMessage, exists bool) {
 	v := m.detail
 	if v == nil {
 		return
@@ -869,7 +870,7 @@ func (m *ExchangeMutation) Detail() (r *model.ExchangeCabinet, exists bool) {
 // OldDetail returns the old "detail" field's value of the Exchange entity.
 // If the Exchange object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ExchangeMutation) OldDetail(ctx context.Context) (v *model.ExchangeCabinet, err error) {
+func (m *ExchangeMutation) OldDetail(ctx context.Context) (v json.RawMessage, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDetail is only allowed on UpdateOne operations")
 	}
@@ -1718,7 +1719,7 @@ func (m *ExchangeMutation) SetField(name string, value ent.Value) error {
 		m.SetSuccess(v)
 		return nil
 	case exchange.FieldDetail:
-		v, ok := value.(*model.ExchangeCabinet)
+		v, ok := value.(json.RawMessage)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

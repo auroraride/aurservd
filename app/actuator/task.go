@@ -54,6 +54,11 @@ func (ts TaskStatus) String() string {
     }
 }
 
+// IsSuccess 是否成功
+func (ts TaskStatus) IsSuccess() bool {
+    return ts == TaskStatusSuccess
+}
+
 // Task 电柜任务详情
 // TODO 存储骑手信息
 type Task struct {

@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -235,8 +236,8 @@ func (eu *ExchangeUpdate) SetNillableSuccess(b *bool) *ExchangeUpdate {
 }
 
 // SetDetail sets the "detail" field.
-func (eu *ExchangeUpdate) SetDetail(mc *model.ExchangeCabinet) *ExchangeUpdate {
-	eu.mutation.SetDetail(mc)
+func (eu *ExchangeUpdate) SetDetail(jm json.RawMessage) *ExchangeUpdate {
+	eu.mutation.SetDetail(jm)
 	return eu
 }
 
@@ -1193,8 +1194,8 @@ func (euo *ExchangeUpdateOne) SetNillableSuccess(b *bool) *ExchangeUpdateOne {
 }
 
 // SetDetail sets the "detail" field.
-func (euo *ExchangeUpdateOne) SetDetail(mc *model.ExchangeCabinet) *ExchangeUpdateOne {
-	euo.mutation.SetDetail(mc)
+func (euo *ExchangeUpdateOne) SetDetail(jm json.RawMessage) *ExchangeUpdateOne {
+	euo.mutation.SetDetail(jm)
 	return euo
 }
 

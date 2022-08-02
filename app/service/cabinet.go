@@ -383,6 +383,7 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
         prov = provider.NewKaixin()
         break
     }
+    // 请求开启柜门
     prov.PrepareRequest()
     state = prov.DoorOperate(operator.Name+"-"+opId, item.Serial, op, *req.Index)
     // 如果成功, 重新获取状态更新数据
@@ -397,6 +398,8 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
             item.Bin[*req.Index].Remark = ""
         }
         _ = prov.UpdateStatus(item, params...)
+    } else {
+        err = errors.New("柜门开启失败")
     }
     go func() {
         // 上传日志

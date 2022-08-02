@@ -61,7 +61,7 @@ func (*cabinet) ProcessStatus(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.RiderCabinetOperateStatusReq](c)
 
     return ctx.SendResponse(
-        service.NewRiderCabinetWithRider(ctx.Rider).ProcessStatus(req),
+        service.NewRiderCabinetWithRider(ctx.Rider).GetProcessStatus(req),
     )
 }
 

@@ -58,25 +58,6 @@ type RiderCabinetOperateReq struct {
     Alternative bool               `json:"alternative"`              // 是否使用备选方案
 }
 
-type TaskStatus uint8
-
-const (
-    TaskStatusProcessing TaskStatus = iota + 1 // 处理中
-    TaskStatusSuccess                          // 成功
-    TaskStatusFailFail                         // 失败
-)
-
-func (s TaskStatus) String() string {
-    switch s {
-    case TaskStatusSuccess:
-        return "成功"
-    case TaskStatusFailFail:
-        return "失败"
-    default:
-        return "处理中"
-    }
-}
-
 // RiderCabinetOperateRes 换电操作步骤返回
 type RiderCabinetOperateRes struct {
     Step    uint8  `json:"step"`    // 操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池
@@ -85,15 +66,7 @@ type RiderCabinetOperateRes struct {
     Stop    bool   `json:"stop"`    // 步骤是否终止
 }
 
-func (c *RiderCabinetOperateRes) MarshalBinary() ([]byte, error) {
-    return jsoniter.Marshal(c)
-}
-
-func (c *RiderCabinetOperateRes) UnmarshalBinary(data []byte) error {
-    return jsoniter.Unmarshal(data, c)
-}
-
 // RiderCabinetOperateStatusReq 获取操作状态
 type RiderCabinetOperateStatusReq struct {
-    UUID *string `json:"uuid" query:"uuid" trans:"操作ID"`
+    UUID primitive.ObjectID `json:"uuid" query:"uuid" trans:"操作ID"`
 }

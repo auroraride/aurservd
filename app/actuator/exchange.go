@@ -23,8 +23,8 @@ const (
     ExchangeStepPutOut                            // 第四步, 取出新电池并关闭仓门
 )
 
-func (ros ExchangeStep) String() string {
-    switch ros {
+func (es ExchangeStep) String() string {
+    switch es {
     case ExchangeStepOpenEmpty:
         return "第一步, 开启空电仓"
     case ExchangeStepPutInto:
@@ -38,12 +38,16 @@ func (ros ExchangeStep) String() string {
 }
 
 // Next 获取下个步骤
-func (ros ExchangeStep) Next() ExchangeStep {
-    return ExchangeStep(uint8(ros) + 1)
+func (es ExchangeStep) Next() ExchangeStep {
+    return ExchangeStep(uint8(es) + 1)
+}
+
+// IsLast 是否最后一步
+func (es ExchangeStep) IsLast() bool {
+    return es == ExchangeStepPutOut
 }
 
 // ExchangeDoorStatus 柜门状态(处理换电用)
-// CabinetBinDoorStatus
 type ExchangeDoorStatus uint8
 
 const (
@@ -82,58 +86,89 @@ var ExchangeDoorError = map[ExchangeDoorStatus]string{
 
 // Exchange 换电信息
 type Exchange struct {
-    Alternative bool         `json:"alternative" bson:"alternative"` // 是否备选方案
-    Model       string       `json:"model" bson:"model"`             // 电池型号
-    Step        ExchangeStep `json:"step" bson:"step"`               // 当前步骤
-    Empty       *BinInfo     `json:"empty" bson:"empty"`             // 空仓位
-    Fully       *BinInfo     `json:"fully" bson:"fully"`             // 满电仓位
+    Alternative bool                `json:"alternative" bson:"alternative"` // 是否备选方案
+    Model       string              `json:"model" bson:"model"`             // 电池型号
+    Empty       *BinInfo            `json:"empty" bson:"empty"`             // 空仓位
+    Fully       *BinInfo            `json:"fully" bson:"fully"`             // 满电仓位
+    Steps       []*ExchangeStepInfo `json:"steps" bson:"steps"`             // 步骤信息
 }
 
-// SetNextStep 设置为下一个换电步骤
-func (e *Exchange) SetNextStep() {
-    if e.Step < ExchangeStepPutOut {
-        e.Step = e.Step.Next()
+// CurrentStep 获取当前步骤
+func (e *Exchange) CurrentStep() *ExchangeStepInfo {
+    return e.Steps[len(e.Steps)-1]
+}
+
+// StartNextStep 开始下一个换电步骤
+func (e *Exchange) StartNextStep() {
+    if len(e.Steps) == 0 {
+        return
+    }
+
+    // 标记上个步骤为成功
+    e.Steps[len(e.Steps)-1].Status = TaskStatusSuccess
+
+    // 判断是否最终步骤, 并加入下一个步骤信息
+    if len(e.Steps) < int(ExchangeStepPutOut) {
+        e.Steps = append(e.Steps, &ExchangeStepInfo{
+            Step:   e.CurrentStep().Step.Next(),
+            Status: TaskStatusProcessing,
+            Time:   time.Time{},
+        })
     }
 }
 
 // CurrentBin 获取当前操作仓位信息
 func (e *Exchange) CurrentBin() *BinInfo {
-    if e.Step < ExchangeStepOpenFull {
+    step := e.CurrentStep().Step
+    if step < ExchangeStepOpenFull {
         return e.Empty
     }
     return e.Fully
 }
 
+// IsSuccess 换电是否成功
+func (e *Exchange) IsSuccess() bool {
+    s := e.CurrentStep()
+    return s.Step.IsLast() && s.Status.IsSuccess()
+}
+
+// StepResult 步骤结果
+func (e *Exchange) StepResult(step ExchangeStep) *ExchangeStepInfo {
+    return e.Steps[step-1]
+}
+
 // BinInfo 任务电柜仓位信息
 type BinInfo struct {
-    Success bool `json:"success" bson:"success"` // 是否成功
-
-    Index       int                      `json:"index" bson:"index"`               // 仓位index
-    Electricity model.BatteryElectricity `json:"electricity" bson:"electricity"`   // 电量
-    Voltage     float64                  `json:"voltage" bson:"voltage"`           // 电压(V)
-    OpenAt      *time.Time               `json:"openAt,omitempty" bson:"openAt"`   // 开门时间
-    CloseAt     *time.Time               `json:"closeAt,omitempty" bson:"closeAt"` // 关门时间
+    Index       int                      `json:"index" bson:"index"`             // 仓位index
+    Electricity model.BatteryElectricity `json:"electricity" bson:"electricity"` // 电量
+    Voltage     float64                  `json:"voltage" bson:"voltage"`         // 电压(V)
 }
 
 func (b *BinInfo) String() string {
-    var o, c string
-    if b.OpenAt != nil {
-        o = b.OpenAt.Format(carbon.DateTimeLayout)
-    }
-    if b.CloseAt != nil {
-        o = b.CloseAt.Format(carbon.DateTimeLayout)
-    }
     return fmt.Sprintf(
-        "%d号仓, 电压: %.2fV, 电流: %2.fA, 开时: %s, 关时: %s",
+        "%d号仓, 电压: %.2fV, 电流: %2.fA",
         b.Index+1,
         b.Voltage,
         b.Electricity,
-        o,
-        c,
     )
 }
 
 type ExchangeInfo struct {
     Cabinet  Cabinet   `json:"cabinet"`  // 电柜信息
     Exchange *Exchange `json:"exchange"` // 换电信息
+}
+
+type ExchangeStepInfo struct {
+    Step   ExchangeStep `json:"step" bson:"step"`     // 操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池
+    Status TaskStatus   `json:"status" bson:"status"` // 状态 1:处理中 2:成功 3:失败
+    Time   time.Time    `json:"time" bson:"time"`     // 时间
+}
+
+func (si *ExchangeStepInfo) String() string {
+    return fmt.Sprintf("{ %s -> %s }: %s", si.Time.Format(carbon.DateTimeLayout), si.Step, si.Status)
+}
+
+// IsSuccess 步骤是否成功
+func (si *ExchangeStepInfo) IsSuccess() bool {
+    return si.Status.IsSuccess()
 }
