@@ -124,41 +124,6 @@ type CabinetDeleteReq struct {
     ID uint64 `json:"id" param:"id"`
 }
 
-// CabinetBinDoorStatus 柜门状态(处理换电用)
-type CabinetBinDoorStatus uint8
-
-const (
-    CabinetBinDoorStatusUnknown      CabinetBinDoorStatus = iota // 未知
-    CabinetBinDoorStatusClose                                    // 关闭
-    CabinetBinDoorStatusOpen                                     // 开启
-    CabinetBinDoorStatusFail                                     // 故障
-    CabinetBinDoorStatusBatteryFull                              // 电池未取出
-    CabinetBinDoorStatusBatteryEmpty                             // 电池未放入
-)
-
-func (bds CabinetBinDoorStatus) String() string {
-    switch bds {
-    case CabinetBinDoorStatusClose:
-        return "关闭"
-    case CabinetBinDoorStatusOpen:
-        return "开启"
-    case CabinetBinDoorStatusFail:
-        return "故障"
-    case CabinetBinDoorStatusBatteryFull:
-        return "电池未取出"
-    case CabinetBinDoorStatusBatteryEmpty:
-        return "电池未放入"
-    }
-    return "未知"
-}
-
-var CabinetBinDoorError = map[CabinetBinDoorStatus]string{
-    CabinetBinDoorStatusUnknown:      "仓门状态未知",
-    CabinetBinDoorStatusFail:         "仓门故障",
-    CabinetBinDoorStatusBatteryFull:  "电池未取出",
-    CabinetBinDoorStatusBatteryEmpty: "电池未放入",
-}
-
 // CabinetBin 仓位详细信息
 // 1000mA = 1A
 // 1000mV = 1V

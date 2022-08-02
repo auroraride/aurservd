@@ -66,6 +66,19 @@ func (s *cabinetService) QueryOne(id uint64) *ent.Cabinet {
     return c
 }
 
+func (s *cabinetService) QueryOneSerial(serial string) *ent.Cabinet {
+    cab, _ := s.orm.QueryNotDeleted().Where(cabinet.Serial(serial)).First(s.ctx)
+    return cab
+}
+
+func (s *cabinetService) QueryOneSerialX(serial string) *ent.Cabinet {
+    cab := s.QueryOneSerial(serial)
+    if cab == nil {
+        snag.Panic("未找到电柜")
+    }
+    return cab
+}
+
 // CreateCabinet 创建电柜
 func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.CabinetItem) {
     if req.Status == model.CabinetStatusNormal && req.BranchID == nil {
@@ -467,15 +480,6 @@ func (s *cabinetService) Reboot(req *model.IDPostReq) bool {
     }()
 
     return state
-}
-
-// QueryWithSerial 根据序列号查找电柜
-func (s *cabinetService) QueryWithSerial(serial string) *ent.Cabinet {
-    cab, _ := s.orm.QueryNotDeleted().Where(cabinet.Serial(serial)).WithBms().Only(s.ctx)
-    if cab == nil {
-        snag.Panic("未找到电柜")
-    }
-    return cab
 }
 
 // ModelInclude 电柜是否可用指定型号电池

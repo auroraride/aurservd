@@ -10,6 +10,7 @@ import (
     "github.com/auroraride/aurservd/assets"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/mgo"
     "github.com/auroraride/aurservd/internal/payment"
     "github.com/auroraride/aurservd/pkg/logger"
     "github.com/golang-module/carbon/v2"
@@ -42,6 +43,7 @@ func Bootstrap() {
 
     // 加载数据库
     ent.Database = ent.OpenDatabase(ar.Config.Database.Postgres.Dsn, ar.Config.App.SQL)
+    mgo.Connect(ar.Config.Database.Mongo.Url, ar.Config.Database.Mongo.DB)
 
     // 加载其他数据
 

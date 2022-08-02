@@ -90,6 +90,10 @@ type config struct {
             Password string
             DB       int `mapstructure:"db"`
         }
+        Mongo struct {
+            Url string
+            DB  string `mapstructure:"db"`
+        }
     }
     ThirdParty struct {
         Yundong struct {

@@ -9,31 +9,8 @@ import (
     "context"
     "github.com/auroraride/aurservd/pkg/cache"
     jsoniter "github.com/json-iterator/go"
+    "go.mongodb.org/mongo-driver/bson/primitive"
 )
-
-// RiderCabinetOperateStep 换电步骤
-type RiderCabinetOperateStep uint8
-
-const (
-    RiderCabinetOperateStepOpenEmpty RiderCabinetOperateStep = iota + 1 // 第一步, 开启空电仓
-    RiderCabinetOperateStepPutInto                                      // 第二步, 放入旧电池并关闭仓门
-    RiderCabinetOperateStepOpenFull                                     // 第三步, 开启满电仓
-    RiderCabinetOperateStepPutOut                                       // 第四步, 取出新电池并关闭仓门
-)
-
-func (ros RiderCabinetOperateStep) String() string {
-    switch ros {
-    case RiderCabinetOperateStepOpenEmpty:
-        return "第一步, 开启空电仓"
-    case RiderCabinetOperateStepPutInto:
-        return "第二步, 放入旧电池并关闭仓门"
-    case RiderCabinetOperateStepOpenFull:
-        return "第三步, 开启满电仓"
-    case RiderCabinetOperateStepPutOut:
-        return "第四步, 取出新电池并关闭仓门"
-    }
-    return "未知"
-}
 
 const (
     RiderCabinetOperateReasonEmpty = "开空电仓"
@@ -79,23 +56,8 @@ func (c *RiderCabinetInfo) UnmarshalBinary(data []byte) error {
 
 // RiderCabinetOperateReq 请求换电
 type RiderCabinetOperateReq struct {
-    UUID        *string `json:"uuid" validate:"required"` // 操作ID
-    Alternative *bool   `json:"alternative"`              // 是否使用备选方案
-}
-
-// RiderCabinetOperating 电柜处理
-type RiderCabinetOperating struct {
-    UUID             string               `json:"uuid"`
-    Serial           string               `json:"serial"`
-    Model            string               `json:"model"`            // 电池型号
-    ID               uint64               `json:"id"`               // 电柜ID
-    Name             string               `json:"name"`             // 电柜名称
-    EmptyIndex       int                  `json:"emptyIndex"`       // 空电仓
-    FullIndex        int                  `json:"fullIndex"`        // 满电仓
-    Electricity      BatteryElectricity   `json:"electricity"`      // 满电电池电量
-    RiderElectricity BatteryElectricity   `json:"riderElectricity"` // 骑手放入电池电量
-    PutInDoor        CabinetBinDoorStatus `json:"putInDoor"`        // 空电仓位状态
-    PutOutDoor       CabinetBinDoorStatus `json:"putOutDoor"`       // 满电仓位状态
+    UUID        primitive.ObjectID `json:"uuid" validate:"required"` // 操作ID
+    Alternative bool               `json:"alternative"`              // 是否使用备选方案
 }
 
 type RiderCabinetOperateStatus uint8
@@ -136,22 +98,6 @@ func (c *RiderCabinetOperateRes) UnmarshalBinary(data []byte) error {
 // RiderCabinetOperateStatusReq 获取操作状态
 type RiderCabinetOperateStatusReq struct {
     UUID *string `json:"uuid" query:"uuid" trans:"操作ID"`
-}
-
-// CabinetExchangeProcess 电柜换电流程信息
-type CabinetExchangeProcess struct {
-    Step       RiderCabinetOperateStep `json:"step"`
-    Info       *RiderCabinetOperating  `json:"info"`
-    Rider      *RiderBasic             `json:"rider"`
-    BatteryNum uint                    `json:"batteryNum"` // 换电开始时电池数量, 业务时应该监听业务发生时的电池数量，当业务流程中电池数量变动大于1的时候视为异常
-}
-
-func (c *CabinetExchangeProcess) MarshalBinary() ([]byte, error) {
-    return jsoniter.Marshal(c)
-}
-
-func (c *CabinetExchangeProcess) UnmarshalBinary(data []byte) error {
-    return jsoniter.Unmarshal(data, c)
 }
 
 // CabinetProcessJob 获取电柜当前换电任务信息

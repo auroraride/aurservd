@@ -19,9 +19,12 @@ var (
     Get    func(ctx context.Context, key string) *redis.StringCmd
     Del    func(ctx context.Context, keys ...string) *redis.IntCmd
 
-    HSet func(ctx context.Context, key string, values ...interface{}) *redis.IntCmd
-    HDel func(ctx context.Context, key string, fields ...string) *redis.IntCmd
-    HGet func(ctx context.Context, key, field string) *redis.StringCmd
+    HSet    func(ctx context.Context, key string, values ...interface{}) *redis.IntCmd
+    HDel    func(ctx context.Context, key string, fields ...string) *redis.IntCmd
+    HGet    func(ctx context.Context, key, field string) *redis.StringCmd
+    HGetAll func(ctx context.Context, key string) *redis.StringStringMapCmd
+
+    Expire func(ctx context.Context, key string, expiration time.Duration) *redis.BoolCmd
 )
 
 func CreateClient(addr, password string, db int) {
@@ -38,6 +41,9 @@ func CreateClient(addr, password string, db int) {
     HSet = client.HSet
     HDel = client.HDel
     HGet = client.HGet
+    HGetAll = client.HGetAll
+
+    Expire = client.Expire
 }
 
 func Float64(key string) float64 {

@@ -7,7 +7,9 @@ package service
 
 import (
     "context"
+    "entgo.io/ent/entc/integration/edgefield/ent/info"
     "fmt"
+    "github.com/auroraride/aurservd/app/actuator"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/provider"
@@ -16,7 +18,6 @@ import (
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
-    "github.com/lithammer/shortuuid/v4"
     log "github.com/sirupsen/logrus"
     "time"
 )
@@ -31,23 +32,9 @@ type riderCabinetService struct {
     maxTime  time.Duration // 单步骤最大处理时长
     logger   *logging.ExchangeLog
 
-    model            string
-    step             model.RiderCabinetOperateStep
-    cabinet          *ent.Cabinet
-    putInElectricity model.BatteryElectricity
-    alternative      bool
-    info             *model.RiderCabinetInfo
-    operating        *model.RiderCabinetOperating
-    batteryNum       uint // 换电开始时电池数量, 业务时应该监听业务发生时的电池数量，当业务流程中电池数量变动大于1的时候视为异常
-
+    cabinet   *ent.Cabinet
     subscribe *ent.Subscribe
-
-    start time.Time
-
-    ex *ent.Exchange
-
-    emptyCloseTime time.Time
-    fullCloseTime  time.Time
+    exchange  *ent.Exchange
 }
 
 func NewRiderCabinet() *riderCabinetService {
@@ -91,7 +78,7 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
 
     // 查询电柜
     cs := NewCabinet()
-    cab := cs.QueryWithSerial(req.Serial)
+    cab := cs.QueryOneSerialX(req.Serial)
 
     // 检查可用电池型号
     if !cs.ModelInclude(cab, subd.Model) {
@@ -102,17 +89,60 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
     if !cs.Health(cab) {
         snag.Panic("电柜目前不可用")
     }
+
+    // 是否忙
+    if actuator.Busy(cab.Serial) {
+        snag.Panic("电柜忙, 请稍后")
+    }
+
     // 更新一次电柜状态
     NewCabinet().UpdateStatus(cab)
     info := NewCabinet().Usable(cab)
-    if info.EmptyBin == nil {
+    if info.EmptyBin == nil || (info.FullBin == nil && info.Alternative == nil) {
         snag.Panic("电柜仓位不可用")
     }
 
-    uid := shortuuid.New()
+    ae := &actuator.Exchange{
+        Model:       subd.Model,
+        Alternative: info.Alternative != nil,
+        Success:     false,
+        Step:        actuator.ExchangeStepOpenEmpty,
+        Empty: actuator.BinInfo{
+            Index: info.EmptyBin.Index,
+        },
+    }
+    if info.Alternative == nil {
+        ae.Fully = actuator.BinInfo{
+            Index:       info.Alternative.Index,
+            Electricity: info.Alternative.Electricity,
+            Voltage:     info.Alternative.Voltage,
+        }
+    } else {
+        ae.Fully = actuator.BinInfo{
+            Index:       info.FullBin.Index,
+            Electricity: info.FullBin.Electricity,
+            Voltage:     info.FullBin.Voltage,
+        }
+    }
+
+    // TODO 存储换电信息到MongoDB
+    task := &actuator.Task{
+        Task: actuator.JobExchange,
+        Cabinet: actuator.Cabinet{
+            Serial:         cab.Serial,
+            Health:         cab.Health,
+            Doors:          cab.Doors,
+            BatteryNum:     cab.BatteryNum,
+            BatteryFullNum: cab.BatteryFullNum,
+        },
+        Exchange: ae,
+    }
+    id := task.SaveX()
+
+    // TODO 修改前端返回值
     res := &model.RiderCabinetInfo{
         ID:                         cab.ID,
-        UUID:                       uid,
+        UUID:                       id,
         Full:                       info.FullBin != nil,
         Name:                       cab.Name,
         Health:                     cab.Health,
@@ -126,13 +156,8 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
         Brand:                      model.CabinetBrand(cab.Brand),
     }
 
-    tools.NewLog().Infof("[换电信息:%s]\n%s\n", uid, res)
+    tools.NewLog().Infof("[换电信息:%s]\n%s\n", id, res)
 
-    err := cache.Set(s.ctx, uid, res, 10*time.Second).Err()
-    if err != nil {
-        log.Error(err)
-        snag.Panic("信息获取失败")
-    }
     return res
 }
 
@@ -170,10 +195,11 @@ func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
         snag.Panic(fmt.Sprintf("换电过于频繁, %d分钟可再次换电", iv))
     }
 
-    info := new(model.RiderCabinetInfo)
-    uid := *req.UUID
-    err := cache.Get(s.ctx, uid).Scan(info)
-    if err != nil || info == nil || info.EmptyBin == nil {
+    // 查找任务
+    task := actuator.Obtain(actuator.ObtainReq{ID: req.UUID})
+
+    // TODO 存储骑手信息并比对骑手信息是否相符
+    if task == nil || task.Task != actuator.JobExchange || task.Exchange == nil {
         snag.Panic("未找到信息, 请重新扫码")
     }
 
@@ -185,11 +211,15 @@ func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
 
     s.subscribe = sub
 
-    cab := NewCabinet().QueryOne(info.ID)
+    cab := NewCabinet().QueryOneSerialX(task.Cabinet.Serial)
     index := -1
     var be model.BatteryElectricity
-    if info.FullBin == nil {
-        if req.Alternative != nil && *req.Alternative {
+    if task.Exchange.Alternative && !req.Alternative {
+        snag.Panic("非满电换电取消")
+    }
+
+    if task.Exchange.Fully {
+        if req.Alternative {
             index = info.Alternative.Index
             be = info.Alternative.Electricity
             s.alternative = true
@@ -237,7 +267,7 @@ func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
 
     // 记录换电人
     // TODO 超时处理
-    s.ex, _ = ent.Database.Exchange.
+    s.exchange, _ = ent.Database.Exchange.
         Create().
         SetRiderID(s.rider.ID).
         SetCityID(s.info.CityID).
@@ -257,7 +287,7 @@ func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
         SetStartAt(s.start).
         Save(s.ctx)
 
-    if s.ex == nil {
+    if s.exchange == nil {
         snag.Panic("换电失败")
     }
 
@@ -302,7 +332,7 @@ func (s *riderCabinetService) ProcessStepEnd() {
     now := time.Now()
 
     // 保存数据库
-    _, _ = s.ex.Update().
+    _, _ = s.exchange.Update().
         SetRiderID(s.rider.ID).
         SetCityID(s.info.CityID).
         SetDetail(&model.ExchangeCabinet{
