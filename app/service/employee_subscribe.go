@@ -172,7 +172,7 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
         }
 
         // 调出库存
-        err = NewStockWithEmployee(s.employee).BatteryWithRider(
+        return NewStockWithEmployee(s.employee).BatteryWithRider(
             tx.Stock.Create(),
             &model.StockWithRiderReq{
                 RiderID:    info.Rider.ID,
@@ -182,10 +182,6 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
                 StockType:  model.StockTypeRiderObtain,
             },
         )
-        if err != nil {
-            return
-        }
-        return nil
     })
 
     if info.EnterpriseID != nil {

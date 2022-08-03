@@ -48,6 +48,13 @@ func NewBusinessLogWithEmployee(e *ent.Employee, sub *ent.Subscribe) *businessLo
     return s
 }
 
+func NewBusinessLogWithRider(r *ent.Rider, sub *ent.Subscribe) *businessLogService {
+    s := NewBusinessLog(sub)
+    s.ctx = context.WithValue(s.ctx, "rider", r)
+    s.rider = r
+    return s
+}
+
 func (s *businessLogService) setSubscribe(sub *ent.Subscribe) {
     s.creator.SetRiderID(sub.RiderID).
         SetSubscribeID(sub.ID).

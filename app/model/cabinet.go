@@ -330,3 +330,7 @@ type CabinetMaintainReq struct {
     ID       uint64 `json:"id" validate:"required"`       // 电柜ID
     Maintain *bool  `json:"maintain" validate:"required"` // 是否维护
 }
+
+type CabinetSerialQueryReq struct {
+    Serial string `json:"serial" query:"serial" validate:"required" trans:"电柜编码"`
+}

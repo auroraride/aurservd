@@ -69,11 +69,6 @@ type Subscribe struct {
     Enterprise *EnterpriseBasic    `json:"enterprise,omitempty"` // 企业信息
 }
 
-// UnsubscribedDaysToNewly 退订多少天后视为有效重签并计算佣金
-func UnsubscribedDaysToNewly() int {
-    return 15
-}
-
 // SubscribeAlter 订阅天数调整请求
 type SubscribeAlter struct {
     ID     uint64 `json:"id" validate:"required"`     // 订阅ID
