@@ -32,6 +32,7 @@ func Connect(url, db string) {
         "serial",
         "job",
         "deactivated",
+        "cabinetId",
     }}})
     if err != nil {
         log.Fatalln(err)

@@ -7,8 +7,10 @@ package mapi
 
 import (
     "github.com/auroraride/aurservd/app"
+    "github.com/auroraride/aurservd/app/actuator"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/service"
+    "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
 )
 
@@ -110,6 +112,10 @@ func (*cabinet) Detail(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) DoorOperate(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetDoorOperateReq](c)
+    if actuator.BusyFromID(*req.ID) {
+        snag.Panic("电柜忙")
+    }
+
     m := ctx.Modifier
     var status bool
     status, err = service.NewCabinetWithModifier(ctx.Modifier).DoorOperate(req, model.CabinetDoorOperator{
@@ -135,6 +141,10 @@ func (*cabinet) DoorOperate(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) Reboot(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.IDPostReq](c)
+    if actuator.BusyFromID(req.ID) {
+        snag.Panic("电柜忙")
+    }
+
     return ctx.SendResponse(
         model.StatusResponse{Status: service.NewCabinetWithModifier(ctx.Modifier).Reboot(req)},
     )

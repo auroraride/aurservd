@@ -122,8 +122,9 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
     }
 
     task := &actuator.Task{
-        Serial: cab.Serial,
-        Job:    actuator.JobExchange,
+        Serial:    cab.Serial,
+        CabinetID: cab.ID,
+        Job:       actuator.JobExchange,
         Rider: &actuator.Rider{
             ID:    s.rider.ID,
             Name:  s.rider.Edges.Person.Name,
@@ -453,6 +454,7 @@ func (s *riderCabinetService) ProcessDoorStatus() *riderCabinetService {
         // 超时标记为任务失败
         if time.Now().Sub(start).Seconds() > s.maxTime.Seconds() && message == "" {
             message = "超时"
+            step.Status = actuator.TaskStatusFail
         }
 
         if step.Status != actuator.TaskStatusProcessing {
@@ -542,7 +544,7 @@ func (s *riderCabinetService) processLogText() {
         s.rider.Phone,
         ex.CurrentStep().Status,
         s.task.Message,
-        ex.IsLastStep(),
+        ex.IsLastStep() || s.task.StopAt != nil,
     )
 }
 

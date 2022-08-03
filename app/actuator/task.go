@@ -67,6 +67,7 @@ type Task struct {
     CreateAt time.Time          `bson:"createAt"`
     UpdateAt time.Time          `bson:"updateAt"`
 
+    CabinetID   uint64     `json:"cabinetId" bson:"cabinetId"`                 // 电柜ID
     Serial      string     `json:"serial" bson:"serial"`                       // 电柜编码
     Deactivated bool       `json:"deactivated" bson:"deactivated"`             // 是否已失效
     Job         Job        `json:"job" bson:"job"`                             // 任务类别
@@ -138,10 +139,13 @@ func (t *Task) Start(cb ...Updater) {
 
     // 更新非当前任务为失效
     _, _ = mgo.CabinetTask.UpdateAll(ctx, bson.M{
-        operator.Not: bson.M{
-            "_id": t.ID,
+        "_id": bson.M{
+            operator.Ne: t.ID,
         },
-    }, bson.M{"deactivated": true})
+        "status": 0,
+    }, bson.M{
+        operator.Set: bson.M{"deactivated": true},
+    })
 }
 
 // Stop 结束任务
@@ -170,6 +174,7 @@ type ObtainReq struct {
     Serial      string             `json:"serial,omitempty" bson:"serial,omitempty"`
     ID          primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
     Deactivated bool               `json:"deactivated" bson:"deactivated"`
+    CabinetID   uint64             `json:"cabinetId,omitempty" bson:"cabinetId,omitempty"`
 }
 
 // Obtain 获取任务信息
@@ -191,5 +196,11 @@ func Obtain(req ObtainReq) (t *Task) {
 // Busy 查询电柜是否繁忙
 func Busy(serial string) bool {
     task := Obtain(ObtainReq{Serial: serial})
+    return task != nil && task.Status == TaskStatusProcessing
+}
+
+// BusyFromID 查询电柜是否繁忙
+func BusyFromID(id uint64) bool {
+    task := Obtain(ObtainReq{CabinetID: id})
     return task != nil && task.Status == TaskStatusProcessing
 }
