@@ -31,6 +31,7 @@ func loadRideRoutes() {
         "/rider/callback/alipay":           true,
         "/rider/callback/wechatpay":        true,
         "/rider/callback/wechatpay/refund": true,
+        "/rider/v1/branch":                 true,
     }))
 
     g.POST("/signin", rapi.Rider.Signin)                  // 登录

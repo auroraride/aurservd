@@ -13,6 +13,7 @@ import (
     "fmt"
     "github.com/alibabacloud-go/tea/tea"
     sls "github.com/aliyun/aliyun-log-go-sdk"
+    "github.com/auroraride/aurservd/app/actuator"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/provider"
@@ -67,7 +68,7 @@ func (s *cabinetService) QueryOne(id uint64) *ent.Cabinet {
 }
 
 func (s *cabinetService) QueryOneSerial(serial string) *ent.Cabinet {
-    cab, _ := s.orm.QueryNotDeleted().Where(cabinet.Serial(serial)).First(s.ctx)
+    cab, _ := s.orm.QueryNotDeleted().Where(cabinet.Serial(serial)).WithBms().First(s.ctx)
     return cab
 }
 
@@ -315,19 +316,19 @@ func (s *cabinetService) UpdateStatus(item *ent.Cabinet, params ...any) {
 }
 
 // DoorOpenStatus 获取柜门状态
-func (s *cabinetService) DoorOpenStatus(item *ent.Cabinet, index int, params ...any) model.CabinetBinDoorStatus {
+func (s *cabinetService) DoorOpenStatus(item *ent.Cabinet, index int, params ...any) actuator.ExchangeDoorStatus {
     s.UpdateStatus(item, params...)
     if len(item.Bin) == 0 || len(item.Bin) < index {
-        return model.CabinetBinDoorStatusUnknown
+        return actuator.ExchangeDoorStatusUnknown
     }
     bin := item.Bin[index]
     if !bin.DoorHealth {
-        return model.CabinetBinDoorStatusFail
+        return actuator.ExchangeDoorStatusFail
     }
     if bin.OpenStatus {
-        return model.CabinetBinDoorStatusOpen
+        return actuator.ExchangeDoorStatusOpen
     }
-    return model.CabinetBinDoorStatusClose
+    return actuator.ExchangeDoorStatusClose
 }
 
 // Detail 电柜详细信息
@@ -682,7 +683,7 @@ func (s *cabinetService) transfer(cab *ent.Cabinet, m string) (err error) {
 
 // Busy TODO 是否需要两次换电间隔
 func (s *cabinetService) Busy(cab *ent.Cabinet) bool {
-    if model.CabinetBusying(cab.Serial) {
+    if actuator.Busy(cab.Serial) {
         return true
     }
     last, _ := ent.Database.Exchange.QueryNotDeleted().Where(exchange.CabinetID(cab.ID)).Order(ent.Desc(exchange.FieldCreatedAt)).First(s.ctx)

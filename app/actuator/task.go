@@ -10,7 +10,6 @@ import (
     "github.com/auroraride/aurservd/internal/mgo"
     "github.com/auroraride/aurservd/pkg/snag"
     jsoniter "github.com/json-iterator/go"
-    "github.com/qiniu/qmgo/field"
     "github.com/qiniu/qmgo/operator"
     log "github.com/sirupsen/logrus"
     "go.mongodb.org/mongo-driver/bson"
@@ -24,6 +23,8 @@ const (
 
 // Job 电柜任务
 type Job string
+
+type Updater func(task *Task)
 
 const (
     JobExchange         Job = "RDR_EXCHANGE"    // 骑手-换电
@@ -62,16 +63,20 @@ func (ts TaskStatus) IsSuccess() bool {
 // Task 电柜任务详情
 // TODO 存储骑手信息
 type Task struct {
-    field.DefaultField `bson:",inline"`
-    Deactivated        bool `json:"deactivated" bson:"deactivated"` // 是否已失效
+    ID       primitive.ObjectID `bson:"_id"`
+    CreateAt time.Time          `bson:"createAt"`
+    UpdateAt time.Time          `bson:"updateAt"`
 
-    Task    Job        `json:"task" bson:"task"`                           // 任务类别
-    Status  TaskStatus `json:"status" bson:"status"`                       // 任务状态
-    StartAt *time.Time `json:"startAt,omitempty" bson:"startAt"`           // 开始时间
-    StopAt  *time.Time `json:"stopAt,omitempty" bson:"stopAt"`             // 结束时间
-    Message string     `json:"message,omitempty" bson:"message,omitempty"` // 失败消息
+    Serial      string     `json:"serial" bson:"serial"`                       // 电柜编码
+    Deactivated bool       `json:"deactivated" bson:"deactivated"`             // 是否已失效
+    Job         Job        `json:"job" bson:"job"`                             // 任务类别
+    Status      TaskStatus `json:"status" bson:"status"`                       // 任务状态
+    StartAt     *time.Time `json:"startAt,omitempty" bson:"startAt,omitempty"` // 开始时间
+    StopAt      *time.Time `json:"stopAt,omitempty" bson:"stopAt,omitempty"`   // 结束时间
+    Message     string     `json:"message,omitempty" bson:"message,omitempty"` // 失败消息
 
     Cabinet  Cabinet   `json:"cabinet" bson:"cabinet"`   // 电柜信息
+    Rider    *Rider    `json:"rider" bson:"rider"`       // 骑手信息
     Exchange *Exchange `json:"exchange" bson:"exchange"` // 换电信息
 }
 
@@ -83,27 +88,33 @@ func (t *Task) UnmarshalBinary(data []byte) error {
     return jsoniter.Unmarshal(data, t)
 }
 
-type TaskUpdater func(task *Task)
+type Rider struct {
+    ID    uint64 `json:"id"`
+    Name  string `json:"name"`
+    Phone string `json:"phone"`
+}
 
 // Cabinet 任务电柜设备信息
 type Cabinet struct {
-    Serial         string `json:"serial" bson:"serial"`                 // 电柜编号
-    Health         uint8  `json:"health" bson:"health"`                 // 电柜健康状态 0离线 1正常 2故障
-    Doors          uint   `json:"doors" bson:"doors"`                   // 总仓位
-    BatteryNum     uint   `json:"batteryNum" bson:"batteryNum"`         // 总电池数
-    BatteryFullNum uint   `json:"batteryFullNum" bson:"batteryFullNum"` // 总满电电池数
+    Health         uint8 `json:"health" bson:"health"`                 // 电柜健康状态 0离线 1正常 2故障
+    Doors          uint  `json:"doors" bson:"doors"`                   // 总仓位
+    BatteryNum     uint  `json:"batteryNum" bson:"batteryNum"`         // 总电池数
+    BatteryFullNum uint  `json:"batteryFullNum" bson:"batteryFullNum"` // 总满电电池数
 }
 
 // Create 创建任务并存储
-func (t *Task) Create() (string, error) {
+func (t *Task) Create() (primitive.ObjectID, error) {
+    t.ID = primitive.NewObjectID()
+    t.UpdateAt = time.Now()
+    t.CreateAt = time.Now()
     r, err := mgo.CabinetTask.InsertOne(context.Background(), t)
     if err != nil {
-        return "", err
+        return primitive.NilObjectID, err
     }
-    return r.InsertedID.(primitive.ObjectID).Hex(), nil
+    return r.InsertedID.(primitive.ObjectID), nil
 }
 
-func (t *Task) CreateX() string {
+func (t *Task) CreateX() primitive.ObjectID {
     id, err := t.Create()
     if err != nil {
         log.Error(err)
@@ -113,7 +124,7 @@ func (t *Task) CreateX() string {
 }
 
 // Start 开始任务
-func (t *Task) Start(cb ...TaskUpdater) {
+func (t *Task) Start(cb ...Updater) {
     ctx := context.Background()
 
     // 更新任务开始时间
@@ -128,7 +139,7 @@ func (t *Task) Start(cb ...TaskUpdater) {
     // 更新非当前任务为失效
     _, _ = mgo.CabinetTask.UpdateAll(ctx, bson.M{
         operator.Not: bson.M{
-            "_id": t.Id,
+            "_id": t.ID,
         },
     }, bson.M{"deactivated": true})
 }
@@ -142,16 +153,17 @@ func (t *Task) Stop(status TaskStatus) {
 }
 
 // Update 更新任务
-func (t *Task) Update(cb TaskUpdater) {
+func (t *Task) Update(cb Updater) {
     cb(t)
-    _ = mgo.CabinetTask.UpdateId(context.Background(), t.Id, bson.M{
+    t.UpdateAt = time.Now()
+    _ = mgo.CabinetTask.UpdateId(context.Background(), t.ID, bson.M{
         operator.Set: t,
     })
 }
 
 // Deactive 设为失效
 func (t *Task) Deactive() {
-    _ = mgo.CabinetTask.UpdateId(context.Background(), t.Id, bson.M{"deactivated": true})
+    _ = mgo.CabinetTask.UpdateId(context.Background(), t.ID, bson.M{"deactivated": true})
 }
 
 type ObtainReq struct {
@@ -160,8 +172,9 @@ type ObtainReq struct {
     Deactivated bool               `json:"deactivated" bson:"deactivated"`
 }
 
-// Obtain 获取任务
+// Obtain 获取任务信息
 func Obtain(req ObtainReq) (t *Task) {
+    t = new(Task)
     ctx := context.Background()
     _ = mgo.CabinetTask.Find(ctx, req).One(t)
     if t == nil {
@@ -177,5 +190,6 @@ func Obtain(req ObtainReq) (t *Task) {
 
 // Busy 查询电柜是否繁忙
 func Busy(serial string) bool {
-    return Obtain(ObtainReq{Serial: serial}) != nil
+    task := Obtain(ObtainReq{Serial: serial})
+    return task != nil && task.Status == TaskStatusProcessing
 }

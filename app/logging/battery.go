@@ -7,6 +7,7 @@ package logging
 
 import (
     "fmt"
+    "github.com/auroraride/aurservd/app/actuator"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/golang-module/carbon/v2"
@@ -45,19 +46,19 @@ func NewBatteryLog(brand, serial string, from, to int, updatedAt time.Time) *Bat
 }
 
 // SetExchangeProcess 设置换电信息
-func (l *BatteryLog) SetExchangeProcess(req *model.CabinetExchangeProcess) *BatteryLog {
-    if req == nil {
+func (l *BatteryLog) SetExchangeProcess(task *actuator.Task) *BatteryLog {
+    if task == nil {
         return l
     }
-    l.UUID = req.Info.UUID
+    l.UUID = task.ID.Hex()
     l.Exchange = fmt.Sprintf(
-        "ID: %d, 电话: %s, 名字: %s, 步骤: %s, 空: %d, 满: %d",
-        req.Rider.ID,
-        req.Rider.Phone,
-        req.Rider.Name,
-        req.Step.String(),
-        req.Info.EmptyIndex+1,
-        req.Info.FullIndex+1,
+        "ID: %d, 电话: %s, 名字: %s, 步骤: %s, 空: %d仓, 满: %d仓",
+        task.Rider.ID,
+        task.Rider.Phone,
+        task.Rider.Name,
+        task.Exchange.CurrentStep().Step,
+        task.Exchange.Empty.Index+1,
+        task.Exchange.Fully.Index+1,
     )
     return l
 }

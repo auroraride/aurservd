@@ -28,7 +28,11 @@ func Connect(url, db string) {
     DB = Client.Database(db)
 
     CabinetTask = DB.Collection("cabinet_task")
-    err = CabinetTask.CreateIndexes(context.Background(), []options.IndexModel{{Key: []string{"id", "serial", "startAt", "updatedAt", "expiration", "finishAt"}}})
+    err = CabinetTask.CreateIndexes(context.Background(), []options.IndexModel{{Key: []string{
+        "serial",
+        "job",
+        "deactivated",
+    }}})
     if err != nil {
         log.Fatalln(err)
     }

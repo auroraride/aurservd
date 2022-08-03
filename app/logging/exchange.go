@@ -69,9 +69,9 @@ func (e *ExchangeLog) SetStep(step actuator.ExchangeStep) *ExchangeLog {
     return e
 }
 
-func (e *ExchangeLog) SetStatus(status model.TaskStatus) *ExchangeLog {
+func (e *ExchangeLog) SetStatus(status actuator.TaskStatus) *ExchangeLog {
     e.Status = uint8(status)
-    if status == model.TaskStatusSuccess {
+    if status == actuator.TaskStatusSuccess {
         e.Result = "成功"
     } else {
         e.Result = "失败"

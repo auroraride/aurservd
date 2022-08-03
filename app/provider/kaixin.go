@@ -35,7 +35,7 @@ func (p *kaixin) Reboot(code string, serial string) bool {
 }
 
 func (p *kaixin) Cabinets() ([]*ent.Cabinet, error) {
-    return ent.Database.Cabinet.Query().Where(cabinet.Brand(model.CabinetBrandKaixin.Value()), cabinet.Status(model.CabinetStatusNormal)).All(context.Background())
+    return ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.Brand(model.CabinetBrandKaixin.Value()), cabinet.Status(model.CabinetStatusNormal)).All(context.Background())
 }
 
 func (p *kaixin) Brand() string {

@@ -228,7 +228,7 @@ func (s *subscribeService) QueryEffective(riderID uint64) (*ent.Subscribe, error
 
 // QueryAllRidersEffective 获取所有骑手生效中的订阅
 func (s *subscribeService) QueryAllRidersEffective() []*ent.Subscribe {
-    items, _ := ent.Database.Subscribe.Query().
+    items, _ := ent.Database.Subscribe.QueryNotDeleted().
         Where(
             // 未退款
             subscribe.RefundAtIsNil(),

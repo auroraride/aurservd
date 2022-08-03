@@ -98,6 +98,11 @@ func (e *Exchange) CurrentStep() *ExchangeStepInfo {
     return e.Steps[len(e.Steps)-1]
 }
 
+// IsLastStep 是否最后一步
+func (e *Exchange) IsLastStep() bool {
+    return e.CurrentStep().Step.IsLast()
+}
+
 // StartNextStep 开始下一个换电步骤
 func (e *Exchange) StartNextStep() {
     if len(e.Steps) == 0 {
@@ -112,7 +117,6 @@ func (e *Exchange) StartNextStep() {
         e.Steps = append(e.Steps, &ExchangeStepInfo{
             Step:   e.CurrentStep().Step.Next(),
             Status: TaskStatusProcessing,
-            Time:   time.Time{},
         })
     }
 }
@@ -165,7 +169,11 @@ type ExchangeStepInfo struct {
 }
 
 func (si *ExchangeStepInfo) String() string {
-    return fmt.Sprintf("{ %s -> %s }: %s", si.Time.Format(carbon.DateTimeLayout), si.Step, si.Status)
+    t := si.Time
+    if t.IsZero() {
+        t = time.Now()
+    }
+    return fmt.Sprintf("{ %s -> %s }: %s", t.Format(carbon.DateTimeLayout), si.Step, si.Status)
 }
 
 // IsSuccess 步骤是否成功
