@@ -145,12 +145,12 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
             Fully: fully,
         },
     }
-    id := task.CreateX()
+    task = task.CreateX()
 
     // TODO 修改前端返回值
     res := &model.RiderCabinetInfo{
         ID:                         cab.ID,
-        UUID:                       id.Hex(),
+        UUID:                       task.ID.Hex(),
         Full:                       info.FullBin != nil,
         Name:                       cab.Name,
         Health:                     cab.Health,
@@ -164,7 +164,7 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
         Brand:                      model.CabinetBrand(cab.Brand),
     }
 
-    tools.NewLog().Infof("[换电信息:%s]\n%s\n", id, res)
+    tools.NewLog().Infof("[换电信息:%s]\n%s\n", task.ID.Hex(), res)
 
     return res
 }

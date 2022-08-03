@@ -23,7 +23,6 @@ import (
     "github.com/auroraride/aurservd/internal/ent/batterymodel"
     "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
-    "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
@@ -359,7 +358,7 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
     // 查找柜子和仓位
     item := s.QueryOne(*req.ID)
     if len(item.Bin) < *req.Index {
-        err = errors.New("该柜门未找到")
+        err = errors.New("柜门不存在")
         return
     }
 
@@ -430,60 +429,6 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
         }
     }()
     return
-}
-
-// Reboot 重启电柜
-func (s *cabinetService) Reboot(req *model.IDPostReq) bool {
-    if s.modifier == nil {
-        snag.Panic("请求不正确")
-    }
-    now := time.Now()
-    opId := shortuuid.New()
-
-    item := s.QueryOne(req.ID)
-    if item.Brand == model.CabinetBrandKaixin.Value() {
-        snag.Panic("凯信电柜不支持该操作")
-    }
-    var prov provider.Provider
-    var state bool
-    prov = provider.NewYundong()
-    state = prov.Reboot(s.modifier.Name+"-"+opId, item.Serial)
-
-    // 如果成功, 重新获取状态更新数据
-    if state {
-        // 更新仓位备注
-        _ = prov.UpdateStatus(item)
-    }
-
-    brand := model.CabinetBrand(item.Brand)
-    go func() {
-        // 上传日志
-        slsCfg := ar.Config.Aliyun.Sls
-        lg := &sls.LogGroup{
-            Logs: []*sls.Log{{
-                Time: tea.Uint32(uint32(now.Unix())),
-                Contents: logging.GenerateLogContent(&logging.DoorOperateLog{
-                    ID:            opId,
-                    Brand:         brand.String(),
-                    OperatorName:  s.modifier.Name,
-                    OperatorID:    s.modifier.ID,
-                    OperatorPhone: s.modifier.Phone,
-                    OperatorRole:  model.CabinetDoorOperatorRoleManager,
-                    Serial:        item.Serial,
-                    Operation:     "重启",
-                    Success:       state,
-                    Time:          now.Format(carbon.DateTimeLayout),
-                }),
-            }},
-        }
-        err := ali.NewSls().PutLogs(slsCfg.Project, slsCfg.DoorLog, lg)
-        if err != nil {
-            log.Error(err)
-            return
-        }
-    }()
-
-    return state
 }
 
 // ModelInclude 电柜是否可用指定型号电池
@@ -679,42 +624,4 @@ func (s *cabinetService) transfer(cab *ent.Cabinet, m string) (err error) {
     })
     return
 
-}
-
-// Maintain 设置电柜操作维护
-func (s *cabinetService) Maintain(req *model.CabinetMaintainReq) {
-    if req.Maintain == nil {
-        snag.Panic("参数请求错误")
-    }
-    cab := s.QueryOne(req.ID)
-
-    key := "CABINET_STATUS"
-
-    status := model.CabinetStatusMaintenance
-    var err error
-    if *req.Maintain {
-        err = cache.HSet(s.ctx, key, cab.Serial, cab.Status).Err()
-    } else {
-        var saved int
-        saved, err = cache.HGet(s.ctx, key, cab.Serial).Int()
-        status = model.CabinetStatus(saved)
-    }
-
-    if status != model.CabinetStatusNormal && !*req.Maintain {
-        snag.Panic("电柜当前未投产")
-    }
-
-    if err != nil {
-        snag.Panic("操作失败")
-    }
-
-    _, _ = cab.Update().SetStatus(status.Raw()).Save(s.ctx)
-
-    // 记录日志
-    go logging.NewOperateLog().
-        SetRef(cab).
-        SetModifier(s.modifier).
-        SetOperate(model.OperateAssistanceAllocate).
-        SetDiff(model.CabinetStatus(cab.Status).String(), status.String()).
-        Send()
 }

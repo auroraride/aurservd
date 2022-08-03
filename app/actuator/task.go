@@ -33,6 +33,9 @@ const (
     JobPause                = "RDR_PAUSE"       // 骑手-寄存
     JobContinue             = "RDR_CONTINUE"    // 骑手-取消寄存
     JobManagerOpen          = "MGR_OPEN"        // 管理-开门
+    JobManagerLock          = "MGR_LOCK"        // 管理-锁仓
+    JobManagerUnLock        = "MGR_UNLOCK"      // 管理-解锁
+    JobManagerReboot        = "MGR_REBOOT"      // 管理-重启
     JobManagerExchange      = "MGR_EXCHANGE"    // 管理-换电
 )
 
@@ -115,13 +118,14 @@ func (t *Task) Create() (primitive.ObjectID, error) {
     return r.InsertedID.(primitive.ObjectID), nil
 }
 
-func (t *Task) CreateX() primitive.ObjectID {
+func (t *Task) CreateX() *Task {
     id, err := t.Create()
     if err != nil {
         log.Error(err)
         snag.Panic("任务存储失败")
     }
-    return id
+    t.ID = id
+    return t
 }
 
 // Start 开始任务

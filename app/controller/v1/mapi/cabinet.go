@@ -114,20 +114,8 @@ func (*cabinet) Detail(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) DoorOperate(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetDoorOperateReq](c)
-    if actuator.BusyFromID(*req.ID) {
-        snag.Panic("电柜忙")
-    }
-
-    m := ctx.Modifier
-    var status bool
-    status, err = service.NewCabinetWithModifier(ctx.Modifier).DoorOperate(req, model.CabinetDoorOperator{
-        ID:    m.ID,
-        Role:  model.CabinetDoorOperatorRoleManager,
-        Name:  m.Name,
-        Phone: m.Phone,
-    })
     return ctx.SendResponse(
-        model.StatusResponse{Status: status},
+        model.StatusResponse{Status: service.NewCabinetMgrWithModifier(ctx.Modifier).BinOperate(req)},
     )
 }
 
@@ -148,7 +136,7 @@ func (*cabinet) Reboot(c echo.Context) (err error) {
     }
 
     return ctx.SendResponse(
-        model.StatusResponse{Status: service.NewCabinetWithModifier(ctx.Modifier).Reboot(req)},
+        model.StatusResponse{Status: service.NewCabinetMgrWithModifier(ctx.Modifier).Reboot(req)},
     )
 }
 
@@ -229,6 +217,6 @@ func (*cabinet) Transfer(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) Maintain(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetMaintainReq](c)
-    service.NewCabinetWithModifier(ctx.Modifier).Maintain(req)
+    service.NewCabinetMgrWithModifier(ctx.Modifier).Maintain(req)
     return ctx.SendResponse()
 }
