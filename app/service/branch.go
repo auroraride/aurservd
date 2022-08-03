@@ -374,7 +374,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
 
     // 电柜
     for _, c := range cabinets {
-        if c.Status == model.CabinetStatusNormal {
+        if model.CabinetStatus(c.Status) == model.CabinetStatusNormal {
             fa := model.BranchFacility{
                 ID:    c.ID,
                 Name:  c.Name,

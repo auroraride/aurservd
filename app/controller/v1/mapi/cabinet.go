@@ -204,3 +204,19 @@ func (*cabinet) Transfer(c echo.Context) (err error) {
     service.NewCabinetWithModifier(ctx.Modifier).Transfer(req)
     return ctx.SendResponse()
 }
+
+// Maintain
+// @ID           ManagerCabinetMaintain
+// @Router       /manager/v1/cabinet/maintain [POST]
+// @Summary      M5012 电柜操作维护
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body     model.CabinetMaintainReq  true  "请求参数"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*cabinet) Maintain(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.CabinetMaintainReq](c)
+    service.NewCabinetWithModifier(ctx.Modifier).Maintain(req)
+    return ctx.SendResponse()
+}

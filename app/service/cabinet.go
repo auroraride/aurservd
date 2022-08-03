@@ -23,7 +23,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/batterymodel"
     "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
-    "github.com/auroraride/aurservd/internal/ent/exchange"
+    "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
@@ -90,7 +90,7 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
         SetName(req.Name).
         SetSerial(req.Serial).
         SetSn(shortuuid.New()).
-        SetStatus(req.Status).
+        SetStatus(req.Status.Raw()).
         SetDoors(req.Doors).
         SetNillableRemark(req.Remark).
         SetBrand(req.Brand.Value()).
@@ -117,7 +117,7 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
     res = new(model.CabinetItem)
     _ = copier.Copy(res, item)
 
-    if item.Status == model.CabinetStatusNormal {
+    if model.CabinetStatus(item.Status) == model.CabinetStatusNormal {
         go s.Deploy(item)
     }
 
@@ -186,7 +186,7 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
     if cab == nil {
         snag.Panic("未找到电柜")
     }
-    willDeploy := cab.Status == model.CabinetStatusPending && req.Status != nil && *req.Status == model.CabinetStatusNormal
+    willDeploy := model.CabinetStatus(cab.Status) == model.CabinetStatusPending && req.Status != nil && *req.Status == model.CabinetStatusNormal
     err := ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
         q := tx.Cabinet.UpdateOne(cab)
         if req.Models != nil {
@@ -218,12 +218,12 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
                 SetCityID(b.CityID)
         } else if cab.BranchID == nil {
             // 检查网点
-            if cab.Status == model.CabinetStatusNormal || (req.Status != nil && *req.Status == model.CabinetStatusNormal) {
+            if model.CabinetStatus(cab.Status) == model.CabinetStatusNormal || (req.Status != nil && *req.Status == model.CabinetStatusNormal) {
                 return errors.New("电柜投产必须选择网点")
             }
         }
         if req.Status != nil {
-            q.SetStatus(*req.Status)
+            q.SetStatus(req.Status.Raw())
         }
         if req.Brand != nil {
             q.SetBrand(req.Brand.Value())
@@ -551,7 +551,7 @@ func (s *cabinetService) Usable(cab *ent.Cabinet) (op model.RiderCabinetOperateP
 
 // Health 判定电柜是否可用
 func (s *cabinetService) Health(cab *ent.Cabinet) bool {
-    return cab.Status == model.CabinetStatusNormal &&
+    return model.CabinetStatus(cab.Status) == model.CabinetStatusNormal &&
         cab.Health == model.CabinetHealthStatusOnline &&
         time.Now().Sub(cab.UpdatedAt).Minutes() < 5 &&
         len(cab.Bin) > 0
@@ -681,14 +681,35 @@ func (s *cabinetService) transfer(cab *ent.Cabinet, m string) (err error) {
 
 }
 
-// Busy TODO 是否需要两次换电间隔
-func (s *cabinetService) Busy(cab *ent.Cabinet) bool {
-    if actuator.Busy(cab.Serial) {
-        return true
+// Maintain 设置电柜操作维护
+func (s *cabinetService) Maintain(req *model.CabinetMaintainReq) {
+    if req.Maintain == nil {
+        snag.Panic("参数请求错误")
     }
-    last, _ := ent.Database.Exchange.QueryNotDeleted().Where(exchange.CabinetID(cab.ID)).Order(ent.Desc(exchange.FieldCreatedAt)).First(s.ctx)
-    if last != nil {
+    cab := s.QueryOne(req.ID)
 
+    key := "CABINET_STATUS"
+
+    status := model.CabinetStatusMaintenance
+    var err error
+    if *req.Maintain {
+        err = cache.HSet(s.ctx, key, cab.Serial, cab.Status).Err()
+    } else {
+        var saved int
+        saved, err = cache.HGet(s.ctx, key, cab.Serial).Int()
+        status = model.CabinetStatus(saved)
     }
-    return false
+    if err != nil {
+        snag.Panic("操作失败")
+    }
+
+    _, _ = cab.Update().SetStatus(status.Raw()).Save(s.ctx)
+
+    // 记录日志
+    go logging.NewOperateLog().
+        SetRef(cab).
+        SetModifier(s.modifier).
+        SetOperate(model.OperateAssistanceAllocate).
+        SetDiff(model.CabinetStatus(cab.Status).String(), status.String()).
+        Send()
 }

@@ -169,7 +169,7 @@ func (r *YDStatusRes) GetBins() (bins []YDBin) {
 }
 
 func (p *yundong) Cabinets() ([]*ent.Cabinet, error) {
-    return ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.Brand(model.CabinetBrandYundong.Value()), cabinet.Status(model.CabinetStatusNormal)).All(context.Background())
+    return ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.Brand(model.CabinetBrandYundong.Value()), cabinet.Status(model.CabinetStatusNormal.Raw())).All(context.Background())
 }
 
 func (p *yundong) Brand() string {

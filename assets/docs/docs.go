@@ -2842,6 +2842,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/cabinet/maintain": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M5012 电柜操作维护",
+                "operationId": "ManagerCabinetMaintain",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CabinetMaintainReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/cabinet/reboot": {
             "post": {
                 "consumes": [
@@ -11156,6 +11197,23 @@ const docTemplate = `{
                 "status": {
                     "description": "电柜状态 0未投放 1运营中 2维护中",
                     "type": "integer"
+                }
+            }
+        },
+        "model.CabinetMaintainReq": {
+            "type": "object",
+            "required": [
+                "id",
+                "maintain"
+            ],
+            "properties": {
+                "id": {
+                    "description": "电柜ID",
+                    "type": "integer"
+                },
+                "maintain": {
+                    "description": "是否维护",
+                    "type": "boolean"
                 }
             }
         },

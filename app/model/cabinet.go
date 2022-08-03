@@ -31,12 +31,29 @@ func (cb CabinetBrand) String() string {
     return "Unknown"
 }
 
-// CabinetStatus 设备状态
+type CabinetStatus uint8
+
 const (
-    CabinetStatusPending     uint8 = iota // 未投放
-    CabinetStatusNormal                   // 运营中
-    CabinetStatusMaintenance              // 维护中
+    CabinetStatusPending     CabinetStatus = iota // 未投放
+    CabinetStatusNormal                           // 运营中
+    CabinetStatusMaintenance                      // 维护中
 )
+
+func (cs CabinetStatus) String() string {
+    switch cs {
+    case CabinetStatusPending:
+        return "未投放"
+    case CabinetStatusNormal:
+        return "运营中"
+    case CabinetStatusMaintenance:
+        return "维护中"
+    }
+    return "未知"
+}
+
+func (cs CabinetStatus) Raw() uint8 {
+    return uint8(cs)
+}
 
 // 设备健康状态
 const (
@@ -47,14 +64,14 @@ const (
 
 // Cabinet 电柜基础属性
 type Cabinet struct {
-    BranchID *uint64      `json:"branchId"`                                                      // 网点
-    Status   uint8        `json:"status" enums:"0,1,2"`                                          // 电柜状态 0未投放 1运营中 2维护中
-    Brand    CabinetBrand `json:"brand" validate:"required" trans:"品牌" enums:"KAIXIN,YUNDONG"` // KAIXIN(凯信) YUNDONG(云动)
-    Serial   string       `json:"serial" validate:"required" trans:"电柜编码"`
-    Name     string       `json:"name" validate:"required" trans:"电柜名称"`
-    Doors    uint         `json:"doors"` // 柜门数量
-    Remark   *string      `json:"remark" trans:"备注"`
-    Health   *uint8       `json:"health"` // 在线状态 0离线 1在线 2故障
+    BranchID *uint64       `json:"branchId"`                                                      // 网点
+    Status   CabinetStatus `json:"status" enums:"0,1,2"`                                          // 电柜状态 0未投放 1运营中 2维护中
+    Brand    CabinetBrand  `json:"brand" validate:"required" trans:"品牌" enums:"KAIXIN,YUNDONG"` // KAIXIN(凯信) YUNDONG(云动)
+    Serial   string        `json:"serial" validate:"required" trans:"电柜编码"`
+    Name     string        `json:"name" validate:"required" trans:"电柜名称"`
+    Doors    uint          `json:"doors"` // 柜门数量
+    Remark   *string       `json:"remark" trans:"备注"`
+    Health   *uint8        `json:"health"` // 在线状态 0离线 1在线 2故障
 }
 
 type CabinetBasicInfo struct {
@@ -106,17 +123,17 @@ type CabinetQueryReq struct {
 
 // CabinetModifyReq 电柜修改请求
 type CabinetModifyReq struct {
-    ID       uint64        `json:"id" param:"id"`
-    BranchID *uint64       `json:"branchId"`                                  // 网点
-    Status   *uint8        `json:"status" enums:"0,1,2"`                      // 电柜状态 0未投放 1运营中 2维护中
-    Brand    *CabinetBrand `json:"brand" trans:"品牌" enums:"KAIXIN,YUNDONG"` // KAIXIN(凯信) YUNDONG(云动)
-    Serial   *string       `json:"serial" trans:"电柜原始编码"`
-    Name     *string       `json:"name" trans:"电柜名称"`
-    Doors    *uint         `json:"doors" trans:"柜门数量"`
-    Remark   *string       `json:"remark" trans:"备注"`
-    Models   *[]string     `json:"models" trans:"电池型号"`
-    SimSn    *string       `json:"simSn,omitempty"`   // SIM卡号
-    SimDate  *string       `json:"simDate,omitempty"` // SIM卡到期日期, 例: 2022-06-01
+    ID       uint64         `json:"id" param:"id"`
+    BranchID *uint64        `json:"branchId"`                                  // 网点
+    Status   *CabinetStatus `json:"status" enums:"0,1,2"`                      // 电柜状态 0未投放 1运营中 2维护中
+    Brand    *CabinetBrand  `json:"brand" trans:"品牌" enums:"KAIXIN,YUNDONG"` // KAIXIN(凯信) YUNDONG(云动)
+    Serial   *string        `json:"serial" trans:"电柜原始编码"`
+    Name     *string        `json:"name" trans:"电柜名称"`
+    Doors    *uint          `json:"doors" trans:"柜门数量"`
+    Remark   *string        `json:"remark" trans:"备注"`
+    Models   *[]string      `json:"models" trans:"电池型号"`
+    SimSn    *string        `json:"simSn,omitempty"`   // SIM卡号
+    SimDate  *string        `json:"simDate,omitempty"` // SIM卡到期日期, 例: 2022-06-01
 }
 
 // CabinetDeleteReq 电柜删除请求
@@ -307,4 +324,9 @@ type CabinetSimNotice struct {
 type CabinetTransferReq struct {
     CabinetID uint64 `json:"cabinetId"` // 电柜ID
     Model     string `json:"model"`     // 型号
+}
+
+type CabinetMaintainReq struct {
+    ID       uint64 `json:"id" validate:"required"`       // 电柜ID
+    Maintain *bool  `json:"maintain" validate:"required"` // 是否维护
 }

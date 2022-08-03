@@ -1656,6 +1656,18 @@ definitions:
         description: 电柜状态 0未投放 1运营中 2维护中
         type: integer
     type: object
+  model.CabinetMaintainReq:
+    properties:
+      id:
+        description: 电柜ID
+        type: integer
+      maintain:
+        description: 是否维护
+        type: boolean
+    required:
+    - id
+    - maintain
+    type: object
   model.CabinetTransferReq:
     properties:
       cabinetId:
@@ -6194,6 +6206,33 @@ paths:
                   type: array
               type: object
       summary: M5008 故障列表
+      tags:
+      - '[M]管理接口'
+  /manager/v1/cabinet/maintain:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerCabinetMaintain
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.CabinetMaintainReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M5012 电柜操作维护
       tags:
       - '[M]管理接口'
   /manager/v1/cabinet/reboot:
