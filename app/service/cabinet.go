@@ -688,6 +688,10 @@ func (s *cabinetService) Maintain(req *model.CabinetMaintainReq) {
     }
     cab := s.QueryOne(req.ID)
 
+    if model.CabinetStatus(cab.Status) != model.CabinetStatusNormal {
+        snag.Panic("电柜当前未投产")
+    }
+
     key := "CABINET_STATUS"
 
     status := model.CabinetStatusMaintenance
@@ -699,6 +703,7 @@ func (s *cabinetService) Maintain(req *model.CabinetMaintainReq) {
         saved, err = cache.HGet(s.ctx, key, cab.Serial).Int()
         status = model.CabinetStatus(saved)
     }
+
     if err != nil {
         snag.Panic("操作失败")
     }
