@@ -217,6 +217,11 @@ func (s *riderCabinetService) Start(req *model.RiderCabinetOperateReq) {
         snag.Panic("电柜忙, 请稍后重试")
     }
 
+    // 查询电柜
+    if !NewCabinet().Health(cab) {
+        snag.Panic("电柜目前不可用")
+    }
+
     s.logger = logging.NewExchangeLog(s.rider.ID, task.ID.Hex(), cab.Serial, s.rider.Phone, be.IsBatteryFull())
     s.cabinet = cab
 
