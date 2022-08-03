@@ -16,14 +16,15 @@ import (
 
 // BatteryLog 电池变动日志
 type BatteryLog struct {
-    UUID     string `json:"uuid" sls:"操作ID" index:"doc"`
-    Brand    string `json:"brand" sls:"品牌" index:"doc"`
-    Serial   string `json:"serial" sls:"编码" index:"doc"`
-    Number   int    `json:"number" sls:"变动数量" index:"doc"`
-    Exchange string `json:"exchange" sls:"换电信息" index:"doc"`
-    Time     string `json:"time" sls:"时间" index:"doc"`
-    From     int    `json:"from" sls:"变动前数量" index:"doc"`
-    To       int    `json:"to" sls:"变动后数量" index:"doc"`
+    UUID     string              `json:"uuid" sls:"操作ID" index:"doc"`
+    Brand    string              `json:"brand" sls:"品牌" index:"doc"`
+    Serial   string              `json:"serial" sls:"编码" index:"doc"`
+    Number   int                 `json:"number" sls:"变动数量" index:"doc"`
+    Exchange string              `json:"exchange" sls:"换电信息" index:"doc"`
+    Time     string              `json:"time" sls:"时间" index:"doc"`
+    From     int                 `json:"from" sls:"变动前数量" index:"doc"`
+    To       int                 `json:"to" sls:"变动后数量" index:"doc"`
+    Status   model.CabinetStatus `json:"status" sls:"电柜状态" index:"doc"`
 }
 
 func (l *BatteryLog) GetLogstoreName() string {
@@ -60,6 +61,11 @@ func (l *BatteryLog) SetExchangeProcess(task *actuator.Task) *BatteryLog {
         task.Exchange.Empty.Index+1,
         task.Exchange.Fully.Index+1,
     )
+    return l
+}
+
+func (l *BatteryLog) SetStatus(status model.CabinetStatus) *BatteryLog {
+    l.Status = status
     return l
 }
 

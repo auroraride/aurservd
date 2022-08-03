@@ -16,7 +16,6 @@ import (
     "github.com/auroraride/aurservd/internal/ali"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
-    "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
     "github.com/lithammer/shortuuid/v4"
@@ -50,28 +49,13 @@ func (s *cabinetMgrService) Maintain(req *model.CabinetMaintainReq) {
     }
     cab := NewCabinet().QueryOne(req.ID)
 
-    key := "CABINET_STATUS"
-
-    status := model.CabinetStatusMaintenance
-    var err error
-    if *req.Maintain {
-        if model.CabinetStatus(cab.Status) != model.CabinetStatusNormal {
-            snag.Panic("未投产电柜无法操作")
-        }
-
-        err = cache.HSet(s.ctx, key, cab.Serial, cab.Status).Err()
-    } else {
-        var saved int
-        saved, err = cache.HGet(s.ctx, key, cab.Serial).Int()
-        status = model.CabinetStatus(saved)
-
-        if status != model.CabinetStatusNormal {
-            snag.Panic("电柜当前未投产")
-        }
+    if model.CabinetStatus(cab.Status) == model.CabinetStatusPending {
+        snag.Panic("未投放电柜无法操作")
     }
 
-    if err != nil {
-        snag.Panic("操作失败")
+    status := model.CabinetStatusNormal
+    if *req.Maintain {
+        status = model.CabinetStatusMaintenance
     }
 
     _, _ = cab.Update().SetStatus(status.Raw()).Save(s.ctx)

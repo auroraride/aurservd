@@ -126,14 +126,19 @@ func monitor(oldBins []model.CabinetBin, oldHealth uint8, oldNum uint, item *ent
         diff := int(item.BatteryNum) - int(oldNum)
         // 当前非业务状态或电池变动数量大于1时
         if task == nil || math.Abs(float64(diff)) > 1 {
+            status := model.CabinetStatus(item.Status)
             logging.NewBatteryLog(item.Brand, item.Serial, int(oldNum), int(item.BatteryNum), item.UpdatedAt).
                 SetExchangeProcess(task).
                 SetBin(oldBins, item.Bin).
+                SetStatus(status).
                 Send()
 
             // 推送消息
             go func() {
-                workwx.New().SendBatteryAbnormality(cabinetCity(item), item.Serial, item.Name, oldNum, item.BatteryNum, diff)
+                // 非运营中状态不推送
+                if status == model.CabinetStatusNormal {
+                    workwx.New().SendBatteryAbnormality(cabinetCity(item), item.Serial, item.Name, oldNum, item.BatteryNum, diff)
+                }
             }()
         }
     }
