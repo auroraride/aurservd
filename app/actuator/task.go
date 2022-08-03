@@ -170,16 +170,27 @@ func (t *Task) Deactive() {
     _ = mgo.CabinetTask.UpdateId(context.Background(), t.ID, bson.M{"deactivated": true})
 }
 
-type ObtainReq struct {
-    Serial      string             `json:"serial,omitempty" bson:"serial,omitempty"`
-    ID          primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-    Deactivated bool               `json:"deactivated" bson:"deactivated"`
-    CabinetID   uint64             `json:"cabinetId,omitempty" bson:"cabinetId,omitempty"`
+// QueryID 查询任务
+func QueryID(id primitive.ObjectID) (t *Task) {
+    t = new(Task)
+    ctx := context.Background()
+    _ = mgo.CabinetTask.Find(ctx, bson.M{"_id": id}).One(t)
+    return
 }
 
-// Obtain 获取任务信息
+type ObtainReq struct {
+    Serial      string     `json:"serial,omitempty" bson:"serial,omitempty"`
+    Deactivated bool       `json:"deactivated" bson:"deactivated"`
+    CabinetID   uint64     `json:"cabinetId,omitempty" bson:"cabinetId,omitempty"`
+    Status      TaskStatus `json:"status" bson:"status"` // 任务状态
+}
+
+// Obtain 获取进行中的任务信息
 func Obtain(req ObtainReq) (t *Task) {
     t = new(Task)
+    if req.Status == 0 {
+        req.Status = TaskStatusProcessing
+    }
     ctx := context.Background()
     _ = mgo.CabinetTask.Find(ctx, req).One(t)
     if t == nil {
@@ -196,11 +207,11 @@ func Obtain(req ObtainReq) (t *Task) {
 // Busy 查询电柜是否繁忙
 func Busy(serial string) bool {
     task := Obtain(ObtainReq{Serial: serial})
-    return task != nil && task.Status == TaskStatusProcessing
+    return task != nil
 }
 
 // BusyFromID 查询电柜是否繁忙
 func BusyFromID(id uint64) bool {
     task := Obtain(ObtainReq{CabinetID: id})
-    return task != nil && task.Status == TaskStatusProcessing
+    return task != nil
 }

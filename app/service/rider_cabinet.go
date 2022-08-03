@@ -191,10 +191,10 @@ func (s *riderCabinetService) Start(req *model.RiderCabinetOperateReq) {
     }
 
     // 查找任务
-    task := actuator.Obtain(actuator.ObtainReq{ID: req.UUID})
+    task := actuator.QueryID(req.UUID)
 
     // TODO 存储骑手信息并比对骑手信息是否相符
-    if task == nil || task.Job != actuator.JobExchange || task.Exchange == nil {
+    if task == nil || task.Status > 0 || task.StartAt != nil || task.Job != actuator.JobExchange || task.Exchange == nil {
         snag.Panic("未找到信息, 请重新扫码")
     }
 
@@ -213,7 +213,7 @@ func (s *riderCabinetService) Start(req *model.RiderCabinetOperateReq) {
     }
 
     // 检查电柜是否繁忙
-    if x := actuator.Obtain(actuator.ObtainReq{Serial: cab.Serial}); x != nil && x.Status == actuator.TaskStatusProcessing && x.ID != req.UUID {
+    if x := actuator.Obtain(actuator.ObtainReq{Serial: cab.Serial}); x != nil && x.ID != req.UUID {
         snag.Panic("电柜忙, 请稍后重试")
     }
 
@@ -455,6 +455,7 @@ func (s *riderCabinetService) ProcessDoorStatus() *riderCabinetService {
         if time.Now().Sub(start).Seconds() > s.maxTime.Seconds() && message == "" {
             message = "超时"
             step.Status = actuator.TaskStatusFail
+            step.Time = time.Now()
         }
 
         if step.Status != actuator.TaskStatusProcessing {
@@ -570,7 +571,7 @@ func (s *riderCabinetService) ProcessLog() bool {
 func (s *riderCabinetService) GetProcessStatus(req *model.RiderCabinetOperateStatusReq) (res *model.RiderCabinetOperateRes) {
     start := time.Now()
     for {
-        task := actuator.Obtain(actuator.ObtainReq{ID: req.UUID})
+        task := actuator.QueryID(req.UUID)
         if task == nil {
             snag.Panic("未找到换电操作")
         }
