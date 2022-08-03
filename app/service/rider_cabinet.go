@@ -290,6 +290,7 @@ func (s *riderCabinetService) ProcessStepEnd() {
         SetInfo(&actuator.ExchangeInfo{
             Cabinet:  s.task.Cabinet,
             Exchange: s.task.Exchange,
+            Message:  s.task.Message,
         }).
         SetUUID(s.task.ID.Hex()).
         SetCabinetID(s.cabinet.ID).
