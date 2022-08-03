@@ -93,10 +93,7 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
         snag.Panic("电柜目前不可用")
     }
 
-    // 是否忙
-    if actuator.Busy(cab.Serial) {
-        snag.Panic("电柜忙, 请稍后")
-    }
+    actuator.BusyX(cab.Serial)
 
     // 更新一次电柜状态
     cs.UpdateStatus(cab)

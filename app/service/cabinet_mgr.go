@@ -91,9 +91,7 @@ func (s *cabinetMgrService) BinOperate(req *model.CabinetDoorOperateReq) bool {
         snag.Panic("权限校验失败")
     }
 
-    if actuator.BusyFromID(*req.ID) {
-        snag.Panic("电柜忙")
-    }
+    actuator.BusyFromIDX(*req.ID)
 
     cs := NewCabinetWithModifier(s.modifier)
 
@@ -163,9 +161,7 @@ func (s *cabinetMgrService) Reboot(req *model.IDPostReq) bool {
         snag.Panic("权限校验失败")
     }
 
-    if actuator.BusyFromID(req.ID) {
-        snag.Panic("电柜忙")
-    }
+    actuator.BusyFromIDX(req.ID)
 
     now := time.Now()
     opId := shortuuid.New()

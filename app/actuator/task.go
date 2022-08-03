@@ -214,8 +214,22 @@ func Busy(serial string) bool {
     return task != nil
 }
 
+func BusyX(serial string) {
+    task := Obtain(ObtainReq{Serial: serial})
+    if task != nil {
+        snag.Panic("电柜忙")
+    }
+}
+
 // BusyFromID 查询电柜是否繁忙
 func BusyFromID(id uint64) bool {
     task := Obtain(ObtainReq{CabinetID: id})
     return task != nil
+}
+
+func BusyFromIDX(id uint64) {
+    task := Obtain(ObtainReq{CabinetID: id})
+    if task != nil {
+        snag.Panic("电柜忙")
+    }
 }
