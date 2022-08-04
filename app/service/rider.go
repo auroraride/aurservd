@@ -478,9 +478,15 @@ func (s *riderService) List(req *model.RiderListReq, w echo.Context) *model.Pagi
             q.Where(rider.EnterpriseIDIsNil())
         }
     }
+
+    if s.modifier != nil && s.modifier.Phone == "15537112255" {
+        req.CityID = tools.NewPointer().UInt64(410100)
+    }
+
     if req.CityID != nil {
         q.Where(rider.HasSubscribesWith(subscribe.CityID(*req.CityID)))
     }
+
     if req.Remaining != "" {
         arr := strings.Split(req.Remaining, ",")
 

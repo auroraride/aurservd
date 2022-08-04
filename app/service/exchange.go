@@ -281,6 +281,10 @@ func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.Paginat
         break
     }
 
+    if s.modifier != nil && s.modifier.Phone == "15537112255" {
+        req.CityID = 410100
+    }
+
     if req.CityID != 0 {
         q.Where(exchange.CityID(req.CityID))
     }
