@@ -186,5 +186,5 @@ func (*cabinet) FaultDeal(c echo.Context) (err error) {
 // @Success      200  {object}  model.PaginationRes{items=[]model.CabinetDataRes}  "请求成功"
 func (*cabinet) Data(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetDataReq](c)
-    return ctx.SendResponse(service.NewCabinet().Data(req))
+    return ctx.SendResponse(service.NewCabinetWithModifier(ctx.Modifier).Data(req))
 }

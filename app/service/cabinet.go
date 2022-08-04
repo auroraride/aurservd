@@ -573,6 +573,10 @@ func (s *cabinetService) Data(req *model.CabinetDataReq) *model.PaginationRes {
         q.Where(cabinet.SerialContainsFold(req.Serial))
     }
 
+    if s.modifier != nil && s.modifier.Phone == "15537112255" {
+        req.CityID = 410100
+    }
+
     if req.CityID != 0 {
         q.Where(cabinet.CityID(req.CityID))
     }
