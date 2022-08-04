@@ -63,7 +63,16 @@ func NewBusinessRiderWithEmployee(e *ent.Employee) *businessRiderService {
     return s
 }
 
-// Inactive 获取待激活骑士卡信息
+// QuerySubscribeWithRider 查询订阅信息
+func (s *businessRiderService) QuerySubscribeWithRider(subscribeID uint64) *ent.Subscribe {
+    item, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.ID(subscribeID)).WithRider().Only(s.ctx)
+    if item == nil {
+        snag.Panic("未找到对应订阅")
+    }
+    return item
+}
+
+// Inactive 获取待激活订阅信息
 func (s *businessRiderService) Inactive(id uint64) (*model.SubscribeActiveInfo, *ent.Subscribe) {
     // 查询订单状态
     sub, _ := ent.Database.Subscribe.QueryNotDeleted().
@@ -214,12 +223,78 @@ func (s *businessRiderService) Active(info *model.SubscribeActiveInfo, sub *ent.
     NewBusinessLog(sub).SetModifier(s.modifier).SetEmployee(s.employee).SaveAsync(business.TypeActive)
 }
 
-func (s *businessRiderService) QuerySubscribeWithRider(subscribeID uint64) *ent.Subscribe {
-    item, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.ID(subscribeID)).WithRider().Only(s.ctx)
-    if item == nil {
-        snag.Panic("未找到对应订阅")
+// UnSubscribe 退租
+// 会抹去欠费情况
+func (s *businessRiderService) UnSubscribe(subscribeID uint64) {
+    sub := s.QuerySubscribeWithRider(subscribeID)
+    if sub == nil || sub.EndAt != nil {
+        snag.Panic("未找到订阅")
     }
-    return item
+
+    if sub.Status != model.SubscribeStatusUsing {
+        snag.Panic("无法退订, 骑士卡当前状态错误")
+    }
+
+    lgr := logging.NewOperateLog()
+    stockReq := &model.StockWithRiderReq{
+        RiderID:   sub.RiderID,
+        Model:     sub.Model,
+        StockType: model.StockTypeRiderUnSubscribe,
+    }
+
+    var reason string
+    if s.modifier != nil {
+        reason = "管理员操作强制退租"
+        lgr.SetOperate(model.OperateHalt).SetModifier(s.modifier)
+        stockReq.ManagerID = tools.NewPointerInterface(s.modifier.ID)
+    }
+    if s.employee != nil {
+        reason = "店员操作退租"
+        lgr.SetOperate(model.OperateUnsubscribe).SetEmployee(s.employeeInfo)
+        stockReq.EmployeeID = tools.NewPointerInterface(s.employeeInfo.ID)
+        stockReq.StoreID = tools.NewPointerInterface(s.employee.Edges.Store.ID)
+    }
+
+    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+        _, err = tx.Subscribe.
+            UpdateOneID(sub.ID).
+            SetEndAt(time.Now()).
+            SetRemaining(0).
+            SetStatus(model.SubscribeStatusUnSubscribed).
+            SetUnsubscribeReason(reason).
+            Save(s.ctx)
+        snag.PanicIfError(err)
+
+        // 标记需要签约
+        _, err = tx.Rider.UpdateOneID(sub.RiderID).SetContractual(false).Save(s.ctx)
+        snag.PanicIfError(err)
+
+        // 电池入库
+        return NewStockWithEmployee(s.employee).BatteryWithRider(
+            tx.Stock.Create(),
+            stockReq,
+        )
+    })
+
+    // 查询并标记用户合同为失效
+    _, _ = ent.Database.Contract.Update().Where(contract.RiderID(sub.RiderID)).SetEffective(false).Save(s.ctx)
+
+    before := fmt.Sprintf(
+        "%s剩余天数: %d",
+        model.SubscribeStatusText(sub.Status),
+        sub.Remaining,
+    )
+
+    // 记录日志
+    go lgr.SetDiff(before, reason).Send()
+
+    // 记录业务日志
+    NewBusinessLog(sub).SetModifier(s.modifier).SetEmployee(s.employee).SaveAsync(business.TypeUnsubscribe)
+
+    // 更新企业账单
+    if sub.EnterpriseID != nil {
+        go NewEnterprise().UpdateStatementByID(*sub.EnterpriseID)
+    }
 }
 
 // PauseSubscribe 暂停计费
@@ -363,78 +438,4 @@ func (s *businessRiderService) ContinueSubscribe(subscribeID uint64) {
 
     // 记录业务日志
     NewBusinessLog(sub).SetModifier(s.modifier).SetEmployee(s.employee).SaveAsync(business.TypeContinue)
-}
-
-// UnSubscribe 退租
-// 会抹去欠费情况
-func (s *businessRiderService) UnSubscribe(subscribeID uint64) {
-    sub := s.QuerySubscribeWithRider(subscribeID)
-    if sub == nil || sub.EndAt != nil {
-        snag.Panic("未找到订阅")
-    }
-
-    if sub.Status != model.SubscribeStatusUsing {
-        snag.Panic("无法退订, 骑士卡当前状态错误")
-    }
-
-    lgr := logging.NewOperateLog()
-    stockReq := &model.StockWithRiderReq{
-        RiderID:   sub.RiderID,
-        Model:     sub.Model,
-        StockType: model.StockTypeRiderUnSubscribe,
-    }
-
-    var reason string
-    if s.modifier != nil {
-        reason = "管理员操作强制退租"
-        lgr.SetOperate(model.OperateHalt).SetModifier(s.modifier)
-        stockReq.ManagerID = tools.NewPointerInterface(s.modifier.ID)
-    }
-    if s.employee != nil {
-        reason = "店员操作退租"
-        lgr.SetOperate(model.OperateUnsubscribe).SetEmployee(s.employeeInfo)
-        stockReq.EmployeeID = tools.NewPointerInterface(s.employeeInfo.ID)
-        stockReq.StoreID = tools.NewPointerInterface(s.employee.Edges.Store.ID)
-    }
-
-    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
-        _, err = tx.Subscribe.
-            UpdateOneID(sub.ID).
-            SetEndAt(time.Now()).
-            SetRemaining(0).
-            SetStatus(model.SubscribeStatusUnSubscribed).
-            SetUnsubscribeReason(reason).
-            Save(s.ctx)
-        snag.PanicIfError(err)
-
-        // 标记需要签约
-        _, err = tx.Rider.UpdateOneID(sub.RiderID).SetContractual(false).Save(s.ctx)
-        snag.PanicIfError(err)
-
-        // 电池入库
-        return NewStockWithEmployee(s.employee).BatteryWithRider(
-            tx.Stock.Create(),
-            stockReq,
-        )
-    })
-
-    // 查询并标记用户合同为失效
-    _, _ = ent.Database.Contract.Update().Where(contract.RiderID(sub.RiderID)).SetEffective(false).Save(s.ctx)
-
-    before := fmt.Sprintf(
-        "%s剩余天数: %d",
-        model.SubscribeStatusText(sub.Status),
-        sub.Remaining,
-    )
-
-    // 记录日志
-    go lgr.SetDiff(before, reason).Send()
-
-    // 记录业务日志
-    NewBusinessLog(sub).SetModifier(s.modifier).SetEmployee(s.employee).SaveAsync(business.TypeUnsubscribe)
-
-    // 更新企业账单
-    if sub.EnterpriseID != nil {
-        go NewEnterprise().UpdateStatementByID(*sub.EnterpriseID)
-    }
 }
