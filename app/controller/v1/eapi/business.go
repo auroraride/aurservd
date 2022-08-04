@@ -44,7 +44,7 @@ func (*business) Rider(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*business) Pause(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.BusinessSubscribeID](c)
-    service.NewRiderMgrWithEmployee(ctx.Employee).PauseSubscribe(req.SubscribeID)
+    service.NewBusinessRiderWithEmployee(ctx.Employee).PauseSubscribe(req.SubscribeID)
     return ctx.SendResponse()
 }
 
@@ -60,7 +60,7 @@ func (*business) Pause(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*business) Continue(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.BusinessSubscribeID](c)
-    service.NewRiderMgrWithEmployee(ctx.Employee).ContinueSubscribe(req.SubscribeID)
+    service.NewBusinessRiderWithEmployee(ctx.Employee).ContinueSubscribe(req.SubscribeID)
     return ctx.SendResponse()
 }
 
@@ -76,7 +76,7 @@ func (*business) Continue(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*business) UnSubscribe(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.BusinessSubscribeID](c)
-    service.NewRiderMgrWithEmployee(ctx.Employee).UnSubscribe(req.SubscribeID)
+    service.NewBusinessRiderWithEmployee(ctx.Employee).UnSubscribe(req.SubscribeID)
     return ctx.SendResponse()
 }
 

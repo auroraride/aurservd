@@ -62,6 +62,8 @@ type SubscribeMutation struct {
 	clearedstation       bool
 	store                *uint64
 	clearedstore         bool
+	cabinet              *uint64
+	clearedcabinet       bool
 	rider                *uint64
 	clearedrider         bool
 	enterprise           *uint64
@@ -681,6 +683,55 @@ func (m *SubscribeMutation) StoreIDCleared() bool {
 func (m *SubscribeMutation) ResetStoreID() {
 	m.store = nil
 	delete(m.clearedFields, subscribe.FieldStoreID)
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (m *SubscribeMutation) SetCabinetID(u uint64) {
+	m.cabinet = &u
+}
+
+// CabinetID returns the value of the "cabinet_id" field in the mutation.
+func (m *SubscribeMutation) CabinetID() (r uint64, exists bool) {
+	v := m.cabinet
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCabinetID returns the old "cabinet_id" field's value of the Subscribe entity.
+// If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeMutation) OldCabinetID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCabinetID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCabinetID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCabinetID: %w", err)
+	}
+	return oldValue.CabinetID, nil
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (m *SubscribeMutation) ClearCabinetID() {
+	m.cabinet = nil
+	m.clearedFields[subscribe.FieldCabinetID] = struct{}{}
+}
+
+// CabinetIDCleared returns if the "cabinet_id" field was cleared in this mutation.
+func (m *SubscribeMutation) CabinetIDCleared() bool {
+	_, ok := m.clearedFields[subscribe.FieldCabinetID]
+	return ok
+}
+
+// ResetCabinetID resets all changes to the "cabinet_id" field.
+func (m *SubscribeMutation) ResetCabinetID() {
+	m.cabinet = nil
+	delete(m.clearedFields, subscribe.FieldCabinetID)
 }
 
 // SetRiderID sets the "rider_id" field.
@@ -1739,6 +1790,32 @@ func (m *SubscribeMutation) ResetStore() {
 	m.clearedstore = false
 }
 
+// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
+func (m *SubscribeMutation) ClearCabinet() {
+	m.clearedcabinet = true
+}
+
+// CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
+func (m *SubscribeMutation) CabinetCleared() bool {
+	return m.CabinetIDCleared() || m.clearedcabinet
+}
+
+// CabinetIDs returns the "cabinet" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CabinetID instead. It exists only for internal usage by the builders.
+func (m *SubscribeMutation) CabinetIDs() (ids []uint64) {
+	if id := m.cabinet; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCabinet resets all changes to the "cabinet" edge.
+func (m *SubscribeMutation) ResetCabinet() {
+	m.cabinet = nil
+	m.clearedcabinet = false
+}
+
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *SubscribeMutation) ClearRider() {
 	m.clearedrider = true
@@ -2052,7 +2129,7 @@ func (m *SubscribeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscribeMutation) Fields() []string {
-	fields := make([]string, 0, 29)
+	fields := make([]string, 0, 30)
 	if m.created_at != nil {
 		fields = append(fields, subscribe.FieldCreatedAt)
 	}
@@ -2085,6 +2162,9 @@ func (m *SubscribeMutation) Fields() []string {
 	}
 	if m.store != nil {
 		fields = append(fields, subscribe.FieldStoreID)
+	}
+	if m.cabinet != nil {
+		fields = append(fields, subscribe.FieldCabinetID)
 	}
 	if m.rider != nil {
 		fields = append(fields, subscribe.FieldRiderID)
@@ -2170,6 +2250,8 @@ func (m *SubscribeMutation) Field(name string) (ent.Value, bool) {
 		return m.StationID()
 	case subscribe.FieldStoreID:
 		return m.StoreID()
+	case subscribe.FieldCabinetID:
+		return m.CabinetID()
 	case subscribe.FieldRiderID:
 		return m.RiderID()
 	case subscribe.FieldInitialOrderID:
@@ -2237,6 +2319,8 @@ func (m *SubscribeMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldStationID(ctx)
 	case subscribe.FieldStoreID:
 		return m.OldStoreID(ctx)
+	case subscribe.FieldCabinetID:
+		return m.OldCabinetID(ctx)
 	case subscribe.FieldRiderID:
 		return m.OldRiderID(ctx)
 	case subscribe.FieldInitialOrderID:
@@ -2358,6 +2442,13 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStoreID(v)
+		return nil
+	case subscribe.FieldCabinetID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCabinetID(v)
 		return nil
 	case subscribe.FieldRiderID:
 		v, ok := value.(uint64)
@@ -2638,6 +2729,9 @@ func (m *SubscribeMutation) ClearedFields() []string {
 	if m.FieldCleared(subscribe.FieldStoreID) {
 		fields = append(fields, subscribe.FieldStoreID)
 	}
+	if m.FieldCleared(subscribe.FieldCabinetID) {
+		fields = append(fields, subscribe.FieldCabinetID)
+	}
 	if m.FieldCleared(subscribe.FieldInitialOrderID) {
 		fields = append(fields, subscribe.FieldInitialOrderID)
 	}
@@ -2702,6 +2796,9 @@ func (m *SubscribeMutation) ClearField(name string) error {
 		return nil
 	case subscribe.FieldStoreID:
 		m.ClearStoreID()
+		return nil
+	case subscribe.FieldCabinetID:
+		m.ClearCabinetID()
 		return nil
 	case subscribe.FieldInitialOrderID:
 		m.ClearInitialOrderID()
@@ -2771,6 +2868,9 @@ func (m *SubscribeMutation) ResetField(name string) error {
 	case subscribe.FieldStoreID:
 		m.ResetStoreID()
 		return nil
+	case subscribe.FieldCabinetID:
+		m.ResetCabinetID()
+		return nil
 	case subscribe.FieldRiderID:
 		m.ResetRiderID()
 		return nil
@@ -2831,7 +2931,7 @@ func (m *SubscribeMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *SubscribeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.plan != nil {
 		edges = append(edges, subscribe.EdgePlan)
 	}
@@ -2846,6 +2946,9 @@ func (m *SubscribeMutation) AddedEdges() []string {
 	}
 	if m.store != nil {
 		edges = append(edges, subscribe.EdgeStore)
+	}
+	if m.cabinet != nil {
+		edges = append(edges, subscribe.EdgeCabinet)
 	}
 	if m.rider != nil {
 		edges = append(edges, subscribe.EdgeRider)
@@ -2895,6 +2998,10 @@ func (m *SubscribeMutation) AddedIDs(name string) []ent.Value {
 		if id := m.store; id != nil {
 			return []ent.Value{*id}
 		}
+	case subscribe.EdgeCabinet:
+		if id := m.cabinet; id != nil {
+			return []ent.Value{*id}
+		}
 	case subscribe.EdgeRider:
 		if id := m.rider; id != nil {
 			return []ent.Value{*id}
@@ -2937,7 +3044,7 @@ func (m *SubscribeMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *SubscribeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.removedpauses != nil {
 		edges = append(edges, subscribe.EdgePauses)
 	}
@@ -2987,7 +3094,7 @@ func (m *SubscribeMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *SubscribeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.clearedplan {
 		edges = append(edges, subscribe.EdgePlan)
 	}
@@ -3002,6 +3109,9 @@ func (m *SubscribeMutation) ClearedEdges() []string {
 	}
 	if m.clearedstore {
 		edges = append(edges, subscribe.EdgeStore)
+	}
+	if m.clearedcabinet {
+		edges = append(edges, subscribe.EdgeCabinet)
 	}
 	if m.clearedrider {
 		edges = append(edges, subscribe.EdgeRider)
@@ -3041,6 +3151,8 @@ func (m *SubscribeMutation) EdgeCleared(name string) bool {
 		return m.clearedstation
 	case subscribe.EdgeStore:
 		return m.clearedstore
+	case subscribe.EdgeCabinet:
+		return m.clearedcabinet
 	case subscribe.EdgeRider:
 		return m.clearedrider
 	case subscribe.EdgeEnterprise:
@@ -3078,6 +3190,9 @@ func (m *SubscribeMutation) ClearEdge(name string) error {
 	case subscribe.EdgeStore:
 		m.ClearStore()
 		return nil
+	case subscribe.EdgeCabinet:
+		m.ClearCabinet()
+		return nil
 	case subscribe.EdgeRider:
 		m.ClearRider()
 		return nil
@@ -3109,6 +3224,9 @@ func (m *SubscribeMutation) ResetEdge(name string) error {
 		return nil
 	case subscribe.EdgeStore:
 		m.ResetStore()
+		return nil
+	case subscribe.EdgeCabinet:
+		m.ResetCabinet()
 		return nil
 	case subscribe.EdgeRider:
 		m.ResetRider()

@@ -43,7 +43,7 @@ func (*subscribe) Alter(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*subscribe) Pause(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.IDPostReq](c)
-    service.NewRiderMgrWithModifier(ctx.Modifier).PauseSubscribe(req.ID)
+    service.NewBusinessRiderWithModifier(ctx.Modifier).PauseSubscribe(req.ID)
     return ctx.SendResponse()
 }
 
@@ -59,7 +59,7 @@ func (*subscribe) Pause(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*subscribe) Continue(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.IDPostReq](c)
-    service.NewRiderMgrWithModifier(ctx.Modifier).ContinueSubscribe(req.ID)
+    service.NewBusinessRiderWithModifier(ctx.Modifier).ContinueSubscribe(req.ID)
     return ctx.SendResponse()
 }
 
@@ -75,6 +75,6 @@ func (*subscribe) Continue(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*subscribe) Halt(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.IDPostReq](c)
-    service.NewRiderMgrWithModifier(ctx.Modifier).UnSubscribe(req.ID)
+    service.NewBusinessRiderWithModifier(ctx.Modifier).UnSubscribe(req.ID)
     return ctx.SendResponse()
 }

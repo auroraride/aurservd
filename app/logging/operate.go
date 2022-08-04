@@ -73,18 +73,22 @@ func (o *OperateLog) SetDiff(before, after string) *OperateLog {
 }
 
 func (o *OperateLog) SetModifier(m *model.Modifier) *OperateLog {
-    o.OperatorID = m.ID
-    o.OperatorPhone = m.Phone
-    o.OperatorName = m.Name
-    o.OperatorType = model.OperatorTypeManager
+    if m != nil {
+        o.OperatorID = m.ID
+        o.OperatorPhone = m.Phone
+        o.OperatorName = m.Name
+        o.OperatorType = model.OperatorTypeManager
+    }
     return o
 }
 
 func (o *OperateLog) SetEmployee(e *model.Employee) *OperateLog {
-    o.OperatorID = e.ID
-    o.OperatorPhone = e.Phone
-    o.OperatorName = e.Name
-    o.OperatorType = model.OperatorTypeEmployee
+    if e != nil {
+        o.OperatorID = e.ID
+        o.OperatorPhone = e.Phone
+        o.OperatorName = e.Name
+        o.OperatorType = model.OperatorTypeEmployee
+    }
     return o
 }
 

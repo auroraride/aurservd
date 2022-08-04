@@ -32,26 +32,31 @@ func NewBusinessLog(sub *ent.Subscribe) *businessLogService {
     return s
 }
 
-func NewBusinessLogWithModifier(m *model.Modifier, sub *ent.Subscribe) *businessLogService {
-    s := NewBusinessLog(sub)
-    s.ctx = context.WithValue(s.ctx, "modifier", m)
-    s.modifier = m
-    s.creator.SetLastModifier(m)
+// SetModifier 设置管理员
+func (s *businessLogService) SetModifier(m *model.Modifier) *businessLogService {
+    if m != nil {
+        s.ctx = context.WithValue(s.ctx, "modifier", m)
+        s.modifier = m
+        s.creator.SetLastModifier(m)
+    }
     return s
 }
 
-func NewBusinessLogWithEmployee(e *ent.Employee, sub *ent.Subscribe) *businessLogService {
-    s := NewBusinessLog(sub)
-    s.ctx = context.WithValue(s.ctx, "employee", e)
-    s.employee = e
-    s.creator.SetEmployee(e).SetStoreID(e.Edges.Store.ID)
+// SetEmployee 设置店员和门店
+func (s *businessLogService) SetEmployee(e *ent.Employee) *businessLogService {
+    if e != nil {
+        s.ctx = context.WithValue(s.ctx, "employee", e)
+        s.employee = e
+        s.creator.SetEmployee(e).SetStoreID(e.Edges.Store.ID)
+    }
     return s
 }
 
-func NewBusinessLogWithRider(r *ent.Rider, sub *ent.Subscribe) *businessLogService {
-    s := NewBusinessLog(sub)
-    s.ctx = context.WithValue(s.ctx, "rider", r)
-    s.rider = r
+// SetCabinet 设置电柜
+func (s *businessLogService) SetCabinet(cab *ent.Cabinet) *businessLogService {
+    if cab != nil {
+        s.creator.SetCabinet(cab)
+    }
     return s
 }
 

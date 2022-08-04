@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -160,6 +161,20 @@ func (sc *SubscribeCreate) SetStoreID(u uint64) *SubscribeCreate {
 func (sc *SubscribeCreate) SetNillableStoreID(u *uint64) *SubscribeCreate {
 	if u != nil {
 		sc.SetStoreID(*u)
+	}
+	return sc
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (sc *SubscribeCreate) SetCabinetID(u uint64) *SubscribeCreate {
+	sc.mutation.SetCabinetID(u)
+	return sc
+}
+
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableCabinetID(u *uint64) *SubscribeCreate {
+	if u != nil {
+		sc.SetCabinetID(*u)
 	}
 	return sc
 }
@@ -423,6 +438,11 @@ func (sc *SubscribeCreate) SetStation(e *EnterpriseStation) *SubscribeCreate {
 // SetStore sets the "store" edge to the Store entity.
 func (sc *SubscribeCreate) SetStore(s *Store) *SubscribeCreate {
 	return sc.SetStoreID(s.ID)
+}
+
+// SetCabinet sets the "cabinet" edge to the Cabinet entity.
+func (sc *SubscribeCreate) SetCabinet(c *Cabinet) *SubscribeCreate {
+	return sc.SetCabinetID(c.ID)
 }
 
 // SetRider sets the "rider" edge to the Rider entity.
@@ -964,6 +984,26 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 		_node.StoreID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := sc.mutation.CabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.CabinetTable,
+			Columns: []string{subscribe.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CabinetID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := sc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1331,6 +1371,24 @@ func (u *SubscribeUpsert) UpdateStoreID() *SubscribeUpsert {
 // ClearStoreID clears the value of the "store_id" field.
 func (u *SubscribeUpsert) ClearStoreID() *SubscribeUpsert {
 	u.SetNull(subscribe.FieldStoreID)
+	return u
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (u *SubscribeUpsert) SetCabinetID(v uint64) *SubscribeUpsert {
+	u.Set(subscribe.FieldCabinetID, v)
+	return u
+}
+
+// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateCabinetID() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldCabinetID)
+	return u
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *SubscribeUpsert) ClearCabinetID() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldCabinetID)
 	return u
 }
 
@@ -1912,6 +1970,27 @@ func (u *SubscribeUpsertOne) UpdateStoreID() *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) ClearStoreID() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearStoreID()
+	})
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (u *SubscribeUpsertOne) SetCabinetID(v uint64) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetCabinetID(v)
+	})
+}
+
+// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateCabinetID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateCabinetID()
+	})
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *SubscribeUpsertOne) ClearCabinetID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearCabinetID()
 	})
 }
 
@@ -2710,6 +2789,27 @@ func (u *SubscribeUpsertBulk) UpdateStoreID() *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) ClearStoreID() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearStoreID()
+	})
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (u *SubscribeUpsertBulk) SetCabinetID(v uint64) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetCabinetID(v)
+	})
+}
+
+// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateCabinetID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateCabinetID()
+	})
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *SubscribeUpsertBulk) ClearCabinetID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearCabinetID()
 	})
 }
 

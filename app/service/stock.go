@@ -208,7 +208,7 @@ func (s *stockService) calculate(items map[string]*model.StockMaterial, st *ent.
     items[name].Surplus += st.Num
 }
 
-// Fetch 获取门店对应物资库存
+// Fetch 获取对应物资库存
 // TODO 电柜调出
 func (s *stockService) Fetch(target uint8, id uint64, name string) int {
     var result []struct {
@@ -399,23 +399,28 @@ GROUP BY outbound, inbound, plaform`)
 func (s *stockService) BatteryWithRider(cr *ent.StockCreate, req *model.StockWithRiderReq) error {
     num := model.StockNumberOfRiderBusiness(req.StockType)
 
+    if req.StoreID == nil && req.CabinetID == nil {
+        return errors.New("参数校验错误")
+    }
+
     // TODO 平台管理员可操作性时处理出入库逻辑
-    if req.StoreID != 0 {
-        cr.SetStoreID(req.StoreID)
-        if num < 0 && s.Fetch(model.StockTargetStore, req.StoreID, req.Model) < int(math.Abs(float64(num))) {
+    if req.StoreID != nil {
+        cr.SetStoreID(*req.StoreID)
+        if num < 0 && s.Fetch(model.StockTargetStore, *req.StoreID, req.Model) < int(math.Abs(float64(num))) {
             return errors.New("电池库存不足")
         }
     }
 
-    if req.EmployeeID != 0 {
-        cr.SetEmployeeID(req.EmployeeID)
+    if req.CabinetID != nil {
+        cr.SetCabinetID(*req.CabinetID)
+        if num < 0 && s.Fetch(model.StockTargetCabinet, *req.CabinetID, req.Model) < int(math.Abs(float64(num))) {
+            return errors.New("电池库存不足")
+        }
     }
 
-    if req.ManagerID != 0 {
-        cr.SetManagerID(req.ManagerID)
-    }
-
-    cr.SetName(req.Model).
+    cr.SetNillableEmployeeID(req.EmployeeID).
+        SetNillableManagerID(req.ManagerID).
+        SetName(req.Model).
         SetRiderID(req.RiderID).
         SetType(req.StockType).
         SetModel(req.Model).

@@ -28,7 +28,7 @@ var Subscribe = new(subscribe)
 // @Success      200  {object}  model.SubscribeActiveInfo  "请求成功"
 func (*subscribe) Inactive(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.QRQueryReq](c)
-    detail, _ := service.NewEmployeeSubscribeWithEmployee(ctx.Employee).Inactive(req.Qrcode)
+    detail, _ := service.NewBusinessEmployeeWithEmployee(ctx.Employee).Inactive(req.Qrcode)
     return ctx.SendResponse(detail)
 }
 
@@ -44,6 +44,6 @@ func (*subscribe) Inactive(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*subscribe) Active(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.QRPostReq](c)
-    service.NewEmployeeSubscribeWithEmployee(ctx.Employee).Active(req)
+    service.NewBusinessEmployeeWithEmployee(ctx.Employee).Active(req)
     return ctx.SendResponse()
 }

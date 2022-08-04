@@ -234,6 +234,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			business.FieldPlanID:       {Type: field.TypeUint64, Column: business.FieldPlanID},
 			business.FieldEnterpriseID: {Type: field.TypeUint64, Column: business.FieldEnterpriseID},
 			business.FieldStationID:    {Type: field.TypeUint64, Column: business.FieldStationID},
+			business.FieldCabinetID:    {Type: field.TypeUint64, Column: business.FieldCabinetID},
 			business.FieldType:         {Type: field.TypeEnum, Column: business.FieldType},
 		},
 	}
@@ -978,6 +979,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldCityID:            {Type: field.TypeUint64, Column: subscribe.FieldCityID},
 			subscribe.FieldStationID:         {Type: field.TypeUint64, Column: subscribe.FieldStationID},
 			subscribe.FieldStoreID:           {Type: field.TypeUint64, Column: subscribe.FieldStoreID},
+			subscribe.FieldCabinetID:         {Type: field.TypeUint64, Column: subscribe.FieldCabinetID},
 			subscribe.FieldRiderID:           {Type: field.TypeUint64, Column: subscribe.FieldRiderID},
 			subscribe.FieldInitialOrderID:    {Type: field.TypeUint64, Column: subscribe.FieldInitialOrderID},
 			subscribe.FieldEnterpriseID:      {Type: field.TypeUint64, Column: subscribe.FieldEnterpriseID},
@@ -1334,6 +1336,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Business",
 		"EnterpriseStation",
+	)
+	graph.MustAddE(
+		"cabinet",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   business.CabinetTable,
+			Columns: []string{business.CabinetColumn},
+			Bidi:    false,
+		},
+		"Business",
+		"Cabinet",
 	)
 	graph.MustAddE(
 		"city",
@@ -2536,6 +2550,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Store",
 	)
 	graph.MustAddE(
+		"cabinet",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.CabinetTable,
+			Columns: []string{subscribe.CabinetColumn},
+			Bidi:    false,
+		},
+		"Subscribe",
+		"Cabinet",
+	)
+	graph.MustAddE(
 		"rider",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -3716,6 +3742,11 @@ func (f *BusinessFilter) WhereStationID(p entql.Uint64P) {
 	f.Where(p.Field(business.FieldStationID))
 }
 
+// WhereCabinetID applies the entql uint64 predicate on the cabinet_id field.
+func (f *BusinessFilter) WhereCabinetID(p entql.Uint64P) {
+	f.Where(p.Field(business.FieldCabinetID))
+}
+
 // WhereType applies the entql string predicate on the type field.
 func (f *BusinessFilter) WhereType(p entql.StringP) {
 	f.Where(p.Field(business.FieldType))
@@ -3827,6 +3858,20 @@ func (f *BusinessFilter) WhereHasStation() {
 // WhereHasStationWith applies a predicate to check if query has an edge station with a given conditions (other predicates).
 func (f *BusinessFilter) WhereHasStationWith(preds ...predicate.EnterpriseStation) {
 	f.Where(entql.HasEdgeWith("station", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasCabinet applies a predicate to check if query has an edge cabinet.
+func (f *BusinessFilter) WhereHasCabinet() {
+	f.Where(entql.HasEdge("cabinet"))
+}
+
+// WhereHasCabinetWith applies a predicate to check if query has an edge cabinet with a given conditions (other predicates).
+func (f *BusinessFilter) WhereHasCabinetWith(preds ...predicate.Cabinet) {
+	f.Where(entql.HasEdgeWith("cabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -8178,6 +8223,11 @@ func (f *SubscribeFilter) WhereStoreID(p entql.Uint64P) {
 	f.Where(p.Field(subscribe.FieldStoreID))
 }
 
+// WhereCabinetID applies the entql uint64 predicate on the cabinet_id field.
+func (f *SubscribeFilter) WhereCabinetID(p entql.Uint64P) {
+	f.Where(p.Field(subscribe.FieldCabinetID))
+}
+
 // WhereRiderID applies the entql uint64 predicate on the rider_id field.
 func (f *SubscribeFilter) WhereRiderID(p entql.Uint64P) {
 	f.Where(p.Field(subscribe.FieldRiderID))
@@ -8332,6 +8382,20 @@ func (f *SubscribeFilter) WhereHasStore() {
 // WhereHasStoreWith applies a predicate to check if query has an edge store with a given conditions (other predicates).
 func (f *SubscribeFilter) WhereHasStoreWith(preds ...predicate.Store) {
 	f.Where(entql.HasEdgeWith("store", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasCabinet applies a predicate to check if query has an edge cabinet.
+func (f *SubscribeFilter) WhereHasCabinet() {
+	f.Where(entql.HasEdge("cabinet"))
+}
+
+// WhereHasCabinetWith applies a predicate to check if query has an edge cabinet with a given conditions (other predicates).
+func (f *SubscribeFilter) WhereHasCabinetWith(preds ...predicate.Cabinet) {
+	f.Where(entql.HasEdgeWith("cabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

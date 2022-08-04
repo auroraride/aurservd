@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/business"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -40,6 +41,7 @@ type BusinessQuery struct {
 	withPlan       *PlanQuery
 	withEnterprise *EnterpriseQuery
 	withStation    *EnterpriseStationQuery
+	withCabinet    *CabinetQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -253,6 +255,28 @@ func (bq *BusinessQuery) QueryStation() *EnterpriseStationQuery {
 	return query
 }
 
+// QueryCabinet chains the current query on the "cabinet" edge.
+func (bq *BusinessQuery) QueryCabinet() *CabinetQuery {
+	query := &CabinetQuery{config: bq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := bq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := bq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, selector),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, business.CabinetTable, business.CabinetColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Business entity from the query.
 // Returns a *NotFoundError when no Business was found.
 func (bq *BusinessQuery) First(ctx context.Context) (*Business, error) {
@@ -442,6 +466,7 @@ func (bq *BusinessQuery) Clone() *BusinessQuery {
 		withPlan:       bq.withPlan.Clone(),
 		withEnterprise: bq.withEnterprise.Clone(),
 		withStation:    bq.withStation.Clone(),
+		withCabinet:    bq.withCabinet.Clone(),
 		// clone intermediate query.
 		sql:    bq.sql.Clone(),
 		path:   bq.path,
@@ -537,6 +562,17 @@ func (bq *BusinessQuery) WithStation(opts ...func(*EnterpriseStationQuery)) *Bus
 	return bq
 }
 
+// WithCabinet tells the query-builder to eager-load the nodes that are connected to
+// the "cabinet" edge. The optional arguments are used to configure the query builder of the edge.
+func (bq *BusinessQuery) WithCabinet(opts ...func(*CabinetQuery)) *BusinessQuery {
+	query := &CabinetQuery{config: bq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	bq.withCabinet = query
+	return bq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -607,7 +643,7 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 	var (
 		nodes       = []*Business{}
 		_spec       = bq.querySpec()
-		loadedTypes = [8]bool{
+		loadedTypes = [9]bool{
 			bq.withRider != nil,
 			bq.withCity != nil,
 			bq.withSubscribe != nil,
@@ -616,6 +652,7 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 			bq.withPlan != nil,
 			bq.withEnterprise != nil,
 			bq.withStation != nil,
+			bq.withCabinet != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -859,6 +896,35 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 			}
 			for i := range nodes {
 				nodes[i].Edges.Station = n
+			}
+		}
+	}
+
+	if query := bq.withCabinet; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Business)
+		for i := range nodes {
+			if nodes[i].CabinetID == nil {
+				continue
+			}
+			fk := *nodes[i].CabinetID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(cabinet.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "cabinet_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Cabinet = n
 			}
 		}
 	}

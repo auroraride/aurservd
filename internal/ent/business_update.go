@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/business"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -213,6 +214,26 @@ func (bu *BusinessUpdate) ClearStationID() *BusinessUpdate {
 	return bu
 }
 
+// SetCabinetID sets the "cabinet_id" field.
+func (bu *BusinessUpdate) SetCabinetID(u uint64) *BusinessUpdate {
+	bu.mutation.SetCabinetID(u)
+	return bu
+}
+
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableCabinetID(u *uint64) *BusinessUpdate {
+	if u != nil {
+		bu.SetCabinetID(*u)
+	}
+	return bu
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (bu *BusinessUpdate) ClearCabinetID() *BusinessUpdate {
+	bu.mutation.ClearCabinetID()
+	return bu
+}
+
 // SetType sets the "type" field.
 func (bu *BusinessUpdate) SetType(b business.Type) *BusinessUpdate {
 	bu.mutation.SetType(b)
@@ -257,6 +278,11 @@ func (bu *BusinessUpdate) SetEnterprise(e *Enterprise) *BusinessUpdate {
 // SetStation sets the "station" edge to the EnterpriseStation entity.
 func (bu *BusinessUpdate) SetStation(e *EnterpriseStation) *BusinessUpdate {
 	return bu.SetStationID(e.ID)
+}
+
+// SetCabinet sets the "cabinet" edge to the Cabinet entity.
+func (bu *BusinessUpdate) SetCabinet(c *Cabinet) *BusinessUpdate {
+	return bu.SetCabinetID(c.ID)
 }
 
 // Mutation returns the BusinessMutation object of the builder.
@@ -309,6 +335,12 @@ func (bu *BusinessUpdate) ClearEnterprise() *BusinessUpdate {
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (bu *BusinessUpdate) ClearStation() *BusinessUpdate {
 	bu.mutation.ClearStation()
+	return bu
+}
+
+// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
+func (bu *BusinessUpdate) ClearCabinet() *BusinessUpdate {
+	bu.mutation.ClearCabinet()
 	return bu
 }
 
@@ -763,6 +795,41 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if bu.mutation.CabinetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   business.CabinetTable,
+			Columns: []string{business.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.CabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   business.CabinetTable,
+			Columns: []string{business.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{business.Label}
@@ -958,6 +1025,26 @@ func (buo *BusinessUpdateOne) ClearStationID() *BusinessUpdateOne {
 	return buo
 }
 
+// SetCabinetID sets the "cabinet_id" field.
+func (buo *BusinessUpdateOne) SetCabinetID(u uint64) *BusinessUpdateOne {
+	buo.mutation.SetCabinetID(u)
+	return buo
+}
+
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableCabinetID(u *uint64) *BusinessUpdateOne {
+	if u != nil {
+		buo.SetCabinetID(*u)
+	}
+	return buo
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (buo *BusinessUpdateOne) ClearCabinetID() *BusinessUpdateOne {
+	buo.mutation.ClearCabinetID()
+	return buo
+}
+
 // SetType sets the "type" field.
 func (buo *BusinessUpdateOne) SetType(b business.Type) *BusinessUpdateOne {
 	buo.mutation.SetType(b)
@@ -1002,6 +1089,11 @@ func (buo *BusinessUpdateOne) SetEnterprise(e *Enterprise) *BusinessUpdateOne {
 // SetStation sets the "station" edge to the EnterpriseStation entity.
 func (buo *BusinessUpdateOne) SetStation(e *EnterpriseStation) *BusinessUpdateOne {
 	return buo.SetStationID(e.ID)
+}
+
+// SetCabinet sets the "cabinet" edge to the Cabinet entity.
+func (buo *BusinessUpdateOne) SetCabinet(c *Cabinet) *BusinessUpdateOne {
+	return buo.SetCabinetID(c.ID)
 }
 
 // Mutation returns the BusinessMutation object of the builder.
@@ -1054,6 +1146,12 @@ func (buo *BusinessUpdateOne) ClearEnterprise() *BusinessUpdateOne {
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (buo *BusinessUpdateOne) ClearStation() *BusinessUpdateOne {
 	buo.mutation.ClearStation()
+	return buo
+}
+
+// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
+func (buo *BusinessUpdateOne) ClearCabinet() *BusinessUpdateOne {
+	buo.mutation.ClearCabinet()
 	return buo
 }
 
@@ -1530,6 +1628,41 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: enterprisestation.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.CabinetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   business.CabinetTable,
+			Columns: []string{business.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.CabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   business.CabinetTable,
+			Columns: []string{business.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
 				},
 			},
 		}

@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/business"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -64,6 +65,9 @@ type Business struct {
 	// StationID holds the value of the "station_id" field.
 	// 站点ID
 	StationID *uint64 `json:"station_id,omitempty"`
+	// CabinetID holds the value of the "cabinet_id" field.
+	// 电柜ID
+	CabinetID *uint64 `json:"cabinet_id,omitempty"`
 	// Type holds the value of the "type" field.
 	// 业务类型
 	Type business.Type `json:"type,omitempty"`
@@ -90,9 +94,11 @@ type BusinessEdges struct {
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
 	// Station holds the value of the station edge.
 	Station *EnterpriseStation `json:"station,omitempty"`
+	// Cabinet holds the value of the cabinet edge.
+	Cabinet *Cabinet `json:"cabinet,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [8]bool
+	loadedTypes [9]bool
 }
 
 // RiderOrErr returns the Rider value or an error if the edge
@@ -207,6 +213,20 @@ func (e BusinessEdges) StationOrErr() (*EnterpriseStation, error) {
 	return nil, &NotLoadedError{edge: "station"}
 }
 
+// CabinetOrErr returns the Cabinet value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e BusinessEdges) CabinetOrErr() (*Cabinet, error) {
+	if e.loadedTypes[8] {
+		if e.Cabinet == nil {
+			// The edge cabinet was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: cabinet.Label}
+		}
+		return e.Cabinet, nil
+	}
+	return nil, &NotLoadedError{edge: "cabinet"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Business) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -214,7 +234,7 @@ func (*Business) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case business.FieldCreator, business.FieldLastModifier:
 			values[i] = new([]byte)
-		case business.FieldID, business.FieldRiderID, business.FieldCityID, business.FieldSubscribeID, business.FieldEmployeeID, business.FieldStoreID, business.FieldPlanID, business.FieldEnterpriseID, business.FieldStationID:
+		case business.FieldID, business.FieldRiderID, business.FieldCityID, business.FieldSubscribeID, business.FieldEmployeeID, business.FieldStoreID, business.FieldPlanID, business.FieldEnterpriseID, business.FieldStationID, business.FieldCabinetID:
 			values[i] = new(sql.NullInt64)
 		case business.FieldRemark, business.FieldType:
 			values[i] = new(sql.NullString)
@@ -335,6 +355,13 @@ func (b *Business) assignValues(columns []string, values []interface{}) error {
 				b.StationID = new(uint64)
 				*b.StationID = uint64(value.Int64)
 			}
+		case business.FieldCabinetID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field cabinet_id", values[i])
+			} else if value.Valid {
+				b.CabinetID = new(uint64)
+				*b.CabinetID = uint64(value.Int64)
+			}
 		case business.FieldType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
@@ -384,6 +411,11 @@ func (b *Business) QueryEnterprise() *EnterpriseQuery {
 // QueryStation queries the "station" edge of the Business entity.
 func (b *Business) QueryStation() *EnterpriseStationQuery {
 	return (&BusinessClient{config: b.config}).QueryStation(b)
+}
+
+// QueryCabinet queries the "cabinet" edge of the Business entity.
+func (b *Business) QueryCabinet() *CabinetQuery {
+	return (&BusinessClient{config: b.config}).QueryCabinet(b)
 }
 
 // Update returns a builder for updating this Business.
@@ -447,6 +479,10 @@ func (b *Business) String() string {
 	}
 	if v := b.StationID; v != nil {
 		builder.WriteString(", station_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := b.CabinetID; v != nil {
+		builder.WriteString(", cabinet_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", type=")

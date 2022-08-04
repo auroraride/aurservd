@@ -1292,6 +1292,22 @@ func (c *BusinessClient) QueryStation(b *Business) *EnterpriseStationQuery {
 	return query
 }
 
+// QueryCabinet queries the cabinet edge of a Business.
+func (c *BusinessClient) QueryCabinet(b *Business) *CabinetQuery {
+	query := &CabinetQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, business.CabinetTable, business.CabinetColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *BusinessClient) Hooks() []Hook {
 	hooks := c.hooks.Business
@@ -5432,6 +5448,22 @@ func (c *SubscribeClient) QueryStore(s *Subscribe) *StoreQuery {
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
 			sqlgraph.To(store.Table, store.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.StoreTable, subscribe.StoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCabinet queries the cabinet edge of a Subscribe.
+func (c *SubscribeClient) QueryCabinet(s *Subscribe) *CabinetQuery {
+	query := &CabinetQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.CabinetTable, subscribe.CabinetColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil

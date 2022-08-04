@@ -85,12 +85,14 @@ type StockOverview struct {
 }
 
 type StockWithRiderReq struct {
-    RiderID    uint64 `json:"riderId"`    // 骑手ID
-    StoreID    uint64 `json:"storeId"`    // 门店ID
-    EmployeeID uint64 `json:"employeeId"` // 店员ID
-    ManagerID  uint64 `json:"managerId"`  // 管理员ID
-    Model      string `json:"model"`      // 电池型号
-    StockType  uint8  `json:"stockType"`  // 出入库类型
+    RiderID   uint64 `json:"riderId"`   // 骑手ID
+    Model     string `json:"model"`     // 电池型号
+    StockType uint8  `json:"stockType"` // 出入库类型
+
+    StoreID    *uint64 `json:"storeId"`    // 门店ID
+    EmployeeID *uint64 `json:"employeeId"` // 店员ID
+    ManagerID  *uint64 `json:"managerId"`  // 管理员ID
+    CabinetID  *uint64 `json:"cabinetId"`  // 电柜ID
 }
 
 type StockEmployeeOverviewBattery struct {

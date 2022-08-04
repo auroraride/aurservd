@@ -15,18 +15,23 @@ import (
 
 type CabinetMixin struct {
     mixin.Schema
+    Optional bool
 }
 
-func (CabinetMixin) Fields() []ent.Field {
-    return []ent.Field{
-        field.Uint64("cabinet_id").Optional(),
+func (m CabinetMixin) Fields() []ent.Field {
+    f := field.Uint64("cabinet_id").Comment("电柜ID")
+    if m.Optional {
+        f.Optional().Nillable()
     }
+    return []ent.Field{f}
 }
 
-func (CabinetMixin) Edges() []ent.Edge {
-    return []ent.Edge{
-        edge.To("cabinet", Cabinet.Type).Unique().Field("cabinet_id"),
+func (m CabinetMixin) Edges() []ent.Edge {
+    e := edge.To("cabinet", Cabinet.Type).Unique().Field("cabinet_id")
+    if !m.Optional {
+        e.Required()
     }
+    return []ent.Edge{e}
 }
 
 // Cabinet holds the schema definition for the Cabinet entity.

@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/business"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -187,6 +188,20 @@ func (bc *BusinessCreate) SetNillableStationID(u *uint64) *BusinessCreate {
 	return bc
 }
 
+// SetCabinetID sets the "cabinet_id" field.
+func (bc *BusinessCreate) SetCabinetID(u uint64) *BusinessCreate {
+	bc.mutation.SetCabinetID(u)
+	return bc
+}
+
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillableCabinetID(u *uint64) *BusinessCreate {
+	if u != nil {
+		bc.SetCabinetID(*u)
+	}
+	return bc
+}
+
 // SetType sets the "type" field.
 func (bc *BusinessCreate) SetType(b business.Type) *BusinessCreate {
 	bc.mutation.SetType(b)
@@ -231,6 +246,11 @@ func (bc *BusinessCreate) SetEnterprise(e *Enterprise) *BusinessCreate {
 // SetStation sets the "station" edge to the EnterpriseStation entity.
 func (bc *BusinessCreate) SetStation(e *EnterpriseStation) *BusinessCreate {
 	return bc.SetStationID(e.ID)
+}
+
+// SetCabinet sets the "cabinet" edge to the Cabinet entity.
+func (bc *BusinessCreate) SetCabinet(c *Cabinet) *BusinessCreate {
+	return bc.SetCabinetID(c.ID)
 }
 
 // Mutation returns the BusinessMutation object of the builder.
@@ -607,6 +627,26 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 		_node.StationID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := bc.mutation.CabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   business.CabinetTable,
+			Columns: []string{business.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CabinetID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -880,6 +920,24 @@ func (u *BusinessUpsert) UpdateStationID() *BusinessUpsert {
 // ClearStationID clears the value of the "station_id" field.
 func (u *BusinessUpsert) ClearStationID() *BusinessUpsert {
 	u.SetNull(business.FieldStationID)
+	return u
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (u *BusinessUpsert) SetCabinetID(v uint64) *BusinessUpsert {
+	u.Set(business.FieldCabinetID, v)
+	return u
+}
+
+// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
+func (u *BusinessUpsert) UpdateCabinetID() *BusinessUpsert {
+	u.SetExcluded(business.FieldCabinetID)
+	return u
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *BusinessUpsert) ClearCabinetID() *BusinessUpsert {
+	u.SetNull(business.FieldCabinetID)
 	return u
 }
 
@@ -1201,6 +1259,27 @@ func (u *BusinessUpsertOne) UpdateStationID() *BusinessUpsertOne {
 func (u *BusinessUpsertOne) ClearStationID() *BusinessUpsertOne {
 	return u.Update(func(s *BusinessUpsert) {
 		s.ClearStationID()
+	})
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (u *BusinessUpsertOne) SetCabinetID(v uint64) *BusinessUpsertOne {
+	return u.Update(func(s *BusinessUpsert) {
+		s.SetCabinetID(v)
+	})
+}
+
+// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
+func (u *BusinessUpsertOne) UpdateCabinetID() *BusinessUpsertOne {
+	return u.Update(func(s *BusinessUpsert) {
+		s.UpdateCabinetID()
+	})
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *BusinessUpsertOne) ClearCabinetID() *BusinessUpsertOne {
+	return u.Update(func(s *BusinessUpsert) {
+		s.ClearCabinetID()
 	})
 }
 
@@ -1688,6 +1767,27 @@ func (u *BusinessUpsertBulk) UpdateStationID() *BusinessUpsertBulk {
 func (u *BusinessUpsertBulk) ClearStationID() *BusinessUpsertBulk {
 	return u.Update(func(s *BusinessUpsert) {
 		s.ClearStationID()
+	})
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (u *BusinessUpsertBulk) SetCabinetID(v uint64) *BusinessUpsertBulk {
+	return u.Update(func(s *BusinessUpsert) {
+		s.SetCabinetID(v)
+	})
+}
+
+// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
+func (u *BusinessUpsertBulk) UpdateCabinetID() *BusinessUpsertBulk {
+	return u.Update(func(s *BusinessUpsert) {
+		s.UpdateCabinetID()
+	})
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *BusinessUpsertBulk) ClearCabinetID() *BusinessUpsertBulk {
+	return u.Update(func(s *BusinessUpsert) {
+		s.ClearCabinetID()
 	})
 }
 

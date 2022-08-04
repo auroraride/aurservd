@@ -344,6 +344,7 @@ var (
 		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "station_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// BusinessTable holds the schema information for the "business" table.
 	BusinessTable = &schema.Table{
@@ -397,6 +398,12 @@ var (
 				Symbol:     "business_enterprise_station_station",
 				Columns:    []*schema.Column{BusinessColumns[15]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "business_cabinet_cabinet",
+				Columns:    []*schema.Column{BusinessColumns[16]},
+				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -2153,6 +2160,7 @@ var (
 		{Name: "city_id", Type: field.TypeUint64},
 		{Name: "station_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "initial_order_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// SubscribeTable holds the schema information for the "subscribe" table.
@@ -2204,8 +2212,14 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "subscribe_order_initial_order",
+				Symbol:     "subscribe_cabinet_cabinet",
 				Columns:    []*schema.Column{SubscribeColumns[29]},
+				RefColumns: []*schema.Column{CabinetColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "subscribe_order_initial_order",
+				Columns:    []*schema.Column{SubscribeColumns[30]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2504,6 +2518,7 @@ func init() {
 	BusinessTable.ForeignKeys[5].RefTable = PlanTable
 	BusinessTable.ForeignKeys[6].RefTable = EnterpriseTable
 	BusinessTable.ForeignKeys[7].RefTable = EnterpriseStationTable
+	BusinessTable.ForeignKeys[8].RefTable = CabinetTable
 	BusinessTable.Annotation = &entsql.Annotation{
 		Table: "business",
 	}
@@ -2651,7 +2666,8 @@ func init() {
 	SubscribeTable.ForeignKeys[4].RefTable = CityTable
 	SubscribeTable.ForeignKeys[5].RefTable = EnterpriseStationTable
 	SubscribeTable.ForeignKeys[6].RefTable = StoreTable
-	SubscribeTable.ForeignKeys[7].RefTable = OrderTable
+	SubscribeTable.ForeignKeys[7].RefTable = CabinetTable
+	SubscribeTable.ForeignKeys[8].RefTable = OrderTable
 	SubscribeTable.Annotation = &entsql.Annotation{
 		Table: "subscribe",
 	}

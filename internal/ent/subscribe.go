@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -56,6 +57,9 @@ type Subscribe struct {
 	// StoreID holds the value of the "store_id" field.
 	// 门店ID
 	StoreID *uint64 `json:"store_id,omitempty"`
+	// CabinetID holds the value of the "cabinet_id" field.
+	// 电柜ID
+	CabinetID *uint64 `json:"cabinet_id,omitempty"`
 	// RiderID holds the value of the "rider_id" field.
 	// 骑手ID
 	RiderID uint64 `json:"rider_id,omitempty"`
@@ -127,6 +131,8 @@ type SubscribeEdges struct {
 	Station *EnterpriseStation `json:"station,omitempty"`
 	// Store holds the value of the store edge.
 	Store *Store `json:"store,omitempty"`
+	// Cabinet holds the value of the cabinet edge.
+	Cabinet *Cabinet `json:"cabinet,omitempty"`
 	// Rider holds the value of the rider edge.
 	Rider *Rider `json:"rider,omitempty"`
 	// Enterprise holds the value of the enterprise edge.
@@ -143,7 +149,7 @@ type SubscribeEdges struct {
 	Bills []*EnterpriseBill `json:"bills,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [12]bool
+	loadedTypes [13]bool
 }
 
 // PlanOrErr returns the Plan value or an error if the edge
@@ -216,10 +222,24 @@ func (e SubscribeEdges) StoreOrErr() (*Store, error) {
 	return nil, &NotLoadedError{edge: "store"}
 }
 
+// CabinetOrErr returns the Cabinet value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e SubscribeEdges) CabinetOrErr() (*Cabinet, error) {
+	if e.loadedTypes[5] {
+		if e.Cabinet == nil {
+			// The edge cabinet was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: cabinet.Label}
+		}
+		return e.Cabinet, nil
+	}
+	return nil, &NotLoadedError{edge: "cabinet"}
+}
+
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e SubscribeEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[6] {
 		if e.Rider == nil {
 			// The edge rider was loaded in eager-loading,
 			// but was not found.
@@ -233,7 +253,7 @@ func (e SubscribeEdges) RiderOrErr() (*Rider, error) {
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e SubscribeEdges) EnterpriseOrErr() (*Enterprise, error) {
-	if e.loadedTypes[6] {
+	if e.loadedTypes[7] {
 		if e.Enterprise == nil {
 			// The edge enterprise was loaded in eager-loading,
 			// but was not found.
@@ -247,7 +267,7 @@ func (e SubscribeEdges) EnterpriseOrErr() (*Enterprise, error) {
 // PausesOrErr returns the Pauses value or an error if the edge
 // was not loaded in eager-loading.
 func (e SubscribeEdges) PausesOrErr() ([]*SubscribePause, error) {
-	if e.loadedTypes[7] {
+	if e.loadedTypes[8] {
 		return e.Pauses, nil
 	}
 	return nil, &NotLoadedError{edge: "pauses"}
@@ -256,7 +276,7 @@ func (e SubscribeEdges) PausesOrErr() ([]*SubscribePause, error) {
 // AltersOrErr returns the Alters value or an error if the edge
 // was not loaded in eager-loading.
 func (e SubscribeEdges) AltersOrErr() ([]*SubscribeAlter, error) {
-	if e.loadedTypes[8] {
+	if e.loadedTypes[9] {
 		return e.Alters, nil
 	}
 	return nil, &NotLoadedError{edge: "alters"}
@@ -265,7 +285,7 @@ func (e SubscribeEdges) AltersOrErr() ([]*SubscribeAlter, error) {
 // OrdersOrErr returns the Orders value or an error if the edge
 // was not loaded in eager-loading.
 func (e SubscribeEdges) OrdersOrErr() ([]*Order, error) {
-	if e.loadedTypes[9] {
+	if e.loadedTypes[10] {
 		return e.Orders, nil
 	}
 	return nil, &NotLoadedError{edge: "orders"}
@@ -274,7 +294,7 @@ func (e SubscribeEdges) OrdersOrErr() ([]*Order, error) {
 // InitialOrderOrErr returns the InitialOrder value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e SubscribeEdges) InitialOrderOrErr() (*Order, error) {
-	if e.loadedTypes[10] {
+	if e.loadedTypes[11] {
 		if e.InitialOrder == nil {
 			// The edge initial_order was loaded in eager-loading,
 			// but was not found.
@@ -288,7 +308,7 @@ func (e SubscribeEdges) InitialOrderOrErr() (*Order, error) {
 // BillsOrErr returns the Bills value or an error if the edge
 // was not loaded in eager-loading.
 func (e SubscribeEdges) BillsOrErr() ([]*EnterpriseBill, error) {
-	if e.loadedTypes[11] {
+	if e.loadedTypes[12] {
 		return e.Bills, nil
 	}
 	return nil, &NotLoadedError{edge: "bills"}
@@ -301,7 +321,7 @@ func (*Subscribe) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case subscribe.FieldCreator, subscribe.FieldLastModifier:
 			values[i] = new([]byte)
-		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldStationID, subscribe.FieldStoreID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldEnterpriseID, subscribe.FieldStatus, subscribe.FieldType, subscribe.FieldInitialDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays, subscribe.FieldRenewalDays, subscribe.FieldOverdueDays, subscribe.FieldRemaining:
+		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldStationID, subscribe.FieldStoreID, subscribe.FieldCabinetID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldEnterpriseID, subscribe.FieldStatus, subscribe.FieldType, subscribe.FieldInitialDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays, subscribe.FieldRenewalDays, subscribe.FieldOverdueDays, subscribe.FieldRemaining:
 			values[i] = new(sql.NullInt64)
 		case subscribe.FieldRemark, subscribe.FieldModel, subscribe.FieldUnsubscribeReason:
 			values[i] = new(sql.NullString)
@@ -402,6 +422,13 @@ func (s *Subscribe) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				s.StoreID = new(uint64)
 				*s.StoreID = uint64(value.Int64)
+			}
+		case subscribe.FieldCabinetID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field cabinet_id", values[i])
+			} else if value.Valid {
+				s.CabinetID = new(uint64)
+				*s.CabinetID = uint64(value.Int64)
 			}
 		case subscribe.FieldRiderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -547,6 +574,11 @@ func (s *Subscribe) QueryStore() *StoreQuery {
 	return (&SubscribeClient{config: s.config}).QueryStore(s)
 }
 
+// QueryCabinet queries the "cabinet" edge of the Subscribe entity.
+func (s *Subscribe) QueryCabinet() *CabinetQuery {
+	return (&SubscribeClient{config: s.config}).QueryCabinet(s)
+}
+
 // QueryRider queries the "rider" edge of the Subscribe entity.
 func (s *Subscribe) QueryRider() *RiderQuery {
 	return (&SubscribeClient{config: s.config}).QueryRider(s)
@@ -635,6 +667,10 @@ func (s *Subscribe) String() string {
 	}
 	if v := s.StoreID; v != nil {
 		builder.WriteString(", store_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := s.CabinetID; v != nil {
+		builder.WriteString(", cabinet_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", rider_id=")

@@ -42,6 +42,8 @@ const (
 	FieldEnterpriseID = "enterprise_id"
 	// FieldStationID holds the string denoting the station_id field in the database.
 	FieldStationID = "station_id"
+	// FieldCabinetID holds the string denoting the cabinet_id field in the database.
+	FieldCabinetID = "cabinet_id"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
@@ -60,6 +62,8 @@ const (
 	EdgeEnterprise = "enterprise"
 	// EdgeStation holds the string denoting the station edge name in mutations.
 	EdgeStation = "station"
+	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
+	EdgeCabinet = "cabinet"
 	// Table holds the table name of the business in the database.
 	Table = "business"
 	// RiderTable is the table that holds the rider relation/edge.
@@ -118,6 +122,13 @@ const (
 	StationInverseTable = "enterprise_station"
 	// StationColumn is the table column denoting the station relation/edge.
 	StationColumn = "station_id"
+	// CabinetTable is the table that holds the cabinet relation/edge.
+	CabinetTable = "business"
+	// CabinetInverseTable is the table name for the Cabinet entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
+	CabinetInverseTable = "cabinet"
+	// CabinetColumn is the table column denoting the cabinet relation/edge.
+	CabinetColumn = "cabinet_id"
 )
 
 // Columns holds all SQL columns for business fields.
@@ -137,6 +148,7 @@ var Columns = []string{
 	FieldPlanID,
 	FieldEnterpriseID,
 	FieldStationID,
+	FieldCabinetID,
 	FieldType,
 }
 

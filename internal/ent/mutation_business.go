@@ -46,6 +46,8 @@ type BusinessMutation struct {
 	clearedenterprise bool
 	station           *uint64
 	clearedstation    bool
+	cabinet           *uint64
+	clearedcabinet    bool
 	done              bool
 	oldValue          func(context.Context) (*Business, error)
 	predicates        []predicate.Business
@@ -770,6 +772,55 @@ func (m *BusinessMutation) ResetStationID() {
 	delete(m.clearedFields, business.FieldStationID)
 }
 
+// SetCabinetID sets the "cabinet_id" field.
+func (m *BusinessMutation) SetCabinetID(u uint64) {
+	m.cabinet = &u
+}
+
+// CabinetID returns the value of the "cabinet_id" field in the mutation.
+func (m *BusinessMutation) CabinetID() (r uint64, exists bool) {
+	v := m.cabinet
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCabinetID returns the old "cabinet_id" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldCabinetID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCabinetID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCabinetID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCabinetID: %w", err)
+	}
+	return oldValue.CabinetID, nil
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (m *BusinessMutation) ClearCabinetID() {
+	m.cabinet = nil
+	m.clearedFields[business.FieldCabinetID] = struct{}{}
+}
+
+// CabinetIDCleared returns if the "cabinet_id" field was cleared in this mutation.
+func (m *BusinessMutation) CabinetIDCleared() bool {
+	_, ok := m.clearedFields[business.FieldCabinetID]
+	return ok
+}
+
+// ResetCabinetID resets all changes to the "cabinet_id" field.
+func (m *BusinessMutation) ResetCabinetID() {
+	m.cabinet = nil
+	delete(m.clearedFields, business.FieldCabinetID)
+}
+
 // SetType sets the "type" field.
 func (m *BusinessMutation) SetType(b business.Type) {
 	m._type = &b
@@ -1014,6 +1065,32 @@ func (m *BusinessMutation) ResetStation() {
 	m.clearedstation = false
 }
 
+// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
+func (m *BusinessMutation) ClearCabinet() {
+	m.clearedcabinet = true
+}
+
+// CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
+func (m *BusinessMutation) CabinetCleared() bool {
+	return m.CabinetIDCleared() || m.clearedcabinet
+}
+
+// CabinetIDs returns the "cabinet" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CabinetID instead. It exists only for internal usage by the builders.
+func (m *BusinessMutation) CabinetIDs() (ids []uint64) {
+	if id := m.cabinet; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCabinet resets all changes to the "cabinet" edge.
+func (m *BusinessMutation) ResetCabinet() {
+	m.cabinet = nil
+	m.clearedcabinet = false
+}
+
 // Where appends a list predicates to the BusinessMutation builder.
 func (m *BusinessMutation) Where(ps ...predicate.Business) {
 	m.predicates = append(m.predicates, ps...)
@@ -1033,7 +1110,7 @@ func (m *BusinessMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *BusinessMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 16)
 	if m.created_at != nil {
 		fields = append(fields, business.FieldCreatedAt)
 	}
@@ -1076,6 +1153,9 @@ func (m *BusinessMutation) Fields() []string {
 	if m.station != nil {
 		fields = append(fields, business.FieldStationID)
 	}
+	if m.cabinet != nil {
+		fields = append(fields, business.FieldCabinetID)
+	}
 	if m._type != nil {
 		fields = append(fields, business.FieldType)
 	}
@@ -1115,6 +1195,8 @@ func (m *BusinessMutation) Field(name string) (ent.Value, bool) {
 		return m.EnterpriseID()
 	case business.FieldStationID:
 		return m.StationID()
+	case business.FieldCabinetID:
+		return m.CabinetID()
 	case business.FieldType:
 		return m.GetType()
 	}
@@ -1154,6 +1236,8 @@ func (m *BusinessMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldEnterpriseID(ctx)
 	case business.FieldStationID:
 		return m.OldStationID(ctx)
+	case business.FieldCabinetID:
+		return m.OldCabinetID(ctx)
 	case business.FieldType:
 		return m.OldType(ctx)
 	}
@@ -1263,6 +1347,13 @@ func (m *BusinessMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetStationID(v)
 		return nil
+	case business.FieldCabinetID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCabinetID(v)
+		return nil
 	case business.FieldType:
 		v, ok := value.(business.Type)
 		if !ok {
@@ -1330,6 +1421,9 @@ func (m *BusinessMutation) ClearedFields() []string {
 	if m.FieldCleared(business.FieldStationID) {
 		fields = append(fields, business.FieldStationID)
 	}
+	if m.FieldCleared(business.FieldCabinetID) {
+		fields = append(fields, business.FieldCabinetID)
+	}
 	return fields
 }
 
@@ -1370,6 +1464,9 @@ func (m *BusinessMutation) ClearField(name string) error {
 		return nil
 	case business.FieldStationID:
 		m.ClearStationID()
+		return nil
+	case business.FieldCabinetID:
+		m.ClearCabinetID()
 		return nil
 	}
 	return fmt.Errorf("unknown Business nullable field %s", name)
@@ -1421,6 +1518,9 @@ func (m *BusinessMutation) ResetField(name string) error {
 	case business.FieldStationID:
 		m.ResetStationID()
 		return nil
+	case business.FieldCabinetID:
+		m.ResetCabinetID()
+		return nil
 	case business.FieldType:
 		m.ResetType()
 		return nil
@@ -1430,7 +1530,7 @@ func (m *BusinessMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *BusinessMutation) AddedEdges() []string {
-	edges := make([]string, 0, 8)
+	edges := make([]string, 0, 9)
 	if m.rider != nil {
 		edges = append(edges, business.EdgeRider)
 	}
@@ -1454,6 +1554,9 @@ func (m *BusinessMutation) AddedEdges() []string {
 	}
 	if m.station != nil {
 		edges = append(edges, business.EdgeStation)
+	}
+	if m.cabinet != nil {
+		edges = append(edges, business.EdgeCabinet)
 	}
 	return edges
 }
@@ -1494,13 +1597,17 @@ func (m *BusinessMutation) AddedIDs(name string) []ent.Value {
 		if id := m.station; id != nil {
 			return []ent.Value{*id}
 		}
+	case business.EdgeCabinet:
+		if id := m.cabinet; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *BusinessMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 8)
+	edges := make([]string, 0, 9)
 	return edges
 }
 
@@ -1514,7 +1621,7 @@ func (m *BusinessMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *BusinessMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 8)
+	edges := make([]string, 0, 9)
 	if m.clearedrider {
 		edges = append(edges, business.EdgeRider)
 	}
@@ -1539,6 +1646,9 @@ func (m *BusinessMutation) ClearedEdges() []string {
 	if m.clearedstation {
 		edges = append(edges, business.EdgeStation)
 	}
+	if m.clearedcabinet {
+		edges = append(edges, business.EdgeCabinet)
+	}
 	return edges
 }
 
@@ -1562,6 +1672,8 @@ func (m *BusinessMutation) EdgeCleared(name string) bool {
 		return m.clearedenterprise
 	case business.EdgeStation:
 		return m.clearedstation
+	case business.EdgeCabinet:
+		return m.clearedcabinet
 	}
 	return false
 }
@@ -1594,6 +1706,9 @@ func (m *BusinessMutation) ClearEdge(name string) error {
 	case business.EdgeStation:
 		m.ClearStation()
 		return nil
+	case business.EdgeCabinet:
+		m.ClearCabinet()
+		return nil
 	}
 	return fmt.Errorf("unknown Business unique edge %s", name)
 }
@@ -1625,6 +1740,9 @@ func (m *BusinessMutation) ResetEdge(name string) error {
 		return nil
 	case business.EdgeStation:
 		m.ResetStation()
+		return nil
+	case business.EdgeCabinet:
+		m.ResetCabinet()
 		return nil
 	}
 	return fmt.Errorf("unknown Business edge %s", name)
