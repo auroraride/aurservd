@@ -12,7 +12,7 @@ const (
 )
 
 type BusinessSubscribeID struct {
-    SubscribeID uint64 `json:"subscribeId"` // 订阅ID
+    SubscribeID uint64 `json:"subscribeId" validate:"required" trans:"订阅ID"`
 }
 
 type BusinessListReq struct {

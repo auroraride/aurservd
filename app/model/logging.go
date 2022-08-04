@@ -11,11 +11,12 @@ type OperatorType uint8
 
 const (
     OperatorTypeManager  OperatorType = iota // 管理员
-    OperatorTypeEmployee                     // 门店店员
+    OperatorTypeEmployee                     // 店员
+    OperatorTypeCabinet                      // 电柜
 )
 
 func (ot OperatorType) String() string {
-    return []string{"管理员", "店员"}[int(ot)]
+    return []string{"管理员", "店员", "电柜"}[int(ot)]
 }
 
 const (
@@ -30,11 +31,11 @@ const (
     OperateDeposit                             // 调整押金
     OperateProfile                             // 修改资料
     OperateRefund                              // 处理退款
-    OperateHalt                                // 强制退租
-    OperateUnsubscribe                         // 骑手退租
+    OperateUnsubscribe                         // 退租
     OperateAssistanceAllocate                  // 救援分配
     OperateAssistanceFree                      // 救援免费
     OperateAssistanceRefuse                    // 救援拒绝
+    OperateActive                              // 激活订阅
 )
 
 func (o Operate) String() string {
@@ -61,16 +62,16 @@ func (o Operate) String() string {
         return "修改资料"
     case OperateRefund:
         return "处理退款"
-    case OperateHalt:
-        return "强制退租"
     case OperateUnsubscribe:
-        return "强制退租"
+        return "骑手门店退租"
     case OperateAssistanceAllocate:
         return "救援分配"
     case OperateAssistanceFree:
         return "救援免费"
     case OperateAssistanceRefuse:
         return "救援拒绝"
+    case OperateActive:
+        return "激活订阅"
     default:
         return "未知操作"
     }

@@ -84,7 +84,8 @@ type StockOverview struct {
     Exception int `json:"exception"` // 电池异常数
 }
 
-type StockWithRiderReq struct {
+// StockBusinessReq 业务库存调整请求
+type StockBusinessReq struct {
     RiderID   uint64 `json:"riderId"`   // 骑手ID
     Model     string `json:"model"`     // 电池型号
     StockType uint8  `json:"stockType"` // 出入库类型

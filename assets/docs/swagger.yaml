@@ -1211,8 +1211,24 @@ definitions:
   model.BusinessSubscribeID:
     properties:
       subscribeId:
-        description: 订阅ID
+        description: '订阅ID '
         type: integer
+    required:
+    - subscribeId
+    type: object
+  model.BusinessSubscribeReq:
+    properties:
+      cabinetId:
+        description: '电柜ID '
+        type: integer
+      id:
+        description: '订阅ID '
+        type: integer
+      storeId:
+        description: '门店ID '
+        type: integer
+    required:
+    - id
     type: object
   model.CabinetBasicInfo:
     properties:
@@ -8873,6 +8889,33 @@ paths:
       summary: M3008 修改门店
       tags:
       - '[M]管理接口'
+  /manager/v1/subscribe/active:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerSubscribeActive
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 订阅信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BusinessSubscribeReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M7009 激活
+      tags:
+      - '[M]管理接口'
   /manager/v1/subscribe/alter:
     post:
       consumes:
@@ -8911,11 +8954,12 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - description: 订阅ID
-        in: path
-        name: id
+      - description: 订阅信息
+        in: body
+        name: body
         required: true
-        type: integer
+        schema:
+          $ref: '#/definitions/model.BusinessSubscribeReq'
       produces:
       - application/json
       responses:
@@ -8937,11 +8981,12 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - description: 订阅ID
-        in: path
-        name: id
+      - description: 订阅信息
+        in: body
+        name: body
         required: true
-        type: integer
+        schema:
+          $ref: '#/definitions/model.BusinessSubscribeReq'
       produces:
       - application/json
       responses:
@@ -8963,11 +9008,12 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - description: 订阅ID
-        in: path
-        name: id
+      - description: 订阅信息
+        in: body
+        name: body
         required: true
-        type: integer
+        schema:
+          $ref: '#/definitions/model.BusinessSubscribeReq'
       produces:
       - application/json
       responses:

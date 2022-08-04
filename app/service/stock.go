@@ -396,7 +396,7 @@ GROUP BY outbound, inbound, plaform`)
 
 // BatteryWithRider 和骑手交互电池出入库
 // TODO 电柜
-func (s *stockService) BatteryWithRider(cr *ent.StockCreate, req *model.StockWithRiderReq) error {
+func (s *stockService) BatteryWithRider(cr *ent.StockCreate, req *model.StockBusinessReq) error {
     num := model.StockNumberOfRiderBusiness(req.StockType)
 
     if req.StoreID == nil && req.CabinetID == nil {

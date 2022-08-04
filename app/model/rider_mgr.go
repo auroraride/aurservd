@@ -5,15 +5,6 @@
 
 package model
 
-const (
-    RiderMgrOperateBlock    uint8 = iota + 1 // 禁用
-    RiderMgrOperateUnBlock                   // 解除禁用
-    RiderMgrOperateBan                       // 拉黑
-    RiderMgrOperateUnBan                     // 解除拉黑
-    RiderMgrOperatePause                     // 暂停计费
-    RiderMgrOperateContinue                  // 继续计费
-)
-
 type RiderMgrDepositReq struct {
     Amount float64 `json:"amount"` // 押金金额
     ID     uint64  `json:"id" validate:"required" trans:"骑手ID"`

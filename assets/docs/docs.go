@@ -7021,6 +7021,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/subscribe/active": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M7009 激活",
+                "operationId": "ManagerSubscribeActive",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "订阅信息",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BusinessSubscribeReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/subscribe/alter": {
             "post": {
                 "consumes": [
@@ -7084,11 +7125,13 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "integer",
-                        "description": "订阅ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
+                        "description": "订阅信息",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BusinessSubscribeReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -7123,11 +7166,13 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "integer",
-                        "description": "订阅ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
+                        "description": "订阅信息",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BusinessSubscribeReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -7162,11 +7207,13 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "integer",
-                        "description": "订阅ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
+                        "description": "订阅信息",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BusinessSubscribeReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -10577,9 +10624,32 @@ const docTemplate = `{
         },
         "model.BusinessSubscribeID": {
             "type": "object",
+            "required": [
+                "subscribeId"
+            ],
             "properties": {
                 "subscribeId": {
-                    "description": "订阅ID",
+                    "description": "订阅ID ",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.BusinessSubscribeReq": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "cabinetId": {
+                    "description": "电柜ID ",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "订阅ID ",
+                    "type": "integer"
+                },
+                "storeId": {
+                    "description": "门店ID ",
                     "type": "integer"
                 }
             }

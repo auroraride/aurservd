@@ -92,6 +92,16 @@ func (o *OperateLog) SetEmployee(e *model.Employee) *OperateLog {
     return o
 }
 
+func (o *OperateLog) SetCabinet(c *model.CabinetBasicInfo) *OperateLog {
+    if c != nil {
+        o.OperatorID = c.ID
+        o.OperatorPhone = c.Serial
+        o.OperatorName = c.Name
+        o.OperatorType = model.OperatorTypeCabinet
+    }
+    return o
+}
+
 func (o *OperateLog) Send() {
     PutLog(o)
 }
