@@ -10,3 +10,7 @@ type BusinessSubscribeReq struct {
     StoreID   *uint64 `json:"storeId" trans:"门店ID"`
     CabinetID *uint64 `json:"cabinetId" trans:"电柜ID"`
 }
+
+type BusinessCabinetReq struct {
+    Serial string `json:"serial" validate:"required" trans:"电柜编码"`
+}

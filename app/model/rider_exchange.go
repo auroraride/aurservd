@@ -27,8 +27,8 @@ type RiderCabinetOperateProcess struct {
     Alternative *CabinetBinBasicInfo `json:"alternative,omitempty"` // 备选方案
 }
 
-// RiderCabinetInfo 待换电信息
-type RiderCabinetInfo struct {
+// RiderExchangeInfo 待换电信息
+type RiderExchangeInfo struct {
     ID             uint64       `json:"id"`             // 电柜ID
     UUID           string       `json:"uuid"`           // 操作ID
     Full           bool         `json:"full"`           // 是否有满电电池
@@ -44,29 +44,29 @@ type RiderCabinetInfo struct {
     RiderCabinetOperateProcess
 }
 
-func (c *RiderCabinetInfo) MarshalBinary() ([]byte, error) {
+func (c *RiderExchangeInfo) MarshalBinary() ([]byte, error) {
     return jsoniter.Marshal(c)
 }
 
-func (c *RiderCabinetInfo) UnmarshalBinary(data []byte) error {
+func (c *RiderExchangeInfo) UnmarshalBinary(data []byte) error {
     return jsoniter.Unmarshal(data, c)
 }
 
-// RiderCabinetOperateReq 请求换电
-type RiderCabinetOperateReq struct {
+// RiderExchangeProcessReq 请求换电
+type RiderExchangeProcessReq struct {
     UUID        primitive.ObjectID `json:"uuid" validate:"required"` // 操作ID
     Alternative bool               `json:"alternative"`              // 是否使用备选方案
 }
 
-// RiderCabinetOperateRes 换电操作步骤返回
-type RiderCabinetOperateRes struct {
+// RiderExchangeProcessRes 换电操作步骤返回
+type RiderExchangeProcessRes struct {
     Step    uint8  `json:"step"`    // 操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池
     Status  uint8  `json:"status"`  // 状态 1:处理中 2:成功 3:失败
     Message string `json:"message"` // 消息
     Stop    bool   `json:"stop"`    // 步骤是否终止
 }
 
-// RiderCabinetOperateStatusReq 获取操作状态
-type RiderCabinetOperateStatusReq struct {
+// RiderExchangeProcessStatusReq 获取操作状态
+type RiderExchangeProcessStatusReq struct {
     UUID primitive.ObjectID `json:"uuid" query:"uuid" trans:"操作ID"`
 }

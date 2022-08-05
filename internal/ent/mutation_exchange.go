@@ -11,7 +11,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/exchange"
     "github.com/auroraride/aurservd/app/model"
     "encoding/json"
-    "github.com/auroraride/aurservd/app/actuator"
+    "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/internal/ent/predicate"
 
     "entgo.io/ent"
@@ -33,7 +33,7 @@ type ExchangeMutation struct {
 	uuid              *string
 	success           *bool
 	detail            *json.RawMessage
-	info              **actuator.ExchangeInfo
+	info              **ec.ExchangeInfo
 	model             *string
 	alternative       *bool
 	start_at          *time.Time
@@ -903,12 +903,12 @@ func (m *ExchangeMutation) ResetDetail() {
 }
 
 // SetInfo sets the "info" field.
-func (m *ExchangeMutation) SetInfo(ai *actuator.ExchangeInfo) {
-	m.info = &ai
+func (m *ExchangeMutation) SetInfo(ei *ec.ExchangeInfo) {
+	m.info = &ei
 }
 
 // Info returns the value of the "info" field in the mutation.
-func (m *ExchangeMutation) Info() (r *actuator.ExchangeInfo, exists bool) {
+func (m *ExchangeMutation) Info() (r *ec.ExchangeInfo, exists bool) {
 	v := m.info
 	if v == nil {
 		return
@@ -919,7 +919,7 @@ func (m *ExchangeMutation) Info() (r *actuator.ExchangeInfo, exists bool) {
 // OldInfo returns the old "info" field's value of the Exchange entity.
 // If the Exchange object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ExchangeMutation) OldInfo(ctx context.Context) (v *actuator.ExchangeInfo, err error) {
+func (m *ExchangeMutation) OldInfo(ctx context.Context) (v *ec.ExchangeInfo, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldInfo is only allowed on UpdateOne operations")
 	}
@@ -1726,7 +1726,7 @@ func (m *ExchangeMutation) SetField(name string, value ent.Value) error {
 		m.SetDetail(v)
 		return nil
 	case exchange.FieldInfo:
-		v, ok := value.(*actuator.ExchangeInfo)
+		v, ok := value.(*ec.ExchangeInfo)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

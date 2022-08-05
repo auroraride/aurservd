@@ -8,7 +8,7 @@ package provider
 import (
     "context"
     "fmt"
-    "github.com/auroraride/aurservd/app/actuator"
+    "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/workwx"
@@ -119,7 +119,7 @@ func monitor(oldBins []model.CabinetBin, oldHealth uint8, oldNum uint, item *ent
     // 监控电池变化
     if oldNum != item.BatteryNum {
         // 判断电柜是否正在执行业务
-        task := actuator.Obtain(actuator.ObtainReq{Serial: item.Serial})
+        task := ec.Obtain(ec.ObtainReq{Serial: item.Serial})
         if task != nil {
             oldNum = task.Cabinet.BatteryNum
         }
@@ -165,7 +165,7 @@ func StartCabinetProvider(providers ...Provider) {
 
                 for _, item := range items {
                     // 换电过程不查询状态
-                    if actuator.Busy(item.Serial) {
+                    if ec.Busy(item.Serial) {
                         continue
                     }
 

@@ -2935,83 +2935,6 @@ definitions:
         description: 骑手ID
         type: integer
     type: object
-  model.RiderCabinetInfo:
-    properties:
-      alternative:
-        allOf:
-        - $ref: '#/definitions/model.CabinetBinBasicInfo'
-        description: 备选方案
-      batteryFullNum:
-        description: 总满电电池数
-        type: integer
-      batteryNum:
-        description: 总电池数
-        type: integer
-      brand:
-        description: '品牌 品牌: KAIXIN(凯信) YUNDONG(云动)'
-        type: string
-      cityId:
-        description: 城市ID
-        type: integer
-      doors:
-        description: 总仓位
-        type: integer
-      emptyBin:
-        allOf:
-        - $ref: '#/definitions/model.CabinetBinBasicInfo'
-        description: 空仓位
-      full:
-        description: 是否有满电电池
-        type: boolean
-      fullBin:
-        allOf:
-        - $ref: '#/definitions/model.CabinetBinBasicInfo'
-        description: 满电仓位
-      health:
-        description: 电柜健康状态 0离线 1正常 2故障
-        type: integer
-      id:
-        description: 电柜ID
-        type: integer
-      model:
-        description: 电池型号
-        type: string
-      name:
-        description: 电柜名称
-        type: string
-      serial:
-        description: 电柜编码
-        type: string
-      uuid:
-        description: 操作ID
-        type: string
-    type: object
-  model.RiderCabinetOperateReq:
-    properties:
-      alternative:
-        description: 是否使用备选方案
-        type: boolean
-      uuid:
-        description: 操作ID
-        type: string
-    required:
-    - uuid
-    type: object
-  model.RiderCabinetOperateRes:
-    properties:
-      message:
-        description: 消息
-        type: string
-      status:
-        description: 状态 1:处理中 2:成功 3:失败
-        type: integer
-      step:
-        description: 操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池
-        type: integer
-      stop:
-        description: 步骤是否终止
-        type: boolean
-    type: object
   model.RiderContact:
     properties:
       name:
@@ -3064,6 +2987,83 @@ definitions:
       subscribeStatus:
         description: 骑手订阅状态
         type: integer
+    type: object
+  model.RiderExchangeInfo:
+    properties:
+      alternative:
+        allOf:
+        - $ref: '#/definitions/model.CabinetBinBasicInfo'
+        description: 备选方案
+      batteryFullNum:
+        description: 总满电电池数
+        type: integer
+      batteryNum:
+        description: 总电池数
+        type: integer
+      brand:
+        description: '品牌 品牌: KAIXIN(凯信) YUNDONG(云动)'
+        type: string
+      cityId:
+        description: 城市ID
+        type: integer
+      doors:
+        description: 总仓位
+        type: integer
+      emptyBin:
+        allOf:
+        - $ref: '#/definitions/model.CabinetBinBasicInfo'
+        description: 空仓位
+      full:
+        description: 是否有满电电池
+        type: boolean
+      fullBin:
+        allOf:
+        - $ref: '#/definitions/model.CabinetBinBasicInfo'
+        description: 满电仓位
+      health:
+        description: 电柜健康状态 0离线 1正常 2故障
+        type: integer
+      id:
+        description: 电柜ID
+        type: integer
+      model:
+        description: 电池型号
+        type: string
+      name:
+        description: 电柜名称
+        type: string
+      serial:
+        description: 电柜编码
+        type: string
+      uuid:
+        description: 操作ID
+        type: string
+    type: object
+  model.RiderExchangeProcessReq:
+    properties:
+      alternative:
+        description: 是否使用备选方案
+        type: boolean
+      uuid:
+        description: 操作ID
+        type: string
+    required:
+    - uuid
+    type: object
+  model.RiderExchangeProcessRes:
+    properties:
+      message:
+        description: 消息
+        type: string
+      status:
+        description: 状态 1:处理中 2:成功 3:失败
+        type: integer
+      step:
+        description: 操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池
+        type: integer
+      stop:
+        description: 步骤是否终止
+        type: boolean
     type: object
   model.RiderFollowUpCreateReq:
     properties:
@@ -9451,7 +9451,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/model.RiderCabinetOperateReq'
+          $ref: '#/definitions/model.RiderExchangeProcessReq'
       produces:
       - application/json
       responses:
@@ -9484,7 +9484,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.RiderCabinetInfo'
+            $ref: '#/definitions/model.RiderExchangeInfo'
       summary: R4001 获取换电信息
       tags:
       - '[R]骑手接口'
@@ -9509,7 +9509,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.RiderCabinetOperateRes'
+            $ref: '#/definitions/model.RiderExchangeProcessRes'
       summary: R4003 换电状态
       tags:
       - '[R]骑手接口'

@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/auroraride/aurservd/app/actuator"
+	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -75,7 +75,7 @@ type Exchange struct {
 	Detail json.RawMessage `json:"detail,omitempty"`
 	// Info holds the value of the "info" field.
 	// 电柜换电信息
-	Info *actuator.ExchangeInfo `json:"info,omitempty"`
+	Info *ec.ExchangeInfo `json:"info,omitempty"`
 	// Model holds the value of the "model" field.
 	// 电池型号
 	Model string `json:"model,omitempty"`

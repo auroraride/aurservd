@@ -7925,7 +7925,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.RiderCabinetOperateReq"
+                            "$ref": "#/definitions/model.RiderExchangeProcessReq"
                         }
                     }
                 ],
@@ -7971,7 +7971,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.RiderCabinetOperateRes"
+                            "$ref": "#/definitions/model.RiderExchangeProcessRes"
                         }
                     }
                 }
@@ -8010,7 +8010,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.RiderCabinetInfo"
+                            "$ref": "#/definitions/model.RiderExchangeInfo"
                         }
                     }
                 }
@@ -13062,120 +13062,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.RiderCabinetInfo": {
-            "type": "object",
-            "properties": {
-                "alternative": {
-                    "description": "备选方案",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.CabinetBinBasicInfo"
-                        }
-                    ]
-                },
-                "batteryFullNum": {
-                    "description": "总满电电池数",
-                    "type": "integer"
-                },
-                "batteryNum": {
-                    "description": "总电池数",
-                    "type": "integer"
-                },
-                "brand": {
-                    "description": "品牌 品牌: KAIXIN(凯信) YUNDONG(云动)",
-                    "type": "string"
-                },
-                "cityId": {
-                    "description": "城市ID",
-                    "type": "integer"
-                },
-                "doors": {
-                    "description": "总仓位",
-                    "type": "integer"
-                },
-                "emptyBin": {
-                    "description": "空仓位",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.CabinetBinBasicInfo"
-                        }
-                    ]
-                },
-                "full": {
-                    "description": "是否有满电电池",
-                    "type": "boolean"
-                },
-                "fullBin": {
-                    "description": "满电仓位",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.CabinetBinBasicInfo"
-                        }
-                    ]
-                },
-                "health": {
-                    "description": "电柜健康状态 0离线 1正常 2故障",
-                    "type": "integer"
-                },
-                "id": {
-                    "description": "电柜ID",
-                    "type": "integer"
-                },
-                "model": {
-                    "description": "电池型号",
-                    "type": "string"
-                },
-                "name": {
-                    "description": "电柜名称",
-                    "type": "string"
-                },
-                "serial": {
-                    "description": "电柜编码",
-                    "type": "string"
-                },
-                "uuid": {
-                    "description": "操作ID",
-                    "type": "string"
-                }
-            }
-        },
-        "model.RiderCabinetOperateReq": {
-            "type": "object",
-            "required": [
-                "uuid"
-            ],
-            "properties": {
-                "alternative": {
-                    "description": "是否使用备选方案",
-                    "type": "boolean"
-                },
-                "uuid": {
-                    "description": "操作ID",
-                    "type": "string"
-                }
-            }
-        },
-        "model.RiderCabinetOperateRes": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "description": "消息",
-                    "type": "string"
-                },
-                "status": {
-                    "description": "状态 1:处理中 2:成功 3:失败",
-                    "type": "integer"
-                },
-                "step": {
-                    "description": "操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池",
-                    "type": "integer"
-                },
-                "stop": {
-                    "description": "步骤是否终止",
-                    "type": "boolean"
-                }
-            }
-        },
         "model.RiderContact": {
             "type": "object",
             "required": [
@@ -13255,6 +13141,120 @@ const docTemplate = `{
                 "subscribeStatus": {
                     "description": "骑手订阅状态",
                     "type": "integer"
+                }
+            }
+        },
+        "model.RiderExchangeInfo": {
+            "type": "object",
+            "properties": {
+                "alternative": {
+                    "description": "备选方案",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CabinetBinBasicInfo"
+                        }
+                    ]
+                },
+                "batteryFullNum": {
+                    "description": "总满电电池数",
+                    "type": "integer"
+                },
+                "batteryNum": {
+                    "description": "总电池数",
+                    "type": "integer"
+                },
+                "brand": {
+                    "description": "品牌 品牌: KAIXIN(凯信) YUNDONG(云动)",
+                    "type": "string"
+                },
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
+                "doors": {
+                    "description": "总仓位",
+                    "type": "integer"
+                },
+                "emptyBin": {
+                    "description": "空仓位",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CabinetBinBasicInfo"
+                        }
+                    ]
+                },
+                "full": {
+                    "description": "是否有满电电池",
+                    "type": "boolean"
+                },
+                "fullBin": {
+                    "description": "满电仓位",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CabinetBinBasicInfo"
+                        }
+                    ]
+                },
+                "health": {
+                    "description": "电柜健康状态 0离线 1正常 2故障",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "电柜ID",
+                    "type": "integer"
+                },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "电柜名称",
+                    "type": "string"
+                },
+                "serial": {
+                    "description": "电柜编码",
+                    "type": "string"
+                },
+                "uuid": {
+                    "description": "操作ID",
+                    "type": "string"
+                }
+            }
+        },
+        "model.RiderExchangeProcessReq": {
+            "type": "object",
+            "required": [
+                "uuid"
+            ],
+            "properties": {
+                "alternative": {
+                    "description": "是否使用备选方案",
+                    "type": "boolean"
+                },
+                "uuid": {
+                    "description": "操作ID",
+                    "type": "string"
+                }
+            }
+        },
+        "model.RiderExchangeProcessRes": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "description": "消息",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态 1:处理中 2:成功 3:失败",
+                    "type": "integer"
+                },
+                "step": {
+                    "description": "操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池",
+                    "type": "integer"
+                },
+                "stop": {
+                    "description": "步骤是否终止",
+                    "type": "boolean"
                 }
             }
         },

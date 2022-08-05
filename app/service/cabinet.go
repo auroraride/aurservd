@@ -13,7 +13,7 @@ import (
     "fmt"
     "github.com/alibabacloud-go/tea/tea"
     sls "github.com/aliyun/aliyun-log-go-sdk"
-    "github.com/auroraride/aurservd/app/actuator"
+    "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/provider"
@@ -299,35 +299,35 @@ func (s *cabinetService) Delete(req *model.CabinetDeleteReq) {
 }
 
 // UpdateStatus 立即更新电柜状态
-func (s *cabinetService) UpdateStatus(item *ent.Cabinet, params ...any) {
+func (s *cabinetService) UpdateStatus(item *ent.Cabinet, params ...any) (err error) {
     var prov provider.Provider
     if item.Brand == model.CabinetBrandKaixin.Value() {
         prov = provider.NewKaixin()
     } else {
         prov = provider.NewYundong()
     }
-    err := prov.UpdateStatus(item, params...)
+    err = prov.UpdateStatus(item, params...)
     // 如果返回失败, 则延迟2秒后重新请求一次
     if err != nil {
         time.Sleep(2 * time.Second)
     }
-    _ = prov.UpdateStatus(item, params...)
+    return prov.UpdateStatus(item, params...)
 }
 
 // DoorOpenStatus 获取柜门状态
-func (s *cabinetService) DoorOpenStatus(item *ent.Cabinet, index int, params ...any) actuator.ExchangeDoorStatus {
-    s.UpdateStatus(item, params...)
+func (s *cabinetService) DoorOpenStatus(item *ent.Cabinet, index int, params ...any) ec.DoorStatus {
+    _ = s.UpdateStatus(item, params...)
     if len(item.Bin) == 0 || len(item.Bin) < index {
-        return actuator.ExchangeDoorStatusUnknown
+        return ec.DoorStatusUnknown
     }
     bin := item.Bin[index]
     if !bin.DoorHealth {
-        return actuator.ExchangeDoorStatusFail
+        return ec.DoorStatusFail
     }
     if bin.OpenStatus {
-        return actuator.ExchangeDoorStatusOpen
+        return ec.DoorStatusOpen
     }
-    return actuator.ExchangeDoorStatusClose
+    return ec.DoorStatusClose
 }
 
 // Detail 电柜详细信息
@@ -341,7 +341,10 @@ func (s *cabinetService) Detail(id uint64) *model.CabinetDetailRes {
     }
     bms := item.Edges.Bms
 
-    s.UpdateStatus(item)
+    err := s.UpdateStatus(item)
+    if err != nil {
+        snag.Panic(err)
+    }
     res := new(model.CabinetDetailRes)
     _ = copier.Copy(res, item)
     for _, bm := range bms {

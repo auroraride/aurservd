@@ -8,7 +8,7 @@ import (
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
-    "github.com/auroraride/aurservd/app/actuator"
+    "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -33,7 +33,7 @@ func (Exchange) Fields() []ent.Field {
         field.Uint64("cabinet_id").Optional().Comment("电柜ID"),
         field.Bool("success").Default(true).Comment("是否成功"),
         field.JSON("detail", json.RawMessage{}).Optional().Comment("电柜换电信息"),
-        field.JSON("info", &actuator.ExchangeInfo{}).Optional().Comment("电柜换电信息"),
+        field.JSON("info", &ec.ExchangeInfo{}).Optional().Comment("电柜换电信息"),
         field.String("model").Comment("电池型号"),
         field.Bool("alternative").Default(false).Comment("是否备用方案"),
         field.Time("start_at").Optional().Comment("换电开始时间"),

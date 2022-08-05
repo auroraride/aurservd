@@ -141,6 +141,8 @@ type CabinetDeleteReq struct {
     ID uint64 `json:"id" param:"id"`
 }
 
+type CabinetBins []*CabinetBin
+
 // CabinetBin 仓位详细信息
 // 1000mA = 1A
 // 1000mV = 1V

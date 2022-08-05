@@ -8,7 +8,7 @@ package internal
 import (
     "context"
     "fmt"
-    "github.com/auroraride/aurservd/app/actuator"
+    "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/exchange"
@@ -67,23 +67,23 @@ func ExchangeDemo() {
             stop = item.UpdatedAt
         }
 
-        status := actuator.TaskStatusSuccess
+        status := ec.TaskStatusSuccess
         if !item.Success {
-            status = actuator.TaskStatusFail
+            status = ec.TaskStatusFail
         }
 
-        var steps []*actuator.ExchangeStepInfo
+        var steps []*ec.ExchangeStepInfo
 
-        ss := actuator.ExchangeStep(detail.Result.Step)
-        for i := actuator.ExchangeStepOpenEmpty; i <= ss; i++ {
-            step := &actuator.ExchangeStepInfo{
+        ss := ec.ExchangeStep(detail.Result.Step)
+        for i := ec.ExchangeStepOpenEmpty; i <= ss; i++ {
+            step := &ec.ExchangeStepInfo{
                 Step: i,
             }
-            if i == actuator.ExchangeStepOpenEmpty {
+            if i == ec.ExchangeStepOpenEmpty {
                 step.Time = start
             }
             if i != ss {
-                step.Status = actuator.TaskStatusSuccess
+                step.Status = ec.TaskStatusSuccess
             } else {
                 step.Time = stop
                 step.Status = status
@@ -91,23 +91,23 @@ func ExchangeDemo() {
             steps = append(steps, step)
         }
 
-        info := &actuator.ExchangeInfo{
+        info := &ec.ExchangeInfo{
             Message: detail.Result.Message,
-            Cabinet: actuator.Cabinet{
+            Cabinet: ec.Cabinet{
                 Health:         model.CabinetHealthStatusOnline,
                 Doors:          cab.Doors,
                 BatteryNum:     cab.BatteryNum,
                 BatteryFullNum: cab.BatteryFullNum,
             },
-            Exchange: &actuator.Exchange{
+            Exchange: &ec.Exchange{
                 Alternative: detail.Alternative,
                 Model:       sub.Model,
-                Empty: &actuator.BinInfo{
+                Empty: &ec.BinInfo{
                     Index:       detail.Info.EmptyIndex,
                     Electricity: model.BatteryElectricity(detail.Info.RiderElectricity),
                     Voltage:     -1,
                 },
-                Fully: &actuator.BinInfo{
+                Fully: &ec.BinInfo{
                     Index:       detail.Info.FullIndex,
                     Electricity: model.BatteryElectricity(detail.Info.Electricity),
                     Voltage:     -1,

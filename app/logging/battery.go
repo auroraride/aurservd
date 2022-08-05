@@ -7,7 +7,7 @@ package logging
 
 import (
     "fmt"
-    "github.com/auroraride/aurservd/app/actuator"
+    "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/golang-module/carbon/v2"
@@ -47,7 +47,7 @@ func NewBatteryLog(brand, serial string, from, to int, updatedAt time.Time) *Bat
 }
 
 // SetExchangeProcess 设置换电信息
-func (l *BatteryLog) SetExchangeProcess(task *actuator.Task) *BatteryLog {
+func (l *BatteryLog) SetExchangeProcess(task *ec.Task) *BatteryLog {
     if task == nil {
         return l
     }

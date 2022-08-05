@@ -3,7 +3,7 @@
 // Created at 2022-07-31
 // Based on aurservd by liasica, magicrolan@qq.com.
 
-package actuator
+package ec
 
 import (
     "fmt"
@@ -44,43 +44,6 @@ func (es ExchangeStep) Next() ExchangeStep {
 // IsLast 是否最后一步
 func (es ExchangeStep) IsLast() bool {
     return es == ExchangeStepPutOut
-}
-
-// ExchangeDoorStatus 柜门状态(处理换电用)
-type ExchangeDoorStatus uint8
-
-const (
-    ExchangeDoorStatusUnknown      ExchangeDoorStatus = iota // 未知
-    ExchangeDoorStatusClose                                  // 关闭
-    ExchangeDoorStatusOpen                                   // 开启
-    ExchangeDoorStatusFail                                   // 故障
-    ExchangeDoorStatusBatteryFull                            // 电池未取出
-    ExchangeDoorStatusBatteryEmpty                           // 电池未放入
-)
-
-func (bds ExchangeDoorStatus) String() string {
-    switch bds {
-    case ExchangeDoorStatusClose:
-        return "关闭"
-    case ExchangeDoorStatusOpen:
-        return "开启"
-    case ExchangeDoorStatusFail:
-        return "故障"
-    case ExchangeDoorStatusBatteryFull:
-        return "电池未取出"
-    case ExchangeDoorStatusBatteryEmpty:
-        return "电池未放入"
-    }
-    return "未知"
-}
-
-// ExchangeDoorError 换电故障
-// CabinetBinDoorError
-var ExchangeDoorError = map[ExchangeDoorStatus]string{
-    ExchangeDoorStatusUnknown:      "仓门状态未知",
-    ExchangeDoorStatusFail:         "仓门故障",
-    ExchangeDoorStatusBatteryFull:  "电池未取出",
-    ExchangeDoorStatusBatteryEmpty: "电池未放入",
 }
 
 // Exchange 换电信息

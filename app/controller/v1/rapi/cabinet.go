@@ -25,7 +25,7 @@ var Cabinet = new(cabinet)
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
 // @Param        serial  path  string  true  "电柜二维码"
-// @Success      200  {object}  model.RiderCabinetInfo  "请求成功"
+// @Success      200  {object}  model.RiderExchangeInfo  "请求成功"
 func (*cabinet) GetProcess(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.RiderCabinetOperateInfoReq](c)
     return ctx.SendResponse(service.NewRiderExchange(ctx.Rider).GetProcess(req))
@@ -39,10 +39,10 @@ func (*cabinet) GetProcess(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Param        body  body  model.RiderCabinetOperateReq  true  "desc"
+// @Param        body  body  model.RiderExchangeProcessReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) Process(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.RiderCabinetOperateReq](c)
+    ctx, req := app.RiderContextAndBinding[model.RiderExchangeProcessReq](c)
     service.NewRiderExchange(ctx.Rider).Start(req)
     return ctx.SendResponse()
 }
@@ -55,10 +55,10 @@ func (*cabinet) Process(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Param        query  query  model.RiderCabinetOperateStatusReq  true  "desc"
-// @Success      200  {object}  model.RiderCabinetOperateRes  "请求成功"
+// @Param        query  query  model.RiderExchangeProcessStatusReq  true  "desc"
+// @Success      200  {object}  model.RiderExchangeProcessRes  "请求成功"
 func (*cabinet) ProcessStatus(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.RiderCabinetOperateStatusReq](c)
+    ctx, req := app.RiderContextAndBinding[model.RiderExchangeProcessStatusReq](c)
 
     return ctx.SendResponse(
         service.NewRiderExchange(ctx.Rider).GetProcessStatus(req),

@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/app/actuator"
+	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -248,8 +248,8 @@ func (eu *ExchangeUpdate) ClearDetail() *ExchangeUpdate {
 }
 
 // SetInfo sets the "info" field.
-func (eu *ExchangeUpdate) SetInfo(ai *actuator.ExchangeInfo) *ExchangeUpdate {
-	eu.mutation.SetInfo(ai)
+func (eu *ExchangeUpdate) SetInfo(ei *ec.ExchangeInfo) *ExchangeUpdate {
+	eu.mutation.SetInfo(ei)
 	return eu
 }
 
@@ -1206,8 +1206,8 @@ func (euo *ExchangeUpdateOne) ClearDetail() *ExchangeUpdateOne {
 }
 
 // SetInfo sets the "info" field.
-func (euo *ExchangeUpdateOne) SetInfo(ai *actuator.ExchangeInfo) *ExchangeUpdateOne {
-	euo.mutation.SetInfo(ai)
+func (euo *ExchangeUpdateOne) SetInfo(ei *ec.ExchangeInfo) *ExchangeUpdateOne {
+	euo.mutation.SetInfo(ei)
 	return euo
 }
 

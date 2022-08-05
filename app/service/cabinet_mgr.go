@@ -9,7 +9,7 @@ import (
     "context"
     "github.com/alibabacloud-go/tea/tea"
     sls "github.com/aliyun/aliyun-log-go-sdk"
-    "github.com/auroraride/aurservd/app/actuator"
+    "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/provider"
@@ -75,7 +75,7 @@ func (s *cabinetMgrService) BinOperate(req *model.CabinetDoorOperateReq) bool {
         snag.Panic("权限校验失败")
     }
 
-    actuator.BusyFromIDX(*req.ID)
+    ec.BusyFromIDX(*req.ID)
 
     cs := NewCabinetWithModifier(s.modifier)
 
@@ -85,10 +85,10 @@ func (s *cabinetMgrService) BinOperate(req *model.CabinetDoorOperateReq) bool {
         snag.Panic("非操作维护中不可操作")
     }
 
-    task := &actuator.Task{
+    task := &ec.Task{
         CabinetID: *req.ID,
         Serial:    cab.Serial,
-        Cabinet: actuator.Cabinet{
+        Cabinet: ec.Cabinet{
             Health:         cab.Health,
             Doors:          cab.Doors,
             BatteryNum:     cab.BatteryNum,
@@ -98,13 +98,13 @@ func (s *cabinetMgrService) BinOperate(req *model.CabinetDoorOperateReq) bool {
 
     switch *req.Operation {
     case model.CabinetDoorOperateOpen:
-        task.Job = actuator.JobManagerOpen
+        task.Job = ec.JobManagerOpen
         break
     case model.CabinetDoorOperateLock:
-        task.Job = actuator.JobManagerLock
+        task.Job = ec.JobManagerLock
         break
     case model.CabinetDoorOperateUnlock:
-        task.Job = actuator.JobManagerUnLock
+        task.Job = ec.JobManagerUnLock
         break
     }
 
@@ -116,9 +116,9 @@ func (s *cabinetMgrService) BinOperate(req *model.CabinetDoorOperateReq) bool {
 
     // 结束回调
     defer func() {
-        ts := actuator.TaskStatusSuccess
+        ts := ec.TaskStatusSuccess
         if !status {
-            ts = actuator.TaskStatusFail
+            ts = ec.TaskStatusFail
             task.Message = err.Error()
         }
         task.Stop(ts)
@@ -145,7 +145,7 @@ func (s *cabinetMgrService) Reboot(req *model.IDPostReq) bool {
         snag.Panic("权限校验失败")
     }
 
-    actuator.BusyFromIDX(req.ID)
+    ec.BusyFromIDX(req.ID)
 
     now := time.Now()
     opId := shortuuid.New()
@@ -164,11 +164,11 @@ func (s *cabinetMgrService) Reboot(req *model.IDPostReq) bool {
     var status bool
 
     // 创建并开始任务
-    task := &actuator.Task{
+    task := &ec.Task{
         CabinetID: req.ID,
         Serial:    cab.Serial,
-        Job:       actuator.JobManagerReboot,
-        Cabinet: actuator.Cabinet{
+        Job:       ec.JobManagerReboot,
+        Cabinet: ec.Cabinet{
             Health:         cab.Health,
             Doors:          cab.Doors,
             BatteryNum:     cab.BatteryNum,
@@ -180,9 +180,9 @@ func (s *cabinetMgrService) Reboot(req *model.IDPostReq) bool {
 
     // 结束回调
     defer func() {
-        ts := actuator.TaskStatusSuccess
+        ts := ec.TaskStatusSuccess
         if !status {
-            ts = actuator.TaskStatusFail
+            ts = ec.TaskStatusFail
             task.Message = "重启失败"
         }
         task.Stop(ts)

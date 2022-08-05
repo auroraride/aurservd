@@ -7,7 +7,7 @@ package logging
 
 import (
     "fmt"
-    "github.com/auroraride/aurservd/app/actuator"
+    "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
 )
@@ -63,15 +63,15 @@ func (e *ExchangeLog) SetBin(index int) *ExchangeLog {
     return e
 }
 
-func (e *ExchangeLog) SetStep(step actuator.ExchangeStep) *ExchangeLog {
+func (e *ExchangeLog) SetStep(step ec.ExchangeStep) *ExchangeLog {
     e.Step = uint8(step)
     e.Description = step.String()
     return e
 }
 
-func (e *ExchangeLog) SetStatus(status actuator.TaskStatus) *ExchangeLog {
+func (e *ExchangeLog) SetStatus(status ec.TaskStatus) *ExchangeLog {
     e.Status = uint8(status)
-    if status == actuator.TaskStatusSuccess {
+    if status == ec.TaskStatusSuccess {
         e.Result = "成功"
     } else {
         e.Result = "失败"
