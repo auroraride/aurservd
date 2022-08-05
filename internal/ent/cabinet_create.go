@@ -176,7 +176,7 @@ func (cc *CabinetCreate) SetNillableHealth(u *uint8) *CabinetCreate {
 }
 
 // SetBin sets the "bin" field.
-func (cc *CabinetCreate) SetBin(mb []model.CabinetBin) *CabinetCreate {
+func (cc *CabinetCreate) SetBin(mb model.CabinetBins) *CabinetCreate {
 	cc.mutation.SetBin(mb)
 	return cc
 }
@@ -1122,7 +1122,7 @@ func (u *CabinetUpsert) AddHealth(v uint8) *CabinetUpsert {
 }
 
 // SetBin sets the "bin" field.
-func (u *CabinetUpsert) SetBin(v []model.CabinetBin) *CabinetUpsert {
+func (u *CabinetUpsert) SetBin(v model.CabinetBins) *CabinetUpsert {
 	u.Set(cabinet.FieldBin, v)
 	return u
 }
@@ -1613,7 +1613,7 @@ func (u *CabinetUpsertOne) UpdateHealth() *CabinetUpsertOne {
 }
 
 // SetBin sets the "bin" field.
-func (u *CabinetUpsertOne) SetBin(v []model.CabinetBin) *CabinetUpsertOne {
+func (u *CabinetUpsertOne) SetBin(v model.CabinetBins) *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
 		s.SetBin(v)
 	})
@@ -2296,7 +2296,7 @@ func (u *CabinetUpsertBulk) UpdateHealth() *CabinetUpsertBulk {
 }
 
 // SetBin sets the "bin" field.
-func (u *CabinetUpsertBulk) SetBin(v []model.CabinetBin) *CabinetUpsertBulk {
+func (u *CabinetUpsertBulk) SetBin(v model.CabinetBins) *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
 		s.SetBin(v)
 	})

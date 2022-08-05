@@ -64,7 +64,7 @@ type Cabinet struct {
 	Health uint8 `json:"health,omitempty"`
 	// Bin holds the value of the "bin" field.
 	// 仓位信息
-	Bin []model.CabinetBin `json:"bin,omitempty"`
+	Bin model.CabinetBins `json:"bin,omitempty"`
 	// BatteryNum holds the value of the "battery_num" field.
 	// 电池总数
 	BatteryNum uint `json:"battery_num,omitempty"`

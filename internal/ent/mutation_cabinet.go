@@ -38,7 +38,7 @@ type CabinetMutation struct {
 	addstatus           *int8
 	health              *uint8
 	addhealth           *int8
-	bin                 *[]model.CabinetBin
+	bin                 *model.CabinetBins
 	battery_num         *uint
 	addbattery_num      *int
 	battery_full_num    *uint
@@ -850,12 +850,12 @@ func (m *CabinetMutation) ResetHealth() {
 }
 
 // SetBin sets the "bin" field.
-func (m *CabinetMutation) SetBin(mb []model.CabinetBin) {
+func (m *CabinetMutation) SetBin(mb model.CabinetBins) {
 	m.bin = &mb
 }
 
 // Bin returns the value of the "bin" field in the mutation.
-func (m *CabinetMutation) Bin() (r []model.CabinetBin, exists bool) {
+func (m *CabinetMutation) Bin() (r model.CabinetBins, exists bool) {
 	v := m.bin
 	if v == nil {
 		return
@@ -866,7 +866,7 @@ func (m *CabinetMutation) Bin() (r []model.CabinetBin, exists bool) {
 // OldBin returns the old "bin" field's value of the Cabinet entity.
 // If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetMutation) OldBin(ctx context.Context) (v []model.CabinetBin, err error) {
+func (m *CabinetMutation) OldBin(ctx context.Context) (v model.CabinetBins, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldBin is only allowed on UpdateOne operations")
 	}
@@ -1921,7 +1921,7 @@ func (m *CabinetMutation) SetField(name string, value ent.Value) error {
 		m.SetHealth(v)
 		return nil
 	case cabinet.FieldBin:
-		v, ok := value.([]model.CabinetBin)
+		v, ok := value.(model.CabinetBins)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

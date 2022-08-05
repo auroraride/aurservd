@@ -205,7 +205,7 @@ func (cu *CabinetUpdate) AddHealth(u int8) *CabinetUpdate {
 }
 
 // SetBin sets the "bin" field.
-func (cu *CabinetUpdate) SetBin(mb []model.CabinetBin) *CabinetUpdate {
+func (cu *CabinetUpdate) SetBin(mb model.CabinetBins) *CabinetUpdate {
 	cu.mutation.SetBin(mb)
 	return cu
 }
@@ -1368,7 +1368,7 @@ func (cuo *CabinetUpdateOne) AddHealth(u int8) *CabinetUpdateOne {
 }
 
 // SetBin sets the "bin" field.
-func (cuo *CabinetUpdateOne) SetBin(mb []model.CabinetBin) *CabinetUpdateOne {
+func (cuo *CabinetUpdateOne) SetBin(mb model.CabinetBins) *CabinetUpdateOne {
 	cuo.mutation.SetBin(mb)
 	return cuo
 }

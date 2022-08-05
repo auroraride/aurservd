@@ -106,7 +106,7 @@ func delBinFault(serial string, index int) {
 
 // monitor 监控电柜变动
 // bins health num 旧数据
-func monitor(oldBins []model.CabinetBin, oldHealth uint8, oldNum uint, item *ent.Cabinet) {
+func monitor(oldBins model.CabinetBins, oldHealth uint8, oldNum uint, item *ent.Cabinet) {
     // 监控在线变化
     if oldHealth != item.Health {
         // 电柜在线变动日志

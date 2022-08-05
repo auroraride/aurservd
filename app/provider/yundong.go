@@ -216,7 +216,7 @@ func (p *yundong) UpdateStatus(item *ent.Cabinet, params ...any) error {
         var full uint = 0
         var num uint = 0
         // 设置仓位状态
-        bins := make([]model.CabinetBin, len(res.Data.Doorstatus))
+        bins := make(model.CabinetBins, len(res.Data.Doorstatus))
         doors := res.GetBins()
         for index, ds := range doors {
             e := model.NewBatteryElectricity(utils.NewNumber().Decimal(ds.Soc))
@@ -235,7 +235,7 @@ func (p *yundong) UpdateStatus(item *ent.Cabinet, params ...any) error {
                 errs = append(errs, model.CabinetBinBatteryFault)
             }
 
-            bin := model.CabinetBin{
+            bin := &model.CabinetBin{
                 Index:         index,
                 Name:          fmt.Sprintf("%d号仓", index+1),
                 BatterySN:     ds.BatterySN,

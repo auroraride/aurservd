@@ -69,8 +69,8 @@ func (l *BatteryLog) SetStatus(status model.CabinetStatus) *BatteryLog {
     return l
 }
 
-func (l *BatteryLog) SetBin(old, value []model.CabinetBin) *BatteryLog {
-    om := make(map[int]model.CabinetBin)
+func (l *BatteryLog) SetBin(old, value model.CabinetBins) *BatteryLog {
+    om := make(map[int]*model.CabinetBin)
 
     for _, bin := range old {
         om[bin.Index] = bin
@@ -78,13 +78,13 @@ func (l *BatteryLog) SetBin(old, value []model.CabinetBin) *BatteryLog {
 
     var diff []string
     for _, bin := range value {
-        old, ok := om[bin.Index]
-        if ok && old.Battery == bin.Battery {
+        o, ok := om[bin.Index]
+        if ok && o.Battery == bin.Battery {
             continue
         }
 
         x := 1
-        if old.Battery {
+        if o.Battery {
             x = -1
         }
 

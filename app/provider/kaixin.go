@@ -198,7 +198,7 @@ func (p *kaixin) UpdateStatus(item *ent.Cabinet, params ...any) error {
 
     if res.State == "ok" {
         doors := res.GetBins()
-        bins := make([]model.CabinetBin, len(doors))
+        bins := make(model.CabinetBins, len(doors))
         var full uint = 0
         var num uint = 0
         for index, ds := range doors {
@@ -221,7 +221,7 @@ func (p *kaixin) UpdateStatus(item *ent.Cabinet, params ...any) error {
                 errs = append(errs, model.CabinetBinBatteryFault)
             }
 
-            bin := model.CabinetBin{
+            bin := &model.CabinetBin{
                 Index:         index,
                 Name:          fmt.Sprintf("%d号仓", index+1),
                 BatterySN:     ds.Bcd,
