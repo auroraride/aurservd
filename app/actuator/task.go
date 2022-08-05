@@ -98,14 +98,6 @@ type Rider struct {
     Phone string `json:"phone"`
 }
 
-// Cabinet 任务电柜设备信息
-type Cabinet struct {
-    Health         uint8 `json:"health" bson:"health"`                 // 电柜健康状态 0离线 1正常 2故障
-    Doors          uint  `json:"doors" bson:"doors"`                   // 总仓位
-    BatteryNum     uint  `json:"batteryNum" bson:"batteryNum"`         // 总电池数
-    BatteryFullNum uint  `json:"batteryFullNum" bson:"batteryFullNum"` // 总满电电池数
-}
-
 // Create 创建任务并存储
 func (t *Task) Create() (primitive.ObjectID, error) {
     t.ID = primitive.NewObjectID()

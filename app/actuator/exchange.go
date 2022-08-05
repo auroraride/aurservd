@@ -7,7 +7,6 @@ package actuator
 
 import (
     "fmt"
-    "github.com/auroraride/aurservd/app/model"
     "github.com/golang-module/carbon/v2"
     "time"
 )
@@ -139,22 +138,6 @@ func (e *Exchange) IsSuccess() bool {
 // StepResult 步骤结果
 func (e *Exchange) StepResult(step ExchangeStep) *ExchangeStepInfo {
     return e.Steps[step-1]
-}
-
-// BinInfo 任务电柜仓位信息
-type BinInfo struct {
-    Index       int                      `json:"index" bson:"index"`             // 仓位index
-    Electricity model.BatteryElectricity `json:"electricity" bson:"electricity"` // 电量
-    Voltage     float64                  `json:"voltage" bson:"voltage"`         // 电压(V)
-}
-
-func (b *BinInfo) String() string {
-    return fmt.Sprintf(
-        "%d号仓, 电压: %.2fV, 电流: %2.fA",
-        b.Index+1,
-        b.Voltage,
-        b.Electricity,
-    )
 }
 
 type ExchangeInfo struct {

@@ -28,7 +28,7 @@ var Cabinet = new(cabinet)
 // @Success      200  {object}  model.RiderCabinetInfo  "请求成功"
 func (*cabinet) GetProcess(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.RiderCabinetOperateInfoReq](c)
-    return ctx.SendResponse(service.NewRiderCabinetWithRider(ctx.Rider).GetProcess(req))
+    return ctx.SendResponse(service.NewRiderExchange(ctx.Rider).GetProcess(req))
 }
 
 // Process
@@ -43,7 +43,7 @@ func (*cabinet) GetProcess(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) Process(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.RiderCabinetOperateReq](c)
-    service.NewRiderCabinetWithRider(ctx.Rider).Start(req)
+    service.NewRiderExchange(ctx.Rider).Start(req)
     return ctx.SendResponse()
 }
 
@@ -61,7 +61,7 @@ func (*cabinet) ProcessStatus(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.RiderCabinetOperateStatusReq](c)
 
     return ctx.SendResponse(
-        service.NewRiderCabinetWithRider(ctx.Rider).GetProcessStatus(req),
+        service.NewRiderExchange(ctx.Rider).GetProcessStatus(req),
     )
 }
 
