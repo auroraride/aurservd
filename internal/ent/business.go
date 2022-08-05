@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
@@ -71,6 +72,9 @@ type Business struct {
 	// Type holds the value of the "type" field.
 	// 业务类型
 	Type business.Type `json:"type,omitempty"`
+	// BinInfo holds the value of the "bin_info" field.
+	// 仓位信息
+	BinInfo *ec.BinInfo `json:"bin_info,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the BusinessQuery when eager-loading is set.
 	Edges BusinessEdges `json:"edges"`
@@ -232,7 +236,7 @@ func (*Business) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case business.FieldCreator, business.FieldLastModifier:
+		case business.FieldCreator, business.FieldLastModifier, business.FieldBinInfo:
 			values[i] = new([]byte)
 		case business.FieldID, business.FieldRiderID, business.FieldCityID, business.FieldSubscribeID, business.FieldEmployeeID, business.FieldStoreID, business.FieldPlanID, business.FieldEnterpriseID, business.FieldStationID, business.FieldCabinetID:
 			values[i] = new(sql.NullInt64)
@@ -368,6 +372,14 @@ func (b *Business) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				b.Type = business.Type(value.String)
 			}
+		case business.FieldBinInfo:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field bin_info", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &b.BinInfo); err != nil {
+					return fmt.Errorf("unmarshal field bin_info: %w", err)
+				}
+			}
 		}
 	}
 	return nil
@@ -487,6 +499,8 @@ func (b *Business) String() string {
 	}
 	builder.WriteString(", type=")
 	builder.WriteString(fmt.Sprintf("%v", b.Type))
+	builder.WriteString(", bin_info=")
+	builder.WriteString(fmt.Sprintf("%v", b.BinInfo))
 	builder.WriteByte(')')
 	return builder.String()
 }

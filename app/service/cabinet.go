@@ -450,48 +450,26 @@ func (s *cabinetService) ModelInclude(item *ent.Cabinet, model string) bool {
 
 // Usable 获取换电可用仓位信息
 func (s *cabinetService) Usable(cab *ent.Cabinet) (op model.RiderCabinetOperateProcess) {
-    sort.Slice(cab.Bin, func(i, j int) bool {
-        return cab.Bin[i].Electricity.Value()+cab.Bin[i].Voltage*0.1 > cab.Bin[j].Electricity.Value()+cab.Bin[j].Voltage*0.1
-    })
-    // 查看电柜是否有满电
-    var max *model.CabinetBinBasicInfo
-    var empty *model.CabinetBinBasicInfo
-    for _, bin := range cab.Bin {
-        // 若仓门不正常直接跳过
-        if !bin.DoorHealth {
-            continue
-        }
-
-        if !bin.Battery && empty == nil {
-            // 获取空仓
-            empty = &model.CabinetBinBasicInfo{
-                Index:       bin.Index,
-                Electricity: bin.Electricity,
-            }
-        }
-
-        if bin.Battery && max == nil {
-            max = &model.CabinetBinBasicInfo{
-                Index:       bin.Index,
-                Electricity: bin.Electricity,
-                Voltage:     bin.Voltage,
-            }
-        }
-        if max != nil && empty != nil {
-            break
-        }
-    }
+    max, empty := cab.Bin.MaxEmpty()
 
     if max == nil || empty == nil {
         snag.Panic("电柜异常, 无法换电")
     }
 
-    op.EmptyBin = empty
+    op.EmptyBin = &model.CabinetBinBasicInfo{
+        Index: empty.Index,
+    }
+
+    maxInfo := &model.CabinetBinBasicInfo{
+        Index:       max.Index,
+        Voltage:     max.Voltage,
+        Electricity: max.Electricity,
+    }
 
     if max.Electricity.IsBatteryFull() {
-        op.FullBin = max
+        op.FullBin = maxInfo
     } else {
-        op.Alternative = max
+        op.Alternative = maxInfo
     }
 
     return

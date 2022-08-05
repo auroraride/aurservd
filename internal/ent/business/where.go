@@ -1143,6 +1143,20 @@ func TypeNotIn(vs ...Type) predicate.Business {
 	})
 }
 
+// BinInfoIsNil applies the IsNil predicate on the "bin_info" field.
+func BinInfoIsNil() predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldBinInfo)))
+	})
+}
+
+// BinInfoNotNil applies the NotNil predicate on the "bin_info" field.
+func BinInfoNotNil() predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldBinInfo)))
+	})
+}
+
 // HasRider applies the HasEdge predicate on the "rider" edge.
 func HasRider() predicate.Business {
 	return predicate.Business(func(s *sql.Selector) {

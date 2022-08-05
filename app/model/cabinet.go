@@ -5,6 +5,8 @@
 
 package model
 
+import "sort"
+
 const (
     CabinetBinBatteryFault = "有电池无电压"
 )
@@ -142,6 +144,35 @@ type CabinetDeleteReq struct {
 }
 
 type CabinetBins []*CabinetBin
+
+// Sort 仓位根据使用条件排序
+func (cbs CabinetBins) Sort() {
+    sort.Slice(cbs, func(i, j int) bool {
+        return cbs[i].Electricity.Value()+cbs[i].Voltage*0.1 > cbs[j].Electricity.Value()+cbs[j].Voltage*0.1
+    })
+}
+
+// MaxEmpty 获取满电和空仓
+func (cbs CabinetBins) MaxEmpty() (max *CabinetBin, empty *CabinetBin) {
+    cbs.Sort()
+
+    for _, bin := range cbs {
+        if !bin.DoorHealth {
+            continue
+        }
+        if bin.Battery && max == nil {
+            max = bin
+        }
+        if !bin.Battery && empty == nil {
+            empty = bin
+        }
+        if max != nil && empty != nil {
+            return
+        }
+    }
+
+    return
+}
 
 // CabinetBin 仓位详细信息
 // 1000mA = 1A

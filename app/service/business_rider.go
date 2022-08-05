@@ -7,6 +7,8 @@ package service
 
 import (
     "context"
+    "fmt"
+    "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
@@ -31,6 +33,8 @@ type businessRiderService struct {
     store        *ent.Store
     subscribe    *ent.Subscribe
 
+    task func() *ec.BinInfo // 电柜任务
+
     storeID, employeeID, cabinetID, managerID *uint64
 }
 
@@ -54,9 +58,9 @@ func NewBusinessRiderWithModifier(m *model.Modifier) *businessRiderService {
     return s
 }
 
-func (s *businessRiderService) SetCabinet(id *uint64) *businessRiderService {
-    if id != nil {
-        s.cabinet = NewCabinet().QueryOne(*id)
+func (s *businessRiderService) SetCabinet(cab *ent.Cabinet) *businessRiderService {
+    if cab != nil {
+        s.cabinet = cab
         s.cabinetInfo = &model.CabinetBasicInfo{
             ID:     s.cabinet.ID,
             Brand:  model.CabinetBrand(s.cabinet.Brand),
@@ -67,9 +71,23 @@ func (s *businessRiderService) SetCabinet(id *uint64) *businessRiderService {
     return s
 }
 
-func (s *businessRiderService) SetStore(id *uint64) *businessRiderService {
+func (s *businessRiderService) SetCabinetID(id *uint64) *businessRiderService {
+    if id != nil {
+        s.SetCabinet(NewCabinet().QueryOne(*id))
+    }
+    return s
+}
+
+func (s *businessRiderService) SetStoreID(id *uint64) *businessRiderService {
     if id != nil {
         s.store = NewStore().Query(*id)
+    }
+    return s
+}
+
+func (s *businessRiderService) SetTask(task func() *ec.BinInfo) *businessRiderService {
+    if task != nil {
+        s.task = task
     }
     return s
 }
@@ -222,6 +240,18 @@ func (s *businessRiderService) preprocess(sub *ent.Subscribe) {
     }
 }
 
+// doTask 处理电柜任务
+func (s *businessRiderService) doTask() (bin *ec.BinInfo, err error) {
+    defer func() {
+        if v := recover(); v != nil {
+            err = fmt.Errorf("%v", err)
+        }
+    }()
+
+    bin = s.task()
+    return
+}
+
 // do 处理业务
 func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
     sts := map[business.Type]uint8{
@@ -252,6 +282,17 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
         business.TypeContinue:    "计费中",
     }
 
+    var bin *ec.BinInfo
+    var err error
+
+    // 放入电池优先执行
+    if s.task != nil && (bt == business.TypePause || bt == business.TypeUnsubscribe) {
+        bin, err = s.doTask()
+        if err != nil {
+            snag.Panic(err)
+        }
+    }
+
     ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
         cb(tx)
 
@@ -270,11 +311,17 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
         )
     })
 
+    // 取出电池优后执行
+    if s.task != nil && (bt == business.TypeActive || bt == business.TypeContinue) {
+        bin, err = s.doTask()
+    }
+
     // 保存业务日志
     NewBusinessLog(s.subscribe).
         SetModifier(s.modifier).
         SetEmployee(s.employee).
         SetCabinet(s.cabinet).
+        SetBinInfo(bin).
         SaveAsync(bt)
 
     // 记录日志
@@ -286,6 +333,10 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
         SetCabinet(s.cabinetInfo).
         SetDiff(bfs[bt], afs[bt]).
         Send()
+
+    if err != nil {
+        snag.Panic(err)
+    }
 }
 
 // Active 激活订阅

@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
@@ -205,6 +206,12 @@ func (bc *BusinessCreate) SetNillableCabinetID(u *uint64) *BusinessCreate {
 // SetType sets the "type" field.
 func (bc *BusinessCreate) SetType(b business.Type) *BusinessCreate {
 	bc.mutation.SetType(b)
+	return bc
+}
+
+// SetBinInfo sets the "bin_info" field.
+func (bc *BusinessCreate) SetBinInfo(ei *ec.BinInfo) *BusinessCreate {
+	bc.mutation.SetBinInfo(ei)
 	return bc
 }
 
@@ -466,6 +473,14 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 			Column: business.FieldType,
 		})
 		_node.Type = value
+	}
+	if value, ok := bc.mutation.BinInfo(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: business.FieldBinInfo,
+		})
+		_node.BinInfo = value
 	}
 	if nodes := bc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -953,6 +968,24 @@ func (u *BusinessUpsert) UpdateType() *BusinessUpsert {
 	return u
 }
 
+// SetBinInfo sets the "bin_info" field.
+func (u *BusinessUpsert) SetBinInfo(v *ec.BinInfo) *BusinessUpsert {
+	u.Set(business.FieldBinInfo, v)
+	return u
+}
+
+// UpdateBinInfo sets the "bin_info" field to the value that was provided on create.
+func (u *BusinessUpsert) UpdateBinInfo() *BusinessUpsert {
+	u.SetExcluded(business.FieldBinInfo)
+	return u
+}
+
+// ClearBinInfo clears the value of the "bin_info" field.
+func (u *BusinessUpsert) ClearBinInfo() *BusinessUpsert {
+	u.SetNull(business.FieldBinInfo)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1294,6 +1327,27 @@ func (u *BusinessUpsertOne) SetType(v business.Type) *BusinessUpsertOne {
 func (u *BusinessUpsertOne) UpdateType() *BusinessUpsertOne {
 	return u.Update(func(s *BusinessUpsert) {
 		s.UpdateType()
+	})
+}
+
+// SetBinInfo sets the "bin_info" field.
+func (u *BusinessUpsertOne) SetBinInfo(v *ec.BinInfo) *BusinessUpsertOne {
+	return u.Update(func(s *BusinessUpsert) {
+		s.SetBinInfo(v)
+	})
+}
+
+// UpdateBinInfo sets the "bin_info" field to the value that was provided on create.
+func (u *BusinessUpsertOne) UpdateBinInfo() *BusinessUpsertOne {
+	return u.Update(func(s *BusinessUpsert) {
+		s.UpdateBinInfo()
+	})
+}
+
+// ClearBinInfo clears the value of the "bin_info" field.
+func (u *BusinessUpsertOne) ClearBinInfo() *BusinessUpsertOne {
+	return u.Update(func(s *BusinessUpsert) {
+		s.ClearBinInfo()
 	})
 }
 
@@ -1802,6 +1856,27 @@ func (u *BusinessUpsertBulk) SetType(v business.Type) *BusinessUpsertBulk {
 func (u *BusinessUpsertBulk) UpdateType() *BusinessUpsertBulk {
 	return u.Update(func(s *BusinessUpsert) {
 		s.UpdateType()
+	})
+}
+
+// SetBinInfo sets the "bin_info" field.
+func (u *BusinessUpsertBulk) SetBinInfo(v *ec.BinInfo) *BusinessUpsertBulk {
+	return u.Update(func(s *BusinessUpsert) {
+		s.SetBinInfo(v)
+	})
+}
+
+// UpdateBinInfo sets the "bin_info" field to the value that was provided on create.
+func (u *BusinessUpsertBulk) UpdateBinInfo() *BusinessUpsertBulk {
+	return u.Update(func(s *BusinessUpsert) {
+		s.UpdateBinInfo()
+	})
+}
+
+// ClearBinInfo clears the value of the "bin_info" field.
+func (u *BusinessUpsertBulk) ClearBinInfo() *BusinessUpsertBulk {
+	return u.Update(func(s *BusinessUpsert) {
+		s.ClearBinInfo()
 	})
 }
 

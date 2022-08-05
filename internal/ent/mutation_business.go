@@ -10,6 +10,7 @@ import (
     "time"
     "github.com/auroraride/aurservd/internal/ent/business"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/internal/ent/predicate"
 
     "entgo.io/ent"
@@ -29,6 +30,7 @@ type BusinessMutation struct {
 	last_modifier     **model.Modifier
 	remark            *string
 	_type             *business.Type
+	bin_info          **ec.BinInfo
 	clearedFields     map[string]struct{}
 	rider             *uint64
 	clearedrider      bool
@@ -857,6 +859,55 @@ func (m *BusinessMutation) ResetType() {
 	m._type = nil
 }
 
+// SetBinInfo sets the "bin_info" field.
+func (m *BusinessMutation) SetBinInfo(ei *ec.BinInfo) {
+	m.bin_info = &ei
+}
+
+// BinInfo returns the value of the "bin_info" field in the mutation.
+func (m *BusinessMutation) BinInfo() (r *ec.BinInfo, exists bool) {
+	v := m.bin_info
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBinInfo returns the old "bin_info" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldBinInfo(ctx context.Context) (v *ec.BinInfo, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBinInfo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBinInfo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBinInfo: %w", err)
+	}
+	return oldValue.BinInfo, nil
+}
+
+// ClearBinInfo clears the value of the "bin_info" field.
+func (m *BusinessMutation) ClearBinInfo() {
+	m.bin_info = nil
+	m.clearedFields[business.FieldBinInfo] = struct{}{}
+}
+
+// BinInfoCleared returns if the "bin_info" field was cleared in this mutation.
+func (m *BusinessMutation) BinInfoCleared() bool {
+	_, ok := m.clearedFields[business.FieldBinInfo]
+	return ok
+}
+
+// ResetBinInfo resets all changes to the "bin_info" field.
+func (m *BusinessMutation) ResetBinInfo() {
+	m.bin_info = nil
+	delete(m.clearedFields, business.FieldBinInfo)
+}
+
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *BusinessMutation) ClearRider() {
 	m.clearedrider = true
@@ -1110,7 +1161,7 @@ func (m *BusinessMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *BusinessMutation) Fields() []string {
-	fields := make([]string, 0, 16)
+	fields := make([]string, 0, 17)
 	if m.created_at != nil {
 		fields = append(fields, business.FieldCreatedAt)
 	}
@@ -1159,6 +1210,9 @@ func (m *BusinessMutation) Fields() []string {
 	if m._type != nil {
 		fields = append(fields, business.FieldType)
 	}
+	if m.bin_info != nil {
+		fields = append(fields, business.FieldBinInfo)
+	}
 	return fields
 }
 
@@ -1199,6 +1253,8 @@ func (m *BusinessMutation) Field(name string) (ent.Value, bool) {
 		return m.CabinetID()
 	case business.FieldType:
 		return m.GetType()
+	case business.FieldBinInfo:
+		return m.BinInfo()
 	}
 	return nil, false
 }
@@ -1240,6 +1296,8 @@ func (m *BusinessMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldCabinetID(ctx)
 	case business.FieldType:
 		return m.OldType(ctx)
+	case business.FieldBinInfo:
+		return m.OldBinInfo(ctx)
 	}
 	return nil, fmt.Errorf("unknown Business field %s", name)
 }
@@ -1361,6 +1419,13 @@ func (m *BusinessMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetType(v)
 		return nil
+	case business.FieldBinInfo:
+		v, ok := value.(*ec.BinInfo)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBinInfo(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Business field %s", name)
 }
@@ -1424,6 +1489,9 @@ func (m *BusinessMutation) ClearedFields() []string {
 	if m.FieldCleared(business.FieldCabinetID) {
 		fields = append(fields, business.FieldCabinetID)
 	}
+	if m.FieldCleared(business.FieldBinInfo) {
+		fields = append(fields, business.FieldBinInfo)
+	}
 	return fields
 }
 
@@ -1467,6 +1535,9 @@ func (m *BusinessMutation) ClearField(name string) error {
 		return nil
 	case business.FieldCabinetID:
 		m.ClearCabinetID()
+		return nil
+	case business.FieldBinInfo:
+		m.ClearBinInfo()
 		return nil
 	}
 	return fmt.Errorf("unknown Business nullable field %s", name)
@@ -1523,6 +1594,9 @@ func (m *BusinessMutation) ResetField(name string) error {
 		return nil
 	case business.FieldType:
 		m.ResetType()
+		return nil
+	case business.FieldBinInfo:
+		m.ResetBinInfo()
 		return nil
 	}
 	return fmt.Errorf("unknown Business field %s", name)

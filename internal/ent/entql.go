@@ -236,6 +236,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			business.FieldStationID:    {Type: field.TypeUint64, Column: business.FieldStationID},
 			business.FieldCabinetID:    {Type: field.TypeUint64, Column: business.FieldCabinetID},
 			business.FieldType:         {Type: field.TypeEnum, Column: business.FieldType},
+			business.FieldBinInfo:      {Type: field.TypeJSON, Column: business.FieldBinInfo},
 		},
 	}
 	graph.Nodes[6] = &sqlgraph.Node{
@@ -3750,6 +3751,11 @@ func (f *BusinessFilter) WhereCabinetID(p entql.Uint64P) {
 // WhereType applies the entql string predicate on the type field.
 func (f *BusinessFilter) WhereType(p entql.StringP) {
 	f.Where(p.Field(business.FieldType))
+}
+
+// WhereBinInfo applies the entql json.RawMessage predicate on the bin_info field.
+func (f *BusinessFilter) WhereBinInfo(p entql.BytesP) {
+	f.Where(p.Field(business.FieldBinInfo))
 }
 
 // WhereHasRider applies a predicate to check if query has an edge rider.

@@ -1154,6 +1154,39 @@ definitions:
       name:
         type: string
     type: object
+  model.BusinessCabinetReq:
+    properties:
+      id:
+        description: '订阅ID '
+        type: integer
+      serial:
+        description: '电柜编码 '
+        type: string
+    required:
+    - id
+    - serial
+    type: object
+  model.BusinessCabinetStatus:
+    properties:
+      index:
+        description: 仓位Index, +1是仓位号
+        type: integer
+      uuid:
+        description: 操作ID, 使用此参数轮询获取状态
+        type: string
+    type: object
+  model.BusinessCabinetStatusRes:
+    properties:
+      message:
+        description: 失败消息
+        type: string
+      stop:
+        description: 是否终止
+        type: boolean
+      success:
+        description: 是否成功
+        type: boolean
+    type: object
   model.BusinessEmployeeListRes:
     properties:
       enterprise:
@@ -9410,6 +9443,140 @@ paths:
           schema:
             $ref: '#/definitions/model.BranchRidingRes'
       summary: R2002 网点骑行规划时间
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/business/active:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderBusinessActive
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 业务请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BusinessCabinetReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.BusinessCabinetStatus'
+      summary: R7001 激活骑士卡
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/business/continue:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderBusinessContinue
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 业务请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BusinessCabinetReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.BusinessCabinetStatus'
+      summary: R7004 取消寄存
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/business/pause:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderBusinessPause
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 业务请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BusinessCabinetReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.BusinessCabinetStatus'
+      summary: R7003 寄存
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/business/status:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderBusinessStatus
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: '操作ID '
+        in: query
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.BusinessCabinetStatusRes'
+      summary: R7005 业务状态
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/business/unsubscribe:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderBusinessUnsubscribe
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 业务请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BusinessCabinetReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.BusinessCabinetStatus'
+      summary: R7002 退租
       tags:
       - '[R]骑手接口'
   /rider/v1/cabinet/fault:

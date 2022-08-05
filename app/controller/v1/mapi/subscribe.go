@@ -43,7 +43,7 @@ func (*subscribe) Alter(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*subscribe) Pause(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.BusinessSubscribeReq](c)
-    service.NewBusinessRiderWithModifier(ctx.Modifier).SetCabinet(req.CabinetID).SetStore(req.StoreID).Pause(req.ID)
+    service.NewBusinessRiderWithModifier(ctx.Modifier).SetCabinetID(req.CabinetID).SetStoreID(req.StoreID).Pause(req.ID)
     return ctx.SendResponse()
 }
 
@@ -59,7 +59,7 @@ func (*subscribe) Pause(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*subscribe) Continue(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.BusinessSubscribeReq](c)
-    service.NewBusinessRiderWithModifier(ctx.Modifier).SetCabinet(req.CabinetID).SetStore(req.StoreID).Continue(req.ID)
+    service.NewBusinessRiderWithModifier(ctx.Modifier).SetCabinetID(req.CabinetID).SetStoreID(req.StoreID).Continue(req.ID)
     return ctx.SendResponse()
 }
 
@@ -75,7 +75,7 @@ func (*subscribe) Continue(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*subscribe) Halt(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.BusinessSubscribeReq](c)
-    service.NewBusinessRiderWithModifier(ctx.Modifier).SetCabinet(req.CabinetID).SetStore(req.StoreID).UnSubscribe(req.ID)
+    service.NewBusinessRiderWithModifier(ctx.Modifier).SetCabinetID(req.CabinetID).SetStoreID(req.StoreID).UnSubscribe(req.ID)
     return ctx.SendResponse()
 }
 
@@ -92,8 +92,8 @@ func (*subscribe) Halt(c echo.Context) (err error) {
 func (*business) Active(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.BusinessSubscribeReq](c)
     service.NewBusinessRiderWithModifier(ctx.Modifier).
-        SetCabinet(req.CabinetID).
-        SetStore(req.StoreID).
+        SetCabinetID(req.CabinetID).
+        SetStoreID(req.StoreID).
         Active(service.NewBusinessRiderWithModifier(ctx.Modifier).Inactive(req.ID))
     return ctx.SendResponse()
 }

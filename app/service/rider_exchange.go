@@ -364,7 +364,7 @@ func (s *riderExchangeService) ProcessDoorBatteryStatus() (ds ec.DoorStatus) {
 
     // 当仓门未关闭时跳过
     if ds != ec.DoorStatusClose {
-        return ds
+        return
     }
 
     // 关门时间
@@ -452,12 +452,10 @@ func (s *riderExchangeService) ProcessDoorStatus() *riderExchangeService {
         }
 
         if step.Status != ec.TaskStatusProcessing {
-            s.task.Update(func(t *ec.Task) {
-                if !step.IsSuccess() {
-                    t.Message = message
-                    t.Stop(ec.TaskStatusFail)
-                }
-            })
+            if !step.IsSuccess() {
+                s.task.Message = message
+                s.task.Stop(ec.TaskStatusFail)
+            }
             return s
         }
 

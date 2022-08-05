@@ -7855,6 +7855,209 @@
                 }
             }
         },
+        "/rider/v1/business/active": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R7001 激活骑士卡",
+                "operationId": "RiderBusinessActive",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "业务请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BusinessCabinetReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.BusinessCabinetStatus"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v1/business/continue": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R7004 取消寄存",
+                "operationId": "RiderBusinessContinue",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "业务请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BusinessCabinetReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.BusinessCabinetStatus"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v1/business/pause": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R7003 寄存",
+                "operationId": "RiderBusinessPause",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "业务请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BusinessCabinetReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.BusinessCabinetStatus"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v1/business/status": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R7005 业务状态",
+                "operationId": "RiderBusinessStatus",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "操作ID ",
+                        "name": "uuid",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.BusinessCabinetStatusRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v1/business/unsubscribe": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R7002 退租",
+                "operationId": "RiderBusinessUnsubscribe",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "业务请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BusinessCabinetReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.BusinessCabinetStatus"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/cabinet/fault": {
             "get": {
                 "consumes": [
@@ -10523,6 +10726,53 @@
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "model.BusinessCabinetReq": {
+            "type": "object",
+            "required": [
+                "id",
+                "serial"
+            ],
+            "properties": {
+                "id": {
+                    "description": "订阅ID ",
+                    "type": "integer"
+                },
+                "serial": {
+                    "description": "电柜编码 ",
+                    "type": "string"
+                }
+            }
+        },
+        "model.BusinessCabinetStatus": {
+            "type": "object",
+            "properties": {
+                "index": {
+                    "description": "仓位Index, +1是仓位号",
+                    "type": "integer"
+                },
+                "uuid": {
+                    "description": "操作ID, 使用此参数轮询获取状态",
+                    "type": "string"
+                }
+            }
+        },
+        "model.BusinessCabinetStatusRes": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "description": "失败消息",
+                    "type": "string"
+                },
+                "stop": {
+                    "description": "是否终止",
+                    "type": "boolean"
+                },
+                "success": {
+                    "description": "是否成功",
+                    "type": "boolean"
                 }
             }
         },

@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
@@ -237,6 +238,18 @@ func (bu *BusinessUpdate) ClearCabinetID() *BusinessUpdate {
 // SetType sets the "type" field.
 func (bu *BusinessUpdate) SetType(b business.Type) *BusinessUpdate {
 	bu.mutation.SetType(b)
+	return bu
+}
+
+// SetBinInfo sets the "bin_info" field.
+func (bu *BusinessUpdate) SetBinInfo(ei *ec.BinInfo) *BusinessUpdate {
+	bu.mutation.SetBinInfo(ei)
+	return bu
+}
+
+// ClearBinInfo clears the value of the "bin_info" field.
+func (bu *BusinessUpdate) ClearBinInfo() *BusinessUpdate {
+	bu.mutation.ClearBinInfo()
 	return bu
 }
 
@@ -513,6 +526,19 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeEnum,
 			Value:  value,
 			Column: business.FieldType,
+		})
+	}
+	if value, ok := bu.mutation.BinInfo(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: business.FieldBinInfo,
+		})
+	}
+	if bu.mutation.BinInfoCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: business.FieldBinInfo,
 		})
 	}
 	if bu.mutation.RiderCleared() {
@@ -1051,6 +1077,18 @@ func (buo *BusinessUpdateOne) SetType(b business.Type) *BusinessUpdateOne {
 	return buo
 }
 
+// SetBinInfo sets the "bin_info" field.
+func (buo *BusinessUpdateOne) SetBinInfo(ei *ec.BinInfo) *BusinessUpdateOne {
+	buo.mutation.SetBinInfo(ei)
+	return buo
+}
+
+// ClearBinInfo clears the value of the "bin_info" field.
+func (buo *BusinessUpdateOne) ClearBinInfo() *BusinessUpdateOne {
+	buo.mutation.ClearBinInfo()
+	return buo
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (buo *BusinessUpdateOne) SetRider(r *Rider) *BusinessUpdateOne {
 	return buo.SetRiderID(r.ID)
@@ -1354,6 +1392,19 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 			Type:   field.TypeEnum,
 			Value:  value,
 			Column: business.FieldType,
+		})
+	}
+	if value, ok := buo.mutation.BinInfo(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: business.FieldBinInfo,
+		})
+	}
+	if buo.mutation.BinInfoCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: business.FieldBinInfo,
 		})
 	}
 	if buo.mutation.RiderCleared() {
