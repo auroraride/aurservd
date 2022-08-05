@@ -15,7 +15,6 @@ import (
     "github.com/auroraride/aurservd/internal/ent/business"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
-    log "github.com/sirupsen/logrus"
     "go.mongodb.org/mongo-driver/bson/primitive"
     "time"
 )
@@ -51,11 +50,16 @@ func NewRiderCabinet(rider *ent.Rider) *riderCabinetService {
 
 // preprocess 预处理业务
 func (s *riderCabinetService) preprocess(serial string, bt business.Type) {
+    ec.BusyX(serial)
+
     cab := NewCabinet().QueryOneSerialX(serial)
+    if !cab.Transferred {
+        snag.Panic("电柜资产异常")
+    }
+
     err := NewCabinet().UpdateStatus(cab)
     if err != nil {
-        log.Error(err)
-        snag.Panic("电柜状态获取失败")
+        snag.Panic(err)
     }
 
     max, empty := cab.Bin.MaxEmpty()
