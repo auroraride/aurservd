@@ -105,9 +105,9 @@ type Task struct {
     StopAt      *time.Time `json:"stopAt,omitempty" bson:"stopAt,omitempty"`   // 结束时间
     Message     string     `json:"message,omitempty" bson:"message,omitempty"` // 失败消息
 
-    Cabinet  Cabinet   `json:"cabinet" bson:"cabinet"`   // 电柜信息
-    Rider    *Rider    `json:"rider" bson:"rider"`       // 骑手信息
-    Exchange *Exchange `json:"exchange" bson:"exchange"` // 换电信息
+    Cabinet  Cabinet   `json:"cabinet" bson:"cabinet"`             // 电柜信息
+    Rider    *Rider    `json:"rider" bson:"rider,omitempty"`       // 骑手信息
+    Exchange *Exchange `json:"exchange" bson:"exchange,omitempty"` // 换电信息
 }
 
 func (t *Task) MarshalBinary() ([]byte, error) {
@@ -173,6 +173,9 @@ func (t *Task) Start(cb ...Updater) {
 // Stop 结束任务
 func (t *Task) Stop(status TaskStatus) {
     t.Update(func(t *Task) {
+        if status != TaskStatusSuccess {
+            status = TaskStatusFail
+        }
         t.StopAt = Pointer(time.Now())
         t.Status = status
     })

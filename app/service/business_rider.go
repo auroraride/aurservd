@@ -230,7 +230,7 @@ func (s *businessRiderService) preprocess(sub *ent.Subscribe) {
         s.managerID = tools.NewPointerInterface(s.modifier.ID)
     }
 
-    if s.employee == nil && s.modifier == nil {
+    if s.employee == nil && s.modifier == nil && s.cabinet == nil {
         snag.Panic("操作权限校验失败")
     }
 
@@ -244,7 +244,7 @@ func (s *businessRiderService) preprocess(sub *ent.Subscribe) {
 func (s *businessRiderService) doTask() (bin *ec.BinInfo, err error) {
     defer func() {
         if v := recover(); v != nil {
-            err = fmt.Errorf("%v", err)
+            err = fmt.Errorf("%v", v)
         }
     }()
 
@@ -326,7 +326,7 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 
     // 记录日志
     go logging.NewOperateLog().
-        SetRef(s.subscribe.Edges.Rider).
+        SetRef(s.rider).
         SetOperate(ops[bt]).
         SetEmployee(s.employeeInfo).
         SetModifier(s.modifier).
@@ -364,10 +364,7 @@ func (s *businessRiderService) Active(info *model.SubscribeActiveInfo, sub *ent.
 
     if info.EnterpriseID != nil {
         // 更新团签账单
-        go NewEnterprise().UpdateStatement(s.subscribe.Edges.Enterprise)
-    } else {
-        // 更新个签订阅
-        go NewSubscribe().UpdateStatus(s.subscribe)
+        go NewEnterprise().UpdateStatement(sub.Edges.Enterprise)
     }
 }
 
@@ -382,6 +379,9 @@ func (s *businessRiderService) UnSubscribe(subscribeID uint64) {
 
     s.do(business.TypeUnsubscribe, func(tx *ent.Tx) {
         var reason string
+        if s.cabinet != nil {
+            reason = "用户电柜退租"
+        }
         if s.modifier != nil {
             reason = "管理员操作强制退租"
         }

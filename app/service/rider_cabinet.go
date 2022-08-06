@@ -15,7 +15,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/business"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
-    "go.mongodb.org/mongo-driver/bson/primitive"
+    log "github.com/sirupsen/logrus"
     "time"
 )
 
@@ -41,7 +41,7 @@ type riderCabinetService struct {
 func NewRiderCabinet(rider *ent.Rider) *riderCabinetService {
     s := &riderCabinetService{
         ctx:     context.Background(),
-        maxTime: 180 * time.Second,
+        maxTime: 30 * time.Second,
     }
     s.ctx = context.WithValue(s.ctx, "rider", rider)
     s.rider = rider
@@ -50,12 +50,40 @@ func NewRiderCabinet(rider *ent.Rider) *riderCabinetService {
 
 // preprocess 预处理业务
 func (s *riderCabinetService) preprocess(serial string, bt business.Type) {
-    ec.BusyX(serial)
+    sm, _ := NewSetting().GetSetting(model.SettingMaintain).(bool)
+    if sm {
+        snag.Panic("系统维护中, 请稍后重试")
+    }
 
-    cab := NewCabinet().QueryOneSerialX(serial)
+    // 检查用户是否可以办理业务
+    NewRiderPermissionWithRider(s.rider).BusinessX()
+
+    cs := NewCabinet()
+
+    cab := cs.QueryOneSerialX(serial)
     if !cab.Transferred {
         snag.Panic("电柜资产异常")
     }
+
+    // 是否有生效中套餐
+    _, sub := NewSubscribe().RecentDetail(s.rider.ID)
+    if sub == nil {
+        snag.Panic("无生效中的骑行卡")
+    }
+
+    s.subscribe = sub
+
+    // 检查可用电池型号
+    if !cs.ModelInclude(cab, sub.Model) {
+        snag.Panic("电池型号不兼容")
+    }
+
+    // 查询电柜
+    if !cs.Businessable(cab) {
+        snag.Panic("电柜目前不可用")
+    }
+
+    ec.BusyX(serial)
 
     err := NewCabinet().UpdateStatus(cab)
     if err != nil {
@@ -81,8 +109,7 @@ func (s *riderCabinetService) preprocess(serial string, bt business.Type) {
     }
 
     switch bt {
-    case business.TypePause:
-    case business.TypeUnsubscribe:
+    case business.TypePause, business.TypeUnsubscribe:
         if en < 2 {
             snag.Panic("仓位不足, 无法处理当前业务")
         }
@@ -91,8 +118,7 @@ func (s *riderCabinetService) preprocess(serial string, bt business.Type) {
         }
         s.empty = &ec.BinInfo{Index: empty.Index}
         break
-    case business.TypeActive:
-    case business.TypeContinue:
+    case business.TypeActive, business.TypeContinue:
         if bn < 2 {
             snag.Panic("电池不足, 无法处理当前业务")
         }
@@ -110,19 +136,33 @@ func (s *riderCabinetService) preprocess(serial string, bt business.Type) {
     s.bt = bt
     s.cabinet = cab
 
-    s.task = &ec.Task{
-        ID:  primitive.NewObjectID(),
-        Job: ec.JobRiderActive,
+    jobs := map[business.Type]ec.Job{
+        business.TypeActive:      ec.JobRiderActive,
+        business.TypeUnsubscribe: ec.JobRiderUnSubscribe,
+        business.TypePause:       ec.JobPause,
+        business.TypeContinue:    ec.JobContinue,
+    }
+
+    task := &ec.Task{
+        Job:       jobs[bt],
+        Serial:    cab.Serial,
+        CabinetID: cab.ID,
         Cabinet: ec.Cabinet{
             Health:         cab.Health,
             Doors:          cab.Doors,
             BatteryNum:     cab.BatteryNum,
             BatteryFullNum: cab.BatteryFullNum,
         },
+        Rider: &ec.Rider{
+            ID:    s.rider.ID,
+            Name:  s.rider.Edges.Person.Name,
+            Phone: s.rider.Phone,
+        },
     }
+    s.task = task.CreateX()
 }
 
-func (s *riderCabinetService) open(bin *ec.BinInfo) (status bool, err error) {
+func (s *riderCabinetService) open(bin *ec.BinInfo, remark string) (status bool, err error) {
     s.task.Start()
 
     operation := model.CabinetDoorOperateOpen
@@ -130,7 +170,7 @@ func (s *riderCabinetService) open(bin *ec.BinInfo) (status bool, err error) {
     status, err = NewCabinet().DoorOperate(&model.CabinetDoorOperateReq{
         ID:        tools.NewPointer().UInt64(s.cabinet.ID),
         Index:     tools.NewPointerInterface(bin.Index),
-        Remark:    fmt.Sprintf("%s - %s", s.task.Job.Label(), model.RiderCabinetOperateReasonFull),
+        Remark:    fmt.Sprintf("%s - %s", s.task.Job.Label(), remark),
         Operation: &operation,
     }, model.CabinetDoorOperator{
         ID:    s.rider.ID,
@@ -143,10 +183,12 @@ func (s *riderCabinetService) open(bin *ec.BinInfo) (status bool, err error) {
 }
 
 func (s *riderCabinetService) putin() *ec.BinInfo {
-    status, err := s.open(s.empty)
-    ts := ec.TaskStatusFail
+    status, err := s.open(s.empty, model.RiderCabinetOperateReasonEmpty)
+    ts := s.task.Status
 
-    defer s.task.Stop(ts)
+    defer func() {
+        s.task.Stop(ts)
+    }()
 
     if !status {
         snag.Panic("仓门开启失败")
@@ -168,6 +210,7 @@ func (s *riderCabinetService) putin() *ec.BinInfo {
             ts = ec.TaskStatusSuccess
             return s.empty
         case ec.DoorStatusOpen:
+            ts = ec.TaskStatusProcessing
             break
         default:
             s.task.Message = ec.DoorError[ds]
@@ -182,6 +225,9 @@ func (s *riderCabinetService) putin() *ec.BinInfo {
         }
 
         if ts != ec.TaskStatusProcessing {
+            if s.task.Message == "" {
+                s.task.Message = "操作失败"
+            }
             snag.Panic(s.task.Message)
         }
 
@@ -225,7 +271,7 @@ func (s *riderCabinetService) battery() (ds ec.DoorStatus) {
 }
 
 func (s *riderCabinetService) putout() *ec.BinInfo {
-    status, err := s.open(s.max)
+    status, err := s.open(s.max, model.RiderCabinetOperateReasonFull)
 
     defer func() {
         ts := ec.TaskStatusSuccess
@@ -244,28 +290,53 @@ func (s *riderCabinetService) putout() *ec.BinInfo {
 
 func (s *riderCabinetService) Active(req *model.BusinessCabinetReq) model.BusinessCabinetStatus {
     s.preprocess(req.Serial, business.TypeActive)
+    if s.subscribe.Status != model.SubscribeStatusInactive {
+        snag.Panic("骑士卡状态错误")
+    }
+
     srv := NewBusinessRiderWithRider(s.rider)
-    srv.SetCabinet(s.cabinet).
-        SetTask(s.putout).
-        Active(srv.Inactive(req.ID))
+    srv.SetCabinet(s.cabinet).SetTask(func() *ec.BinInfo {
+        return s.putout()
+    }).Active(srv.Inactive(req.ID))
     return model.BusinessCabinetStatus{
         UUID:  s.task.ID.Hex(),
-        Index: s.empty.Index,
+        Index: s.max.Index,
     }
 }
 
 func (s *riderCabinetService) Continue(req *model.BusinessCabinetReq) model.BusinessCabinetStatus {
     s.preprocess(req.Serial, business.TypeContinue)
-    NewBusinessRiderWithRider(s.rider).SetTask(s.putout).Continue(req.ID)
+    if s.subscribe.Status != model.SubscribeStatusPaused {
+        snag.Panic("骑士卡状态错误")
+    }
+
+    NewBusinessRiderWithRider(s.rider).SetTask(func() *ec.BinInfo {
+        return s.putout()
+    }).SetCabinet(s.cabinet).Continue(req.ID)
     return model.BusinessCabinetStatus{
         UUID:  s.task.ID.Hex(),
-        Index: s.empty.Index,
+        Index: s.max.Index,
     }
 }
 
 func (s *riderCabinetService) Unsubscribe(req *model.BusinessCabinetReq) model.BusinessCabinetStatus {
     s.preprocess(req.Serial, business.TypeUnsubscribe)
-    NewBusinessRiderWithRider(s.rider).SetTask(s.putin).UnSubscribe(req.ID)
+    if s.subscribe.Status != model.SubscribeStatusUsing {
+        snag.Panic("骑士卡未在计费中")
+    }
+
+    go func() {
+        err := snag.Recover(func() {
+            NewBusinessRiderWithRider(s.rider).SetTask(func() *ec.BinInfo {
+                return s.putin()
+            }).SetCabinet(s.cabinet).UnSubscribe(req.ID)
+        })
+
+        if err != nil {
+            log.Error(err)
+        }
+    }()
+
     return model.BusinessCabinetStatus{
         UUID:  s.task.ID.Hex(),
         Index: s.empty.Index,
@@ -274,7 +345,24 @@ func (s *riderCabinetService) Unsubscribe(req *model.BusinessCabinetReq) model.B
 
 func (s *riderCabinetService) Pause(req *model.BusinessCabinetReq) model.BusinessCabinetStatus {
     s.preprocess(req.Serial, business.TypePause)
-    NewBusinessRiderWithRider(s.rider).SetTask(s.putin).Pause(req.ID)
+    if s.subscribe.Status != model.SubscribeStatusUsing {
+        snag.Panic("骑士卡未在计费中")
+    }
+
+    go func() {
+        err := snag.Recover(func() {
+            NewBusinessRiderWithRider(s.rider).
+                SetTask(func() *ec.BinInfo {
+                    return s.putin()
+                }).
+                SetCabinet(s.cabinet).
+                Pause(req.ID)
+        })
+        if err != nil {
+            log.Error(err)
+        }
+    }()
+
     return model.BusinessCabinetStatus{
         UUID:  s.task.ID.Hex(),
         Index: s.empty.Index,
@@ -294,7 +382,7 @@ func (s *riderCabinetService) Status(req *model.BusinessCabinetStatusReq) (res m
             res.Stop = true
             res.Message = task.Message
         }
-        if res.Stop || time.Now().Sub(start) > 30 {
+        if res.Stop || time.Now().Sub(start).Seconds() > 30 {
             return
         }
         time.Sleep(1 * time.Second)

@@ -5,6 +5,10 @@
 
 package snag
 
+import (
+    "fmt"
+)
+
 func Panic(params ...any) {
     panic(NewError(params...))
 }
@@ -30,4 +34,16 @@ func PanicIfErrorX(err error, cb func() error, params ...any) {
         _ = cb()
         panic(NewError(err))
     }
+}
+
+func Recover(cb func()) (err error) {
+    defer func() {
+        if v := recover(); v != nil {
+            err = fmt.Errorf("%v", v)
+        }
+    }()
+
+    cb()
+
+    return
 }

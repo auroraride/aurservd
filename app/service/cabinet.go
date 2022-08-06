@@ -475,8 +475,8 @@ func (s *cabinetService) Usable(cab *ent.Cabinet) (op model.RiderCabinetOperateP
     return
 }
 
-// Health 判定电柜是否可用
-func (s *cabinetService) Health(cab *ent.Cabinet) bool {
+// Businessable 判定电柜是否可用
+func (s *cabinetService) Businessable(cab *ent.Cabinet) bool {
     return model.CabinetStatus(cab.Status) == model.CabinetStatusNormal &&
         cab.Health == model.CabinetHealthStatusOnline &&
         time.Now().Sub(cab.UpdatedAt).Minutes() < 5 &&

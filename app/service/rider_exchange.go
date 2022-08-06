@@ -40,7 +40,7 @@ func NewRiderExchange(r *ent.Rider) *riderExchangeService {
         maxTime: 180 * time.Second,
         rider:   r,
     }
-    s.ctx = context.WithValue(s.ctx, "rider", r)
+    s.ctx = context.WithValue(context.Background(), "rider", r)
     return s
 }
 
@@ -81,7 +81,7 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
     }
 
     // 查询电柜
-    if !cs.Health(cab) {
+    if !cs.Businessable(cab) {
         snag.Panic("电柜目前不可用")
     }
 
@@ -212,7 +212,7 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     }
 
     // 查询电柜
-    if !NewCabinet().Health(cab) {
+    if !NewCabinet().Businessable(cab) {
         snag.Panic("电柜目前不可用")
     }
 
