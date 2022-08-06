@@ -356,8 +356,9 @@ type CabinetSimNotice struct {
 }
 
 type CabinetTransferReq struct {
-    CabinetID uint64 `json:"cabinetId"` // 电柜ID
-    Model     string `json:"model"`     // 型号
+    CabinetID uint64 `json:"cabinetId" validate:"required" trans:"电柜ID"`
+    Model     string `json:"model" validate:"required" trans:"型号"`
+    Num       int    `json:"num" validate:"required" trans:"数量"`
 }
 
 type CabinetMaintainReq struct {

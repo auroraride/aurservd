@@ -6671,7 +6671,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M1017 门店物资详细",
+                "summary": "ME002 门店物资详细",
                 "operationId": "ManagerStockList",
                 "parameters": [
                     {
@@ -6758,7 +6758,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M1015 调拨物资",
+                "summary": "ME001 调拨物资",
                 "operationId": "ManagerStockCreate",
                 "parameters": [
                     {
@@ -6799,7 +6799,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M1016 物资管理概览",
+                "summary": "ME003 物资管理概览",
                 "operationId": "ManagerStockOverview",
                 "parameters": [
                     {
@@ -11539,14 +11539,23 @@ const docTemplate = `{
         },
         "model.CabinetTransferReq": {
             "type": "object",
+            "required": [
+                "cabinetId",
+                "model",
+                "num"
+            ],
             "properties": {
                 "cabinetId": {
-                    "description": "电柜ID",
+                    "description": "电柜ID ",
                     "type": "integer"
                 },
                 "model": {
-                    "description": "型号",
+                    "description": "型号 ",
                     "type": "string"
+                },
+                "num": {
+                    "description": "数量 ",
+                    "type": "integer"
                 }
             }
         },

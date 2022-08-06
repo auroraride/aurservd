@@ -1720,11 +1720,18 @@ definitions:
   model.CabinetTransferReq:
     properties:
       cabinetId:
-        description: 电柜ID
+        description: '电柜ID '
         type: integer
       model:
-        description: 型号
+        description: '型号 '
         type: string
+      num:
+        description: '数量 '
+        type: integer
+    required:
+    - cabinetId
+    - model
+    - num
     type: object
   model.CascaderOptionLevel2:
     properties:
@@ -8741,7 +8748,7 @@ paths:
                     $ref: '#/definitions/model.StockListRes'
                   type: array
               type: object
-      summary: M1017 门店物资详细
+      summary: ME002 门店物资详细
       tags:
       - '[M]管理接口'
     post:
@@ -8767,7 +8774,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M1015 调拨物资
+      summary: ME001 调拨物资
       tags:
       - '[M]管理接口'
   /manager/v1/stock/overview:
@@ -8788,7 +8795,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StockOverview'
-      summary: M1016 物资管理概览
+      summary: ME003 物资管理概览
       tags:
       - '[M]管理接口'
   /manager/v1/store:

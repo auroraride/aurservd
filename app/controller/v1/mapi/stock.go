@@ -19,7 +19,7 @@ var Stock = new(stock)
 // Create
 // @ID           ManagerStockCreate
 // @Router       /manager/v1/stock [POST]
-// @Summary      M1015 调拨物资
+// @Summary      ME001 调拨物资
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -35,7 +35,7 @@ func (*stock) Create(c echo.Context) (err error) {
 // List
 // @ID           ManagerStockList
 // @Router       /manager/v1/stock [GET]
-// @Summary      M1017 门店物资详细
+// @Summary      ME002 门店物资详细
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -50,7 +50,7 @@ func (*stock) List(c echo.Context) (err error) {
 // Overview
 // @ID           ManagerStockOverview
 // @Router       /manager/v1/stock/overview [GET]
-// @Summary      M1016 物资管理概览
+// @Summary      ME003 物资管理概览
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
