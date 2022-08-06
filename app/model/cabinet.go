@@ -163,7 +163,8 @@ func (cbs CabinetBins) MaxEmpty() (max *CabinetBin, empty *CabinetBin) {
         if bin.Battery && max == nil {
             max = bin
         }
-        if !bin.Battery && empty == nil {
+        // 2022年08月06日16:28:26 曹博文反馈说凯信的仓位开开发现有电池,查询日志所得: 15:43:58时CH7208KXHD220408027电柜的2号仓电池不在位但电流和电压不为空
+        if !bin.Battery && bin.Voltage < 40 && bin.Electricity == 0 && empty == nil {
             empty = bin
         }
         if max != nil && empty != nil {
