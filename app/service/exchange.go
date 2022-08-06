@@ -160,14 +160,13 @@ func (s *exchangeService) RiderList(riderID uint64, req model.PaginationReq) *mo
             if cab != nil {
                 res.Type = "电柜"
                 res.Name = cab.Name
-                // TODO 修改信息展示
-                // info := item.Detail.Info
-                // if info != nil {
-                //     res.BinInfo = model.ExchangeLogBinInfo{
-                //         EmptyIndex: info.EmptyIndex,
-                //         FullIndex:  info.FullIndex,
-                //     }
-                // }
+                if item.Info != nil && item.Info.Exchange != nil {
+                    ex := item.Info.Exchange
+                    res.BinInfo = model.ExchangeLogBinInfo{
+                        EmptyIndex: ex.Empty.Index,
+                        FullIndex:  ex.Fully.Index,
+                    }
+                }
             }
             store := item.Edges.Store
             if store != nil {
@@ -379,14 +378,14 @@ func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.Paginat
             }
         }
 
-        // TODO 修改信息展示
-        // if item.Detail != nil && item.Detail.Info != nil {
-        //     res.Full = fmt.Sprintf("%d号仓, %.2f%%", item.Detail.Info.FullIndex+1, item.Detail.Info.Electricity)
-        //     res.Empty = fmt.Sprintf("%d号仓, %.2f%%", item.Detail.Info.EmptyIndex+1, item.Detail.Info.RiderElectricity)
-        //     if !item.Success && !item.FinishAt.IsZero() {
-        //         res.Error = fmt.Sprintf("%s [%s]", item.Detail.Result.Message, item.Detail.Result.Step)
-        //     }
-        // }
+        if item.Info != nil && item.Info.Exchange != nil {
+            ex := item.Info.Exchange
+            res.Full = fmt.Sprintf("%d号仓, %.2f%%", ex.Fully.Index+1, ex.Fully.Electricity)
+            res.Empty = fmt.Sprintf("%d号仓, %.2f%%", ex.Fully.Index+1, ex.Fully.Electricity)
+            if !item.Success && !item.FinishAt.IsZero() {
+                res.Error = fmt.Sprintf("%s [%s]", item.Info.Message, ex.CurrentStep().Step)
+            }
+        }
         return res
     })
 }

@@ -165,6 +165,7 @@ func (t *Task) Start(cb ...Updater) {
             operator.Ne: t.ID,
         },
         "status": 0,
+        "serial": t.Serial,
     }, bson.M{
         operator.Set: bson.M{"deactivated": true},
     })
