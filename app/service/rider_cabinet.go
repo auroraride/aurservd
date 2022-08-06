@@ -41,7 +41,7 @@ type riderCabinetService struct {
 func NewRiderCabinet(rider *ent.Rider) *riderCabinetService {
     s := &riderCabinetService{
         ctx:     context.Background(),
-        maxTime: 30 * time.Second,
+        maxTime: 180 * time.Second,
     }
     s.ctx = context.WithValue(s.ctx, "rider", rider)
     s.rider = rider
