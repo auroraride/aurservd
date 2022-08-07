@@ -7,6 +7,7 @@ package service
 
 import (
     "context"
+    "fmt"
     "github.com/alibabacloud-go/tea/tea"
     sls "github.com/aliyun/aliyun-log-go-sdk"
     "github.com/auroraride/aurservd/app/ec"
@@ -125,12 +126,18 @@ func (s *cabinetMgrService) BinOperate(req *model.CabinetDoorOperateReq) bool {
 
     // 结束回调
     defer func() {
+        if v := recover(); v != nil {
+            err = fmt.Errorf("%v", v)
+        }
+
         ts := ec.TaskStatusSuccess
         if !status {
             ts = ec.TaskStatusFail
             task.Message = err.Error()
         }
+
         task.Stop(ts)
+        snag.Panic(err)
     }()
 
     // 柜门操作
