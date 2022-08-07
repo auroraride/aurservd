@@ -64,13 +64,9 @@ func NewStockWithEmployee(e *ent.Employee) *stockService {
     return s
 }
 
-func (s *stockService) List(req *model.StockListReq) *model.PaginationRes {
+func (s *stockService) StoreList(req *model.StockListReq) *model.PaginationRes {
     q := ent.Database.Store.QueryNotDeleted().
-        Where(
-            store.Or(
-                store.HasStocks(),
-            ),
-        ).
+        Where(store.Or(store.HasStocks())).
         WithCity().
         WithStocks().
         WithExceptions(func(eq *ent.ExceptionQuery) {
@@ -352,7 +348,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
     }
 }
 
-func (s *stockService) Overview() (res model.StockOverview) {
+func (s *stockService) Overview(req *model.StockOverviewReq) (res model.StockOverview) {
     rows, err := ent.Database.QueryContext(s.ctx, `SELECT DISTINCT ABS(SUM(num)) AS sum,
                 NOT store_id IS NULL AND NOT cabinet_id IS NULL AND num < 0 AS outbound,
                 NOT store_id IS NULL AND NOT cabinet_id IS NULL AND num > 0 AS inbound,

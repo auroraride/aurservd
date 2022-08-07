@@ -8696,10 +8696,65 @@ paths:
       tags:
       - '[M]管理接口'
   /manager/v1/stock:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerStockCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.StockTransferReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: ME001 调拨物资
+      tags:
+      - '[M]管理接口'
+  /manager/v1/stock/overview:
     get:
       consumes:
       - application/json
-      operationId: ManagerStockList
+      operationId: ManagerStockOverview
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 查询目标, 1:门店(默认) 2:电柜
+        enum:
+        - 1
+        - 2
+        in: query
+        name: target
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StockOverview'
+      summary: ME002 门店物资概览
+      tags:
+      - '[M]管理接口'
+  /manager/v1/stock/store:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerStockStoreList
       parameters:
       - description: 管理员校验token
         in: header
@@ -8748,54 +8803,7 @@ paths:
                     $ref: '#/definitions/model.StockListRes'
                   type: array
               type: object
-      summary: ME002 门店物资详细
-      tags:
-      - '[M]管理接口'
-    post:
-      consumes:
-      - application/json
-      operationId: ManagerStockCreate
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: desc
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.StockTransferReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: ME001 调拨物资
-      tags:
-      - '[M]管理接口'
-  /manager/v1/stock/overview:
-    get:
-      consumes:
-      - application/json
-      operationId: ManagerStockOverview
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StockOverview'
-      summary: ME003 物资管理概览
+      summary: ME003 门店物资列表
       tags:
       - '[M]管理接口'
   /manager/v1/store:

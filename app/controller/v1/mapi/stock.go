@@ -32,31 +32,32 @@ func (*stock) Create(c echo.Context) (err error) {
     return ctx.SendResponse()
 }
 
-// List
-// @ID           ManagerStockList
-// @Router       /manager/v1/stock [GET]
-// @Summary      ME002 门店物资详细
+// Overview
+// @ID           ManagerStockOverview
+// @Router       /manager/v1/stock/overview [GET]
+// @Summary      ME002 门店物资概览
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query  model.StockOverviewReq  true  "查询目标"
+// @Success      200  {object}  model.StockOverview  "请求成功"
+func (*stock) Overview(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.StockOverviewReq](c)
+    return ctx.SendResponse(service.NewStock().Overview(req))
+}
+
+// StoreList
+// @ID           ManagerStockStoreList
+// @Router       /manager/v1/stock/store [GET]
+// @Summary      ME003 门店物资列表
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        query  query   model.StockListReq  true  "desc"
 // @Success      200  {object}  model.PaginationRes{items=[]model.StockListRes}  "请求成功"
-func (*stock) List(c echo.Context) (err error) {
+func (*stock) StoreList(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.StockListReq](c)
-    return ctx.SendResponse(service.NewStockWithModifier(ctx.Modifier).List(req))
-}
-
-// Overview
-// @ID           ManagerStockOverview
-// @Router       /manager/v1/stock/overview [GET]
-// @Summary      ME003 物资管理概览
-// @Tags         [M]管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Success      200  {object}  model.StockOverview  "请求成功"
-func (*stock) Overview(c echo.Context) (err error) {
-    ctx := app.ContextX[app.ManagerContext](c)
-    return ctx.SendResponse(service.NewStock().Overview())
+    return ctx.SendResponse(service.NewStockWithModifier(ctx.Modifier).StoreList(req))
 }

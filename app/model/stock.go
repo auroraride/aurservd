@@ -44,6 +44,10 @@ type StockTransferReq struct {
     Force bool `swaggerignore:"true"` // 是否强制 (忽略电柜初始化)
 }
 
+type StockOverviewReq struct {
+    Target uint8 `json:"target" query:"target" enums:"1,2"` // 查询目标, 1:门店(默认) 2:电柜
+}
+
 type StockListReq struct {
     PaginationReq
 
