@@ -65,7 +65,7 @@ func (*inventory) Delete(c echo.Context) (err error) {
 // Transferable
 // @ID           ManagerInventoryTransferable
 // @Router       /manager/v1/inventory/transferable [GET]
-// @Summary      M1018 可调拨物资清单
+// @Summary      M1015 可调拨物资清单
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json

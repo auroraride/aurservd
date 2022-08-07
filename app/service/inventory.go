@@ -107,7 +107,7 @@ func (s *inventoryService) ListInventory(req model.InventoryListReq) (items []mo
 }
 
 func (s *inventoryService) ListStockInventory(id uint64, req model.InventoryListReq) (res []model.InventoryItemWithNum) {
-    inm := NewStock().CurrentMap(id)
+    inm := NewStock().StoreCurrentMap(id)
     items := s.ListInventory(req)
     res = make([]model.InventoryItemWithNum, len(items))
     for i, item := range items {

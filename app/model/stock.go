@@ -59,11 +59,11 @@ type StockListReq struct {
 }
 
 type StockMaterial struct {
-    Name      string `json:"name"`      // 物资名称
-    Outbound  int    `json:"outbound"`  // 出库数量
-    Inbound   int    `json:"inbound"`   // 入库数量
-    Surplus   int    `json:"surplus"`   // 剩余
-    Exception int    `json:"exception"` // 异常数量
+    Name      string `json:"name"`                // 物资名称
+    Outbound  int    `json:"outbound"`            // 出库数量
+    Inbound   int    `json:"inbound"`             // 入库数量
+    Surplus   int    `json:"surplus"`             // 剩余
+    Exception int    `json:"exception,omitempty"` // 异常数量(电柜无)
 }
 
 type StockStoreMaterial struct {
@@ -139,4 +139,21 @@ type StockEmployeeListRes struct {
     Today *int `json:"today,omitempty"` // 今日出库/入库数量, 仅第一页请求时会返回
 
     *PaginationRes
+}
+
+type StockCabinetListReq struct {
+    PaginationReq
+
+    Serial    string `json:"serial" query:"serial"`       // 电柜编号
+    CityID    uint64 `json:"cityId" query:"cityId"`       // 城市ID
+    CabinetID uint64 `json:"cabinetId" query:"cabinetId"` // 电柜ID
+    Start     string `json:"start" query:"start"`         // 开始时间
+    End       string `json:"end" query:"end"`             // 结束时间
+}
+
+type StockCabinetListRes struct {
+    Serial    string           `json:"serial"`    // 电柜编号
+    City      City             `json:"city"`      // 城市
+    Name      string           `json:"name"`      // 电柜名称
+    Batteries []*StockMaterial `json:"batteries"` // 电池详情
 }

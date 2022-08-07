@@ -3730,6 +3730,24 @@ definitions:
       status:
         type: boolean
     type: object
+  model.StockCabinetListRes:
+    properties:
+      batteries:
+        description: 电池详情
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      name:
+        description: 电柜名称
+        type: string
+      serial:
+        description: 电柜编号
+        type: string
+    type: object
   model.StockEmployeeListRes:
     properties:
       items:
@@ -3829,7 +3847,7 @@ definitions:
   model.StockMaterial:
     properties:
       exception:
-        description: 异常数量
+        description: 异常数量(电柜无)
         type: integer
       inbound:
         description: 入库数量
@@ -7618,7 +7636,7 @@ paths:
             items:
               $ref: '#/definitions/model.InventoryItem'
             type: array
-      summary: M1018 可调拨物资清单
+      summary: M1015 可调拨物资清单
       tags:
       - '[M]管理接口'
   /manager/v1/order:
@@ -8722,6 +8740,62 @@ paths:
       summary: ME001 调拨物资
       tags:
       - '[M]管理接口'
+  /manager/v1/stock/cabinet:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerStockCabinetList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 电柜ID
+        in: query
+        name: cabinetId
+        type: integer
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 电柜编号
+        in: query
+        name: serial
+        type: string
+      - description: 开始时间
+        in: query
+        name: start
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.StockCabinetListRes'
+                  type: array
+              type: object
+      summary: ME004 电柜物资列表
+      tags:
+      - '[M]管理接口'
   /manager/v1/stock/overview:
     get:
       consumes:
@@ -8747,7 +8821,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StockOverview'
-      summary: ME002 门店物资概览
+      summary: ME002 物资概览
       tags:
       - '[M]管理接口'
   /manager/v1/stock/store:

@@ -81,7 +81,7 @@ func (s *enterpriseService) Modify(req *model.EnterpriseDetailWithID) {
     e := s.QueryX(req.ID)
     // 判定付费方式是否允许改变
     if *req.Payment != e.Payment {
-        // set := NewEnterpriseStatementWithModifier(s.modifier).Current(e)
+        // set := NewEnterpriseStatementWithModifier(s.modifier).StoreCurrent(e)
         // if set.Cost > 0 {
         //     snag.Panic("企业已产生费用, 无法修改支付方式")
         // }

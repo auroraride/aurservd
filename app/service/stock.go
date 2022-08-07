@@ -14,6 +14,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/branch"
+    "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/internal/ent/exception"
     "github.com/auroraride/aurservd/internal/ent/predicate"
     "github.com/auroraride/aurservd/internal/ent/stock"
@@ -66,7 +67,7 @@ func NewStockWithEmployee(e *ent.Employee) *stockService {
 
 func (s *stockService) StoreList(req *model.StockListReq) *model.PaginationRes {
     q := ent.Database.Store.QueryNotDeleted().
-        Where(store.Or(store.HasStocks())).
+        Where(store.HasStocks()).
         WithCity().
         WithStocks().
         WithExceptions(func(eq *ent.ExceptionQuery) {
@@ -132,7 +133,7 @@ func (s *stockService) StoreList(req *model.StockListReq) *model.PaginationRes {
             batteries := make(map[string]*model.StockMaterial)
             materials := make(map[string]*model.StockMaterial)
 
-            // 入库
+            // 出入库
             for _, st := range item.Edges.Stocks {
                 if st.Model != nil {
                     // 电池
@@ -145,9 +146,9 @@ func (s *stockService) StoreList(req *model.StockListReq) *model.PaginationRes {
 
             for _, ex := range item.Edges.Exceptions {
                 if ex.Model != nil {
-                    s.calculateMaterial(batteries, ex)
+                    s.calculateException(batteries, ex)
                 } else {
-                    s.calculateMaterial(materials, ex)
+                    s.calculateException(materials, ex)
                 }
             }
 
@@ -173,7 +174,7 @@ func (s *stockService) StoreList(req *model.StockListReq) *model.PaginationRes {
     )
 }
 
-func (s *stockService) calculateMaterial(items map[string]*model.StockMaterial, ex *ent.Exception) {
+func (s *stockService) calculateException(items map[string]*model.StockMaterial, ex *ent.Exception) {
     name := ex.Name
     if _, ok := items[name]; !ok {
         items[name] = &model.StockMaterial{
@@ -586,8 +587,8 @@ func (s *stockService) EmployeeList(req *model.StockEmployeeListReq) model.Stock
     }
 }
 
-// Current 列出当前门店所有库存物资
-func (s *stockService) Current(id uint64) []model.InventoryItemWithNum {
+// StoreCurrent 列出当前门店所有库存物资
+func (s *stockService) StoreCurrent(id uint64) []model.InventoryItemWithNum {
     ins := make([]model.InventoryItemWithNum, 0)
     err := s.orm.QueryNotDeleted().
         Where(stock.StoreID(id)).
@@ -605,10 +606,60 @@ func (s *stockService) Current(id uint64) []model.InventoryItemWithNum {
     return ins
 }
 
-func (s *stockService) CurrentMap(id uint64) map[string]model.InventoryItemWithNum {
+func (s *stockService) StoreCurrentMap(id uint64) map[string]model.InventoryItemWithNum {
     inm := make(map[string]model.InventoryItemWithNum)
-    for _, in := range s.Current(id) {
+    for _, in := range s.StoreCurrent(id) {
         inm[in.Name] = in
     }
     return inm
+}
+
+func (s *stockService) CabinetList(req *model.StockCabinetListReq) *model.PaginationRes {
+    q := ent.Database.Cabinet.QueryNotDeleted().
+        Where(cabinet.HasStocks()).
+        WithCity().
+        WithStocks()
+
+    if req.CabinetID != 0 {
+        q.Where(cabinet.ID(req.CabinetID))
+    }
+    if req.Serial != "" {
+        q.Where(cabinet.Serial(req.Serial))
+    }
+    if req.CityID != 0 {
+        q.Where(cabinet.CityID(req.CityID))
+    }
+    if req.Start != "" {
+        q.Where(cabinet.CreatedAtGTE(tools.NewTime().ParseDateStringX(req.Start)))
+    }
+    if req.End != "" {
+        q.Where(cabinet.CreatedAtLT(tools.NewTime().ParseNextDateStringX(req.End)))
+    }
+
+    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Cabinet) model.StockCabinetListRes {
+        res := model.StockCabinetListRes{
+            Serial:    item.Serial,
+            Name:      item.Name,
+            Batteries: make([]*model.StockMaterial, 0),
+        }
+        c := item.Edges.City
+        if c != nil {
+            res.City = model.City{
+                ID:   c.ID,
+                Name: c.Name,
+            }
+        }
+        batteries := make(map[string]*model.StockMaterial)
+
+        // 出入库
+        for _, st := range item.Edges.Stocks {
+            s.calculate(batteries, st)
+        }
+
+        for _, battery := range batteries {
+            res.Batteries = append(res.Batteries, battery)
+        }
+
+        return res
+    })
 }

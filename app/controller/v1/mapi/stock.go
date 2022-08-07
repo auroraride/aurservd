@@ -35,7 +35,7 @@ func (*stock) Create(c echo.Context) (err error) {
 // Overview
 // @ID           ManagerStockOverview
 // @Router       /manager/v1/stock/overview [GET]
-// @Summary      ME002 门店物资概览
+// @Summary      ME002 物资概览
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -60,4 +60,19 @@ func (*stock) Overview(c echo.Context) (err error) {
 func (*stock) StoreList(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.StockListReq](c)
     return ctx.SendResponse(service.NewStockWithModifier(ctx.Modifier).StoreList(req))
+}
+
+// CabinetList
+// @ID           ManagerStockCabinetList
+// @Router       /manager/v1/stock/cabinet [GET]
+// @Summary      ME004 电柜物资列表
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query   model.StockCabinetListReq  true  "desc"
+// @Success      200  {object}  model.PaginationRes{items=[]model.StockCabinetListRes}  "请求成功"
+func (*stock) CabinetList(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.StockCabinetListReq](c)
+    return ctx.SendResponse(service.NewStockWithModifier(ctx.Modifier).CabinetList(req))
 }

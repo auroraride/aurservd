@@ -5006,7 +5006,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M1018 可调拨物资清单",
+                "summary": "M1015 可调拨物资清单",
                 "operationId": "ManagerInventoryTransferable",
                 "parameters": [
                     {
@@ -6701,6 +6701,95 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/stock/cabinet": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "ME004 电柜物资列表",
+                "operationId": "ManagerStockCabinetList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "电柜ID",
+                        "name": "cabinetId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜编号",
+                        "name": "serial",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.StockCabinetListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/stock/overview": {
             "get": {
                 "consumes": [
@@ -6712,7 +6801,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "ME002 门店物资概览",
+                "summary": "ME002 物资概览",
                 "operationId": "ManagerStockOverview",
                 "parameters": [
                     {
@@ -14465,6 +14554,34 @@ const docTemplate = `{
                 }
             }
         },
+        "model.StockCabinetListRes": {
+            "type": "object",
+            "properties": {
+                "batteries": {
+                    "description": "电池详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.StockMaterial"
+                    }
+                },
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "name": {
+                    "description": "电柜名称",
+                    "type": "string"
+                },
+                "serial": {
+                    "description": "电柜编号",
+                    "type": "string"
+                }
+            }
+        },
         "model.StockEmployeeListRes": {
             "type": "object",
             "properties": {
@@ -14613,7 +14730,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "exception": {
-                    "description": "异常数量",
+                    "description": "异常数量(电柜无)",
                     "type": "integer"
                 },
                 "inbound": {
