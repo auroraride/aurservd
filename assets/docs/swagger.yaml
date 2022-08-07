@@ -6305,7 +6305,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.StatusResponse'
+            $ref: '#/definitions/model.CabinetDetailRes'
       summary: M5012 电柜操作维护
       tags:
       - '[M]管理接口'

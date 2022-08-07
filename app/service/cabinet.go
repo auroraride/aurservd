@@ -330,8 +330,8 @@ func (s *cabinetService) DoorOpenStatus(item *ent.Cabinet, index int, params ...
     return ec.DoorStatusClose
 }
 
-// Detail 电柜详细信息
-func (s *cabinetService) Detail(id uint64) *model.CabinetDetailRes {
+// DetailFromID 电柜详细信息
+func (s *cabinetService) DetailFromID(id uint64) *model.CabinetDetailRes {
     item := s.orm.QueryNotDeleted().
         Where(cabinet.ID(id)).
         WithBms().
@@ -339,12 +339,23 @@ func (s *cabinetService) Detail(id uint64) *model.CabinetDetailRes {
     if item == nil {
         snag.Panic("未找到电柜")
     }
-    bms := item.Edges.Bms
 
-    err := s.UpdateStatus(item)
-    if err != nil {
-        snag.Panic(err)
+    return s.Detail(item)
+}
+
+func (s *cabinetService) Detail(item *ent.Cabinet) *model.CabinetDetailRes {
+    if time.Now().Sub(item.UpdatedAt).Seconds() > 2 {
+        err := s.UpdateStatus(item)
+        if err != nil {
+            snag.Panic(err)
+        }
     }
+
+    bms := item.Edges.Bms
+    if bms == nil {
+        bms, _ = item.QueryBms().All(s.ctx)
+    }
+
     res := new(model.CabinetDetailRes)
     _ = copier.Copy(res, item)
     for _, bm := range bms {

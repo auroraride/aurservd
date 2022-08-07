@@ -95,7 +95,7 @@ func (*cabinet) Delete(c echo.Context) (err error) {
 // @Success      200  {object}  model.CabinetDetailRes  "请求成功"
 func (*cabinet) Detail(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-    return ctx.SendResponse(service.NewCabinet().Detail(req.ID))
+    return ctx.SendResponse(service.NewCabinet().DetailFromID(req.ID))
 }
 
 // TODO 非维护状态禁止操作柜门
@@ -209,7 +209,7 @@ func (*cabinet) Transfer(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        body  body     model.CabinetMaintainReq  true  "请求参数"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @Success      200  {object}  model.CabinetDetailRes  "请求成功"
 func (*cabinet) Maintain(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetMaintainReq](c)
     service.NewCabinetMgrWithModifier(ctx.Modifier).Maintain(req)

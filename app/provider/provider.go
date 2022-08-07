@@ -29,6 +29,7 @@ type Provider interface {
     Cabinets() ([]*ent.Cabinet, error)
     Brand() string
     Logger() *Logger
+    // UpdateStatus 更新电柜状态 params 0:(true)是否换电中
     UpdateStatus(item *ent.Cabinet, params ...any) error
     DoorOperate(code, serial, operation string, door int) bool
     Reboot(code string, serial string) bool

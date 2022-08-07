@@ -43,7 +43,7 @@ func NewCabinetMgrWithModifier(m *model.Modifier) *cabinetMgrService {
 }
 
 // Maintain 设置电柜操作维护
-func (s *cabinetMgrService) Maintain(req *model.CabinetMaintainReq) {
+func (s *cabinetMgrService) Maintain(req *model.CabinetMaintainReq) (detail *model.CabinetDetailRes) {
     if req.Maintain == nil {
         snag.Panic("参数请求错误")
     }
@@ -58,7 +58,14 @@ func (s *cabinetMgrService) Maintain(req *model.CabinetMaintainReq) {
         status = model.CabinetStatusMaintenance
     }
 
-    _, _ = cab.Update().SetStatus(status.Raw()).Save(s.ctx)
+    detail = NewCabinetWithModifier(s.modifier).Detail(cab)
+
+    _, err := cab.Update().SetStatus(status.Raw()).Save(s.ctx)
+    if err != nil {
+        snag.Panic(err)
+    }
+
+    detail.Status = status
 
     // 记录日志
     go logging.NewOperateLog().
@@ -67,6 +74,8 @@ func (s *cabinetMgrService) Maintain(req *model.CabinetMaintainReq) {
         SetOperate(model.OperateAssistanceAllocate).
         SetDiff(model.CabinetStatus(cab.Status).String(), status.String()).
         Send()
+
+    return
 }
 
 // BinOperate 仓门操控
