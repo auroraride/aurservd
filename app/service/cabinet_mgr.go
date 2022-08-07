@@ -137,7 +137,10 @@ func (s *cabinetMgrService) BinOperate(req *model.CabinetDoorOperateReq) bool {
         }
 
         task.Stop(ts)
-        snag.Panic(err)
+
+        if err != nil {
+            snag.Panic(err)
+        }
     }()
 
     // 柜门操作
