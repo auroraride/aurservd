@@ -736,6 +736,7 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 			nodeids[nodes[i].ID] = nodes[i]
 			nodes[i].Edges.Stocks = []*Stock{}
 		}
+		query.withFKs = true
 		query.Where(predicate.Stock(func(s *sql.Selector) {
 			s.Where(sql.InValues(cabinet.StocksColumn, fks...))
 		}))

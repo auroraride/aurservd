@@ -3,6 +3,7 @@
 package stock
 
 import (
+	"fmt"
 	"time"
 
 	"entgo.io/ent"
@@ -27,6 +28,8 @@ const (
 	FieldRemark = "remark"
 	// FieldManagerID holds the string denoting the manager_id field in the database.
 	FieldManagerID = "manager_id"
+	// FieldCityID holds the string denoting the city_id field in the database.
+	FieldCityID = "city_id"
 	// FieldSn holds the string denoting the sn field in the database.
 	FieldSn = "sn"
 	// FieldType holds the string denoting the type field in the database.
@@ -45,8 +48,12 @@ const (
 	FieldModel = "model"
 	// FieldNum holds the string denoting the num field in the database.
 	FieldNum = "num"
+	// FieldMaterial holds the string denoting the material field in the database.
+	FieldMaterial = "material"
 	// EdgeManager holds the string denoting the manager edge name in mutations.
 	EdgeManager = "manager"
+	// EdgeCity holds the string denoting the city edge name in mutations.
+	EdgeCity = "city"
 	// EdgeStore holds the string denoting the store edge name in mutations.
 	EdgeStore = "store"
 	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
@@ -55,6 +62,8 @@ const (
 	EdgeRider = "rider"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
 	EdgeEmployee = "employee"
+	// EdgeSpouse holds the string denoting the spouse edge name in mutations.
+	EdgeSpouse = "spouse"
 	// Table holds the table name of the stock in the database.
 	Table = "stock"
 	// ManagerTable is the table that holds the manager relation/edge.
@@ -64,6 +73,13 @@ const (
 	ManagerInverseTable = "manager"
 	// ManagerColumn is the table column denoting the manager relation/edge.
 	ManagerColumn = "manager_id"
+	// CityTable is the table that holds the city relation/edge.
+	CityTable = "stock"
+	// CityInverseTable is the table name for the City entity.
+	// It exists in this package in order to avoid circular dependency with the "city" package.
+	CityInverseTable = "city"
+	// CityColumn is the table column denoting the city relation/edge.
+	CityColumn = "city_id"
 	// StoreTable is the table that holds the store relation/edge.
 	StoreTable = "stock"
 	// StoreInverseTable is the table name for the Store entity.
@@ -92,6 +108,10 @@ const (
 	EmployeeInverseTable = "employee"
 	// EmployeeColumn is the table column denoting the employee relation/edge.
 	EmployeeColumn = "employee_id"
+	// SpouseTable is the table that holds the spouse relation/edge.
+	SpouseTable = "stock"
+	// SpouseColumn is the table column denoting the spouse relation/edge.
+	SpouseColumn = "stock_spouse"
 )
 
 // Columns holds all SQL columns for stock fields.
@@ -104,6 +124,7 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldManagerID,
+	FieldCityID,
 	FieldSn,
 	FieldType,
 	FieldStoreID,
@@ -113,12 +134,24 @@ var Columns = []string{
 	FieldName,
 	FieldModel,
 	FieldNum,
+	FieldMaterial,
+}
+
+// ForeignKeys holds the SQL foreign-keys that are owned by the "stock"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"stock_spouse",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -142,3 +175,27 @@ var (
 	// DefaultType holds the default value on creation for the "type" field.
 	DefaultType uint8
 )
+
+// Material defines the type for the "material" enum field.
+type Material string
+
+// Material values.
+const (
+	MaterialBattery Material = "battery"
+	MaterialFrame   Material = "frame"
+	MaterialOthers  Material = "others"
+)
+
+func (m Material) String() string {
+	return string(m)
+}
+
+// MaterialValidator is a validator for the "material" field enum values. It is called by the builders before save.
+func MaterialValidator(m Material) error {
+	switch m {
+	case MaterialBattery, MaterialFrame, MaterialOthers:
+		return nil
+	default:
+		return fmt.Errorf("stock: invalid enum value for material field: %q", m)
+	}
+}

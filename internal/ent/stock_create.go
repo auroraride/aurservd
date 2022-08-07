@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -106,6 +107,20 @@ func (sc *StockCreate) SetManagerID(u uint64) *StockCreate {
 func (sc *StockCreate) SetNillableManagerID(u *uint64) *StockCreate {
 	if u != nil {
 		sc.SetManagerID(*u)
+	}
+	return sc
+}
+
+// SetCityID sets the "city_id" field.
+func (sc *StockCreate) SetCityID(u uint64) *StockCreate {
+	sc.mutation.SetCityID(u)
+	return sc
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (sc *StockCreate) SetNillableCityID(u *uint64) *StockCreate {
+	if u != nil {
+		sc.SetCityID(*u)
 	}
 	return sc
 }
@@ -212,9 +227,20 @@ func (sc *StockCreate) SetNum(i int) *StockCreate {
 	return sc
 }
 
+// SetMaterial sets the "material" field.
+func (sc *StockCreate) SetMaterial(s stock.Material) *StockCreate {
+	sc.mutation.SetMaterial(s)
+	return sc
+}
+
 // SetManager sets the "manager" edge to the Manager entity.
 func (sc *StockCreate) SetManager(m *Manager) *StockCreate {
 	return sc.SetManagerID(m.ID)
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (sc *StockCreate) SetCity(c *City) *StockCreate {
+	return sc.SetCityID(c.ID)
 }
 
 // SetStore sets the "store" edge to the Store entity.
@@ -235,6 +261,25 @@ func (sc *StockCreate) SetRider(r *Rider) *StockCreate {
 // SetEmployee sets the "employee" edge to the Employee entity.
 func (sc *StockCreate) SetEmployee(e *Employee) *StockCreate {
 	return sc.SetEmployeeID(e.ID)
+}
+
+// SetSpouseID sets the "spouse" edge to the Stock entity by ID.
+func (sc *StockCreate) SetSpouseID(id uint64) *StockCreate {
+	sc.mutation.SetSpouseID(id)
+	return sc
+}
+
+// SetNillableSpouseID sets the "spouse" edge to the Stock entity by ID if the given value is not nil.
+func (sc *StockCreate) SetNillableSpouseID(id *uint64) *StockCreate {
+	if id != nil {
+		sc = sc.SetSpouseID(*id)
+	}
+	return sc
+}
+
+// SetSpouse sets the "spouse" edge to the Stock entity.
+func (sc *StockCreate) SetSpouse(s *Stock) *StockCreate {
+	return sc.SetSpouseID(s.ID)
 }
 
 // Mutation returns the StockMutation object of the builder.
@@ -357,6 +402,14 @@ func (sc *StockCreate) check() error {
 	if _, ok := sc.mutation.Num(); !ok {
 		return &ValidationError{Name: "num", err: errors.New(`ent: missing required field "Stock.num"`)}
 	}
+	if _, ok := sc.mutation.Material(); !ok {
+		return &ValidationError{Name: "material", err: errors.New(`ent: missing required field "Stock.material"`)}
+	}
+	if v, ok := sc.mutation.Material(); ok {
+		if err := stock.MaterialValidator(v); err != nil {
+			return &ValidationError{Name: "material", err: fmt.Errorf(`ent: validator failed for field "Stock.material": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -473,6 +526,14 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 		})
 		_node.Num = value
 	}
+	if value, ok := sc.mutation.Material(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: stock.FieldMaterial,
+		})
+		_node.Material = value
+	}
 	if nodes := sc.mutation.ManagerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -491,6 +552,26 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.ManagerID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.CityTable,
+			Columns: []string{stock.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CityID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := sc.mutation.StoreIDs(); len(nodes) > 0 {
@@ -571,6 +652,26 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.EmployeeID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.SpouseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   stock.SpouseTable,
+			Columns: []string{stock.SpouseColumn},
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.stock_spouse = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -741,6 +842,24 @@ func (u *StockUpsert) ClearManagerID() *StockUpsert {
 	return u
 }
 
+// SetCityID sets the "city_id" field.
+func (u *StockUpsert) SetCityID(v uint64) *StockUpsert {
+	u.Set(stock.FieldCityID, v)
+	return u
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *StockUpsert) UpdateCityID() *StockUpsert {
+	u.SetExcluded(stock.FieldCityID)
+	return u
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *StockUpsert) ClearCityID() *StockUpsert {
+	u.SetNull(stock.FieldCityID)
+	return u
+}
+
 // SetSn sets the "sn" field.
 func (u *StockUpsert) SetSn(v string) *StockUpsert {
 	u.Set(stock.FieldSn, v)
@@ -888,6 +1007,18 @@ func (u *StockUpsert) UpdateNum() *StockUpsert {
 // AddNum adds v to the "num" field.
 func (u *StockUpsert) AddNum(v int) *StockUpsert {
 	u.Add(stock.FieldNum, v)
+	return u
+}
+
+// SetMaterial sets the "material" field.
+func (u *StockUpsert) SetMaterial(v stock.Material) *StockUpsert {
+	u.Set(stock.FieldMaterial, v)
+	return u
+}
+
+// UpdateMaterial sets the "material" field to the value that was provided on create.
+func (u *StockUpsert) UpdateMaterial() *StockUpsert {
+	u.SetExcluded(stock.FieldMaterial)
 	return u
 }
 
@@ -1077,6 +1208,27 @@ func (u *StockUpsertOne) ClearManagerID() *StockUpsertOne {
 	})
 }
 
+// SetCityID sets the "city_id" field.
+func (u *StockUpsertOne) SetCityID(v uint64) *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.SetCityID(v)
+	})
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *StockUpsertOne) UpdateCityID() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateCityID()
+	})
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *StockUpsertOne) ClearCityID() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.ClearCityID()
+	})
+}
+
 // SetSn sets the "sn" field.
 func (u *StockUpsertOne) SetSn(v string) *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
@@ -1249,6 +1401,20 @@ func (u *StockUpsertOne) AddNum(v int) *StockUpsertOne {
 func (u *StockUpsertOne) UpdateNum() *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
 		s.UpdateNum()
+	})
+}
+
+// SetMaterial sets the "material" field.
+func (u *StockUpsertOne) SetMaterial(v stock.Material) *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.SetMaterial(v)
+	})
+}
+
+// UpdateMaterial sets the "material" field to the value that was provided on create.
+func (u *StockUpsertOne) UpdateMaterial() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateMaterial()
 	})
 }
 
@@ -1602,6 +1768,27 @@ func (u *StockUpsertBulk) ClearManagerID() *StockUpsertBulk {
 	})
 }
 
+// SetCityID sets the "city_id" field.
+func (u *StockUpsertBulk) SetCityID(v uint64) *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.SetCityID(v)
+	})
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *StockUpsertBulk) UpdateCityID() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateCityID()
+	})
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *StockUpsertBulk) ClearCityID() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.ClearCityID()
+	})
+}
+
 // SetSn sets the "sn" field.
 func (u *StockUpsertBulk) SetSn(v string) *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
@@ -1774,6 +1961,20 @@ func (u *StockUpsertBulk) AddNum(v int) *StockUpsertBulk {
 func (u *StockUpsertBulk) UpdateNum() *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
 		s.UpdateNum()
+	})
+}
+
+// SetMaterial sets the "material" field.
+func (u *StockUpsertBulk) SetMaterial(v stock.Material) *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.SetMaterial(v)
+	})
+}
+
+// UpdateMaterial sets the "material" field to the value that was provided on create.
+func (u *StockUpsertBulk) UpdateMaterial() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateMaterial()
 	})
 }
 

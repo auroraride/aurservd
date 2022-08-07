@@ -38,6 +38,7 @@ func (Stock) Fields() []ent.Field {
         field.String("name").Comment("物资名称"),
         field.String("model").Optional().Nillable().Comment("电池型号"),
         field.Int("num").Immutable().Comment("物资数量: 正值调入 / 负值调出"),
+        field.Enum("material").Values("battery", "frame", "others").Comment("物资种类"),
     }
 }
 
@@ -48,6 +49,7 @@ func (Stock) Edges() []ent.Edge {
         edge.From("cabinet", Cabinet.Type).Unique().Ref("stocks").Field("cabinet_id"),
         edge.From("rider", Rider.Type).Unique().Ref("stocks").Field("rider_id"),
         edge.From("employee", Employee.Type).Unique().Ref("stocks").Field("employee_id"),
+        edge.To("spouse", Stock.Type).Unique(),
     }
 }
 
@@ -59,6 +61,7 @@ func (Stock) Mixin() []ent.Mixin {
             IndexCreator: true,
         },
         ManagerMixin{Optional: true},
+        CityMixin{Optional: true},
     }
 }
 

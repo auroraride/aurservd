@@ -656,6 +656,7 @@ func (sq *StoreQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Store,
 			nodeids[nodes[i].ID] = nodes[i]
 			nodes[i].Edges.Stocks = []*Stock{}
 		}
+		query.withFKs = true
 		query.Where(predicate.Stock(func(s *sql.Selector) {
 			s.Where(sql.InValues(store.StocksColumn, fks...))
 		}))

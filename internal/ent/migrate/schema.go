@@ -1977,10 +1977,13 @@ var (
 		{Name: "name", Type: field.TypeString, Comment: "物资名称"},
 		{Name: "model", Type: field.TypeString, Comment: "电池型号", Nullable: true},
 		{Name: "num", Type: field.TypeInt, Comment: "物资数量: 正值调入 / 负值调出"},
+		{Name: "material", Type: field.TypeEnum, Comment: "物资种类", Enums: []string{"battery", "frame", "others"}},
 		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "rider_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "manager_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "stock_spouse", Type: field.TypeUint64, Unique: true, Nullable: true},
 		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// StockTable holds the schema information for the "stock" table.
@@ -1991,31 +1994,43 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "stock_cabinet_stocks",
-				Columns:    []*schema.Column{StockColumns[12]},
+				Columns:    []*schema.Column{StockColumns[13]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "stock_employee_stocks",
-				Columns:    []*schema.Column{StockColumns[13]},
+				Columns:    []*schema.Column{StockColumns[14]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "stock_rider_stocks",
-				Columns:    []*schema.Column{StockColumns[14]},
+				Columns:    []*schema.Column{StockColumns[15]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "stock_manager_manager",
-				Columns:    []*schema.Column{StockColumns[15]},
+				Columns:    []*schema.Column{StockColumns[16]},
 				RefColumns: []*schema.Column{ManagerColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
+				Symbol:     "stock_city_city",
+				Columns:    []*schema.Column{StockColumns[17]},
+				RefColumns: []*schema.Column{CityColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "stock_stock_spouse",
+				Columns:    []*schema.Column{StockColumns[18]},
+				RefColumns: []*schema.Column{StockColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
 				Symbol:     "stock_store_stocks",
-				Columns:    []*schema.Column{StockColumns[16]},
+				Columns:    []*schema.Column{StockColumns[19]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2650,7 +2665,9 @@ func init() {
 	StockTable.ForeignKeys[1].RefTable = EmployeeTable
 	StockTable.ForeignKeys[2].RefTable = RiderTable
 	StockTable.ForeignKeys[3].RefTable = ManagerTable
-	StockTable.ForeignKeys[4].RefTable = StoreTable
+	StockTable.ForeignKeys[4].RefTable = CityTable
+	StockTable.ForeignKeys[5].RefTable = StockTable
+	StockTable.ForeignKeys[6].RefTable = StoreTable
 	StockTable.Annotation = &entsql.Annotation{
 		Table: "stock",
 	}

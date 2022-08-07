@@ -19,6 +19,7 @@ const (
     StockTargetCabinet       // 调拨对象 - 电柜
 )
 
+// StockNumberOfRiderBusiness 出入库电池数量
 func StockNumberOfRiderBusiness(typ uint8) (num int) {
     switch typ {
     case StockTypeRiderObtain, StockTypeRiderContinue:
@@ -37,7 +38,7 @@ type StockTransferReq struct {
     Num   int    `json:"num"`             // 调拨数量
 
     OutboundID     uint64 `json:"outboundId"`                   // 调出自 0:平台
-    OutBoundTarget uint8  `json:"outBoundTarget" enums:"0,1,2"` // 调出目标 0:平台 1:门店 2:电柜
+    OutboundTarget uint8  `json:"outboundTarget" enums:"0,1,2"` // 调出目标 0:平台 1:门店 2:电柜
     InboundID      uint64 `json:"inboundId"`                    // 调入至 0:平台
     InboundTarget  uint8  `json:"inboundTarget" enums:"0,1,2"`  // 调入目标 0:平台 1:门店 2:电柜
 
@@ -93,6 +94,7 @@ type StockBusinessReq struct {
     RiderID   uint64 `json:"riderId"`   // 骑手ID
     Model     string `json:"model"`     // 电池型号
     StockType uint8  `json:"stockType"` // 出入库类型
+    CityID    uint64 `json:"cityId"`    // 城市
 
     StoreID    *uint64 `json:"storeId"`    // 门店ID
     EmployeeID *uint64 `json:"employeeId"` // 店员ID
@@ -156,4 +158,29 @@ type StockCabinetListRes struct {
     City      City             `json:"city"`      // 城市
     Name      string           `json:"name"`      // 电柜名称
     Batteries []*StockMaterial `json:"batteries"` // 电池详情
+}
+
+type StockDetailReq struct {
+    PaginationReq
+
+    QueryTarget uint8  `json:"queryTarget"` // 查询对象 0:全部 1:门店 2:电柜
+    Materials   string `json:"materials"`   // 查询物资类别, 默认为电池, 逗号分隔 battery:电池 frame:车架 others:其他物资
+    Serial      string `json:"serial"`      // 电柜编号
+    CityID      uint64 `json:"cityId"`      // 城市ID
+    CabinetID   uint64 `json:"cabinetId"`   // 电柜ID
+    StoreID     uint64 `json:"storeId"`     // 门店ID
+    Start       string `json:"start"`       // 开始时间
+    End         string `json:"end"`         // 结束时间
+    Positive    bool   `json:"positive"`    // 是否正序(默认倒序)
+}
+
+type StockDetailRes struct {
+    City     string `json:"city"`     // 城市
+    Inbound  string `json:"inbound"`  // 调入
+    Outbound string `json:"outbound"` // 调出
+    Name     string `json:"name"`     // 物资
+    Num      int    `json:"num"`      // 数量
+    Type     string `json:"type"`     // 类型
+    Operator string `json:"operator"` // 操作人
+    Time     string `json:"time"`     // 时间
 }

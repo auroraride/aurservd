@@ -131,6 +131,7 @@ func loadManagerRoutes() {
     g.GET("/stock/overview", mapi.Stock.Overview)
     g.GET("/stock/store", mapi.Stock.StoreList)
     g.GET("/stock/cabinet", mapi.Stock.CabinetList)
+    g.GET("/stock/detail", mapi.Stock.Detail)
 
     // 选择项目
     g.GET("/selection/plan", mapi.Selection.Plan)

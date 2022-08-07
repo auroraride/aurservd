@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -30,10 +31,13 @@ type StockQuery struct {
 	predicates []predicate.Stock
 	// eager-loading edges.
 	withManager  *ManagerQuery
+	withCity     *CityQuery
 	withStore    *StoreQuery
 	withCabinet  *CabinetQuery
 	withRider    *RiderQuery
 	withEmployee *EmployeeQuery
+	withSpouse   *StockQuery
+	withFKs      bool
 	modifiers    []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -86,6 +90,28 @@ func (sq *StockQuery) QueryManager() *ManagerQuery {
 			sqlgraph.From(stock.Table, stock.FieldID, selector),
 			sqlgraph.To(manager.Table, manager.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, stock.ManagerTable, stock.ManagerColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCity chains the current query on the "city" edge.
+func (sq *StockQuery) QueryCity() *CityQuery {
+	query := &CityQuery{config: sq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, selector),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stock.CityTable, stock.CityColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -174,6 +200,28 @@ func (sq *StockQuery) QueryEmployee() *EmployeeQuery {
 			sqlgraph.From(stock.Table, stock.FieldID, selector),
 			sqlgraph.To(employee.Table, employee.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, stock.EmployeeTable, stock.EmployeeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySpouse chains the current query on the "spouse" edge.
+func (sq *StockQuery) QuerySpouse() *StockQuery {
+	query := &StockQuery{config: sq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, selector),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, stock.SpouseTable, stock.SpouseColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -363,10 +411,12 @@ func (sq *StockQuery) Clone() *StockQuery {
 		order:        append([]OrderFunc{}, sq.order...),
 		predicates:   append([]predicate.Stock{}, sq.predicates...),
 		withManager:  sq.withManager.Clone(),
+		withCity:     sq.withCity.Clone(),
 		withStore:    sq.withStore.Clone(),
 		withCabinet:  sq.withCabinet.Clone(),
 		withRider:    sq.withRider.Clone(),
 		withEmployee: sq.withEmployee.Clone(),
+		withSpouse:   sq.withSpouse.Clone(),
 		// clone intermediate query.
 		sql:    sq.sql.Clone(),
 		path:   sq.path,
@@ -382,6 +432,17 @@ func (sq *StockQuery) WithManager(opts ...func(*ManagerQuery)) *StockQuery {
 		opt(query)
 	}
 	sq.withManager = query
+	return sq
+}
+
+// WithCity tells the query-builder to eager-load the nodes that are connected to
+// the "city" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *StockQuery) WithCity(opts ...func(*CityQuery)) *StockQuery {
+	query := &CityQuery{config: sq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withCity = query
 	return sq
 }
 
@@ -426,6 +487,17 @@ func (sq *StockQuery) WithEmployee(opts ...func(*EmployeeQuery)) *StockQuery {
 		opt(query)
 	}
 	sq.withEmployee = query
+	return sq
+}
+
+// WithSpouse tells the query-builder to eager-load the nodes that are connected to
+// the "spouse" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *StockQuery) WithSpouse(opts ...func(*StockQuery)) *StockQuery {
+	query := &StockQuery{config: sq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withSpouse = query
 	return sq
 }
 
@@ -498,15 +570,24 @@ func (sq *StockQuery) prepareQuery(ctx context.Context) error {
 func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock, error) {
 	var (
 		nodes       = []*Stock{}
+		withFKs     = sq.withFKs
 		_spec       = sq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [7]bool{
 			sq.withManager != nil,
+			sq.withCity != nil,
 			sq.withStore != nil,
 			sq.withCabinet != nil,
 			sq.withRider != nil,
 			sq.withEmployee != nil,
+			sq.withSpouse != nil,
 		}
 	)
+	if sq.withManager != nil || sq.withCity != nil || sq.withStore != nil || sq.withCabinet != nil || sq.withRider != nil || sq.withEmployee != nil || sq.withSpouse != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, stock.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		return (*Stock).scanValues(nil, columns)
 	}
@@ -554,6 +635,35 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 			}
 			for i := range nodes {
 				nodes[i].Edges.Manager = n
+			}
+		}
+	}
+
+	if query := sq.withCity; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Stock)
+		for i := range nodes {
+			if nodes[i].CityID == nil {
+				continue
+			}
+			fk := *nodes[i].CityID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(city.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "city_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.City = n
 			}
 		}
 	}
@@ -670,6 +780,35 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 			}
 			for i := range nodes {
 				nodes[i].Edges.Employee = n
+			}
+		}
+	}
+
+	if query := sq.withSpouse; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Stock)
+		for i := range nodes {
+			if nodes[i].stock_spouse == nil {
+				continue
+			}
+			fk := *nodes[i].stock_spouse
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(stock.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "stock_spouse" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Spouse = n
 			}
 		}
 	}

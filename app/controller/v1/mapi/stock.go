@@ -76,3 +76,8 @@ func (*stock) CabinetList(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.StockCabinetListReq](c)
     return ctx.SendResponse(service.NewStockWithModifier(ctx.Modifier).CabinetList(req))
 }
+
+func (*stock) Detail(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.StockDetailReq](c)
+    return ctx.SendResponse(service.NewStockWithModifier(ctx.Modifier).Detail(req))
+}

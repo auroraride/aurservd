@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -109,6 +110,26 @@ func (su *StockUpdate) SetNillableManagerID(u *uint64) *StockUpdate {
 // ClearManagerID clears the value of the "manager_id" field.
 func (su *StockUpdate) ClearManagerID() *StockUpdate {
 	su.mutation.ClearManagerID()
+	return su
+}
+
+// SetCityID sets the "city_id" field.
+func (su *StockUpdate) SetCityID(u uint64) *StockUpdate {
+	su.mutation.SetCityID(u)
+	return su
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (su *StockUpdate) SetNillableCityID(u *uint64) *StockUpdate {
+	if u != nil {
+		su.SetCityID(*u)
+	}
+	return su
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (su *StockUpdate) ClearCityID() *StockUpdate {
+	su.mutation.ClearCityID()
 	return su
 }
 
@@ -245,9 +266,20 @@ func (su *StockUpdate) ClearModel() *StockUpdate {
 	return su
 }
 
+// SetMaterial sets the "material" field.
+func (su *StockUpdate) SetMaterial(s stock.Material) *StockUpdate {
+	su.mutation.SetMaterial(s)
+	return su
+}
+
 // SetManager sets the "manager" edge to the Manager entity.
 func (su *StockUpdate) SetManager(m *Manager) *StockUpdate {
 	return su.SetManagerID(m.ID)
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (su *StockUpdate) SetCity(c *City) *StockUpdate {
+	return su.SetCityID(c.ID)
 }
 
 // SetStore sets the "store" edge to the Store entity.
@@ -270,6 +302,25 @@ func (su *StockUpdate) SetEmployee(e *Employee) *StockUpdate {
 	return su.SetEmployeeID(e.ID)
 }
 
+// SetSpouseID sets the "spouse" edge to the Stock entity by ID.
+func (su *StockUpdate) SetSpouseID(id uint64) *StockUpdate {
+	su.mutation.SetSpouseID(id)
+	return su
+}
+
+// SetNillableSpouseID sets the "spouse" edge to the Stock entity by ID if the given value is not nil.
+func (su *StockUpdate) SetNillableSpouseID(id *uint64) *StockUpdate {
+	if id != nil {
+		su = su.SetSpouseID(*id)
+	}
+	return su
+}
+
+// SetSpouse sets the "spouse" edge to the Stock entity.
+func (su *StockUpdate) SetSpouse(s *Stock) *StockUpdate {
+	return su.SetSpouseID(s.ID)
+}
+
 // Mutation returns the StockMutation object of the builder.
 func (su *StockUpdate) Mutation() *StockMutation {
 	return su.mutation
@@ -278,6 +329,12 @@ func (su *StockUpdate) Mutation() *StockMutation {
 // ClearManager clears the "manager" edge to the Manager entity.
 func (su *StockUpdate) ClearManager() *StockUpdate {
 	su.mutation.ClearManager()
+	return su
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (su *StockUpdate) ClearCity() *StockUpdate {
+	su.mutation.ClearCity()
 	return su
 }
 
@@ -305,6 +362,12 @@ func (su *StockUpdate) ClearEmployee() *StockUpdate {
 	return su
 }
 
+// ClearSpouse clears the "spouse" edge to the Stock entity.
+func (su *StockUpdate) ClearSpouse() *StockUpdate {
+	su.mutation.ClearSpouse()
+	return su
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (su *StockUpdate) Save(ctx context.Context) (int, error) {
 	var (
@@ -315,12 +378,18 @@ func (su *StockUpdate) Save(ctx context.Context) (int, error) {
 		return 0, err
 	}
 	if len(su.hooks) == 0 {
+		if err = su.check(); err != nil {
+			return 0, err
+		}
 		affected, err = su.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*StockMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = su.check(); err != nil {
+				return 0, err
 			}
 			su.mutation = mutation
 			affected, err = su.sqlSave(ctx)
@@ -370,6 +439,16 @@ func (su *StockUpdate) defaults() error {
 		}
 		v := stock.UpdateDefaultUpdatedAt()
 		su.mutation.SetUpdatedAt(v)
+	}
+	return nil
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (su *StockUpdate) check() error {
+	if v, ok := su.mutation.Material(); ok {
+		if err := stock.MaterialValidator(v); err != nil {
+			return &ValidationError{Name: "material", err: fmt.Errorf(`ent: validator failed for field "Stock.material": %w`, err)}
+		}
 	}
 	return nil
 }
@@ -485,6 +564,13 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: stock.FieldModel,
 		})
 	}
+	if value, ok := su.mutation.Material(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: stock.FieldMaterial,
+		})
+	}
 	if su.mutation.ManagerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -512,6 +598,41 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: manager.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if su.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.CityTable,
+			Columns: []string{stock.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.CityTable,
+			Columns: []string{stock.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
 				},
 			},
 		}
@@ -660,6 +781,41 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if su.mutation.SpouseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   stock.SpouseTable,
+			Columns: []string{stock.SpouseColumn},
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.SpouseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   stock.SpouseTable,
+			Columns: []string{stock.SpouseColumn},
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, su.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{stock.Label}
@@ -754,6 +910,26 @@ func (suo *StockUpdateOne) SetNillableManagerID(u *uint64) *StockUpdateOne {
 // ClearManagerID clears the value of the "manager_id" field.
 func (suo *StockUpdateOne) ClearManagerID() *StockUpdateOne {
 	suo.mutation.ClearManagerID()
+	return suo
+}
+
+// SetCityID sets the "city_id" field.
+func (suo *StockUpdateOne) SetCityID(u uint64) *StockUpdateOne {
+	suo.mutation.SetCityID(u)
+	return suo
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (suo *StockUpdateOne) SetNillableCityID(u *uint64) *StockUpdateOne {
+	if u != nil {
+		suo.SetCityID(*u)
+	}
+	return suo
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (suo *StockUpdateOne) ClearCityID() *StockUpdateOne {
+	suo.mutation.ClearCityID()
 	return suo
 }
 
@@ -890,9 +1066,20 @@ func (suo *StockUpdateOne) ClearModel() *StockUpdateOne {
 	return suo
 }
 
+// SetMaterial sets the "material" field.
+func (suo *StockUpdateOne) SetMaterial(s stock.Material) *StockUpdateOne {
+	suo.mutation.SetMaterial(s)
+	return suo
+}
+
 // SetManager sets the "manager" edge to the Manager entity.
 func (suo *StockUpdateOne) SetManager(m *Manager) *StockUpdateOne {
 	return suo.SetManagerID(m.ID)
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (suo *StockUpdateOne) SetCity(c *City) *StockUpdateOne {
+	return suo.SetCityID(c.ID)
 }
 
 // SetStore sets the "store" edge to the Store entity.
@@ -915,6 +1102,25 @@ func (suo *StockUpdateOne) SetEmployee(e *Employee) *StockUpdateOne {
 	return suo.SetEmployeeID(e.ID)
 }
 
+// SetSpouseID sets the "spouse" edge to the Stock entity by ID.
+func (suo *StockUpdateOne) SetSpouseID(id uint64) *StockUpdateOne {
+	suo.mutation.SetSpouseID(id)
+	return suo
+}
+
+// SetNillableSpouseID sets the "spouse" edge to the Stock entity by ID if the given value is not nil.
+func (suo *StockUpdateOne) SetNillableSpouseID(id *uint64) *StockUpdateOne {
+	if id != nil {
+		suo = suo.SetSpouseID(*id)
+	}
+	return suo
+}
+
+// SetSpouse sets the "spouse" edge to the Stock entity.
+func (suo *StockUpdateOne) SetSpouse(s *Stock) *StockUpdateOne {
+	return suo.SetSpouseID(s.ID)
+}
+
 // Mutation returns the StockMutation object of the builder.
 func (suo *StockUpdateOne) Mutation() *StockMutation {
 	return suo.mutation
@@ -923,6 +1129,12 @@ func (suo *StockUpdateOne) Mutation() *StockMutation {
 // ClearManager clears the "manager" edge to the Manager entity.
 func (suo *StockUpdateOne) ClearManager() *StockUpdateOne {
 	suo.mutation.ClearManager()
+	return suo
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (suo *StockUpdateOne) ClearCity() *StockUpdateOne {
+	suo.mutation.ClearCity()
 	return suo
 }
 
@@ -950,6 +1162,12 @@ func (suo *StockUpdateOne) ClearEmployee() *StockUpdateOne {
 	return suo
 }
 
+// ClearSpouse clears the "spouse" edge to the Stock entity.
+func (suo *StockUpdateOne) ClearSpouse() *StockUpdateOne {
+	suo.mutation.ClearSpouse()
+	return suo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (suo *StockUpdateOne) Select(field string, fields ...string) *StockUpdateOne {
@@ -967,12 +1185,18 @@ func (suo *StockUpdateOne) Save(ctx context.Context) (*Stock, error) {
 		return nil, err
 	}
 	if len(suo.hooks) == 0 {
+		if err = suo.check(); err != nil {
+			return nil, err
+		}
 		node, err = suo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*StockMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = suo.check(); err != nil {
+				return nil, err
 			}
 			suo.mutation = mutation
 			node, err = suo.sqlSave(ctx)
@@ -1028,6 +1252,16 @@ func (suo *StockUpdateOne) defaults() error {
 		}
 		v := stock.UpdateDefaultUpdatedAt()
 		suo.mutation.SetUpdatedAt(v)
+	}
+	return nil
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (suo *StockUpdateOne) check() error {
+	if v, ok := suo.mutation.Material(); ok {
+		if err := stock.MaterialValidator(v); err != nil {
+			return &ValidationError{Name: "material", err: fmt.Errorf(`ent: validator failed for field "Stock.material": %w`, err)}
+		}
 	}
 	return nil
 }
@@ -1160,6 +1394,13 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 			Column: stock.FieldModel,
 		})
 	}
+	if value, ok := suo.mutation.Material(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: stock.FieldMaterial,
+		})
+	}
 	if suo.mutation.ManagerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1187,6 +1428,41 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: manager.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.CityTable,
+			Columns: []string{stock.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.CityTable,
+			Columns: []string{stock.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
 				},
 			},
 		}
@@ -1327,6 +1603,41 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: employee.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.SpouseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   stock.SpouseTable,
+			Columns: []string{stock.SpouseColumn},
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.SpouseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   stock.SpouseTable,
+			Columns: []string{stock.SpouseColumn},
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
 				},
 			},
 		}

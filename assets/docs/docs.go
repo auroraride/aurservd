@@ -14821,7 +14821,11 @@ const docTemplate = `{
                     "description": "调拨数量",
                     "type": "integer"
                 },
-                "outBoundTarget": {
+                "outboundId": {
+                    "description": "调出自 0:平台",
+                    "type": "integer"
+                },
+                "outboundTarget": {
                     "description": "调出目标 0:平台 1:门店 2:电柜",
                     "type": "integer",
                     "enum": [
@@ -14829,10 +14833,6 @@ const docTemplate = `{
                         1,
                         2
                     ]
-                },
-                "outboundId": {
-                    "description": "调出自 0:平台",
-                    "type": "integer"
                 }
             }
         },

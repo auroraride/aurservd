@@ -301,6 +301,7 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
             &model.StockBusinessReq{
                 RiderID:   s.subscribe.RiderID,
                 Model:     s.subscribe.Model,
+                CityID:    s.subscribe.CityID,
                 StockType: sts[bt],
 
                 StoreID:    s.storeID,

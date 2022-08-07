@@ -206,7 +206,7 @@ func (s *stockService) calculate(items map[string]*model.StockMaterial, st *ent.
 }
 
 // Fetch 获取对应物资库存
-// TODO 电柜调出
+// TODO 车架调拨另外做
 func (s *stockService) Fetch(target uint8, id uint64, name string) int {
     var result []struct {
         Sum       int    `json:"sum"`
@@ -253,36 +253,65 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
     if req.InboundID == 0 && req.OutboundID == 0 {
         snag.Panic("平台之间无法调拨物资")
     }
-    if req.InboundTarget == model.StockTargetCabinet && req.OutBoundTarget == model.StockTargetCabinet {
+    if req.InboundTarget == model.StockTargetCabinet && req.OutboundTarget == model.StockTargetCabinet {
         snag.Panic("电柜之间无法调拨")
     }
     if (req.InboundTarget == model.StockTargetStore && req.InboundID == 0) || (req.InboundTarget == model.StockTargetPlaform && req.InboundID != 0) {
         snag.Panic("调入参数错误")
     }
-    if (req.OutBoundTarget == model.StockTargetStore && req.OutboundID == 0) || (req.OutBoundTarget == model.StockTargetPlaform && req.OutboundID != 0) {
+    if (req.OutboundTarget == model.StockTargetStore && req.OutboundID == 0) || (req.OutboundTarget == model.StockTargetPlaform && req.OutboundID != 0) {
         snag.Panic("调出参数错误")
     }
 
     name := req.Name
+    mt := stock.MaterialOthers
     if req.Model != "" {
         name = req.Model
+        mt = stock.MaterialBattery
     }
+
+    var cityID uint64
+
+    // 查询电柜
+    var cab *ent.Cabinet
+    var cabID uint64
 
     // 检查电柜是否初始化调拨过
     if !req.Force && req.InboundTarget == model.StockTargetCabinet {
-        if !NewCabinet().QueryOne(req.InboundID).Transferred {
+        cabID = req.InboundID
+    }
+    if !req.Force && req.OutboundTarget == model.StockTargetCabinet {
+        cabID = req.OutboundID
+    }
+    if cabID > 0 {
+        cab = NewCabinet().QueryOne(cabID)
+        if !cab.Transferred {
             snag.Panic("电柜未初始化调拨")
+        }
+        if cab.CityID != nil {
+            cityID = *cab.CityID
         }
     }
 
-    if !req.Force && req.OutBoundTarget == model.StockTargetCabinet {
-        if !NewCabinet().QueryOne(req.OutboundID).Transferred {
-            snag.Panic("电柜未初始化调拨")
-        }
+    // 查询门店
+    var st *ent.Store
+    var stID uint64
+    if req.InboundTarget == model.StockTargetStore {
+        stID = req.InboundID
+    }
+    if req.OutboundTarget == model.StockTargetStore {
+        stID = req.OutboundID
+    }
+    if stID > 0 {
+        st = NewStore().Query(stID)
+        cityID = st.CityID
+    }
+    if cab.CityID == nil || st.CityID != *cab.CityID {
+        snag.Panic("不同城市电柜和门店无法调拨")
     }
 
     // 调出检查
-    if req.OutboundID > 0 && s.Fetch(req.OutBoundTarget, req.OutboundID, name) < req.Num {
+    if req.OutboundID > 0 && s.Fetch(req.OutboundTarget, req.OutboundID, name) < req.Num {
         snag.Panic("操作失败, 调出物资大于库存物资")
     }
 
@@ -309,10 +338,12 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
             SetName(name).
             SetNillableModel(v).
             SetNum(-req.Num).
+            SetCityID(cityID).
             SetType(model.StockTypeTransfer).
+            SetMaterial(mt).
             SetSn(sn)
 
-        if req.OutBoundTarget == model.StockTargetStore {
+        if req.OutboundTarget == model.StockTargetStore {
             oq.SetNillableStoreID(out)
         } else {
             oq.SetNillableCabinetID(out)
@@ -323,7 +354,9 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
             SetName(name).
             SetNillableModel(v).
             SetNum(req.Num).
+            SetCityID(cityID).
             SetType(model.StockTypeTransfer).
+            SetMaterial(mt).
             SetSn(sn)
         if req.InboundTarget == model.StockTargetStore {
             iq.SetNillableStoreID(in)
@@ -332,13 +365,14 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
         }
 
         // 调出
-        _, err = oq.Save(s.ctx)
+        var spouse *ent.Stock
+        spouse, err = oq.Save(s.ctx)
         if err != nil {
             return
         }
 
         // 调入
-        _, err = iq.Save(s.ctx)
+        _, err = iq.SetSpouse(spouse).Save(s.ctx)
         if err != nil {
             return
         }
@@ -392,7 +426,6 @@ GROUP BY outbound, inbound, plaform`)
 }
 
 // BatteryWithRider 和骑手交互电池出入库
-// TODO 电柜
 func (s *stockService) BatteryWithRider(cr *ent.StockCreate, req *model.StockBusinessReq) error {
     num := model.StockNumberOfRiderBusiness(req.StockType)
 
@@ -422,6 +455,8 @@ func (s *stockService) BatteryWithRider(cr *ent.StockCreate, req *model.StockBus
         SetType(req.StockType).
         SetModel(req.Model).
         SetNum(num).
+        SetCityID(req.CityID).
+        SetMaterial(stock.MaterialBattery).
         SetSn(tools.NewUnique().NewSN())
 
     _, err := cr.Save(s.ctx)
@@ -660,6 +695,91 @@ func (s *stockService) CabinetList(req *model.StockCabinetListReq) *model.Pagina
             res.Batteries = append(res.Batteries, battery)
         }
 
+        return res
+    })
+}
+
+func (s *stockService) Detail(req *model.StockDetailReq) *model.PaginationRes {
+    q := s.orm.QueryNotDeleted()
+    // 排序
+    if req.Positive {
+        q.Order(ent.Asc(stock.FieldCreatedAt))
+    } else {
+        q.Order(ent.Desc(stock.FieldCreatedAt))
+    }
+
+    if req.Start != "" {
+        q.Where(stock.CreatedAtGTE(tools.NewTime().ParseDateStringX(req.Start)))
+    }
+
+    if req.End != "" {
+        q.Where(stock.CreatedAtLT(tools.NewTime().ParseNextDateStringX(req.End)))
+    }
+
+    if req.CityID != 0 {
+        q.Where(stock.CityID(req.CityID))
+    }
+
+    if req.CabinetID != 0 {
+        q.Where(stock.CabinetID(req.CabinetID))
+    }
+
+    if req.Serial != "" {
+        q.Where(stock.HasCabinetWith(cabinet.Serial(req.Serial)))
+    }
+
+    if req.StoreID != 0 {
+        q.Where(stock.StoreID(req.StoreID))
+    }
+
+    switch req.QueryTarget {
+    case 1:
+        // 门店物资
+        q.Where(
+            stock.StoreIDNotNil(),
+            stock.CabinetIDIsNil(),
+        )
+        break
+    case 2:
+        // 电柜物资
+        q.Where(
+            stock.StoreIDIsNil(),
+            stock.CabinetIDNotNil(),
+        )
+        break
+    default:
+        // 门店或电柜物资
+        q.Where(
+            stock.Or(
+                stock.StoreIDNotNil(),
+                stock.CabinetIDNotNil(),
+            ),
+        )
+        break
+    }
+
+    // 筛选物资类别
+    if req.Materials == "" {
+        req.Materials = string(stock.MaterialBattery)
+    } else {
+        req.Materials = strings.ReplaceAll(req.Materials, " ", "")
+    }
+    materials := strings.Split(req.Materials, ",")
+    var predicates []predicate.Stock
+    for _, material := range materials {
+        switch stock.Material(material) {
+        case stock.MaterialBattery:
+            predicates = append(predicates, stock.ModelNotNil())
+            break
+        case stock.MaterialOthers:
+            predicates = append(predicates, stock.ModelIsNil())
+            break
+        }
+    }
+    q.Where(stock.Or(predicates...))
+
+    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Stock) model.StockDetailRes {
+        res := model.StockDetailRes{}
         return res
     })
 }

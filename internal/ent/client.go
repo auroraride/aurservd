@@ -5033,6 +5033,22 @@ func (c *StockClient) QueryManager(s *Stock) *ManagerQuery {
 	return query
 }
 
+// QueryCity queries the city edge of a Stock.
+func (c *StockClient) QueryCity(s *Stock) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stock.CityTable, stock.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryStore queries the store edge of a Stock.
 func (c *StockClient) QueryStore(s *Stock) *StoreQuery {
 	query := &StoreQuery{config: c.config}
@@ -5090,6 +5106,22 @@ func (c *StockClient) QueryEmployee(s *Stock) *EmployeeQuery {
 			sqlgraph.From(stock.Table, stock.FieldID, id),
 			sqlgraph.To(employee.Table, employee.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, stock.EmployeeTable, stock.EmployeeColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySpouse queries the spouse edge of a Stock.
+func (c *StockClient) QuerySpouse(s *Stock) *StockQuery {
+	query := &StockQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, stock.SpouseTable, stock.SpouseColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil

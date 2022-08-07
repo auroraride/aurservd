@@ -690,6 +690,7 @@ func (eq *EmployeeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Emp
 			nodeids[nodes[i].ID] = nodes[i]
 			nodes[i].Edges.Stocks = []*Stock{}
 		}
+		query.withFKs = true
 		query.Where(predicate.Stock(func(s *sql.Selector) {
 			s.Where(sql.InValues(employee.StocksColumn, fks...))
 		}))

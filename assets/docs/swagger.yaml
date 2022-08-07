@@ -3913,15 +3913,15 @@ definitions:
       num:
         description: 调拨数量
         type: integer
-      outBoundTarget:
+      outboundId:
+        description: 调出自 0:平台
+        type: integer
+      outboundTarget:
         description: 调出目标 0:平台 1:门店 2:电柜
         enum:
         - 0
         - 1
         - 2
-        type: integer
-      outboundId:
-        description: 调出自 0:平台
         type: integer
     type: object
   model.Store:

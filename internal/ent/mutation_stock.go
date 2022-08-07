@@ -35,9 +35,12 @@ type StockMutation struct {
 	model           *string
 	num             *int
 	addnum          *int
+	material        *stock.Material
 	clearedFields   map[string]struct{}
 	manager         *uint64
 	clearedmanager  bool
+	city            *uint64
+	clearedcity     bool
 	store           *uint64
 	clearedstore    bool
 	cabinet         *uint64
@@ -46,6 +49,8 @@ type StockMutation struct {
 	clearedrider    bool
 	employee        *uint64
 	clearedemployee bool
+	spouse          *uint64
+	clearedspouse   bool
 	done            bool
 	oldValue        func(context.Context) (*Stock, error)
 	predicates      []predicate.Stock
@@ -464,6 +469,55 @@ func (m *StockMutation) ManagerIDCleared() bool {
 func (m *StockMutation) ResetManagerID() {
 	m.manager = nil
 	delete(m.clearedFields, stock.FieldManagerID)
+}
+
+// SetCityID sets the "city_id" field.
+func (m *StockMutation) SetCityID(u uint64) {
+	m.city = &u
+}
+
+// CityID returns the value of the "city_id" field in the mutation.
+func (m *StockMutation) CityID() (r uint64, exists bool) {
+	v := m.city
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCityID returns the old "city_id" field's value of the Stock entity.
+// If the Stock object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StockMutation) OldCityID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCityID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCityID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCityID: %w", err)
+	}
+	return oldValue.CityID, nil
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (m *StockMutation) ClearCityID() {
+	m.city = nil
+	m.clearedFields[stock.FieldCityID] = struct{}{}
+}
+
+// CityIDCleared returns if the "city_id" field was cleared in this mutation.
+func (m *StockMutation) CityIDCleared() bool {
+	_, ok := m.clearedFields[stock.FieldCityID]
+	return ok
+}
+
+// ResetCityID resets all changes to the "city_id" field.
+func (m *StockMutation) ResetCityID() {
+	m.city = nil
+	delete(m.clearedFields, stock.FieldCityID)
 }
 
 // SetSn sets the "sn" field.
@@ -895,6 +949,42 @@ func (m *StockMutation) ResetNum() {
 	m.addnum = nil
 }
 
+// SetMaterial sets the "material" field.
+func (m *StockMutation) SetMaterial(s stock.Material) {
+	m.material = &s
+}
+
+// Material returns the value of the "material" field in the mutation.
+func (m *StockMutation) Material() (r stock.Material, exists bool) {
+	v := m.material
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMaterial returns the old "material" field's value of the Stock entity.
+// If the Stock object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StockMutation) OldMaterial(ctx context.Context) (v stock.Material, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMaterial is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMaterial requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMaterial: %w", err)
+	}
+	return oldValue.Material, nil
+}
+
+// ResetMaterial resets all changes to the "material" field.
+func (m *StockMutation) ResetMaterial() {
+	m.material = nil
+}
+
 // ClearManager clears the "manager" edge to the Manager entity.
 func (m *StockMutation) ClearManager() {
 	m.clearedmanager = true
@@ -919,6 +1009,32 @@ func (m *StockMutation) ManagerIDs() (ids []uint64) {
 func (m *StockMutation) ResetManager() {
 	m.manager = nil
 	m.clearedmanager = false
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (m *StockMutation) ClearCity() {
+	m.clearedcity = true
+}
+
+// CityCleared reports if the "city" edge to the City entity was cleared.
+func (m *StockMutation) CityCleared() bool {
+	return m.CityIDCleared() || m.clearedcity
+}
+
+// CityIDs returns the "city" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CityID instead. It exists only for internal usage by the builders.
+func (m *StockMutation) CityIDs() (ids []uint64) {
+	if id := m.city; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCity resets all changes to the "city" edge.
+func (m *StockMutation) ResetCity() {
+	m.city = nil
+	m.clearedcity = false
 }
 
 // ClearStore clears the "store" edge to the Store entity.
@@ -1025,6 +1141,45 @@ func (m *StockMutation) ResetEmployee() {
 	m.clearedemployee = false
 }
 
+// SetSpouseID sets the "spouse" edge to the Stock entity by id.
+func (m *StockMutation) SetSpouseID(id uint64) {
+	m.spouse = &id
+}
+
+// ClearSpouse clears the "spouse" edge to the Stock entity.
+func (m *StockMutation) ClearSpouse() {
+	m.clearedspouse = true
+}
+
+// SpouseCleared reports if the "spouse" edge to the Stock entity was cleared.
+func (m *StockMutation) SpouseCleared() bool {
+	return m.clearedspouse
+}
+
+// SpouseID returns the "spouse" edge ID in the mutation.
+func (m *StockMutation) SpouseID() (id uint64, exists bool) {
+	if m.spouse != nil {
+		return *m.spouse, true
+	}
+	return
+}
+
+// SpouseIDs returns the "spouse" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// SpouseID instead. It exists only for internal usage by the builders.
+func (m *StockMutation) SpouseIDs() (ids []uint64) {
+	if id := m.spouse; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetSpouse resets all changes to the "spouse" edge.
+func (m *StockMutation) ResetSpouse() {
+	m.spouse = nil
+	m.clearedspouse = false
+}
+
 // Where appends a list predicates to the StockMutation builder.
 func (m *StockMutation) Where(ps ...predicate.Stock) {
 	m.predicates = append(m.predicates, ps...)
@@ -1044,7 +1199,7 @@ func (m *StockMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StockMutation) Fields() []string {
-	fields := make([]string, 0, 16)
+	fields := make([]string, 0, 18)
 	if m.created_at != nil {
 		fields = append(fields, stock.FieldCreatedAt)
 	}
@@ -1065,6 +1220,9 @@ func (m *StockMutation) Fields() []string {
 	}
 	if m.manager != nil {
 		fields = append(fields, stock.FieldManagerID)
+	}
+	if m.city != nil {
+		fields = append(fields, stock.FieldCityID)
 	}
 	if m.sn != nil {
 		fields = append(fields, stock.FieldSn)
@@ -1093,6 +1251,9 @@ func (m *StockMutation) Fields() []string {
 	if m.num != nil {
 		fields = append(fields, stock.FieldNum)
 	}
+	if m.material != nil {
+		fields = append(fields, stock.FieldMaterial)
+	}
 	return fields
 }
 
@@ -1115,6 +1276,8 @@ func (m *StockMutation) Field(name string) (ent.Value, bool) {
 		return m.Remark()
 	case stock.FieldManagerID:
 		return m.ManagerID()
+	case stock.FieldCityID:
+		return m.CityID()
 	case stock.FieldSn:
 		return m.Sn()
 	case stock.FieldType:
@@ -1133,6 +1296,8 @@ func (m *StockMutation) Field(name string) (ent.Value, bool) {
 		return m.Model()
 	case stock.FieldNum:
 		return m.Num()
+	case stock.FieldMaterial:
+		return m.Material()
 	}
 	return nil, false
 }
@@ -1156,6 +1321,8 @@ func (m *StockMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldRemark(ctx)
 	case stock.FieldManagerID:
 		return m.OldManagerID(ctx)
+	case stock.FieldCityID:
+		return m.OldCityID(ctx)
 	case stock.FieldSn:
 		return m.OldSn(ctx)
 	case stock.FieldType:
@@ -1174,6 +1341,8 @@ func (m *StockMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldModel(ctx)
 	case stock.FieldNum:
 		return m.OldNum(ctx)
+	case stock.FieldMaterial:
+		return m.OldMaterial(ctx)
 	}
 	return nil, fmt.Errorf("unknown Stock field %s", name)
 }
@@ -1231,6 +1400,13 @@ func (m *StockMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetManagerID(v)
+		return nil
+	case stock.FieldCityID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCityID(v)
 		return nil
 	case stock.FieldSn:
 		v, ok := value.(string)
@@ -1294,6 +1470,13 @@ func (m *StockMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetNum(v)
+		return nil
+	case stock.FieldMaterial:
+		v, ok := value.(stock.Material)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMaterial(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Stock field %s", name)
@@ -1367,6 +1550,9 @@ func (m *StockMutation) ClearedFields() []string {
 	if m.FieldCleared(stock.FieldManagerID) {
 		fields = append(fields, stock.FieldManagerID)
 	}
+	if m.FieldCleared(stock.FieldCityID) {
+		fields = append(fields, stock.FieldCityID)
+	}
 	if m.FieldCleared(stock.FieldStoreID) {
 		fields = append(fields, stock.FieldStoreID)
 	}
@@ -1410,6 +1596,9 @@ func (m *StockMutation) ClearField(name string) error {
 		return nil
 	case stock.FieldManagerID:
 		m.ClearManagerID()
+		return nil
+	case stock.FieldCityID:
+		m.ClearCityID()
 		return nil
 	case stock.FieldStoreID:
 		m.ClearStoreID()
@@ -1455,6 +1644,9 @@ func (m *StockMutation) ResetField(name string) error {
 	case stock.FieldManagerID:
 		m.ResetManagerID()
 		return nil
+	case stock.FieldCityID:
+		m.ResetCityID()
+		return nil
 	case stock.FieldSn:
 		m.ResetSn()
 		return nil
@@ -1482,15 +1674,21 @@ func (m *StockMutation) ResetField(name string) error {
 	case stock.FieldNum:
 		m.ResetNum()
 		return nil
+	case stock.FieldMaterial:
+		m.ResetMaterial()
+		return nil
 	}
 	return fmt.Errorf("unknown Stock field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *StockMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 7)
 	if m.manager != nil {
 		edges = append(edges, stock.EdgeManager)
+	}
+	if m.city != nil {
+		edges = append(edges, stock.EdgeCity)
 	}
 	if m.store != nil {
 		edges = append(edges, stock.EdgeStore)
@@ -1504,6 +1702,9 @@ func (m *StockMutation) AddedEdges() []string {
 	if m.employee != nil {
 		edges = append(edges, stock.EdgeEmployee)
 	}
+	if m.spouse != nil {
+		edges = append(edges, stock.EdgeSpouse)
+	}
 	return edges
 }
 
@@ -1513,6 +1714,10 @@ func (m *StockMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case stock.EdgeManager:
 		if id := m.manager; id != nil {
+			return []ent.Value{*id}
+		}
+	case stock.EdgeCity:
+		if id := m.city; id != nil {
 			return []ent.Value{*id}
 		}
 	case stock.EdgeStore:
@@ -1531,13 +1736,17 @@ func (m *StockMutation) AddedIDs(name string) []ent.Value {
 		if id := m.employee; id != nil {
 			return []ent.Value{*id}
 		}
+	case stock.EdgeSpouse:
+		if id := m.spouse; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *StockMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 7)
 	return edges
 }
 
@@ -1551,9 +1760,12 @@ func (m *StockMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *StockMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 7)
 	if m.clearedmanager {
 		edges = append(edges, stock.EdgeManager)
+	}
+	if m.clearedcity {
+		edges = append(edges, stock.EdgeCity)
 	}
 	if m.clearedstore {
 		edges = append(edges, stock.EdgeStore)
@@ -1567,6 +1779,9 @@ func (m *StockMutation) ClearedEdges() []string {
 	if m.clearedemployee {
 		edges = append(edges, stock.EdgeEmployee)
 	}
+	if m.clearedspouse {
+		edges = append(edges, stock.EdgeSpouse)
+	}
 	return edges
 }
 
@@ -1576,6 +1791,8 @@ func (m *StockMutation) EdgeCleared(name string) bool {
 	switch name {
 	case stock.EdgeManager:
 		return m.clearedmanager
+	case stock.EdgeCity:
+		return m.clearedcity
 	case stock.EdgeStore:
 		return m.clearedstore
 	case stock.EdgeCabinet:
@@ -1584,6 +1801,8 @@ func (m *StockMutation) EdgeCleared(name string) bool {
 		return m.clearedrider
 	case stock.EdgeEmployee:
 		return m.clearedemployee
+	case stock.EdgeSpouse:
+		return m.clearedspouse
 	}
 	return false
 }
@@ -1594,6 +1813,9 @@ func (m *StockMutation) ClearEdge(name string) error {
 	switch name {
 	case stock.EdgeManager:
 		m.ClearManager()
+		return nil
+	case stock.EdgeCity:
+		m.ClearCity()
 		return nil
 	case stock.EdgeStore:
 		m.ClearStore()
@@ -1607,6 +1829,9 @@ func (m *StockMutation) ClearEdge(name string) error {
 	case stock.EdgeEmployee:
 		m.ClearEmployee()
 		return nil
+	case stock.EdgeSpouse:
+		m.ClearSpouse()
+		return nil
 	}
 	return fmt.Errorf("unknown Stock unique edge %s", name)
 }
@@ -1617,6 +1842,9 @@ func (m *StockMutation) ResetEdge(name string) error {
 	switch name {
 	case stock.EdgeManager:
 		m.ResetManager()
+		return nil
+	case stock.EdgeCity:
+		m.ResetCity()
 		return nil
 	case stock.EdgeStore:
 		m.ResetStore()
@@ -1629,6 +1857,9 @@ func (m *StockMutation) ResetEdge(name string) error {
 		return nil
 	case stock.EdgeEmployee:
 		m.ResetEmployee()
+		return nil
+	case stock.EdgeSpouse:
+		m.ResetSpouse()
 		return nil
 	}
 	return fmt.Errorf("unknown Stock edge %s", name)

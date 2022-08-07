@@ -40,9 +40,9 @@ func ({{ $receiver }} *{{ $builder }}) PaginationResult(req model.PaginationReq)
     ids := {{ $receiver }}.Clone().Select("{{ $n.ID.Name }}").GroupBy("{{ $n.ID.Name }}").IntsX(context.Background())
     total := len(ids)
 	return model.Pagination{
-	    StoreCurrent: req.GetCurrent(),
+	    Current: req.GetCurrent(),
         Pages:   req.GetPages(total),
-	    Total: total,
+	    Total:   total,
 	}
 }
 
