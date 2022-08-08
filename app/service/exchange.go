@@ -16,10 +16,12 @@ import (
     "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
+    "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     "github.com/lithammer/shortuuid/v4"
+    "math"
     "strings"
     "time"
 )
@@ -60,9 +62,26 @@ func NewExchangeWithEmployee(e *ent.Employee) *exchangeService {
     return s
 }
 
+// RiderInterval 检查用户换电间隔
+func (s *exchangeService) RiderInterval(riderID uint64) {
+    // 检查用户换电间隔
+    iv := cache.Int(model.SettingExchangeInterval)
+    if exist, _ := ent.Database.Exchange.QueryNotDeleted().Where(
+        exchange.RiderID(riderID),
+        exchange.Success(true),
+    ).First(s.ctx); exist != nil {
+        m := int(math.Ceil(time.Now().Sub(exist.FinishAt).Minutes()))
+        if iv-m > 0 {
+            snag.Panic(fmt.Sprintf("换电过于频繁, %d分钟可再次换电", iv-m))
+        }
+    }
+}
+
 // Store 扫门店二维码换电
 // 换电操作有出库和入库, 所以不记录
 func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStoreRes {
+    s.RiderInterval(s.rider.ID)
+
     // 检查用户是否可以办理业务
     NewRiderPermissionWithRider(s.rider).BusinessX()
 

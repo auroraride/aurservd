@@ -18,7 +18,6 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     log "github.com/sirupsen/logrus"
-    "math"
     "time"
 )
 
@@ -51,17 +50,8 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
         snag.Panic("系统维护中, 请稍后重试")
     }
 
-    // 检查用户换电间隔
-    iv := cache.Int(model.SettingExchangeInterval)
-    if exist, _ := ent.Database.Exchange.QueryNotDeleted().Where(
-        exchange.RiderID(s.rider.ID),
-        exchange.Success(true),
-    ).First(s.ctx); exist != nil {
-        m := int(math.Ceil(time.Now().Sub(exist.FinishAt).Minutes()))
-        if iv-m > 0 {
-            snag.Panic(fmt.Sprintf("换电过于频繁, %d分钟可再次换电", iv-m))
-        }
-    }
+    NewExchange().RiderInterval(s.rider.ID)
+
     // 检查用户是否可以办理业务
     NewRiderPermissionWithRider(s.rider).BusinessX()
 
