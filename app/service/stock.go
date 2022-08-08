@@ -280,15 +280,15 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
     var cabID uint64
 
     // 检查电柜是否初始化调拨过
-    if !req.Force && req.InboundTarget == model.StockTargetCabinet {
+    if req.InboundTarget == model.StockTargetCabinet {
         cabID = req.InboundID
     }
-    if !req.Force && req.OutboundTarget == model.StockTargetCabinet {
+    if req.OutboundTarget == model.StockTargetCabinet {
         cabID = req.OutboundID
     }
     if cabID > 0 {
         cab = NewCabinet().QueryOne(cabID)
-        if !cab.Transferred {
+        if !cab.Transferred && !req.Force {
             snag.Panic("电柜未初始化调拨")
         }
         if cab.CityID != nil {
@@ -309,7 +309,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
         st = NewStore().Query(stID)
         cityID = st.CityID
     }
-    if cab.CityID == nil || st.CityID != *cab.CityID {
+    if cab.CityID != nil && st != nil && st.CityID != *cab.CityID {
         snag.Panic("不同城市电柜和门店无法调拨")
     }
 

@@ -449,6 +449,9 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
 func (s *cabinetService) ModelInclude(item *ent.Cabinet, model string) bool {
     bms := item.Edges.Bms
     if bms == nil {
+        bms, _ = item.QueryBms().All(s.ctx)
+    }
+    if bms == nil {
         return false
     }
     for _, bm := range bms {
