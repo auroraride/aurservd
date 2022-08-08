@@ -212,6 +212,5 @@ func (*cabinet) Transfer(c echo.Context) (err error) {
 // @Success      200  {object}  model.CabinetDetailRes  "请求成功"
 func (*cabinet) Maintain(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetMaintainReq](c)
-    service.NewCabinetMgrWithModifier(ctx.Modifier).Maintain(req)
-    return ctx.SendResponse()
+    return ctx.SendResponse(service.NewCabinetMgrWithModifier(ctx.Modifier).Maintain(req))
 }
