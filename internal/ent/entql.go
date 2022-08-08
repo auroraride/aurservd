@@ -918,7 +918,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			stock.FieldCreator:      {Type: field.TypeJSON, Column: stock.FieldCreator},
 			stock.FieldLastModifier: {Type: field.TypeJSON, Column: stock.FieldLastModifier},
 			stock.FieldRemark:       {Type: field.TypeString, Column: stock.FieldRemark},
-			stock.FieldManagerID:    {Type: field.TypeUint64, Column: stock.FieldManagerID},
 			stock.FieldCityID:       {Type: field.TypeUint64, Column: stock.FieldCityID},
 			stock.FieldSn:           {Type: field.TypeString, Column: stock.FieldSn},
 			stock.FieldType:         {Type: field.TypeUint8, Column: stock.FieldType},
@@ -2358,18 +2357,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"Role",
-		"Manager",
-	)
-	graph.MustAddE(
-		"manager",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   stock.ManagerTable,
-			Columns: []string{stock.ManagerColumn},
-			Bidi:    false,
-		},
-		"Stock",
 		"Manager",
 	)
 	graph.MustAddE(
@@ -7841,11 +7828,6 @@ func (f *StockFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(stock.FieldRemark))
 }
 
-// WhereManagerID applies the entql uint64 predicate on the manager_id field.
-func (f *StockFilter) WhereManagerID(p entql.Uint64P) {
-	f.Where(p.Field(stock.FieldManagerID))
-}
-
 // WhereCityID applies the entql uint64 predicate on the city_id field.
 func (f *StockFilter) WhereCityID(p entql.Uint64P) {
 	f.Where(p.Field(stock.FieldCityID))
@@ -7899,20 +7881,6 @@ func (f *StockFilter) WhereNum(p entql.IntP) {
 // WhereMaterial applies the entql string predicate on the material field.
 func (f *StockFilter) WhereMaterial(p entql.StringP) {
 	f.Where(p.Field(stock.FieldMaterial))
-}
-
-// WhereHasManager applies a predicate to check if query has an edge manager.
-func (f *StockFilter) WhereHasManager() {
-	f.Where(entql.HasEdge("manager"))
-}
-
-// WhereHasManagerWith applies a predicate to check if query has an edge manager with a given conditions (other predicates).
-func (f *StockFilter) WhereHasManagerWith(preds ...predicate.Manager) {
-	f.Where(entql.HasEdgeWith("manager", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
 }
 
 // WhereHasCity applies a predicate to check if query has an edge city.

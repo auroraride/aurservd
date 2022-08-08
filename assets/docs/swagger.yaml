@@ -1445,6 +1445,9 @@ definitions:
     type: object
   model.CabinetDetailRes:
     properties:
+      batteryNum:
+        description: 电池数量
+        type: integer
       bins:
         description: 仓位信息
         items:
@@ -1627,6 +1630,9 @@ definitions:
     type: object
   model.CabinetItem:
     properties:
+      batteryNum:
+        description: 电池数量
+        type: integer
       branchId:
         description: 网点
         type: integer
@@ -3749,11 +3755,50 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.City'
         description: 城市
+      id:
+        description: 电柜ID
+        type: integer
       name:
         description: 电柜名称
         type: string
       serial:
         description: 电柜编号
+        type: string
+    type: object
+  model.StockDetailRes:
+    properties:
+      city:
+        description: 城市
+        type: string
+      id:
+        description: 调拨ID
+        type: integer
+      inbound:
+        description: 调入
+        type: string
+      name:
+        description: 物资
+        type: string
+      num:
+        description: 数量
+        type: integer
+      operator:
+        description: 操作人
+        type: string
+      outbound:
+        description: 调出
+        type: string
+      rider:
+        description: 骑手, 仅业务发生有此字段
+        type: string
+      sn:
+        description: 调拨编号
+        type: string
+      time:
+        description: 时间
+        type: string
+      type:
+        description: 类型
         type: string
     type: object
   model.StockEmployeeListRes:
@@ -8802,6 +8847,78 @@ paths:
                   type: array
               type: object
       summary: ME004 电柜物资列表
+      tags:
+      - '[M]管理接口'
+  /manager/v1/stock/detail:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerStockDetail
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 电柜ID
+        in: query
+        name: cabinetId
+        type: integer
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end
+        type: string
+      - description: 查询物资类别, 默认为电池, 逗号分隔 battery:电池 frame:车架 others:其他物资
+        in: query
+        name: materials
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 是否正序(默认倒序)
+        in: query
+        name: positive
+        type: boolean
+      - description: 查询对象 0:全部 1:门店 2:电柜
+        in: query
+        name: queryTarget
+        type: integer
+      - description: 电柜编号
+        in: query
+        name: serial
+        type: string
+      - description: 开始时间
+        in: query
+        name: start
+        type: string
+      - description: 门店ID
+        in: query
+        name: storeId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.StockDetailRes'
+                  type: array
+              type: object
+      summary: ME005 出入库明细
       tags:
       - '[M]管理接口'
   /manager/v1/stock/overview:

@@ -13,7 +13,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
-	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -30,7 +29,6 @@ type StockQuery struct {
 	fields     []string
 	predicates []predicate.Stock
 	// eager-loading edges.
-	withManager  *ManagerQuery
 	withCity     *CityQuery
 	withStore    *StoreQuery
 	withCabinet  *CabinetQuery
@@ -73,28 +71,6 @@ func (sq *StockQuery) Unique(unique bool) *StockQuery {
 func (sq *StockQuery) Order(o ...OrderFunc) *StockQuery {
 	sq.order = append(sq.order, o...)
 	return sq
-}
-
-// QueryManager chains the current query on the "manager" edge.
-func (sq *StockQuery) QueryManager() *ManagerQuery {
-	query := &ManagerQuery{config: sq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := sq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := sq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(stock.Table, stock.FieldID, selector),
-			sqlgraph.To(manager.Table, manager.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, stock.ManagerTable, stock.ManagerColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
 }
 
 // QueryCity chains the current query on the "city" edge.
@@ -410,7 +386,6 @@ func (sq *StockQuery) Clone() *StockQuery {
 		offset:       sq.offset,
 		order:        append([]OrderFunc{}, sq.order...),
 		predicates:   append([]predicate.Stock{}, sq.predicates...),
-		withManager:  sq.withManager.Clone(),
 		withCity:     sq.withCity.Clone(),
 		withStore:    sq.withStore.Clone(),
 		withCabinet:  sq.withCabinet.Clone(),
@@ -422,17 +397,6 @@ func (sq *StockQuery) Clone() *StockQuery {
 		path:   sq.path,
 		unique: sq.unique,
 	}
-}
-
-// WithManager tells the query-builder to eager-load the nodes that are connected to
-// the "manager" edge. The optional arguments are used to configure the query builder of the edge.
-func (sq *StockQuery) WithManager(opts ...func(*ManagerQuery)) *StockQuery {
-	query := &ManagerQuery{config: sq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	sq.withManager = query
-	return sq
 }
 
 // WithCity tells the query-builder to eager-load the nodes that are connected to
@@ -572,8 +536,7 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 		nodes       = []*Stock{}
 		withFKs     = sq.withFKs
 		_spec       = sq.querySpec()
-		loadedTypes = [7]bool{
-			sq.withManager != nil,
+		loadedTypes = [6]bool{
 			sq.withCity != nil,
 			sq.withStore != nil,
 			sq.withCabinet != nil,
@@ -582,7 +545,7 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 			sq.withSpouse != nil,
 		}
 	)
-	if sq.withManager != nil || sq.withCity != nil || sq.withStore != nil || sq.withCabinet != nil || sq.withRider != nil || sq.withEmployee != nil || sq.withSpouse != nil {
+	if sq.withCity != nil || sq.withStore != nil || sq.withCabinet != nil || sq.withRider != nil || sq.withEmployee != nil || sq.withSpouse != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -608,35 +571,6 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
-	}
-
-	if query := sq.withManager; query != nil {
-		ids := make([]uint64, 0, len(nodes))
-		nodeids := make(map[uint64][]*Stock)
-		for i := range nodes {
-			if nodes[i].ManagerID == nil {
-				continue
-			}
-			fk := *nodes[i].ManagerID
-			if _, ok := nodeids[fk]; !ok {
-				ids = append(ids, fk)
-			}
-			nodeids[fk] = append(nodeids[fk], nodes[i])
-		}
-		query.Where(manager.IDIn(ids...))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			nodes, ok := nodeids[n.ID]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "manager_id" returned %v`, n.ID)
-			}
-			for i := range nodes {
-				nodes[i].Edges.Manager = n
-			}
-		}
 	}
 
 	if query := sq.withCity; query != nil {

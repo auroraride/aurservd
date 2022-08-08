@@ -37,8 +37,6 @@ type StockMutation struct {
 	addnum          *int
 	material        *stock.Material
 	clearedFields   map[string]struct{}
-	manager         *uint64
-	clearedmanager  bool
 	city            *uint64
 	clearedcity     bool
 	store           *uint64
@@ -420,55 +418,6 @@ func (m *StockMutation) RemarkCleared() bool {
 func (m *StockMutation) ResetRemark() {
 	m.remark = nil
 	delete(m.clearedFields, stock.FieldRemark)
-}
-
-// SetManagerID sets the "manager_id" field.
-func (m *StockMutation) SetManagerID(u uint64) {
-	m.manager = &u
-}
-
-// ManagerID returns the value of the "manager_id" field in the mutation.
-func (m *StockMutation) ManagerID() (r uint64, exists bool) {
-	v := m.manager
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldManagerID returns the old "manager_id" field's value of the Stock entity.
-// If the Stock object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StockMutation) OldManagerID(ctx context.Context) (v *uint64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldManagerID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldManagerID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldManagerID: %w", err)
-	}
-	return oldValue.ManagerID, nil
-}
-
-// ClearManagerID clears the value of the "manager_id" field.
-func (m *StockMutation) ClearManagerID() {
-	m.manager = nil
-	m.clearedFields[stock.FieldManagerID] = struct{}{}
-}
-
-// ManagerIDCleared returns if the "manager_id" field was cleared in this mutation.
-func (m *StockMutation) ManagerIDCleared() bool {
-	_, ok := m.clearedFields[stock.FieldManagerID]
-	return ok
-}
-
-// ResetManagerID resets all changes to the "manager_id" field.
-func (m *StockMutation) ResetManagerID() {
-	m.manager = nil
-	delete(m.clearedFields, stock.FieldManagerID)
 }
 
 // SetCityID sets the "city_id" field.
@@ -985,32 +934,6 @@ func (m *StockMutation) ResetMaterial() {
 	m.material = nil
 }
 
-// ClearManager clears the "manager" edge to the Manager entity.
-func (m *StockMutation) ClearManager() {
-	m.clearedmanager = true
-}
-
-// ManagerCleared reports if the "manager" edge to the Manager entity was cleared.
-func (m *StockMutation) ManagerCleared() bool {
-	return m.ManagerIDCleared() || m.clearedmanager
-}
-
-// ManagerIDs returns the "manager" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// ManagerID instead. It exists only for internal usage by the builders.
-func (m *StockMutation) ManagerIDs() (ids []uint64) {
-	if id := m.manager; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetManager resets all changes to the "manager" edge.
-func (m *StockMutation) ResetManager() {
-	m.manager = nil
-	m.clearedmanager = false
-}
-
 // ClearCity clears the "city" edge to the City entity.
 func (m *StockMutation) ClearCity() {
 	m.clearedcity = true
@@ -1199,7 +1122,7 @@ func (m *StockMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StockMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 17)
 	if m.created_at != nil {
 		fields = append(fields, stock.FieldCreatedAt)
 	}
@@ -1217,9 +1140,6 @@ func (m *StockMutation) Fields() []string {
 	}
 	if m.remark != nil {
 		fields = append(fields, stock.FieldRemark)
-	}
-	if m.manager != nil {
-		fields = append(fields, stock.FieldManagerID)
 	}
 	if m.city != nil {
 		fields = append(fields, stock.FieldCityID)
@@ -1274,8 +1194,6 @@ func (m *StockMutation) Field(name string) (ent.Value, bool) {
 		return m.LastModifier()
 	case stock.FieldRemark:
 		return m.Remark()
-	case stock.FieldManagerID:
-		return m.ManagerID()
 	case stock.FieldCityID:
 		return m.CityID()
 	case stock.FieldSn:
@@ -1319,8 +1237,6 @@ func (m *StockMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldLastModifier(ctx)
 	case stock.FieldRemark:
 		return m.OldRemark(ctx)
-	case stock.FieldManagerID:
-		return m.OldManagerID(ctx)
 	case stock.FieldCityID:
 		return m.OldCityID(ctx)
 	case stock.FieldSn:
@@ -1393,13 +1309,6 @@ func (m *StockMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRemark(v)
-		return nil
-	case stock.FieldManagerID:
-		v, ok := value.(uint64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetManagerID(v)
 		return nil
 	case stock.FieldCityID:
 		v, ok := value.(uint64)
@@ -1547,9 +1456,6 @@ func (m *StockMutation) ClearedFields() []string {
 	if m.FieldCleared(stock.FieldRemark) {
 		fields = append(fields, stock.FieldRemark)
 	}
-	if m.FieldCleared(stock.FieldManagerID) {
-		fields = append(fields, stock.FieldManagerID)
-	}
 	if m.FieldCleared(stock.FieldCityID) {
 		fields = append(fields, stock.FieldCityID)
 	}
@@ -1593,9 +1499,6 @@ func (m *StockMutation) ClearField(name string) error {
 		return nil
 	case stock.FieldRemark:
 		m.ClearRemark()
-		return nil
-	case stock.FieldManagerID:
-		m.ClearManagerID()
 		return nil
 	case stock.FieldCityID:
 		m.ClearCityID()
@@ -1641,9 +1544,6 @@ func (m *StockMutation) ResetField(name string) error {
 	case stock.FieldRemark:
 		m.ResetRemark()
 		return nil
-	case stock.FieldManagerID:
-		m.ResetManagerID()
-		return nil
 	case stock.FieldCityID:
 		m.ResetCityID()
 		return nil
@@ -1683,10 +1583,7 @@ func (m *StockMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *StockMutation) AddedEdges() []string {
-	edges := make([]string, 0, 7)
-	if m.manager != nil {
-		edges = append(edges, stock.EdgeManager)
-	}
+	edges := make([]string, 0, 6)
 	if m.city != nil {
 		edges = append(edges, stock.EdgeCity)
 	}
@@ -1712,10 +1609,6 @@ func (m *StockMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *StockMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case stock.EdgeManager:
-		if id := m.manager; id != nil {
-			return []ent.Value{*id}
-		}
 	case stock.EdgeCity:
 		if id := m.city; id != nil {
 			return []ent.Value{*id}
@@ -1746,7 +1639,7 @@ func (m *StockMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *StockMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 6)
 	return edges
 }
 
@@ -1760,10 +1653,7 @@ func (m *StockMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *StockMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 7)
-	if m.clearedmanager {
-		edges = append(edges, stock.EdgeManager)
-	}
+	edges := make([]string, 0, 6)
 	if m.clearedcity {
 		edges = append(edges, stock.EdgeCity)
 	}
@@ -1789,8 +1679,6 @@ func (m *StockMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *StockMutation) EdgeCleared(name string) bool {
 	switch name {
-	case stock.EdgeManager:
-		return m.clearedmanager
 	case stock.EdgeCity:
 		return m.clearedcity
 	case stock.EdgeStore:
@@ -1811,9 +1699,6 @@ func (m *StockMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *StockMutation) ClearEdge(name string) error {
 	switch name {
-	case stock.EdgeManager:
-		m.ClearManager()
-		return nil
 	case stock.EdgeCity:
 		m.ClearCity()
 		return nil
@@ -1840,9 +1725,6 @@ func (m *StockMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *StockMutation) ResetEdge(name string) error {
 	switch name {
-	case stock.EdgeManager:
-		m.ResetManager()
-		return nil
 	case stock.EdgeCity:
 		m.ResetCity()
 		return nil

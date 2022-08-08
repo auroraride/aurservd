@@ -53,8 +53,10 @@ func NewStockWithRider(r *ent.Rider) *stockService {
 
 func NewStockWithModifier(m *model.Modifier) *stockService {
     s := NewStock()
-    s.ctx = context.WithValue(s.ctx, "modifier", m)
-    s.modifier = m
+    if m != nil {
+        s.ctx = context.WithValue(s.ctx, "modifier", m)
+        s.modifier = m
+    }
     return s
 }
 
@@ -449,7 +451,6 @@ func (s *stockService) BatteryWithRider(cr *ent.StockCreate, req *model.StockBus
     }
 
     cr.SetNillableEmployeeID(req.EmployeeID).
-        SetNillableManagerID(req.ManagerID).
         SetName(req.Model).
         SetRiderID(req.RiderID).
         SetType(req.StockType).
@@ -673,6 +674,7 @@ func (s *stockService) CabinetList(req *model.StockCabinetListReq) *model.Pagina
 
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Cabinet) model.StockCabinetListRes {
         res := model.StockCabinetListRes{
+            ID:        item.ID,
             Serial:    item.Serial,
             Name:      item.Name,
             Batteries: make([]*model.StockMaterial, 0),
@@ -699,8 +701,15 @@ func (s *stockService) CabinetList(req *model.StockCabinetListReq) *model.Pagina
     })
 }
 
+// Detail 出入库明细
 func (s *stockService) Detail(req *model.StockDetailReq) *model.PaginationRes {
-    q := s.orm.QueryNotDeleted()
+    q := s.orm.QueryNotDeleted().WithCabinet().WithStore().WithSpouse(func(sq *ent.StockQuery) {
+        sq.WithStore().WithCabinet().WithRider(func(rq *ent.RiderQuery) {
+            rq.WithPerson()
+        })
+    }).WithRider(func(rq *ent.RiderQuery) {
+        rq.WithPerson()
+    }).WithEmployee().WithCity()
     // 排序
     if req.Positive {
         q.Order(ent.Asc(stock.FieldCreatedAt))
@@ -779,7 +788,108 @@ func (s *stockService) Detail(req *model.StockDetailReq) *model.PaginationRes {
     q.Where(stock.Or(predicates...))
 
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Stock) model.StockDetailRes {
-        res := model.StockDetailRes{}
-        return res
+        return s.detailInfo(item)
     })
+}
+
+// detailInfo 库存出入明细信息
+func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
+    res := model.StockDetailRes{
+        ID:   item.ID,
+        Sn:   item.Sn,
+        Name: item.Name,
+        Num:  int(math.Abs(float64(item.Num))),
+        Time: item.CreatedAt.Format(carbon.DateTimeLayout),
+    }
+
+    // 城市
+    c := item.Edges.City
+    if c != nil {
+        res.City = c.Name
+    }
+
+    em := item.Creator
+    er := item.Edges.Rider
+    ee := item.Edges.Employee
+    es := item.Edges.Store
+    ec := item.Edges.Cabinet
+
+    if item.Type == model.StockTypeTransfer {
+        // 平台调拨记录
+        res.Type = "平台调拨"
+        res.Operator = fmt.Sprintf("后台-%s", em.Name)
+
+        var ses *ent.Store
+        var sec *ent.Cabinet
+
+        sp := item.Edges.Spouse
+        if sp != nil {
+            ses = sp.Edges.Store
+            sec = sp.Edges.Cabinet
+        }
+
+        // 出入库对象判定
+        if item.Num > 0 {
+            res.Inbound = s.target(es, ec)
+            res.Outbound = s.target(ses, sec)
+        } else {
+            res.Inbound = s.target(ses, sec)
+            res.Outbound = s.target(es, ec)
+        }
+    } else {
+        // 业务调拨记录
+        var riderName string
+
+        if er != nil {
+            riderName = er.Edges.Person.Name
+            res.Rider = fmt.Sprintf("%s-%s", riderName, er.Phone)
+        }
+
+        tm := map[uint8]string{
+            model.StockTypeRiderObtain:      "新签",
+            model.StockTypeRiderPause:       "寄存",
+            model.StockTypeRiderContinue:    "取消寄存",
+            model.StockTypeRiderUnSubscribe: "退租",
+        }
+
+        tmr := "门店"
+        if ec != nil {
+            tmr = "电柜"
+        }
+        res.Type = tmr + tm[item.Type]
+
+        if ee != nil {
+            res.Operator = fmt.Sprintf("店员-%s", ee.Name)
+        }
+        if ec != nil {
+            res.Operator = fmt.Sprintf("骑手-%s", riderName)
+        }
+
+        // 出入库对象
+        target := fmt.Sprintf("[骑手]%s - %s", er.Phone, er.Edges.Person.Name)
+        switch item.Type {
+        case model.StockTypeRiderObtain, model.StockTypeRiderContinue:
+            res.Inbound = target
+            res.Outbound = s.target(es, ec)
+            break
+        case model.StockTypeRiderPause, model.StockTypeRiderUnSubscribe:
+            res.Inbound = s.target(es, ec)
+            res.Outbound = target
+            break
+        }
+    }
+
+    return res
+}
+
+// target 出入库对象
+func (s *stockService) target(es *ent.Store, ec *ent.Cabinet) (target string) {
+    target = "平台"
+    if es != nil {
+        target = fmt.Sprintf("[门店]%s", es.Name)
+    }
+    if ec != nil {
+        target = fmt.Sprintf("[电柜]%s - %s", ec.Name, ec.Serial)
+    }
+    return
 }

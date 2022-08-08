@@ -26,8 +26,6 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
-	// FieldManagerID holds the string denoting the manager_id field in the database.
-	FieldManagerID = "manager_id"
 	// FieldCityID holds the string denoting the city_id field in the database.
 	FieldCityID = "city_id"
 	// FieldSn holds the string denoting the sn field in the database.
@@ -50,8 +48,6 @@ const (
 	FieldNum = "num"
 	// FieldMaterial holds the string denoting the material field in the database.
 	FieldMaterial = "material"
-	// EdgeManager holds the string denoting the manager edge name in mutations.
-	EdgeManager = "manager"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeStore holds the string denoting the store edge name in mutations.
@@ -66,13 +62,6 @@ const (
 	EdgeSpouse = "spouse"
 	// Table holds the table name of the stock in the database.
 	Table = "stock"
-	// ManagerTable is the table that holds the manager relation/edge.
-	ManagerTable = "stock"
-	// ManagerInverseTable is the table name for the Manager entity.
-	// It exists in this package in order to avoid circular dependency with the "manager" package.
-	ManagerInverseTable = "manager"
-	// ManagerColumn is the table column denoting the manager relation/edge.
-	ManagerColumn = "manager_id"
 	// CityTable is the table that holds the city relation/edge.
 	CityTable = "stock"
 	// CityInverseTable is the table name for the City entity.
@@ -123,7 +112,6 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
-	FieldManagerID,
 	FieldCityID,
 	FieldSn,
 	FieldType,

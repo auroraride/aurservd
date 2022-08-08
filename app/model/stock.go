@@ -98,7 +98,6 @@ type StockBusinessReq struct {
 
     StoreID    *uint64 `json:"storeId"`    // 门店ID
     EmployeeID *uint64 `json:"employeeId"` // 店员ID
-    ManagerID  *uint64 `json:"managerId"`  // 管理员ID
     CabinetID  *uint64 `json:"cabinetId"`  // 电柜ID
 }
 
@@ -154,6 +153,7 @@ type StockCabinetListReq struct {
 }
 
 type StockCabinetListRes struct {
+    ID        uint64           `json:"id"`        // 电柜ID
     Serial    string           `json:"serial"`    // 电柜编号
     City      City             `json:"city"`      // 城市
     Name      string           `json:"name"`      // 电柜名称
@@ -175,12 +175,15 @@ type StockDetailReq struct {
 }
 
 type StockDetailRes struct {
-    City     string `json:"city"`     // 城市
-    Inbound  string `json:"inbound"`  // 调入
-    Outbound string `json:"outbound"` // 调出
-    Name     string `json:"name"`     // 物资
-    Num      int    `json:"num"`      // 数量
-    Type     string `json:"type"`     // 类型
-    Operator string `json:"operator"` // 操作人
-    Time     string `json:"time"`     // 时间
+    ID       uint64 `json:"id"`              // 调拨ID
+    Sn       string `json:"sn"`              // 调拨编号
+    City     string `json:"city"`            // 城市
+    Inbound  string `json:"inbound"`         // 调入
+    Outbound string `json:"outbound"`        // 调出
+    Name     string `json:"name"`            // 物资
+    Num      int    `json:"num"`             // 数量
+    Type     string `json:"type"`            // 类型
+    Operator string `json:"operator"`        // 操作人
+    Time     string `json:"time"`            // 时间
+    Rider    string `json:"rider,omitempty"` // 骑手, 仅业务发生有此字段
 }

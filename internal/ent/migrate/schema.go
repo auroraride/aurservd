@@ -1981,7 +1981,6 @@ var (
 		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "rider_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "manager_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "stock_spouse", Type: field.TypeUint64, Unique: true, Nullable: true},
 		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
@@ -2011,26 +2010,20 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "stock_manager_manager",
-				Columns:    []*schema.Column{StockColumns[16]},
-				RefColumns: []*schema.Column{ManagerColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
 				Symbol:     "stock_city_city",
-				Columns:    []*schema.Column{StockColumns[17]},
+				Columns:    []*schema.Column{StockColumns[16]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "stock_stock_spouse",
-				Columns:    []*schema.Column{StockColumns[18]},
+				Columns:    []*schema.Column{StockColumns[17]},
 				RefColumns: []*schema.Column{StockColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "stock_store_stocks",
-				Columns:    []*schema.Column{StockColumns[19]},
+				Columns:    []*schema.Column{StockColumns[18]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2664,10 +2657,9 @@ func init() {
 	StockTable.ForeignKeys[0].RefTable = CabinetTable
 	StockTable.ForeignKeys[1].RefTable = EmployeeTable
 	StockTable.ForeignKeys[2].RefTable = RiderTable
-	StockTable.ForeignKeys[3].RefTable = ManagerTable
-	StockTable.ForeignKeys[4].RefTable = CityTable
-	StockTable.ForeignKeys[5].RefTable = StockTable
-	StockTable.ForeignKeys[6].RefTable = StoreTable
+	StockTable.ForeignKeys[3].RefTable = CityTable
+	StockTable.ForeignKeys[4].RefTable = StockTable
+	StockTable.ForeignKeys[5].RefTable = StoreTable
 	StockTable.Annotation = &entsql.Annotation{
 		Table: "stock",
 	}

@@ -35,7 +35,7 @@ type businessRiderService struct {
 
     task func() *ec.BinInfo // 电柜任务
 
-    storeID, employeeID, cabinetID, managerID *uint64
+    storeID, employeeID, cabinetID *uint64
 }
 
 func NewBusinessRider() *businessRiderService {
@@ -226,10 +226,6 @@ func (s *businessRiderService) preprocess(sub *ent.Subscribe) {
         s.employeeID = tools.NewPointerInterface(s.employee.ID)
     }
 
-    if s.modifier != nil {
-        s.managerID = tools.NewPointerInterface(s.modifier.ID)
-    }
-
     if s.employee == nil && s.modifier == nil && s.cabinet == nil {
         snag.Panic("操作权限校验失败")
     }
@@ -296,7 +292,7 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
     ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
         cb(tx)
 
-        return NewStock().BatteryWithRider(
+        return NewStockWithModifier(s.modifier).BatteryWithRider(
             tx.Stock.Create(),
             &model.StockBusinessReq{
                 RiderID:   s.subscribe.RiderID,
@@ -306,7 +302,6 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 
                 StoreID:    s.storeID,
                 EmployeeID: s.employeeID,
-                ManagerID:  s.managerID,
                 CabinetID:  s.cabinetID,
             },
         )

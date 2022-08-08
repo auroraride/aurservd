@@ -15,7 +15,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
-	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -90,26 +89,6 @@ func (su *StockUpdate) SetNillableRemark(s *string) *StockUpdate {
 // ClearRemark clears the value of the "remark" field.
 func (su *StockUpdate) ClearRemark() *StockUpdate {
 	su.mutation.ClearRemark()
-	return su
-}
-
-// SetManagerID sets the "manager_id" field.
-func (su *StockUpdate) SetManagerID(u uint64) *StockUpdate {
-	su.mutation.SetManagerID(u)
-	return su
-}
-
-// SetNillableManagerID sets the "manager_id" field if the given value is not nil.
-func (su *StockUpdate) SetNillableManagerID(u *uint64) *StockUpdate {
-	if u != nil {
-		su.SetManagerID(*u)
-	}
-	return su
-}
-
-// ClearManagerID clears the value of the "manager_id" field.
-func (su *StockUpdate) ClearManagerID() *StockUpdate {
-	su.mutation.ClearManagerID()
 	return su
 }
 
@@ -272,11 +251,6 @@ func (su *StockUpdate) SetMaterial(s stock.Material) *StockUpdate {
 	return su
 }
 
-// SetManager sets the "manager" edge to the Manager entity.
-func (su *StockUpdate) SetManager(m *Manager) *StockUpdate {
-	return su.SetManagerID(m.ID)
-}
-
 // SetCity sets the "city" edge to the City entity.
 func (su *StockUpdate) SetCity(c *City) *StockUpdate {
 	return su.SetCityID(c.ID)
@@ -324,12 +298,6 @@ func (su *StockUpdate) SetSpouse(s *Stock) *StockUpdate {
 // Mutation returns the StockMutation object of the builder.
 func (su *StockUpdate) Mutation() *StockMutation {
 	return su.mutation
-}
-
-// ClearManager clears the "manager" edge to the Manager entity.
-func (su *StockUpdate) ClearManager() *StockUpdate {
-	su.mutation.ClearManager()
-	return su
 }
 
 // ClearCity clears the "city" edge to the City entity.
@@ -570,41 +538,6 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Value:  value,
 			Column: stock.FieldMaterial,
 		})
-	}
-	if su.mutation.ManagerCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   stock.ManagerTable,
-			Columns: []string{stock.ManagerColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: manager.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := su.mutation.ManagerIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   stock.ManagerTable,
-			Columns: []string{stock.ManagerColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: manager.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if su.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -893,26 +826,6 @@ func (suo *StockUpdateOne) ClearRemark() *StockUpdateOne {
 	return suo
 }
 
-// SetManagerID sets the "manager_id" field.
-func (suo *StockUpdateOne) SetManagerID(u uint64) *StockUpdateOne {
-	suo.mutation.SetManagerID(u)
-	return suo
-}
-
-// SetNillableManagerID sets the "manager_id" field if the given value is not nil.
-func (suo *StockUpdateOne) SetNillableManagerID(u *uint64) *StockUpdateOne {
-	if u != nil {
-		suo.SetManagerID(*u)
-	}
-	return suo
-}
-
-// ClearManagerID clears the value of the "manager_id" field.
-func (suo *StockUpdateOne) ClearManagerID() *StockUpdateOne {
-	suo.mutation.ClearManagerID()
-	return suo
-}
-
 // SetCityID sets the "city_id" field.
 func (suo *StockUpdateOne) SetCityID(u uint64) *StockUpdateOne {
 	suo.mutation.SetCityID(u)
@@ -1072,11 +985,6 @@ func (suo *StockUpdateOne) SetMaterial(s stock.Material) *StockUpdateOne {
 	return suo
 }
 
-// SetManager sets the "manager" edge to the Manager entity.
-func (suo *StockUpdateOne) SetManager(m *Manager) *StockUpdateOne {
-	return suo.SetManagerID(m.ID)
-}
-
 // SetCity sets the "city" edge to the City entity.
 func (suo *StockUpdateOne) SetCity(c *City) *StockUpdateOne {
 	return suo.SetCityID(c.ID)
@@ -1124,12 +1032,6 @@ func (suo *StockUpdateOne) SetSpouse(s *Stock) *StockUpdateOne {
 // Mutation returns the StockMutation object of the builder.
 func (suo *StockUpdateOne) Mutation() *StockMutation {
 	return suo.mutation
-}
-
-// ClearManager clears the "manager" edge to the Manager entity.
-func (suo *StockUpdateOne) ClearManager() *StockUpdateOne {
-	suo.mutation.ClearManager()
-	return suo
 }
 
 // ClearCity clears the "city" edge to the City entity.
@@ -1400,41 +1302,6 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 			Value:  value,
 			Column: stock.FieldMaterial,
 		})
-	}
-	if suo.mutation.ManagerCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   stock.ManagerTable,
-			Columns: []string{stock.ManagerColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: manager.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := suo.mutation.ManagerIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   stock.ManagerTable,
-			Columns: []string{stock.ManagerColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: manager.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if suo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -60,7 +60,6 @@ func (Stock) Mixin() []ent.Mixin {
         internal.Modifier{
             IndexCreator: true,
         },
-        ManagerMixin{Optional: true},
         CityMixin{Optional: true},
     }
 }

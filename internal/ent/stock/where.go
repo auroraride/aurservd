@@ -121,13 +121,6 @@ func Remark(v string) predicate.Stock {
 	})
 }
 
-// ManagerID applies equality check predicate on the "manager_id" field. It's identical to ManagerIDEQ.
-func ManagerID(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldManagerID), v))
-	})
-}
-
 // CityID applies equality check predicate on the "city_id" field. It's identical to CityIDEQ.
 func CityID(v uint64) predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
@@ -590,68 +583,6 @@ func RemarkEqualFold(v string) predicate.Stock {
 func RemarkContainsFold(v string) predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
-	})
-}
-
-// ManagerIDEQ applies the EQ predicate on the "manager_id" field.
-func ManagerIDEQ(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldManagerID), v))
-	})
-}
-
-// ManagerIDNEQ applies the NEQ predicate on the "manager_id" field.
-func ManagerIDNEQ(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldManagerID), v))
-	})
-}
-
-// ManagerIDIn applies the In predicate on the "manager_id" field.
-func ManagerIDIn(vs ...uint64) predicate.Stock {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldManagerID), v...))
-	})
-}
-
-// ManagerIDNotIn applies the NotIn predicate on the "manager_id" field.
-func ManagerIDNotIn(vs ...uint64) predicate.Stock {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldManagerID), v...))
-	})
-}
-
-// ManagerIDIsNil applies the IsNil predicate on the "manager_id" field.
-func ManagerIDIsNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldManagerID)))
-	})
-}
-
-// ManagerIDNotNil applies the NotNil predicate on the "manager_id" field.
-func ManagerIDNotNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldManagerID)))
 	})
 }
 
@@ -1509,34 +1440,6 @@ func MaterialNotIn(vs ...Material) predicate.Stock {
 			return
 		}
 		s.Where(sql.NotIn(s.C(FieldMaterial), v...))
-	})
-}
-
-// HasManager applies the HasEdge predicate on the "manager" edge.
-func HasManager() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ManagerTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, ManagerTable, ManagerColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasManagerWith applies the HasEdge predicate on the "manager" edge with a given conditions (other predicates).
-func HasManagerWith(preds ...predicate.Manager) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ManagerInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, ManagerTable, ManagerColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
 	})
 }
 

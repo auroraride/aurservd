@@ -108,6 +108,7 @@ type CabinetItem struct {
     SimSn       string   `json:"simSn,omitempty"`     // SIM卡号
     SimDate     string   `json:"simDate,omitempty"`   // SIM卡到期日期, 例: 2022-06-01
     Transferred bool     `json:"transferred"`         // 是否初始化过调拨
+    BatteryNum  int      `json:"batteryNum"`          // 电池数量
 }
 
 // CabinetQueryReq 电柜查询请求

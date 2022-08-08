@@ -6790,6 +6790,119 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/stock/detail": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "ME005 出入库明细",
+                "operationId": "ManagerStockDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "电柜ID",
+                        "name": "cabinetId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "查询物资类别, 默认为电池, 逗号分隔 battery:电池 frame:车架 others:其他物资",
+                        "name": "materials",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否正序(默认倒序)",
+                        "name": "positive",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "查询对象 0:全部 1:门店 2:电柜",
+                        "name": "queryTarget",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜编号",
+                        "name": "serial",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店ID",
+                        "name": "storeId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.StockDetailRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/stock/overview": {
             "get": {
                 "consumes": [
@@ -11264,6 +11377,10 @@ const docTemplate = `{
                 "serial"
             ],
             "properties": {
+                "batteryNum": {
+                    "description": "电池数量",
+                    "type": "integer"
+                },
                 "bins": {
                     "description": "仓位信息",
                     "type": "array",
@@ -11523,6 +11640,10 @@ const docTemplate = `{
                 "serial"
             ],
             "properties": {
+                "batteryNum": {
+                    "description": "电池数量",
+                    "type": "integer"
+                },
                 "branchId": {
                     "description": "网点",
                     "type": "integer"
@@ -14588,12 +14709,65 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "id": {
+                    "description": "电柜ID",
+                    "type": "integer"
+                },
                 "name": {
                     "description": "电柜名称",
                     "type": "string"
                 },
                 "serial": {
                     "description": "电柜编号",
+                    "type": "string"
+                }
+            }
+        },
+        "model.StockDetailRes": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "description": "城市",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "调拨ID",
+                    "type": "integer"
+                },
+                "inbound": {
+                    "description": "调入",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "物资",
+                    "type": "string"
+                },
+                "num": {
+                    "description": "数量",
+                    "type": "integer"
+                },
+                "operator": {
+                    "description": "操作人",
+                    "type": "string"
+                },
+                "outbound": {
+                    "description": "调出",
+                    "type": "string"
+                },
+                "rider": {
+                    "description": "骑手, 仅业务发生有此字段",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "调拨编号",
+                    "type": "string"
+                },
+                "time": {
+                    "description": "时间",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "类型",
                     "type": "string"
                 }
             }
