@@ -1214,6 +1214,10 @@ definitions:
     type: object
   model.BusinessListRes:
     properties:
+      cabinet:
+        allOf:
+        - $ref: '#/definitions/model.CabinetBasicInfo'
+        description: 电柜, 可能为空
       employee:
         allOf:
         - $ref: '#/definitions/model.Employee'
@@ -1234,6 +1238,10 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.Plan'
         description: 骑士卡, 团签无此字段
+      store:
+        allOf:
+        - $ref: '#/definitions/model.Store'
+        description: 门店, 可能为空
       time:
         description: 业务时间
         type: string

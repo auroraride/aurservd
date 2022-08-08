@@ -194,7 +194,7 @@ func (s *businessService) ListEmployee(req *model.BusinessListReq) *model.Pagina
 
 // ListManager 业务列表 - 后台
 func (s *businessService) ListManager(req *model.BusinessListReq) *model.PaginationRes {
-    q := s.listBasicQuery(req).WithEmployee()
+    q := s.listBasicQuery(req).WithEmployee().WithCabinet().WithStore()
 
     return model.ParsePaginationResponse(
         q,
@@ -210,6 +210,24 @@ func (s *businessService) ListManager(req *model.BusinessListReq) *model.Paginat
                     ID:    emp.ID,
                     Name:  emp.Name,
                     Phone: emp.Phone,
+                }
+            }
+
+            st := item.Edges.Store
+            if st != nil {
+                res.Store = &model.Store{
+                    ID:   st.ID,
+                    Name: st.Name,
+                }
+            }
+
+            cab := item.Edges.Cabinet
+            if cab != nil {
+                res.Cabinet = &model.CabinetBasicInfo{
+                    ID:     cab.ID,
+                    Brand:  model.CabinetBrand(cab.Brand),
+                    Serial: cab.Serial,
+                    Name:   cab.Name,
                 }
             }
             return

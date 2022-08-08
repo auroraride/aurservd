@@ -10928,6 +10928,14 @@ const docTemplate = `{
         "model.BusinessListRes": {
             "type": "object",
             "properties": {
+                "cabinet": {
+                    "description": "电柜, 可能为空",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CabinetBasicInfo"
+                        }
+                    ]
+                },
                 "employee": {
                     "description": "店员, 可能为空",
                     "allOf": [
@@ -10960,6 +10968,14 @@ const docTemplate = `{
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.Plan"
+                        }
+                    ]
+                },
+                "store": {
+                    "description": "门店, 可能为空",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Store"
                         }
                     ]
                 },
