@@ -840,7 +840,7 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
     if item.Type == model.StockTypeTransfer {
         // 平台调拨记录
         res.Type = "平台调拨"
-        res.Operator = fmt.Sprintf("后台-%s", em.Name)
+        res.Operator = fmt.Sprintf("后台 - %s", em.Name)
 
         var ses *ent.Store
         var sec *ent.Cabinet
@@ -865,7 +865,7 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
 
         if er != nil {
             riderName = er.Edges.Person.Name
-            res.Rider = fmt.Sprintf("%s-%s", riderName, er.Phone)
+            res.Rider = fmt.Sprintf("%s - %s", riderName, er.Phone)
         }
 
         tm := map[uint8]string{
@@ -882,14 +882,14 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
         res.Type = tmr + tm[item.Type]
 
         if ee != nil {
-            res.Operator = fmt.Sprintf("店员-%s", ee.Name)
+            res.Operator = fmt.Sprintf("店员 - %s", ee.Name)
         }
         if ec != nil {
-            res.Operator = fmt.Sprintf("骑手-%s", riderName)
+            res.Operator = fmt.Sprintf("骑手 - %s", riderName)
         }
 
         // 出入库对象
-        target := fmt.Sprintf("[骑手]%s - %s", er.Phone, er.Edges.Person.Name)
+        target := fmt.Sprintf("[骑手] %s - %s", er.Phone, er.Edges.Person.Name)
         switch item.Type {
         case model.StockTypeRiderObtain, model.StockTypeRiderContinue:
             res.Inbound = target
@@ -909,10 +909,10 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
 func (s *stockService) target(es *ent.Store, ec *ent.Cabinet) (target string) {
     target = "平台"
     if es != nil {
-        target = fmt.Sprintf("[门店]%s", es.Name)
+        target = fmt.Sprintf("[门店] %s", es.Name)
     }
     if ec != nil {
-        target = fmt.Sprintf("[电柜]%s - %s", ec.Name, ec.Serial)
+        target = fmt.Sprintf("[电柜] %s - %s", ec.Name, ec.Serial)
     }
     return
 }
