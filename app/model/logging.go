@@ -36,6 +36,7 @@ const (
     OperateAssistanceFree                      // 救援免费
     OperateAssistanceRefuse                    // 救援拒绝
     OperateActive                              // 激活订阅
+    OperateCabinetMaintain                     // 电柜维护
 )
 
 func (o Operate) String() string {
@@ -72,6 +73,8 @@ func (o Operate) String() string {
         return "救援拒绝"
     case OperateActive:
         return "激活订阅"
+    case OperateCabinetMaintain:
+        return "电柜维护"
     default:
         return "未知操作"
     }

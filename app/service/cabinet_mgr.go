@@ -72,8 +72,9 @@ func (s *cabinetMgrService) Maintain(req *model.CabinetMaintainReq) (detail *mod
     go logging.NewOperateLog().
         SetRef(cab).
         SetModifier(s.modifier).
-        SetOperate(model.OperateAssistanceAllocate).
+        SetOperate(model.OperateCabinetMaintain).
         SetDiff(model.CabinetStatus(cab.Status).String(), status.String()).
+        SetRemark(cab.Remark).
         Send()
 
     return
