@@ -8932,6 +8932,18 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
+      - description: 电柜ID
+        in: query
+        name: cabinetId
+        type: integer
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 门店ID
+        in: query
+        name: storeId
+        type: integer
       - description: 查询目标, 1:门店(默认) 2:电柜
         enum:
         - 1

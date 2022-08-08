@@ -46,7 +46,37 @@ type StockTransferReq struct {
 }
 
 type StockOverviewReq struct {
-    Target uint8 `json:"target" query:"target" enums:"1,2"` // 查询目标, 1:门店(默认) 2:电柜
+    Target    uint8  `json:"target" query:"target" enums:"1,2"` // 查询目标, 1:门店(默认) 2:电柜
+    CityID    uint64 `json:"cityId" query:"cityId"`             // 城市ID
+    CabinetID uint64 `json:"cabinetId" query:"cabinetId"`       // 电柜ID
+    StoreID   uint64 `json:"storeId" query:"storeId"`           // 门店ID
+}
+
+type StockOverview struct {
+    Total     int `json:"total"`     // 电池总数
+    Surplus   int `json:"surplus"`   // 库存电池
+    Outbound  int `json:"outbound"`  // 电池出库数
+    Inbound   int `json:"inbound"`   // 电池库存数
+    Exception int `json:"exception"` // 电池异常数
+}
+
+type StockOverviewRes struct {
+    Model        string `json:"model"`
+    Num          int    `json:"num"`
+    CTransfer    int    `json:"c_transfer"`
+    STransfer    int    `json:"s_transfer"`
+    COutboundnum int    `json:"c_outboundnum"`
+    CInboundnum  int    `json:"c_inboundnum"`
+    SOutboundnum int    `json:"s_outboundnum"`
+    SInboundnum  int    `json:"s_inboundnum"`
+    CActive      int    `json:"c_active"`
+    CPause       int    `json:"c_pause"`
+    CContinue    int    `json:"c_continue"`
+    CUnsubscribe int    `json:"c_unsubscribe"`
+    SActive      int    `json:"s_active"`
+    SPause       int    `json:"s_pause"`
+    SContinue    int    `json:"s_continue"`
+    SUnsubscribe int    `json:"s_unsubscribe"`
 }
 
 type StockListReq struct {
@@ -79,14 +109,6 @@ type StockListRes struct {
     BatteryTotal int              `json:"batteryTotal"` // 电池总数
     Batteries    []*StockMaterial `json:"batteries"`    // 电池详情
     Materials    []*StockMaterial `json:"materials"`    // 非电池物资详情
-}
-
-type StockOverview struct {
-    Total     int `json:"total"`     // 电池总数
-    Surplus   int `json:"surplus"`   // 库存电池
-    Outbound  int `json:"outbound"`  // 电池出库数
-    Inbound   int `json:"inbound"`   // 电池库存数
-    Exception int `json:"exception"` // 电池异常数
 }
 
 // StockBusinessReq 业务库存调整请求

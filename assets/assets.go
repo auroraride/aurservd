@@ -36,4 +36,7 @@ var (
 
     //go:embed octicons.css
     OcticonsCss []byte
+
+    //go:embed sql/stock_overview.sql
+    SQLStockOverview string
 )

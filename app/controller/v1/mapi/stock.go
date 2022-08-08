@@ -40,7 +40,7 @@ func (*stock) Create(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        query  query  model.StockOverviewReq  true  "查询目标"
+// @Param        query  query   model.StockOverviewReq  true  "查询目标"
 // @Success      200  {object}  model.StockOverview  "请求成功"
 func (*stock) Overview(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.StockOverviewReq](c)
