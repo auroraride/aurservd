@@ -12,6 +12,7 @@ import (
     "errors"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/assets"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
@@ -22,10 +23,10 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
+    jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
     "math"
     "sort"
-    "strconv"
     "strings"
 )
 
@@ -385,14 +386,45 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
     }
 }
 
-func (s *stockService) Overview(req *model.StockOverviewReq) (res model.StockOverview) {
-    rows, err := ent.Database.QueryContext(s.ctx, `SELECT DISTINCT ABS(SUM(num)) AS sum,
-                NOT store_id IS NULL AND NOT cabinet_id IS NULL AND num < 0 AS outbound,
-                NOT store_id IS NULL AND NOT cabinet_id IS NULL AND num > 0 AS inbound,
-                store_id IS NULL AND cabinet_id IS NULL AS plaform
-FROM stock
-WHERE model IS NOT NULL AND deleted_at IS NULL
-GROUP BY outbound, inbound, plaform`)
+func (s *stockService) BatteryOverview(req *model.StockOverviewReq) (items []model.StockBatteryOverviewRes) {
+    var extends []string
+
+    switch req.Goal {
+    case 1:
+        extends = append(extends, fmt.Sprintf("AND (%s IS NOT NULL OR (%s IS NULL AND %s IS NULL))", stock.FieldStoreID, stock.FieldStoreID, stock.FieldCabinetID))
+        break
+    case 2:
+        extends = append(extends, fmt.Sprintf("AND (%s IS NOT NULL)", stock.FieldCabinetID))
+        break
+    default:
+        switch true {
+        case req.StoreID != 0:
+            extends = append(extends, fmt.Sprintf("AND (%s = %d)", stock.FieldStoreID, req.StoreID))
+            break
+        case req.CabinetID != 0:
+            extends = append(extends, fmt.Sprintf("AND (%s = %d)", stock.FieldCabinetID, req.StoreID))
+            break
+        default:
+            extends = append(extends, fmt.Sprintf("AND (%s IS NOT NULL OR %s IS NOT NULL OR %s IS NOT NULL)", stock.FieldStoreID, stock.FieldCabinetID, stock.FieldRiderID))
+            break
+        }
+        break
+    }
+
+    if req.CityID != 0 {
+        extends = append(extends, fmt.Sprintf("AND (%s = %d)", stock.FieldCityID, req.CityID))
+    }
+
+    if req.Start != "" && req.End != "" {
+        start := tools.NewTime().ParseDateStringX(req.Start).Format(carbon.DateTimeLayout)
+        end := tools.NewTime().ParseNextDateStringX(req.End).Format(carbon.DateTimeLayout)
+        extends = append(extends, fmt.Sprintf("AND (%s >= '%s'::timestamp AND %s < '%s'::timestamp)", stock.FieldCreatedAt, start, stock.FieldCreatedAt, end))
+    }
+
+    extend := fmt.Sprintf("WHERE model IS NOT NULL %s", strings.Join(extends, " "))
+    query := strings.Replace(assets.SQLStockOverview, "WHERE model IS NOT NULL", extend, 1)
+
+    rows, err := ent.Database.QueryContext(s.ctx, query)
 
     if err != nil {
         log.Error(err)
@@ -404,26 +436,17 @@ GROUP BY outbound, inbound, plaform`)
     }(rows)
 
     for rows.Next() {
-        var sum string
-        var outbound, inbound, plaform bool
-        err = rows.Scan(&sum, &outbound, &inbound, &plaform)
+        var b []byte
+        err = rows.Scan(&b)
         if err != nil {
             log.Error(err)
             break
         }
-        total, _ := strconv.Atoi(sum)
-        if outbound {
-            res.Outbound = total
-        }
-        if inbound {
-            res.Inbound = total
-        }
-        if plaform {
-            res.Total = total
-        }
+        var item model.StockBatteryOverviewRes
+        _ = jsoniter.Unmarshal(b, &item)
+        items = append(items, item)
     }
 
-    res.Surplus = res.Inbound - res.Outbound
     return
 }
 

@@ -6693,6 +6693,79 @@
                 }
             }
         },
+        "/manager/v1/stock/battery/overview": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "ME002 电池概览",
+                "operationId": "ManagerStockBatteryOverview",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "电柜ID, 仅goal为0的时候生效",
+                        "name": "cabinetId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "查询目标, 0:不筛选 1:门店(默认) 2:电柜",
+                        "name": "goal",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店ID, 仅goal为0的时候生效",
+                        "name": "storeId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "使用中数量 = 激活 + 结束寄存 - 寄存 - 退租",
+                        "schema": {
+                            "$ref": "#/definitions/model.StockBatteryOverviewRes"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/stock/cabinet": {
             "get": {
                 "consumes": [
@@ -6890,66 +6963,6 @@
                                     }
                                 }
                             ]
-                        }
-                    }
-                }
-            }
-        },
-        "/manager/v1/stock/overview": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[M]管理接口"
-                ],
-                "summary": "ME002 物资概览",
-                "operationId": "ManagerStockOverview",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "电柜ID",
-                        "name": "cabinetId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "城市ID",
-                        "name": "cityId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "门店ID",
-                        "name": "storeId",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            1,
-                            2
-                        ],
-                        "type": "integer",
-                        "description": "查询目标, 1:门店(默认) 2:电柜",
-                        "name": "target",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StockOverview"
                         }
                     }
                 }
@@ -14701,6 +14714,75 @@
                 }
             }
         },
+        "model.StockBatteryOverviewRes": {
+            "type": "object",
+            "properties": {
+                "c_active": {
+                    "description": "电柜-激活",
+                    "type": "integer"
+                },
+                "c_continue": {
+                    "description": "电柜-结束寄存",
+                    "type": "integer"
+                },
+                "c_inboundnum": {
+                    "description": "电柜-入库数量",
+                    "type": "integer"
+                },
+                "c_outboundnum": {
+                    "description": "电柜-出库数量",
+                    "type": "integer"
+                },
+                "c_pause": {
+                    "description": "电柜-寄存",
+                    "type": "integer"
+                },
+                "c_transfer": {
+                    "description": "电柜-平台调拨数量",
+                    "type": "integer"
+                },
+                "c_unsubscribe": {
+                    "description": "电柜-退租",
+                    "type": "integer"
+                },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
+                "num": {
+                    "description": "总数",
+                    "type": "integer"
+                },
+                "s_active": {
+                    "description": "门店-激活",
+                    "type": "integer"
+                },
+                "s_continue": {
+                    "description": "门店-结束寄存",
+                    "type": "integer"
+                },
+                "s_inboundnum": {
+                    "description": "门店-入库数量",
+                    "type": "integer"
+                },
+                "s_outboundnum": {
+                    "description": "门店-出库数量",
+                    "type": "integer"
+                },
+                "s_pause": {
+                    "description": "门店-寄存",
+                    "type": "integer"
+                },
+                "s_transfer": {
+                    "description": "门店-平台调拨数量",
+                    "type": "integer"
+                },
+                "s_unsubscribe": {
+                    "description": "门店-退租",
+                    "type": "integer"
+                }
+            }
+        },
         "model.StockCabinetListRes": {
             "type": "object",
             "properties": {
@@ -14947,31 +15029,6 @@
                 },
                 "surplus": {
                     "description": "剩余",
-                    "type": "integer"
-                }
-            }
-        },
-        "model.StockOverview": {
-            "type": "object",
-            "properties": {
-                "exception": {
-                    "description": "电池异常数",
-                    "type": "integer"
-                },
-                "inbound": {
-                    "description": "电池库存数",
-                    "type": "integer"
-                },
-                "outbound": {
-                    "description": "电池出库数",
-                    "type": "integer"
-                },
-                "surplus": {
-                    "description": "库存电池",
-                    "type": "integer"
-                },
-                "total": {
-                    "description": "电池总数",
                     "type": "integer"
                 }
             }

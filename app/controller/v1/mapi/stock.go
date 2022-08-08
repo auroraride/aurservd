@@ -32,19 +32,19 @@ func (*stock) Create(c echo.Context) (err error) {
     return ctx.SendResponse()
 }
 
-// Overview
-// @ID           ManagerStockOverview
-// @Router       /manager/v1/stock/overview [GET]
-// @Summary      ME002 物资概览
+// BatteryOverview
+// @ID           ManagerStockBatteryOverview
+// @Router       /manager/v1/stock/battery/overview [GET]
+// @Summary      ME002 电池概览
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        query  query   model.StockOverviewReq  true  "查询目标"
-// @Success      200  {object}  model.StockOverview  "请求成功"
-func (*stock) Overview(c echo.Context) (err error) {
+// @Success      200  {object}  model.StockBatteryOverviewRes  "使用中数量 = 激活 + 结束寄存 - 寄存 - 退租"
+func (*stock) BatteryOverview(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.StockOverviewReq](c)
-    return ctx.SendResponse(service.NewStock().Overview(req))
+    return ctx.SendResponse(service.NewStock().BatteryOverview(req))
 }
 
 // StoreList

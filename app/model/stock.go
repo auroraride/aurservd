@@ -46,37 +46,32 @@ type StockTransferReq struct {
 }
 
 type StockOverviewReq struct {
-    Target    uint8  `json:"target" query:"target" enums:"1,2"` // 查询目标, 1:门店(默认) 2:电柜
-    CityID    uint64 `json:"cityId" query:"cityId"`             // 城市ID
-    CabinetID uint64 `json:"cabinetId" query:"cabinetId"`       // 电柜ID
-    StoreID   uint64 `json:"storeId" query:"storeId"`           // 门店ID
+    Goal      uint8  `json:"goal" query:"goal" enums:"0,1,2"` // 查询目标, 0:不筛选 1:门店(默认) 2:电柜
+    CabinetID uint64 `json:"cabinetId" query:"cabinetId"`     // 电柜ID, 仅goal为0的时候生效
+    StoreID   uint64 `json:"storeId" query:"storeId"`         // 门店ID, 仅goal为0的时候生效
+    CityID    uint64 `json:"cityId" query:"cityId"`           // 城市ID
+    Start     string `json:"start" query:"start"`             // 开始时间
+    End       string `json:"end" query:"end"`                 // 结束时间
 }
 
-type StockOverview struct {
-    Total     int `json:"total"`     // 电池总数
-    Surplus   int `json:"surplus"`   // 库存电池
-    Outbound  int `json:"outbound"`  // 电池出库数
-    Inbound   int `json:"inbound"`   // 电池库存数
-    Exception int `json:"exception"` // 电池异常数
-}
-
-type StockOverviewRes struct {
-    Model        string `json:"model"`
-    Num          int    `json:"num"`
-    CTransfer    int    `json:"c_transfer"`
-    STransfer    int    `json:"s_transfer"`
-    COutboundnum int    `json:"c_outboundnum"`
-    CInboundnum  int    `json:"c_inboundnum"`
-    SOutboundnum int    `json:"s_outboundnum"`
-    SInboundnum  int    `json:"s_inboundnum"`
-    CActive      int    `json:"c_active"`
-    CPause       int    `json:"c_pause"`
-    CContinue    int    `json:"c_continue"`
-    CUnsubscribe int    `json:"c_unsubscribe"`
-    SActive      int    `json:"s_active"`
-    SPause       int    `json:"s_pause"`
-    SContinue    int    `json:"s_continue"`
-    SUnsubscribe int    `json:"s_unsubscribe"`
+// StockBatteryOverviewRes 电池概览
+type StockBatteryOverviewRes struct {
+    Model        string `json:"model"`         // 电池型号
+    Num          int    `json:"num"`           // 总数
+    STransfer    int    `json:"s_transfer"`    // 门店-平台调拨数量
+    SOutboundnum int    `json:"s_outboundnum"` // 门店-出库数量
+    SInboundnum  int    `json:"s_inboundnum"`  // 门店-入库数量
+    SActive      int    `json:"s_active"`      // 门店-激活
+    SPause       int    `json:"s_pause"`       // 门店-寄存
+    SContinue    int    `json:"s_continue"`    // 门店-结束寄存
+    SUnsubscribe int    `json:"s_unsubscribe"` // 门店-退租
+    CTransfer    int    `json:"c_transfer"`    // 电柜-平台调拨数量
+    COutboundnum int    `json:"c_outboundnum"` // 电柜-出库数量
+    CInboundnum  int    `json:"c_inboundnum"`  // 电柜-入库数量
+    CActive      int    `json:"c_active"`      // 电柜-激活
+    CPause       int    `json:"c_pause"`       // 电柜-寄存
+    CContinue    int    `json:"c_continue"`    // 电柜-结束寄存
+    CUnsubscribe int    `json:"c_unsubscribe"` // 电柜-退租
 }
 
 type StockListReq struct {
