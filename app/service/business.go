@@ -7,20 +7,27 @@ package service
 
 import (
     "context"
+    "entgo.io/ent/dialect/sql"
+    "entgo.io/ent/dialect/sql/sqljson"
+    "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/business"
+    "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
+    "github.com/auroraride/aurservd/internal/ent/subscribepause"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
+    "strings"
 )
 
 // 门店业务处理专用
 type businessService struct {
     ctx      context.Context
     employee *ent.Employee
+    modifer  *model.Modifier
 }
 
 func NewBusiness() *businessService {
@@ -33,6 +40,15 @@ func NewBusinessWithEmployee(e *ent.Employee) *businessService {
     s := NewBusiness()
     s.ctx = context.WithValue(s.ctx, "employee", e)
     s.employee = e
+    return s
+}
+
+func NewBusinessWithModifier(m *model.Modifier) *businessService {
+    s := NewBusiness()
+    if m != nil {
+        s.ctx = context.WithValue(s.ctx, "modifier", m)
+        s.modifer = m
+    }
     return s
 }
 
@@ -233,4 +249,109 @@ func (s *businessService) ListManager(req *model.BusinessListReq) *model.Paginat
             return
         },
     )
+}
+
+func (s *businessService) ListPause(req *model.BusinessListPauseReq) *model.PaginationRes {
+    q := ent.Database.SubscribePause.
+        QueryNotDeleted().
+        WithCity().
+        WithEmployee().
+        WithEndEmployee().
+        WithCabinet().
+        WithEndCabinet().
+        WithStore().
+        WithEndStore()
+
+    // 筛选城市
+    if req.CityID != 0 {
+        q.Where(subscribepause.CityID(req.CityID))
+    }
+
+    // 筛选骑手
+    if req.RiderID != 0 {
+        q.Where(subscribepause.RiderID(req.RiderID))
+    }
+
+    // 状态筛选
+    switch req.Status {
+    case 1:
+        q.Where(subscribepause.EndAtIsNil())
+        break
+    case 2:
+        q.Where(subscribepause.EndAtNotNil())
+        break
+    }
+
+    // 是否逾期
+    if req.Overdue {
+        q.Where(subscribepause.Overdue(true))
+    }
+
+    switch req.StartAscription {
+    case 1:
+        q.Where(subscribepause.StoreIDNotNil())
+        break
+    case 2:
+        q.Where(subscribepause.CabinetIDNotNil())
+        break
+    }
+
+    switch req.EndAscription {
+    case 1:
+        q.Where(subscribepause.EndStoreIDNotNil())
+        break
+    case 2:
+        q.Where(subscribepause.EndCabinetIDNotNil())
+        break
+    }
+
+    if req.StartDate != "" {
+        start := strings.Split(strings.ReplaceAll(req.StartDate, " ", ""), ",")
+        if len(start) != 2 {
+            snag.Panic("寄存时间段参数错误")
+        }
+        q.Where(
+            subscribepause.StartAtGTE(tools.NewTime().ParseDateStringX(start[0])),
+            subscribepause.StartAtLT(tools.NewTime().ParseNextDateStringX(start[1])),
+        )
+    }
+
+    if req.EndDate != "" {
+        end := strings.Split(strings.ReplaceAll(req.EndDate, " ", ""), ",")
+        if len(end) != 2 {
+            snag.Panic("结束寄存时间段参数错误")
+        }
+        q.Where(
+            subscribepause.EndAtGTE(tools.NewTime().ParseDateStringX(end[0])),
+            subscribepause.EndAtLT(tools.NewTime().ParseNextDateStringX(end[1])),
+        )
+    }
+
+    if req.StartBy != "" {
+        q.Where(
+            subscribepause.Or(
+                func(sel *sql.Selector) {
+                    sel.Where(sqljson.StringContains(sel.C(subscribepause.FieldCreator), req.StartBy, sqljson.Path("name")))
+                },
+                subscribepause.HasEmployeeWith(employee.NameContainsFold(req.StartBy)),
+            ),
+        )
+    }
+
+    if req.EndBy != "" {
+        q.Where(
+            subscribepause.Or(
+                func(sel *sql.Selector) {
+                    sel.Where(sqljson.StringContains(sel.C(subscribepause.FieldEndModifier), req.EndBy, sqljson.Path("name")))
+                },
+                subscribepause.HasEndEmployeeWith(employee.NameContainsFold(req.EndBy)),
+            ),
+        )
+    }
+
+    items, _ := q.All(s.ctx)
+
+    fmt.Println(len(items))
+
+    return nil
 }

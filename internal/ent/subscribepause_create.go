@@ -12,8 +12,11 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 )
@@ -114,6 +117,76 @@ func (spc *SubscribePauseCreate) SetNillableEmployeeID(u *uint64) *SubscribePaus
 	return spc
 }
 
+// SetCityID sets the "city_id" field.
+func (spc *SubscribePauseCreate) SetCityID(u uint64) *SubscribePauseCreate {
+	spc.mutation.SetCityID(u)
+	return spc
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (spc *SubscribePauseCreate) SetNillableCityID(u *uint64) *SubscribePauseCreate {
+	if u != nil {
+		spc.SetCityID(*u)
+	}
+	return spc
+}
+
+// SetStoreID sets the "store_id" field.
+func (spc *SubscribePauseCreate) SetStoreID(u uint64) *SubscribePauseCreate {
+	spc.mutation.SetStoreID(u)
+	return spc
+}
+
+// SetNillableStoreID sets the "store_id" field if the given value is not nil.
+func (spc *SubscribePauseCreate) SetNillableStoreID(u *uint64) *SubscribePauseCreate {
+	if u != nil {
+		spc.SetStoreID(*u)
+	}
+	return spc
+}
+
+// SetEndStoreID sets the "end_store_id" field.
+func (spc *SubscribePauseCreate) SetEndStoreID(u uint64) *SubscribePauseCreate {
+	spc.mutation.SetEndStoreID(u)
+	return spc
+}
+
+// SetNillableEndStoreID sets the "end_store_id" field if the given value is not nil.
+func (spc *SubscribePauseCreate) SetNillableEndStoreID(u *uint64) *SubscribePauseCreate {
+	if u != nil {
+		spc.SetEndStoreID(*u)
+	}
+	return spc
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (spc *SubscribePauseCreate) SetCabinetID(u uint64) *SubscribePauseCreate {
+	spc.mutation.SetCabinetID(u)
+	return spc
+}
+
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (spc *SubscribePauseCreate) SetNillableCabinetID(u *uint64) *SubscribePauseCreate {
+	if u != nil {
+		spc.SetCabinetID(*u)
+	}
+	return spc
+}
+
+// SetEndCabinetID sets the "end_cabinet_id" field.
+func (spc *SubscribePauseCreate) SetEndCabinetID(u uint64) *SubscribePauseCreate {
+	spc.mutation.SetEndCabinetID(u)
+	return spc
+}
+
+// SetNillableEndCabinetID sets the "end_cabinet_id" field if the given value is not nil.
+func (spc *SubscribePauseCreate) SetNillableEndCabinetID(u *uint64) *SubscribePauseCreate {
+	if u != nil {
+		spc.SetEndCabinetID(*u)
+	}
+	return spc
+}
+
 // SetSubscribeID sets the "subscribe_id" field.
 func (spc *SubscribePauseCreate) SetSubscribeID(u uint64) *SubscribePauseCreate {
 	spc.mutation.SetSubscribeID(u)
@@ -182,6 +255,12 @@ func (spc *SubscribePauseCreate) SetNillableOverdue(b *bool) *SubscribePauseCrea
 	return spc
 }
 
+// SetEndModifier sets the "end_modifier" field.
+func (spc *SubscribePauseCreate) SetEndModifier(m *model.Modifier) *SubscribePauseCreate {
+	spc.mutation.SetEndModifier(m)
+	return spc
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (spc *SubscribePauseCreate) SetRider(r *Rider) *SubscribePauseCreate {
 	return spc.SetRiderID(r.ID)
@@ -190,6 +269,31 @@ func (spc *SubscribePauseCreate) SetRider(r *Rider) *SubscribePauseCreate {
 // SetEmployee sets the "employee" edge to the Employee entity.
 func (spc *SubscribePauseCreate) SetEmployee(e *Employee) *SubscribePauseCreate {
 	return spc.SetEmployeeID(e.ID)
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (spc *SubscribePauseCreate) SetCity(c *City) *SubscribePauseCreate {
+	return spc.SetCityID(c.ID)
+}
+
+// SetStore sets the "store" edge to the Store entity.
+func (spc *SubscribePauseCreate) SetStore(s *Store) *SubscribePauseCreate {
+	return spc.SetStoreID(s.ID)
+}
+
+// SetEndStore sets the "endStore" edge to the Store entity.
+func (spc *SubscribePauseCreate) SetEndStore(s *Store) *SubscribePauseCreate {
+	return spc.SetEndStoreID(s.ID)
+}
+
+// SetCabinet sets the "cabinet" edge to the Cabinet entity.
+func (spc *SubscribePauseCreate) SetCabinet(c *Cabinet) *SubscribePauseCreate {
+	return spc.SetCabinetID(c.ID)
+}
+
+// SetEndCabinet sets the "endCabinet" edge to the Cabinet entity.
+func (spc *SubscribePauseCreate) SetEndCabinet(c *Cabinet) *SubscribePauseCreate {
+	return spc.SetEndCabinetID(c.ID)
 }
 
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
@@ -436,6 +540,14 @@ func (spc *SubscribePauseCreate) createSpec() (*SubscribePause, *sqlgraph.Create
 		})
 		_node.Overdue = value
 	}
+	if value, ok := spc.mutation.EndModifier(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: subscribepause.FieldEndModifier,
+		})
+		_node.EndModifier = value
+	}
 	if nodes := spc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -474,6 +586,106 @@ func (spc *SubscribePauseCreate) createSpec() (*SubscribePause, *sqlgraph.Create
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.EmployeeID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := spc.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.CityTable,
+			Columns: []string{subscribepause.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CityID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := spc.mutation.StoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.StoreTable,
+			Columns: []string{subscribepause.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.StoreID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := spc.mutation.EndStoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.EndStoreTable,
+			Columns: []string{subscribepause.EndStoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.EndStoreID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := spc.mutation.CabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.CabinetTable,
+			Columns: []string{subscribepause.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CabinetID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := spc.mutation.EndCabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.EndCabinetTable,
+			Columns: []string{subscribepause.EndCabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.EndCabinetID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := spc.mutation.SubscribeIDs(); len(nodes) > 0 {
@@ -696,6 +908,96 @@ func (u *SubscribePauseUpsert) ClearEmployeeID() *SubscribePauseUpsert {
 	return u
 }
 
+// SetCityID sets the "city_id" field.
+func (u *SubscribePauseUpsert) SetCityID(v uint64) *SubscribePauseUpsert {
+	u.Set(subscribepause.FieldCityID, v)
+	return u
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *SubscribePauseUpsert) UpdateCityID() *SubscribePauseUpsert {
+	u.SetExcluded(subscribepause.FieldCityID)
+	return u
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *SubscribePauseUpsert) ClearCityID() *SubscribePauseUpsert {
+	u.SetNull(subscribepause.FieldCityID)
+	return u
+}
+
+// SetStoreID sets the "store_id" field.
+func (u *SubscribePauseUpsert) SetStoreID(v uint64) *SubscribePauseUpsert {
+	u.Set(subscribepause.FieldStoreID, v)
+	return u
+}
+
+// UpdateStoreID sets the "store_id" field to the value that was provided on create.
+func (u *SubscribePauseUpsert) UpdateStoreID() *SubscribePauseUpsert {
+	u.SetExcluded(subscribepause.FieldStoreID)
+	return u
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (u *SubscribePauseUpsert) ClearStoreID() *SubscribePauseUpsert {
+	u.SetNull(subscribepause.FieldStoreID)
+	return u
+}
+
+// SetEndStoreID sets the "end_store_id" field.
+func (u *SubscribePauseUpsert) SetEndStoreID(v uint64) *SubscribePauseUpsert {
+	u.Set(subscribepause.FieldEndStoreID, v)
+	return u
+}
+
+// UpdateEndStoreID sets the "end_store_id" field to the value that was provided on create.
+func (u *SubscribePauseUpsert) UpdateEndStoreID() *SubscribePauseUpsert {
+	u.SetExcluded(subscribepause.FieldEndStoreID)
+	return u
+}
+
+// ClearEndStoreID clears the value of the "end_store_id" field.
+func (u *SubscribePauseUpsert) ClearEndStoreID() *SubscribePauseUpsert {
+	u.SetNull(subscribepause.FieldEndStoreID)
+	return u
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (u *SubscribePauseUpsert) SetCabinetID(v uint64) *SubscribePauseUpsert {
+	u.Set(subscribepause.FieldCabinetID, v)
+	return u
+}
+
+// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
+func (u *SubscribePauseUpsert) UpdateCabinetID() *SubscribePauseUpsert {
+	u.SetExcluded(subscribepause.FieldCabinetID)
+	return u
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *SubscribePauseUpsert) ClearCabinetID() *SubscribePauseUpsert {
+	u.SetNull(subscribepause.FieldCabinetID)
+	return u
+}
+
+// SetEndCabinetID sets the "end_cabinet_id" field.
+func (u *SubscribePauseUpsert) SetEndCabinetID(v uint64) *SubscribePauseUpsert {
+	u.Set(subscribepause.FieldEndCabinetID, v)
+	return u
+}
+
+// UpdateEndCabinetID sets the "end_cabinet_id" field to the value that was provided on create.
+func (u *SubscribePauseUpsert) UpdateEndCabinetID() *SubscribePauseUpsert {
+	u.SetExcluded(subscribepause.FieldEndCabinetID)
+	return u
+}
+
+// ClearEndCabinetID clears the value of the "end_cabinet_id" field.
+func (u *SubscribePauseUpsert) ClearEndCabinetID() *SubscribePauseUpsert {
+	u.SetNull(subscribepause.FieldEndCabinetID)
+	return u
+}
+
 // SetSubscribeID sets the "subscribe_id" field.
 func (u *SubscribePauseUpsert) SetSubscribeID(v uint64) *SubscribePauseUpsert {
 	u.Set(subscribepause.FieldSubscribeID, v)
@@ -789,6 +1091,24 @@ func (u *SubscribePauseUpsert) SetOverdue(v bool) *SubscribePauseUpsert {
 // UpdateOverdue sets the "overdue" field to the value that was provided on create.
 func (u *SubscribePauseUpsert) UpdateOverdue() *SubscribePauseUpsert {
 	u.SetExcluded(subscribepause.FieldOverdue)
+	return u
+}
+
+// SetEndModifier sets the "end_modifier" field.
+func (u *SubscribePauseUpsert) SetEndModifier(v *model.Modifier) *SubscribePauseUpsert {
+	u.Set(subscribepause.FieldEndModifier, v)
+	return u
+}
+
+// UpdateEndModifier sets the "end_modifier" field to the value that was provided on create.
+func (u *SubscribePauseUpsert) UpdateEndModifier() *SubscribePauseUpsert {
+	u.SetExcluded(subscribepause.FieldEndModifier)
+	return u
+}
+
+// ClearEndModifier clears the value of the "end_modifier" field.
+func (u *SubscribePauseUpsert) ClearEndModifier() *SubscribePauseUpsert {
+	u.SetNull(subscribepause.FieldEndModifier)
 	return u
 }
 
@@ -989,6 +1309,111 @@ func (u *SubscribePauseUpsertOne) ClearEmployeeID() *SubscribePauseUpsertOne {
 	})
 }
 
+// SetCityID sets the "city_id" field.
+func (u *SubscribePauseUpsertOne) SetCityID(v uint64) *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.SetCityID(v)
+	})
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *SubscribePauseUpsertOne) UpdateCityID() *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.UpdateCityID()
+	})
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *SubscribePauseUpsertOne) ClearCityID() *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.ClearCityID()
+	})
+}
+
+// SetStoreID sets the "store_id" field.
+func (u *SubscribePauseUpsertOne) SetStoreID(v uint64) *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.SetStoreID(v)
+	})
+}
+
+// UpdateStoreID sets the "store_id" field to the value that was provided on create.
+func (u *SubscribePauseUpsertOne) UpdateStoreID() *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.UpdateStoreID()
+	})
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (u *SubscribePauseUpsertOne) ClearStoreID() *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.ClearStoreID()
+	})
+}
+
+// SetEndStoreID sets the "end_store_id" field.
+func (u *SubscribePauseUpsertOne) SetEndStoreID(v uint64) *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.SetEndStoreID(v)
+	})
+}
+
+// UpdateEndStoreID sets the "end_store_id" field to the value that was provided on create.
+func (u *SubscribePauseUpsertOne) UpdateEndStoreID() *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.UpdateEndStoreID()
+	})
+}
+
+// ClearEndStoreID clears the value of the "end_store_id" field.
+func (u *SubscribePauseUpsertOne) ClearEndStoreID() *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.ClearEndStoreID()
+	})
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (u *SubscribePauseUpsertOne) SetCabinetID(v uint64) *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.SetCabinetID(v)
+	})
+}
+
+// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
+func (u *SubscribePauseUpsertOne) UpdateCabinetID() *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.UpdateCabinetID()
+	})
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *SubscribePauseUpsertOne) ClearCabinetID() *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.ClearCabinetID()
+	})
+}
+
+// SetEndCabinetID sets the "end_cabinet_id" field.
+func (u *SubscribePauseUpsertOne) SetEndCabinetID(v uint64) *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.SetEndCabinetID(v)
+	})
+}
+
+// UpdateEndCabinetID sets the "end_cabinet_id" field to the value that was provided on create.
+func (u *SubscribePauseUpsertOne) UpdateEndCabinetID() *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.UpdateEndCabinetID()
+	})
+}
+
+// ClearEndCabinetID clears the value of the "end_cabinet_id" field.
+func (u *SubscribePauseUpsertOne) ClearEndCabinetID() *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.ClearEndCabinetID()
+	})
+}
+
 // SetSubscribeID sets the "subscribe_id" field.
 func (u *SubscribePauseUpsertOne) SetSubscribeID(v uint64) *SubscribePauseUpsertOne {
 	return u.Update(func(s *SubscribePauseUpsert) {
@@ -1098,6 +1523,27 @@ func (u *SubscribePauseUpsertOne) SetOverdue(v bool) *SubscribePauseUpsertOne {
 func (u *SubscribePauseUpsertOne) UpdateOverdue() *SubscribePauseUpsertOne {
 	return u.Update(func(s *SubscribePauseUpsert) {
 		s.UpdateOverdue()
+	})
+}
+
+// SetEndModifier sets the "end_modifier" field.
+func (u *SubscribePauseUpsertOne) SetEndModifier(v *model.Modifier) *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.SetEndModifier(v)
+	})
+}
+
+// UpdateEndModifier sets the "end_modifier" field to the value that was provided on create.
+func (u *SubscribePauseUpsertOne) UpdateEndModifier() *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.UpdateEndModifier()
+	})
+}
+
+// ClearEndModifier clears the value of the "end_modifier" field.
+func (u *SubscribePauseUpsertOne) ClearEndModifier() *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.ClearEndModifier()
 	})
 }
 
@@ -1462,6 +1908,111 @@ func (u *SubscribePauseUpsertBulk) ClearEmployeeID() *SubscribePauseUpsertBulk {
 	})
 }
 
+// SetCityID sets the "city_id" field.
+func (u *SubscribePauseUpsertBulk) SetCityID(v uint64) *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.SetCityID(v)
+	})
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *SubscribePauseUpsertBulk) UpdateCityID() *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.UpdateCityID()
+	})
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *SubscribePauseUpsertBulk) ClearCityID() *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.ClearCityID()
+	})
+}
+
+// SetStoreID sets the "store_id" field.
+func (u *SubscribePauseUpsertBulk) SetStoreID(v uint64) *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.SetStoreID(v)
+	})
+}
+
+// UpdateStoreID sets the "store_id" field to the value that was provided on create.
+func (u *SubscribePauseUpsertBulk) UpdateStoreID() *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.UpdateStoreID()
+	})
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (u *SubscribePauseUpsertBulk) ClearStoreID() *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.ClearStoreID()
+	})
+}
+
+// SetEndStoreID sets the "end_store_id" field.
+func (u *SubscribePauseUpsertBulk) SetEndStoreID(v uint64) *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.SetEndStoreID(v)
+	})
+}
+
+// UpdateEndStoreID sets the "end_store_id" field to the value that was provided on create.
+func (u *SubscribePauseUpsertBulk) UpdateEndStoreID() *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.UpdateEndStoreID()
+	})
+}
+
+// ClearEndStoreID clears the value of the "end_store_id" field.
+func (u *SubscribePauseUpsertBulk) ClearEndStoreID() *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.ClearEndStoreID()
+	})
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (u *SubscribePauseUpsertBulk) SetCabinetID(v uint64) *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.SetCabinetID(v)
+	})
+}
+
+// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
+func (u *SubscribePauseUpsertBulk) UpdateCabinetID() *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.UpdateCabinetID()
+	})
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *SubscribePauseUpsertBulk) ClearCabinetID() *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.ClearCabinetID()
+	})
+}
+
+// SetEndCabinetID sets the "end_cabinet_id" field.
+func (u *SubscribePauseUpsertBulk) SetEndCabinetID(v uint64) *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.SetEndCabinetID(v)
+	})
+}
+
+// UpdateEndCabinetID sets the "end_cabinet_id" field to the value that was provided on create.
+func (u *SubscribePauseUpsertBulk) UpdateEndCabinetID() *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.UpdateEndCabinetID()
+	})
+}
+
+// ClearEndCabinetID clears the value of the "end_cabinet_id" field.
+func (u *SubscribePauseUpsertBulk) ClearEndCabinetID() *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.ClearEndCabinetID()
+	})
+}
+
 // SetSubscribeID sets the "subscribe_id" field.
 func (u *SubscribePauseUpsertBulk) SetSubscribeID(v uint64) *SubscribePauseUpsertBulk {
 	return u.Update(func(s *SubscribePauseUpsert) {
@@ -1571,6 +2122,27 @@ func (u *SubscribePauseUpsertBulk) SetOverdue(v bool) *SubscribePauseUpsertBulk 
 func (u *SubscribePauseUpsertBulk) UpdateOverdue() *SubscribePauseUpsertBulk {
 	return u.Update(func(s *SubscribePauseUpsert) {
 		s.UpdateOverdue()
+	})
+}
+
+// SetEndModifier sets the "end_modifier" field.
+func (u *SubscribePauseUpsertBulk) SetEndModifier(v *model.Modifier) *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.SetEndModifier(v)
+	})
+}
+
+// UpdateEndModifier sets the "end_modifier" field to the value that was provided on create.
+func (u *SubscribePauseUpsertBulk) UpdateEndModifier() *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.UpdateEndModifier()
+	})
+}
+
+// ClearEndModifier clears the value of the "end_modifier" field.
+func (u *SubscribePauseUpsertBulk) ClearEndModifier() *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.ClearEndModifier()
 	})
 }
 

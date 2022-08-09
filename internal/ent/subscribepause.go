@@ -10,8 +10,11 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 )
@@ -42,6 +45,21 @@ type SubscribePause struct {
 	// EmployeeID holds the value of the "employee_id" field.
 	// 店员ID
 	EmployeeID *uint64 `json:"employee_id,omitempty"`
+	// CityID holds the value of the "city_id" field.
+	// 城市ID
+	CityID *uint64 `json:"city_id,omitempty"`
+	// StoreID holds the value of the "store_id" field.
+	// 门店ID
+	StoreID *uint64 `json:"store_id,omitempty"`
+	// EndStoreID holds the value of the "end_store_id" field.
+	// 门店ID
+	EndStoreID *uint64 `json:"end_store_id,omitempty"`
+	// CabinetID holds the value of the "cabinet_id" field.
+	// 电柜ID
+	CabinetID *uint64 `json:"cabinet_id,omitempty"`
+	// EndCabinetID holds the value of the "end_cabinet_id" field.
+	// 电柜ID
+	EndCabinetID *uint64 `json:"end_cabinet_id,omitempty"`
 	// SubscribeID holds the value of the "subscribe_id" field.
 	// 订阅ID
 	SubscribeID uint64 `json:"subscribe_id,omitempty"`
@@ -60,6 +78,9 @@ type SubscribePause struct {
 	// Overdue holds the value of the "overdue" field.
 	// 是否超期
 	Overdue bool `json:"overdue,omitempty"`
+	// EndModifier holds the value of the "end_modifier" field.
+	// 结束寄存管理员信息
+	EndModifier *model.Modifier `json:"end_modifier,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribePauseQuery when eager-loading is set.
 	Edges SubscribePauseEdges `json:"edges"`
@@ -71,13 +92,23 @@ type SubscribePauseEdges struct {
 	Rider *Rider `json:"rider,omitempty"`
 	// Employee holds the value of the employee edge.
 	Employee *Employee `json:"employee,omitempty"`
+	// City holds the value of the city edge.
+	City *City `json:"city,omitempty"`
+	// Store holds the value of the store edge.
+	Store *Store `json:"store,omitempty"`
+	// EndStore holds the value of the endStore edge.
+	EndStore *Store `json:"endStore,omitempty"`
+	// Cabinet holds the value of the cabinet edge.
+	Cabinet *Cabinet `json:"cabinet,omitempty"`
+	// EndCabinet holds the value of the endCabinet edge.
+	EndCabinet *Cabinet `json:"endCabinet,omitempty"`
 	// Subscribe holds the value of the subscribe edge.
 	Subscribe *Subscribe `json:"subscribe,omitempty"`
 	// EndEmployee holds the value of the end_employee edge.
 	EndEmployee *Employee `json:"end_employee,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [9]bool
 }
 
 // RiderOrErr returns the Rider value or an error if the edge
@@ -108,10 +139,80 @@ func (e SubscribePauseEdges) EmployeeOrErr() (*Employee, error) {
 	return nil, &NotLoadedError{edge: "employee"}
 }
 
+// CityOrErr returns the City value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e SubscribePauseEdges) CityOrErr() (*City, error) {
+	if e.loadedTypes[2] {
+		if e.City == nil {
+			// The edge city was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: city.Label}
+		}
+		return e.City, nil
+	}
+	return nil, &NotLoadedError{edge: "city"}
+}
+
+// StoreOrErr returns the Store value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e SubscribePauseEdges) StoreOrErr() (*Store, error) {
+	if e.loadedTypes[3] {
+		if e.Store == nil {
+			// The edge store was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: store.Label}
+		}
+		return e.Store, nil
+	}
+	return nil, &NotLoadedError{edge: "store"}
+}
+
+// EndStoreOrErr returns the EndStore value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e SubscribePauseEdges) EndStoreOrErr() (*Store, error) {
+	if e.loadedTypes[4] {
+		if e.EndStore == nil {
+			// The edge endStore was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: store.Label}
+		}
+		return e.EndStore, nil
+	}
+	return nil, &NotLoadedError{edge: "endStore"}
+}
+
+// CabinetOrErr returns the Cabinet value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e SubscribePauseEdges) CabinetOrErr() (*Cabinet, error) {
+	if e.loadedTypes[5] {
+		if e.Cabinet == nil {
+			// The edge cabinet was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: cabinet.Label}
+		}
+		return e.Cabinet, nil
+	}
+	return nil, &NotLoadedError{edge: "cabinet"}
+}
+
+// EndCabinetOrErr returns the EndCabinet value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e SubscribePauseEdges) EndCabinetOrErr() (*Cabinet, error) {
+	if e.loadedTypes[6] {
+		if e.EndCabinet == nil {
+			// The edge endCabinet was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: cabinet.Label}
+		}
+		return e.EndCabinet, nil
+	}
+	return nil, &NotLoadedError{edge: "endCabinet"}
+}
+
 // SubscribeOrErr returns the Subscribe value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e SubscribePauseEdges) SubscribeOrErr() (*Subscribe, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[7] {
 		if e.Subscribe == nil {
 			// The edge subscribe was loaded in eager-loading,
 			// but was not found.
@@ -125,7 +226,7 @@ func (e SubscribePauseEdges) SubscribeOrErr() (*Subscribe, error) {
 // EndEmployeeOrErr returns the EndEmployee value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e SubscribePauseEdges) EndEmployeeOrErr() (*Employee, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[8] {
 		if e.EndEmployee == nil {
 			// The edge end_employee was loaded in eager-loading,
 			// but was not found.
@@ -141,11 +242,11 @@ func (*SubscribePause) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case subscribepause.FieldCreator, subscribepause.FieldLastModifier:
+		case subscribepause.FieldCreator, subscribepause.FieldLastModifier, subscribepause.FieldEndModifier:
 			values[i] = new([]byte)
 		case subscribepause.FieldOverdue:
 			values[i] = new(sql.NullBool)
-		case subscribepause.FieldID, subscribepause.FieldRiderID, subscribepause.FieldEmployeeID, subscribepause.FieldSubscribeID, subscribepause.FieldDays, subscribepause.FieldEndEmployeeID:
+		case subscribepause.FieldID, subscribepause.FieldRiderID, subscribepause.FieldEmployeeID, subscribepause.FieldCityID, subscribepause.FieldStoreID, subscribepause.FieldEndStoreID, subscribepause.FieldCabinetID, subscribepause.FieldEndCabinetID, subscribepause.FieldSubscribeID, subscribepause.FieldDays, subscribepause.FieldEndEmployeeID:
 			values[i] = new(sql.NullInt64)
 		case subscribepause.FieldRemark:
 			values[i] = new(sql.NullString)
@@ -226,6 +327,41 @@ func (sp *SubscribePause) assignValues(columns []string, values []interface{}) e
 				sp.EmployeeID = new(uint64)
 				*sp.EmployeeID = uint64(value.Int64)
 			}
+		case subscribepause.FieldCityID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field city_id", values[i])
+			} else if value.Valid {
+				sp.CityID = new(uint64)
+				*sp.CityID = uint64(value.Int64)
+			}
+		case subscribepause.FieldStoreID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field store_id", values[i])
+			} else if value.Valid {
+				sp.StoreID = new(uint64)
+				*sp.StoreID = uint64(value.Int64)
+			}
+		case subscribepause.FieldEndStoreID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field end_store_id", values[i])
+			} else if value.Valid {
+				sp.EndStoreID = new(uint64)
+				*sp.EndStoreID = uint64(value.Int64)
+			}
+		case subscribepause.FieldCabinetID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field cabinet_id", values[i])
+			} else if value.Valid {
+				sp.CabinetID = new(uint64)
+				*sp.CabinetID = uint64(value.Int64)
+			}
+		case subscribepause.FieldEndCabinetID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field end_cabinet_id", values[i])
+			} else if value.Valid {
+				sp.EndCabinetID = new(uint64)
+				*sp.EndCabinetID = uint64(value.Int64)
+			}
 		case subscribepause.FieldSubscribeID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field subscribe_id", values[i])
@@ -263,6 +399,14 @@ func (sp *SubscribePause) assignValues(columns []string, values []interface{}) e
 			} else if value.Valid {
 				sp.Overdue = value.Bool
 			}
+		case subscribepause.FieldEndModifier:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field end_modifier", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &sp.EndModifier); err != nil {
+					return fmt.Errorf("unmarshal field end_modifier: %w", err)
+				}
+			}
 		}
 	}
 	return nil
@@ -276,6 +420,31 @@ func (sp *SubscribePause) QueryRider() *RiderQuery {
 // QueryEmployee queries the "employee" edge of the SubscribePause entity.
 func (sp *SubscribePause) QueryEmployee() *EmployeeQuery {
 	return (&SubscribePauseClient{config: sp.config}).QueryEmployee(sp)
+}
+
+// QueryCity queries the "city" edge of the SubscribePause entity.
+func (sp *SubscribePause) QueryCity() *CityQuery {
+	return (&SubscribePauseClient{config: sp.config}).QueryCity(sp)
+}
+
+// QueryStore queries the "store" edge of the SubscribePause entity.
+func (sp *SubscribePause) QueryStore() *StoreQuery {
+	return (&SubscribePauseClient{config: sp.config}).QueryStore(sp)
+}
+
+// QueryEndStore queries the "endStore" edge of the SubscribePause entity.
+func (sp *SubscribePause) QueryEndStore() *StoreQuery {
+	return (&SubscribePauseClient{config: sp.config}).QueryEndStore(sp)
+}
+
+// QueryCabinet queries the "cabinet" edge of the SubscribePause entity.
+func (sp *SubscribePause) QueryCabinet() *CabinetQuery {
+	return (&SubscribePauseClient{config: sp.config}).QueryCabinet(sp)
+}
+
+// QueryEndCabinet queries the "endCabinet" edge of the SubscribePause entity.
+func (sp *SubscribePause) QueryEndCabinet() *CabinetQuery {
+	return (&SubscribePauseClient{config: sp.config}).QueryEndCabinet(sp)
 }
 
 // QuerySubscribe queries the "subscribe" edge of the SubscribePause entity.
@@ -331,6 +500,26 @@ func (sp *SubscribePause) String() string {
 		builder.WriteString(", employee_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
+	if v := sp.CityID; v != nil {
+		builder.WriteString(", city_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := sp.StoreID; v != nil {
+		builder.WriteString(", store_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := sp.EndStoreID; v != nil {
+		builder.WriteString(", end_store_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := sp.CabinetID; v != nil {
+		builder.WriteString(", cabinet_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := sp.EndCabinetID; v != nil {
+		builder.WriteString(", end_cabinet_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", subscribe_id=")
 	builder.WriteString(fmt.Sprintf("%v", sp.SubscribeID))
 	builder.WriteString(", start_at=")
@@ -345,6 +534,8 @@ func (sp *SubscribePause) String() string {
 	}
 	builder.WriteString(", overdue=")
 	builder.WriteString(fmt.Sprintf("%v", sp.Overdue))
+	builder.WriteString(", end_modifier=")
+	builder.WriteString(fmt.Sprintf("%v", sp.EndModifier))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -5861,6 +5861,86 @@ func (c *SubscribePauseClient) QueryEmployee(sp *SubscribePause) *EmployeeQuery 
 	return query
 }
 
+// QueryCity queries the city edge of a SubscribePause.
+func (c *SubscribePauseClient) QueryCity(sp *SubscribePause) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := sp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribepause.CityTable, subscribepause.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(sp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStore queries the store edge of a SubscribePause.
+func (c *SubscribePauseClient) QueryStore(sp *SubscribePause) *StoreQuery {
+	query := &StoreQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := sp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribepause.StoreTable, subscribepause.StoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(sp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEndStore queries the endStore edge of a SubscribePause.
+func (c *SubscribePauseClient) QueryEndStore(sp *SubscribePause) *StoreQuery {
+	query := &StoreQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := sp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribepause.EndStoreTable, subscribepause.EndStoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(sp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCabinet queries the cabinet edge of a SubscribePause.
+func (c *SubscribePauseClient) QueryCabinet(sp *SubscribePause) *CabinetQuery {
+	query := &CabinetQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := sp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribepause.CabinetTable, subscribepause.CabinetColumn),
+		)
+		fromV = sqlgraph.Neighbors(sp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEndCabinet queries the endCabinet edge of a SubscribePause.
+func (c *SubscribePauseClient) QueryEndCabinet(sp *SubscribePause) *CabinetQuery {
+	query := &CabinetQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := sp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribepause.EndCabinetTable, subscribepause.EndCabinetColumn),
+		)
+		fromV = sqlgraph.Neighbors(sp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QuerySubscribe queries the subscribe edge of a SubscribePause.
 func (c *SubscribePauseClient) QuerySubscribe(sp *SubscribePause) *SubscribeQuery {
 	query := &SubscribeQuery{config: c.config}

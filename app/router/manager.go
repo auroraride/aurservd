@@ -95,6 +95,7 @@ func loadManagerRoutes() {
     g.POST("/order/refund", mapi.Order.RefundAudit)
     g.GET("/exchange", mapi.Exchange.List)
     g.GET("/business", mapi.Business.List)
+    g.GET("/business/pause", mapi.Business.Pause)
 
     // 企业
     g.POST("/enterprise", mapi.Enterprise.Create)

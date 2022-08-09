@@ -29,6 +29,16 @@ const (
 	FieldRiderID = "rider_id"
 	// FieldEmployeeID holds the string denoting the employee_id field in the database.
 	FieldEmployeeID = "employee_id"
+	// FieldCityID holds the string denoting the city_id field in the database.
+	FieldCityID = "city_id"
+	// FieldStoreID holds the string denoting the store_id field in the database.
+	FieldStoreID = "store_id"
+	// FieldEndStoreID holds the string denoting the end_store_id field in the database.
+	FieldEndStoreID = "end_store_id"
+	// FieldCabinetID holds the string denoting the cabinet_id field in the database.
+	FieldCabinetID = "cabinet_id"
+	// FieldEndCabinetID holds the string denoting the end_cabinet_id field in the database.
+	FieldEndCabinetID = "end_cabinet_id"
 	// FieldSubscribeID holds the string denoting the subscribe_id field in the database.
 	FieldSubscribeID = "subscribe_id"
 	// FieldStartAt holds the string denoting the start_at field in the database.
@@ -41,10 +51,22 @@ const (
 	FieldEndEmployeeID = "end_employee_id"
 	// FieldOverdue holds the string denoting the overdue field in the database.
 	FieldOverdue = "overdue"
+	// FieldEndModifier holds the string denoting the end_modifier field in the database.
+	FieldEndModifier = "end_modifier"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
 	EdgeEmployee = "employee"
+	// EdgeCity holds the string denoting the city edge name in mutations.
+	EdgeCity = "city"
+	// EdgeStore holds the string denoting the store edge name in mutations.
+	EdgeStore = "store"
+	// EdgeEndStore holds the string denoting the endstore edge name in mutations.
+	EdgeEndStore = "endStore"
+	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
+	EdgeCabinet = "cabinet"
+	// EdgeEndCabinet holds the string denoting the endcabinet edge name in mutations.
+	EdgeEndCabinet = "endCabinet"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
 	EdgeSubscribe = "subscribe"
 	// EdgeEndEmployee holds the string denoting the end_employee edge name in mutations.
@@ -65,6 +87,41 @@ const (
 	EmployeeInverseTable = "employee"
 	// EmployeeColumn is the table column denoting the employee relation/edge.
 	EmployeeColumn = "employee_id"
+	// CityTable is the table that holds the city relation/edge.
+	CityTable = "subscribe_pause"
+	// CityInverseTable is the table name for the City entity.
+	// It exists in this package in order to avoid circular dependency with the "city" package.
+	CityInverseTable = "city"
+	// CityColumn is the table column denoting the city relation/edge.
+	CityColumn = "city_id"
+	// StoreTable is the table that holds the store relation/edge.
+	StoreTable = "subscribe_pause"
+	// StoreInverseTable is the table name for the Store entity.
+	// It exists in this package in order to avoid circular dependency with the "store" package.
+	StoreInverseTable = "store"
+	// StoreColumn is the table column denoting the store relation/edge.
+	StoreColumn = "store_id"
+	// EndStoreTable is the table that holds the endStore relation/edge.
+	EndStoreTable = "subscribe_pause"
+	// EndStoreInverseTable is the table name for the Store entity.
+	// It exists in this package in order to avoid circular dependency with the "store" package.
+	EndStoreInverseTable = "store"
+	// EndStoreColumn is the table column denoting the endStore relation/edge.
+	EndStoreColumn = "end_store_id"
+	// CabinetTable is the table that holds the cabinet relation/edge.
+	CabinetTable = "subscribe_pause"
+	// CabinetInverseTable is the table name for the Cabinet entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
+	CabinetInverseTable = "cabinet"
+	// CabinetColumn is the table column denoting the cabinet relation/edge.
+	CabinetColumn = "cabinet_id"
+	// EndCabinetTable is the table that holds the endCabinet relation/edge.
+	EndCabinetTable = "subscribe_pause"
+	// EndCabinetInverseTable is the table name for the Cabinet entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
+	EndCabinetInverseTable = "cabinet"
+	// EndCabinetColumn is the table column denoting the endCabinet relation/edge.
+	EndCabinetColumn = "end_cabinet_id"
 	// SubscribeTable is the table that holds the subscribe relation/edge.
 	SubscribeTable = "subscribe_pause"
 	// SubscribeInverseTable is the table name for the Subscribe entity.
@@ -92,12 +149,18 @@ var Columns = []string{
 	FieldRemark,
 	FieldRiderID,
 	FieldEmployeeID,
+	FieldCityID,
+	FieldStoreID,
+	FieldEndStoreID,
+	FieldCabinetID,
+	FieldEndCabinetID,
 	FieldSubscribeID,
 	FieldStartAt,
 	FieldEndAt,
 	FieldDays,
 	FieldEndEmployeeID,
 	FieldOverdue,
+	FieldEndModifier,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

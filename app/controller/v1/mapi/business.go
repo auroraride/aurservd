@@ -30,3 +30,17 @@ func (*business) List(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.BusinessListReq](c)
     return ctx.SendResponse(service.NewBusiness().ListManager(req))
 }
+
+// Pause
+// @ID           ManagerBusinessPause
+// @Router       /manager/v1/business/pause [GET]
+// @Summary      M8005 寄存记录
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*business) Pause(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.BusinessListPauseReq](c)
+    return ctx.SendResponse(service.NewBusinessWithModifier(ctx.Modifier).ListPause(req))
+}

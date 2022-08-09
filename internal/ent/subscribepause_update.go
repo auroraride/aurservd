@@ -12,9 +12,12 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 )
@@ -116,6 +119,106 @@ func (spu *SubscribePauseUpdate) ClearEmployeeID() *SubscribePauseUpdate {
 	return spu
 }
 
+// SetCityID sets the "city_id" field.
+func (spu *SubscribePauseUpdate) SetCityID(u uint64) *SubscribePauseUpdate {
+	spu.mutation.SetCityID(u)
+	return spu
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (spu *SubscribePauseUpdate) SetNillableCityID(u *uint64) *SubscribePauseUpdate {
+	if u != nil {
+		spu.SetCityID(*u)
+	}
+	return spu
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (spu *SubscribePauseUpdate) ClearCityID() *SubscribePauseUpdate {
+	spu.mutation.ClearCityID()
+	return spu
+}
+
+// SetStoreID sets the "store_id" field.
+func (spu *SubscribePauseUpdate) SetStoreID(u uint64) *SubscribePauseUpdate {
+	spu.mutation.SetStoreID(u)
+	return spu
+}
+
+// SetNillableStoreID sets the "store_id" field if the given value is not nil.
+func (spu *SubscribePauseUpdate) SetNillableStoreID(u *uint64) *SubscribePauseUpdate {
+	if u != nil {
+		spu.SetStoreID(*u)
+	}
+	return spu
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (spu *SubscribePauseUpdate) ClearStoreID() *SubscribePauseUpdate {
+	spu.mutation.ClearStoreID()
+	return spu
+}
+
+// SetEndStoreID sets the "end_store_id" field.
+func (spu *SubscribePauseUpdate) SetEndStoreID(u uint64) *SubscribePauseUpdate {
+	spu.mutation.SetEndStoreID(u)
+	return spu
+}
+
+// SetNillableEndStoreID sets the "end_store_id" field if the given value is not nil.
+func (spu *SubscribePauseUpdate) SetNillableEndStoreID(u *uint64) *SubscribePauseUpdate {
+	if u != nil {
+		spu.SetEndStoreID(*u)
+	}
+	return spu
+}
+
+// ClearEndStoreID clears the value of the "end_store_id" field.
+func (spu *SubscribePauseUpdate) ClearEndStoreID() *SubscribePauseUpdate {
+	spu.mutation.ClearEndStoreID()
+	return spu
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (spu *SubscribePauseUpdate) SetCabinetID(u uint64) *SubscribePauseUpdate {
+	spu.mutation.SetCabinetID(u)
+	return spu
+}
+
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (spu *SubscribePauseUpdate) SetNillableCabinetID(u *uint64) *SubscribePauseUpdate {
+	if u != nil {
+		spu.SetCabinetID(*u)
+	}
+	return spu
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (spu *SubscribePauseUpdate) ClearCabinetID() *SubscribePauseUpdate {
+	spu.mutation.ClearCabinetID()
+	return spu
+}
+
+// SetEndCabinetID sets the "end_cabinet_id" field.
+func (spu *SubscribePauseUpdate) SetEndCabinetID(u uint64) *SubscribePauseUpdate {
+	spu.mutation.SetEndCabinetID(u)
+	return spu
+}
+
+// SetNillableEndCabinetID sets the "end_cabinet_id" field if the given value is not nil.
+func (spu *SubscribePauseUpdate) SetNillableEndCabinetID(u *uint64) *SubscribePauseUpdate {
+	if u != nil {
+		spu.SetEndCabinetID(*u)
+	}
+	return spu
+}
+
+// ClearEndCabinetID clears the value of the "end_cabinet_id" field.
+func (spu *SubscribePauseUpdate) ClearEndCabinetID() *SubscribePauseUpdate {
+	spu.mutation.ClearEndCabinetID()
+	return spu
+}
+
 // SetSubscribeID sets the "subscribe_id" field.
 func (spu *SubscribePauseUpdate) SetSubscribeID(u uint64) *SubscribePauseUpdate {
 	spu.mutation.SetSubscribeID(u)
@@ -209,6 +312,18 @@ func (spu *SubscribePauseUpdate) SetNillableOverdue(b *bool) *SubscribePauseUpda
 	return spu
 }
 
+// SetEndModifier sets the "end_modifier" field.
+func (spu *SubscribePauseUpdate) SetEndModifier(m *model.Modifier) *SubscribePauseUpdate {
+	spu.mutation.SetEndModifier(m)
+	return spu
+}
+
+// ClearEndModifier clears the value of the "end_modifier" field.
+func (spu *SubscribePauseUpdate) ClearEndModifier() *SubscribePauseUpdate {
+	spu.mutation.ClearEndModifier()
+	return spu
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (spu *SubscribePauseUpdate) SetRider(r *Rider) *SubscribePauseUpdate {
 	return spu.SetRiderID(r.ID)
@@ -217,6 +332,31 @@ func (spu *SubscribePauseUpdate) SetRider(r *Rider) *SubscribePauseUpdate {
 // SetEmployee sets the "employee" edge to the Employee entity.
 func (spu *SubscribePauseUpdate) SetEmployee(e *Employee) *SubscribePauseUpdate {
 	return spu.SetEmployeeID(e.ID)
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (spu *SubscribePauseUpdate) SetCity(c *City) *SubscribePauseUpdate {
+	return spu.SetCityID(c.ID)
+}
+
+// SetStore sets the "store" edge to the Store entity.
+func (spu *SubscribePauseUpdate) SetStore(s *Store) *SubscribePauseUpdate {
+	return spu.SetStoreID(s.ID)
+}
+
+// SetEndStore sets the "endStore" edge to the Store entity.
+func (spu *SubscribePauseUpdate) SetEndStore(s *Store) *SubscribePauseUpdate {
+	return spu.SetEndStoreID(s.ID)
+}
+
+// SetCabinet sets the "cabinet" edge to the Cabinet entity.
+func (spu *SubscribePauseUpdate) SetCabinet(c *Cabinet) *SubscribePauseUpdate {
+	return spu.SetCabinetID(c.ID)
+}
+
+// SetEndCabinet sets the "endCabinet" edge to the Cabinet entity.
+func (spu *SubscribePauseUpdate) SetEndCabinet(c *Cabinet) *SubscribePauseUpdate {
+	return spu.SetEndCabinetID(c.ID)
 }
 
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
@@ -243,6 +383,36 @@ func (spu *SubscribePauseUpdate) ClearRider() *SubscribePauseUpdate {
 // ClearEmployee clears the "employee" edge to the Employee entity.
 func (spu *SubscribePauseUpdate) ClearEmployee() *SubscribePauseUpdate {
 	spu.mutation.ClearEmployee()
+	return spu
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (spu *SubscribePauseUpdate) ClearCity() *SubscribePauseUpdate {
+	spu.mutation.ClearCity()
+	return spu
+}
+
+// ClearStore clears the "store" edge to the Store entity.
+func (spu *SubscribePauseUpdate) ClearStore() *SubscribePauseUpdate {
+	spu.mutation.ClearStore()
+	return spu
+}
+
+// ClearEndStore clears the "endStore" edge to the Store entity.
+func (spu *SubscribePauseUpdate) ClearEndStore() *SubscribePauseUpdate {
+	spu.mutation.ClearEndStore()
+	return spu
+}
+
+// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
+func (spu *SubscribePauseUpdate) ClearCabinet() *SubscribePauseUpdate {
+	spu.mutation.ClearCabinet()
+	return spu
+}
+
+// ClearEndCabinet clears the "endCabinet" edge to the Cabinet entity.
+func (spu *SubscribePauseUpdate) ClearEndCabinet() *SubscribePauseUpdate {
+	spu.mutation.ClearEndCabinet()
 	return spu
 }
 
@@ -461,6 +631,19 @@ func (spu *SubscribePauseUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: subscribepause.FieldOverdue,
 		})
 	}
+	if value, ok := spu.mutation.EndModifier(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: subscribepause.FieldEndModifier,
+		})
+	}
+	if spu.mutation.EndModifierCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: subscribepause.FieldEndModifier,
+		})
+	}
 	if spu.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -523,6 +706,181 @@ func (spu *SubscribePauseUpdate) sqlSave(ctx context.Context) (n int, err error)
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: employee.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if spu.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.CityTable,
+			Columns: []string{subscribepause.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := spu.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.CityTable,
+			Columns: []string{subscribepause.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if spu.mutation.StoreCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.StoreTable,
+			Columns: []string{subscribepause.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := spu.mutation.StoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.StoreTable,
+			Columns: []string{subscribepause.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if spu.mutation.EndStoreCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.EndStoreTable,
+			Columns: []string{subscribepause.EndStoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := spu.mutation.EndStoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.EndStoreTable,
+			Columns: []string{subscribepause.EndStoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if spu.mutation.CabinetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.CabinetTable,
+			Columns: []string{subscribepause.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := spu.mutation.CabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.CabinetTable,
+			Columns: []string{subscribepause.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if spu.mutation.EndCabinetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.EndCabinetTable,
+			Columns: []string{subscribepause.EndCabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := spu.mutation.EndCabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.EndCabinetTable,
+			Columns: []string{subscribepause.EndCabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
 				},
 			},
 		}
@@ -704,6 +1062,106 @@ func (spuo *SubscribePauseUpdateOne) ClearEmployeeID() *SubscribePauseUpdateOne 
 	return spuo
 }
 
+// SetCityID sets the "city_id" field.
+func (spuo *SubscribePauseUpdateOne) SetCityID(u uint64) *SubscribePauseUpdateOne {
+	spuo.mutation.SetCityID(u)
+	return spuo
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (spuo *SubscribePauseUpdateOne) SetNillableCityID(u *uint64) *SubscribePauseUpdateOne {
+	if u != nil {
+		spuo.SetCityID(*u)
+	}
+	return spuo
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (spuo *SubscribePauseUpdateOne) ClearCityID() *SubscribePauseUpdateOne {
+	spuo.mutation.ClearCityID()
+	return spuo
+}
+
+// SetStoreID sets the "store_id" field.
+func (spuo *SubscribePauseUpdateOne) SetStoreID(u uint64) *SubscribePauseUpdateOne {
+	spuo.mutation.SetStoreID(u)
+	return spuo
+}
+
+// SetNillableStoreID sets the "store_id" field if the given value is not nil.
+func (spuo *SubscribePauseUpdateOne) SetNillableStoreID(u *uint64) *SubscribePauseUpdateOne {
+	if u != nil {
+		spuo.SetStoreID(*u)
+	}
+	return spuo
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (spuo *SubscribePauseUpdateOne) ClearStoreID() *SubscribePauseUpdateOne {
+	spuo.mutation.ClearStoreID()
+	return spuo
+}
+
+// SetEndStoreID sets the "end_store_id" field.
+func (spuo *SubscribePauseUpdateOne) SetEndStoreID(u uint64) *SubscribePauseUpdateOne {
+	spuo.mutation.SetEndStoreID(u)
+	return spuo
+}
+
+// SetNillableEndStoreID sets the "end_store_id" field if the given value is not nil.
+func (spuo *SubscribePauseUpdateOne) SetNillableEndStoreID(u *uint64) *SubscribePauseUpdateOne {
+	if u != nil {
+		spuo.SetEndStoreID(*u)
+	}
+	return spuo
+}
+
+// ClearEndStoreID clears the value of the "end_store_id" field.
+func (spuo *SubscribePauseUpdateOne) ClearEndStoreID() *SubscribePauseUpdateOne {
+	spuo.mutation.ClearEndStoreID()
+	return spuo
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (spuo *SubscribePauseUpdateOne) SetCabinetID(u uint64) *SubscribePauseUpdateOne {
+	spuo.mutation.SetCabinetID(u)
+	return spuo
+}
+
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (spuo *SubscribePauseUpdateOne) SetNillableCabinetID(u *uint64) *SubscribePauseUpdateOne {
+	if u != nil {
+		spuo.SetCabinetID(*u)
+	}
+	return spuo
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (spuo *SubscribePauseUpdateOne) ClearCabinetID() *SubscribePauseUpdateOne {
+	spuo.mutation.ClearCabinetID()
+	return spuo
+}
+
+// SetEndCabinetID sets the "end_cabinet_id" field.
+func (spuo *SubscribePauseUpdateOne) SetEndCabinetID(u uint64) *SubscribePauseUpdateOne {
+	spuo.mutation.SetEndCabinetID(u)
+	return spuo
+}
+
+// SetNillableEndCabinetID sets the "end_cabinet_id" field if the given value is not nil.
+func (spuo *SubscribePauseUpdateOne) SetNillableEndCabinetID(u *uint64) *SubscribePauseUpdateOne {
+	if u != nil {
+		spuo.SetEndCabinetID(*u)
+	}
+	return spuo
+}
+
+// ClearEndCabinetID clears the value of the "end_cabinet_id" field.
+func (spuo *SubscribePauseUpdateOne) ClearEndCabinetID() *SubscribePauseUpdateOne {
+	spuo.mutation.ClearEndCabinetID()
+	return spuo
+}
+
 // SetSubscribeID sets the "subscribe_id" field.
 func (spuo *SubscribePauseUpdateOne) SetSubscribeID(u uint64) *SubscribePauseUpdateOne {
 	spuo.mutation.SetSubscribeID(u)
@@ -797,6 +1255,18 @@ func (spuo *SubscribePauseUpdateOne) SetNillableOverdue(b *bool) *SubscribePause
 	return spuo
 }
 
+// SetEndModifier sets the "end_modifier" field.
+func (spuo *SubscribePauseUpdateOne) SetEndModifier(m *model.Modifier) *SubscribePauseUpdateOne {
+	spuo.mutation.SetEndModifier(m)
+	return spuo
+}
+
+// ClearEndModifier clears the value of the "end_modifier" field.
+func (spuo *SubscribePauseUpdateOne) ClearEndModifier() *SubscribePauseUpdateOne {
+	spuo.mutation.ClearEndModifier()
+	return spuo
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (spuo *SubscribePauseUpdateOne) SetRider(r *Rider) *SubscribePauseUpdateOne {
 	return spuo.SetRiderID(r.ID)
@@ -805,6 +1275,31 @@ func (spuo *SubscribePauseUpdateOne) SetRider(r *Rider) *SubscribePauseUpdateOne
 // SetEmployee sets the "employee" edge to the Employee entity.
 func (spuo *SubscribePauseUpdateOne) SetEmployee(e *Employee) *SubscribePauseUpdateOne {
 	return spuo.SetEmployeeID(e.ID)
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (spuo *SubscribePauseUpdateOne) SetCity(c *City) *SubscribePauseUpdateOne {
+	return spuo.SetCityID(c.ID)
+}
+
+// SetStore sets the "store" edge to the Store entity.
+func (spuo *SubscribePauseUpdateOne) SetStore(s *Store) *SubscribePauseUpdateOne {
+	return spuo.SetStoreID(s.ID)
+}
+
+// SetEndStore sets the "endStore" edge to the Store entity.
+func (spuo *SubscribePauseUpdateOne) SetEndStore(s *Store) *SubscribePauseUpdateOne {
+	return spuo.SetEndStoreID(s.ID)
+}
+
+// SetCabinet sets the "cabinet" edge to the Cabinet entity.
+func (spuo *SubscribePauseUpdateOne) SetCabinet(c *Cabinet) *SubscribePauseUpdateOne {
+	return spuo.SetCabinetID(c.ID)
+}
+
+// SetEndCabinet sets the "endCabinet" edge to the Cabinet entity.
+func (spuo *SubscribePauseUpdateOne) SetEndCabinet(c *Cabinet) *SubscribePauseUpdateOne {
+	return spuo.SetEndCabinetID(c.ID)
 }
 
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
@@ -831,6 +1326,36 @@ func (spuo *SubscribePauseUpdateOne) ClearRider() *SubscribePauseUpdateOne {
 // ClearEmployee clears the "employee" edge to the Employee entity.
 func (spuo *SubscribePauseUpdateOne) ClearEmployee() *SubscribePauseUpdateOne {
 	spuo.mutation.ClearEmployee()
+	return spuo
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (spuo *SubscribePauseUpdateOne) ClearCity() *SubscribePauseUpdateOne {
+	spuo.mutation.ClearCity()
+	return spuo
+}
+
+// ClearStore clears the "store" edge to the Store entity.
+func (spuo *SubscribePauseUpdateOne) ClearStore() *SubscribePauseUpdateOne {
+	spuo.mutation.ClearStore()
+	return spuo
+}
+
+// ClearEndStore clears the "endStore" edge to the Store entity.
+func (spuo *SubscribePauseUpdateOne) ClearEndStore() *SubscribePauseUpdateOne {
+	spuo.mutation.ClearEndStore()
+	return spuo
+}
+
+// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
+func (spuo *SubscribePauseUpdateOne) ClearCabinet() *SubscribePauseUpdateOne {
+	spuo.mutation.ClearCabinet()
+	return spuo
+}
+
+// ClearEndCabinet clears the "endCabinet" edge to the Cabinet entity.
+func (spuo *SubscribePauseUpdateOne) ClearEndCabinet() *SubscribePauseUpdateOne {
+	spuo.mutation.ClearEndCabinet()
 	return spuo
 }
 
@@ -1079,6 +1604,19 @@ func (spuo *SubscribePauseUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 			Column: subscribepause.FieldOverdue,
 		})
 	}
+	if value, ok := spuo.mutation.EndModifier(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: subscribepause.FieldEndModifier,
+		})
+	}
+	if spuo.mutation.EndModifierCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: subscribepause.FieldEndModifier,
+		})
+	}
 	if spuo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1141,6 +1679,181 @@ func (spuo *SubscribePauseUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: employee.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if spuo.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.CityTable,
+			Columns: []string{subscribepause.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := spuo.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.CityTable,
+			Columns: []string{subscribepause.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if spuo.mutation.StoreCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.StoreTable,
+			Columns: []string{subscribepause.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := spuo.mutation.StoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.StoreTable,
+			Columns: []string{subscribepause.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if spuo.mutation.EndStoreCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.EndStoreTable,
+			Columns: []string{subscribepause.EndStoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := spuo.mutation.EndStoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.EndStoreTable,
+			Columns: []string{subscribepause.EndStoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if spuo.mutation.CabinetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.CabinetTable,
+			Columns: []string{subscribepause.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := spuo.mutation.CabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.CabinetTable,
+			Columns: []string{subscribepause.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if spuo.mutation.EndCabinetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.EndCabinetTable,
+			Columns: []string{subscribepause.EndCabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := spuo.mutation.EndCabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.EndCabinetTable,
+			Columns: []string{subscribepause.EndCabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
 				},
 			},
 		}

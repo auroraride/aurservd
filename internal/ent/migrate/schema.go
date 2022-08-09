@@ -2327,9 +2327,15 @@ var (
 		{Name: "end_at", Type: field.TypeTime, Comment: "暂停结束时间", Nullable: true},
 		{Name: "days", Type: field.TypeInt, Comment: "暂停天数", Nullable: true},
 		{Name: "overdue", Type: field.TypeBool, Comment: "是否超期", Default: false},
+		{Name: "end_modifier", Type: field.TypeJSON, Comment: "结束寄存管理员信息", Nullable: true},
 		{Name: "subscribe_id", Type: field.TypeUint64},
 		{Name: "rider_id", Type: field.TypeUint64},
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "end_store_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "end_cabinet_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "end_employee_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// SubscribePauseTable holds the schema information for the "subscribe_pause" table.
@@ -2340,25 +2346,55 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "subscribe_pause_subscribe_pauses",
-				Columns:    []*schema.Column{SubscribePauseColumns[11]},
+				Columns:    []*schema.Column{SubscribePauseColumns[12]},
 				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "subscribe_pause_rider_rider",
-				Columns:    []*schema.Column{SubscribePauseColumns[12]},
+				Columns:    []*schema.Column{SubscribePauseColumns[13]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "subscribe_pause_employee_employee",
-				Columns:    []*schema.Column{SubscribePauseColumns[13]},
+				Columns:    []*schema.Column{SubscribePauseColumns[14]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
+				Symbol:     "subscribe_pause_city_city",
+				Columns:    []*schema.Column{SubscribePauseColumns[15]},
+				RefColumns: []*schema.Column{CityColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "subscribe_pause_store_store",
+				Columns:    []*schema.Column{SubscribePauseColumns[16]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "subscribe_pause_store_endStore",
+				Columns:    []*schema.Column{SubscribePauseColumns[17]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "subscribe_pause_cabinet_cabinet",
+				Columns:    []*schema.Column{SubscribePauseColumns[18]},
+				RefColumns: []*schema.Column{CabinetColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "subscribe_pause_cabinet_endCabinet",
+				Columns:    []*schema.Column{SubscribePauseColumns[19]},
+				RefColumns: []*schema.Column{CabinetColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
 				Symbol:     "subscribe_pause_employee_end_employee",
-				Columns:    []*schema.Column{SubscribePauseColumns[14]},
+				Columns:    []*schema.Column{SubscribePauseColumns[20]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2373,6 +2409,26 @@ var (
 				Name:    "subscribepause_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{SubscribePauseColumns[3]},
+			},
+			{
+				Name:    "subscribepause_creator",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribePauseColumns[4]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
+			{
+				Name:    "subscribepause_end_modifier",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribePauseColumns[11]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
 			},
 		},
 	}
@@ -2692,7 +2748,12 @@ func init() {
 	SubscribePauseTable.ForeignKeys[0].RefTable = SubscribeTable
 	SubscribePauseTable.ForeignKeys[1].RefTable = RiderTable
 	SubscribePauseTable.ForeignKeys[2].RefTable = EmployeeTable
-	SubscribePauseTable.ForeignKeys[3].RefTable = EmployeeTable
+	SubscribePauseTable.ForeignKeys[3].RefTable = CityTable
+	SubscribePauseTable.ForeignKeys[4].RefTable = StoreTable
+	SubscribePauseTable.ForeignKeys[5].RefTable = StoreTable
+	SubscribePauseTable.ForeignKeys[6].RefTable = CabinetTable
+	SubscribePauseTable.ForeignKeys[7].RefTable = CabinetTable
+	SubscribePauseTable.ForeignKeys[8].RefTable = EmployeeTable
 	SubscribePauseTable.Annotation = &entsql.Annotation{
 		Table: "subscribe_pause",
 	}

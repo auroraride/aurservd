@@ -425,7 +425,7 @@ func (s *businessRiderService) UnSubscribe(subscribeID uint64) {
     }
 }
 
-// Pause 暂停计费
+// Pause 寄存
 func (s *businessRiderService) Pause(subscribeID uint64) {
     s.preprocess(s.QuerySubscribeWithRider(subscribeID))
 
@@ -441,6 +441,9 @@ func (s *businessRiderService) Pause(subscribeID uint64) {
             SetStartAt(time.Now()).
             SetRiderID(s.subscribe.RiderID).
             SetSubscribeID(s.subscribe.ID).
+            SetCityID(s.subscribe.CityID).
+            SetNillableStoreID(s.storeID).
+            SetNillableCabinetID(s.cabinetID).
             SetNillableEmployeeID(s.employeeID).Save(s.ctx)
         snag.PanicIfError(err)
 
@@ -472,7 +475,16 @@ func (s *businessRiderService) Continue(subscribeID uint64) {
     days, overdue := NewSubscribe().PausedDays(sp.StartAt, now)
 
     s.do(business.TypeContinue, func(tx *ent.Tx) {
-        _, err := tx.SubscribePause.UpdateOne(sp).SetDays(days).SetEndAt(now).SetNillableEndEmployeeID(s.employeeID).SetOverdue(overdue).Save(s.ctx)
+        _, err := tx.SubscribePause.
+            UpdateOne(sp).
+            SetDays(days).
+            SetEndAt(now).
+            SetNillableEndEmployeeID(s.employeeID).
+            SetEndModifier(s.modifier).
+            SetOverdue(overdue).
+            SetNillableEndStoreID(s.storeID).
+            SetNillableEndCabinetID(s.cabinetID).
+            Save(s.ctx)
         snag.PanicIfError(err)
 
         // 更新订阅

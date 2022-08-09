@@ -10,9 +10,12 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 )
@@ -29,6 +32,11 @@ type SubscribePauseQuery struct {
 	// eager-loading edges.
 	withRider       *RiderQuery
 	withEmployee    *EmployeeQuery
+	withCity        *CityQuery
+	withStore       *StoreQuery
+	withEndStore    *StoreQuery
+	withCabinet     *CabinetQuery
+	withEndCabinet  *CabinetQuery
 	withSubscribe   *SubscribeQuery
 	withEndEmployee *EmployeeQuery
 	modifiers       []func(*sql.Selector)
@@ -105,6 +113,116 @@ func (spq *SubscribePauseQuery) QueryEmployee() *EmployeeQuery {
 			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, selector),
 			sqlgraph.To(employee.Table, employee.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, subscribepause.EmployeeTable, subscribepause.EmployeeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(spq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCity chains the current query on the "city" edge.
+func (spq *SubscribePauseQuery) QueryCity() *CityQuery {
+	query := &CityQuery{config: spq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := spq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := spq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, selector),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribepause.CityTable, subscribepause.CityColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(spq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryStore chains the current query on the "store" edge.
+func (spq *SubscribePauseQuery) QueryStore() *StoreQuery {
+	query := &StoreQuery{config: spq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := spq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := spq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, selector),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribepause.StoreTable, subscribepause.StoreColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(spq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEndStore chains the current query on the "endStore" edge.
+func (spq *SubscribePauseQuery) QueryEndStore() *StoreQuery {
+	query := &StoreQuery{config: spq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := spq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := spq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, selector),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribepause.EndStoreTable, subscribepause.EndStoreColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(spq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCabinet chains the current query on the "cabinet" edge.
+func (spq *SubscribePauseQuery) QueryCabinet() *CabinetQuery {
+	query := &CabinetQuery{config: spq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := spq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := spq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, selector),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribepause.CabinetTable, subscribepause.CabinetColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(spq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEndCabinet chains the current query on the "endCabinet" edge.
+func (spq *SubscribePauseQuery) QueryEndCabinet() *CabinetQuery {
+	query := &CabinetQuery{config: spq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := spq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := spq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, selector),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribepause.EndCabinetTable, subscribepause.EndCabinetColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(spq.driver.Dialect(), step)
 		return fromU, nil
@@ -339,6 +457,11 @@ func (spq *SubscribePauseQuery) Clone() *SubscribePauseQuery {
 		predicates:      append([]predicate.SubscribePause{}, spq.predicates...),
 		withRider:       spq.withRider.Clone(),
 		withEmployee:    spq.withEmployee.Clone(),
+		withCity:        spq.withCity.Clone(),
+		withStore:       spq.withStore.Clone(),
+		withEndStore:    spq.withEndStore.Clone(),
+		withCabinet:     spq.withCabinet.Clone(),
+		withEndCabinet:  spq.withEndCabinet.Clone(),
 		withSubscribe:   spq.withSubscribe.Clone(),
 		withEndEmployee: spq.withEndEmployee.Clone(),
 		// clone intermediate query.
@@ -367,6 +490,61 @@ func (spq *SubscribePauseQuery) WithEmployee(opts ...func(*EmployeeQuery)) *Subs
 		opt(query)
 	}
 	spq.withEmployee = query
+	return spq
+}
+
+// WithCity tells the query-builder to eager-load the nodes that are connected to
+// the "city" edge. The optional arguments are used to configure the query builder of the edge.
+func (spq *SubscribePauseQuery) WithCity(opts ...func(*CityQuery)) *SubscribePauseQuery {
+	query := &CityQuery{config: spq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	spq.withCity = query
+	return spq
+}
+
+// WithStore tells the query-builder to eager-load the nodes that are connected to
+// the "store" edge. The optional arguments are used to configure the query builder of the edge.
+func (spq *SubscribePauseQuery) WithStore(opts ...func(*StoreQuery)) *SubscribePauseQuery {
+	query := &StoreQuery{config: spq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	spq.withStore = query
+	return spq
+}
+
+// WithEndStore tells the query-builder to eager-load the nodes that are connected to
+// the "endStore" edge. The optional arguments are used to configure the query builder of the edge.
+func (spq *SubscribePauseQuery) WithEndStore(opts ...func(*StoreQuery)) *SubscribePauseQuery {
+	query := &StoreQuery{config: spq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	spq.withEndStore = query
+	return spq
+}
+
+// WithCabinet tells the query-builder to eager-load the nodes that are connected to
+// the "cabinet" edge. The optional arguments are used to configure the query builder of the edge.
+func (spq *SubscribePauseQuery) WithCabinet(opts ...func(*CabinetQuery)) *SubscribePauseQuery {
+	query := &CabinetQuery{config: spq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	spq.withCabinet = query
+	return spq
+}
+
+// WithEndCabinet tells the query-builder to eager-load the nodes that are connected to
+// the "endCabinet" edge. The optional arguments are used to configure the query builder of the edge.
+func (spq *SubscribePauseQuery) WithEndCabinet(opts ...func(*CabinetQuery)) *SubscribePauseQuery {
+	query := &CabinetQuery{config: spq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	spq.withEndCabinet = query
 	return spq
 }
 
@@ -462,9 +640,14 @@ func (spq *SubscribePauseQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 	var (
 		nodes       = []*SubscribePause{}
 		_spec       = spq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [9]bool{
 			spq.withRider != nil,
 			spq.withEmployee != nil,
+			spq.withCity != nil,
+			spq.withStore != nil,
+			spq.withEndStore != nil,
+			spq.withCabinet != nil,
+			spq.withEndCabinet != nil,
 			spq.withSubscribe != nil,
 			spq.withEndEmployee != nil,
 		}
@@ -542,6 +725,151 @@ func (spq *SubscribePauseQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 			}
 			for i := range nodes {
 				nodes[i].Edges.Employee = n
+			}
+		}
+	}
+
+	if query := spq.withCity; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*SubscribePause)
+		for i := range nodes {
+			if nodes[i].CityID == nil {
+				continue
+			}
+			fk := *nodes[i].CityID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(city.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "city_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.City = n
+			}
+		}
+	}
+
+	if query := spq.withStore; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*SubscribePause)
+		for i := range nodes {
+			if nodes[i].StoreID == nil {
+				continue
+			}
+			fk := *nodes[i].StoreID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(store.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "store_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Store = n
+			}
+		}
+	}
+
+	if query := spq.withEndStore; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*SubscribePause)
+		for i := range nodes {
+			if nodes[i].EndStoreID == nil {
+				continue
+			}
+			fk := *nodes[i].EndStoreID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(store.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "end_store_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.EndStore = n
+			}
+		}
+	}
+
+	if query := spq.withCabinet; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*SubscribePause)
+		for i := range nodes {
+			if nodes[i].CabinetID == nil {
+				continue
+			}
+			fk := *nodes[i].CabinetID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(cabinet.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "cabinet_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Cabinet = n
+			}
+		}
+	}
+
+	if query := spq.withEndCabinet; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*SubscribePause)
+		for i := range nodes {
+			if nodes[i].EndCabinetID == nil {
+				continue
+			}
+			fk := *nodes[i].EndCabinetID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(cabinet.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "end_cabinet_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.EndCabinet = n
 			}
 		}
 	}

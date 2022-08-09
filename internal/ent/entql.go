@@ -1045,12 +1045,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribepause.FieldRemark:        {Type: field.TypeString, Column: subscribepause.FieldRemark},
 			subscribepause.FieldRiderID:       {Type: field.TypeUint64, Column: subscribepause.FieldRiderID},
 			subscribepause.FieldEmployeeID:    {Type: field.TypeUint64, Column: subscribepause.FieldEmployeeID},
+			subscribepause.FieldCityID:        {Type: field.TypeUint64, Column: subscribepause.FieldCityID},
+			subscribepause.FieldStoreID:       {Type: field.TypeUint64, Column: subscribepause.FieldStoreID},
+			subscribepause.FieldEndStoreID:    {Type: field.TypeUint64, Column: subscribepause.FieldEndStoreID},
+			subscribepause.FieldCabinetID:     {Type: field.TypeUint64, Column: subscribepause.FieldCabinetID},
+			subscribepause.FieldEndCabinetID:  {Type: field.TypeUint64, Column: subscribepause.FieldEndCabinetID},
 			subscribepause.FieldSubscribeID:   {Type: field.TypeUint64, Column: subscribepause.FieldSubscribeID},
 			subscribepause.FieldStartAt:       {Type: field.TypeTime, Column: subscribepause.FieldStartAt},
 			subscribepause.FieldEndAt:         {Type: field.TypeTime, Column: subscribepause.FieldEndAt},
 			subscribepause.FieldDays:          {Type: field.TypeInt, Column: subscribepause.FieldDays},
 			subscribepause.FieldEndEmployeeID: {Type: field.TypeUint64, Column: subscribepause.FieldEndEmployeeID},
 			subscribepause.FieldOverdue:       {Type: field.TypeBool, Column: subscribepause.FieldOverdue},
+			subscribepause.FieldEndModifier:   {Type: field.TypeJSON, Column: subscribepause.FieldEndModifier},
 		},
 	}
 	graph.MustAddE(
@@ -2720,6 +2726,66 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"SubscribePause",
 		"Employee",
+	)
+	graph.MustAddE(
+		"city",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.CityTable,
+			Columns: []string{subscribepause.CityColumn},
+			Bidi:    false,
+		},
+		"SubscribePause",
+		"City",
+	)
+	graph.MustAddE(
+		"store",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.StoreTable,
+			Columns: []string{subscribepause.StoreColumn},
+			Bidi:    false,
+		},
+		"SubscribePause",
+		"Store",
+	)
+	graph.MustAddE(
+		"endStore",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.EndStoreTable,
+			Columns: []string{subscribepause.EndStoreColumn},
+			Bidi:    false,
+		},
+		"SubscribePause",
+		"Store",
+	)
+	graph.MustAddE(
+		"cabinet",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.CabinetTable,
+			Columns: []string{subscribepause.CabinetColumn},
+			Bidi:    false,
+		},
+		"SubscribePause",
+		"Cabinet",
+	)
+	graph.MustAddE(
+		"endCabinet",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.EndCabinetTable,
+			Columns: []string{subscribepause.EndCabinetColumn},
+			Bidi:    false,
+		},
+		"SubscribePause",
+		"Cabinet",
 	)
 	graph.MustAddE(
 		"subscribe",
@@ -8757,6 +8823,31 @@ func (f *SubscribePauseFilter) WhereEmployeeID(p entql.Uint64P) {
 	f.Where(p.Field(subscribepause.FieldEmployeeID))
 }
 
+// WhereCityID applies the entql uint64 predicate on the city_id field.
+func (f *SubscribePauseFilter) WhereCityID(p entql.Uint64P) {
+	f.Where(p.Field(subscribepause.FieldCityID))
+}
+
+// WhereStoreID applies the entql uint64 predicate on the store_id field.
+func (f *SubscribePauseFilter) WhereStoreID(p entql.Uint64P) {
+	f.Where(p.Field(subscribepause.FieldStoreID))
+}
+
+// WhereEndStoreID applies the entql uint64 predicate on the end_store_id field.
+func (f *SubscribePauseFilter) WhereEndStoreID(p entql.Uint64P) {
+	f.Where(p.Field(subscribepause.FieldEndStoreID))
+}
+
+// WhereCabinetID applies the entql uint64 predicate on the cabinet_id field.
+func (f *SubscribePauseFilter) WhereCabinetID(p entql.Uint64P) {
+	f.Where(p.Field(subscribepause.FieldCabinetID))
+}
+
+// WhereEndCabinetID applies the entql uint64 predicate on the end_cabinet_id field.
+func (f *SubscribePauseFilter) WhereEndCabinetID(p entql.Uint64P) {
+	f.Where(p.Field(subscribepause.FieldEndCabinetID))
+}
+
 // WhereSubscribeID applies the entql uint64 predicate on the subscribe_id field.
 func (f *SubscribePauseFilter) WhereSubscribeID(p entql.Uint64P) {
 	f.Where(p.Field(subscribepause.FieldSubscribeID))
@@ -8787,6 +8878,11 @@ func (f *SubscribePauseFilter) WhereOverdue(p entql.BoolP) {
 	f.Where(p.Field(subscribepause.FieldOverdue))
 }
 
+// WhereEndModifier applies the entql json.RawMessage predicate on the end_modifier field.
+func (f *SubscribePauseFilter) WhereEndModifier(p entql.BytesP) {
+	f.Where(p.Field(subscribepause.FieldEndModifier))
+}
+
 // WhereHasRider applies a predicate to check if query has an edge rider.
 func (f *SubscribePauseFilter) WhereHasRider() {
 	f.Where(entql.HasEdge("rider"))
@@ -8809,6 +8905,76 @@ func (f *SubscribePauseFilter) WhereHasEmployee() {
 // WhereHasEmployeeWith applies a predicate to check if query has an edge employee with a given conditions (other predicates).
 func (f *SubscribePauseFilter) WhereHasEmployeeWith(preds ...predicate.Employee) {
 	f.Where(entql.HasEdgeWith("employee", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasCity applies a predicate to check if query has an edge city.
+func (f *SubscribePauseFilter) WhereHasCity() {
+	f.Where(entql.HasEdge("city"))
+}
+
+// WhereHasCityWith applies a predicate to check if query has an edge city with a given conditions (other predicates).
+func (f *SubscribePauseFilter) WhereHasCityWith(preds ...predicate.City) {
+	f.Where(entql.HasEdgeWith("city", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasStore applies a predicate to check if query has an edge store.
+func (f *SubscribePauseFilter) WhereHasStore() {
+	f.Where(entql.HasEdge("store"))
+}
+
+// WhereHasStoreWith applies a predicate to check if query has an edge store with a given conditions (other predicates).
+func (f *SubscribePauseFilter) WhereHasStoreWith(preds ...predicate.Store) {
+	f.Where(entql.HasEdgeWith("store", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasEndStore applies a predicate to check if query has an edge endStore.
+func (f *SubscribePauseFilter) WhereHasEndStore() {
+	f.Where(entql.HasEdge("endStore"))
+}
+
+// WhereHasEndStoreWith applies a predicate to check if query has an edge endStore with a given conditions (other predicates).
+func (f *SubscribePauseFilter) WhereHasEndStoreWith(preds ...predicate.Store) {
+	f.Where(entql.HasEdgeWith("endStore", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasCabinet applies a predicate to check if query has an edge cabinet.
+func (f *SubscribePauseFilter) WhereHasCabinet() {
+	f.Where(entql.HasEdge("cabinet"))
+}
+
+// WhereHasCabinetWith applies a predicate to check if query has an edge cabinet with a given conditions (other predicates).
+func (f *SubscribePauseFilter) WhereHasCabinetWith(preds ...predicate.Cabinet) {
+	f.Where(entql.HasEdgeWith("cabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasEndCabinet applies a predicate to check if query has an edge endCabinet.
+func (f *SubscribePauseFilter) WhereHasEndCabinet() {
+	f.Where(entql.HasEdge("endCabinet"))
+}
+
+// WhereHasEndCabinetWith applies a predicate to check if query has an edge endCabinet with a given conditions (other predicates).
+func (f *SubscribePauseFilter) WhereHasEndCabinetWith(preds ...predicate.Cabinet) {
+	f.Where(entql.HasEdgeWith("endCabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

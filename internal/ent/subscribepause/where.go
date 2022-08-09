@@ -135,6 +135,41 @@ func EmployeeID(v uint64) predicate.SubscribePause {
 	})
 }
 
+// CityID applies equality check predicate on the "city_id" field. It's identical to CityIDEQ.
+func CityID(v uint64) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCityID), v))
+	})
+}
+
+// StoreID applies equality check predicate on the "store_id" field. It's identical to StoreIDEQ.
+func StoreID(v uint64) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStoreID), v))
+	})
+}
+
+// EndStoreID applies equality check predicate on the "end_store_id" field. It's identical to EndStoreIDEQ.
+func EndStoreID(v uint64) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEndStoreID), v))
+	})
+}
+
+// CabinetID applies equality check predicate on the "cabinet_id" field. It's identical to CabinetIDEQ.
+func CabinetID(v uint64) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCabinetID), v))
+	})
+}
+
+// EndCabinetID applies equality check predicate on the "end_cabinet_id" field. It's identical to EndCabinetIDEQ.
+func EndCabinetID(v uint64) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEndCabinetID), v))
+	})
+}
+
 // SubscribeID applies equality check predicate on the "subscribe_id" field. It's identical to SubscribeIDEQ.
 func SubscribeID(v uint64) predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
@@ -682,6 +717,316 @@ func EmployeeIDNotNil() predicate.SubscribePause {
 	})
 }
 
+// CityIDEQ applies the EQ predicate on the "city_id" field.
+func CityIDEQ(v uint64) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCityID), v))
+	})
+}
+
+// CityIDNEQ applies the NEQ predicate on the "city_id" field.
+func CityIDNEQ(v uint64) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldCityID), v))
+	})
+}
+
+// CityIDIn applies the In predicate on the "city_id" field.
+func CityIDIn(vs ...uint64) predicate.SubscribePause {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldCityID), v...))
+	})
+}
+
+// CityIDNotIn applies the NotIn predicate on the "city_id" field.
+func CityIDNotIn(vs ...uint64) predicate.SubscribePause {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldCityID), v...))
+	})
+}
+
+// CityIDIsNil applies the IsNil predicate on the "city_id" field.
+func CityIDIsNil() predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldCityID)))
+	})
+}
+
+// CityIDNotNil applies the NotNil predicate on the "city_id" field.
+func CityIDNotNil() predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldCityID)))
+	})
+}
+
+// StoreIDEQ applies the EQ predicate on the "store_id" field.
+func StoreIDEQ(v uint64) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStoreID), v))
+	})
+}
+
+// StoreIDNEQ applies the NEQ predicate on the "store_id" field.
+func StoreIDNEQ(v uint64) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldStoreID), v))
+	})
+}
+
+// StoreIDIn applies the In predicate on the "store_id" field.
+func StoreIDIn(vs ...uint64) predicate.SubscribePause {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldStoreID), v...))
+	})
+}
+
+// StoreIDNotIn applies the NotIn predicate on the "store_id" field.
+func StoreIDNotIn(vs ...uint64) predicate.SubscribePause {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldStoreID), v...))
+	})
+}
+
+// StoreIDIsNil applies the IsNil predicate on the "store_id" field.
+func StoreIDIsNil() predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldStoreID)))
+	})
+}
+
+// StoreIDNotNil applies the NotNil predicate on the "store_id" field.
+func StoreIDNotNil() predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldStoreID)))
+	})
+}
+
+// EndStoreIDEQ applies the EQ predicate on the "end_store_id" field.
+func EndStoreIDEQ(v uint64) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEndStoreID), v))
+	})
+}
+
+// EndStoreIDNEQ applies the NEQ predicate on the "end_store_id" field.
+func EndStoreIDNEQ(v uint64) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldEndStoreID), v))
+	})
+}
+
+// EndStoreIDIn applies the In predicate on the "end_store_id" field.
+func EndStoreIDIn(vs ...uint64) predicate.SubscribePause {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldEndStoreID), v...))
+	})
+}
+
+// EndStoreIDNotIn applies the NotIn predicate on the "end_store_id" field.
+func EndStoreIDNotIn(vs ...uint64) predicate.SubscribePause {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldEndStoreID), v...))
+	})
+}
+
+// EndStoreIDIsNil applies the IsNil predicate on the "end_store_id" field.
+func EndStoreIDIsNil() predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldEndStoreID)))
+	})
+}
+
+// EndStoreIDNotNil applies the NotNil predicate on the "end_store_id" field.
+func EndStoreIDNotNil() predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldEndStoreID)))
+	})
+}
+
+// CabinetIDEQ applies the EQ predicate on the "cabinet_id" field.
+func CabinetIDEQ(v uint64) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCabinetID), v))
+	})
+}
+
+// CabinetIDNEQ applies the NEQ predicate on the "cabinet_id" field.
+func CabinetIDNEQ(v uint64) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldCabinetID), v))
+	})
+}
+
+// CabinetIDIn applies the In predicate on the "cabinet_id" field.
+func CabinetIDIn(vs ...uint64) predicate.SubscribePause {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldCabinetID), v...))
+	})
+}
+
+// CabinetIDNotIn applies the NotIn predicate on the "cabinet_id" field.
+func CabinetIDNotIn(vs ...uint64) predicate.SubscribePause {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldCabinetID), v...))
+	})
+}
+
+// CabinetIDIsNil applies the IsNil predicate on the "cabinet_id" field.
+func CabinetIDIsNil() predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldCabinetID)))
+	})
+}
+
+// CabinetIDNotNil applies the NotNil predicate on the "cabinet_id" field.
+func CabinetIDNotNil() predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldCabinetID)))
+	})
+}
+
+// EndCabinetIDEQ applies the EQ predicate on the "end_cabinet_id" field.
+func EndCabinetIDEQ(v uint64) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEndCabinetID), v))
+	})
+}
+
+// EndCabinetIDNEQ applies the NEQ predicate on the "end_cabinet_id" field.
+func EndCabinetIDNEQ(v uint64) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldEndCabinetID), v))
+	})
+}
+
+// EndCabinetIDIn applies the In predicate on the "end_cabinet_id" field.
+func EndCabinetIDIn(vs ...uint64) predicate.SubscribePause {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldEndCabinetID), v...))
+	})
+}
+
+// EndCabinetIDNotIn applies the NotIn predicate on the "end_cabinet_id" field.
+func EndCabinetIDNotIn(vs ...uint64) predicate.SubscribePause {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldEndCabinetID), v...))
+	})
+}
+
+// EndCabinetIDIsNil applies the IsNil predicate on the "end_cabinet_id" field.
+func EndCabinetIDIsNil() predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldEndCabinetID)))
+	})
+}
+
+// EndCabinetIDNotNil applies the NotNil predicate on the "end_cabinet_id" field.
+func EndCabinetIDNotNil() predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldEndCabinetID)))
+	})
+}
+
 // SubscribeIDEQ applies the EQ predicate on the "subscribe_id" field.
 func SubscribeIDEQ(v uint64) predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
@@ -1062,6 +1407,20 @@ func OverdueNEQ(v bool) predicate.SubscribePause {
 	})
 }
 
+// EndModifierIsNil applies the IsNil predicate on the "end_modifier" field.
+func EndModifierIsNil() predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldEndModifier)))
+	})
+}
+
+// EndModifierNotNil applies the NotNil predicate on the "end_modifier" field.
+func EndModifierNotNil() predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldEndModifier)))
+	})
+}
+
 // HasRider applies the HasEdge predicate on the "rider" edge.
 func HasRider() predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
@@ -1109,6 +1468,146 @@ func HasEmployeeWith(preds ...predicate.Employee) predicate.SubscribePause {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(EmployeeInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, EmployeeTable, EmployeeColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasCity applies the HasEdge predicate on the "city" edge.
+func HasCity() predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CityTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCityWith applies the HasEdge predicate on the "city" edge with a given conditions (other predicates).
+func HasCityWith(preds ...predicate.City) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CityInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasStore applies the HasEdge predicate on the "store" edge.
+func HasStore() predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(StoreTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStoreWith applies the HasEdge predicate on the "store" edge with a given conditions (other predicates).
+func HasStoreWith(preds ...predicate.Store) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(StoreInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasEndStore applies the HasEdge predicate on the "endStore" edge.
+func HasEndStore() predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EndStoreTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, EndStoreTable, EndStoreColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEndStoreWith applies the HasEdge predicate on the "endStore" edge with a given conditions (other predicates).
+func HasEndStoreWith(preds ...predicate.Store) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EndStoreInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, EndStoreTable, EndStoreColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasCabinet applies the HasEdge predicate on the "cabinet" edge.
+func HasCabinet() predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CabinetTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, CabinetTable, CabinetColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCabinetWith applies the HasEdge predicate on the "cabinet" edge with a given conditions (other predicates).
+func HasCabinetWith(preds ...predicate.Cabinet) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CabinetInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, CabinetTable, CabinetColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasEndCabinet applies the HasEdge predicate on the "endCabinet" edge.
+func HasEndCabinet() predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EndCabinetTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, EndCabinetTable, EndCabinetColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEndCabinetWith applies the HasEdge predicate on the "endCabinet" edge with a given conditions (other predicates).
+func HasEndCabinetWith(preds ...predicate.Cabinet) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EndCabinetInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, EndCabinetTable, EndCabinetColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

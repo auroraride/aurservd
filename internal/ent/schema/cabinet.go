@@ -9,6 +9,7 @@ import (
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
+    "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
@@ -16,10 +17,22 @@ import (
 type CabinetMixin struct {
     mixin.Schema
     Optional bool
+    Prefix   string
+
+    field    string
+    edgeName string
+}
+
+func (m CabinetMixin) prefield() (string, string) {
+    if m.Prefix == "" {
+        return "cabinet_id", "cabinet"
+    }
+    return fmt.Sprintf("%s_cabinet_id", m.Prefix), fmt.Sprintf("%sCabinet", m.Prefix)
 }
 
 func (m CabinetMixin) Fields() []ent.Field {
-    f := field.Uint64("cabinet_id").Comment("电柜ID")
+    pf, _ := m.prefield()
+    f := field.Uint64(pf).Comment("电柜ID")
     if m.Optional {
         f.Optional().Nillable()
     }
@@ -27,7 +40,8 @@ func (m CabinetMixin) Fields() []ent.Field {
 }
 
 func (m CabinetMixin) Edges() []ent.Edge {
-    e := edge.To("cabinet", Cabinet.Type).Unique().Field("cabinet_id")
+    pf, pn := m.prefield()
+    e := edge.To(pn, Cabinet.Type).Unique().Field(pf)
     if !m.Optional {
         e.Required()
     }

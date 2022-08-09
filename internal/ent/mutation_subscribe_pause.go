@@ -33,11 +33,22 @@ type SubscribePauseMutation struct {
 	days                *int
 	adddays             *int
 	overdue             *bool
+	end_modifier        **model.Modifier
 	clearedFields       map[string]struct{}
 	rider               *uint64
 	clearedrider        bool
 	employee            *uint64
 	clearedemployee     bool
+	city                *uint64
+	clearedcity         bool
+	store               *uint64
+	clearedstore        bool
+	endStore            *uint64
+	clearedendStore     bool
+	cabinet             *uint64
+	clearedcabinet      bool
+	endCabinet          *uint64
+	clearedendCabinet   bool
 	subscribe           *uint64
 	clearedsubscribe    bool
 	end_employee        *uint64
@@ -498,6 +509,251 @@ func (m *SubscribePauseMutation) ResetEmployeeID() {
 	delete(m.clearedFields, subscribepause.FieldEmployeeID)
 }
 
+// SetCityID sets the "city_id" field.
+func (m *SubscribePauseMutation) SetCityID(u uint64) {
+	m.city = &u
+}
+
+// CityID returns the value of the "city_id" field in the mutation.
+func (m *SubscribePauseMutation) CityID() (r uint64, exists bool) {
+	v := m.city
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCityID returns the old "city_id" field's value of the SubscribePause entity.
+// If the SubscribePause object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribePauseMutation) OldCityID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCityID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCityID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCityID: %w", err)
+	}
+	return oldValue.CityID, nil
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (m *SubscribePauseMutation) ClearCityID() {
+	m.city = nil
+	m.clearedFields[subscribepause.FieldCityID] = struct{}{}
+}
+
+// CityIDCleared returns if the "city_id" field was cleared in this mutation.
+func (m *SubscribePauseMutation) CityIDCleared() bool {
+	_, ok := m.clearedFields[subscribepause.FieldCityID]
+	return ok
+}
+
+// ResetCityID resets all changes to the "city_id" field.
+func (m *SubscribePauseMutation) ResetCityID() {
+	m.city = nil
+	delete(m.clearedFields, subscribepause.FieldCityID)
+}
+
+// SetStoreID sets the "store_id" field.
+func (m *SubscribePauseMutation) SetStoreID(u uint64) {
+	m.store = &u
+}
+
+// StoreID returns the value of the "store_id" field in the mutation.
+func (m *SubscribePauseMutation) StoreID() (r uint64, exists bool) {
+	v := m.store
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStoreID returns the old "store_id" field's value of the SubscribePause entity.
+// If the SubscribePause object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribePauseMutation) OldStoreID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStoreID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStoreID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStoreID: %w", err)
+	}
+	return oldValue.StoreID, nil
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (m *SubscribePauseMutation) ClearStoreID() {
+	m.store = nil
+	m.clearedFields[subscribepause.FieldStoreID] = struct{}{}
+}
+
+// StoreIDCleared returns if the "store_id" field was cleared in this mutation.
+func (m *SubscribePauseMutation) StoreIDCleared() bool {
+	_, ok := m.clearedFields[subscribepause.FieldStoreID]
+	return ok
+}
+
+// ResetStoreID resets all changes to the "store_id" field.
+func (m *SubscribePauseMutation) ResetStoreID() {
+	m.store = nil
+	delete(m.clearedFields, subscribepause.FieldStoreID)
+}
+
+// SetEndStoreID sets the "end_store_id" field.
+func (m *SubscribePauseMutation) SetEndStoreID(u uint64) {
+	m.endStore = &u
+}
+
+// EndStoreID returns the value of the "end_store_id" field in the mutation.
+func (m *SubscribePauseMutation) EndStoreID() (r uint64, exists bool) {
+	v := m.endStore
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEndStoreID returns the old "end_store_id" field's value of the SubscribePause entity.
+// If the SubscribePause object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribePauseMutation) OldEndStoreID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEndStoreID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEndStoreID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEndStoreID: %w", err)
+	}
+	return oldValue.EndStoreID, nil
+}
+
+// ClearEndStoreID clears the value of the "end_store_id" field.
+func (m *SubscribePauseMutation) ClearEndStoreID() {
+	m.endStore = nil
+	m.clearedFields[subscribepause.FieldEndStoreID] = struct{}{}
+}
+
+// EndStoreIDCleared returns if the "end_store_id" field was cleared in this mutation.
+func (m *SubscribePauseMutation) EndStoreIDCleared() bool {
+	_, ok := m.clearedFields[subscribepause.FieldEndStoreID]
+	return ok
+}
+
+// ResetEndStoreID resets all changes to the "end_store_id" field.
+func (m *SubscribePauseMutation) ResetEndStoreID() {
+	m.endStore = nil
+	delete(m.clearedFields, subscribepause.FieldEndStoreID)
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (m *SubscribePauseMutation) SetCabinetID(u uint64) {
+	m.cabinet = &u
+}
+
+// CabinetID returns the value of the "cabinet_id" field in the mutation.
+func (m *SubscribePauseMutation) CabinetID() (r uint64, exists bool) {
+	v := m.cabinet
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCabinetID returns the old "cabinet_id" field's value of the SubscribePause entity.
+// If the SubscribePause object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribePauseMutation) OldCabinetID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCabinetID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCabinetID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCabinetID: %w", err)
+	}
+	return oldValue.CabinetID, nil
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (m *SubscribePauseMutation) ClearCabinetID() {
+	m.cabinet = nil
+	m.clearedFields[subscribepause.FieldCabinetID] = struct{}{}
+}
+
+// CabinetIDCleared returns if the "cabinet_id" field was cleared in this mutation.
+func (m *SubscribePauseMutation) CabinetIDCleared() bool {
+	_, ok := m.clearedFields[subscribepause.FieldCabinetID]
+	return ok
+}
+
+// ResetCabinetID resets all changes to the "cabinet_id" field.
+func (m *SubscribePauseMutation) ResetCabinetID() {
+	m.cabinet = nil
+	delete(m.clearedFields, subscribepause.FieldCabinetID)
+}
+
+// SetEndCabinetID sets the "end_cabinet_id" field.
+func (m *SubscribePauseMutation) SetEndCabinetID(u uint64) {
+	m.endCabinet = &u
+}
+
+// EndCabinetID returns the value of the "end_cabinet_id" field in the mutation.
+func (m *SubscribePauseMutation) EndCabinetID() (r uint64, exists bool) {
+	v := m.endCabinet
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEndCabinetID returns the old "end_cabinet_id" field's value of the SubscribePause entity.
+// If the SubscribePause object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribePauseMutation) OldEndCabinetID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEndCabinetID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEndCabinetID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEndCabinetID: %w", err)
+	}
+	return oldValue.EndCabinetID, nil
+}
+
+// ClearEndCabinetID clears the value of the "end_cabinet_id" field.
+func (m *SubscribePauseMutation) ClearEndCabinetID() {
+	m.endCabinet = nil
+	m.clearedFields[subscribepause.FieldEndCabinetID] = struct{}{}
+}
+
+// EndCabinetIDCleared returns if the "end_cabinet_id" field was cleared in this mutation.
+func (m *SubscribePauseMutation) EndCabinetIDCleared() bool {
+	_, ok := m.clearedFields[subscribepause.FieldEndCabinetID]
+	return ok
+}
+
+// ResetEndCabinetID resets all changes to the "end_cabinet_id" field.
+func (m *SubscribePauseMutation) ResetEndCabinetID() {
+	m.endCabinet = nil
+	delete(m.clearedFields, subscribepause.FieldEndCabinetID)
+}
+
 // SetSubscribeID sets the "subscribe_id" field.
 func (m *SubscribePauseMutation) SetSubscribeID(u uint64) {
 	m.subscribe = &u
@@ -774,6 +1030,55 @@ func (m *SubscribePauseMutation) ResetOverdue() {
 	m.overdue = nil
 }
 
+// SetEndModifier sets the "end_modifier" field.
+func (m *SubscribePauseMutation) SetEndModifier(value *model.Modifier) {
+	m.end_modifier = &value
+}
+
+// EndModifier returns the value of the "end_modifier" field in the mutation.
+func (m *SubscribePauseMutation) EndModifier() (r *model.Modifier, exists bool) {
+	v := m.end_modifier
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEndModifier returns the old "end_modifier" field's value of the SubscribePause entity.
+// If the SubscribePause object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribePauseMutation) OldEndModifier(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEndModifier is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEndModifier requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEndModifier: %w", err)
+	}
+	return oldValue.EndModifier, nil
+}
+
+// ClearEndModifier clears the value of the "end_modifier" field.
+func (m *SubscribePauseMutation) ClearEndModifier() {
+	m.end_modifier = nil
+	m.clearedFields[subscribepause.FieldEndModifier] = struct{}{}
+}
+
+// EndModifierCleared returns if the "end_modifier" field was cleared in this mutation.
+func (m *SubscribePauseMutation) EndModifierCleared() bool {
+	_, ok := m.clearedFields[subscribepause.FieldEndModifier]
+	return ok
+}
+
+// ResetEndModifier resets all changes to the "end_modifier" field.
+func (m *SubscribePauseMutation) ResetEndModifier() {
+	m.end_modifier = nil
+	delete(m.clearedFields, subscribepause.FieldEndModifier)
+}
+
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *SubscribePauseMutation) ClearRider() {
 	m.clearedrider = true
@@ -824,6 +1129,136 @@ func (m *SubscribePauseMutation) EmployeeIDs() (ids []uint64) {
 func (m *SubscribePauseMutation) ResetEmployee() {
 	m.employee = nil
 	m.clearedemployee = false
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (m *SubscribePauseMutation) ClearCity() {
+	m.clearedcity = true
+}
+
+// CityCleared reports if the "city" edge to the City entity was cleared.
+func (m *SubscribePauseMutation) CityCleared() bool {
+	return m.CityIDCleared() || m.clearedcity
+}
+
+// CityIDs returns the "city" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CityID instead. It exists only for internal usage by the builders.
+func (m *SubscribePauseMutation) CityIDs() (ids []uint64) {
+	if id := m.city; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCity resets all changes to the "city" edge.
+func (m *SubscribePauseMutation) ResetCity() {
+	m.city = nil
+	m.clearedcity = false
+}
+
+// ClearStore clears the "store" edge to the Store entity.
+func (m *SubscribePauseMutation) ClearStore() {
+	m.clearedstore = true
+}
+
+// StoreCleared reports if the "store" edge to the Store entity was cleared.
+func (m *SubscribePauseMutation) StoreCleared() bool {
+	return m.StoreIDCleared() || m.clearedstore
+}
+
+// StoreIDs returns the "store" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// StoreID instead. It exists only for internal usage by the builders.
+func (m *SubscribePauseMutation) StoreIDs() (ids []uint64) {
+	if id := m.store; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetStore resets all changes to the "store" edge.
+func (m *SubscribePauseMutation) ResetStore() {
+	m.store = nil
+	m.clearedstore = false
+}
+
+// ClearEndStore clears the "endStore" edge to the Store entity.
+func (m *SubscribePauseMutation) ClearEndStore() {
+	m.clearedendStore = true
+}
+
+// EndStoreCleared reports if the "endStore" edge to the Store entity was cleared.
+func (m *SubscribePauseMutation) EndStoreCleared() bool {
+	return m.EndStoreIDCleared() || m.clearedendStore
+}
+
+// EndStoreIDs returns the "endStore" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EndStoreID instead. It exists only for internal usage by the builders.
+func (m *SubscribePauseMutation) EndStoreIDs() (ids []uint64) {
+	if id := m.endStore; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEndStore resets all changes to the "endStore" edge.
+func (m *SubscribePauseMutation) ResetEndStore() {
+	m.endStore = nil
+	m.clearedendStore = false
+}
+
+// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
+func (m *SubscribePauseMutation) ClearCabinet() {
+	m.clearedcabinet = true
+}
+
+// CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
+func (m *SubscribePauseMutation) CabinetCleared() bool {
+	return m.CabinetIDCleared() || m.clearedcabinet
+}
+
+// CabinetIDs returns the "cabinet" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CabinetID instead. It exists only for internal usage by the builders.
+func (m *SubscribePauseMutation) CabinetIDs() (ids []uint64) {
+	if id := m.cabinet; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCabinet resets all changes to the "cabinet" edge.
+func (m *SubscribePauseMutation) ResetCabinet() {
+	m.cabinet = nil
+	m.clearedcabinet = false
+}
+
+// ClearEndCabinet clears the "endCabinet" edge to the Cabinet entity.
+func (m *SubscribePauseMutation) ClearEndCabinet() {
+	m.clearedendCabinet = true
+}
+
+// EndCabinetCleared reports if the "endCabinet" edge to the Cabinet entity was cleared.
+func (m *SubscribePauseMutation) EndCabinetCleared() bool {
+	return m.EndCabinetIDCleared() || m.clearedendCabinet
+}
+
+// EndCabinetIDs returns the "endCabinet" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EndCabinetID instead. It exists only for internal usage by the builders.
+func (m *SubscribePauseMutation) EndCabinetIDs() (ids []uint64) {
+	if id := m.endCabinet; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEndCabinet resets all changes to the "endCabinet" edge.
+func (m *SubscribePauseMutation) ResetEndCabinet() {
+	m.endCabinet = nil
+	m.clearedendCabinet = false
 }
 
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
@@ -897,7 +1332,7 @@ func (m *SubscribePauseMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscribePauseMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 20)
 	if m.created_at != nil {
 		fields = append(fields, subscribepause.FieldCreatedAt)
 	}
@@ -922,6 +1357,21 @@ func (m *SubscribePauseMutation) Fields() []string {
 	if m.employee != nil {
 		fields = append(fields, subscribepause.FieldEmployeeID)
 	}
+	if m.city != nil {
+		fields = append(fields, subscribepause.FieldCityID)
+	}
+	if m.store != nil {
+		fields = append(fields, subscribepause.FieldStoreID)
+	}
+	if m.endStore != nil {
+		fields = append(fields, subscribepause.FieldEndStoreID)
+	}
+	if m.cabinet != nil {
+		fields = append(fields, subscribepause.FieldCabinetID)
+	}
+	if m.endCabinet != nil {
+		fields = append(fields, subscribepause.FieldEndCabinetID)
+	}
 	if m.subscribe != nil {
 		fields = append(fields, subscribepause.FieldSubscribeID)
 	}
@@ -939,6 +1389,9 @@ func (m *SubscribePauseMutation) Fields() []string {
 	}
 	if m.overdue != nil {
 		fields = append(fields, subscribepause.FieldOverdue)
+	}
+	if m.end_modifier != nil {
+		fields = append(fields, subscribepause.FieldEndModifier)
 	}
 	return fields
 }
@@ -964,6 +1417,16 @@ func (m *SubscribePauseMutation) Field(name string) (ent.Value, bool) {
 		return m.RiderID()
 	case subscribepause.FieldEmployeeID:
 		return m.EmployeeID()
+	case subscribepause.FieldCityID:
+		return m.CityID()
+	case subscribepause.FieldStoreID:
+		return m.StoreID()
+	case subscribepause.FieldEndStoreID:
+		return m.EndStoreID()
+	case subscribepause.FieldCabinetID:
+		return m.CabinetID()
+	case subscribepause.FieldEndCabinetID:
+		return m.EndCabinetID()
 	case subscribepause.FieldSubscribeID:
 		return m.SubscribeID()
 	case subscribepause.FieldStartAt:
@@ -976,6 +1439,8 @@ func (m *SubscribePauseMutation) Field(name string) (ent.Value, bool) {
 		return m.EndEmployeeID()
 	case subscribepause.FieldOverdue:
 		return m.Overdue()
+	case subscribepause.FieldEndModifier:
+		return m.EndModifier()
 	}
 	return nil, false
 }
@@ -1001,6 +1466,16 @@ func (m *SubscribePauseMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldRiderID(ctx)
 	case subscribepause.FieldEmployeeID:
 		return m.OldEmployeeID(ctx)
+	case subscribepause.FieldCityID:
+		return m.OldCityID(ctx)
+	case subscribepause.FieldStoreID:
+		return m.OldStoreID(ctx)
+	case subscribepause.FieldEndStoreID:
+		return m.OldEndStoreID(ctx)
+	case subscribepause.FieldCabinetID:
+		return m.OldCabinetID(ctx)
+	case subscribepause.FieldEndCabinetID:
+		return m.OldEndCabinetID(ctx)
 	case subscribepause.FieldSubscribeID:
 		return m.OldSubscribeID(ctx)
 	case subscribepause.FieldStartAt:
@@ -1013,6 +1488,8 @@ func (m *SubscribePauseMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldEndEmployeeID(ctx)
 	case subscribepause.FieldOverdue:
 		return m.OldOverdue(ctx)
+	case subscribepause.FieldEndModifier:
+		return m.OldEndModifier(ctx)
 	}
 	return nil, fmt.Errorf("unknown SubscribePause field %s", name)
 }
@@ -1078,6 +1555,41 @@ func (m *SubscribePauseMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetEmployeeID(v)
 		return nil
+	case subscribepause.FieldCityID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCityID(v)
+		return nil
+	case subscribepause.FieldStoreID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStoreID(v)
+		return nil
+	case subscribepause.FieldEndStoreID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEndStoreID(v)
+		return nil
+	case subscribepause.FieldCabinetID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCabinetID(v)
+		return nil
+	case subscribepause.FieldEndCabinetID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEndCabinetID(v)
+		return nil
 	case subscribepause.FieldSubscribeID:
 		v, ok := value.(uint64)
 		if !ok {
@@ -1119,6 +1631,13 @@ func (m *SubscribePauseMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetOverdue(v)
+		return nil
+	case subscribepause.FieldEndModifier:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEndModifier(v)
 		return nil
 	}
 	return fmt.Errorf("unknown SubscribePause field %s", name)
@@ -1180,6 +1699,21 @@ func (m *SubscribePauseMutation) ClearedFields() []string {
 	if m.FieldCleared(subscribepause.FieldEmployeeID) {
 		fields = append(fields, subscribepause.FieldEmployeeID)
 	}
+	if m.FieldCleared(subscribepause.FieldCityID) {
+		fields = append(fields, subscribepause.FieldCityID)
+	}
+	if m.FieldCleared(subscribepause.FieldStoreID) {
+		fields = append(fields, subscribepause.FieldStoreID)
+	}
+	if m.FieldCleared(subscribepause.FieldEndStoreID) {
+		fields = append(fields, subscribepause.FieldEndStoreID)
+	}
+	if m.FieldCleared(subscribepause.FieldCabinetID) {
+		fields = append(fields, subscribepause.FieldCabinetID)
+	}
+	if m.FieldCleared(subscribepause.FieldEndCabinetID) {
+		fields = append(fields, subscribepause.FieldEndCabinetID)
+	}
 	if m.FieldCleared(subscribepause.FieldEndAt) {
 		fields = append(fields, subscribepause.FieldEndAt)
 	}
@@ -1188,6 +1722,9 @@ func (m *SubscribePauseMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(subscribepause.FieldEndEmployeeID) {
 		fields = append(fields, subscribepause.FieldEndEmployeeID)
+	}
+	if m.FieldCleared(subscribepause.FieldEndModifier) {
+		fields = append(fields, subscribepause.FieldEndModifier)
 	}
 	return fields
 }
@@ -1218,6 +1755,21 @@ func (m *SubscribePauseMutation) ClearField(name string) error {
 	case subscribepause.FieldEmployeeID:
 		m.ClearEmployeeID()
 		return nil
+	case subscribepause.FieldCityID:
+		m.ClearCityID()
+		return nil
+	case subscribepause.FieldStoreID:
+		m.ClearStoreID()
+		return nil
+	case subscribepause.FieldEndStoreID:
+		m.ClearEndStoreID()
+		return nil
+	case subscribepause.FieldCabinetID:
+		m.ClearCabinetID()
+		return nil
+	case subscribepause.FieldEndCabinetID:
+		m.ClearEndCabinetID()
+		return nil
 	case subscribepause.FieldEndAt:
 		m.ClearEndAt()
 		return nil
@@ -1226,6 +1778,9 @@ func (m *SubscribePauseMutation) ClearField(name string) error {
 		return nil
 	case subscribepause.FieldEndEmployeeID:
 		m.ClearEndEmployeeID()
+		return nil
+	case subscribepause.FieldEndModifier:
+		m.ClearEndModifier()
 		return nil
 	}
 	return fmt.Errorf("unknown SubscribePause nullable field %s", name)
@@ -1259,6 +1814,21 @@ func (m *SubscribePauseMutation) ResetField(name string) error {
 	case subscribepause.FieldEmployeeID:
 		m.ResetEmployeeID()
 		return nil
+	case subscribepause.FieldCityID:
+		m.ResetCityID()
+		return nil
+	case subscribepause.FieldStoreID:
+		m.ResetStoreID()
+		return nil
+	case subscribepause.FieldEndStoreID:
+		m.ResetEndStoreID()
+		return nil
+	case subscribepause.FieldCabinetID:
+		m.ResetCabinetID()
+		return nil
+	case subscribepause.FieldEndCabinetID:
+		m.ResetEndCabinetID()
+		return nil
 	case subscribepause.FieldSubscribeID:
 		m.ResetSubscribeID()
 		return nil
@@ -1277,18 +1847,36 @@ func (m *SubscribePauseMutation) ResetField(name string) error {
 	case subscribepause.FieldOverdue:
 		m.ResetOverdue()
 		return nil
+	case subscribepause.FieldEndModifier:
+		m.ResetEndModifier()
+		return nil
 	}
 	return fmt.Errorf("unknown SubscribePause field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *SubscribePauseMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 9)
 	if m.rider != nil {
 		edges = append(edges, subscribepause.EdgeRider)
 	}
 	if m.employee != nil {
 		edges = append(edges, subscribepause.EdgeEmployee)
+	}
+	if m.city != nil {
+		edges = append(edges, subscribepause.EdgeCity)
+	}
+	if m.store != nil {
+		edges = append(edges, subscribepause.EdgeStore)
+	}
+	if m.endStore != nil {
+		edges = append(edges, subscribepause.EdgeEndStore)
+	}
+	if m.cabinet != nil {
+		edges = append(edges, subscribepause.EdgeCabinet)
+	}
+	if m.endCabinet != nil {
+		edges = append(edges, subscribepause.EdgeEndCabinet)
 	}
 	if m.subscribe != nil {
 		edges = append(edges, subscribepause.EdgeSubscribe)
@@ -1311,6 +1899,26 @@ func (m *SubscribePauseMutation) AddedIDs(name string) []ent.Value {
 		if id := m.employee; id != nil {
 			return []ent.Value{*id}
 		}
+	case subscribepause.EdgeCity:
+		if id := m.city; id != nil {
+			return []ent.Value{*id}
+		}
+	case subscribepause.EdgeStore:
+		if id := m.store; id != nil {
+			return []ent.Value{*id}
+		}
+	case subscribepause.EdgeEndStore:
+		if id := m.endStore; id != nil {
+			return []ent.Value{*id}
+		}
+	case subscribepause.EdgeCabinet:
+		if id := m.cabinet; id != nil {
+			return []ent.Value{*id}
+		}
+	case subscribepause.EdgeEndCabinet:
+		if id := m.endCabinet; id != nil {
+			return []ent.Value{*id}
+		}
 	case subscribepause.EdgeSubscribe:
 		if id := m.subscribe; id != nil {
 			return []ent.Value{*id}
@@ -1325,7 +1933,7 @@ func (m *SubscribePauseMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *SubscribePauseMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 9)
 	return edges
 }
 
@@ -1339,12 +1947,27 @@ func (m *SubscribePauseMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *SubscribePauseMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 9)
 	if m.clearedrider {
 		edges = append(edges, subscribepause.EdgeRider)
 	}
 	if m.clearedemployee {
 		edges = append(edges, subscribepause.EdgeEmployee)
+	}
+	if m.clearedcity {
+		edges = append(edges, subscribepause.EdgeCity)
+	}
+	if m.clearedstore {
+		edges = append(edges, subscribepause.EdgeStore)
+	}
+	if m.clearedendStore {
+		edges = append(edges, subscribepause.EdgeEndStore)
+	}
+	if m.clearedcabinet {
+		edges = append(edges, subscribepause.EdgeCabinet)
+	}
+	if m.clearedendCabinet {
+		edges = append(edges, subscribepause.EdgeEndCabinet)
 	}
 	if m.clearedsubscribe {
 		edges = append(edges, subscribepause.EdgeSubscribe)
@@ -1363,6 +1986,16 @@ func (m *SubscribePauseMutation) EdgeCleared(name string) bool {
 		return m.clearedrider
 	case subscribepause.EdgeEmployee:
 		return m.clearedemployee
+	case subscribepause.EdgeCity:
+		return m.clearedcity
+	case subscribepause.EdgeStore:
+		return m.clearedstore
+	case subscribepause.EdgeEndStore:
+		return m.clearedendStore
+	case subscribepause.EdgeCabinet:
+		return m.clearedcabinet
+	case subscribepause.EdgeEndCabinet:
+		return m.clearedendCabinet
 	case subscribepause.EdgeSubscribe:
 		return m.clearedsubscribe
 	case subscribepause.EdgeEndEmployee:
@@ -1380,6 +2013,21 @@ func (m *SubscribePauseMutation) ClearEdge(name string) error {
 		return nil
 	case subscribepause.EdgeEmployee:
 		m.ClearEmployee()
+		return nil
+	case subscribepause.EdgeCity:
+		m.ClearCity()
+		return nil
+	case subscribepause.EdgeStore:
+		m.ClearStore()
+		return nil
+	case subscribepause.EdgeEndStore:
+		m.ClearEndStore()
+		return nil
+	case subscribepause.EdgeCabinet:
+		m.ClearCabinet()
+		return nil
+	case subscribepause.EdgeEndCabinet:
+		m.ClearEndCabinet()
 		return nil
 	case subscribepause.EdgeSubscribe:
 		m.ClearSubscribe()
@@ -1400,6 +2048,21 @@ func (m *SubscribePauseMutation) ResetEdge(name string) error {
 		return nil
 	case subscribepause.EdgeEmployee:
 		m.ResetEmployee()
+		return nil
+	case subscribepause.EdgeCity:
+		m.ResetCity()
+		return nil
+	case subscribepause.EdgeStore:
+		m.ResetStore()
+		return nil
+	case subscribepause.EdgeEndStore:
+		m.ResetEndStore()
+		return nil
+	case subscribepause.EdgeCabinet:
+		m.ResetCabinet()
+		return nil
+	case subscribepause.EdgeEndCabinet:
+		m.ResetEndCabinet()
 		return nil
 	case subscribepause.EdgeSubscribe:
 		m.ResetSubscribe()

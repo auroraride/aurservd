@@ -44,3 +44,22 @@ type BusinessListRes struct {
     Cabinet  *CabinetBasicInfo `json:"cabinet,omitempty"`  // 电柜, 可能为空
     Store    *Store            `json:"store,omitempty"`    // 门店, 可能为空
 }
+
+type BusinessListPauseReq struct {
+    CityID  uint64 `json:"cityId" query:"cityId"`   // 城市ID
+    RiderID uint64 `json:"riderId" query:"riderId"` // 骑手ID
+    Status  uint8  `json:"status" query:"status"`   // 状态 0:全部 1:寄存中 2:已结束
+    Overdue bool   `json:"overdue" query:"overdue"` // 逾期 false:全部 true:已逾期
+
+    StartAscription uint8 `json:"startAscription" query:"startAscription"` // 寄存所属 0:全部 1:门店 2:电柜
+    EndAscription   uint8 `json:"endAscription" query:"endAscription"`     // 取消寄存所属 0:全部 1:门店 2:电柜
+
+    StartDate string `json:"startDate" query:"startDate"` // 寄存时间段, 逗号分隔, 如2022-08-01,2022-08-07
+    EndDate   string `json:"endDate" query:"endDate"`     // 结束寄存时间段, 逗号分隔, 如2022-08-01,2022-08-07
+
+    StartBy string `json:"startBy" query:"startBy"` // 寄存办理人
+    EndBy   string `json:"endBy" query:"endBy"`     // 结束寄存办理人
+
+    StartTarget string `json:"startTarget" query:"startTarget"` // 寄存于
+    EndTarget   string `json:"endTarget" query:"endTarget"`     // 结束寄存于
+}

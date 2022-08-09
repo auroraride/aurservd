@@ -6051,6 +6051,27 @@ paths:
       summary: M8004 业务记录
       tags:
       - '[M]管理接口'
+  /manager/v1/business/pause:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerBusinessPause
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M8005 寄存记录
+      tags:
+      - '[M]管理接口'
   /manager/v1/cabinet:
     get:
       consumes:
