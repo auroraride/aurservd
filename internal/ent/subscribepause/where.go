@@ -170,10 +170,10 @@ func EndEmployeeID(v uint64) predicate.SubscribePause {
 	})
 }
 
-// ContinueEmployeeID applies equality check predicate on the "continue_employee_id" field. It's identical to ContinueEmployeeIDEQ.
-func ContinueEmployeeID(v uint64) predicate.SubscribePause {
+// Overdue applies equality check predicate on the "overdue" field. It's identical to OverdueEQ.
+func Overdue(v bool) predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldContinueEmployeeID), v))
+		s.Where(sql.EQ(s.C(FieldOverdue), v))
 	})
 }
 
@@ -1048,93 +1048,17 @@ func EndEmployeeIDNotNil() predicate.SubscribePause {
 	})
 }
 
-// ContinueEmployeeIDEQ applies the EQ predicate on the "continue_employee_id" field.
-func ContinueEmployeeIDEQ(v uint64) predicate.SubscribePause {
+// OverdueEQ applies the EQ predicate on the "overdue" field.
+func OverdueEQ(v bool) predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldContinueEmployeeID), v))
+		s.Where(sql.EQ(s.C(FieldOverdue), v))
 	})
 }
 
-// ContinueEmployeeIDNEQ applies the NEQ predicate on the "continue_employee_id" field.
-func ContinueEmployeeIDNEQ(v uint64) predicate.SubscribePause {
+// OverdueNEQ applies the NEQ predicate on the "overdue" field.
+func OverdueNEQ(v bool) predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldContinueEmployeeID), v))
-	})
-}
-
-// ContinueEmployeeIDIn applies the In predicate on the "continue_employee_id" field.
-func ContinueEmployeeIDIn(vs ...uint64) predicate.SubscribePause {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldContinueEmployeeID), v...))
-	})
-}
-
-// ContinueEmployeeIDNotIn applies the NotIn predicate on the "continue_employee_id" field.
-func ContinueEmployeeIDNotIn(vs ...uint64) predicate.SubscribePause {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldContinueEmployeeID), v...))
-	})
-}
-
-// ContinueEmployeeIDGT applies the GT predicate on the "continue_employee_id" field.
-func ContinueEmployeeIDGT(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldContinueEmployeeID), v))
-	})
-}
-
-// ContinueEmployeeIDGTE applies the GTE predicate on the "continue_employee_id" field.
-func ContinueEmployeeIDGTE(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldContinueEmployeeID), v))
-	})
-}
-
-// ContinueEmployeeIDLT applies the LT predicate on the "continue_employee_id" field.
-func ContinueEmployeeIDLT(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldContinueEmployeeID), v))
-	})
-}
-
-// ContinueEmployeeIDLTE applies the LTE predicate on the "continue_employee_id" field.
-func ContinueEmployeeIDLTE(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldContinueEmployeeID), v))
-	})
-}
-
-// ContinueEmployeeIDIsNil applies the IsNil predicate on the "continue_employee_id" field.
-func ContinueEmployeeIDIsNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldContinueEmployeeID)))
-	})
-}
-
-// ContinueEmployeeIDNotNil applies the NotNil predicate on the "continue_employee_id" field.
-func ContinueEmployeeIDNotNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldContinueEmployeeID)))
+		s.Where(sql.NEQ(s.C(FieldOverdue), v))
 	})
 }
 

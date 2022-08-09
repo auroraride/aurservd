@@ -2326,7 +2326,7 @@ var (
 		{Name: "start_at", Type: field.TypeTime, Comment: "暂停开始时间"},
 		{Name: "end_at", Type: field.TypeTime, Comment: "暂停结束时间", Nullable: true},
 		{Name: "days", Type: field.TypeInt, Comment: "暂停天数", Nullable: true},
-		{Name: "continue_employee_id", Type: field.TypeUint64, Comment: "结束寄存店员ID", Nullable: true},
+		{Name: "overdue", Type: field.TypeBool, Comment: "是否超期", Default: false},
 		{Name: "subscribe_id", Type: field.TypeUint64},
 		{Name: "rider_id", Type: field.TypeUint64},
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},

@@ -897,6 +897,10 @@ func init() {
 	subscribepause.DefaultUpdatedAt = subscribepauseDescUpdatedAt.Default.(func() time.Time)
 	// subscribepause.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	subscribepause.UpdateDefaultUpdatedAt = subscribepauseDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// subscribepauseDescOverdue is the schema descriptor for overdue field.
+	subscribepauseDescOverdue := subscribepauseFields[5].Descriptor()
+	// subscribepause.DefaultOverdue holds the default value on creation for the overdue field.
+	subscribepause.DefaultOverdue = subscribepauseDescOverdue.Default.(bool)
 }
 
 const (

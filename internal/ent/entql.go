@@ -1037,20 +1037,20 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "SubscribePause",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			subscribepause.FieldCreatedAt:          {Type: field.TypeTime, Column: subscribepause.FieldCreatedAt},
-			subscribepause.FieldUpdatedAt:          {Type: field.TypeTime, Column: subscribepause.FieldUpdatedAt},
-			subscribepause.FieldDeletedAt:          {Type: field.TypeTime, Column: subscribepause.FieldDeletedAt},
-			subscribepause.FieldCreator:            {Type: field.TypeJSON, Column: subscribepause.FieldCreator},
-			subscribepause.FieldLastModifier:       {Type: field.TypeJSON, Column: subscribepause.FieldLastModifier},
-			subscribepause.FieldRemark:             {Type: field.TypeString, Column: subscribepause.FieldRemark},
-			subscribepause.FieldRiderID:            {Type: field.TypeUint64, Column: subscribepause.FieldRiderID},
-			subscribepause.FieldEmployeeID:         {Type: field.TypeUint64, Column: subscribepause.FieldEmployeeID},
-			subscribepause.FieldSubscribeID:        {Type: field.TypeUint64, Column: subscribepause.FieldSubscribeID},
-			subscribepause.FieldStartAt:            {Type: field.TypeTime, Column: subscribepause.FieldStartAt},
-			subscribepause.FieldEndAt:              {Type: field.TypeTime, Column: subscribepause.FieldEndAt},
-			subscribepause.FieldDays:               {Type: field.TypeInt, Column: subscribepause.FieldDays},
-			subscribepause.FieldEndEmployeeID:      {Type: field.TypeUint64, Column: subscribepause.FieldEndEmployeeID},
-			subscribepause.FieldContinueEmployeeID: {Type: field.TypeUint64, Column: subscribepause.FieldContinueEmployeeID},
+			subscribepause.FieldCreatedAt:     {Type: field.TypeTime, Column: subscribepause.FieldCreatedAt},
+			subscribepause.FieldUpdatedAt:     {Type: field.TypeTime, Column: subscribepause.FieldUpdatedAt},
+			subscribepause.FieldDeletedAt:     {Type: field.TypeTime, Column: subscribepause.FieldDeletedAt},
+			subscribepause.FieldCreator:       {Type: field.TypeJSON, Column: subscribepause.FieldCreator},
+			subscribepause.FieldLastModifier:  {Type: field.TypeJSON, Column: subscribepause.FieldLastModifier},
+			subscribepause.FieldRemark:        {Type: field.TypeString, Column: subscribepause.FieldRemark},
+			subscribepause.FieldRiderID:       {Type: field.TypeUint64, Column: subscribepause.FieldRiderID},
+			subscribepause.FieldEmployeeID:    {Type: field.TypeUint64, Column: subscribepause.FieldEmployeeID},
+			subscribepause.FieldSubscribeID:   {Type: field.TypeUint64, Column: subscribepause.FieldSubscribeID},
+			subscribepause.FieldStartAt:       {Type: field.TypeTime, Column: subscribepause.FieldStartAt},
+			subscribepause.FieldEndAt:         {Type: field.TypeTime, Column: subscribepause.FieldEndAt},
+			subscribepause.FieldDays:          {Type: field.TypeInt, Column: subscribepause.FieldDays},
+			subscribepause.FieldEndEmployeeID: {Type: field.TypeUint64, Column: subscribepause.FieldEndEmployeeID},
+			subscribepause.FieldOverdue:       {Type: field.TypeBool, Column: subscribepause.FieldOverdue},
 		},
 	}
 	graph.MustAddE(
@@ -8782,9 +8782,9 @@ func (f *SubscribePauseFilter) WhereEndEmployeeID(p entql.Uint64P) {
 	f.Where(p.Field(subscribepause.FieldEndEmployeeID))
 }
 
-// WhereContinueEmployeeID applies the entql uint64 predicate on the continue_employee_id field.
-func (f *SubscribePauseFilter) WhereContinueEmployeeID(p entql.Uint64P) {
-	f.Where(p.Field(subscribepause.FieldContinueEmployeeID))
+// WhereOverdue applies the entql bool predicate on the overdue field.
+func (f *SubscribePauseFilter) WhereOverdue(p entql.BoolP) {
+	f.Where(p.Field(subscribepause.FieldOverdue))
 }
 
 // WhereHasRider applies a predicate to check if query has an edge rider.

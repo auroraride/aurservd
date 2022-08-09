@@ -19,33 +19,32 @@ import (
 // SubscribePauseMutation represents an operation that mutates the SubscribePause nodes in the graph.
 type SubscribePauseMutation struct {
 	config
-	op                      Op
-	typ                     string
-	id                      *uint64
-	created_at              *time.Time
-	updated_at              *time.Time
-	deleted_at              *time.Time
-	creator                 **model.Modifier
-	last_modifier           **model.Modifier
-	remark                  *string
-	start_at                *time.Time
-	end_at                  *time.Time
-	days                    *int
-	adddays                 *int
-	continue_employee_id    *uint64
-	addcontinue_employee_id *int64
-	clearedFields           map[string]struct{}
-	rider                   *uint64
-	clearedrider            bool
-	employee                *uint64
-	clearedemployee         bool
-	subscribe               *uint64
-	clearedsubscribe        bool
-	end_employee            *uint64
-	clearedend_employee     bool
-	done                    bool
-	oldValue                func(context.Context) (*SubscribePause, error)
-	predicates              []predicate.SubscribePause
+	op                  Op
+	typ                 string
+	id                  *uint64
+	created_at          *time.Time
+	updated_at          *time.Time
+	deleted_at          *time.Time
+	creator             **model.Modifier
+	last_modifier       **model.Modifier
+	remark              *string
+	start_at            *time.Time
+	end_at              *time.Time
+	days                *int
+	adddays             *int
+	overdue             *bool
+	clearedFields       map[string]struct{}
+	rider               *uint64
+	clearedrider        bool
+	employee            *uint64
+	clearedemployee     bool
+	subscribe           *uint64
+	clearedsubscribe    bool
+	end_employee        *uint64
+	clearedend_employee bool
+	done                bool
+	oldValue            func(context.Context) (*SubscribePause, error)
+	predicates          []predicate.SubscribePause
 }
 
 var _ ent.Mutation = (*SubscribePauseMutation)(nil)
@@ -739,74 +738,40 @@ func (m *SubscribePauseMutation) ResetEndEmployeeID() {
 	delete(m.clearedFields, subscribepause.FieldEndEmployeeID)
 }
 
-// SetContinueEmployeeID sets the "continue_employee_id" field.
-func (m *SubscribePauseMutation) SetContinueEmployeeID(u uint64) {
-	m.continue_employee_id = &u
-	m.addcontinue_employee_id = nil
+// SetOverdue sets the "overdue" field.
+func (m *SubscribePauseMutation) SetOverdue(b bool) {
+	m.overdue = &b
 }
 
-// ContinueEmployeeID returns the value of the "continue_employee_id" field in the mutation.
-func (m *SubscribePauseMutation) ContinueEmployeeID() (r uint64, exists bool) {
-	v := m.continue_employee_id
+// Overdue returns the value of the "overdue" field in the mutation.
+func (m *SubscribePauseMutation) Overdue() (r bool, exists bool) {
+	v := m.overdue
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldContinueEmployeeID returns the old "continue_employee_id" field's value of the SubscribePause entity.
+// OldOverdue returns the old "overdue" field's value of the SubscribePause entity.
 // If the SubscribePause object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SubscribePauseMutation) OldContinueEmployeeID(ctx context.Context) (v *uint64, err error) {
+func (m *SubscribePauseMutation) OldOverdue(ctx context.Context) (v bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldContinueEmployeeID is only allowed on UpdateOne operations")
+		return v, errors.New("OldOverdue is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldContinueEmployeeID requires an ID field in the mutation")
+		return v, errors.New("OldOverdue requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldContinueEmployeeID: %w", err)
+		return v, fmt.Errorf("querying old value for OldOverdue: %w", err)
 	}
-	return oldValue.ContinueEmployeeID, nil
+	return oldValue.Overdue, nil
 }
 
-// AddContinueEmployeeID adds u to the "continue_employee_id" field.
-func (m *SubscribePauseMutation) AddContinueEmployeeID(u int64) {
-	if m.addcontinue_employee_id != nil {
-		*m.addcontinue_employee_id += u
-	} else {
-		m.addcontinue_employee_id = &u
-	}
-}
-
-// AddedContinueEmployeeID returns the value that was added to the "continue_employee_id" field in this mutation.
-func (m *SubscribePauseMutation) AddedContinueEmployeeID() (r int64, exists bool) {
-	v := m.addcontinue_employee_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearContinueEmployeeID clears the value of the "continue_employee_id" field.
-func (m *SubscribePauseMutation) ClearContinueEmployeeID() {
-	m.continue_employee_id = nil
-	m.addcontinue_employee_id = nil
-	m.clearedFields[subscribepause.FieldContinueEmployeeID] = struct{}{}
-}
-
-// ContinueEmployeeIDCleared returns if the "continue_employee_id" field was cleared in this mutation.
-func (m *SubscribePauseMutation) ContinueEmployeeIDCleared() bool {
-	_, ok := m.clearedFields[subscribepause.FieldContinueEmployeeID]
-	return ok
-}
-
-// ResetContinueEmployeeID resets all changes to the "continue_employee_id" field.
-func (m *SubscribePauseMutation) ResetContinueEmployeeID() {
-	m.continue_employee_id = nil
-	m.addcontinue_employee_id = nil
-	delete(m.clearedFields, subscribepause.FieldContinueEmployeeID)
+// ResetOverdue resets all changes to the "overdue" field.
+func (m *SubscribePauseMutation) ResetOverdue() {
+	m.overdue = nil
 }
 
 // ClearRider clears the "rider" edge to the Rider entity.
@@ -972,8 +937,8 @@ func (m *SubscribePauseMutation) Fields() []string {
 	if m.end_employee != nil {
 		fields = append(fields, subscribepause.FieldEndEmployeeID)
 	}
-	if m.continue_employee_id != nil {
-		fields = append(fields, subscribepause.FieldContinueEmployeeID)
+	if m.overdue != nil {
+		fields = append(fields, subscribepause.FieldOverdue)
 	}
 	return fields
 }
@@ -1009,8 +974,8 @@ func (m *SubscribePauseMutation) Field(name string) (ent.Value, bool) {
 		return m.Days()
 	case subscribepause.FieldEndEmployeeID:
 		return m.EndEmployeeID()
-	case subscribepause.FieldContinueEmployeeID:
-		return m.ContinueEmployeeID()
+	case subscribepause.FieldOverdue:
+		return m.Overdue()
 	}
 	return nil, false
 }
@@ -1046,8 +1011,8 @@ func (m *SubscribePauseMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldDays(ctx)
 	case subscribepause.FieldEndEmployeeID:
 		return m.OldEndEmployeeID(ctx)
-	case subscribepause.FieldContinueEmployeeID:
-		return m.OldContinueEmployeeID(ctx)
+	case subscribepause.FieldOverdue:
+		return m.OldOverdue(ctx)
 	}
 	return nil, fmt.Errorf("unknown SubscribePause field %s", name)
 }
@@ -1148,12 +1113,12 @@ func (m *SubscribePauseMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetEndEmployeeID(v)
 		return nil
-	case subscribepause.FieldContinueEmployeeID:
-		v, ok := value.(uint64)
+	case subscribepause.FieldOverdue:
+		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetContinueEmployeeID(v)
+		m.SetOverdue(v)
 		return nil
 	}
 	return fmt.Errorf("unknown SubscribePause field %s", name)
@@ -1166,9 +1131,6 @@ func (m *SubscribePauseMutation) AddedFields() []string {
 	if m.adddays != nil {
 		fields = append(fields, subscribepause.FieldDays)
 	}
-	if m.addcontinue_employee_id != nil {
-		fields = append(fields, subscribepause.FieldContinueEmployeeID)
-	}
 	return fields
 }
 
@@ -1179,8 +1141,6 @@ func (m *SubscribePauseMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case subscribepause.FieldDays:
 		return m.AddedDays()
-	case subscribepause.FieldContinueEmployeeID:
-		return m.AddedContinueEmployeeID()
 	}
 	return nil, false
 }
@@ -1196,13 +1156,6 @@ func (m *SubscribePauseMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddDays(v)
-		return nil
-	case subscribepause.FieldContinueEmployeeID:
-		v, ok := value.(int64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddContinueEmployeeID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown SubscribePause numeric field %s", name)
@@ -1235,9 +1188,6 @@ func (m *SubscribePauseMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(subscribepause.FieldEndEmployeeID) {
 		fields = append(fields, subscribepause.FieldEndEmployeeID)
-	}
-	if m.FieldCleared(subscribepause.FieldContinueEmployeeID) {
-		fields = append(fields, subscribepause.FieldContinueEmployeeID)
 	}
 	return fields
 }
@@ -1276,9 +1226,6 @@ func (m *SubscribePauseMutation) ClearField(name string) error {
 		return nil
 	case subscribepause.FieldEndEmployeeID:
 		m.ClearEndEmployeeID()
-		return nil
-	case subscribepause.FieldContinueEmployeeID:
-		m.ClearContinueEmployeeID()
 		return nil
 	}
 	return fmt.Errorf("unknown SubscribePause nullable field %s", name)
@@ -1327,8 +1274,8 @@ func (m *SubscribePauseMutation) ResetField(name string) error {
 	case subscribepause.FieldEndEmployeeID:
 		m.ResetEndEmployeeID()
 		return nil
-	case subscribepause.FieldContinueEmployeeID:
-		m.ResetContinueEmployeeID()
+	case subscribepause.FieldOverdue:
+		m.ResetOverdue()
 		return nil
 	}
 	return fmt.Errorf("unknown SubscribePause field %s", name)

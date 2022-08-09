@@ -469,10 +469,10 @@ func (s *businessRiderService) Continue(subscribeID uint64) {
     now := time.Now()
 
     // 已寄存天数
-    days := NewSubscribe().PausedDays(sp.StartAt, now)
+    days, overdue := NewSubscribe().PausedDays(sp.StartAt, now)
 
     s.do(business.TypeContinue, func(tx *ent.Tx) {
-        _, err := tx.SubscribePause.UpdateOne(sp).SetDays(days).SetEndAt(now).SetNillableEndEmployeeID(s.employeeID).Save(s.ctx)
+        _, err := tx.SubscribePause.UpdateOne(sp).SetDays(days).SetEndAt(now).SetNillableEndEmployeeID(s.employeeID).SetOverdue(overdue).Save(s.ctx)
         snag.PanicIfError(err)
 
         // 更新订阅

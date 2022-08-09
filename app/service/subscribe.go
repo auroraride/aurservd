@@ -257,6 +257,7 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe) error {
     var pause *ent.SubscribePause // 当前寄存中
     var pauseDays int             // 总寄存天数
     var currPauseDays int         // 当前寄存天数
+    var pauseOverdue bool         // 寄存是否超期
 
     // 计算寄存
     pauses := item.Edges.Pauses
@@ -268,11 +269,12 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe) error {
         if p.EndAt.IsZero() {
             // 寄存未结束
             pause = p
-            pd = s.PausedDays(p.StartAt, time.Now())
+            pd, pauseOverdue = s.PausedDays(p.StartAt, time.Now())
             currPauseDays = pd
+            pauseOverdue = currPauseDays > cache.Int(model.SettingPauseMaxDays)
         } else {
             // 寄存已结束按寄存结束时间计算
-            pd = s.PausedDays(p.StartAt, p.EndAt)
+            pd, _ = s.PausedDays(p.StartAt, p.EndAt)
         }
         // 寄存已过时间需要尽可能的少算
         pauseDays += pd
@@ -283,26 +285,31 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe) error {
         status = model.SubscribeStatusOverdue
     }
 
-    up := item.Update().
-        SetPauseDays(pauseDays).
-        SetRemaining(remaining)
-
     return ent.WithTx(s.ctx, func(tx *ent.Tx) error {
+        up := tx.Subscribe.UpdateOne(item).SetPauseDays(pauseDays).SetRemaining(remaining)
+
         // 寄存中的如果欠费则自动退租: 超过寄存设置的最大时间继续计费, 直到欠费自动退租
         var unsub bool
-        if status == model.SubscribeStatusPaused && remaining < 0 {
-            unsub = true
-            reason := "寄存超期自动退租"
-            _, err := tx.SubscribePause.UpdateOne(pause).SetDays(currPauseDays).SetEndAt(time.Now()).SetRemark(reason).Save(s.ctx) // TODO 处理
+        if pause != nil {
+            pup := tx.SubscribePause.UpdateOne(pause).SetDays(currPauseDays)
+            if remaining < 0 {
+                status = model.SubscribeStatusUnSubscribed
+                unsub = true
+                reason := "寄存超期自动退租"
+
+                pup.SetEndAt(time.Now()).SetRemark(reason)
+                up.SetPauseOverdue(true).
+                    ClearPausedAt().
+                    SetUnsubscribeReason(reason)
+                log.Infof("[SUBSCRIBE TASK PAUSE] %d 寄存超期自动退租", item.ID)
+            } else {
+                pup.SetOverdue(pauseOverdue)
+            }
+            _, err := pup.Save(s.ctx)
             if err != nil {
                 log.Errorf("[SUBSCRIBE TASK PAUSE] %d 更新失败: %v", pause.ID, err)
                 return err
             }
-            status = model.SubscribeStatusUnSubscribed
-            up.SetPauseOverdue(true).
-                ClearPausedAt().
-                SetUnsubscribeReason(reason)
-            log.Infof("[SUBSCRIBE TASK PAUSE] %d 寄存超期自动退租", item.ID)
         }
 
         // 更新
@@ -404,14 +411,15 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
 
 // PausedDays 计算寄存天数
 // 寄存天数 = 结束寄存当天0点 - 寄存当日24点(第二天0点)
-func (s *subscribeService) PausedDays(start time.Time, end time.Time) int {
-    days := int(math.Abs(float64(carbon.Time2Carbon(start).StartOfDay().AddDay().DiffInDays(carbon.Time2Carbon(end).StartOfDay()))))
+func (s *subscribeService) PausedDays(start time.Time, end time.Time) (days int, overdue bool) {
+    days = int(math.Abs(float64(carbon.Time2Carbon(start).StartOfDay().AddDay().DiffInDays(carbon.Time2Carbon(end).StartOfDay()))))
     // 判定寄存时间是否超限, 寄存时间超限后会继续计费
     max := cache.Int(model.SettingPauseMaxDays)
-    if days >= max {
+    if days > max {
         days = max
+        overdue = true
     }
-    return days
+    return
 }
 
 // OverdueFee 计算逾期费用

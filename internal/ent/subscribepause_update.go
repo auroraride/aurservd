@@ -195,30 +195,17 @@ func (spu *SubscribePauseUpdate) ClearEndEmployeeID() *SubscribePauseUpdate {
 	return spu
 }
 
-// SetContinueEmployeeID sets the "continue_employee_id" field.
-func (spu *SubscribePauseUpdate) SetContinueEmployeeID(u uint64) *SubscribePauseUpdate {
-	spu.mutation.ResetContinueEmployeeID()
-	spu.mutation.SetContinueEmployeeID(u)
+// SetOverdue sets the "overdue" field.
+func (spu *SubscribePauseUpdate) SetOverdue(b bool) *SubscribePauseUpdate {
+	spu.mutation.SetOverdue(b)
 	return spu
 }
 
-// SetNillableContinueEmployeeID sets the "continue_employee_id" field if the given value is not nil.
-func (spu *SubscribePauseUpdate) SetNillableContinueEmployeeID(u *uint64) *SubscribePauseUpdate {
-	if u != nil {
-		spu.SetContinueEmployeeID(*u)
+// SetNillableOverdue sets the "overdue" field if the given value is not nil.
+func (spu *SubscribePauseUpdate) SetNillableOverdue(b *bool) *SubscribePauseUpdate {
+	if b != nil {
+		spu.SetOverdue(*b)
 	}
-	return spu
-}
-
-// AddContinueEmployeeID adds u to the "continue_employee_id" field.
-func (spu *SubscribePauseUpdate) AddContinueEmployeeID(u int64) *SubscribePauseUpdate {
-	spu.mutation.AddContinueEmployeeID(u)
-	return spu
-}
-
-// ClearContinueEmployeeID clears the value of the "continue_employee_id" field.
-func (spu *SubscribePauseUpdate) ClearContinueEmployeeID() *SubscribePauseUpdate {
-	spu.mutation.ClearContinueEmployeeID()
 	return spu
 }
 
@@ -467,24 +454,11 @@ func (spu *SubscribePauseUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: subscribepause.FieldDays,
 		})
 	}
-	if value, ok := spu.mutation.ContinueEmployeeID(); ok {
+	if value, ok := spu.mutation.Overdue(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeBool,
 			Value:  value,
-			Column: subscribepause.FieldContinueEmployeeID,
-		})
-	}
-	if value, ok := spu.mutation.AddedContinueEmployeeID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
-			Value:  value,
-			Column: subscribepause.FieldContinueEmployeeID,
-		})
-	}
-	if spu.mutation.ContinueEmployeeIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
-			Column: subscribepause.FieldContinueEmployeeID,
+			Column: subscribepause.FieldOverdue,
 		})
 	}
 	if spu.mutation.RiderCleared() {
@@ -809,30 +783,17 @@ func (spuo *SubscribePauseUpdateOne) ClearEndEmployeeID() *SubscribePauseUpdateO
 	return spuo
 }
 
-// SetContinueEmployeeID sets the "continue_employee_id" field.
-func (spuo *SubscribePauseUpdateOne) SetContinueEmployeeID(u uint64) *SubscribePauseUpdateOne {
-	spuo.mutation.ResetContinueEmployeeID()
-	spuo.mutation.SetContinueEmployeeID(u)
+// SetOverdue sets the "overdue" field.
+func (spuo *SubscribePauseUpdateOne) SetOverdue(b bool) *SubscribePauseUpdateOne {
+	spuo.mutation.SetOverdue(b)
 	return spuo
 }
 
-// SetNillableContinueEmployeeID sets the "continue_employee_id" field if the given value is not nil.
-func (spuo *SubscribePauseUpdateOne) SetNillableContinueEmployeeID(u *uint64) *SubscribePauseUpdateOne {
-	if u != nil {
-		spuo.SetContinueEmployeeID(*u)
+// SetNillableOverdue sets the "overdue" field if the given value is not nil.
+func (spuo *SubscribePauseUpdateOne) SetNillableOverdue(b *bool) *SubscribePauseUpdateOne {
+	if b != nil {
+		spuo.SetOverdue(*b)
 	}
-	return spuo
-}
-
-// AddContinueEmployeeID adds u to the "continue_employee_id" field.
-func (spuo *SubscribePauseUpdateOne) AddContinueEmployeeID(u int64) *SubscribePauseUpdateOne {
-	spuo.mutation.AddContinueEmployeeID(u)
-	return spuo
-}
-
-// ClearContinueEmployeeID clears the value of the "continue_employee_id" field.
-func (spuo *SubscribePauseUpdateOne) ClearContinueEmployeeID() *SubscribePauseUpdateOne {
-	spuo.mutation.ClearContinueEmployeeID()
 	return spuo
 }
 
@@ -1111,24 +1072,11 @@ func (spuo *SubscribePauseUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 			Column: subscribepause.FieldDays,
 		})
 	}
-	if value, ok := spuo.mutation.ContinueEmployeeID(); ok {
+	if value, ok := spuo.mutation.Overdue(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeBool,
 			Value:  value,
-			Column: subscribepause.FieldContinueEmployeeID,
-		})
-	}
-	if value, ok := spuo.mutation.AddedContinueEmployeeID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
-			Value:  value,
-			Column: subscribepause.FieldContinueEmployeeID,
-		})
-	}
-	if spuo.mutation.ContinueEmployeeIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
-			Column: subscribepause.FieldContinueEmployeeID,
+			Column: subscribepause.FieldOverdue,
 		})
 	}
 	if spuo.mutation.RiderCleared() {

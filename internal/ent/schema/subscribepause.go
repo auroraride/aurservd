@@ -29,7 +29,7 @@ func (SubscribePause) Fields() []ent.Field {
         field.Time("end_at").Optional().Comment("暂停结束时间"),
         field.Int("days").Optional().Comment("暂停天数"),
         field.Uint64("end_employee_id").Optional().Nillable().Comment("结束寄存店员ID"),
-        field.Uint64("continue_employee_id").Optional().Nillable().Comment("结束寄存店员ID"), // TODO 删除
+        field.Bool("overdue").Default(false).Comment("是否超期"),
     }
 }
 

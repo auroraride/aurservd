@@ -57,9 +57,9 @@ type SubscribePause struct {
 	// EndEmployeeID holds the value of the "end_employee_id" field.
 	// 结束寄存店员ID
 	EndEmployeeID *uint64 `json:"end_employee_id,omitempty"`
-	// ContinueEmployeeID holds the value of the "continue_employee_id" field.
-	// 结束寄存店员ID
-	ContinueEmployeeID *uint64 `json:"continue_employee_id,omitempty"`
+	// Overdue holds the value of the "overdue" field.
+	// 是否超期
+	Overdue bool `json:"overdue,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribePauseQuery when eager-loading is set.
 	Edges SubscribePauseEdges `json:"edges"`
@@ -143,7 +143,9 @@ func (*SubscribePause) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case subscribepause.FieldCreator, subscribepause.FieldLastModifier:
 			values[i] = new([]byte)
-		case subscribepause.FieldID, subscribepause.FieldRiderID, subscribepause.FieldEmployeeID, subscribepause.FieldSubscribeID, subscribepause.FieldDays, subscribepause.FieldEndEmployeeID, subscribepause.FieldContinueEmployeeID:
+		case subscribepause.FieldOverdue:
+			values[i] = new(sql.NullBool)
+		case subscribepause.FieldID, subscribepause.FieldRiderID, subscribepause.FieldEmployeeID, subscribepause.FieldSubscribeID, subscribepause.FieldDays, subscribepause.FieldEndEmployeeID:
 			values[i] = new(sql.NullInt64)
 		case subscribepause.FieldRemark:
 			values[i] = new(sql.NullString)
@@ -255,12 +257,11 @@ func (sp *SubscribePause) assignValues(columns []string, values []interface{}) e
 				sp.EndEmployeeID = new(uint64)
 				*sp.EndEmployeeID = uint64(value.Int64)
 			}
-		case subscribepause.FieldContinueEmployeeID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field continue_employee_id", values[i])
+		case subscribepause.FieldOverdue:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field overdue", values[i])
 			} else if value.Valid {
-				sp.ContinueEmployeeID = new(uint64)
-				*sp.ContinueEmployeeID = uint64(value.Int64)
+				sp.Overdue = value.Bool
 			}
 		}
 	}
@@ -342,10 +343,8 @@ func (sp *SubscribePause) String() string {
 		builder.WriteString(", end_employee_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
-	if v := sp.ContinueEmployeeID; v != nil {
-		builder.WriteString(", continue_employee_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
+	builder.WriteString(", overdue=")
+	builder.WriteString(fmt.Sprintf("%v", sp.Overdue))
 	builder.WriteByte(')')
 	return builder.String()
 }

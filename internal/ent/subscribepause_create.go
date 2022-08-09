@@ -168,16 +168,16 @@ func (spc *SubscribePauseCreate) SetNillableEndEmployeeID(u *uint64) *SubscribeP
 	return spc
 }
 
-// SetContinueEmployeeID sets the "continue_employee_id" field.
-func (spc *SubscribePauseCreate) SetContinueEmployeeID(u uint64) *SubscribePauseCreate {
-	spc.mutation.SetContinueEmployeeID(u)
+// SetOverdue sets the "overdue" field.
+func (spc *SubscribePauseCreate) SetOverdue(b bool) *SubscribePauseCreate {
+	spc.mutation.SetOverdue(b)
 	return spc
 }
 
-// SetNillableContinueEmployeeID sets the "continue_employee_id" field if the given value is not nil.
-func (spc *SubscribePauseCreate) SetNillableContinueEmployeeID(u *uint64) *SubscribePauseCreate {
-	if u != nil {
-		spc.SetContinueEmployeeID(*u)
+// SetNillableOverdue sets the "overdue" field if the given value is not nil.
+func (spc *SubscribePauseCreate) SetNillableOverdue(b *bool) *SubscribePauseCreate {
+	if b != nil {
+		spc.SetOverdue(*b)
 	}
 	return spc
 }
@@ -295,6 +295,10 @@ func (spc *SubscribePauseCreate) defaults() error {
 		v := subscribepause.DefaultUpdatedAt()
 		spc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := spc.mutation.Overdue(); !ok {
+		v := subscribepause.DefaultOverdue
+		spc.mutation.SetOverdue(v)
+	}
 	return nil
 }
 
@@ -314,6 +318,9 @@ func (spc *SubscribePauseCreate) check() error {
 	}
 	if _, ok := spc.mutation.StartAt(); !ok {
 		return &ValidationError{Name: "start_at", err: errors.New(`ent: missing required field "SubscribePause.start_at"`)}
+	}
+	if _, ok := spc.mutation.Overdue(); !ok {
+		return &ValidationError{Name: "overdue", err: errors.New(`ent: missing required field "SubscribePause.overdue"`)}
 	}
 	if _, ok := spc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "SubscribePause.rider"`)}
@@ -421,13 +428,13 @@ func (spc *SubscribePauseCreate) createSpec() (*SubscribePause, *sqlgraph.Create
 		})
 		_node.Days = value
 	}
-	if value, ok := spc.mutation.ContinueEmployeeID(); ok {
+	if value, ok := spc.mutation.Overdue(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeBool,
 			Value:  value,
-			Column: subscribepause.FieldContinueEmployeeID,
+			Column: subscribepause.FieldOverdue,
 		})
-		_node.ContinueEmployeeID = &value
+		_node.Overdue = value
 	}
 	if nodes := spc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -773,27 +780,15 @@ func (u *SubscribePauseUpsert) ClearEndEmployeeID() *SubscribePauseUpsert {
 	return u
 }
 
-// SetContinueEmployeeID sets the "continue_employee_id" field.
-func (u *SubscribePauseUpsert) SetContinueEmployeeID(v uint64) *SubscribePauseUpsert {
-	u.Set(subscribepause.FieldContinueEmployeeID, v)
+// SetOverdue sets the "overdue" field.
+func (u *SubscribePauseUpsert) SetOverdue(v bool) *SubscribePauseUpsert {
+	u.Set(subscribepause.FieldOverdue, v)
 	return u
 }
 
-// UpdateContinueEmployeeID sets the "continue_employee_id" field to the value that was provided on create.
-func (u *SubscribePauseUpsert) UpdateContinueEmployeeID() *SubscribePauseUpsert {
-	u.SetExcluded(subscribepause.FieldContinueEmployeeID)
-	return u
-}
-
-// AddContinueEmployeeID adds v to the "continue_employee_id" field.
-func (u *SubscribePauseUpsert) AddContinueEmployeeID(v uint64) *SubscribePauseUpsert {
-	u.Add(subscribepause.FieldContinueEmployeeID, v)
-	return u
-}
-
-// ClearContinueEmployeeID clears the value of the "continue_employee_id" field.
-func (u *SubscribePauseUpsert) ClearContinueEmployeeID() *SubscribePauseUpsert {
-	u.SetNull(subscribepause.FieldContinueEmployeeID)
+// UpdateOverdue sets the "overdue" field to the value that was provided on create.
+func (u *SubscribePauseUpsert) UpdateOverdue() *SubscribePauseUpsert {
+	u.SetExcluded(subscribepause.FieldOverdue)
 	return u
 }
 
@@ -1092,31 +1087,17 @@ func (u *SubscribePauseUpsertOne) ClearEndEmployeeID() *SubscribePauseUpsertOne 
 	})
 }
 
-// SetContinueEmployeeID sets the "continue_employee_id" field.
-func (u *SubscribePauseUpsertOne) SetContinueEmployeeID(v uint64) *SubscribePauseUpsertOne {
+// SetOverdue sets the "overdue" field.
+func (u *SubscribePauseUpsertOne) SetOverdue(v bool) *SubscribePauseUpsertOne {
 	return u.Update(func(s *SubscribePauseUpsert) {
-		s.SetContinueEmployeeID(v)
+		s.SetOverdue(v)
 	})
 }
 
-// AddContinueEmployeeID adds v to the "continue_employee_id" field.
-func (u *SubscribePauseUpsertOne) AddContinueEmployeeID(v uint64) *SubscribePauseUpsertOne {
+// UpdateOverdue sets the "overdue" field to the value that was provided on create.
+func (u *SubscribePauseUpsertOne) UpdateOverdue() *SubscribePauseUpsertOne {
 	return u.Update(func(s *SubscribePauseUpsert) {
-		s.AddContinueEmployeeID(v)
-	})
-}
-
-// UpdateContinueEmployeeID sets the "continue_employee_id" field to the value that was provided on create.
-func (u *SubscribePauseUpsertOne) UpdateContinueEmployeeID() *SubscribePauseUpsertOne {
-	return u.Update(func(s *SubscribePauseUpsert) {
-		s.UpdateContinueEmployeeID()
-	})
-}
-
-// ClearContinueEmployeeID clears the value of the "continue_employee_id" field.
-func (u *SubscribePauseUpsertOne) ClearContinueEmployeeID() *SubscribePauseUpsertOne {
-	return u.Update(func(s *SubscribePauseUpsert) {
-		s.ClearContinueEmployeeID()
+		s.UpdateOverdue()
 	})
 }
 
@@ -1579,31 +1560,17 @@ func (u *SubscribePauseUpsertBulk) ClearEndEmployeeID() *SubscribePauseUpsertBul
 	})
 }
 
-// SetContinueEmployeeID sets the "continue_employee_id" field.
-func (u *SubscribePauseUpsertBulk) SetContinueEmployeeID(v uint64) *SubscribePauseUpsertBulk {
+// SetOverdue sets the "overdue" field.
+func (u *SubscribePauseUpsertBulk) SetOverdue(v bool) *SubscribePauseUpsertBulk {
 	return u.Update(func(s *SubscribePauseUpsert) {
-		s.SetContinueEmployeeID(v)
+		s.SetOverdue(v)
 	})
 }
 
-// AddContinueEmployeeID adds v to the "continue_employee_id" field.
-func (u *SubscribePauseUpsertBulk) AddContinueEmployeeID(v uint64) *SubscribePauseUpsertBulk {
+// UpdateOverdue sets the "overdue" field to the value that was provided on create.
+func (u *SubscribePauseUpsertBulk) UpdateOverdue() *SubscribePauseUpsertBulk {
 	return u.Update(func(s *SubscribePauseUpsert) {
-		s.AddContinueEmployeeID(v)
-	})
-}
-
-// UpdateContinueEmployeeID sets the "continue_employee_id" field to the value that was provided on create.
-func (u *SubscribePauseUpsertBulk) UpdateContinueEmployeeID() *SubscribePauseUpsertBulk {
-	return u.Update(func(s *SubscribePauseUpsert) {
-		s.UpdateContinueEmployeeID()
-	})
-}
-
-// ClearContinueEmployeeID clears the value of the "continue_employee_id" field.
-func (u *SubscribePauseUpsertBulk) ClearContinueEmployeeID() *SubscribePauseUpsertBulk {
-	return u.Update(func(s *SubscribePauseUpsert) {
-		s.ClearContinueEmployeeID()
+		s.UpdateOverdue()
 	})
 }
 

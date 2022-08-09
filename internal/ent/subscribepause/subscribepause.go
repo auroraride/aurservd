@@ -39,8 +39,8 @@ const (
 	FieldDays = "days"
 	// FieldEndEmployeeID holds the string denoting the end_employee_id field in the database.
 	FieldEndEmployeeID = "end_employee_id"
-	// FieldContinueEmployeeID holds the string denoting the continue_employee_id field in the database.
-	FieldContinueEmployeeID = "continue_employee_id"
+	// FieldOverdue holds the string denoting the overdue field in the database.
+	FieldOverdue = "overdue"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
@@ -97,7 +97,7 @@ var Columns = []string{
 	FieldEndAt,
 	FieldDays,
 	FieldEndEmployeeID,
-	FieldContinueEmployeeID,
+	FieldOverdue,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -124,4 +124,6 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultOverdue holds the default value on creation for the "overdue" field.
+	DefaultOverdue bool
 )
