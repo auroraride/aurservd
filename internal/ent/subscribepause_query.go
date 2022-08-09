@@ -27,11 +27,11 @@ type SubscribePauseQuery struct {
 	fields     []string
 	predicates []predicate.SubscribePause
 	// eager-loading edges.
-	withRider            *RiderQuery
-	withEmployee         *EmployeeQuery
-	withSubscribe        *SubscribeQuery
-	withContinueEmployee *EmployeeQuery
-	modifiers            []func(*sql.Selector)
+	withRider       *RiderQuery
+	withEmployee    *EmployeeQuery
+	withSubscribe   *SubscribeQuery
+	withEndEmployee *EmployeeQuery
+	modifiers       []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -134,8 +134,8 @@ func (spq *SubscribePauseQuery) QuerySubscribe() *SubscribeQuery {
 	return query
 }
 
-// QueryContinueEmployee chains the current query on the "continue_employee" edge.
-func (spq *SubscribePauseQuery) QueryContinueEmployee() *EmployeeQuery {
+// QueryEndEmployee chains the current query on the "end_employee" edge.
+func (spq *SubscribePauseQuery) QueryEndEmployee() *EmployeeQuery {
 	query := &EmployeeQuery{config: spq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := spq.prepareQuery(ctx); err != nil {
@@ -148,7 +148,7 @@ func (spq *SubscribePauseQuery) QueryContinueEmployee() *EmployeeQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, selector),
 			sqlgraph.To(employee.Table, employee.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, subscribepause.ContinueEmployeeTable, subscribepause.ContinueEmployeeColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribepause.EndEmployeeTable, subscribepause.EndEmployeeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(spq.driver.Dialect(), step)
 		return fromU, nil
@@ -332,15 +332,15 @@ func (spq *SubscribePauseQuery) Clone() *SubscribePauseQuery {
 		return nil
 	}
 	return &SubscribePauseQuery{
-		config:               spq.config,
-		limit:                spq.limit,
-		offset:               spq.offset,
-		order:                append([]OrderFunc{}, spq.order...),
-		predicates:           append([]predicate.SubscribePause{}, spq.predicates...),
-		withRider:            spq.withRider.Clone(),
-		withEmployee:         spq.withEmployee.Clone(),
-		withSubscribe:        spq.withSubscribe.Clone(),
-		withContinueEmployee: spq.withContinueEmployee.Clone(),
+		config:          spq.config,
+		limit:           spq.limit,
+		offset:          spq.offset,
+		order:           append([]OrderFunc{}, spq.order...),
+		predicates:      append([]predicate.SubscribePause{}, spq.predicates...),
+		withRider:       spq.withRider.Clone(),
+		withEmployee:    spq.withEmployee.Clone(),
+		withSubscribe:   spq.withSubscribe.Clone(),
+		withEndEmployee: spq.withEndEmployee.Clone(),
 		// clone intermediate query.
 		sql:    spq.sql.Clone(),
 		path:   spq.path,
@@ -381,14 +381,14 @@ func (spq *SubscribePauseQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *Su
 	return spq
 }
 
-// WithContinueEmployee tells the query-builder to eager-load the nodes that are connected to
-// the "continue_employee" edge. The optional arguments are used to configure the query builder of the edge.
-func (spq *SubscribePauseQuery) WithContinueEmployee(opts ...func(*EmployeeQuery)) *SubscribePauseQuery {
+// WithEndEmployee tells the query-builder to eager-load the nodes that are connected to
+// the "end_employee" edge. The optional arguments are used to configure the query builder of the edge.
+func (spq *SubscribePauseQuery) WithEndEmployee(opts ...func(*EmployeeQuery)) *SubscribePauseQuery {
 	query := &EmployeeQuery{config: spq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	spq.withContinueEmployee = query
+	spq.withEndEmployee = query
 	return spq
 }
 
@@ -466,7 +466,7 @@ func (spq *SubscribePauseQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 			spq.withRider != nil,
 			spq.withEmployee != nil,
 			spq.withSubscribe != nil,
-			spq.withContinueEmployee != nil,
+			spq.withEndEmployee != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -572,14 +572,14 @@ func (spq *SubscribePauseQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 		}
 	}
 
-	if query := spq.withContinueEmployee; query != nil {
+	if query := spq.withEndEmployee; query != nil {
 		ids := make([]uint64, 0, len(nodes))
 		nodeids := make(map[uint64][]*SubscribePause)
 		for i := range nodes {
-			if nodes[i].ContinueEmployeeID == nil {
+			if nodes[i].EndEmployeeID == nil {
 				continue
 			}
-			fk := *nodes[i].ContinueEmployeeID
+			fk := *nodes[i].EndEmployeeID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
@@ -593,10 +593,10 @@ func (spq *SubscribePauseQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 		for _, n := range neighbors {
 			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "continue_employee_id" returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "end_employee_id" returned %v`, n.ID)
 			}
 			for i := range nodes {
-				nodes[i].Edges.ContinueEmployee = n
+				nodes[i].Edges.EndEmployee = n
 			}
 		}
 	}

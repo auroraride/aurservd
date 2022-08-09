@@ -289,6 +289,13 @@ func LastBillDate(v time.Time) predicate.Subscribe {
 	})
 }
 
+// PauseOverdue applies equality check predicate on the "pause_overdue" field. It's identical to PauseOverdueEQ.
+func PauseOverdue(v bool) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPauseOverdue), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
@@ -2519,6 +2526,20 @@ func LastBillDateIsNil() predicate.Subscribe {
 func LastBillDateNotNil() predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldLastBillDate)))
+	})
+}
+
+// PauseOverdueEQ applies the EQ predicate on the "pause_overdue" field.
+func PauseOverdueEQ(v bool) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPauseOverdue), v))
+	})
+}
+
+// PauseOverdueNEQ applies the NEQ predicate on the "pause_overdue" field.
+func PauseOverdueNEQ(v bool) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPauseOverdue), v))
 	})
 }
 

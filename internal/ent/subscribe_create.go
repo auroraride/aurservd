@@ -415,6 +415,20 @@ func (sc *SubscribeCreate) SetNillableLastBillDate(t *time.Time) *SubscribeCreat
 	return sc
 }
 
+// SetPauseOverdue sets the "pause_overdue" field.
+func (sc *SubscribeCreate) SetPauseOverdue(b bool) *SubscribeCreate {
+	sc.mutation.SetPauseOverdue(b)
+	return sc
+}
+
+// SetNillablePauseOverdue sets the "pause_overdue" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillablePauseOverdue(b *bool) *SubscribeCreate {
+	if b != nil {
+		sc.SetPauseOverdue(*b)
+	}
+	return sc
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (sc *SubscribeCreate) SetPlan(p *Plan) *SubscribeCreate {
 	return sc.SetPlanID(p.ID)
@@ -641,6 +655,10 @@ func (sc *SubscribeCreate) defaults() error {
 		v := subscribe.DefaultRemaining
 		sc.mutation.SetRemaining(v)
 	}
+	if _, ok := sc.mutation.PauseOverdue(); !ok {
+		v := subscribe.DefaultPauseOverdue
+		sc.mutation.SetPauseOverdue(v)
+	}
 	return nil
 }
 
@@ -681,6 +699,9 @@ func (sc *SubscribeCreate) check() error {
 	}
 	if _, ok := sc.mutation.Remaining(); !ok {
 		return &ValidationError{Name: "remaining", err: errors.New(`ent: missing required field "Subscribe.remaining"`)}
+	}
+	if _, ok := sc.mutation.PauseOverdue(); !ok {
+		return &ValidationError{Name: "pause_overdue", err: errors.New(`ent: missing required field "Subscribe.pause_overdue"`)}
 	}
 	if _, ok := sc.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Subscribe.city"`)}
@@ -883,6 +904,14 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 			Column: subscribe.FieldLastBillDate,
 		})
 		_node.LastBillDate = &value
+	}
+	if value, ok := sc.mutation.PauseOverdue(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: subscribe.FieldPauseOverdue,
+		})
+		_node.PauseOverdue = value
 	}
 	if nodes := sc.mutation.PlanIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1710,6 +1739,18 @@ func (u *SubscribeUpsert) ClearLastBillDate() *SubscribeUpsert {
 	return u
 }
 
+// SetPauseOverdue sets the "pause_overdue" field.
+func (u *SubscribeUpsert) SetPauseOverdue(v bool) *SubscribeUpsert {
+	u.Set(subscribe.FieldPauseOverdue, v)
+	return u
+}
+
+// UpdatePauseOverdue sets the "pause_overdue" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdatePauseOverdue() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldPauseOverdue)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -2362,6 +2403,20 @@ func (u *SubscribeUpsertOne) UpdateLastBillDate() *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) ClearLastBillDate() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearLastBillDate()
+	})
+}
+
+// SetPauseOverdue sets the "pause_overdue" field.
+func (u *SubscribeUpsertOne) SetPauseOverdue(v bool) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetPauseOverdue(v)
+	})
+}
+
+// UpdatePauseOverdue sets the "pause_overdue" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdatePauseOverdue() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdatePauseOverdue()
 	})
 }
 
@@ -3181,6 +3236,20 @@ func (u *SubscribeUpsertBulk) UpdateLastBillDate() *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) ClearLastBillDate() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearLastBillDate()
+	})
+}
+
+// SetPauseOverdue sets the "pause_overdue" field.
+func (u *SubscribeUpsertBulk) SetPauseOverdue(v bool) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetPauseOverdue(v)
+	})
+}
+
+// UpdatePauseOverdue sets the "pause_overdue" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdatePauseOverdue() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdatePauseOverdue()
 	})
 }
 

@@ -369,8 +369,26 @@ func (s *businessRiderService) Active(info *model.SubscribeActiveInfo, sub *ent.
 func (s *businessRiderService) UnSubscribe(subscribeID uint64) {
     s.preprocess(s.QuerySubscribeWithRider(subscribeID))
 
-    if s.subscribe.Status != model.SubscribeStatusUsing {
-        snag.Panic("无法退订, 骑士卡当前状态错误")
+    sub := s.subscribe
+
+    err := NewSubscribe().UpdateStatus(sub)
+    if err != nil {
+        snag.Panic(err)
+    }
+
+    // 判定退租是否满足条件
+    if s.modifier == nil {
+        if sub.Remaining < 0 {
+            snag.Panic("欠费中, 无法继续办理")
+        }
+    } else {
+        if sub.Remaining < 0 || sub.Status == model.SubscribeStatusOverdue {
+            sub.Status = model.SubscribeStatusUsing
+        }
+    }
+
+    if sub.Status != model.SubscribeStatusUsing {
+        snag.Panic("无法退租, 骑士卡当前非使用中")
     }
 
     s.do(business.TypeUnsubscribe, func(tx *ent.Tx) {
@@ -385,26 +403,25 @@ func (s *businessRiderService) UnSubscribe(subscribeID uint64) {
             reason = "店员操作退租"
         }
 
-        _, err := tx.Subscribe.
-            UpdateOneID(s.subscribe.ID).
+        _, err = tx.Subscribe.
+            UpdateOneID(sub.ID).
             SetEndAt(time.Now()).
-            SetRemaining(0).
             SetStatus(model.SubscribeStatusUnSubscribed).
             SetUnsubscribeReason(reason).
             Save(s.ctx)
         snag.PanicIfError(err)
 
         // 标记需要签约
-        _, err = tx.Rider.UpdateOneID(s.subscribe.RiderID).SetContractual(false).Save(s.ctx)
+        _, err = tx.Rider.UpdateOneID(sub.RiderID).SetContractual(false).Save(s.ctx)
         snag.PanicIfError(err)
 
         // 查询并标记用户合同为失效
-        _, _ = tx.Contract.Update().Where(contract.RiderID(s.subscribe.RiderID)).SetEffective(false).Save(s.ctx)
+        _, _ = tx.Contract.Update().Where(contract.RiderID(sub.RiderID)).SetEffective(false).Save(s.ctx)
     })
 
     // 更新企业账单
-    if s.subscribe.EnterpriseID != nil {
-        go NewEnterprise().UpdateStatementByID(*s.subscribe.EnterpriseID)
+    if sub.EnterpriseID != nil {
+        go NewEnterprise().UpdateStatementByID(*sub.EnterpriseID)
     }
 }
 
@@ -455,7 +472,7 @@ func (s *businessRiderService) Continue(subscribeID uint64) {
     days := NewSubscribe().PausedDays(sp.StartAt, now)
 
     s.do(business.TypeContinue, func(tx *ent.Tx) {
-        _, err := tx.SubscribePause.UpdateOne(sp).SetDays(days).SetEndAt(now).SetNillableContinueEmployeeID(s.employeeID).Save(s.ctx)
+        _, err := tx.SubscribePause.UpdateOne(sp).SetDays(days).SetEndAt(now).SetNillableEndEmployeeID(s.employeeID).Save(s.ctx)
         snag.PanicIfError(err)
 
         // 更新订阅

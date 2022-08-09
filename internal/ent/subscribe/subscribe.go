@@ -73,6 +73,8 @@ const (
 	FieldUnsubscribeReason = "unsubscribe_reason"
 	// FieldLastBillDate holds the string denoting the last_bill_date field in the database.
 	FieldLastBillDate = "last_bill_date"
+	// FieldPauseOverdue holds the string denoting the pause_overdue field in the database.
+	FieldPauseOverdue = "pause_overdue"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
@@ -227,6 +229,7 @@ var Columns = []string{
 	FieldRefundAt,
 	FieldUnsubscribeReason,
 	FieldLastBillDate,
+	FieldPauseOverdue,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -267,4 +270,6 @@ var (
 	DefaultOverdueDays int
 	// DefaultRemaining holds the default value on creation for the "remaining" field.
 	DefaultRemaining int
+	// DefaultPauseOverdue holds the default value on creation for the "pause_overdue" field.
+	DefaultPauseOverdue bool
 )

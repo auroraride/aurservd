@@ -1000,6 +1000,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldRefundAt:          {Type: field.TypeTime, Column: subscribe.FieldRefundAt},
 			subscribe.FieldUnsubscribeReason: {Type: field.TypeString, Column: subscribe.FieldUnsubscribeReason},
 			subscribe.FieldLastBillDate:      {Type: field.TypeTime, Column: subscribe.FieldLastBillDate},
+			subscribe.FieldPauseOverdue:      {Type: field.TypeBool, Column: subscribe.FieldPauseOverdue},
 		},
 	}
 	graph.Nodes[34] = &sqlgraph.Node{
@@ -1048,6 +1049,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribepause.FieldStartAt:            {Type: field.TypeTime, Column: subscribepause.FieldStartAt},
 			subscribepause.FieldEndAt:              {Type: field.TypeTime, Column: subscribepause.FieldEndAt},
 			subscribepause.FieldDays:               {Type: field.TypeInt, Column: subscribepause.FieldDays},
+			subscribepause.FieldEndEmployeeID:      {Type: field.TypeUint64, Column: subscribepause.FieldEndEmployeeID},
 			subscribepause.FieldContinueEmployeeID: {Type: field.TypeUint64, Column: subscribepause.FieldContinueEmployeeID},
 		},
 	}
@@ -2732,12 +2734,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Subscribe",
 	)
 	graph.MustAddE(
-		"continue_employee",
+		"end_employee",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   subscribepause.ContinueEmployeeTable,
-			Columns: []string{subscribepause.ContinueEmployeeColumn},
+			Table:   subscribepause.EndEmployeeTable,
+			Columns: []string{subscribepause.EndEmployeeColumn},
 			Bidi:    false,
 		},
 		"SubscribePause",
@@ -8356,6 +8358,11 @@ func (f *SubscribeFilter) WhereLastBillDate(p entql.TimeP) {
 	f.Where(p.Field(subscribe.FieldLastBillDate))
 }
 
+// WherePauseOverdue applies the entql bool predicate on the pause_overdue field.
+func (f *SubscribeFilter) WherePauseOverdue(p entql.BoolP) {
+	f.Where(p.Field(subscribe.FieldPauseOverdue))
+}
+
 // WhereHasPlan applies a predicate to check if query has an edge plan.
 func (f *SubscribeFilter) WhereHasPlan() {
 	f.Where(entql.HasEdge("plan"))
@@ -8770,6 +8777,11 @@ func (f *SubscribePauseFilter) WhereDays(p entql.IntP) {
 	f.Where(p.Field(subscribepause.FieldDays))
 }
 
+// WhereEndEmployeeID applies the entql uint64 predicate on the end_employee_id field.
+func (f *SubscribePauseFilter) WhereEndEmployeeID(p entql.Uint64P) {
+	f.Where(p.Field(subscribepause.FieldEndEmployeeID))
+}
+
 // WhereContinueEmployeeID applies the entql uint64 predicate on the continue_employee_id field.
 func (f *SubscribePauseFilter) WhereContinueEmployeeID(p entql.Uint64P) {
 	f.Where(p.Field(subscribepause.FieldContinueEmployeeID))
@@ -8817,14 +8829,14 @@ func (f *SubscribePauseFilter) WhereHasSubscribeWith(preds ...predicate.Subscrib
 	})))
 }
 
-// WhereHasContinueEmployee applies a predicate to check if query has an edge continue_employee.
-func (f *SubscribePauseFilter) WhereHasContinueEmployee() {
-	f.Where(entql.HasEdge("continue_employee"))
+// WhereHasEndEmployee applies a predicate to check if query has an edge end_employee.
+func (f *SubscribePauseFilter) WhereHasEndEmployee() {
+	f.Where(entql.HasEdge("end_employee"))
 }
 
-// WhereHasContinueEmployeeWith applies a predicate to check if query has an edge continue_employee with a given conditions (other predicates).
-func (f *SubscribePauseFilter) WhereHasContinueEmployeeWith(preds ...predicate.Employee) {
-	f.Where(entql.HasEdgeWith("continue_employee", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasEndEmployeeWith applies a predicate to check if query has an edge end_employee with a given conditions (other predicates).
+func (f *SubscribePauseFilter) WhereHasEndEmployeeWith(preds ...predicate.Employee) {
+	f.Where(entql.HasEdgeWith("end_employee", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

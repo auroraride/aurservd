@@ -51,6 +51,7 @@ type SubscribeMutation struct {
 	refund_at            *time.Time
 	unsubscribe_reason   *string
 	last_bill_date       *time.Time
+	pause_overdue        *bool
 	clearedFields        map[string]struct{}
 	plan                 *uint64
 	clearedplan          bool
@@ -1660,6 +1661,42 @@ func (m *SubscribeMutation) ResetLastBillDate() {
 	delete(m.clearedFields, subscribe.FieldLastBillDate)
 }
 
+// SetPauseOverdue sets the "pause_overdue" field.
+func (m *SubscribeMutation) SetPauseOverdue(b bool) {
+	m.pause_overdue = &b
+}
+
+// PauseOverdue returns the value of the "pause_overdue" field in the mutation.
+func (m *SubscribeMutation) PauseOverdue() (r bool, exists bool) {
+	v := m.pause_overdue
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPauseOverdue returns the old "pause_overdue" field's value of the Subscribe entity.
+// If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeMutation) OldPauseOverdue(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPauseOverdue is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPauseOverdue requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPauseOverdue: %w", err)
+	}
+	return oldValue.PauseOverdue, nil
+}
+
+// ResetPauseOverdue resets all changes to the "pause_overdue" field.
+func (m *SubscribeMutation) ResetPauseOverdue() {
+	m.pause_overdue = nil
+}
+
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *SubscribeMutation) ClearPlan() {
 	m.clearedplan = true
@@ -2129,7 +2166,7 @@ func (m *SubscribeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscribeMutation) Fields() []string {
-	fields := make([]string, 0, 30)
+	fields := make([]string, 0, 31)
 	if m.created_at != nil {
 		fields = append(fields, subscribe.FieldCreatedAt)
 	}
@@ -2220,6 +2257,9 @@ func (m *SubscribeMutation) Fields() []string {
 	if m.last_bill_date != nil {
 		fields = append(fields, subscribe.FieldLastBillDate)
 	}
+	if m.pause_overdue != nil {
+		fields = append(fields, subscribe.FieldPauseOverdue)
+	}
 	return fields
 }
 
@@ -2288,6 +2328,8 @@ func (m *SubscribeMutation) Field(name string) (ent.Value, bool) {
 		return m.UnsubscribeReason()
 	case subscribe.FieldLastBillDate:
 		return m.LastBillDate()
+	case subscribe.FieldPauseOverdue:
+		return m.PauseOverdue()
 	}
 	return nil, false
 }
@@ -2357,6 +2399,8 @@ func (m *SubscribeMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldUnsubscribeReason(ctx)
 	case subscribe.FieldLastBillDate:
 		return m.OldLastBillDate(ctx)
+	case subscribe.FieldPauseOverdue:
+		return m.OldPauseOverdue(ctx)
 	}
 	return nil, fmt.Errorf("unknown Subscribe field %s", name)
 }
@@ -2575,6 +2619,13 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetLastBillDate(v)
+		return nil
+	case subscribe.FieldPauseOverdue:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPauseOverdue(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe field %s", name)
@@ -2924,6 +2975,9 @@ func (m *SubscribeMutation) ResetField(name string) error {
 		return nil
 	case subscribe.FieldLastBillDate:
 		m.ResetLastBillDate()
+		return nil
+	case subscribe.FieldPauseOverdue:
+		m.ResetPauseOverdue()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe field %s", name)

@@ -154,6 +154,20 @@ func (spc *SubscribePauseCreate) SetNillableDays(i *int) *SubscribePauseCreate {
 	return spc
 }
 
+// SetEndEmployeeID sets the "end_employee_id" field.
+func (spc *SubscribePauseCreate) SetEndEmployeeID(u uint64) *SubscribePauseCreate {
+	spc.mutation.SetEndEmployeeID(u)
+	return spc
+}
+
+// SetNillableEndEmployeeID sets the "end_employee_id" field if the given value is not nil.
+func (spc *SubscribePauseCreate) SetNillableEndEmployeeID(u *uint64) *SubscribePauseCreate {
+	if u != nil {
+		spc.SetEndEmployeeID(*u)
+	}
+	return spc
+}
+
 // SetContinueEmployeeID sets the "continue_employee_id" field.
 func (spc *SubscribePauseCreate) SetContinueEmployeeID(u uint64) *SubscribePauseCreate {
 	spc.mutation.SetContinueEmployeeID(u)
@@ -183,9 +197,9 @@ func (spc *SubscribePauseCreate) SetSubscribe(s *Subscribe) *SubscribePauseCreat
 	return spc.SetSubscribeID(s.ID)
 }
 
-// SetContinueEmployee sets the "continue_employee" edge to the Employee entity.
-func (spc *SubscribePauseCreate) SetContinueEmployee(e *Employee) *SubscribePauseCreate {
-	return spc.SetContinueEmployeeID(e.ID)
+// SetEndEmployee sets the "end_employee" edge to the Employee entity.
+func (spc *SubscribePauseCreate) SetEndEmployee(e *Employee) *SubscribePauseCreate {
+	return spc.SetEndEmployeeID(e.ID)
 }
 
 // Mutation returns the SubscribePauseMutation object of the builder.
@@ -407,6 +421,14 @@ func (spc *SubscribePauseCreate) createSpec() (*SubscribePause, *sqlgraph.Create
 		})
 		_node.Days = value
 	}
+	if value, ok := spc.mutation.ContinueEmployeeID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint64,
+			Value:  value,
+			Column: subscribepause.FieldContinueEmployeeID,
+		})
+		_node.ContinueEmployeeID = &value
+	}
 	if nodes := spc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -467,12 +489,12 @@ func (spc *SubscribePauseCreate) createSpec() (*SubscribePause, *sqlgraph.Create
 		_node.SubscribeID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := spc.mutation.ContinueEmployeeIDs(); len(nodes) > 0 {
+	if nodes := spc.mutation.EndEmployeeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   subscribepause.ContinueEmployeeTable,
-			Columns: []string{subscribepause.ContinueEmployeeColumn},
+			Table:   subscribepause.EndEmployeeTable,
+			Columns: []string{subscribepause.EndEmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -484,7 +506,7 @@ func (spc *SubscribePauseCreate) createSpec() (*SubscribePause, *sqlgraph.Create
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ContinueEmployeeID = &nodes[0]
+		_node.EndEmployeeID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -733,6 +755,24 @@ func (u *SubscribePauseUpsert) ClearDays() *SubscribePauseUpsert {
 	return u
 }
 
+// SetEndEmployeeID sets the "end_employee_id" field.
+func (u *SubscribePauseUpsert) SetEndEmployeeID(v uint64) *SubscribePauseUpsert {
+	u.Set(subscribepause.FieldEndEmployeeID, v)
+	return u
+}
+
+// UpdateEndEmployeeID sets the "end_employee_id" field to the value that was provided on create.
+func (u *SubscribePauseUpsert) UpdateEndEmployeeID() *SubscribePauseUpsert {
+	u.SetExcluded(subscribepause.FieldEndEmployeeID)
+	return u
+}
+
+// ClearEndEmployeeID clears the value of the "end_employee_id" field.
+func (u *SubscribePauseUpsert) ClearEndEmployeeID() *SubscribePauseUpsert {
+	u.SetNull(subscribepause.FieldEndEmployeeID)
+	return u
+}
+
 // SetContinueEmployeeID sets the "continue_employee_id" field.
 func (u *SubscribePauseUpsert) SetContinueEmployeeID(v uint64) *SubscribePauseUpsert {
 	u.Set(subscribepause.FieldContinueEmployeeID, v)
@@ -742,6 +782,12 @@ func (u *SubscribePauseUpsert) SetContinueEmployeeID(v uint64) *SubscribePauseUp
 // UpdateContinueEmployeeID sets the "continue_employee_id" field to the value that was provided on create.
 func (u *SubscribePauseUpsert) UpdateContinueEmployeeID() *SubscribePauseUpsert {
 	u.SetExcluded(subscribepause.FieldContinueEmployeeID)
+	return u
+}
+
+// AddContinueEmployeeID adds v to the "continue_employee_id" field.
+func (u *SubscribePauseUpsert) AddContinueEmployeeID(v uint64) *SubscribePauseUpsert {
+	u.Add(subscribepause.FieldContinueEmployeeID, v)
 	return u
 }
 
@@ -1025,10 +1071,38 @@ func (u *SubscribePauseUpsertOne) ClearDays() *SubscribePauseUpsertOne {
 	})
 }
 
+// SetEndEmployeeID sets the "end_employee_id" field.
+func (u *SubscribePauseUpsertOne) SetEndEmployeeID(v uint64) *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.SetEndEmployeeID(v)
+	})
+}
+
+// UpdateEndEmployeeID sets the "end_employee_id" field to the value that was provided on create.
+func (u *SubscribePauseUpsertOne) UpdateEndEmployeeID() *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.UpdateEndEmployeeID()
+	})
+}
+
+// ClearEndEmployeeID clears the value of the "end_employee_id" field.
+func (u *SubscribePauseUpsertOne) ClearEndEmployeeID() *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.ClearEndEmployeeID()
+	})
+}
+
 // SetContinueEmployeeID sets the "continue_employee_id" field.
 func (u *SubscribePauseUpsertOne) SetContinueEmployeeID(v uint64) *SubscribePauseUpsertOne {
 	return u.Update(func(s *SubscribePauseUpsert) {
 		s.SetContinueEmployeeID(v)
+	})
+}
+
+// AddContinueEmployeeID adds v to the "continue_employee_id" field.
+func (u *SubscribePauseUpsertOne) AddContinueEmployeeID(v uint64) *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.AddContinueEmployeeID(v)
 	})
 }
 
@@ -1484,10 +1558,38 @@ func (u *SubscribePauseUpsertBulk) ClearDays() *SubscribePauseUpsertBulk {
 	})
 }
 
+// SetEndEmployeeID sets the "end_employee_id" field.
+func (u *SubscribePauseUpsertBulk) SetEndEmployeeID(v uint64) *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.SetEndEmployeeID(v)
+	})
+}
+
+// UpdateEndEmployeeID sets the "end_employee_id" field to the value that was provided on create.
+func (u *SubscribePauseUpsertBulk) UpdateEndEmployeeID() *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.UpdateEndEmployeeID()
+	})
+}
+
+// ClearEndEmployeeID clears the value of the "end_employee_id" field.
+func (u *SubscribePauseUpsertBulk) ClearEndEmployeeID() *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.ClearEndEmployeeID()
+	})
+}
+
 // SetContinueEmployeeID sets the "continue_employee_id" field.
 func (u *SubscribePauseUpsertBulk) SetContinueEmployeeID(v uint64) *SubscribePauseUpsertBulk {
 	return u.Update(func(s *SubscribePauseUpsert) {
 		s.SetContinueEmployeeID(v)
+	})
+}
+
+// AddContinueEmployeeID adds v to the "continue_employee_id" field.
+func (u *SubscribePauseUpsertBulk) AddContinueEmployeeID(v uint64) *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.AddContinueEmployeeID(v)
 	})
 }
 

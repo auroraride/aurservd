@@ -72,6 +72,7 @@ func (Subscribe) Fields() []ent.Field {
         field.Time("refund_at").Optional().Nillable().Comment("退款时间"),
         field.String("unsubscribe_reason").Optional().Comment("退租理由"),
         field.Time("last_bill_date").Optional().Nillable().Comment("上次结算日期(包含该日期)"),
+        field.Bool("pause_overdue").Default(false).Comment("是否超期退租"),
     }
 }
 

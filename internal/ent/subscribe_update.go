@@ -530,6 +530,20 @@ func (su *SubscribeUpdate) ClearLastBillDate() *SubscribeUpdate {
 	return su
 }
 
+// SetPauseOverdue sets the "pause_overdue" field.
+func (su *SubscribeUpdate) SetPauseOverdue(b bool) *SubscribeUpdate {
+	su.mutation.SetPauseOverdue(b)
+	return su
+}
+
+// SetNillablePauseOverdue sets the "pause_overdue" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillablePauseOverdue(b *bool) *SubscribeUpdate {
+	if b != nil {
+		su.SetPauseOverdue(*b)
+	}
+	return su
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (su *SubscribeUpdate) SetPlan(p *Plan) *SubscribeUpdate {
 	return su.SetPlanID(p.ID)
@@ -1121,6 +1135,13 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: subscribe.FieldLastBillDate,
+		})
+	}
+	if value, ok := su.mutation.PauseOverdue(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: subscribe.FieldPauseOverdue,
 		})
 	}
 	if su.mutation.PlanCleared() {
@@ -2162,6 +2183,20 @@ func (suo *SubscribeUpdateOne) ClearLastBillDate() *SubscribeUpdateOne {
 	return suo
 }
 
+// SetPauseOverdue sets the "pause_overdue" field.
+func (suo *SubscribeUpdateOne) SetPauseOverdue(b bool) *SubscribeUpdateOne {
+	suo.mutation.SetPauseOverdue(b)
+	return suo
+}
+
+// SetNillablePauseOverdue sets the "pause_overdue" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillablePauseOverdue(b *bool) *SubscribeUpdateOne {
+	if b != nil {
+		suo.SetPauseOverdue(*b)
+	}
+	return suo
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (suo *SubscribeUpdateOne) SetPlan(p *Plan) *SubscribeUpdateOne {
 	return suo.SetPlanID(p.ID)
@@ -2783,6 +2818,13 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: subscribe.FieldLastBillDate,
+		})
+	}
+	if value, ok := suo.mutation.PauseOverdue(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: subscribe.FieldPauseOverdue,
 		})
 	}
 	if suo.mutation.PlanCleared() {

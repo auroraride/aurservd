@@ -37,6 +37,8 @@ const (
 	FieldEndAt = "end_at"
 	// FieldDays holds the string denoting the days field in the database.
 	FieldDays = "days"
+	// FieldEndEmployeeID holds the string denoting the end_employee_id field in the database.
+	FieldEndEmployeeID = "end_employee_id"
 	// FieldContinueEmployeeID holds the string denoting the continue_employee_id field in the database.
 	FieldContinueEmployeeID = "continue_employee_id"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
@@ -45,8 +47,8 @@ const (
 	EdgeEmployee = "employee"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
 	EdgeSubscribe = "subscribe"
-	// EdgeContinueEmployee holds the string denoting the continue_employee edge name in mutations.
-	EdgeContinueEmployee = "continue_employee"
+	// EdgeEndEmployee holds the string denoting the end_employee edge name in mutations.
+	EdgeEndEmployee = "end_employee"
 	// Table holds the table name of the subscribepause in the database.
 	Table = "subscribe_pause"
 	// RiderTable is the table that holds the rider relation/edge.
@@ -70,13 +72,13 @@ const (
 	SubscribeInverseTable = "subscribe"
 	// SubscribeColumn is the table column denoting the subscribe relation/edge.
 	SubscribeColumn = "subscribe_id"
-	// ContinueEmployeeTable is the table that holds the continue_employee relation/edge.
-	ContinueEmployeeTable = "subscribe_pause"
-	// ContinueEmployeeInverseTable is the table name for the Employee entity.
+	// EndEmployeeTable is the table that holds the end_employee relation/edge.
+	EndEmployeeTable = "subscribe_pause"
+	// EndEmployeeInverseTable is the table name for the Employee entity.
 	// It exists in this package in order to avoid circular dependency with the "employee" package.
-	ContinueEmployeeInverseTable = "employee"
-	// ContinueEmployeeColumn is the table column denoting the continue_employee relation/edge.
-	ContinueEmployeeColumn = "continue_employee_id"
+	EndEmployeeInverseTable = "employee"
+	// EndEmployeeColumn is the table column denoting the end_employee relation/edge.
+	EndEmployeeColumn = "end_employee_id"
 )
 
 // Columns holds all SQL columns for subscribepause fields.
@@ -94,6 +96,7 @@ var Columns = []string{
 	FieldStartAt,
 	FieldEndAt,
 	FieldDays,
+	FieldEndEmployeeID,
 	FieldContinueEmployeeID,
 }
 

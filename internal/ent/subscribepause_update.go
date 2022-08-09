@@ -175,8 +175,29 @@ func (spu *SubscribePauseUpdate) ClearDays() *SubscribePauseUpdate {
 	return spu
 }
 
+// SetEndEmployeeID sets the "end_employee_id" field.
+func (spu *SubscribePauseUpdate) SetEndEmployeeID(u uint64) *SubscribePauseUpdate {
+	spu.mutation.SetEndEmployeeID(u)
+	return spu
+}
+
+// SetNillableEndEmployeeID sets the "end_employee_id" field if the given value is not nil.
+func (spu *SubscribePauseUpdate) SetNillableEndEmployeeID(u *uint64) *SubscribePauseUpdate {
+	if u != nil {
+		spu.SetEndEmployeeID(*u)
+	}
+	return spu
+}
+
+// ClearEndEmployeeID clears the value of the "end_employee_id" field.
+func (spu *SubscribePauseUpdate) ClearEndEmployeeID() *SubscribePauseUpdate {
+	spu.mutation.ClearEndEmployeeID()
+	return spu
+}
+
 // SetContinueEmployeeID sets the "continue_employee_id" field.
 func (spu *SubscribePauseUpdate) SetContinueEmployeeID(u uint64) *SubscribePauseUpdate {
+	spu.mutation.ResetContinueEmployeeID()
 	spu.mutation.SetContinueEmployeeID(u)
 	return spu
 }
@@ -186,6 +207,12 @@ func (spu *SubscribePauseUpdate) SetNillableContinueEmployeeID(u *uint64) *Subsc
 	if u != nil {
 		spu.SetContinueEmployeeID(*u)
 	}
+	return spu
+}
+
+// AddContinueEmployeeID adds u to the "continue_employee_id" field.
+func (spu *SubscribePauseUpdate) AddContinueEmployeeID(u int64) *SubscribePauseUpdate {
+	spu.mutation.AddContinueEmployeeID(u)
 	return spu
 }
 
@@ -210,9 +237,9 @@ func (spu *SubscribePauseUpdate) SetSubscribe(s *Subscribe) *SubscribePauseUpdat
 	return spu.SetSubscribeID(s.ID)
 }
 
-// SetContinueEmployee sets the "continue_employee" edge to the Employee entity.
-func (spu *SubscribePauseUpdate) SetContinueEmployee(e *Employee) *SubscribePauseUpdate {
-	return spu.SetContinueEmployeeID(e.ID)
+// SetEndEmployee sets the "end_employee" edge to the Employee entity.
+func (spu *SubscribePauseUpdate) SetEndEmployee(e *Employee) *SubscribePauseUpdate {
+	return spu.SetEndEmployeeID(e.ID)
 }
 
 // Mutation returns the SubscribePauseMutation object of the builder.
@@ -238,9 +265,9 @@ func (spu *SubscribePauseUpdate) ClearSubscribe() *SubscribePauseUpdate {
 	return spu
 }
 
-// ClearContinueEmployee clears the "continue_employee" edge to the Employee entity.
-func (spu *SubscribePauseUpdate) ClearContinueEmployee() *SubscribePauseUpdate {
-	spu.mutation.ClearContinueEmployee()
+// ClearEndEmployee clears the "end_employee" edge to the Employee entity.
+func (spu *SubscribePauseUpdate) ClearEndEmployee() *SubscribePauseUpdate {
+	spu.mutation.ClearEndEmployee()
 	return spu
 }
 
@@ -440,6 +467,26 @@ func (spu *SubscribePauseUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: subscribepause.FieldDays,
 		})
 	}
+	if value, ok := spu.mutation.ContinueEmployeeID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint64,
+			Value:  value,
+			Column: subscribepause.FieldContinueEmployeeID,
+		})
+	}
+	if value, ok := spu.mutation.AddedContinueEmployeeID(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint64,
+			Value:  value,
+			Column: subscribepause.FieldContinueEmployeeID,
+		})
+	}
+	if spu.mutation.ContinueEmployeeIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint64,
+			Column: subscribepause.FieldContinueEmployeeID,
+		})
+	}
 	if spu.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -545,12 +592,12 @@ func (spu *SubscribePauseUpdate) sqlSave(ctx context.Context) (n int, err error)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if spu.mutation.ContinueEmployeeCleared() {
+	if spu.mutation.EndEmployeeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   subscribepause.ContinueEmployeeTable,
-			Columns: []string{subscribepause.ContinueEmployeeColumn},
+			Table:   subscribepause.EndEmployeeTable,
+			Columns: []string{subscribepause.EndEmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -561,12 +608,12 @@ func (spu *SubscribePauseUpdate) sqlSave(ctx context.Context) (n int, err error)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := spu.mutation.ContinueEmployeeIDs(); len(nodes) > 0 {
+	if nodes := spu.mutation.EndEmployeeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   subscribepause.ContinueEmployeeTable,
-			Columns: []string{subscribepause.ContinueEmployeeColumn},
+			Table:   subscribepause.EndEmployeeTable,
+			Columns: []string{subscribepause.EndEmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -742,8 +789,29 @@ func (spuo *SubscribePauseUpdateOne) ClearDays() *SubscribePauseUpdateOne {
 	return spuo
 }
 
+// SetEndEmployeeID sets the "end_employee_id" field.
+func (spuo *SubscribePauseUpdateOne) SetEndEmployeeID(u uint64) *SubscribePauseUpdateOne {
+	spuo.mutation.SetEndEmployeeID(u)
+	return spuo
+}
+
+// SetNillableEndEmployeeID sets the "end_employee_id" field if the given value is not nil.
+func (spuo *SubscribePauseUpdateOne) SetNillableEndEmployeeID(u *uint64) *SubscribePauseUpdateOne {
+	if u != nil {
+		spuo.SetEndEmployeeID(*u)
+	}
+	return spuo
+}
+
+// ClearEndEmployeeID clears the value of the "end_employee_id" field.
+func (spuo *SubscribePauseUpdateOne) ClearEndEmployeeID() *SubscribePauseUpdateOne {
+	spuo.mutation.ClearEndEmployeeID()
+	return spuo
+}
+
 // SetContinueEmployeeID sets the "continue_employee_id" field.
 func (spuo *SubscribePauseUpdateOne) SetContinueEmployeeID(u uint64) *SubscribePauseUpdateOne {
+	spuo.mutation.ResetContinueEmployeeID()
 	spuo.mutation.SetContinueEmployeeID(u)
 	return spuo
 }
@@ -753,6 +821,12 @@ func (spuo *SubscribePauseUpdateOne) SetNillableContinueEmployeeID(u *uint64) *S
 	if u != nil {
 		spuo.SetContinueEmployeeID(*u)
 	}
+	return spuo
+}
+
+// AddContinueEmployeeID adds u to the "continue_employee_id" field.
+func (spuo *SubscribePauseUpdateOne) AddContinueEmployeeID(u int64) *SubscribePauseUpdateOne {
+	spuo.mutation.AddContinueEmployeeID(u)
 	return spuo
 }
 
@@ -777,9 +851,9 @@ func (spuo *SubscribePauseUpdateOne) SetSubscribe(s *Subscribe) *SubscribePauseU
 	return spuo.SetSubscribeID(s.ID)
 }
 
-// SetContinueEmployee sets the "continue_employee" edge to the Employee entity.
-func (spuo *SubscribePauseUpdateOne) SetContinueEmployee(e *Employee) *SubscribePauseUpdateOne {
-	return spuo.SetContinueEmployeeID(e.ID)
+// SetEndEmployee sets the "end_employee" edge to the Employee entity.
+func (spuo *SubscribePauseUpdateOne) SetEndEmployee(e *Employee) *SubscribePauseUpdateOne {
+	return spuo.SetEndEmployeeID(e.ID)
 }
 
 // Mutation returns the SubscribePauseMutation object of the builder.
@@ -805,9 +879,9 @@ func (spuo *SubscribePauseUpdateOne) ClearSubscribe() *SubscribePauseUpdateOne {
 	return spuo
 }
 
-// ClearContinueEmployee clears the "continue_employee" edge to the Employee entity.
-func (spuo *SubscribePauseUpdateOne) ClearContinueEmployee() *SubscribePauseUpdateOne {
-	spuo.mutation.ClearContinueEmployee()
+// ClearEndEmployee clears the "end_employee" edge to the Employee entity.
+func (spuo *SubscribePauseUpdateOne) ClearEndEmployee() *SubscribePauseUpdateOne {
+	spuo.mutation.ClearEndEmployee()
 	return spuo
 }
 
@@ -1037,6 +1111,26 @@ func (spuo *SubscribePauseUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 			Column: subscribepause.FieldDays,
 		})
 	}
+	if value, ok := spuo.mutation.ContinueEmployeeID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint64,
+			Value:  value,
+			Column: subscribepause.FieldContinueEmployeeID,
+		})
+	}
+	if value, ok := spuo.mutation.AddedContinueEmployeeID(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint64,
+			Value:  value,
+			Column: subscribepause.FieldContinueEmployeeID,
+		})
+	}
+	if spuo.mutation.ContinueEmployeeIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint64,
+			Column: subscribepause.FieldContinueEmployeeID,
+		})
+	}
 	if spuo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1142,12 +1236,12 @@ func (spuo *SubscribePauseUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if spuo.mutation.ContinueEmployeeCleared() {
+	if spuo.mutation.EndEmployeeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   subscribepause.ContinueEmployeeTable,
-			Columns: []string{subscribepause.ContinueEmployeeColumn},
+			Table:   subscribepause.EndEmployeeTable,
+			Columns: []string{subscribepause.EndEmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1158,12 +1252,12 @@ func (spuo *SubscribePauseUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := spuo.mutation.ContinueEmployeeIDs(); len(nodes) > 0 {
+	if nodes := spuo.mutation.EndEmployeeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   subscribepause.ContinueEmployeeTable,
-			Columns: []string{subscribepause.ContinueEmployeeColumn},
+			Table:   subscribepause.EndEmployeeTable,
+			Columns: []string{subscribepause.EndEmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

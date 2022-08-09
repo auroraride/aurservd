@@ -5877,15 +5877,15 @@ func (c *SubscribePauseClient) QuerySubscribe(sp *SubscribePause) *SubscribeQuer
 	return query
 }
 
-// QueryContinueEmployee queries the continue_employee edge of a SubscribePause.
-func (c *SubscribePauseClient) QueryContinueEmployee(sp *SubscribePause) *EmployeeQuery {
+// QueryEndEmployee queries the end_employee edge of a SubscribePause.
+func (c *SubscribePauseClient) QueryEndEmployee(sp *SubscribePause) *EmployeeQuery {
 	query := &EmployeeQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := sp.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, id),
 			sqlgraph.To(employee.Table, employee.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, subscribepause.ContinueEmployeeTable, subscribepause.ContinueEmployeeColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribepause.EndEmployeeTable, subscribepause.EndEmployeeColumn),
 		)
 		fromV = sqlgraph.Neighbors(sp.driver.Dialect(), step)
 		return fromV, nil

@@ -6,4 +6,4 @@ dropdb -U liasica auroraride
 createdb auroraride
 psql -d auroraride -U liasica -c "SET timezone = 'Asia/Shanghai'; CREATE EXTENSION postgis; CREATE EXTENSION pg_trgm; CREATE EXTENSION btree_gin;"
 psql -d auroraride -U liasica -f ~/Downloads/_sql/auroraride.sql
-rm -rf ~/Downloads/_sql/auroraride.sql
+#rm -rf ~/Downloads/_sql/auroraride.sql

@@ -114,6 +114,9 @@ type Subscribe struct {
 	// LastBillDate holds the value of the "last_bill_date" field.
 	// 上次结算日期(包含该日期)
 	LastBillDate *time.Time `json:"last_bill_date,omitempty"`
+	// PauseOverdue holds the value of the "pause_overdue" field.
+	// 是否超期退租
+	PauseOverdue bool `json:"pause_overdue,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribeQuery when eager-loading is set.
 	Edges SubscribeEdges `json:"edges"`
@@ -321,6 +324,8 @@ func (*Subscribe) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case subscribe.FieldCreator, subscribe.FieldLastModifier:
 			values[i] = new([]byte)
+		case subscribe.FieldPauseOverdue:
+			values[i] = new(sql.NullBool)
 		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldStationID, subscribe.FieldStoreID, subscribe.FieldCabinetID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldEnterpriseID, subscribe.FieldStatus, subscribe.FieldType, subscribe.FieldInitialDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays, subscribe.FieldRenewalDays, subscribe.FieldOverdueDays, subscribe.FieldRemaining:
 			values[i] = new(sql.NullInt64)
 		case subscribe.FieldRemark, subscribe.FieldModel, subscribe.FieldUnsubscribeReason:
@@ -544,6 +549,12 @@ func (s *Subscribe) assignValues(columns []string, values []interface{}) error {
 				s.LastBillDate = new(time.Time)
 				*s.LastBillDate = value.Time
 			}
+		case subscribe.FieldPauseOverdue:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field pause_overdue", values[i])
+			} else if value.Valid {
+				s.PauseOverdue = value.Bool
+			}
 		}
 	}
 	return nil
@@ -721,6 +732,8 @@ func (s *Subscribe) String() string {
 		builder.WriteString(", last_bill_date=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
+	builder.WriteString(", pause_overdue=")
+	builder.WriteString(fmt.Sprintf("%v", s.PauseOverdue))
 	builder.WriteByte(')')
 	return builder.String()
 }

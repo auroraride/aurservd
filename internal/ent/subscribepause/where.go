@@ -163,6 +163,13 @@ func Days(v int) predicate.SubscribePause {
 	})
 }
 
+// EndEmployeeID applies equality check predicate on the "end_employee_id" field. It's identical to EndEmployeeIDEQ.
+func EndEmployeeID(v uint64) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEndEmployeeID), v))
+	})
+}
+
 // ContinueEmployeeID applies equality check predicate on the "continue_employee_id" field. It's identical to ContinueEmployeeIDEQ.
 func ContinueEmployeeID(v uint64) predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
@@ -979,6 +986,68 @@ func DaysNotNil() predicate.SubscribePause {
 	})
 }
 
+// EndEmployeeIDEQ applies the EQ predicate on the "end_employee_id" field.
+func EndEmployeeIDEQ(v uint64) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEndEmployeeID), v))
+	})
+}
+
+// EndEmployeeIDNEQ applies the NEQ predicate on the "end_employee_id" field.
+func EndEmployeeIDNEQ(v uint64) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldEndEmployeeID), v))
+	})
+}
+
+// EndEmployeeIDIn applies the In predicate on the "end_employee_id" field.
+func EndEmployeeIDIn(vs ...uint64) predicate.SubscribePause {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldEndEmployeeID), v...))
+	})
+}
+
+// EndEmployeeIDNotIn applies the NotIn predicate on the "end_employee_id" field.
+func EndEmployeeIDNotIn(vs ...uint64) predicate.SubscribePause {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldEndEmployeeID), v...))
+	})
+}
+
+// EndEmployeeIDIsNil applies the IsNil predicate on the "end_employee_id" field.
+func EndEmployeeIDIsNil() predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldEndEmployeeID)))
+	})
+}
+
+// EndEmployeeIDNotNil applies the NotNil predicate on the "end_employee_id" field.
+func EndEmployeeIDNotNil() predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldEndEmployeeID)))
+	})
+}
+
 // ContinueEmployeeIDEQ applies the EQ predicate on the "continue_employee_id" field.
 func ContinueEmployeeIDEQ(v uint64) predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
@@ -1024,6 +1093,34 @@ func ContinueEmployeeIDNotIn(vs ...uint64) predicate.SubscribePause {
 			return
 		}
 		s.Where(sql.NotIn(s.C(FieldContinueEmployeeID), v...))
+	})
+}
+
+// ContinueEmployeeIDGT applies the GT predicate on the "continue_employee_id" field.
+func ContinueEmployeeIDGT(v uint64) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldContinueEmployeeID), v))
+	})
+}
+
+// ContinueEmployeeIDGTE applies the GTE predicate on the "continue_employee_id" field.
+func ContinueEmployeeIDGTE(v uint64) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldContinueEmployeeID), v))
+	})
+}
+
+// ContinueEmployeeIDLT applies the LT predicate on the "continue_employee_id" field.
+func ContinueEmployeeIDLT(v uint64) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldContinueEmployeeID), v))
+	})
+}
+
+// ContinueEmployeeIDLTE applies the LTE predicate on the "continue_employee_id" field.
+func ContinueEmployeeIDLTE(v uint64) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldContinueEmployeeID), v))
 	})
 }
 
@@ -1125,25 +1222,25 @@ func HasSubscribeWith(preds ...predicate.Subscribe) predicate.SubscribePause {
 	})
 }
 
-// HasContinueEmployee applies the HasEdge predicate on the "continue_employee" edge.
-func HasContinueEmployee() predicate.SubscribePause {
+// HasEndEmployee applies the HasEdge predicate on the "end_employee" edge.
+func HasEndEmployee() predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ContinueEmployeeTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, ContinueEmployeeTable, ContinueEmployeeColumn),
+			sqlgraph.To(EndEmployeeTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, EndEmployeeTable, EndEmployeeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasContinueEmployeeWith applies the HasEdge predicate on the "continue_employee" edge with a given conditions (other predicates).
-func HasContinueEmployeeWith(preds ...predicate.Employee) predicate.SubscribePause {
+// HasEndEmployeeWith applies the HasEdge predicate on the "end_employee" edge with a given conditions (other predicates).
+func HasEndEmployeeWith(preds ...predicate.Employee) predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ContinueEmployeeInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, ContinueEmployeeTable, ContinueEmployeeColumn),
+			sqlgraph.To(EndEmployeeInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, EndEmployeeTable, EndEmployeeColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

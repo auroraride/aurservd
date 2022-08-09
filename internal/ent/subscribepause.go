@@ -54,6 +54,9 @@ type SubscribePause struct {
 	// Days holds the value of the "days" field.
 	// 暂停天数
 	Days int `json:"days,omitempty"`
+	// EndEmployeeID holds the value of the "end_employee_id" field.
+	// 结束寄存店员ID
+	EndEmployeeID *uint64 `json:"end_employee_id,omitempty"`
 	// ContinueEmployeeID holds the value of the "continue_employee_id" field.
 	// 结束寄存店员ID
 	ContinueEmployeeID *uint64 `json:"continue_employee_id,omitempty"`
@@ -70,8 +73,8 @@ type SubscribePauseEdges struct {
 	Employee *Employee `json:"employee,omitempty"`
 	// Subscribe holds the value of the subscribe edge.
 	Subscribe *Subscribe `json:"subscribe,omitempty"`
-	// ContinueEmployee holds the value of the continue_employee edge.
-	ContinueEmployee *Employee `json:"continue_employee,omitempty"`
+	// EndEmployee holds the value of the end_employee edge.
+	EndEmployee *Employee `json:"end_employee,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [4]bool
@@ -119,18 +122,18 @@ func (e SubscribePauseEdges) SubscribeOrErr() (*Subscribe, error) {
 	return nil, &NotLoadedError{edge: "subscribe"}
 }
 
-// ContinueEmployeeOrErr returns the ContinueEmployee value or an error if the edge
+// EndEmployeeOrErr returns the EndEmployee value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e SubscribePauseEdges) ContinueEmployeeOrErr() (*Employee, error) {
+func (e SubscribePauseEdges) EndEmployeeOrErr() (*Employee, error) {
 	if e.loadedTypes[3] {
-		if e.ContinueEmployee == nil {
-			// The edge continue_employee was loaded in eager-loading,
+		if e.EndEmployee == nil {
+			// The edge end_employee was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: employee.Label}
 		}
-		return e.ContinueEmployee, nil
+		return e.EndEmployee, nil
 	}
-	return nil, &NotLoadedError{edge: "continue_employee"}
+	return nil, &NotLoadedError{edge: "end_employee"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -140,7 +143,7 @@ func (*SubscribePause) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case subscribepause.FieldCreator, subscribepause.FieldLastModifier:
 			values[i] = new([]byte)
-		case subscribepause.FieldID, subscribepause.FieldRiderID, subscribepause.FieldEmployeeID, subscribepause.FieldSubscribeID, subscribepause.FieldDays, subscribepause.FieldContinueEmployeeID:
+		case subscribepause.FieldID, subscribepause.FieldRiderID, subscribepause.FieldEmployeeID, subscribepause.FieldSubscribeID, subscribepause.FieldDays, subscribepause.FieldEndEmployeeID, subscribepause.FieldContinueEmployeeID:
 			values[i] = new(sql.NullInt64)
 		case subscribepause.FieldRemark:
 			values[i] = new(sql.NullString)
@@ -245,6 +248,13 @@ func (sp *SubscribePause) assignValues(columns []string, values []interface{}) e
 			} else if value.Valid {
 				sp.Days = int(value.Int64)
 			}
+		case subscribepause.FieldEndEmployeeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field end_employee_id", values[i])
+			} else if value.Valid {
+				sp.EndEmployeeID = new(uint64)
+				*sp.EndEmployeeID = uint64(value.Int64)
+			}
 		case subscribepause.FieldContinueEmployeeID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field continue_employee_id", values[i])
@@ -272,9 +282,9 @@ func (sp *SubscribePause) QuerySubscribe() *SubscribeQuery {
 	return (&SubscribePauseClient{config: sp.config}).QuerySubscribe(sp)
 }
 
-// QueryContinueEmployee queries the "continue_employee" edge of the SubscribePause entity.
-func (sp *SubscribePause) QueryContinueEmployee() *EmployeeQuery {
-	return (&SubscribePauseClient{config: sp.config}).QueryContinueEmployee(sp)
+// QueryEndEmployee queries the "end_employee" edge of the SubscribePause entity.
+func (sp *SubscribePause) QueryEndEmployee() *EmployeeQuery {
+	return (&SubscribePauseClient{config: sp.config}).QueryEndEmployee(sp)
 }
 
 // Update returns a builder for updating this SubscribePause.
@@ -328,6 +338,10 @@ func (sp *SubscribePause) String() string {
 	builder.WriteString(sp.EndAt.Format(time.ANSIC))
 	builder.WriteString(", days=")
 	builder.WriteString(fmt.Sprintf("%v", sp.Days))
+	if v := sp.EndEmployeeID; v != nil {
+		builder.WriteString(", end_employee_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	if v := sp.ContinueEmployeeID; v != nil {
 		builder.WriteString(", continue_employee_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))

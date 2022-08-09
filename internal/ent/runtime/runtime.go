@@ -859,6 +859,10 @@ func init() {
 	subscribeDescRemaining := subscribeFields[11].Descriptor()
 	// subscribe.DefaultRemaining holds the default value on creation for the remaining field.
 	subscribe.DefaultRemaining = subscribeDescRemaining.Default.(int)
+	// subscribeDescPauseOverdue is the schema descriptor for pause_overdue field.
+	subscribeDescPauseOverdue := subscribeFields[18].Descriptor()
+	// subscribe.DefaultPauseOverdue holds the default value on creation for the pause_overdue field.
+	subscribe.DefaultPauseOverdue = subscribeDescPauseOverdue.Default.(bool)
 	subscribealterMixin := schema.SubscribeAlter{}.Mixin()
 	subscribealterMixinHooks2 := subscribealterMixin[2].Hooks()
 	subscribealter.Hooks[0] = subscribealterMixinHooks2[0]
