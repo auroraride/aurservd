@@ -11410,6 +11410,9 @@ const docTemplate = `{
                     "description": "满电数",
                     "type": "integer"
                 },
+                "id": {
+                    "type": "integer"
+                },
                 "lockNum": {
                     "description": "锁仓数",
                     "type": "integer"
@@ -11429,6 +11432,10 @@ const docTemplate = `{
                 "serial": {
                     "description": "编号",
                     "type": "string"
+                },
+                "stockNum": {
+                    "description": "库存电池",
+                    "type": "integer"
                 }
             }
         },
@@ -11526,6 +11533,10 @@ const docTemplate = `{
                         1,
                         2
                     ]
+                },
+                "stockNum": {
+                    "description": "库存电池",
+                    "type": "integer"
                 },
                 "transferred": {
                     "description": "是否初始化过调拨",

@@ -1427,6 +1427,8 @@ definitions:
       fullNum:
         description: 满电数
         type: integer
+      id:
+        type: integer
       lockNum:
         description: 锁仓数
         type: integer
@@ -1442,6 +1444,9 @@ definitions:
       serial:
         description: 编号
         type: string
+      stockNum:
+        description: 库存电池
+        type: integer
     type: object
   model.CabinetDetailRes:
     properties:
@@ -1507,6 +1512,9 @@ definitions:
         - 0
         - 1
         - 2
+        type: integer
+      stockNum:
+        description: 库存电池
         type: integer
       transferred:
         description: 是否初始化过调拨

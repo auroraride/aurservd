@@ -209,7 +209,8 @@ type CabinetSnParamReq struct {
 // CabinetDetailRes 电柜详细信息返回
 type CabinetDetailRes struct {
     CabinetItem
-    Bin []CabinetBin `json:"bins"` // 仓位信息
+    Bin      []CabinetBin `json:"bins"`     // 仓位信息
+    StockNum int          `json:"stockNum"` // 库存电池
 }
 
 // CanUse 仓位是否可以换电
@@ -335,6 +336,7 @@ type CabinetDataBin struct {
 }
 
 type CabinetDataRes struct {
+    ID         uint64           `json:"id"`
     Name       string           `json:"name"`       // 名称
     Serial     string           `json:"serial"`     // 编号
     Model      string           `json:"model"`      // 型号
@@ -346,6 +348,7 @@ type CabinetDataRes struct {
     LockNum    int              `json:"lockNum"`    // 锁仓数
     FullNum    int              `json:"fullNum"`    // 满电数
     Bins       []CabinetDataBin `json:"bins"`       // 仓位信息
+    StockNum   int              `json:"stockNum"`   // 库存电池
 }
 
 type CabinetSimNotice struct {

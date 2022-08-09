@@ -922,3 +922,34 @@ func (s *stockService) target(es *ent.Store, ec *ent.Cabinet) (target string) {
     }
     return
 }
+
+// CurrentNum 获取当前库存
+func (s *stockService) CurrentNum(ids []uint64, field string) map[uint64]int {
+    var result []struct {
+        TargetID uint64 `json:"target_id"`
+        Sum      int    `json:"sum"`
+    }
+    v := make([]interface{}, len(ids))
+    for i := range v {
+        v[i] = ids[i]
+    }
+    _ = s.orm.QueryNotDeleted().
+        Modify(func(sel *sql.Selector) {
+            sel.Where(sql.In(sel.C(field), v...)).
+                Select(
+                    sql.As(sel.C(field), "target_id"),
+                    sql.As(sql.Sum(stock.FieldNum), "sum"),
+                ).
+                GroupBy(field)
+        }).
+        Scan(s.ctx, &result)
+    m := make(map[uint64]int)
+    for _, r := range result {
+        m[r.TargetID] = r.Sum
+    }
+    return m
+}
+
+func (s *stockService) Current(id uint64, field string) int {
+    return s.CurrentNum([]uint64{id}, field)[id]
+}

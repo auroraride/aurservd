@@ -23,6 +23,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/batterymodel"
     "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
+    "github.com/auroraride/aurservd/internal/ent/stock"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
@@ -362,6 +363,8 @@ func (s *cabinetService) Detail(item *ent.Cabinet) *model.CabinetDetailRes {
         res.Models = append(res.Models, bm.Model)
     }
 
+    res.StockNum = NewStock().Current(item.ID, stock.FieldCabinetID)
+
     return res
 }
 
@@ -550,49 +553,63 @@ func (s *cabinetService) Data(req *model.CabinetDataReq) *model.PaginationRes {
         q.Where(cabinet.HasBmsWith(batterymodel.ModelHasPrefix(bm)))
     }
 
-    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Cabinet) model.CabinetDataRes {
-        res := model.CabinetDataRes{
-            Name:       item.Name,
-            Serial:     item.Serial,
-            Model:      "",
-            Brand:      model.CabinetBrand(item.Brand).String(),
-            Online:     item.Health == model.CabinetHealthStatusOnline,
-            BinNum:     int(item.Doors),
-            BatteryNum: int(item.BatteryNum),
-            EmptyNum:   0,
-            LockNum:    0,
-            FullNum:    0,
-        }
+    return s.dataItems(model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Cabinet) model.CabinetDataRes {
+        return s.dataDetail(item)
+    }))
+}
 
-        bms := item.Edges.Bms
-        if len(bms) > 0 {
-            res.Model = regexp.MustCompile(`(?m)(\d+)V\d+AH`).ReplaceAllString(bms[0].Model, "${1}V")
-        }
+func (s *cabinetService) dataItems(res *model.PaginationRes) *model.PaginationRes {
+    items := res.Items.([]model.CabinetDataRes)
+    ids := make([]uint64, len(items))
+    for i, item := range items {
+        ids[i] = item.ID
+    }
+    m := NewStock().CurrentNum(ids, stock.FieldCabinetID)
+    for i, item := range items {
+        items[i].StockNum = m[item.ID]
+    }
+    return res
+}
 
-        res.Bins = make([]model.CabinetDataBin, len(item.Bin))
-        for i, bin := range item.Bin {
+func (s *cabinetService) dataDetail(item *ent.Cabinet) model.CabinetDataRes {
+    res := model.CabinetDataRes{
+        ID:         item.ID,
+        Name:       item.Name,
+        Serial:     item.Serial,
+        Brand:      model.CabinetBrand(item.Brand).String(),
+        Online:     item.Health == model.CabinetHealthStatusOnline,
+        BinNum:     int(item.Doors),
+        BatteryNum: int(item.BatteryNum),
+    }
 
-            if bin.Battery {
-                if bin.Full {
-                    res.Bins[i].Status = model.CabinetDataBinStatusFull
-                    res.FullNum += 1
-                } else {
-                    res.Bins[i].Status = model.CabinetDataBinStatusCharging
-                }
+    bms := item.Edges.Bms
+    if len(bms) > 0 {
+        res.Model = regexp.MustCompile(`(?m)(\d+)V\d+AH`).ReplaceAllString(bms[0].Model, "${1}V")
+    }
+
+    res.Bins = make([]model.CabinetDataBin, len(item.Bin))
+    for i, bin := range item.Bin {
+
+        if bin.Battery {
+            if bin.Full {
+                res.Bins[i].Status = model.CabinetDataBinStatusFull
+                res.FullNum += 1
             } else {
-                res.Bins[i].Status = model.CabinetDataBinStatusEmpty
-                res.EmptyNum += 1
+                res.Bins[i].Status = model.CabinetDataBinStatusCharging
             }
-
-            if !bin.DoorHealth {
-                res.Bins[i].Status = model.CabinetDataBinStatusLock
-                res.Bins[i].Remark = bin.Remark
-                res.LockNum += 1
-            }
+        } else {
+            res.Bins[i].Status = model.CabinetDataBinStatusEmpty
+            res.EmptyNum += 1
         }
 
-        return res
-    })
+        if !bin.DoorHealth {
+            res.Bins[i].Status = model.CabinetDataBinStatusLock
+            res.Bins[i].Remark = bin.Remark
+            res.LockNum += 1
+        }
+    }
+
+    return res
 }
 
 // Transfer 电柜初始化调拨
