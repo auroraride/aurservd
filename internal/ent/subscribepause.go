@@ -75,12 +75,15 @@ type SubscribePause struct {
 	// EndEmployeeID holds the value of the "end_employee_id" field.
 	// 结束寄存店员ID
 	EndEmployeeID *uint64 `json:"end_employee_id,omitempty"`
-	// Overdue holds the value of the "overdue" field.
-	// 是否超期
-	Overdue bool `json:"overdue,omitempty"`
+	// OverdueDays holds the value of the "overdue_days" field.
+	// 超期天数
+	OverdueDays int `json:"overdue_days,omitempty"`
 	// EndModifier holds the value of the "end_modifier" field.
 	// 结束寄存管理员信息
 	EndModifier *model.Modifier `json:"end_modifier,omitempty"`
+	// PauseOverdue holds the value of the "pause_overdue" field.
+	// 是否超期退租
+	PauseOverdue bool `json:"pause_overdue,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribePauseQuery when eager-loading is set.
 	Edges SubscribePauseEdges `json:"edges"`
@@ -244,9 +247,9 @@ func (*SubscribePause) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case subscribepause.FieldCreator, subscribepause.FieldLastModifier, subscribepause.FieldEndModifier:
 			values[i] = new([]byte)
-		case subscribepause.FieldOverdue:
+		case subscribepause.FieldPauseOverdue:
 			values[i] = new(sql.NullBool)
-		case subscribepause.FieldID, subscribepause.FieldRiderID, subscribepause.FieldEmployeeID, subscribepause.FieldCityID, subscribepause.FieldStoreID, subscribepause.FieldEndStoreID, subscribepause.FieldCabinetID, subscribepause.FieldEndCabinetID, subscribepause.FieldSubscribeID, subscribepause.FieldDays, subscribepause.FieldEndEmployeeID:
+		case subscribepause.FieldID, subscribepause.FieldRiderID, subscribepause.FieldEmployeeID, subscribepause.FieldCityID, subscribepause.FieldStoreID, subscribepause.FieldEndStoreID, subscribepause.FieldCabinetID, subscribepause.FieldEndCabinetID, subscribepause.FieldSubscribeID, subscribepause.FieldDays, subscribepause.FieldEndEmployeeID, subscribepause.FieldOverdueDays:
 			values[i] = new(sql.NullInt64)
 		case subscribepause.FieldRemark:
 			values[i] = new(sql.NullString)
@@ -393,11 +396,11 @@ func (sp *SubscribePause) assignValues(columns []string, values []interface{}) e
 				sp.EndEmployeeID = new(uint64)
 				*sp.EndEmployeeID = uint64(value.Int64)
 			}
-		case subscribepause.FieldOverdue:
-			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field overdue", values[i])
+		case subscribepause.FieldOverdueDays:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field overdue_days", values[i])
 			} else if value.Valid {
-				sp.Overdue = value.Bool
+				sp.OverdueDays = int(value.Int64)
 			}
 		case subscribepause.FieldEndModifier:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -406,6 +409,12 @@ func (sp *SubscribePause) assignValues(columns []string, values []interface{}) e
 				if err := json.Unmarshal(*value, &sp.EndModifier); err != nil {
 					return fmt.Errorf("unmarshal field end_modifier: %w", err)
 				}
+			}
+		case subscribepause.FieldPauseOverdue:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field pause_overdue", values[i])
+			} else if value.Valid {
+				sp.PauseOverdue = value.Bool
 			}
 		}
 	}
@@ -532,10 +541,12 @@ func (sp *SubscribePause) String() string {
 		builder.WriteString(", end_employee_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
-	builder.WriteString(", overdue=")
-	builder.WriteString(fmt.Sprintf("%v", sp.Overdue))
+	builder.WriteString(", overdue_days=")
+	builder.WriteString(fmt.Sprintf("%v", sp.OverdueDays))
 	builder.WriteString(", end_modifier=")
 	builder.WriteString(fmt.Sprintf("%v", sp.EndModifier))
+	builder.WriteString(", pause_overdue=")
+	builder.WriteString(fmt.Sprintf("%v", sp.PauseOverdue))
 	builder.WriteByte(')')
 	return builder.String()
 }

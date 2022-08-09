@@ -241,16 +241,16 @@ func (spc *SubscribePauseCreate) SetNillableEndEmployeeID(u *uint64) *SubscribeP
 	return spc
 }
 
-// SetOverdue sets the "overdue" field.
-func (spc *SubscribePauseCreate) SetOverdue(b bool) *SubscribePauseCreate {
-	spc.mutation.SetOverdue(b)
+// SetOverdueDays sets the "overdue_days" field.
+func (spc *SubscribePauseCreate) SetOverdueDays(i int) *SubscribePauseCreate {
+	spc.mutation.SetOverdueDays(i)
 	return spc
 }
 
-// SetNillableOverdue sets the "overdue" field if the given value is not nil.
-func (spc *SubscribePauseCreate) SetNillableOverdue(b *bool) *SubscribePauseCreate {
-	if b != nil {
-		spc.SetOverdue(*b)
+// SetNillableOverdueDays sets the "overdue_days" field if the given value is not nil.
+func (spc *SubscribePauseCreate) SetNillableOverdueDays(i *int) *SubscribePauseCreate {
+	if i != nil {
+		spc.SetOverdueDays(*i)
 	}
 	return spc
 }
@@ -258,6 +258,20 @@ func (spc *SubscribePauseCreate) SetNillableOverdue(b *bool) *SubscribePauseCrea
 // SetEndModifier sets the "end_modifier" field.
 func (spc *SubscribePauseCreate) SetEndModifier(m *model.Modifier) *SubscribePauseCreate {
 	spc.mutation.SetEndModifier(m)
+	return spc
+}
+
+// SetPauseOverdue sets the "pause_overdue" field.
+func (spc *SubscribePauseCreate) SetPauseOverdue(b bool) *SubscribePauseCreate {
+	spc.mutation.SetPauseOverdue(b)
+	return spc
+}
+
+// SetNillablePauseOverdue sets the "pause_overdue" field if the given value is not nil.
+func (spc *SubscribePauseCreate) SetNillablePauseOverdue(b *bool) *SubscribePauseCreate {
+	if b != nil {
+		spc.SetPauseOverdue(*b)
+	}
 	return spc
 }
 
@@ -399,9 +413,13 @@ func (spc *SubscribePauseCreate) defaults() error {
 		v := subscribepause.DefaultUpdatedAt()
 		spc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := spc.mutation.Overdue(); !ok {
-		v := subscribepause.DefaultOverdue
-		spc.mutation.SetOverdue(v)
+	if _, ok := spc.mutation.OverdueDays(); !ok {
+		v := subscribepause.DefaultOverdueDays
+		spc.mutation.SetOverdueDays(v)
+	}
+	if _, ok := spc.mutation.PauseOverdue(); !ok {
+		v := subscribepause.DefaultPauseOverdue
+		spc.mutation.SetPauseOverdue(v)
 	}
 	return nil
 }
@@ -423,8 +441,11 @@ func (spc *SubscribePauseCreate) check() error {
 	if _, ok := spc.mutation.StartAt(); !ok {
 		return &ValidationError{Name: "start_at", err: errors.New(`ent: missing required field "SubscribePause.start_at"`)}
 	}
-	if _, ok := spc.mutation.Overdue(); !ok {
-		return &ValidationError{Name: "overdue", err: errors.New(`ent: missing required field "SubscribePause.overdue"`)}
+	if _, ok := spc.mutation.OverdueDays(); !ok {
+		return &ValidationError{Name: "overdue_days", err: errors.New(`ent: missing required field "SubscribePause.overdue_days"`)}
+	}
+	if _, ok := spc.mutation.PauseOverdue(); !ok {
+		return &ValidationError{Name: "pause_overdue", err: errors.New(`ent: missing required field "SubscribePause.pause_overdue"`)}
 	}
 	if _, ok := spc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "SubscribePause.rider"`)}
@@ -532,13 +553,13 @@ func (spc *SubscribePauseCreate) createSpec() (*SubscribePause, *sqlgraph.Create
 		})
 		_node.Days = value
 	}
-	if value, ok := spc.mutation.Overdue(); ok {
+	if value, ok := spc.mutation.OverdueDays(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
+			Type:   field.TypeInt,
 			Value:  value,
-			Column: subscribepause.FieldOverdue,
+			Column: subscribepause.FieldOverdueDays,
 		})
-		_node.Overdue = value
+		_node.OverdueDays = value
 	}
 	if value, ok := spc.mutation.EndModifier(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -547,6 +568,14 @@ func (spc *SubscribePauseCreate) createSpec() (*SubscribePause, *sqlgraph.Create
 			Column: subscribepause.FieldEndModifier,
 		})
 		_node.EndModifier = value
+	}
+	if value, ok := spc.mutation.PauseOverdue(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: subscribepause.FieldPauseOverdue,
+		})
+		_node.PauseOverdue = value
 	}
 	if nodes := spc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1082,15 +1111,21 @@ func (u *SubscribePauseUpsert) ClearEndEmployeeID() *SubscribePauseUpsert {
 	return u
 }
 
-// SetOverdue sets the "overdue" field.
-func (u *SubscribePauseUpsert) SetOverdue(v bool) *SubscribePauseUpsert {
-	u.Set(subscribepause.FieldOverdue, v)
+// SetOverdueDays sets the "overdue_days" field.
+func (u *SubscribePauseUpsert) SetOverdueDays(v int) *SubscribePauseUpsert {
+	u.Set(subscribepause.FieldOverdueDays, v)
 	return u
 }
 
-// UpdateOverdue sets the "overdue" field to the value that was provided on create.
-func (u *SubscribePauseUpsert) UpdateOverdue() *SubscribePauseUpsert {
-	u.SetExcluded(subscribepause.FieldOverdue)
+// UpdateOverdueDays sets the "overdue_days" field to the value that was provided on create.
+func (u *SubscribePauseUpsert) UpdateOverdueDays() *SubscribePauseUpsert {
+	u.SetExcluded(subscribepause.FieldOverdueDays)
+	return u
+}
+
+// AddOverdueDays adds v to the "overdue_days" field.
+func (u *SubscribePauseUpsert) AddOverdueDays(v int) *SubscribePauseUpsert {
+	u.Add(subscribepause.FieldOverdueDays, v)
 	return u
 }
 
@@ -1109,6 +1144,18 @@ func (u *SubscribePauseUpsert) UpdateEndModifier() *SubscribePauseUpsert {
 // ClearEndModifier clears the value of the "end_modifier" field.
 func (u *SubscribePauseUpsert) ClearEndModifier() *SubscribePauseUpsert {
 	u.SetNull(subscribepause.FieldEndModifier)
+	return u
+}
+
+// SetPauseOverdue sets the "pause_overdue" field.
+func (u *SubscribePauseUpsert) SetPauseOverdue(v bool) *SubscribePauseUpsert {
+	u.Set(subscribepause.FieldPauseOverdue, v)
+	return u
+}
+
+// UpdatePauseOverdue sets the "pause_overdue" field to the value that was provided on create.
+func (u *SubscribePauseUpsert) UpdatePauseOverdue() *SubscribePauseUpsert {
+	u.SetExcluded(subscribepause.FieldPauseOverdue)
 	return u
 }
 
@@ -1512,17 +1559,24 @@ func (u *SubscribePauseUpsertOne) ClearEndEmployeeID() *SubscribePauseUpsertOne 
 	})
 }
 
-// SetOverdue sets the "overdue" field.
-func (u *SubscribePauseUpsertOne) SetOverdue(v bool) *SubscribePauseUpsertOne {
+// SetOverdueDays sets the "overdue_days" field.
+func (u *SubscribePauseUpsertOne) SetOverdueDays(v int) *SubscribePauseUpsertOne {
 	return u.Update(func(s *SubscribePauseUpsert) {
-		s.SetOverdue(v)
+		s.SetOverdueDays(v)
 	})
 }
 
-// UpdateOverdue sets the "overdue" field to the value that was provided on create.
-func (u *SubscribePauseUpsertOne) UpdateOverdue() *SubscribePauseUpsertOne {
+// AddOverdueDays adds v to the "overdue_days" field.
+func (u *SubscribePauseUpsertOne) AddOverdueDays(v int) *SubscribePauseUpsertOne {
 	return u.Update(func(s *SubscribePauseUpsert) {
-		s.UpdateOverdue()
+		s.AddOverdueDays(v)
+	})
+}
+
+// UpdateOverdueDays sets the "overdue_days" field to the value that was provided on create.
+func (u *SubscribePauseUpsertOne) UpdateOverdueDays() *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.UpdateOverdueDays()
 	})
 }
 
@@ -1544,6 +1598,20 @@ func (u *SubscribePauseUpsertOne) UpdateEndModifier() *SubscribePauseUpsertOne {
 func (u *SubscribePauseUpsertOne) ClearEndModifier() *SubscribePauseUpsertOne {
 	return u.Update(func(s *SubscribePauseUpsert) {
 		s.ClearEndModifier()
+	})
+}
+
+// SetPauseOverdue sets the "pause_overdue" field.
+func (u *SubscribePauseUpsertOne) SetPauseOverdue(v bool) *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.SetPauseOverdue(v)
+	})
+}
+
+// UpdatePauseOverdue sets the "pause_overdue" field to the value that was provided on create.
+func (u *SubscribePauseUpsertOne) UpdatePauseOverdue() *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.UpdatePauseOverdue()
 	})
 }
 
@@ -2111,17 +2179,24 @@ func (u *SubscribePauseUpsertBulk) ClearEndEmployeeID() *SubscribePauseUpsertBul
 	})
 }
 
-// SetOverdue sets the "overdue" field.
-func (u *SubscribePauseUpsertBulk) SetOverdue(v bool) *SubscribePauseUpsertBulk {
+// SetOverdueDays sets the "overdue_days" field.
+func (u *SubscribePauseUpsertBulk) SetOverdueDays(v int) *SubscribePauseUpsertBulk {
 	return u.Update(func(s *SubscribePauseUpsert) {
-		s.SetOverdue(v)
+		s.SetOverdueDays(v)
 	})
 }
 
-// UpdateOverdue sets the "overdue" field to the value that was provided on create.
-func (u *SubscribePauseUpsertBulk) UpdateOverdue() *SubscribePauseUpsertBulk {
+// AddOverdueDays adds v to the "overdue_days" field.
+func (u *SubscribePauseUpsertBulk) AddOverdueDays(v int) *SubscribePauseUpsertBulk {
 	return u.Update(func(s *SubscribePauseUpsert) {
-		s.UpdateOverdue()
+		s.AddOverdueDays(v)
+	})
+}
+
+// UpdateOverdueDays sets the "overdue_days" field to the value that was provided on create.
+func (u *SubscribePauseUpsertBulk) UpdateOverdueDays() *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.UpdateOverdueDays()
 	})
 }
 
@@ -2143,6 +2218,20 @@ func (u *SubscribePauseUpsertBulk) UpdateEndModifier() *SubscribePauseUpsertBulk
 func (u *SubscribePauseUpsertBulk) ClearEndModifier() *SubscribePauseUpsertBulk {
 	return u.Update(func(s *SubscribePauseUpsert) {
 		s.ClearEndModifier()
+	})
+}
+
+// SetPauseOverdue sets the "pause_overdue" field.
+func (u *SubscribePauseUpsertBulk) SetPauseOverdue(v bool) *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.SetPauseOverdue(v)
+	})
+}
+
+// UpdatePauseOverdue sets the "pause_overdue" field to the value that was provided on create.
+func (u *SubscribePauseUpsertBulk) UpdatePauseOverdue() *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.UpdatePauseOverdue()
 	})
 }
 

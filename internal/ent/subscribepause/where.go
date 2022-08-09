@@ -205,10 +205,17 @@ func EndEmployeeID(v uint64) predicate.SubscribePause {
 	})
 }
 
-// Overdue applies equality check predicate on the "overdue" field. It's identical to OverdueEQ.
-func Overdue(v bool) predicate.SubscribePause {
+// OverdueDays applies equality check predicate on the "overdue_days" field. It's identical to OverdueDaysEQ.
+func OverdueDays(v int) predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldOverdue), v))
+		s.Where(sql.EQ(s.C(FieldOverdueDays), v))
+	})
+}
+
+// PauseOverdue applies equality check predicate on the "pause_overdue" field. It's identical to PauseOverdueEQ.
+func PauseOverdue(v bool) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPauseOverdue), v))
 	})
 }
 
@@ -1393,17 +1400,79 @@ func EndEmployeeIDNotNil() predicate.SubscribePause {
 	})
 }
 
-// OverdueEQ applies the EQ predicate on the "overdue" field.
-func OverdueEQ(v bool) predicate.SubscribePause {
+// OverdueDaysEQ applies the EQ predicate on the "overdue_days" field.
+func OverdueDaysEQ(v int) predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldOverdue), v))
+		s.Where(sql.EQ(s.C(FieldOverdueDays), v))
 	})
 }
 
-// OverdueNEQ applies the NEQ predicate on the "overdue" field.
-func OverdueNEQ(v bool) predicate.SubscribePause {
+// OverdueDaysNEQ applies the NEQ predicate on the "overdue_days" field.
+func OverdueDaysNEQ(v int) predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldOverdue), v))
+		s.Where(sql.NEQ(s.C(FieldOverdueDays), v))
+	})
+}
+
+// OverdueDaysIn applies the In predicate on the "overdue_days" field.
+func OverdueDaysIn(vs ...int) predicate.SubscribePause {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldOverdueDays), v...))
+	})
+}
+
+// OverdueDaysNotIn applies the NotIn predicate on the "overdue_days" field.
+func OverdueDaysNotIn(vs ...int) predicate.SubscribePause {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldOverdueDays), v...))
+	})
+}
+
+// OverdueDaysGT applies the GT predicate on the "overdue_days" field.
+func OverdueDaysGT(v int) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldOverdueDays), v))
+	})
+}
+
+// OverdueDaysGTE applies the GTE predicate on the "overdue_days" field.
+func OverdueDaysGTE(v int) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldOverdueDays), v))
+	})
+}
+
+// OverdueDaysLT applies the LT predicate on the "overdue_days" field.
+func OverdueDaysLT(v int) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldOverdueDays), v))
+	})
+}
+
+// OverdueDaysLTE applies the LTE predicate on the "overdue_days" field.
+func OverdueDaysLTE(v int) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldOverdueDays), v))
 	})
 }
 
@@ -1418,6 +1487,20 @@ func EndModifierIsNil() predicate.SubscribePause {
 func EndModifierNotNil() predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldEndModifier)))
+	})
+}
+
+// PauseOverdueEQ applies the EQ predicate on the "pause_overdue" field.
+func PauseOverdueEQ(v bool) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPauseOverdue), v))
+	})
+}
+
+// PauseOverdueNEQ applies the NEQ predicate on the "pause_overdue" field.
+func PauseOverdueNEQ(v bool) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPauseOverdue), v))
 	})
 }
 

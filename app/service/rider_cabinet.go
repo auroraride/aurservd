@@ -50,10 +50,7 @@ func NewRiderCabinet(rider *ent.Rider) *riderCabinetService {
 
 // preprocess 预处理业务
 func (s *riderCabinetService) preprocess(serial string, bt business.Type) {
-    sm, _ := NewSetting().GetSetting(model.SettingMaintain).(bool)
-    if sm {
-        snag.Panic("系统维护中, 请稍后重试")
-    }
+    NewSetting().SystemMaintainX()
 
     // 检查用户是否可以办理业务
     NewRiderPermissionWithRider(s.rider).BusinessX()
@@ -78,10 +75,8 @@ func (s *riderCabinetService) preprocess(serial string, bt business.Type) {
         snag.Panic("电池型号不兼容")
     }
 
-    // 查询电柜
-    if !cs.Businessable(cab) {
-        snag.Panic("电柜目前不可用")
-    }
+    // 查询电柜是否可使用
+    NewCabinet().BusinessableX(cab)
 
     ec.BusyX(serial)
 
@@ -294,7 +289,7 @@ func (s *riderCabinetService) Active(req *model.BusinessCabinetReq) model.Busine
         snag.Panic("骑士卡状态错误")
     }
 
-    srv := NewBusinessRiderWithRider(s.rider)
+    srv := NewBusinessRider(s.rider)
     srv.SetCabinet(s.cabinet).SetTask(func() *ec.BinInfo {
         return s.putout()
     }).Active(srv.Inactive(req.ID))
@@ -310,7 +305,7 @@ func (s *riderCabinetService) Continue(req *model.BusinessCabinetReq) model.Busi
         snag.Panic("骑士卡状态错误")
     }
 
-    NewBusinessRiderWithRider(s.rider).SetTask(func() *ec.BinInfo {
+    NewBusinessRider(s.rider).SetTask(func() *ec.BinInfo {
         return s.putout()
     }).SetCabinet(s.cabinet).Continue(req.ID)
     return model.BusinessCabinetStatus{
@@ -327,7 +322,7 @@ func (s *riderCabinetService) Unsubscribe(req *model.BusinessCabinetReq) model.B
 
     go func() {
         err := snag.Recover(func() {
-            NewBusinessRiderWithRider(s.rider).SetTask(func() *ec.BinInfo {
+            NewBusinessRider(s.rider).SetTask(func() *ec.BinInfo {
                 return s.putin()
             }).SetCabinet(s.cabinet).UnSubscribe(req.ID)
         })
@@ -351,7 +346,7 @@ func (s *riderCabinetService) Pause(req *model.BusinessCabinetReq) model.Busines
 
     go func() {
         err := snag.Recover(func() {
-            NewBusinessRiderWithRider(s.rider).
+            NewBusinessRider(s.rider).
                 SetTask(func() *ec.BinInfo {
                     return s.putin()
                 }).

@@ -1055,8 +1055,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribepause.FieldEndAt:         {Type: field.TypeTime, Column: subscribepause.FieldEndAt},
 			subscribepause.FieldDays:          {Type: field.TypeInt, Column: subscribepause.FieldDays},
 			subscribepause.FieldEndEmployeeID: {Type: field.TypeUint64, Column: subscribepause.FieldEndEmployeeID},
-			subscribepause.FieldOverdue:       {Type: field.TypeBool, Column: subscribepause.FieldOverdue},
+			subscribepause.FieldOverdueDays:   {Type: field.TypeInt, Column: subscribepause.FieldOverdueDays},
 			subscribepause.FieldEndModifier:   {Type: field.TypeJSON, Column: subscribepause.FieldEndModifier},
+			subscribepause.FieldPauseOverdue:  {Type: field.TypeBool, Column: subscribepause.FieldPauseOverdue},
 		},
 	}
 	graph.MustAddE(
@@ -8873,14 +8874,19 @@ func (f *SubscribePauseFilter) WhereEndEmployeeID(p entql.Uint64P) {
 	f.Where(p.Field(subscribepause.FieldEndEmployeeID))
 }
 
-// WhereOverdue applies the entql bool predicate on the overdue field.
-func (f *SubscribePauseFilter) WhereOverdue(p entql.BoolP) {
-	f.Where(p.Field(subscribepause.FieldOverdue))
+// WhereOverdueDays applies the entql int predicate on the overdue_days field.
+func (f *SubscribePauseFilter) WhereOverdueDays(p entql.IntP) {
+	f.Where(p.Field(subscribepause.FieldOverdueDays))
 }
 
 // WhereEndModifier applies the entql json.RawMessage predicate on the end_modifier field.
 func (f *SubscribePauseFilter) WhereEndModifier(p entql.BytesP) {
 	f.Where(p.Field(subscribepause.FieldEndModifier))
+}
+
+// WherePauseOverdue applies the entql bool predicate on the pause_overdue field.
+func (f *SubscribePauseFilter) WherePauseOverdue(p entql.BoolP) {
+	f.Where(p.Field(subscribepause.FieldPauseOverdue))
 }
 
 // WhereHasRider applies a predicate to check if query has an edge rider.

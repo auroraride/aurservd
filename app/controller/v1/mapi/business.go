@@ -41,6 +41,6 @@ func (*business) List(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*business) Pause(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.BusinessListPauseReq](c)
+    ctx, req := app.ManagerContextAndBinding[model.BusinessPauseList](c)
     return ctx.SendResponse(service.NewBusinessWithModifier(ctx.Modifier).ListPause(req))
 }

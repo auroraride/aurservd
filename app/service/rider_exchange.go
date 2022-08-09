@@ -45,10 +45,7 @@ func NewRiderExchange(r *ent.Rider) *riderExchangeService {
 
 // GetProcess 获取待换电信息
 func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq) *model.RiderExchangeInfo {
-    sm, _ := NewSetting().GetSetting(model.SettingMaintain).(bool)
-    if sm {
-        snag.Panic("系统维护中, 请稍后重试")
-    }
+    NewSetting().SystemMaintainX()
 
     NewExchange().RiderInterval(s.rider.ID)
 
@@ -70,10 +67,8 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
         snag.Panic("电池型号不兼容")
     }
 
-    // 查询电柜
-    if !cs.Businessable(cab) {
-        snag.Panic("电柜目前不可用")
-    }
+    // 查询电柜是否可使用
+    NewCabinet().BusinessableX(cab)
 
     ec.BusyX(cab.Serial)
 
@@ -156,10 +151,7 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
 // Start 开始换电
 func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     // 检查是否维护中
-    sm, _ := NewSetting().GetSetting(model.SettingMaintain).(bool)
-    if sm {
-        snag.Panic("系统维护中, 请稍后重试")
-    }
+    NewSetting().SystemMaintainX()
 
     // 检查用户是否可以办理业务
     NewRiderPermissionWithRider(s.rider).BusinessX()
@@ -201,10 +193,8 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         snag.Panic("电柜忙, 请稍后重试")
     }
 
-    // 查询电柜
-    if !NewCabinet().Businessable(cab) {
-        snag.Panic("电柜目前不可用")
-    }
+    // 查询电柜是否可使用
+    NewCabinet().BusinessableX(cab)
 
     s.logger = logging.NewExchangeLog(s.rider.ID, task.ID.Hex(), cab.Serial, s.rider.Phone, be.IsBatteryFull())
     s.cabinet = cab

@@ -38,21 +38,15 @@ type businessRiderService struct {
     storeID, employeeID, cabinetID *uint64
 }
 
-func NewBusinessRider() *businessRiderService {
+func NewBusinessRider(r *ent.Rider) *businessRiderService {
     return &businessRiderService{
-        ctx: context.Background(),
+        ctx:   context.Background(),
+        rider: r,
     }
 }
 
-func NewBusinessRiderWithRider(r *ent.Rider) *businessRiderService {
-    s := NewBusinessRider()
-    s.ctx = context.WithValue(s.ctx, "rider", r)
-    s.rider = r
-    return s
-}
-
 func NewBusinessRiderWithModifier(m *model.Modifier) *businessRiderService {
-    s := NewBusinessRider()
+    s := NewBusinessRider(nil)
     s.ctx = context.WithValue(s.ctx, "modifier", m)
     s.modifier = m
     return s
@@ -93,7 +87,7 @@ func (s *businessRiderService) SetTask(task func() *ec.BinInfo) *businessRiderSe
 }
 
 func NewBusinessRiderWithEmployee(e *ent.Employee) *businessRiderService {
-    s := NewBusinessRider()
+    s := NewBusinessRider(nil)
     s.ctx = context.WithValue(s.ctx, "employee", e)
     store := e.Edges.Store
     if store == nil {
@@ -209,6 +203,17 @@ func (s *businessRiderService) Inactive(id uint64) (*model.SubscribeActiveInfo, 
 // preprocess 预处理数据
 func (s *businessRiderService) preprocess(sub *ent.Subscribe) {
     s.subscribe = sub
+
+    r := sub.Edges.Rider
+    if r == nil {
+        r, _ = sub.QueryRider().First(s.ctx)
+    }
+
+    if r == nil {
+        snag.Panic("骑手查询失败")
+    }
+
+    s.rider = r
 
     if s.store != nil {
         s.storeID = tools.NewPointerInterface(s.store.ID)
@@ -481,7 +486,7 @@ func (s *businessRiderService) Continue(subscribeID uint64) {
             SetEndAt(now).
             SetNillableEndEmployeeID(s.employeeID).
             SetEndModifier(s.modifier).
-            SetOverdue(overdue).
+            SetOverdueDays(overdue).
             SetNillableEndStoreID(s.storeID).
             SetNillableEndCabinetID(s.cabinetID).
             Save(s.ctx)

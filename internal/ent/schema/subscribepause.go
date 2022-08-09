@@ -32,8 +32,9 @@ func (SubscribePause) Fields() []ent.Field {
         field.Time("end_at").Optional().Comment("暂停结束时间"),
         field.Int("days").Optional().Comment("暂停天数"),
         field.Uint64("end_employee_id").Optional().Nillable().Comment("结束寄存店员ID"),
-        field.Bool("overdue").Default(false).Comment("是否超期"),
+        field.Int("overdue_days").Default(0).Comment("超期天数"),
         field.JSON("end_modifier", &model.Modifier{}).Optional().Comment("结束寄存管理员信息"),
+        field.Bool("pause_overdue").Default(false).Comment("是否超期退租"),
     }
 }
 

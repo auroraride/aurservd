@@ -298,17 +298,24 @@ func (spu *SubscribePauseUpdate) ClearEndEmployeeID() *SubscribePauseUpdate {
 	return spu
 }
 
-// SetOverdue sets the "overdue" field.
-func (spu *SubscribePauseUpdate) SetOverdue(b bool) *SubscribePauseUpdate {
-	spu.mutation.SetOverdue(b)
+// SetOverdueDays sets the "overdue_days" field.
+func (spu *SubscribePauseUpdate) SetOverdueDays(i int) *SubscribePauseUpdate {
+	spu.mutation.ResetOverdueDays()
+	spu.mutation.SetOverdueDays(i)
 	return spu
 }
 
-// SetNillableOverdue sets the "overdue" field if the given value is not nil.
-func (spu *SubscribePauseUpdate) SetNillableOverdue(b *bool) *SubscribePauseUpdate {
-	if b != nil {
-		spu.SetOverdue(*b)
+// SetNillableOverdueDays sets the "overdue_days" field if the given value is not nil.
+func (spu *SubscribePauseUpdate) SetNillableOverdueDays(i *int) *SubscribePauseUpdate {
+	if i != nil {
+		spu.SetOverdueDays(*i)
 	}
+	return spu
+}
+
+// AddOverdueDays adds i to the "overdue_days" field.
+func (spu *SubscribePauseUpdate) AddOverdueDays(i int) *SubscribePauseUpdate {
+	spu.mutation.AddOverdueDays(i)
 	return spu
 }
 
@@ -321,6 +328,20 @@ func (spu *SubscribePauseUpdate) SetEndModifier(m *model.Modifier) *SubscribePau
 // ClearEndModifier clears the value of the "end_modifier" field.
 func (spu *SubscribePauseUpdate) ClearEndModifier() *SubscribePauseUpdate {
 	spu.mutation.ClearEndModifier()
+	return spu
+}
+
+// SetPauseOverdue sets the "pause_overdue" field.
+func (spu *SubscribePauseUpdate) SetPauseOverdue(b bool) *SubscribePauseUpdate {
+	spu.mutation.SetPauseOverdue(b)
+	return spu
+}
+
+// SetNillablePauseOverdue sets the "pause_overdue" field if the given value is not nil.
+func (spu *SubscribePauseUpdate) SetNillablePauseOverdue(b *bool) *SubscribePauseUpdate {
+	if b != nil {
+		spu.SetPauseOverdue(*b)
+	}
 	return spu
 }
 
@@ -624,11 +645,18 @@ func (spu *SubscribePauseUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: subscribepause.FieldDays,
 		})
 	}
-	if value, ok := spu.mutation.Overdue(); ok {
+	if value, ok := spu.mutation.OverdueDays(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
+			Type:   field.TypeInt,
 			Value:  value,
-			Column: subscribepause.FieldOverdue,
+			Column: subscribepause.FieldOverdueDays,
+		})
+	}
+	if value, ok := spu.mutation.AddedOverdueDays(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribepause.FieldOverdueDays,
 		})
 	}
 	if value, ok := spu.mutation.EndModifier(); ok {
@@ -642,6 +670,13 @@ func (spu *SubscribePauseUpdate) sqlSave(ctx context.Context) (n int, err error)
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Column: subscribepause.FieldEndModifier,
+		})
+	}
+	if value, ok := spu.mutation.PauseOverdue(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: subscribepause.FieldPauseOverdue,
 		})
 	}
 	if spu.mutation.RiderCleared() {
@@ -1241,17 +1276,24 @@ func (spuo *SubscribePauseUpdateOne) ClearEndEmployeeID() *SubscribePauseUpdateO
 	return spuo
 }
 
-// SetOverdue sets the "overdue" field.
-func (spuo *SubscribePauseUpdateOne) SetOverdue(b bool) *SubscribePauseUpdateOne {
-	spuo.mutation.SetOverdue(b)
+// SetOverdueDays sets the "overdue_days" field.
+func (spuo *SubscribePauseUpdateOne) SetOverdueDays(i int) *SubscribePauseUpdateOne {
+	spuo.mutation.ResetOverdueDays()
+	spuo.mutation.SetOverdueDays(i)
 	return spuo
 }
 
-// SetNillableOverdue sets the "overdue" field if the given value is not nil.
-func (spuo *SubscribePauseUpdateOne) SetNillableOverdue(b *bool) *SubscribePauseUpdateOne {
-	if b != nil {
-		spuo.SetOverdue(*b)
+// SetNillableOverdueDays sets the "overdue_days" field if the given value is not nil.
+func (spuo *SubscribePauseUpdateOne) SetNillableOverdueDays(i *int) *SubscribePauseUpdateOne {
+	if i != nil {
+		spuo.SetOverdueDays(*i)
 	}
+	return spuo
+}
+
+// AddOverdueDays adds i to the "overdue_days" field.
+func (spuo *SubscribePauseUpdateOne) AddOverdueDays(i int) *SubscribePauseUpdateOne {
+	spuo.mutation.AddOverdueDays(i)
 	return spuo
 }
 
@@ -1264,6 +1306,20 @@ func (spuo *SubscribePauseUpdateOne) SetEndModifier(m *model.Modifier) *Subscrib
 // ClearEndModifier clears the value of the "end_modifier" field.
 func (spuo *SubscribePauseUpdateOne) ClearEndModifier() *SubscribePauseUpdateOne {
 	spuo.mutation.ClearEndModifier()
+	return spuo
+}
+
+// SetPauseOverdue sets the "pause_overdue" field.
+func (spuo *SubscribePauseUpdateOne) SetPauseOverdue(b bool) *SubscribePauseUpdateOne {
+	spuo.mutation.SetPauseOverdue(b)
+	return spuo
+}
+
+// SetNillablePauseOverdue sets the "pause_overdue" field if the given value is not nil.
+func (spuo *SubscribePauseUpdateOne) SetNillablePauseOverdue(b *bool) *SubscribePauseUpdateOne {
+	if b != nil {
+		spuo.SetPauseOverdue(*b)
+	}
 	return spuo
 }
 
@@ -1597,11 +1653,18 @@ func (spuo *SubscribePauseUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 			Column: subscribepause.FieldDays,
 		})
 	}
-	if value, ok := spuo.mutation.Overdue(); ok {
+	if value, ok := spuo.mutation.OverdueDays(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
+			Type:   field.TypeInt,
 			Value:  value,
-			Column: subscribepause.FieldOverdue,
+			Column: subscribepause.FieldOverdueDays,
+		})
+	}
+	if value, ok := spuo.mutation.AddedOverdueDays(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribepause.FieldOverdueDays,
 		})
 	}
 	if value, ok := spuo.mutation.EndModifier(); ok {
@@ -1615,6 +1678,13 @@ func (spuo *SubscribePauseUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Column: subscribepause.FieldEndModifier,
+		})
+	}
+	if value, ok := spuo.mutation.PauseOverdue(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: subscribepause.FieldPauseOverdue,
 		})
 	}
 	if spuo.mutation.RiderCleared() {

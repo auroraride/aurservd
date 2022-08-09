@@ -125,3 +125,16 @@ func (s *settingService) GetSetting(key string) (v any) {
 
     return d.Default
 }
+
+// SystemMaintain 检查是否维护中
+func (s *settingService) SystemMaintain() bool {
+    sm, _ := NewSetting().GetSetting(model.SettingMaintain).(bool)
+    return sm
+}
+
+// SystemMaintainX 检查是否维护中
+func (s *settingService) SystemMaintainX() {
+    if s.SystemMaintain() {
+        snag.Panic("正在唤醒电柜, 请稍后")
+    }
+}

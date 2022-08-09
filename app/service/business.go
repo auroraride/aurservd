@@ -13,9 +13,11 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/business"
+    "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
+    "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
@@ -251,7 +253,7 @@ func (s *businessService) ListManager(req *model.BusinessListReq) *model.Paginat
     )
 }
 
-func (s *businessService) ListPause(req *model.BusinessListPauseReq) *model.PaginationRes {
+func (s *businessService) ListPause(req *model.BusinessPauseList) *model.PaginationRes {
     q := ent.Database.SubscribePause.
         QueryNotDeleted().
         WithCity().
@@ -260,7 +262,14 @@ func (s *businessService) ListPause(req *model.BusinessListPauseReq) *model.Pagi
         WithCabinet().
         WithEndCabinet().
         WithStore().
-        WithEndStore()
+        WithEndStore().
+        WithSubscribe(func(query *ent.SubscribeQuery) {
+            query.WithPlan()
+        }).
+        WithRider(func(query *ent.RiderQuery) {
+            query.WithPerson()
+        }).
+        Order(ent.Desc(subscribepause.FieldCreatedAt))
 
     // 筛选城市
     if req.CityID != 0 {
@@ -284,7 +293,7 @@ func (s *businessService) ListPause(req *model.BusinessListPauseReq) *model.Pagi
 
     // 是否逾期
     if req.Overdue {
-        q.Where(subscribepause.Overdue(true))
+        q.Where(subscribepause.OverdueDaysGT(0))
     }
 
     switch req.StartAscription {
@@ -349,9 +358,98 @@ func (s *businessService) ListPause(req *model.BusinessListPauseReq) *model.Pagi
         )
     }
 
-    items, _ := q.All(s.ctx)
+    if req.StartTarget != "" {
+        q.Where(
+            subscribepause.Or(
+                subscribepause.HasStoreWith(store.NameContainsFold(req.StartTarget)),
+                subscribepause.HasCabinetWith(
+                    cabinet.Or(
+                        cabinet.NameContainsFold(req.StartTarget),
+                        cabinet.SerialContainsFold(req.StartTarget),
+                    ),
+                ),
+            ),
+        )
+    }
 
-    fmt.Println(len(items))
+    if req.EndTarget != "" {
+        q.Where(
+            subscribepause.Or(
+                subscribepause.HasEndStoreWith(store.NameContainsFold(req.EndTarget)),
+                subscribepause.HasEndCabinetWith(
+                    cabinet.Or(
+                        cabinet.NameContainsFold(req.EndTarget),
+                        cabinet.SerialContainsFold(req.EndTarget),
+                    ),
+                ),
+            ),
+        )
+    }
 
-    return nil
+    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.SubscribePause) (res model.BusinessPauseListRes) {
+        sub := item.Edges.Subscribe
+        ep := sub.Edges.Plan
+        res = model.BusinessPauseListRes{
+            City:            item.Edges.City.Name,
+            Name:            item.Edges.Rider.Edges.Person.Name,
+            Phone:           item.Edges.Rider.Phone,
+            Plan:            fmt.Sprintf("%s - %d天", ep.Name, ep.Days),
+            Start:           item.StartAt.Format(carbon.DateLayout),
+            StartTarget:     s.pauseTarget(item.Edges.Store, item.Edges.Cabinet),
+            StartAscription: s.pauseAscription(item.Edges.Store, item.Edges.Cabinet),
+            StartBy:         s.pauseBy(item.Creator, item.Edges.Employee, item.Edges.Cabinet),
+            EndTarget:       s.pauseTarget(item.Edges.EndStore, item.Edges.EndCabinet),
+            EndAscription:   s.pauseAscription(item.Edges.EndStore, item.Edges.EndCabinet),
+            EndBy:           s.pauseBy(item.EndModifier, item.Edges.EndEmployee, item.Edges.EndCabinet),
+            Days:            item.Days,
+            OverdueDays:     item.OverdueDays,
+            Remaining:       sub.Remaining,
+        }
+
+        if item.EndAt.IsZero() {
+            res.Status = "寄存中"
+        } else {
+            res.End = item.EndAt.Format(carbon.DateLayout)
+            res.Status = "已结束"
+        }
+
+        if item.PauseOverdue {
+            res.Status = "超期退租"
+        }
+
+        return
+    })
+}
+
+func (s *businessService) pauseTarget(st *ent.Store, cab *ent.Cabinet) string {
+    if st != nil {
+        return fmt.Sprintf("[门店] %s", st.Name)
+    }
+    if cab != nil {
+        return fmt.Sprintf("[电柜] %s - %s", cab.Name, cab.Serial)
+    }
+    return ""
+}
+
+func (s *businessService) pauseAscription(st *ent.Store, cab *ent.Cabinet) string {
+    if st != nil {
+        return "门店"
+    }
+    if cab != nil {
+        return "电柜"
+    }
+    return ""
+}
+
+func (s *businessService) pauseBy(m *model.Modifier, e *ent.Employee, cab *ent.Cabinet) string {
+    if cab != nil {
+        return cab.Serial
+    }
+    if e != nil {
+        return e.Name
+    }
+    if m != nil {
+        return m.Name
+    }
+    return ""
 }
