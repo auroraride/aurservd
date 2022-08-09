@@ -14854,6 +14854,10 @@ const docTemplate = `{
                     "description": "调出",
                     "type": "string"
                 },
+                "remark": {
+                    "description": "备注信息",
+                    "type": "string"
+                },
                 "rider": {
                     "description": "骑手, 仅业务发生有此字段",
                     "type": "string"
@@ -15060,6 +15064,10 @@ const docTemplate = `{
         },
         "model.StockTransferReq": {
             "type": "object",
+            "required": [
+                "num",
+                "remark"
+            ],
             "properties": {
                 "inboundId": {
                     "description": "调入至 0:平台",
@@ -15098,6 +15106,10 @@ const docTemplate = `{
                         1,
                         2
                     ]
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
                 }
             }
         },

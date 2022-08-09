@@ -33,9 +33,10 @@ func StockNumberOfRiderBusiness(typ uint8) (num int) {
 }
 
 type StockTransferReq struct {
-    Model string `json:"model,omitempty"` // 电池型号 (和`物资名称`不能同时存在, 也不能同时为空)
-    Name  string `json:"name,omitempty"`  // 物资名称 (和`电池型号`不能同时存在, 也不能同时为空)
-    Num   int    `json:"num"`             // 调拨数量
+    Model  string  `json:"model,omitempty"`            // 电池型号 (和`物资名称`不能同时存在, 也不能同时为空)
+    Name   string  `json:"name,omitempty"`             // 物资名称 (和`电池型号`不能同时存在, 也不能同时为空)
+    Num    int     `json:"num" validate:"required"`    // 调拨数量
+    Remark *string `json:"remark" validate:"required"` // 备注
 
     OutboundID     uint64 `json:"outboundId"`                   // 调出自 0:平台
     OutboundTarget uint8  `json:"outboundTarget" enums:"0,1,2"` // 调出目标 0:平台 1:门店 2:电柜
@@ -202,5 +203,6 @@ type StockDetailRes struct {
     Type     string `json:"type"`            // 类型
     Operator string `json:"operator"`        // 操作人
     Time     string `json:"time"`            // 时间
+    Remark   string `json:"remark"`          // 备注信息
     Rider    string `json:"rider,omitempty"` // 骑手, 仅业务发生有此字段
 }

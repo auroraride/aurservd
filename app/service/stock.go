@@ -344,6 +344,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
             SetCityID(cityID).
             SetType(model.StockTypeTransfer).
             SetMaterial(mt).
+            SetNillableRemark(req.Remark).
             SetSn(sn)
 
         if req.OutboundTarget == model.StockTargetStore {
@@ -360,6 +361,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
             SetCityID(cityID).
             SetType(model.StockTypeTransfer).
             SetMaterial(mt).
+            SetNillableRemark(req.Remark).
             SetSn(sn)
         if req.InboundTarget == model.StockTargetStore {
             iq.SetNillableStoreID(in)
@@ -818,11 +820,12 @@ func (s *stockService) Detail(req *model.StockDetailReq) *model.PaginationRes {
 // detailInfo 库存出入明细信息
 func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
     res := model.StockDetailRes{
-        ID:   item.ID,
-        Sn:   item.Sn,
-        Name: item.Name,
-        Num:  int(math.Abs(float64(item.Num))),
-        Time: item.CreatedAt.Format(carbon.DateTimeLayout),
+        ID:     item.ID,
+        Sn:     item.Sn,
+        Name:   item.Name,
+        Num:    int(math.Abs(float64(item.Num))),
+        Time:   item.CreatedAt.Format(carbon.DateTimeLayout),
+        Remark: item.Remark,
     }
 
     // 城市
@@ -875,18 +878,21 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
             model.StockTypeRiderUnSubscribe: "退租",
         }
 
-        tmr := "门店"
-        if ec != nil {
-            tmr = "电柜"
-        }
-        res.Type = tmr + tm[item.Type]
-
-        if ee != nil {
-            res.Operator = fmt.Sprintf("店员 - %s", ee.Name)
-        }
+        var tmr string
         if ec != nil {
             res.Operator = fmt.Sprintf("骑手 - %s", riderName)
+            tmr = "电柜"
+        } else {
+            if ee != nil {
+                tmr = "门店"
+                res.Operator = fmt.Sprintf("店员 - %s", ee.Name)
+            } else if item.Creator != nil {
+                tmr = "后台"
+                res.Operator = fmt.Sprintf("后台 - %s", item.Creator.Name)
+            }
         }
+
+        res.Type = tmr + tm[item.Type]
 
         // 出入库对象
         target := fmt.Sprintf("[骑手] %s - %s", er.Phone, er.Edges.Person.Name)

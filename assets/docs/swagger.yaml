@@ -3839,6 +3839,9 @@ definitions:
       outbound:
         description: 调出
         type: string
+      remark:
+        description: 备注信息
+        type: string
       rider:
         description: 骑手, 仅业务发生有此字段
         type: string
@@ -4009,6 +4012,12 @@ definitions:
         - 1
         - 2
         type: integer
+      remark:
+        description: 备注
+        type: string
+    required:
+    - num
+    - remark
     type: object
   model.Store:
     properties:
