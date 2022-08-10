@@ -737,9 +737,9 @@ func (s *stockService) Detail(req *model.StockDetailReq) *model.PaginationRes {
     }).WithEmployee().WithCity()
     // 排序
     if req.Positive {
-        q.Order(ent.Asc(stock.FieldCreatedAt))
+        q.Order(ent.Asc(stock.FieldSn))
     } else {
-        q.Order(ent.Desc(stock.FieldCreatedAt))
+        q.Order(ent.Desc(stock.FieldSn))
     }
 
     if req.Start != "" {
@@ -811,6 +811,10 @@ func (s *stockService) Detail(req *model.StockDetailReq) *model.PaginationRes {
         }
     }
     q.Where(stock.Or(predicates...))
+
+    q.Modify(func(sel *sql.Selector) {
+        sel.Select("ON (sn) *")
+    })
 
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Stock) model.StockDetailRes {
         return s.detailInfo(item)
