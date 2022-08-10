@@ -2467,13 +2467,122 @@
                         "name": "X-Manager-Token",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "取电类别 0:全部 1:门店 2:电柜",
+                        "name": "endAscription",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "取电办理人",
+                        "name": "endBy",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "取电时间段, 逗号分隔, 如2022-08-01,2022-08-07",
+                        "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束地点",
+                        "name": "endTarget",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "逾期 false:全部 true:已逾期",
+                        "name": "overdue",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "骑手ID",
+                        "name": "riderId",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "寄存类别 0:全部 1:门店 2:电柜",
+                        "name": "startAscription",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "寄存办理人",
+                        "name": "startBy",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "寄存时间段, 逗号分隔, 如2022-08-01,2022-08-07",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "寄存地点",
+                        "name": "startTarget",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "状态 0:全部 1:寄存中 2:已结束",
+                        "name": "status",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.BusinessPauseListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -11149,6 +11258,75 @@
                 },
                 "type": {
                     "description": "业务类别",
+                    "type": "string"
+                }
+            }
+        },
+        "model.BusinessPauseListRes": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "description": "城市",
+                    "type": "string"
+                },
+                "days": {
+                    "description": "寄存天数",
+                    "type": "integer"
+                },
+                "end": {
+                    "description": "取电时间",
+                    "type": "string"
+                },
+                "endAscription": {
+                    "description": "取电类别",
+                    "type": "string"
+                },
+                "endBy": {
+                    "description": "取电办理",
+                    "type": "string"
+                },
+                "endTarget": {
+                    "description": "取电地点",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "骑手姓名",
+                    "type": "string"
+                },
+                "overdueDays": {
+                    "description": "超期天数",
+                    "type": "integer"
+                },
+                "phone": {
+                    "description": "骑手电话",
+                    "type": "string"
+                },
+                "remaining": {
+                    "description": "剩余天数",
+                    "type": "integer"
+                },
+                "start": {
+                    "description": "寄存开始时间",
+                    "type": "string"
+                },
+                "startAscription": {
+                    "description": "寄存类别",
+                    "type": "string"
+                },
+                "startBy": {
+                    "description": "寄存办理",
+                    "type": "string"
+                },
+                "startTarget": {
+                    "description": "寄存地点",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "当前状态",
+                    "type": "string"
+                },
+                "subscribe": {
+                    "description": "骑士卡",
                     "type": "string"
                 }
             }
