@@ -393,23 +393,21 @@ func (s *stockService) BatteryOverview(req *model.StockOverviewReq) (items []mod
 
     switch req.Goal {
     case 1:
-        extends = append(extends, fmt.Sprintf("AND (%s IS NOT NULL OR (%s IS NULL AND %s IS NULL))", stock.FieldStoreID, stock.FieldStoreID, stock.FieldCabinetID))
+        if req.StoreID != 0 {
+            extends = append(extends, fmt.Sprintf("AND (%s = %d)", stock.FieldStoreID, req.StoreID))
+        } else {
+            extends = append(extends, fmt.Sprintf("AND (%s IS NOT NULL OR (%s IS NULL AND %s IS NULL))", stock.FieldStoreID, stock.FieldStoreID, stock.FieldCabinetID))
+        }
         break
     case 2:
-        extends = append(extends, fmt.Sprintf("AND (%s IS NOT NULL)", stock.FieldCabinetID))
+        if req.CabinetID != 0 {
+            extends = append(extends, fmt.Sprintf("AND (%s = %d)", stock.FieldCabinetID, req.StoreID))
+        } else {
+            extends = append(extends, fmt.Sprintf("AND (%s IS NOT NULL)", stock.FieldCabinetID))
+        }
         break
     default:
-        switch true {
-        case req.StoreID != 0:
-            extends = append(extends, fmt.Sprintf("AND (%s = %d)", stock.FieldStoreID, req.StoreID))
-            break
-        case req.CabinetID != 0:
-            extends = append(extends, fmt.Sprintf("AND (%s = %d)", stock.FieldCabinetID, req.StoreID))
-            break
-        default:
-            extends = append(extends, fmt.Sprintf("AND (%s IS NOT NULL OR %s IS NOT NULL OR %s IS NOT NULL)", stock.FieldStoreID, stock.FieldCabinetID, stock.FieldRiderID))
-            break
-        }
+        extends = append(extends, fmt.Sprintf("AND (%s IS NOT NULL OR %s IS NOT NULL OR %s IS NOT NULL)", stock.FieldStoreID, stock.FieldCabinetID, stock.FieldRiderID))
         break
     }
 
@@ -754,32 +752,32 @@ func (s *stockService) Detail(req *model.StockDetailReq) *model.PaginationRes {
         q.Where(stock.CityID(req.CityID))
     }
 
-    if req.CabinetID != 0 {
-        q.Where(stock.CabinetID(req.CabinetID))
-    }
-
     if req.Serial != "" {
         q.Where(stock.HasCabinetWith(cabinet.Serial(req.Serial)))
     }
 
-    if req.StoreID != 0 {
-        q.Where(stock.StoreID(req.StoreID))
-    }
-
-    switch req.QueryTarget {
+    switch req.Goal {
     case 1:
         // 门店物资
-        q.Where(
-            stock.StoreIDNotNil(),
-            stock.CabinetIDIsNil(),
-        )
+        if req.StoreID != 0 {
+            q.Where(stock.StoreID(req.StoreID))
+        } else {
+            q.Where(
+                stock.StoreIDNotNil(),
+                stock.CabinetIDIsNil(),
+            )
+        }
         break
     case 2:
         // 电柜物资
-        q.Where(
-            stock.StoreIDIsNil(),
-            stock.CabinetIDNotNil(),
-        )
+        if req.CabinetID != 0 {
+            q.Where(stock.CabinetID(req.CabinetID))
+        } else {
+            q.Where(
+                stock.StoreIDIsNil(),
+                stock.CabinetIDNotNil(),
+            )
+        }
         break
     default:
         // 门店或电柜物资

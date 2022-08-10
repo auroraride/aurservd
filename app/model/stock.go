@@ -181,15 +181,15 @@ type StockCabinetListRes struct {
 type StockDetailReq struct {
     PaginationReq
 
-    QueryTarget uint8  `json:"queryTarget"` // 查询对象 0:全部 1:门店 2:电柜
-    Materials   string `json:"materials"`   // 查询物资类别, 默认为电池, 逗号分隔 battery:电池 frame:车架 others:其他物资
-    Serial      string `json:"serial"`      // 电柜编号
-    CityID      uint64 `json:"cityId"`      // 城市ID
-    CabinetID   uint64 `json:"cabinetId"`   // 电柜ID
-    StoreID     uint64 `json:"storeId"`     // 门店ID
-    Start       string `json:"start"`       // 开始时间
-    End         string `json:"end"`         // 结束时间
-    Positive    bool   `json:"positive"`    // 是否正序(默认倒序)
+    Goal      uint8  `json:"goal" query:"goal" enums:"0,1,2"` // 查询目标 0:不筛选 1:门店(默认) 2:电柜
+    Materials string `json:"materials" query:"materials"`     // 查询物资类别, 默认为电池, 逗号分隔 battery:电池 frame:车架 others:其他物资
+    Serial    string `json:"serial" query:"serial"`           // 电柜编号
+    CityID    uint64 `json:"cityId" query:"cityId"`           // 城市ID
+    CabinetID uint64 `json:"cabinetId" query:"cabinetId"`     // 电柜ID
+    StoreID   uint64 `json:"storeId" query:"storeId"`         // 门店ID
+    Start     string `json:"start" query:"start"`             // 开始时间
+    End       string `json:"end" query:"end"`                 // 结束时间
+    Positive  bool   `json:"positive" query:"positive"`       // 是否正序(默认倒序)
 }
 
 type StockDetailRes struct {

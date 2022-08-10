@@ -7026,6 +7026,17 @@
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "查询目标 0:不筛选 1:门店(默认) 2:电柜",
+                        "name": "goal",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "查询物资类别, 默认为电池, 逗号分隔 battery:电池 frame:车架 others:其他物资",
                         "name": "materials",
@@ -7041,12 +7052,6 @@
                         "type": "boolean",
                         "description": "是否正序(默认倒序)",
                         "name": "positive",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "查询对象 0:全部 1:门店 2:电柜",
-                        "name": "queryTarget",
                         "in": "query"
                     },
                     {
