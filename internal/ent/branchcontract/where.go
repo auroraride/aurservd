@@ -185,7 +185,7 @@ func ElectricityPledge(v float64) predicate.BranchContract {
 }
 
 // Electricity applies equality check predicate on the "electricity" field. It's identical to ElectricityEQ.
-func Electricity(v float64) predicate.BranchContract {
+func Electricity(v string) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldElectricity), v))
 	})
@@ -1411,21 +1411,21 @@ func ElectricityPledgeLTE(v float64) predicate.BranchContract {
 }
 
 // ElectricityEQ applies the EQ predicate on the "electricity" field.
-func ElectricityEQ(v float64) predicate.BranchContract {
+func ElectricityEQ(v string) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldElectricity), v))
 	})
 }
 
 // ElectricityNEQ applies the NEQ predicate on the "electricity" field.
-func ElectricityNEQ(v float64) predicate.BranchContract {
+func ElectricityNEQ(v string) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldElectricity), v))
 	})
 }
 
 // ElectricityIn applies the In predicate on the "electricity" field.
-func ElectricityIn(vs ...float64) predicate.BranchContract {
+func ElectricityIn(vs ...string) predicate.BranchContract {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1442,7 +1442,7 @@ func ElectricityIn(vs ...float64) predicate.BranchContract {
 }
 
 // ElectricityNotIn applies the NotIn predicate on the "electricity" field.
-func ElectricityNotIn(vs ...float64) predicate.BranchContract {
+func ElectricityNotIn(vs ...string) predicate.BranchContract {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1459,30 +1459,65 @@ func ElectricityNotIn(vs ...float64) predicate.BranchContract {
 }
 
 // ElectricityGT applies the GT predicate on the "electricity" field.
-func ElectricityGT(v float64) predicate.BranchContract {
+func ElectricityGT(v string) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldElectricity), v))
 	})
 }
 
 // ElectricityGTE applies the GTE predicate on the "electricity" field.
-func ElectricityGTE(v float64) predicate.BranchContract {
+func ElectricityGTE(v string) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldElectricity), v))
 	})
 }
 
 // ElectricityLT applies the LT predicate on the "electricity" field.
-func ElectricityLT(v float64) predicate.BranchContract {
+func ElectricityLT(v string) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldElectricity), v))
 	})
 }
 
 // ElectricityLTE applies the LTE predicate on the "electricity" field.
-func ElectricityLTE(v float64) predicate.BranchContract {
+func ElectricityLTE(v string) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldElectricity), v))
+	})
+}
+
+// ElectricityContains applies the Contains predicate on the "electricity" field.
+func ElectricityContains(v string) predicate.BranchContract {
+	return predicate.BranchContract(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldElectricity), v))
+	})
+}
+
+// ElectricityHasPrefix applies the HasPrefix predicate on the "electricity" field.
+func ElectricityHasPrefix(v string) predicate.BranchContract {
+	return predicate.BranchContract(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldElectricity), v))
+	})
+}
+
+// ElectricityHasSuffix applies the HasSuffix predicate on the "electricity" field.
+func ElectricityHasSuffix(v string) predicate.BranchContract {
+	return predicate.BranchContract(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldElectricity), v))
+	})
+}
+
+// ElectricityEqualFold applies the EqualFold predicate on the "electricity" field.
+func ElectricityEqualFold(v string) predicate.BranchContract {
+	return predicate.BranchContract(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldElectricity), v))
+	})
+}
+
+// ElectricityContainsFold applies the ContainsFold predicate on the "electricity" field.
+func ElectricityContainsFold(v string) predicate.BranchContract {
+	return predicate.BranchContract(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldElectricity), v))
 	})
 }
 

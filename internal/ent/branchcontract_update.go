@@ -171,15 +171,8 @@ func (bcu *BranchContractUpdate) AddElectricityPledge(f float64) *BranchContract
 }
 
 // SetElectricity sets the "electricity" field.
-func (bcu *BranchContractUpdate) SetElectricity(f float64) *BranchContractUpdate {
-	bcu.mutation.ResetElectricity()
-	bcu.mutation.SetElectricity(f)
-	return bcu
-}
-
-// AddElectricity adds f to the "electricity" field.
-func (bcu *BranchContractUpdate) AddElectricity(f float64) *BranchContractUpdate {
-	bcu.mutation.AddElectricity(f)
+func (bcu *BranchContractUpdate) SetElectricity(s string) *BranchContractUpdate {
+	bcu.mutation.SetElectricity(s)
 	return bcu
 }
 
@@ -475,14 +468,7 @@ func (bcu *BranchContractUpdate) sqlSave(ctx context.Context) (n int, err error)
 	}
 	if value, ok := bcu.mutation.Electricity(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: branchcontract.FieldElectricity,
-		})
-	}
-	if value, ok := bcu.mutation.AddedElectricity(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeString,
 			Value:  value,
 			Column: branchcontract.FieldElectricity,
 		})
@@ -724,15 +710,8 @@ func (bcuo *BranchContractUpdateOne) AddElectricityPledge(f float64) *BranchCont
 }
 
 // SetElectricity sets the "electricity" field.
-func (bcuo *BranchContractUpdateOne) SetElectricity(f float64) *BranchContractUpdateOne {
-	bcuo.mutation.ResetElectricity()
-	bcuo.mutation.SetElectricity(f)
-	return bcuo
-}
-
-// AddElectricity adds f to the "electricity" field.
-func (bcuo *BranchContractUpdateOne) AddElectricity(f float64) *BranchContractUpdateOne {
-	bcuo.mutation.AddElectricity(f)
+func (bcuo *BranchContractUpdateOne) SetElectricity(s string) *BranchContractUpdateOne {
+	bcuo.mutation.SetElectricity(s)
 	return bcuo
 }
 
@@ -1058,14 +1037,7 @@ func (bcuo *BranchContractUpdateOne) sqlSave(ctx context.Context) (_node *Branch
 	}
 	if value, ok := bcuo.mutation.Electricity(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: branchcontract.FieldElectricity,
-		})
-	}
-	if value, ok := bcuo.mutation.AddedElectricity(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeString,
 			Value:  value,
 			Column: branchcontract.FieldElectricity,
 		})

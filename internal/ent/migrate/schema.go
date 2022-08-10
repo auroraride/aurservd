@@ -292,7 +292,7 @@ var (
 		{Name: "rent", Type: field.TypeFloat64, Comment: "租金"},
 		{Name: "lease", Type: field.TypeUint, Comment: "租期月数"},
 		{Name: "electricity_pledge", Type: field.TypeFloat64, Comment: "电费押金"},
-		{Name: "electricity", Type: field.TypeFloat64, Comment: "电费单价"},
+		{Name: "electricity", Type: field.TypeString, Comment: "电费单价"},
 		{Name: "area", Type: field.TypeFloat64, Comment: "网点面积"},
 		{Name: "start_time", Type: field.TypeTime, Comment: "租期开始时间"},
 		{Name: "end_time", Type: field.TypeTime, Comment: "租期结束时间"},

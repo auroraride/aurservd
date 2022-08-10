@@ -10656,17 +10656,13 @@ const docTemplate = `{
         "model.BranchContract": {
             "type": "object",
             "required": [
-                "area",
-                "bankNumber",
                 "electricity",
-                "electricityPledge",
                 "endTime",
                 "file",
                 "idCardNumber",
                 "landlordName",
                 "lease",
                 "phone",
-                "pledge",
                 "rent",
                 "sheets",
                 "startTime"
@@ -10682,7 +10678,7 @@ const docTemplate = `{
                 },
                 "electricity": {
                     "description": "电费单价 ",
-                    "type": "number"
+                    "type": "string"
                 },
                 "electricityPledge": {
                     "description": "电费押金 ",

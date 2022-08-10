@@ -907,7 +907,7 @@ definitions:
         type: string
       electricity:
         description: '电费单价 '
-        type: number
+        type: string
       electricityPledge:
         description: '电费押金 '
         type: number
@@ -944,17 +944,13 @@ definitions:
         description: '租期开始时间 '
         type: string
     required:
-    - area
-    - bankNumber
     - electricity
-    - electricityPledge
     - endTime
     - file
     - idCardNumber
     - landlordName
     - lease
     - phone
-    - pledge
     - rent
     - sheets
     - startTime

@@ -40,8 +40,7 @@ type BranchContractMutation struct {
 	addlease              *int
 	electricity_pledge    *float64
 	addelectricity_pledge *float64
-	electricity           *float64
-	addelectricity        *float64
+	electricity           *string
 	area                  *float64
 	addarea               *float64
 	start_time            *time.Time
@@ -827,13 +826,12 @@ func (m *BranchContractMutation) ResetElectricityPledge() {
 }
 
 // SetElectricity sets the "electricity" field.
-func (m *BranchContractMutation) SetElectricity(f float64) {
-	m.electricity = &f
-	m.addelectricity = nil
+func (m *BranchContractMutation) SetElectricity(s string) {
+	m.electricity = &s
 }
 
 // Electricity returns the value of the "electricity" field in the mutation.
-func (m *BranchContractMutation) Electricity() (r float64, exists bool) {
+func (m *BranchContractMutation) Electricity() (r string, exists bool) {
 	v := m.electricity
 	if v == nil {
 		return
@@ -844,7 +842,7 @@ func (m *BranchContractMutation) Electricity() (r float64, exists bool) {
 // OldElectricity returns the old "electricity" field's value of the BranchContract entity.
 // If the BranchContract object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BranchContractMutation) OldElectricity(ctx context.Context) (v float64, err error) {
+func (m *BranchContractMutation) OldElectricity(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldElectricity is only allowed on UpdateOne operations")
 	}
@@ -858,28 +856,9 @@ func (m *BranchContractMutation) OldElectricity(ctx context.Context) (v float64,
 	return oldValue.Electricity, nil
 }
 
-// AddElectricity adds f to the "electricity" field.
-func (m *BranchContractMutation) AddElectricity(f float64) {
-	if m.addelectricity != nil {
-		*m.addelectricity += f
-	} else {
-		m.addelectricity = &f
-	}
-}
-
-// AddedElectricity returns the value that was added to the "electricity" field in this mutation.
-func (m *BranchContractMutation) AddedElectricity() (r float64, exists bool) {
-	v := m.addelectricity
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
 // ResetElectricity resets all changes to the "electricity" field.
 func (m *BranchContractMutation) ResetElectricity() {
 	m.electricity = nil
-	m.addelectricity = nil
 }
 
 // SetArea sets the "area" field.
@@ -1407,7 +1386,7 @@ func (m *BranchContractMutation) SetField(name string, value ent.Value) error {
 		m.SetElectricityPledge(v)
 		return nil
 	case branchcontract.FieldElectricity:
-		v, ok := value.(float64)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1468,9 +1447,6 @@ func (m *BranchContractMutation) AddedFields() []string {
 	if m.addelectricity_pledge != nil {
 		fields = append(fields, branchcontract.FieldElectricityPledge)
 	}
-	if m.addelectricity != nil {
-		fields = append(fields, branchcontract.FieldElectricity)
-	}
 	if m.addarea != nil {
 		fields = append(fields, branchcontract.FieldArea)
 	}
@@ -1490,8 +1466,6 @@ func (m *BranchContractMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedLease()
 	case branchcontract.FieldElectricityPledge:
 		return m.AddedElectricityPledge()
-	case branchcontract.FieldElectricity:
-		return m.AddedElectricity()
 	case branchcontract.FieldArea:
 		return m.AddedArea()
 	}
@@ -1530,13 +1504,6 @@ func (m *BranchContractMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddElectricityPledge(v)
-		return nil
-	case branchcontract.FieldElectricity:
-		v, ok := value.(float64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddElectricity(v)
 		return nil
 	case branchcontract.FieldArea:
 		v, ok := value.(float64)

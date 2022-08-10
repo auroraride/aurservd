@@ -63,7 +63,7 @@ type BranchContract struct {
 	ElectricityPledge float64 `json:"electricity_pledge,omitempty"`
 	// Electricity holds the value of the "electricity" field.
 	// 电费单价
-	Electricity float64 `json:"electricity,omitempty"`
+	Electricity string `json:"electricity,omitempty"`
 	// Area holds the value of the "area" field.
 	// 网点面积
 	Area float64 `json:"area,omitempty"`
@@ -114,11 +114,11 @@ func (*BranchContract) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case branchcontract.FieldCreator, branchcontract.FieldLastModifier, branchcontract.FieldSheets:
 			values[i] = new([]byte)
-		case branchcontract.FieldPledge, branchcontract.FieldRent, branchcontract.FieldElectricityPledge, branchcontract.FieldElectricity, branchcontract.FieldArea:
+		case branchcontract.FieldPledge, branchcontract.FieldRent, branchcontract.FieldElectricityPledge, branchcontract.FieldArea:
 			values[i] = new(sql.NullFloat64)
 		case branchcontract.FieldID, branchcontract.FieldBranchID, branchcontract.FieldLease:
 			values[i] = new(sql.NullInt64)
-		case branchcontract.FieldRemark, branchcontract.FieldLandlordName, branchcontract.FieldIDCardNumber, branchcontract.FieldPhone, branchcontract.FieldBankNumber, branchcontract.FieldFile:
+		case branchcontract.FieldRemark, branchcontract.FieldLandlordName, branchcontract.FieldIDCardNumber, branchcontract.FieldPhone, branchcontract.FieldBankNumber, branchcontract.FieldElectricity, branchcontract.FieldFile:
 			values[i] = new(sql.NullString)
 		case branchcontract.FieldCreatedAt, branchcontract.FieldUpdatedAt, branchcontract.FieldDeletedAt, branchcontract.FieldStartTime, branchcontract.FieldEndTime:
 			values[i] = new(sql.NullTime)
@@ -239,10 +239,10 @@ func (bc *BranchContract) assignValues(columns []string, values []interface{}) e
 				bc.ElectricityPledge = value.Float64
 			}
 		case branchcontract.FieldElectricity:
-			if value, ok := values[i].(*sql.NullFloat64); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field electricity", values[i])
 			} else if value.Valid {
-				bc.Electricity = value.Float64
+				bc.Electricity = value.String
 			}
 		case branchcontract.FieldArea:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
@@ -342,7 +342,7 @@ func (bc *BranchContract) String() string {
 	builder.WriteString(", electricity_pledge=")
 	builder.WriteString(fmt.Sprintf("%v", bc.ElectricityPledge))
 	builder.WriteString(", electricity=")
-	builder.WriteString(fmt.Sprintf("%v", bc.Electricity))
+	builder.WriteString(bc.Electricity)
 	builder.WriteString(", area=")
 	builder.WriteString(fmt.Sprintf("%v", bc.Area))
 	builder.WriteString(", start_time=")

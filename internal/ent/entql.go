@@ -201,7 +201,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			branchcontract.FieldRent:              {Type: field.TypeFloat64, Column: branchcontract.FieldRent},
 			branchcontract.FieldLease:             {Type: field.TypeUint, Column: branchcontract.FieldLease},
 			branchcontract.FieldElectricityPledge: {Type: field.TypeFloat64, Column: branchcontract.FieldElectricityPledge},
-			branchcontract.FieldElectricity:       {Type: field.TypeFloat64, Column: branchcontract.FieldElectricity},
+			branchcontract.FieldElectricity:       {Type: field.TypeString, Column: branchcontract.FieldElectricity},
 			branchcontract.FieldArea:              {Type: field.TypeFloat64, Column: branchcontract.FieldArea},
 			branchcontract.FieldStartTime:         {Type: field.TypeTime, Column: branchcontract.FieldStartTime},
 			branchcontract.FieldEndTime:           {Type: field.TypeTime, Column: branchcontract.FieldEndTime},
@@ -3671,8 +3671,8 @@ func (f *BranchContractFilter) WhereElectricityPledge(p entql.Float64P) {
 	f.Where(p.Field(branchcontract.FieldElectricityPledge))
 }
 
-// WhereElectricity applies the entql float64 predicate on the electricity field.
-func (f *BranchContractFilter) WhereElectricity(p entql.Float64P) {
+// WhereElectricity applies the entql string predicate on the electricity field.
+func (f *BranchContractFilter) WhereElectricity(p entql.StringP) {
 	f.Where(p.Field(branchcontract.FieldElectricity))
 }
 

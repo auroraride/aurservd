@@ -33,7 +33,7 @@ func (BranchContract) Fields() []ent.Field {
         field.Float("rent").Comment("租金"),
         field.Uint("lease").Comment("租期月数"),
         field.Float("electricity_pledge").Comment("电费押金"),
-        field.Float("electricity").Comment("电费单价"),
+        field.String("electricity").Comment("电费单价"),
         field.Float("area").Comment("网点面积"),
         field.Time("start_time").Comment("租期开始时间"),
         field.Time("end_time").Comment("租期结束时间"),

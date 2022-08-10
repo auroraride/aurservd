@@ -147,8 +147,8 @@ func (bcc *BranchContractCreate) SetElectricityPledge(f float64) *BranchContract
 }
 
 // SetElectricity sets the "electricity" field.
-func (bcc *BranchContractCreate) SetElectricity(f float64) *BranchContractCreate {
-	bcc.mutation.SetElectricity(f)
+func (bcc *BranchContractCreate) SetElectricity(s string) *BranchContractCreate {
+	bcc.mutation.SetElectricity(s)
 	return bcc
 }
 
@@ -481,7 +481,7 @@ func (bcc *BranchContractCreate) createSpec() (*BranchContract, *sqlgraph.Create
 	}
 	if value, ok := bcc.mutation.Electricity(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeString,
 			Value:  value,
 			Column: branchcontract.FieldElectricity,
 		})
@@ -830,7 +830,7 @@ func (u *BranchContractUpsert) AddElectricityPledge(v float64) *BranchContractUp
 }
 
 // SetElectricity sets the "electricity" field.
-func (u *BranchContractUpsert) SetElectricity(v float64) *BranchContractUpsert {
+func (u *BranchContractUpsert) SetElectricity(v string) *BranchContractUpsert {
 	u.Set(branchcontract.FieldElectricity, v)
 	return u
 }
@@ -838,12 +838,6 @@ func (u *BranchContractUpsert) SetElectricity(v float64) *BranchContractUpsert {
 // UpdateElectricity sets the "electricity" field to the value that was provided on create.
 func (u *BranchContractUpsert) UpdateElectricity() *BranchContractUpsert {
 	u.SetExcluded(branchcontract.FieldElectricity)
-	return u
-}
-
-// AddElectricity adds v to the "electricity" field.
-func (u *BranchContractUpsert) AddElectricity(v float64) *BranchContractUpsert {
-	u.Add(branchcontract.FieldElectricity, v)
 	return u
 }
 
@@ -1230,16 +1224,9 @@ func (u *BranchContractUpsertOne) UpdateElectricityPledge() *BranchContractUpser
 }
 
 // SetElectricity sets the "electricity" field.
-func (u *BranchContractUpsertOne) SetElectricity(v float64) *BranchContractUpsertOne {
+func (u *BranchContractUpsertOne) SetElectricity(v string) *BranchContractUpsertOne {
 	return u.Update(func(s *BranchContractUpsert) {
 		s.SetElectricity(v)
-	})
-}
-
-// AddElectricity adds v to the "electricity" field.
-func (u *BranchContractUpsertOne) AddElectricity(v float64) *BranchContractUpsertOne {
-	return u.Update(func(s *BranchContractUpsert) {
-		s.AddElectricity(v)
 	})
 }
 
@@ -1808,16 +1795,9 @@ func (u *BranchContractUpsertBulk) UpdateElectricityPledge() *BranchContractUpse
 }
 
 // SetElectricity sets the "electricity" field.
-func (u *BranchContractUpsertBulk) SetElectricity(v float64) *BranchContractUpsertBulk {
+func (u *BranchContractUpsertBulk) SetElectricity(v string) *BranchContractUpsertBulk {
 	return u.Update(func(s *BranchContractUpsert) {
 		s.SetElectricity(v)
-	})
-}
-
-// AddElectricity adds v to the "electricity" field.
-func (u *BranchContractUpsertBulk) AddElectricity(v float64) *BranchContractUpsertBulk {
-	return u.Update(func(s *BranchContractUpsert) {
-		s.AddElectricity(v)
 	})
 }
 

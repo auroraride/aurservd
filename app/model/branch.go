@@ -65,13 +65,13 @@ type BranchContract struct {
     LandlordName      string   `json:"landlordName" validate:"required" trans:"房东姓名"`
     IDCardNumber      string   `json:"idCardNumber" validate:"required" trans:"房东身份证"`
     Phone             string   `json:"phone" validate:"required,phone" trans:"房东手机号"`
-    BankNumber        string   `json:"bankNumber" validate:"required" trans:"房东银行卡号"`
-    Pledge            float64  `json:"pledge" validate:"required" trans:"押金"`
+    BankNumber        string   `json:"bankNumber" trans:"房东银行卡号"`
+    Pledge            float64  `json:"pledge" trans:"押金"`
     Rent              float64  `json:"rent" validate:"required" trans:"租金"`
     Lease             uint     `json:"lease" validate:"required" trans:"租期月数"`
-    ElectricityPledge float64  `json:"electricityPledge" validate:"required" trans:"电费押金"`
-    Electricity       float64  `json:"electricity" validate:"required" trans:"电费单价"`
-    Area              float64  `json:"area" validate:"required" trans:"网点面积"`
+    ElectricityPledge float64  `json:"electricityPledge" trans:"电费押金"`
+    Electricity       string   `json:"electricity" validate:"required" trans:"电费单价"`
+    Area              float64  `json:"area" trans:"网点面积"`
     StartTime         string   `json:"startTime" validate:"required" trans:"租期开始时间"`
     EndTime           string   `json:"endTime" validate:"required" trans:"租期结束时间"`
     File              string   `json:"file" validate:"required" trans:"合同文件"`
