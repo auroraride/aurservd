@@ -26,6 +26,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exception"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
+	"github.com/auroraride/aurservd/internal/ent/export"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -537,6 +538,27 @@ func init() {
 	exchangeDescAlternative := exchangeFields[8].Descriptor()
 	// exchange.DefaultAlternative holds the default value on creation for the alternative field.
 	exchange.DefaultAlternative = exchangeDescAlternative.Default.(bool)
+	exportMixin := schema.Export{}.Mixin()
+	exportMixinHooks2 := exportMixin[2].Hooks()
+	export.Hooks[0] = exportMixinHooks2[0]
+	exportMixinFields0 := exportMixin[0].Fields()
+	_ = exportMixinFields0
+	exportFields := schema.Export{}.Fields()
+	_ = exportFields
+	// exportDescCreatedAt is the schema descriptor for created_at field.
+	exportDescCreatedAt := exportMixinFields0[0].Descriptor()
+	// export.DefaultCreatedAt holds the default value on creation for the created_at field.
+	export.DefaultCreatedAt = exportDescCreatedAt.Default.(func() time.Time)
+	// exportDescUpdatedAt is the schema descriptor for updated_at field.
+	exportDescUpdatedAt := exportMixinFields0[1].Descriptor()
+	// export.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	export.DefaultUpdatedAt = exportDescUpdatedAt.Default.(func() time.Time)
+	// export.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	export.UpdateDefaultUpdatedAt = exportDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// exportDescStatus is the schema descriptor for status field.
+	exportDescStatus := exportFields[2].Descriptor()
+	// export.DefaultStatus holds the default value on creation for the status field.
+	export.DefaultStatus = exportDescStatus.Default.(uint8)
 	inventoryMixin := schema.Inventory{}.Mixin()
 	inventoryMixinHooks2 := inventoryMixin[2].Hooks()
 	inventory.Hooks[0] = inventoryMixinHooks2[0]

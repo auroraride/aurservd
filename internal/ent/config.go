@@ -49,6 +49,7 @@ type hooks struct {
 	EnterpriseStation    []ent.Hook
 	Exception            []ent.Hook
 	Exchange             []ent.Hook
+	Export               []ent.Hook
 	Inventory            []ent.Hook
 	Manager              []ent.Hook
 	Order                []ent.Hook

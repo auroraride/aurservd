@@ -29,9 +29,7 @@ import (
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/golang-module/carbon/v2"
     jsoniter "github.com/json-iterator/go"
-    "github.com/labstack/echo/v4"
     "github.com/rs/xid"
-    "path/filepath"
     "strconv"
     "strings"
     "time"
@@ -363,9 +361,9 @@ func (s *riderService) Status(u *ent.Rider) uint8 {
     return status
 }
 
-// List 骑手列表
-func (s *riderService) List(req *model.RiderListReq, w echo.Context) *model.PaginationRes {
-    q := ent.Database.Rider.
+func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery, info ar.Map) {
+    info = make(ar.Map)
+    q = ent.Database.Rider.
         QueryNotDeleted().
         WithPerson().
         WithOrders(func(oq *ent.OrderQuery) {
@@ -383,6 +381,7 @@ func (s *riderService) List(req *model.RiderListReq, w echo.Context) *model.Pagi
         WithEnterprise().
         Order(ent.Desc(rider.FieldCreatedAt))
     if req.Keyword != nil {
+        info["关键词"] = *req.Keyword
         // 判定是否id字段
         q.Where(
             rider.Or(
@@ -397,16 +396,20 @@ func (s *riderService) List(req *model.RiderListReq, w echo.Context) *model.Pagi
         )
     }
     if req.Start != nil {
+        info["开始日期"] = *req.Start
         q.Where(rider.CreatedAtGTE(tools.NewTime().ParseDateStringX(*req.Start)))
     }
     if req.End != nil {
+        info["结束日期"] = *req.End
         q.Where(rider.CreatedAtLT(tools.NewTime().ParseNextDateStringX(*req.End)))
     }
     if req.Modified != nil {
         m := *req.Modified
         if m {
+            info["修改状态"] = "已被修改"
             q.Where(rider.LastModifierNotNil())
         } else {
+            info["修改状态"] = "未被修改"
             q.Where(rider.LastModifierIsNil())
         }
     }
@@ -414,6 +417,7 @@ func (s *riderService) List(req *model.RiderListReq, w echo.Context) *model.Pagi
         rs := *req.Status
         switch rs {
         case model.RiderStatusNormal:
+            info["用户状态"] = "未认证"
             q.Where(
                 rider.Blocked(false),
                 rider.Or(
@@ -423,15 +427,18 @@ func (s *riderService) List(req *model.RiderListReq, w echo.Context) *model.Pagi
             )
             break
         case model.RiderStatusBlocked:
+            info["用户状态"] = "已禁用"
             q.Where(rider.Blocked(true))
             break
         case model.RiderStatusBanned:
+            info["用户状态"] = "已封禁"
             q.Where(rider.HasPersonWith(person.Banned(true)))
             break
         }
     }
     if req.AuthStatus != nil {
         ra := *req.AuthStatus
+        info["认证状态"] = req.AuthStatus.String()
         switch ra {
         case model.PersonUnauthenticated:
             q.Where(
@@ -447,6 +454,7 @@ func (s *riderService) List(req *model.RiderListReq, w echo.Context) *model.Pagi
         }
     }
     if req.SubscribeStatus != nil {
+        key := "业务状态"
         rss := *req.SubscribeStatus
         switch rss {
         case 11:
@@ -463,32 +471,52 @@ func (s *riderService) List(req *model.RiderListReq, w echo.Context) *model.Pagi
             q.Where(rider.HasSubscribesWith(subscribe.Status(rss)))
             break
         }
+        info[key] = map[uint8]string{
+            0:  "未激活",
+            1:  "计费中",
+            2:  "寄存中",
+            3:  "已逾期",
+            4:  "已退订",
+            5:  "已取消",
+            11: "即将到期",
+            99: "未使用",
+        }[*req.SubscribeStatus]
     }
     if req.PlanID != nil {
+        info["骑士卡ID"] = func() string {
+            return NewPlan().NameFromID(*req.PlanID)
+        }
         q.Where(rider.HasSubscribesWith(subscribe.PlanID(*req.PlanID)))
     }
     if req.Enterprise != nil && *req.Enterprise != 0 {
+        key := "是否团签"
+        var value string
         if *req.Enterprise == 1 {
+            value = "是"
             if req.EnterpriseID == nil {
                 q.Where(rider.EnterpriseIDNotNil())
             } else {
+                info["团签企业"] = func() string {
+                    return NewEnterprise().NameFromID(*req.EnterpriseID)
+                }
                 q.Where(rider.EnterpriseID(*req.EnterpriseID))
             }
         } else {
+            value = "否"
             q.Where(rider.EnterpriseIDIsNil())
         }
-    }
-
-    if s.modifier != nil && s.modifier.Phone == "15537112255" {
-        req.CityID = tools.NewPointer().UInt64(410100)
+        info[key] = value
     }
 
     if req.CityID != nil {
+        info["城市"] = func() string {
+            return NewCity().NameFromID(*req.EnterpriseID)
+        }
         q.Where(rider.HasSubscribesWith(subscribe.CityID(*req.CityID)))
     }
 
-    if req.Remaining != "" {
-        arr := strings.Split(req.Remaining, ",")
+    if req.Remaining != nil {
+        arr := strings.Split(*req.Remaining, ",")
 
         var subqs []predicate.Subscribe
         subqs = append(subqs, subscribe.StatusNotIn(model.SubscribeStatusUnSubscribed, model.SubscribeStatusCanceled))
@@ -502,14 +530,19 @@ func (s *riderService) List(req *model.RiderListReq, w echo.Context) *model.Pagi
                 }
                 subqs = append(subqs, subscribe.RemainingLTE(r2))
             }
+            info["骑士卡剩余天数"] = fmt.Sprintf("%d - %d", r1, r2)
+        } else {
+            info["骑士卡剩余天数"] = fmt.Sprintf("> %d", r1)
         }
+
         q.Where(rider.HasSubscribesWith(subqs...))
     }
+    return
+}
 
-    if req.Export {
-        s.export(q, w)
-        return nil
-    }
+// List 骑手列表
+func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
+    q, _ := s.listFilter(req.RiderListFilter)
 
     return model.ParsePaginationResponse[model.RiderItem, ent.Rider](
         q,
@@ -588,70 +621,71 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
     return ri
 }
 
-func (s *riderService) export(q *ent.RiderQuery, w echo.Context) {
-    items, _ := q.All(s.ctx)
-    if len(items) == 0 {
-        snag.Panic("无效筛选")
-    }
+func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
+    q, info := s.listFilter(req.RiderListFilter)
+    return NewExportWithModifier(s.modifier).Start("骑手列表", req, info, req.Remark, func(path string) {
+        items, _ := q.All(s.ctx)
+        if len(items) == 0 {
+            snag.Panic("无效筛选")
+        }
 
-    var rows [][]any
-    title := []any{
-        "城市",
-        "骑手",
-        "电话",
-        "证件",
-        "户籍",
-        "企业",
-        "押金",
-        "订阅",
-        "电池",
-        "剩余",
-        "状态",
-        "认证",
-        "紧急联系",
-        "注册时间",
-    }
-    rows = append(rows, title)
-    for _, item := range items {
-        detail := s.detailRiderItem(item)
-        row := []any{
-            "",
-            detail.Name,
-            detail.Phone,
-            "",
-            detail.Address,
-            "",
-            detail.Deposit,
-            "",
-            "",
-            "",
-            []string{"正常", "正常", "禁用", "黑名单"}[detail.Status],
-            detail.AuthStatus.String(),
-            "",
-            item.CreatedAt.Format(carbon.DateTimeLayout),
+        var rows [][]any
+        title := []any{
+            "城市",
+            "骑手",
+            "电话",
+            "证件",
+            "户籍",
+            "企业",
+            "押金",
+            "订阅",
+            "电池",
+            "剩余",
+            "状态",
+            "认证",
+            "紧急联系",
+            "注册时间",
         }
-        if detail.City != nil {
-            row[0] = detail.City.Name
+        rows = append(rows, title)
+        for _, item := range items {
+            detail := s.detailRiderItem(item)
+            row := []any{
+                "",
+                detail.Name,
+                detail.Phone,
+                "",
+                detail.Address,
+                "",
+                detail.Deposit,
+                "",
+                "",
+                "",
+                []string{"正常", "正常", "禁用", "黑名单"}[detail.Status],
+                detail.AuthStatus.String(),
+                "",
+                item.CreatedAt.Format(carbon.DateTimeLayout),
+            }
+            if detail.City != nil {
+                row[0] = detail.City.Name
+            }
+            if detail.Person != nil {
+                row[3] = detail.Person.IDCardNumber
+            }
+            if detail.Enterprise != nil {
+                row[5] = detail.Enterprise.Name
+            }
+            if detail.Subscribe != nil {
+                row[7] = model.SubscribeStatusText(detail.Subscribe.Status)
+                row[8] = detail.Subscribe.Model
+                row[9] = detail.Subscribe.Remaining
+            }
+            if item.Contact != nil {
+                row[12] = item.Contact.String()
+            }
+            rows = append(rows, row)
         }
-        if detail.Person != nil {
-            row[3] = detail.Person.IDCardNumber
-        }
-        if detail.Enterprise != nil {
-            row[5] = detail.Enterprise.Name
-        }
-        if detail.Subscribe != nil {
-            row[7] = model.SubscribeStatusText(detail.Subscribe.Status)
-            row[8] = detail.Subscribe.Model
-            row[9] = detail.Subscribe.Remaining
-        }
-        if item.Contact != nil {
-            row[12] = item.Contact.String()
-        }
-        rows = append(rows, row)
-    }
-    fp := filepath.Join("runtime/export/rider", fmt.Sprintf("骑手%s.xlsx", time.Now().Format(carbon.ShortDateTimeLayout)))
-    ex := tools.NewExcelExistsExport(w, fp)
-    ex.AddValues(rows).Done().Export()
+        tools.NewExcel(path).AddValues(rows).Done()
+    })
 }
 
 func (s *riderService) Query(id uint64) *ent.Rider {

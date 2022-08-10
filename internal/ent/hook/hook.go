@@ -282,6 +282,19 @@ func (f ExchangeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 	return f(ctx, mv)
 }
 
+// The ExportFunc type is an adapter to allow the use of ordinary
+// function as Export mutator.
+type ExportFunc func(context.Context, *ent.ExportMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ExportFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ExportMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ExportMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The InventoryFunc type is an adapter to allow the use of ordinary
 // function as Inventory mutator.
 type InventoryFunc func(context.Context, *ent.InventoryMutation) (ent.Value, error)

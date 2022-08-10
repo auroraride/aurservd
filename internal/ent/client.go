@@ -30,6 +30,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exception"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
+	"github.com/auroraride/aurservd/internal/ent/export"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -98,6 +99,8 @@ type Client struct {
 	Exception *ExceptionClient
 	// Exchange is the client for interacting with the Exchange builders.
 	Exchange *ExchangeClient
+	// Export is the client for interacting with the Export builders.
+	Export *ExportClient
 	// Inventory is the client for interacting with the Inventory builders.
 	Inventory *InventoryClient
 	// Manager is the client for interacting with the Manager builders.
@@ -162,6 +165,7 @@ func (c *Client) init() {
 	c.EnterpriseStation = NewEnterpriseStationClient(c.config)
 	c.Exception = NewExceptionClient(c.config)
 	c.Exchange = NewExchangeClient(c.config)
+	c.Export = NewExportClient(c.config)
 	c.Inventory = NewInventoryClient(c.config)
 	c.Manager = NewManagerClient(c.config)
 	c.Order = NewOrderClient(c.config)
@@ -231,6 +235,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		EnterpriseStation:    NewEnterpriseStationClient(cfg),
 		Exception:            NewExceptionClient(cfg),
 		Exchange:             NewExchangeClient(cfg),
+		Export:               NewExportClient(cfg),
 		Inventory:            NewInventoryClient(cfg),
 		Manager:              NewManagerClient(cfg),
 		Order:                NewOrderClient(cfg),
@@ -286,6 +291,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		EnterpriseStation:    NewEnterpriseStationClient(cfg),
 		Exception:            NewExceptionClient(cfg),
 		Exchange:             NewExchangeClient(cfg),
+		Export:               NewExportClient(cfg),
 		Inventory:            NewInventoryClient(cfg),
 		Manager:              NewManagerClient(cfg),
 		Order:                NewOrderClient(cfg),
@@ -351,6 +357,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.EnterpriseStation.Use(hooks...)
 	c.Exception.Use(hooks...)
 	c.Exchange.Use(hooks...)
+	c.Export.Use(hooks...)
 	c.Inventory.Use(hooks...)
 	c.Manager.Use(hooks...)
 	c.Order.Use(hooks...)
@@ -3557,6 +3564,97 @@ func (c *ExchangeClient) QueryEmployee(e *Exchange) *EmployeeQuery {
 func (c *ExchangeClient) Hooks() []Hook {
 	hooks := c.hooks.Exchange
 	return append(hooks[:len(hooks):len(hooks)], exchange.Hooks[:]...)
+}
+
+// ExportClient is a client for the Export schema.
+type ExportClient struct {
+	config
+}
+
+// NewExportClient returns a client for the Export from the given config.
+func NewExportClient(c config) *ExportClient {
+	return &ExportClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `export.Hooks(f(g(h())))`.
+func (c *ExportClient) Use(hooks ...Hook) {
+	c.hooks.Export = append(c.hooks.Export, hooks...)
+}
+
+// Create returns a create builder for Export.
+func (c *ExportClient) Create() *ExportCreate {
+	mutation := newExportMutation(c.config, OpCreate)
+	return &ExportCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Export entities.
+func (c *ExportClient) CreateBulk(builders ...*ExportCreate) *ExportCreateBulk {
+	return &ExportCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Export.
+func (c *ExportClient) Update() *ExportUpdate {
+	mutation := newExportMutation(c.config, OpUpdate)
+	return &ExportUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ExportClient) UpdateOne(e *Export) *ExportUpdateOne {
+	mutation := newExportMutation(c.config, OpUpdateOne, withExport(e))
+	return &ExportUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ExportClient) UpdateOneID(id uint64) *ExportUpdateOne {
+	mutation := newExportMutation(c.config, OpUpdateOne, withExportID(id))
+	return &ExportUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Export.
+func (c *ExportClient) Delete() *ExportDelete {
+	mutation := newExportMutation(c.config, OpDelete)
+	return &ExportDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ExportClient) DeleteOne(e *Export) *ExportDeleteOne {
+	return c.DeleteOneID(e.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ExportClient) DeleteOneID(id uint64) *ExportDeleteOne {
+	builder := c.Delete().Where(export.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ExportDeleteOne{builder}
+}
+
+// Query returns a query builder for Export.
+func (c *ExportClient) Query() *ExportQuery {
+	return &ExportQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Export entity by its id.
+func (c *ExportClient) Get(ctx context.Context, id uint64) (*Export, error) {
+	return c.Query().Where(export.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ExportClient) GetX(ctx context.Context, id uint64) *Export {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ExportClient) Hooks() []Hook {
+	hooks := c.hooks.Export
+	return append(hooks[:len(hooks):len(hooks)], export.Hooks[:]...)
 }
 
 // InventoryClient is a client for the Inventory schema.

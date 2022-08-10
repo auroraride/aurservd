@@ -240,6 +240,16 @@ func (e *Exchange) GetID() uint64 {
 	return e.ID
 }
 
+// GetTableName returns table name for Export.
+func (e *Export) GetTableName() string {
+	return "export"
+}
+
+// GetID returns id for Export.
+func (e *Export) GetID() uint64 {
+	return e.ID
+}
+
 // GetTableName returns table name for Inventory.
 func (i *Inventory) GetTableName() string {
 	return "inventory"

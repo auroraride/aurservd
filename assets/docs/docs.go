@@ -4176,12 +4176,6 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "boolean",
-                        "description": "是否导出为Excel, 导出Excel的时候直接下载文件",
-                        "name": "export",
-                        "in": "query"
-                    },
-                    {
                         "type": "integer",
                         "description": "账单ID ",
                         "name": "id",
@@ -4228,15 +4222,10 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "筛选结束时间",
+                        "description": "结束时间 ",
                         "name": "end",
-                        "in": "query"
-                    },
-                    {
-                        "type": "boolean",
-                        "description": "是否导出为Excel, 导出Excel的时候直接下载文件",
-                        "name": "export",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
@@ -4253,9 +4242,10 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "筛选开始时间",
+                        "description": "开始时间 ",
                         "name": "start",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -5804,12 +5794,6 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "团签企业ID, ` + "`" + `enterprise = 1` + "`" + `时才会生效",
                         "name": "enterpriseId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "boolean",
-                        "description": "导出",
-                        "name": "export",
                         "in": "query"
                     },
                     {

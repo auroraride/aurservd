@@ -1404,6 +1404,53 @@ var (
 			},
 		},
 	}
+	// ExportColumns holds the columns for the "export" table.
+	ExportColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "taxonomy", Type: field.TypeString, Comment: "分类"},
+		{Name: "sn", Type: field.TypeString, Comment: "编号"},
+		{Name: "status", Type: field.TypeUint8, Comment: "状态", Default: 0},
+		{Name: "path", Type: field.TypeString, Comment: "文件路径", Nullable: true},
+		{Name: "message", Type: field.TypeString, Comment: "失败原因", Nullable: true},
+		{Name: "finish_at", Type: field.TypeTime, Comment: "生成时间", Nullable: true},
+		{Name: "duration", Type: field.TypeInt64, Comment: "耗时", Nullable: true},
+		{Name: "condition", Type: field.TypeJSON, Comment: "筛选条件"},
+		{Name: "info", Type: field.TypeJSON, Comment: "详细信息"},
+	}
+	// ExportTable holds the schema information for the "export" table.
+	ExportTable = &schema.Table{
+		Name:       "export",
+		Columns:    ExportColumns,
+		PrimaryKey: []*schema.Column{ExportColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "export_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{ExportColumns[1]},
+			},
+			{
+				Name:    "export_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{ExportColumns[3]},
+			},
+			{
+				Name:    "export_sn",
+				Unique:  false,
+				Columns: []*schema.Column{ExportColumns[8]},
+			},
+			{
+				Name:    "export_status",
+				Unique:  false,
+				Columns: []*schema.Column{ExportColumns[9]},
+			},
+		},
+	}
 	// InventoryColumns holds the columns for the "inventory" table.
 	InventoryColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -2531,6 +2578,7 @@ var (
 		EnterpriseStationTable,
 		ExceptionTable,
 		ExchangeTable,
+		ExportTable,
 		InventoryTable,
 		ManagerTable,
 		OrderTable,
@@ -2669,6 +2717,9 @@ func init() {
 	ExchangeTable.ForeignKeys[7].RefTable = RiderTable
 	ExchangeTable.Annotation = &entsql.Annotation{
 		Table: "exchange",
+	}
+	ExportTable.Annotation = &entsql.Annotation{
+		Table: "export",
 	}
 	InventoryTable.Annotation = &entsql.Annotation{
 		Table: "inventory",

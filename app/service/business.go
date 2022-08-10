@@ -387,38 +387,42 @@ func (s *businessService) ListPause(req *model.BusinessPauseList) *model.Paginat
     }
 
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.SubscribePause) (res model.BusinessPauseListRes) {
-        sub := item.Edges.Subscribe
-        ep := sub.Edges.Plan
-        res = model.BusinessPauseListRes{
-            City:            item.Edges.City.Name,
-            Name:            item.Edges.Rider.Edges.Person.Name,
-            Phone:           item.Edges.Rider.Phone,
-            Plan:            fmt.Sprintf("%s - %d天", ep.Name, ep.Days),
-            Start:           item.StartAt.Format(carbon.DateLayout),
-            StartTarget:     s.pauseTarget(item.Edges.Store, item.Edges.Cabinet),
-            StartAscription: s.pauseAscription(item.Edges.Store, item.Edges.Cabinet),
-            StartBy:         s.pauseBy(item.Creator, item.Edges.Employee, item.Edges.Cabinet),
-            EndTarget:       s.pauseTarget(item.Edges.EndStore, item.Edges.EndCabinet),
-            EndAscription:   s.pauseAscription(item.Edges.EndStore, item.Edges.EndCabinet),
-            EndBy:           s.pauseBy(item.EndModifier, item.Edges.EndEmployee, item.Edges.EndCabinet),
-            Days:            item.Days,
-            OverdueDays:     item.OverdueDays,
-            Remaining:       sub.Remaining,
-        }
-
-        if item.EndAt.IsZero() {
-            res.Status = "寄存中"
-        } else {
-            res.End = item.EndAt.Format(carbon.DateLayout)
-            res.Status = "已结束"
-        }
-
-        if item.PauseOverdue {
-            res.Status = "超期退租"
-        }
-
-        return
+        return s.pauseDetail(item)
     })
+}
+
+func (s *businessService) pauseDetail(item *ent.SubscribePause) (res model.BusinessPauseListRes) {
+    sub := item.Edges.Subscribe
+    ep := sub.Edges.Plan
+    res = model.BusinessPauseListRes{
+        City:            item.Edges.City.Name,
+        Name:            item.Edges.Rider.Edges.Person.Name,
+        Phone:           item.Edges.Rider.Phone,
+        Plan:            fmt.Sprintf("%s - %d天", ep.Name, ep.Days),
+        Start:           item.StartAt.Format(carbon.DateLayout),
+        StartTarget:     s.pauseTarget(item.Edges.Store, item.Edges.Cabinet),
+        StartAscription: s.pauseAscription(item.Edges.Store, item.Edges.Cabinet),
+        StartBy:         s.pauseBy(item.Creator, item.Edges.Employee, item.Edges.Cabinet),
+        EndTarget:       s.pauseTarget(item.Edges.EndStore, item.Edges.EndCabinet),
+        EndAscription:   s.pauseAscription(item.Edges.EndStore, item.Edges.EndCabinet),
+        EndBy:           s.pauseBy(item.EndModifier, item.Edges.EndEmployee, item.Edges.EndCabinet),
+        Days:            item.Days,
+        OverdueDays:     item.OverdueDays,
+        Remaining:       sub.Remaining,
+    }
+
+    if item.EndAt.IsZero() {
+        res.Status = "寄存中"
+    } else {
+        res.End = item.EndAt.Format(carbon.DateLayout)
+        res.Status = "已结束"
+    }
+
+    if item.PauseOverdue {
+        res.Status = "超期退租"
+    }
+
+    return
 }
 
 func (s *businessService) pauseTarget(st *ent.Store, cab *ent.Cabinet) string {

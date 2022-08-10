@@ -56,6 +56,8 @@ type Tx struct {
 	Exception *ExceptionClient
 	// Exchange is the client for interacting with the Exchange builders.
 	Exchange *ExchangeClient
+	// Export is the client for interacting with the Export builders.
+	Export *ExportClient
 	// Inventory is the client for interacting with the Inventory builders.
 	Inventory *InventoryClient
 	// Manager is the client for interacting with the Manager builders.
@@ -242,6 +244,7 @@ func (tx *Tx) init() {
 	tx.EnterpriseStation = NewEnterpriseStationClient(tx.config)
 	tx.Exception = NewExceptionClient(tx.config)
 	tx.Exchange = NewExchangeClient(tx.config)
+	tx.Export = NewExportClient(tx.config)
 	tx.Inventory = NewInventoryClient(tx.config)
 	tx.Manager = NewManagerClient(tx.config)
 	tx.Order = NewOrderClient(tx.config)

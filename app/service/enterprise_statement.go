@@ -9,6 +9,7 @@ import (
     "context"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/enterprise"
     "github.com/auroraride/aurservd/internal/ent/enterprisebill"
@@ -23,7 +24,6 @@ import (
     "github.com/labstack/echo/v4"
     log "github.com/sirupsen/logrus"
     "math"
-    "path/filepath"
     "time"
 )
 
@@ -270,11 +270,10 @@ func (s *enterpriseStatementService) Historical(req *model.StatementBillHistoric
     )
 }
 
-// Statement 账单详情
-func (s *enterpriseStatementService) Statement(req *model.StatementBillDetailReq, w echo.Context) []model.StatementDetail {
+func (s *enterpriseStatementService) info(id uint64) (*ent.EnterpriseStatement, *ent.Enterprise) {
     es, _ := ent.Database.EnterpriseStatement.QueryNotDeleted().
         Where(
-            enterprisestatement.ID(req.ID),
+            enterprisestatement.ID(id),
             enterprisestatement.SettledAtNotNil(),
         ).
         WithEnterprise().
@@ -282,9 +281,17 @@ func (s *enterpriseStatementService) Statement(req *model.StatementBillDetailReq
     if es == nil {
         snag.Panic("未找到账单")
     }
+    return es, es.Edges.Enterprise
+}
 
-    e := es.Edges.Enterprise
+// Statement 账单明细
+func (s *enterpriseStatementService) Statement(req *model.StatementBillDetailReq) []model.StatementDetail {
+    s.info(req.ID)
+    return s.detail(req.ID)
+}
 
+// detail 账单明细
+func (s *enterpriseStatementService) detail(id uint64) []model.StatementDetail {
     items, _ := ent.Database.EnterpriseBill.
         QueryNotDeleted().
         WithRider(func(query *ent.RiderQuery) {
@@ -292,7 +299,7 @@ func (s *enterpriseStatementService) Statement(req *model.StatementBillDetailReq
         }).
         WithCity().
         WithStation().
-        Where(enterprisebill.StatementID(req.ID)).
+        Where(enterprisebill.StatementID(id)).
         All(s.ctx)
 
     res := make([]model.StatementDetail, len(items))
@@ -326,21 +333,21 @@ func (s *enterpriseStatementService) Statement(req *model.StatementBillDetailReq
         }
     }
 
-    if req.Export {
-        if len(items) == 0 {
-            snag.Panic("无详细账单信息")
-        }
-        sheet := fmt.Sprintf("%s-%s", es.Start.Format(carbon.ShortDateLayout), es.End.Format(carbon.ShortDateLayout))
-        fp := filepath.Join("runtime/export/statement", fmt.Sprintf("%s%s账单明细.xlsx", e.Name, sheet))
-        ex := tools.NewExcelExistsExport(w, fp, sheet)
-        if ex == nil {
-            return nil
-        }
+    return res
+}
 
+// DetailExport 账单明细导出
+func (s *enterpriseStatementService) DetailExport(req *model.StatementBillDetailExport) model.ExportRes {
+    es, e := s.info(req.ID)
+    info := ar.Map{"企业": e.Name, "开始": es.Start.Format(carbon.ShortDateLayout), "结束": es.End.Format(carbon.ShortDateLayout)}
+    return NewExportWithModifier(s.modifier).Start(e.Name+"账单明细", req.ID, info, req.Remark, func(path string) {
+        items := s.Statement(req.StatementBillDetailReq)
+        sheet := fmt.Sprintf("%s-%s", es.Start.Format(carbon.ShortDateLayout), es.End.Format(carbon.ShortDateLayout))
+        ex := tools.NewExcel(path, sheet)
         // 设置数据
         var rows [][]any
         rows = append(rows, []any{"姓名", "电话", "城市", "站点", "开始日期", "结束日期", "使用天数", "电池型号", "日单价", "费用"})
-        for _, x := range res {
+        for _, x := range items {
             so := ""
             if x.Station != nil {
                 so = x.Station.Name
@@ -359,18 +366,12 @@ func (s *enterpriseStatementService) Statement(req *model.StatementBillDetailReq
             })
         }
 
-        ex.AddValues(rows).Done().Export()
-        return nil
-    }
-
-    return res
+        ex.AddValues(rows).Done()
+    })
 }
 
-func (s *enterpriseStatementService) Usage(req *model.StatementUsageReq, w echo.Context) *model.PaginationRes {
-    e := NewEnterprise().QueryX(req.ID)
-    prices := NewEnterprise().GetPriceValues(e)
-
-    q := ent.Database.Subscribe.QueryNotDeleted().
+func (s *enterpriseStatementService) usageFilter(req model.StatementUsageFilter) (q *ent.SubscribeQuery, start time.Time, end time.Time) {
+    q = ent.Database.Subscribe.QueryNotDeleted().
         WithRider(func(rq *ent.RiderQuery) {
             rq.WithPerson()
         }).
@@ -382,24 +383,18 @@ func (s *enterpriseStatementService) Usage(req *model.StatementUsageReq, w echo.
         )
 
     var bw []predicate.EnterpriseBill
-    var start time.Time
 
-    if req.Start != "" {
-        start = tools.NewTime().ParseDateStringX(req.Start)
-        q.Where(
-            subscribe.Or(
-                subscribe.EndAtIsNil(),
-                subscribe.EndAtGTE(start),
-            ),
-        )
+    start = tools.NewTime().ParseDateStringX(req.Start)
+    q.Where(
+        subscribe.Or(
+            subscribe.EndAtIsNil(),
+            subscribe.EndAtGTE(start),
+        ),
+    )
 
-        bw = append(bw, enterprisebill.EndGTE(start))
-    }
+    bw = append(bw, enterprisebill.EndGTE(start))
 
-    end := carbon.Now().StartOfDay().Carbon2Time()
-    if req.End != "" {
-        end = tools.NewTime().ParseDateStringX(req.End)
-    }
+    end = tools.NewTime().ParseDateStringX(req.End)
     next := end.AddDate(0, 0, 1)
 
     // 开始时间早于结束时间
@@ -412,56 +407,65 @@ func (s *enterpriseStatementService) Usage(req *model.StatementUsageReq, w echo.
         }
         bq.Order(ent.Asc(enterprisebill.FieldEnd))
     })
+    return
+}
 
-    if req.Export {
-        s.usageExport(w, q, e.Name, start, end, prices)
-        return nil
-    }
-
+// Usage 使用明细
+func (s *enterpriseStatementService) Usage(req *model.StatementUsageReq, w echo.Context) *model.PaginationRes {
+    e := NewEnterprise().QueryX(req.ID)
+    prices := NewEnterprise().GetPriceValues(e)
+    q, start, end := s.usageFilter(req.StatementUsageFilter)
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Subscribe) model.StatementUsageRes {
         return s.usageDetail(item, start, end, prices)
     })
 }
 
-func (s *enterpriseStatementService) usageExport(w echo.Context, q *ent.SubscribeQuery, ename string, start, end time.Time, prices map[string]float64) {
-    sheet := fmt.Sprintf("%s-%s", start.Format(carbon.ShortDateLayout), end.Format(carbon.ShortDateLayout))
-    fp := filepath.Join("runtime/export/usage", fmt.Sprintf("%s%s使用明细.xlsx", ename, sheet))
-    ex := tools.NewExcelExistsExport(w, fp, sheet)
+func (s *enterpriseStatementService) UsageExport(req *model.StatementUsageExport) model.ExportRes {
+    e := NewEnterprise().QueryX(req.ID)
+    prices := NewEnterprise().GetPriceValues(e)
+    q, start, end := s.usageFilter(req.StatementUsageFilter)
+    taxonomy := fmt.Sprintf("%s使用明细", e.Name)
 
-    items, _ := q.All(s.ctx)
-    var rows [][]any
-    rows = append(rows, []any{"城市", "姓名", "电话", "站点", "型号", "状态", "删除时间", "开始日期", "结束日期", "使用天数", "日单价", "费用"})
-    for _, item := range items {
-        detail := s.usageDetail(item, start, end, prices)
-        sta := ""
-        if detail.Station != nil {
-            sta = detail.Station.Name
-        }
-        row := []any{
-            detail.City.Name,
-            detail.Rider.Name,
-            detail.Rider.Phone,
-            sta,
-            detail.Model,
-            detail.Status,
-            detail.DeletedAt,
-        }
-        var sub []any
-        for _, ui := range detail.Items {
-            sub = append(sub, []any{
-                ui.Start,
-                ui.End,
-                ui.Days,
-                ui.Price,
-                ui.Cost,
-            })
-        }
-        row = append(row, sub)
+    return NewExportWithModifier(s.modifier).Start(taxonomy, "", nil, req.Remark, func(path string) {
+        sheet := fmt.Sprintf("%s-%s", start.Format(carbon.ShortDateLayout), end.Format(carbon.ShortDateLayout))
+        ex := tools.NewExcel(path, sheet)
 
-        rows = append(rows, row)
-    }
+        items, _ := q.All(s.ctx)
 
-    ex.AddValues(rows).Done().Export()
+        var rows [][]any
+        rows = append(rows, []any{"城市", "姓名", "电话", "站点", "型号", "状态", "删除时间", "开始日期", "结束日期", "使用天数", "日单价", "费用"})
+        for _, item := range items {
+            detail := s.usageDetail(item, start, end, prices)
+            sta := ""
+            if detail.Station != nil {
+                sta = detail.Station.Name
+            }
+            row := []any{
+                detail.City.Name,
+                detail.Rider.Name,
+                detail.Rider.Phone,
+                sta,
+                detail.Model,
+                detail.Status,
+                detail.DeletedAt,
+            }
+            var sub []any
+            for _, ui := range detail.Items {
+                sub = append(sub, []any{
+                    ui.Start,
+                    ui.End,
+                    ui.Days,
+                    ui.Price,
+                    ui.Cost,
+                })
+            }
+            row = append(row, sub)
+
+            rows = append(rows, row)
+        }
+
+        ex.AddValues(rows).Done()
+    })
 }
 
 func (s *enterpriseStatementService) usageDetail(item *ent.Subscribe, start, end time.Time, prices map[string]float64) model.StatementUsageRes {

@@ -36,6 +36,7 @@ const (
 	TypeEnterpriseStation    = "EnterpriseStation"
 	TypeException            = "Exception"
 	TypeExchange             = "Exchange"
+	TypeExport               = "Export"
 	TypeInventory            = "Inventory"
 	TypeManager              = "Manager"
 	TypeOrder                = "Order"

@@ -83,8 +83,12 @@ type StatementBillHistoricalListRes struct {
 }
 
 type StatementBillDetailReq struct {
-    ID     uint64 `json:"id" query:"id" validate:"required" trans:"账单ID"`
-    Export bool   `json:"export" query:"export"` // 是否导出为Excel, 导出Excel的时候直接下载文件
+    ID uint64 `json:"id" query:"id" validate:"required" trans:"账单ID"`
+}
+
+type StatementBillDetailExport struct {
+    *StatementBillDetailReq
+    Remark string `json:"remark" validate:"required" trans:"备注"`
 }
 
 type StatementDetail struct {
@@ -99,13 +103,20 @@ type StatementDetail struct {
     Station *EnterpriseStation `json:"station,omitempty"` // 站点, 可能为空
 }
 
+type StatementUsageFilter struct {
+    ID    uint64 `json:"id" query:"id" validate:"required" trans:"企业ID"`
+    Start string `json:"start" query:"start" validate:"required" trans:"开始时间"`
+    End   string `json:"end" query:"end" validate:"required" trans:"结束时间"`
+}
+
 type StatementUsageReq struct {
     PaginationReq
+    StatementUsageFilter
+}
 
-    ID     uint64 `json:"id" query:"id" validate:"required" trans:"企业ID"`
-    Export bool   `json:"export" query:"export"` // 是否导出为Excel, 导出Excel的时候直接下载文件
-    Start  string `json:"start" query:"start"`   // 筛选开始时间
-    End    string `json:"end" query:"end"`       // 筛选结束时间
+type StatementUsageExport struct {
+    StatementUsageFilter
+    Remark string `json:"remark" validate:"required" trans:"备注"`
 }
 
 type StatementUsageItem struct {

@@ -9,11 +9,7 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/utils"
-    "github.com/labstack/echo/v4"
     "github.com/xuri/excelize/v2"
-    "net/url"
-    "os"
-    "path/filepath"
     "reflect"
 )
 
@@ -21,15 +17,13 @@ type excel struct {
     path  string
     sheet string
 
-    w echo.Context
-
     *excelize.File
 }
 
-func NewExcel(w echo.Context, fp string, args ...any) *excel {
-    err := utils.NewFile(fp).CreateDirectoryIfNotExist()
+func NewExcel(path string, args ...any) (e *excel) {
+    err := utils.NewFile(path).CreateDirectoryIfNotExist()
     if err != nil {
-        snag.Panic("文件创建失败")
+        snag.Panic(err)
     }
 
     sheet := "Sheet1"
@@ -39,32 +33,11 @@ func NewExcel(w echo.Context, fp string, args ...any) *excel {
 
     fe := excelize.NewFile()
     fe.SetSheetName("Sheet1", sheet)
-
     return &excel{
-        path:  fp,
+        path:  path,
         sheet: sheet,
-        w:     w,
         File:  fe,
     }
-}
-
-func sendAttachement(w echo.Context, path string) {
-    // w.Response().Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    // w.Response().Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename*=utf-8''%s`, url.QueryEscape(filepath.Base(path))))
-    // err := w.File(path)
-    err := w.Attachment(path, url.QueryEscape(filepath.Base(path)))
-    if err != nil {
-        snag.Panic(err)
-    }
-}
-
-func NewExcelExistsExport(w echo.Context, fp string, args ...any) (e *excel) {
-    _, err := os.Stat(fp)
-    if err == nil {
-        sendAttachement(w, fp)
-        return nil
-    }
-    return NewExcel(w, fp, args...)
 }
 
 func (e *excel) CellString(row, column int) string {
@@ -108,15 +81,10 @@ func (e *excel) AddValues(rows [][]any) *excel {
 }
 
 // Done 保存文件
-func (e *excel) Done() *excel {
+func (e *excel) Done() string {
     err := e.SaveAs(e.path)
     if err != nil {
         snag.Panic(err)
     }
-    return e
-}
-
-// Export 导出文件
-func (e *excel) Export() {
-    sendAttachement(e.w, e.path)
+    return e.path
 }

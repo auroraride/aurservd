@@ -31,6 +31,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exception"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
+	"github.com/auroraride/aurservd/internal/ent/export"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -87,6 +88,7 @@ func columnChecker(table string) func(string) error {
 		enterprisestation.Table:    enterprisestation.ValidColumn,
 		exception.Table:            exception.ValidColumn,
 		exchange.Table:             exchange.ValidColumn,
+		export.Table:               export.ValidColumn,
 		inventory.Table:            inventory.ValidColumn,
 		manager.Table:              manager.ValidColumn,
 		order.Table:                order.ValidColumn,

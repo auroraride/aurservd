@@ -27,6 +27,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exception"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
+	"github.com/auroraride/aurservd/internal/ent/export"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -875,6 +876,46 @@ func (c *ExchangeClient) GetNotDeleted(ctx context.Context, id uint64) (*Exchang
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *ExchangeClient) GetNotDeletedX(ctx context.Context, id uint64) *Exchange {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for Export.
+func (c *ExportClient) SoftDelete() *ExportUpdate {
+	mutation := newExportMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &ExportUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *ExportClient) SoftDeleteOne(e *Export) *ExportUpdateOne {
+	mutation := newExportMutation(c.config, OpUpdateOne, withExport(e))
+	mutation.SetDeletedAt(time.Now())
+	return &ExportUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *ExportClient) SoftDeleteOneID(id uint64) *ExportUpdateOne {
+	mutation := newExportMutation(c.config, OpUpdateOne, withExportID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &ExportUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for Export.
+func (c *ExportClient) QueryNotDeleted() *ExportQuery {
+	return c.Query().Where(export.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a Export not deleted entity by its id.
+func (c *ExportClient) GetNotDeleted(ctx context.Context, id uint64) (*Export, error) {
+	return c.Query().Where(export.ID(id), export.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *ExportClient) GetNotDeletedX(ctx context.Context, id uint64) *Export {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

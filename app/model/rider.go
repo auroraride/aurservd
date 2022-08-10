@@ -81,22 +81,28 @@ type RiderSampleInfo struct {
 // RiderListReq 骑手列表请求
 type RiderListReq struct {
     PaginationReq
+    RiderListFilter
+}
 
-    Export bool `json:"export" query:"export"` // 导出
+type RiderListExport struct {
+    RiderListFilter
+    Remark string `json:"remark" validate:"required" trans:"备注"`
+}
 
-    Keyword         *string           `json:"keyword" query:"keyword"`                                           // 搜索关键词
-    Modified        *bool             `json:"modified" query:"modified"`                                         // 是否被修改过
-    Start           *string           `json:"start" query:"start"`                                               // 注册开始时间, 格式为: 2022-01-01
-    End             *string           `json:"end" query:"end"`                                                   // 注册结束时间, 格式为: 2022-01-01
-    Enterprise      *uint8            `json:"enterprise" query:"enterprise"`                                     // 是否团签, 0:全部 1:团签 2:个签
-    EnterpriseID    *uint64           `json:"enterpriseId" query:"enterpriseId"`                                 // 团签企业ID, `enterprise = 1`时才会生效
-    CityID          *uint64           `json:"cityId" query:"cityId"`                                             // 城市筛选
-    Model           string            `json:"model" query:"model"`                                               // 电池型号筛选
-    Status          *uint8            `json:"status" enums:"0,1,2,3,4" query:"status"`                           // 用户状态 1:正常 2:已禁用 3:黑名单
-    SubscribeStatus *uint8            `json:"subscribeStatus" enums:"0,1,2,3,4,5,11,99" query:"subscribeStatus"` // 业务状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期 99:未使用
-    AuthStatus      *PersonAuthStatus `json:"authStatus" enums:"0,1,2,3" query:"authStatus"`                     // 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
-    PlanID          *uint64           `json:"planId" query:"planId"`                                             // 骑士卡
-    Remaining       string            `json:"remaining" query:"remaining"`                                       // 订阅剩余天数区间, 逗号分隔, 例如 `0,7`
+type RiderListFilter struct {
+    Keyword         *string           `json:"keyword,omitempty" query:"keyword"`                                           // 搜索关键词
+    Modified        *bool             `json:"modified,omitempty" query:"modified"`                                         // 是否被修改过
+    Start           *string           `json:"start,omitempty" query:"start"`                                               // 注册开始时间, 格式为: 2022-01-01
+    End             *string           `json:"end,omitempty" query:"end"`                                                   // 注册结束时间, 格式为: 2022-01-01
+    Enterprise      *uint8            `json:"enterprise,omitempty" query:"enterprise"`                                     // 是否团签, 0:全部 1:团签 2:个签
+    EnterpriseID    *uint64           `json:"enterpriseId,omitempty" query:"enterpriseId"`                                 // 团签企业ID, `enterprise = 1`时才会生效
+    CityID          *uint64           `json:"cityId,omitempty" query:"cityId"`                                             // 城市筛选
+    Model           string            `json:"model,omitempty" query:"model"`                                               // 电池型号筛选
+    Status          *uint8            `json:"status,omitempty" enums:"0,1,2,3,4" query:"status"`                           // 用户状态 1:正常 2:已禁用 3:黑名单
+    SubscribeStatus *uint8            `json:"subscribeStatus,omitempty" enums:"0,1,2,3,4,5,11,99" query:"subscribeStatus"` // 业务状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期 99:未使用
+    AuthStatus      *PersonAuthStatus `json:"authStatus,omitempty" enums:"0,1,2,3" query:"authStatus"`                     // 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
+    PlanID          *uint64           `json:"planId,omitempty" query:"planId"`                                             // 骑士卡
+    Remaining       *string           `json:"remaining,omitempty" query:"remaining"`                                       // 订阅剩余天数区间, 逗号分隔, 例如 `0,7`
 }
 
 // RiderItemSubscribe 骑手骑士卡简单信息

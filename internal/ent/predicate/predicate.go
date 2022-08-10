@@ -69,6 +69,9 @@ type Exception func(*sql.Selector)
 // Exchange is the predicate function for exchange builders.
 type Exchange func(*sql.Selector)
 
+// Export is the predicate function for export builders.
+type Export func(*sql.Selector)
+
 // Inventory is the predicate function for inventory builders.
 type Inventory func(*sql.Selector)
 

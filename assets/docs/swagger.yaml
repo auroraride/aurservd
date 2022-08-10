@@ -7301,10 +7301,6 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - description: 是否导出为Excel, 导出Excel的时候直接下载文件
-        in: query
-        name: export
-        type: boolean
       - description: '账单ID '
         in: query
         name: id
@@ -7335,14 +7331,11 @@ paths:
         in: query
         name: current
         type: integer
-      - description: 筛选结束时间
+      - description: '结束时间 '
         in: query
         name: end
+        required: true
         type: string
-      - description: 是否导出为Excel, 导出Excel的时候直接下载文件
-        in: query
-        name: export
-        type: boolean
       - description: '企业ID '
         in: query
         name: id
@@ -7352,9 +7345,10 @@ paths:
         in: query
         name: pageSize
         type: integer
-      - description: 筛选开始时间
+      - description: '开始时间 '
         in: query
         name: start
+        required: true
         type: string
       produces:
       - application/json
@@ -8296,10 +8290,6 @@ paths:
         in: query
         name: enterpriseId
         type: integer
-      - description: 导出
-        in: query
-        name: export
-        type: boolean
       - description: 搜索关键词
         in: query
         name: keyword

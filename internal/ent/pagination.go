@@ -470,6 +470,28 @@ func (eq *ExchangeQuery) PaginationResult(req model.PaginationReq) model.Paginat
 	}
 }
 
+// Pagination returns pagination query builder for ExportQuery.
+func (eq *ExportQuery) Pagination(req model.PaginationReq) *ExportQuery {
+	eq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return eq
+}
+
+// PaginationItems returns pagination query builder for ExportQuery.
+func (eq *ExportQuery) PaginationItemsX(req model.PaginationReq) any {
+	return eq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for ExportQuery.
+func (eq *ExportQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := eq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for InventoryQuery.
 func (iq *InventoryQuery) Pagination(req model.PaginationReq) *InventoryQuery {
 	iq.Offset(req.GetOffset()).Limit(req.GetLimit())

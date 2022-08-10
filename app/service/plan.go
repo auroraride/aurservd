@@ -410,3 +410,11 @@ func (s *planService) RiderListRenewal() model.RiderPlanRenewalRes {
         Items:   items,
     }
 }
+
+func (s *planService) NameFromID(id uint64) string {
+    p, _ := ent.Database.Plan.QueryNotDeleted().Where(plan.ID(id)).First(s.ctx)
+    if p == nil {
+        return "-"
+    }
+    return p.Name
+}

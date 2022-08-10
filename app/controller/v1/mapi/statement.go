@@ -74,7 +74,7 @@ func (*statement) Historical(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatementDetail  "请求成功"
 func (*statement) Statement(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.StatementBillDetailReq](c)
-    return ctx.SendResponse(service.NewEnterpriseStatementWithModifier(ctx.Modifier).Statement(req, c))
+    return ctx.SendResponse(service.NewEnterpriseStatementWithModifier(ctx.Modifier).Statement(req))
 }
 
 // Usage

@@ -678,3 +678,11 @@ func (s *enterpriseService) DeleteContract(req *model.IDParamReq) {
         snag.Panic("合同删除失败")
     }
 }
+
+func (s *enterpriseService) NameFromID(id uint64) string {
+    p, _ := ent.Database.Enterprise.QueryNotDeleted().Where(enterprise.ID(id)).First(s.ctx)
+    if p == nil {
+        return "-"
+    }
+    return p.Name
+}

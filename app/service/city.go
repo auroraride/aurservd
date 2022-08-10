@@ -104,3 +104,11 @@ func (s *cityService) OpenedCities() []model.CityWithLocation {
     }
     return res
 }
+
+func (s *cityService) NameFromID(id uint64) string {
+    p, _ := ent.Database.City.QueryNotDeleted().Where(city.ID(id)).First(s.ctx)
+    if p == nil {
+        return "-"
+    }
+    return p.Name
+}
