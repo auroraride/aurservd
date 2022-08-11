@@ -26,8 +26,8 @@ const (
     OperateRiderUnBLock                        // 解封账户
     OperateSubscribeAlter                      // 修改订阅时间
     OperateEnterprisePrepayment                // 企业预储值
-    OperateSubscribePause                      // 暂停计费
-    OperateSubscribeContinue                   // 继续计费
+    OperateSubscribePause                      // 寄存
+    OperateSubscribeContinue                   // 取消寄存
     OperateDeposit                             // 调整押金
     OperateProfile                             // 修改资料
     OperateRefund                              // 处理退款
@@ -37,6 +37,8 @@ const (
     OperateAssistanceRefuse                    // 救援拒绝
     OperateActive                              // 激活订阅
     OperateCabinetMaintain                     // 电柜维护
+    OperateSuspend                             // 暂停扣费
+    OperateResume                              // 继续扣费
 )
 
 func (o Operate) String() string {
@@ -54,9 +56,9 @@ func (o Operate) String() string {
     case OperateEnterprisePrepayment:
         return "企业预储值"
     case OperateSubscribePause:
-        return "暂停计费"
+        return "寄存"
     case OperateSubscribeContinue:
-        return "继续计费"
+        return "取消寄存"
     case OperateDeposit:
         return "调整押金"
     case OperateProfile:
@@ -75,6 +77,10 @@ func (o Operate) String() string {
         return "激活订阅"
     case OperateCabinetMaintain:
         return "电柜维护"
+    case OperateSuspend:
+        return "暂停扣费"
+    case OperateResume:
+        return "继续扣费"
     default:
         return "未知操作"
     }
