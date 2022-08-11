@@ -4,8 +4,6 @@ package export
 
 import (
 	"time"
-
-	"entgo.io/ent"
 )
 
 const (
@@ -19,12 +17,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
-	// FieldCreator holds the string denoting the creator field in the database.
-	FieldCreator = "creator"
-	// FieldLastModifier holds the string denoting the last_modifier field in the database.
-	FieldLastModifier = "last_modifier"
-	// FieldRemark holds the string denoting the remark field in the database.
-	FieldRemark = "remark"
+	// FieldManagerID holds the string denoting the manager_id field in the database.
+	FieldManagerID = "manager_id"
 	// FieldTaxonomy holds the string denoting the taxonomy field in the database.
 	FieldTaxonomy = "taxonomy"
 	// FieldSn holds the string denoting the sn field in the database.
@@ -43,8 +37,19 @@ const (
 	FieldCondition = "condition"
 	// FieldInfo holds the string denoting the info field in the database.
 	FieldInfo = "info"
+	// FieldRemark holds the string denoting the remark field in the database.
+	FieldRemark = "remark"
+	// EdgeManager holds the string denoting the manager edge name in mutations.
+	EdgeManager = "manager"
 	// Table holds the table name of the export in the database.
 	Table = "export"
+	// ManagerTable is the table that holds the manager relation/edge.
+	ManagerTable = "export"
+	// ManagerInverseTable is the table name for the Manager entity.
+	// It exists in this package in order to avoid circular dependency with the "manager" package.
+	ManagerInverseTable = "manager"
+	// ManagerColumn is the table column denoting the manager relation/edge.
+	ManagerColumn = "manager_id"
 )
 
 // Columns holds all SQL columns for export fields.
@@ -53,9 +58,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
-	FieldCreator,
-	FieldLastModifier,
-	FieldRemark,
+	FieldManagerID,
 	FieldTaxonomy,
 	FieldSn,
 	FieldStatus,
@@ -65,6 +68,7 @@ var Columns = []string{
 	FieldDuration,
 	FieldCondition,
 	FieldInfo,
+	FieldRemark,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -77,14 +81,7 @@ func ValidColumn(column string) bool {
 	return false
 }
 
-// Note that the variables below are initialized by the runtime
-// package on the initialization of the application. Therefore,
-// it should be imported in the main as follows:
-//
-//	import _ "github.com/auroraride/aurservd/internal/ent/runtime"
-//
 var (
-	Hooks [1]ent.Hook
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

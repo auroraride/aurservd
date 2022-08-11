@@ -9,7 +9,6 @@ import (
     "errors"
     "time"
     "github.com/auroraride/aurservd/internal/ent/export"
-    "github.com/auroraride/aurservd/app/model"
     "encoding/json"
     "github.com/auroraride/aurservd/internal/ent/predicate"
 
@@ -20,30 +19,30 @@ import (
 // ExportMutation represents an operation that mutates the Export nodes in the graph.
 type ExportMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uint64
-	created_at    *time.Time
-	updated_at    *time.Time
-	deleted_at    *time.Time
-	creator       **model.Modifier
-	last_modifier **model.Modifier
-	remark        *string
-	taxonomy      *string
-	sn            *string
-	status        *uint8
-	addstatus     *int8
-	_path         *string
-	message       *string
-	finish_at     *time.Time
-	duration      *int64
-	addduration   *int64
-	condition     *json.RawMessage
-	info          *map[string]interface{}
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*Export, error)
-	predicates    []predicate.Export
+	op             Op
+	typ            string
+	id             *uint64
+	created_at     *time.Time
+	updated_at     *time.Time
+	deleted_at     *time.Time
+	taxonomy       *string
+	sn             *string
+	status         *uint8
+	addstatus      *int8
+	_path          *string
+	message        *string
+	finish_at      *time.Time
+	duration       *int64
+	addduration    *int64
+	condition      *json.RawMessage
+	info           *map[string]interface{}
+	remark         *string
+	clearedFields  map[string]struct{}
+	manager        *uint64
+	clearedmanager bool
+	done           bool
+	oldValue       func(context.Context) (*Export, error)
+	predicates     []predicate.Export
 }
 
 var _ ent.Mutation = (*ExportMutation)(nil)
@@ -265,151 +264,40 @@ func (m *ExportMutation) ResetDeletedAt() {
 	delete(m.clearedFields, export.FieldDeletedAt)
 }
 
-// SetCreator sets the "creator" field.
-func (m *ExportMutation) SetCreator(value *model.Modifier) {
-	m.creator = &value
+// SetManagerID sets the "manager_id" field.
+func (m *ExportMutation) SetManagerID(u uint64) {
+	m.manager = &u
 }
 
-// Creator returns the value of the "creator" field in the mutation.
-func (m *ExportMutation) Creator() (r *model.Modifier, exists bool) {
-	v := m.creator
+// ManagerID returns the value of the "manager_id" field in the mutation.
+func (m *ExportMutation) ManagerID() (r uint64, exists bool) {
+	v := m.manager
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldCreator returns the old "creator" field's value of the Export entity.
+// OldManagerID returns the old "manager_id" field's value of the Export entity.
 // If the Export object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ExportMutation) OldCreator(ctx context.Context) (v *model.Modifier, err error) {
+func (m *ExportMutation) OldManagerID(ctx context.Context) (v uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreator is only allowed on UpdateOne operations")
+		return v, errors.New("OldManagerID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreator requires an ID field in the mutation")
+		return v, errors.New("OldManagerID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreator: %w", err)
+		return v, fmt.Errorf("querying old value for OldManagerID: %w", err)
 	}
-	return oldValue.Creator, nil
+	return oldValue.ManagerID, nil
 }
 
-// ClearCreator clears the value of the "creator" field.
-func (m *ExportMutation) ClearCreator() {
-	m.creator = nil
-	m.clearedFields[export.FieldCreator] = struct{}{}
-}
-
-// CreatorCleared returns if the "creator" field was cleared in this mutation.
-func (m *ExportMutation) CreatorCleared() bool {
-	_, ok := m.clearedFields[export.FieldCreator]
-	return ok
-}
-
-// ResetCreator resets all changes to the "creator" field.
-func (m *ExportMutation) ResetCreator() {
-	m.creator = nil
-	delete(m.clearedFields, export.FieldCreator)
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (m *ExportMutation) SetLastModifier(value *model.Modifier) {
-	m.last_modifier = &value
-}
-
-// LastModifier returns the value of the "last_modifier" field in the mutation.
-func (m *ExportMutation) LastModifier() (r *model.Modifier, exists bool) {
-	v := m.last_modifier
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldLastModifier returns the old "last_modifier" field's value of the Export entity.
-// If the Export object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ExportMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastModifier is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastModifier requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastModifier: %w", err)
-	}
-	return oldValue.LastModifier, nil
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (m *ExportMutation) ClearLastModifier() {
-	m.last_modifier = nil
-	m.clearedFields[export.FieldLastModifier] = struct{}{}
-}
-
-// LastModifierCleared returns if the "last_modifier" field was cleared in this mutation.
-func (m *ExportMutation) LastModifierCleared() bool {
-	_, ok := m.clearedFields[export.FieldLastModifier]
-	return ok
-}
-
-// ResetLastModifier resets all changes to the "last_modifier" field.
-func (m *ExportMutation) ResetLastModifier() {
-	m.last_modifier = nil
-	delete(m.clearedFields, export.FieldLastModifier)
-}
-
-// SetRemark sets the "remark" field.
-func (m *ExportMutation) SetRemark(s string) {
-	m.remark = &s
-}
-
-// Remark returns the value of the "remark" field in the mutation.
-func (m *ExportMutation) Remark() (r string, exists bool) {
-	v := m.remark
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRemark returns the old "remark" field's value of the Export entity.
-// If the Export object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ExportMutation) OldRemark(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRemark requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRemark: %w", err)
-	}
-	return oldValue.Remark, nil
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (m *ExportMutation) ClearRemark() {
-	m.remark = nil
-	m.clearedFields[export.FieldRemark] = struct{}{}
-}
-
-// RemarkCleared returns if the "remark" field was cleared in this mutation.
-func (m *ExportMutation) RemarkCleared() bool {
-	_, ok := m.clearedFields[export.FieldRemark]
-	return ok
-}
-
-// ResetRemark resets all changes to the "remark" field.
-func (m *ExportMutation) ResetRemark() {
-	m.remark = nil
-	delete(m.clearedFields, export.FieldRemark)
+// ResetManagerID resets all changes to the "manager_id" field.
+func (m *ExportMutation) ResetManagerID() {
+	m.manager = nil
 }
 
 // SetTaxonomy sets the "taxonomy" field.
@@ -829,6 +717,68 @@ func (m *ExportMutation) ResetInfo() {
 	m.info = nil
 }
 
+// SetRemark sets the "remark" field.
+func (m *ExportMutation) SetRemark(s string) {
+	m.remark = &s
+}
+
+// Remark returns the value of the "remark" field in the mutation.
+func (m *ExportMutation) Remark() (r string, exists bool) {
+	v := m.remark
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemark returns the old "remark" field's value of the Export entity.
+// If the Export object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExportMutation) OldRemark(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemark requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemark: %w", err)
+	}
+	return oldValue.Remark, nil
+}
+
+// ResetRemark resets all changes to the "remark" field.
+func (m *ExportMutation) ResetRemark() {
+	m.remark = nil
+}
+
+// ClearManager clears the "manager" edge to the Manager entity.
+func (m *ExportMutation) ClearManager() {
+	m.clearedmanager = true
+}
+
+// ManagerCleared reports if the "manager" edge to the Manager entity was cleared.
+func (m *ExportMutation) ManagerCleared() bool {
+	return m.clearedmanager
+}
+
+// ManagerIDs returns the "manager" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ManagerID instead. It exists only for internal usage by the builders.
+func (m *ExportMutation) ManagerIDs() (ids []uint64) {
+	if id := m.manager; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetManager resets all changes to the "manager" edge.
+func (m *ExportMutation) ResetManager() {
+	m.manager = nil
+	m.clearedmanager = false
+}
+
 // Where appends a list predicates to the ExportMutation builder.
 func (m *ExportMutation) Where(ps ...predicate.Export) {
 	m.predicates = append(m.predicates, ps...)
@@ -848,7 +798,7 @@ func (m *ExportMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ExportMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 14)
 	if m.created_at != nil {
 		fields = append(fields, export.FieldCreatedAt)
 	}
@@ -858,14 +808,8 @@ func (m *ExportMutation) Fields() []string {
 	if m.deleted_at != nil {
 		fields = append(fields, export.FieldDeletedAt)
 	}
-	if m.creator != nil {
-		fields = append(fields, export.FieldCreator)
-	}
-	if m.last_modifier != nil {
-		fields = append(fields, export.FieldLastModifier)
-	}
-	if m.remark != nil {
-		fields = append(fields, export.FieldRemark)
+	if m.manager != nil {
+		fields = append(fields, export.FieldManagerID)
 	}
 	if m.taxonomy != nil {
 		fields = append(fields, export.FieldTaxonomy)
@@ -894,6 +838,9 @@ func (m *ExportMutation) Fields() []string {
 	if m.info != nil {
 		fields = append(fields, export.FieldInfo)
 	}
+	if m.remark != nil {
+		fields = append(fields, export.FieldRemark)
+	}
 	return fields
 }
 
@@ -908,12 +855,8 @@ func (m *ExportMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case export.FieldDeletedAt:
 		return m.DeletedAt()
-	case export.FieldCreator:
-		return m.Creator()
-	case export.FieldLastModifier:
-		return m.LastModifier()
-	case export.FieldRemark:
-		return m.Remark()
+	case export.FieldManagerID:
+		return m.ManagerID()
 	case export.FieldTaxonomy:
 		return m.Taxonomy()
 	case export.FieldSn:
@@ -932,6 +875,8 @@ func (m *ExportMutation) Field(name string) (ent.Value, bool) {
 		return m.Condition()
 	case export.FieldInfo:
 		return m.Info()
+	case export.FieldRemark:
+		return m.Remark()
 	}
 	return nil, false
 }
@@ -947,12 +892,8 @@ func (m *ExportMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldUpdatedAt(ctx)
 	case export.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
-	case export.FieldCreator:
-		return m.OldCreator(ctx)
-	case export.FieldLastModifier:
-		return m.OldLastModifier(ctx)
-	case export.FieldRemark:
-		return m.OldRemark(ctx)
+	case export.FieldManagerID:
+		return m.OldManagerID(ctx)
 	case export.FieldTaxonomy:
 		return m.OldTaxonomy(ctx)
 	case export.FieldSn:
@@ -971,6 +912,8 @@ func (m *ExportMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldCondition(ctx)
 	case export.FieldInfo:
 		return m.OldInfo(ctx)
+	case export.FieldRemark:
+		return m.OldRemark(ctx)
 	}
 	return nil, fmt.Errorf("unknown Export field %s", name)
 }
@@ -1001,26 +944,12 @@ func (m *ExportMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDeletedAt(v)
 		return nil
-	case export.FieldCreator:
-		v, ok := value.(*model.Modifier)
+	case export.FieldManagerID:
+		v, ok := value.(uint64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetCreator(v)
-		return nil
-	case export.FieldLastModifier:
-		v, ok := value.(*model.Modifier)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetLastModifier(v)
-		return nil
-	case export.FieldRemark:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRemark(v)
+		m.SetManagerID(v)
 		return nil
 	case export.FieldTaxonomy:
 		v, ok := value.(string)
@@ -1085,6 +1014,13 @@ func (m *ExportMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetInfo(v)
 		return nil
+	case export.FieldRemark:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemark(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Export field %s", name)
 }
@@ -1145,15 +1081,6 @@ func (m *ExportMutation) ClearedFields() []string {
 	if m.FieldCleared(export.FieldDeletedAt) {
 		fields = append(fields, export.FieldDeletedAt)
 	}
-	if m.FieldCleared(export.FieldCreator) {
-		fields = append(fields, export.FieldCreator)
-	}
-	if m.FieldCleared(export.FieldLastModifier) {
-		fields = append(fields, export.FieldLastModifier)
-	}
-	if m.FieldCleared(export.FieldRemark) {
-		fields = append(fields, export.FieldRemark)
-	}
 	if m.FieldCleared(export.FieldPath) {
 		fields = append(fields, export.FieldPath)
 	}
@@ -1182,15 +1109,6 @@ func (m *ExportMutation) ClearField(name string) error {
 	switch name {
 	case export.FieldDeletedAt:
 		m.ClearDeletedAt()
-		return nil
-	case export.FieldCreator:
-		m.ClearCreator()
-		return nil
-	case export.FieldLastModifier:
-		m.ClearLastModifier()
-		return nil
-	case export.FieldRemark:
-		m.ClearRemark()
 		return nil
 	case export.FieldPath:
 		m.ClearPath()
@@ -1221,14 +1139,8 @@ func (m *ExportMutation) ResetField(name string) error {
 	case export.FieldDeletedAt:
 		m.ResetDeletedAt()
 		return nil
-	case export.FieldCreator:
-		m.ResetCreator()
-		return nil
-	case export.FieldLastModifier:
-		m.ResetLastModifier()
-		return nil
-	case export.FieldRemark:
-		m.ResetRemark()
+	case export.FieldManagerID:
+		m.ResetManagerID()
 		return nil
 	case export.FieldTaxonomy:
 		m.ResetTaxonomy()
@@ -1257,55 +1169,86 @@ func (m *ExportMutation) ResetField(name string) error {
 	case export.FieldInfo:
 		m.ResetInfo()
 		return nil
+	case export.FieldRemark:
+		m.ResetRemark()
+		return nil
 	}
 	return fmt.Errorf("unknown Export field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ExportMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.manager != nil {
+		edges = append(edges, export.EdgeManager)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *ExportMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case export.EdgeManager:
+		if id := m.manager; id != nil {
+			return []ent.Value{*id}
+		}
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ExportMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *ExportMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ExportMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedmanager {
+		edges = append(edges, export.EdgeManager)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *ExportMutation) EdgeCleared(name string) bool {
+	switch name {
+	case export.EdgeManager:
+		return m.clearedmanager
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *ExportMutation) ClearEdge(name string) error {
+	switch name {
+	case export.EdgeManager:
+		m.ClearManager()
+		return nil
+	}
 	return fmt.Errorf("unknown Export unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *ExportMutation) ResetEdge(name string) error {
+	switch name {
+	case export.EdgeManager:
+		m.ResetManager()
+		return nil
+	}
 	return fmt.Errorf("unknown Export edge %s", name)
 }
 

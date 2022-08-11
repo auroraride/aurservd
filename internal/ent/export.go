@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/export"
+	"github.com/auroraride/aurservd/internal/ent/manager"
 )
 
 // Export is the model entity for the Export schema.
@@ -24,15 +24,9 @@ type Export struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
-	// Creator holds the value of the "creator" field.
-	// 创建人
-	Creator *model.Modifier `json:"creator,omitempty"`
-	// LastModifier holds the value of the "last_modifier" field.
-	// 最后修改人
-	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
-	// Remark holds the value of the "remark" field.
-	// 管理员改动原因/备注
-	Remark string `json:"remark,omitempty"`
+	// ManagerID holds the value of the "manager_id" field.
+	// 管理人ID
+	ManagerID uint64 `json:"manager_id,omitempty"`
 	// Taxonomy holds the value of the "taxonomy" field.
 	// 分类
 	Taxonomy string `json:"taxonomy,omitempty"`
@@ -60,6 +54,35 @@ type Export struct {
 	// Info holds the value of the "info" field.
 	// 详细信息
 	Info map[string]interface{} `json:"info,omitempty"`
+	// Remark holds the value of the "remark" field.
+	// 备注信息
+	Remark string `json:"remark,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the ExportQuery when eager-loading is set.
+	Edges ExportEdges `json:"edges"`
+}
+
+// ExportEdges holds the relations/edges for other nodes in the graph.
+type ExportEdges struct {
+	// Manager holds the value of the manager edge.
+	Manager *Manager `json:"manager,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// ManagerOrErr returns the Manager value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ExportEdges) ManagerOrErr() (*Manager, error) {
+	if e.loadedTypes[0] {
+		if e.Manager == nil {
+			// The edge manager was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: manager.Label}
+		}
+		return e.Manager, nil
+	}
+	return nil, &NotLoadedError{edge: "manager"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -67,11 +90,11 @@ func (*Export) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case export.FieldCreator, export.FieldLastModifier, export.FieldCondition, export.FieldInfo:
+		case export.FieldCondition, export.FieldInfo:
 			values[i] = new([]byte)
-		case export.FieldID, export.FieldStatus, export.FieldDuration:
+		case export.FieldID, export.FieldManagerID, export.FieldStatus, export.FieldDuration:
 			values[i] = new(sql.NullInt64)
-		case export.FieldRemark, export.FieldTaxonomy, export.FieldSn, export.FieldPath, export.FieldMessage:
+		case export.FieldTaxonomy, export.FieldSn, export.FieldPath, export.FieldMessage, export.FieldRemark:
 			values[i] = new(sql.NullString)
 		case export.FieldCreatedAt, export.FieldUpdatedAt, export.FieldDeletedAt, export.FieldFinishAt:
 			values[i] = new(sql.NullTime)
@@ -115,27 +138,11 @@ func (e *Export) assignValues(columns []string, values []interface{}) error {
 				e.DeletedAt = new(time.Time)
 				*e.DeletedAt = value.Time
 			}
-		case export.FieldCreator:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field creator", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &e.Creator); err != nil {
-					return fmt.Errorf("unmarshal field creator: %w", err)
-				}
-			}
-		case export.FieldLastModifier:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field last_modifier", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &e.LastModifier); err != nil {
-					return fmt.Errorf("unmarshal field last_modifier: %w", err)
-				}
-			}
-		case export.FieldRemark:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field remark", values[i])
+		case export.FieldManagerID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field manager_id", values[i])
 			} else if value.Valid {
-				e.Remark = value.String
+				e.ManagerID = uint64(value.Int64)
 			}
 		case export.FieldTaxonomy:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -195,9 +202,20 @@ func (e *Export) assignValues(columns []string, values []interface{}) error {
 					return fmt.Errorf("unmarshal field info: %w", err)
 				}
 			}
+		case export.FieldRemark:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field remark", values[i])
+			} else if value.Valid {
+				e.Remark = value.String
+			}
 		}
 	}
 	return nil
+}
+
+// QueryManager queries the "manager" edge of the Export entity.
+func (e *Export) QueryManager() *ManagerQuery {
+	return (&ExportClient{config: e.config}).QueryManager(e)
 }
 
 // Update returns a builder for updating this Export.
@@ -231,12 +249,8 @@ func (e *Export) String() string {
 		builder.WriteString(", deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
-	builder.WriteString(", creator=")
-	builder.WriteString(fmt.Sprintf("%v", e.Creator))
-	builder.WriteString(", last_modifier=")
-	builder.WriteString(fmt.Sprintf("%v", e.LastModifier))
-	builder.WriteString(", remark=")
-	builder.WriteString(e.Remark)
+	builder.WriteString(", manager_id=")
+	builder.WriteString(fmt.Sprintf("%v", e.ManagerID))
 	builder.WriteString(", taxonomy=")
 	builder.WriteString(e.Taxonomy)
 	builder.WriteString(", sn=")
@@ -255,6 +269,8 @@ func (e *Export) String() string {
 	builder.WriteString(fmt.Sprintf("%v", e.Condition))
 	builder.WriteString(", info=")
 	builder.WriteString(fmt.Sprintf("%v", e.Info))
+	builder.WriteString(", remark=")
+	builder.WriteString(e.Remark)
 	builder.WriteByte(')')
 	return builder.String()
 }

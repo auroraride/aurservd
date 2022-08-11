@@ -1410,9 +1410,6 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
-		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
-		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "taxonomy", Type: field.TypeString, Comment: "分类"},
 		{Name: "sn", Type: field.TypeString, Comment: "编号"},
 		{Name: "status", Type: field.TypeUint8, Comment: "状态", Default: 0},
@@ -1422,12 +1419,22 @@ var (
 		{Name: "duration", Type: field.TypeInt64, Comment: "耗时", Nullable: true},
 		{Name: "condition", Type: field.TypeJSON, Comment: "筛选条件"},
 		{Name: "info", Type: field.TypeJSON, Comment: "详细信息"},
+		{Name: "remark", Type: field.TypeString, Comment: "备注信息"},
+		{Name: "manager_id", Type: field.TypeUint64},
 	}
 	// ExportTable holds the schema information for the "export" table.
 	ExportTable = &schema.Table{
 		Name:       "export",
 		Columns:    ExportColumns,
 		PrimaryKey: []*schema.Column{ExportColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "export_manager_manager",
+				Columns:    []*schema.Column{ExportColumns[14]},
+				RefColumns: []*schema.Column{ManagerColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
 		Indexes: []*schema.Index{
 			{
 				Name:    "export_created_at",
@@ -1442,12 +1449,12 @@ var (
 			{
 				Name:    "export_sn",
 				Unique:  false,
-				Columns: []*schema.Column{ExportColumns[8]},
+				Columns: []*schema.Column{ExportColumns[5]},
 			},
 			{
 				Name:    "export_status",
 				Unique:  false,
-				Columns: []*schema.Column{ExportColumns[9]},
+				Columns: []*schema.Column{ExportColumns[6]},
 			},
 		},
 	}
@@ -2725,6 +2732,7 @@ func init() {
 	ExchangeTable.Annotation = &entsql.Annotation{
 		Table: "exchange",
 	}
+	ExportTable.ForeignKeys[0].RefTable = ManagerTable
 	ExportTable.Annotation = &entsql.Annotation{
 		Table: "export",
 	}

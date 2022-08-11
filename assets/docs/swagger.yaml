@@ -7903,6 +7903,10 @@ paths:
         in: query
         name: pageSize
         type: integer
+      - description: 导出编号
+        in: query
+        name: sn
+        type: string
       produces:
       - application/json
       responses:

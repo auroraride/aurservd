@@ -5005,6 +5005,12 @@ const docTemplate = `{
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "导出编号",
+                        "name": "sn",
+                        "in": "query"
                     }
                 ],
                 "responses": {

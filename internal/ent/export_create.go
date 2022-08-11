@@ -12,8 +12,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/export"
+	"github.com/auroraride/aurservd/internal/ent/manager"
 )
 
 // ExportCreate is the builder for creating a Export entity.
@@ -66,29 +66,9 @@ func (ec *ExportCreate) SetNillableDeletedAt(t *time.Time) *ExportCreate {
 	return ec
 }
 
-// SetCreator sets the "creator" field.
-func (ec *ExportCreate) SetCreator(m *model.Modifier) *ExportCreate {
-	ec.mutation.SetCreator(m)
-	return ec
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (ec *ExportCreate) SetLastModifier(m *model.Modifier) *ExportCreate {
-	ec.mutation.SetLastModifier(m)
-	return ec
-}
-
-// SetRemark sets the "remark" field.
-func (ec *ExportCreate) SetRemark(s string) *ExportCreate {
-	ec.mutation.SetRemark(s)
-	return ec
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (ec *ExportCreate) SetNillableRemark(s *string) *ExportCreate {
-	if s != nil {
-		ec.SetRemark(*s)
-	}
+// SetManagerID sets the "manager_id" field.
+func (ec *ExportCreate) SetManagerID(u uint64) *ExportCreate {
+	ec.mutation.SetManagerID(u)
 	return ec
 }
 
@@ -186,6 +166,17 @@ func (ec *ExportCreate) SetInfo(m map[string]interface{}) *ExportCreate {
 	return ec
 }
 
+// SetRemark sets the "remark" field.
+func (ec *ExportCreate) SetRemark(s string) *ExportCreate {
+	ec.mutation.SetRemark(s)
+	return ec
+}
+
+// SetManager sets the "manager" edge to the Manager entity.
+func (ec *ExportCreate) SetManager(m *Manager) *ExportCreate {
+	return ec.SetManagerID(m.ID)
+}
+
 // Mutation returns the ExportMutation object of the builder.
 func (ec *ExportCreate) Mutation() *ExportMutation {
 	return ec.mutation
@@ -197,9 +188,7 @@ func (ec *ExportCreate) Save(ctx context.Context) (*Export, error) {
 		err  error
 		node *Export
 	)
-	if err := ec.defaults(); err != nil {
-		return nil, err
-	}
+	ec.defaults()
 	if len(ec.hooks) == 0 {
 		if err = ec.check(); err != nil {
 			return nil, err
@@ -264,18 +253,12 @@ func (ec *ExportCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (ec *ExportCreate) defaults() error {
+func (ec *ExportCreate) defaults() {
 	if _, ok := ec.mutation.CreatedAt(); !ok {
-		if export.DefaultCreatedAt == nil {
-			return fmt.Errorf("ent: uninitialized export.DefaultCreatedAt (forgotten import ent/runtime?)")
-		}
 		v := export.DefaultCreatedAt()
 		ec.mutation.SetCreatedAt(v)
 	}
 	if _, ok := ec.mutation.UpdatedAt(); !ok {
-		if export.DefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized export.DefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := export.DefaultUpdatedAt()
 		ec.mutation.SetUpdatedAt(v)
 	}
@@ -283,7 +266,6 @@ func (ec *ExportCreate) defaults() error {
 		v := export.DefaultStatus
 		ec.mutation.SetStatus(v)
 	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -293,6 +275,9 @@ func (ec *ExportCreate) check() error {
 	}
 	if _, ok := ec.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Export.updated_at"`)}
+	}
+	if _, ok := ec.mutation.ManagerID(); !ok {
+		return &ValidationError{Name: "manager_id", err: errors.New(`ent: missing required field "Export.manager_id"`)}
 	}
 	if _, ok := ec.mutation.Taxonomy(); !ok {
 		return &ValidationError{Name: "taxonomy", err: errors.New(`ent: missing required field "Export.taxonomy"`)}
@@ -308,6 +293,12 @@ func (ec *ExportCreate) check() error {
 	}
 	if _, ok := ec.mutation.Info(); !ok {
 		return &ValidationError{Name: "info", err: errors.New(`ent: missing required field "Export.info"`)}
+	}
+	if _, ok := ec.mutation.Remark(); !ok {
+		return &ValidationError{Name: "remark", err: errors.New(`ent: missing required field "Export.remark"`)}
+	}
+	if _, ok := ec.mutation.ManagerID(); !ok {
+		return &ValidationError{Name: "manager", err: errors.New(`ent: missing required edge "Export.manager"`)}
 	}
 	return nil
 }
@@ -360,30 +351,6 @@ func (ec *ExportCreate) createSpec() (*Export, *sqlgraph.CreateSpec) {
 			Column: export.FieldDeletedAt,
 		})
 		_node.DeletedAt = &value
-	}
-	if value, ok := ec.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: export.FieldCreator,
-		})
-		_node.Creator = value
-	}
-	if value, ok := ec.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: export.FieldLastModifier,
-		})
-		_node.LastModifier = value
-	}
-	if value, ok := ec.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: export.FieldRemark,
-		})
-		_node.Remark = value
 	}
 	if value, ok := ec.mutation.Taxonomy(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -456,6 +423,34 @@ func (ec *ExportCreate) createSpec() (*Export, *sqlgraph.CreateSpec) {
 			Column: export.FieldInfo,
 		})
 		_node.Info = value
+	}
+	if value, ok := ec.mutation.Remark(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: export.FieldRemark,
+		})
+		_node.Remark = value
+	}
+	if nodes := ec.mutation.ManagerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   export.ManagerTable,
+			Columns: []string{export.ManagerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: manager.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.ManagerID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
@@ -553,57 +548,15 @@ func (u *ExportUpsert) ClearDeletedAt() *ExportUpsert {
 	return u
 }
 
-// SetCreator sets the "creator" field.
-func (u *ExportUpsert) SetCreator(v *model.Modifier) *ExportUpsert {
-	u.Set(export.FieldCreator, v)
+// SetManagerID sets the "manager_id" field.
+func (u *ExportUpsert) SetManagerID(v uint64) *ExportUpsert {
+	u.Set(export.FieldManagerID, v)
 	return u
 }
 
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *ExportUpsert) UpdateCreator() *ExportUpsert {
-	u.SetExcluded(export.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *ExportUpsert) ClearCreator() *ExportUpsert {
-	u.SetNull(export.FieldCreator)
-	return u
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (u *ExportUpsert) SetLastModifier(v *model.Modifier) *ExportUpsert {
-	u.Set(export.FieldLastModifier, v)
-	return u
-}
-
-// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
-func (u *ExportUpsert) UpdateLastModifier() *ExportUpsert {
-	u.SetExcluded(export.FieldLastModifier)
-	return u
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (u *ExportUpsert) ClearLastModifier() *ExportUpsert {
-	u.SetNull(export.FieldLastModifier)
-	return u
-}
-
-// SetRemark sets the "remark" field.
-func (u *ExportUpsert) SetRemark(v string) *ExportUpsert {
-	u.Set(export.FieldRemark, v)
-	return u
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *ExportUpsert) UpdateRemark() *ExportUpsert {
-	u.SetExcluded(export.FieldRemark)
-	return u
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *ExportUpsert) ClearRemark() *ExportUpsert {
-	u.SetNull(export.FieldRemark)
+// UpdateManagerID sets the "manager_id" field to the value that was provided on create.
+func (u *ExportUpsert) UpdateManagerID() *ExportUpsert {
+	u.SetExcluded(export.FieldManagerID)
 	return u
 }
 
@@ -751,6 +704,18 @@ func (u *ExportUpsert) UpdateInfo() *ExportUpsert {
 	return u
 }
 
+// SetRemark sets the "remark" field.
+func (u *ExportUpsert) SetRemark(v string) *ExportUpsert {
+	u.Set(export.FieldRemark, v)
+	return u
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *ExportUpsert) UpdateRemark() *ExportUpsert {
+	u.SetExcluded(export.FieldRemark)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -765,9 +730,6 @@ func (u *ExportUpsertOne) UpdateNewValues() *ExportUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(export.FieldCreatedAt)
-		}
-		if _, exists := u.create.mutation.Creator(); exists {
-			s.SetIgnore(export.FieldCreator)
 		}
 	}))
 	return u
@@ -850,66 +812,17 @@ func (u *ExportUpsertOne) ClearDeletedAt() *ExportUpsertOne {
 	})
 }
 
-// SetCreator sets the "creator" field.
-func (u *ExportUpsertOne) SetCreator(v *model.Modifier) *ExportUpsertOne {
+// SetManagerID sets the "manager_id" field.
+func (u *ExportUpsertOne) SetManagerID(v uint64) *ExportUpsertOne {
 	return u.Update(func(s *ExportUpsert) {
-		s.SetCreator(v)
+		s.SetManagerID(v)
 	})
 }
 
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *ExportUpsertOne) UpdateCreator() *ExportUpsertOne {
+// UpdateManagerID sets the "manager_id" field to the value that was provided on create.
+func (u *ExportUpsertOne) UpdateManagerID() *ExportUpsertOne {
 	return u.Update(func(s *ExportUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *ExportUpsertOne) ClearCreator() *ExportUpsertOne {
-	return u.Update(func(s *ExportUpsert) {
-		s.ClearCreator()
-	})
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (u *ExportUpsertOne) SetLastModifier(v *model.Modifier) *ExportUpsertOne {
-	return u.Update(func(s *ExportUpsert) {
-		s.SetLastModifier(v)
-	})
-}
-
-// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
-func (u *ExportUpsertOne) UpdateLastModifier() *ExportUpsertOne {
-	return u.Update(func(s *ExportUpsert) {
-		s.UpdateLastModifier()
-	})
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (u *ExportUpsertOne) ClearLastModifier() *ExportUpsertOne {
-	return u.Update(func(s *ExportUpsert) {
-		s.ClearLastModifier()
-	})
-}
-
-// SetRemark sets the "remark" field.
-func (u *ExportUpsertOne) SetRemark(v string) *ExportUpsertOne {
-	return u.Update(func(s *ExportUpsert) {
-		s.SetRemark(v)
-	})
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *ExportUpsertOne) UpdateRemark() *ExportUpsertOne {
-	return u.Update(func(s *ExportUpsert) {
-		s.UpdateRemark()
-	})
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *ExportUpsertOne) ClearRemark() *ExportUpsertOne {
-	return u.Update(func(s *ExportUpsert) {
-		s.ClearRemark()
+		s.UpdateManagerID()
 	})
 }
 
@@ -1078,6 +991,20 @@ func (u *ExportUpsertOne) SetInfo(v map[string]interface{}) *ExportUpsertOne {
 func (u *ExportUpsertOne) UpdateInfo() *ExportUpsertOne {
 	return u.Update(func(s *ExportUpsert) {
 		s.UpdateInfo()
+	})
+}
+
+// SetRemark sets the "remark" field.
+func (u *ExportUpsertOne) SetRemark(v string) *ExportUpsertOne {
+	return u.Update(func(s *ExportUpsert) {
+		s.SetRemark(v)
+	})
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *ExportUpsertOne) UpdateRemark() *ExportUpsertOne {
+	return u.Update(func(s *ExportUpsert) {
+		s.UpdateRemark()
 	})
 }
 
@@ -1259,9 +1186,6 @@ func (u *ExportUpsertBulk) UpdateNewValues() *ExportUpsertBulk {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(export.FieldCreatedAt)
 			}
-			if _, exists := b.mutation.Creator(); exists {
-				s.SetIgnore(export.FieldCreator)
-			}
 		}
 	}))
 	return u
@@ -1344,66 +1268,17 @@ func (u *ExportUpsertBulk) ClearDeletedAt() *ExportUpsertBulk {
 	})
 }
 
-// SetCreator sets the "creator" field.
-func (u *ExportUpsertBulk) SetCreator(v *model.Modifier) *ExportUpsertBulk {
+// SetManagerID sets the "manager_id" field.
+func (u *ExportUpsertBulk) SetManagerID(v uint64) *ExportUpsertBulk {
 	return u.Update(func(s *ExportUpsert) {
-		s.SetCreator(v)
+		s.SetManagerID(v)
 	})
 }
 
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *ExportUpsertBulk) UpdateCreator() *ExportUpsertBulk {
+// UpdateManagerID sets the "manager_id" field to the value that was provided on create.
+func (u *ExportUpsertBulk) UpdateManagerID() *ExportUpsertBulk {
 	return u.Update(func(s *ExportUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *ExportUpsertBulk) ClearCreator() *ExportUpsertBulk {
-	return u.Update(func(s *ExportUpsert) {
-		s.ClearCreator()
-	})
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (u *ExportUpsertBulk) SetLastModifier(v *model.Modifier) *ExportUpsertBulk {
-	return u.Update(func(s *ExportUpsert) {
-		s.SetLastModifier(v)
-	})
-}
-
-// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
-func (u *ExportUpsertBulk) UpdateLastModifier() *ExportUpsertBulk {
-	return u.Update(func(s *ExportUpsert) {
-		s.UpdateLastModifier()
-	})
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (u *ExportUpsertBulk) ClearLastModifier() *ExportUpsertBulk {
-	return u.Update(func(s *ExportUpsert) {
-		s.ClearLastModifier()
-	})
-}
-
-// SetRemark sets the "remark" field.
-func (u *ExportUpsertBulk) SetRemark(v string) *ExportUpsertBulk {
-	return u.Update(func(s *ExportUpsert) {
-		s.SetRemark(v)
-	})
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *ExportUpsertBulk) UpdateRemark() *ExportUpsertBulk {
-	return u.Update(func(s *ExportUpsert) {
-		s.UpdateRemark()
-	})
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *ExportUpsertBulk) ClearRemark() *ExportUpsertBulk {
-	return u.Update(func(s *ExportUpsert) {
-		s.ClearRemark()
+		s.UpdateManagerID()
 	})
 }
 
@@ -1572,6 +1447,20 @@ func (u *ExportUpsertBulk) SetInfo(v map[string]interface{}) *ExportUpsertBulk {
 func (u *ExportUpsertBulk) UpdateInfo() *ExportUpsertBulk {
 	return u.Update(func(s *ExportUpsert) {
 		s.UpdateInfo()
+	})
+}
+
+// SetRemark sets the "remark" field.
+func (u *ExportUpsertBulk) SetRemark(v string) *ExportUpsertBulk {
+	return u.Update(func(s *ExportUpsert) {
+		s.SetRemark(v)
+	})
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *ExportUpsertBulk) UpdateRemark() *ExportUpsertBulk {
+	return u.Update(func(s *ExportUpsert) {
+		s.UpdateRemark()
 	})
 }
 

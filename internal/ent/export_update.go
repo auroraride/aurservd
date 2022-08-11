@@ -12,8 +12,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/export"
+	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -56,35 +56,9 @@ func (eu *ExportUpdate) ClearDeletedAt() *ExportUpdate {
 	return eu
 }
 
-// SetLastModifier sets the "last_modifier" field.
-func (eu *ExportUpdate) SetLastModifier(m *model.Modifier) *ExportUpdate {
-	eu.mutation.SetLastModifier(m)
-	return eu
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (eu *ExportUpdate) ClearLastModifier() *ExportUpdate {
-	eu.mutation.ClearLastModifier()
-	return eu
-}
-
-// SetRemark sets the "remark" field.
-func (eu *ExportUpdate) SetRemark(s string) *ExportUpdate {
-	eu.mutation.SetRemark(s)
-	return eu
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (eu *ExportUpdate) SetNillableRemark(s *string) *ExportUpdate {
-	if s != nil {
-		eu.SetRemark(*s)
-	}
-	return eu
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (eu *ExportUpdate) ClearRemark() *ExportUpdate {
-	eu.mutation.ClearRemark()
+// SetManagerID sets the "manager_id" field.
+func (eu *ExportUpdate) SetManagerID(u uint64) *ExportUpdate {
+	eu.mutation.SetManagerID(u)
 	return eu
 }
 
@@ -220,9 +194,26 @@ func (eu *ExportUpdate) SetInfo(m map[string]interface{}) *ExportUpdate {
 	return eu
 }
 
+// SetRemark sets the "remark" field.
+func (eu *ExportUpdate) SetRemark(s string) *ExportUpdate {
+	eu.mutation.SetRemark(s)
+	return eu
+}
+
+// SetManager sets the "manager" edge to the Manager entity.
+func (eu *ExportUpdate) SetManager(m *Manager) *ExportUpdate {
+	return eu.SetManagerID(m.ID)
+}
+
 // Mutation returns the ExportMutation object of the builder.
 func (eu *ExportUpdate) Mutation() *ExportMutation {
 	return eu.mutation
+}
+
+// ClearManager clears the "manager" edge to the Manager entity.
+func (eu *ExportUpdate) ClearManager() *ExportUpdate {
+	eu.mutation.ClearManager()
+	return eu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -231,16 +222,20 @@ func (eu *ExportUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
-	if err := eu.defaults(); err != nil {
-		return 0, err
-	}
+	eu.defaults()
 	if len(eu.hooks) == 0 {
+		if err = eu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = eu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*ExportMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = eu.check(); err != nil {
+				return 0, err
 			}
 			eu.mutation = mutation
 			affected, err = eu.sqlSave(ctx)
@@ -283,13 +278,17 @@ func (eu *ExportUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (eu *ExportUpdate) defaults() error {
+func (eu *ExportUpdate) defaults() {
 	if _, ok := eu.mutation.UpdatedAt(); !ok {
-		if export.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized export.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := export.UpdateDefaultUpdatedAt()
 		eu.mutation.SetUpdatedAt(v)
+	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (eu *ExportUpdate) check() error {
+	if _, ok := eu.mutation.ManagerID(); eu.mutation.ManagerCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Export.manager"`)
 	}
 	return nil
 }
@@ -330,38 +329,6 @@ func (eu *ExportUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: export.FieldDeletedAt,
-		})
-	}
-	if eu.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: export.FieldCreator,
-		})
-	}
-	if value, ok := eu.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: export.FieldLastModifier,
-		})
-	}
-	if eu.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: export.FieldLastModifier,
-		})
-	}
-	if value, ok := eu.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: export.FieldRemark,
-		})
-	}
-	if eu.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: export.FieldRemark,
 		})
 	}
 	if value, ok := eu.mutation.Taxonomy(); ok {
@@ -465,6 +432,48 @@ func (eu *ExportUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: export.FieldInfo,
 		})
 	}
+	if value, ok := eu.mutation.Remark(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: export.FieldRemark,
+		})
+	}
+	if eu.mutation.ManagerCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   export.ManagerTable,
+			Columns: []string{export.ManagerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: manager.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.ManagerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   export.ManagerTable,
+			Columns: []string{export.ManagerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: manager.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, eu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{export.Label}
@@ -510,35 +519,9 @@ func (euo *ExportUpdateOne) ClearDeletedAt() *ExportUpdateOne {
 	return euo
 }
 
-// SetLastModifier sets the "last_modifier" field.
-func (euo *ExportUpdateOne) SetLastModifier(m *model.Modifier) *ExportUpdateOne {
-	euo.mutation.SetLastModifier(m)
-	return euo
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (euo *ExportUpdateOne) ClearLastModifier() *ExportUpdateOne {
-	euo.mutation.ClearLastModifier()
-	return euo
-}
-
-// SetRemark sets the "remark" field.
-func (euo *ExportUpdateOne) SetRemark(s string) *ExportUpdateOne {
-	euo.mutation.SetRemark(s)
-	return euo
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (euo *ExportUpdateOne) SetNillableRemark(s *string) *ExportUpdateOne {
-	if s != nil {
-		euo.SetRemark(*s)
-	}
-	return euo
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (euo *ExportUpdateOne) ClearRemark() *ExportUpdateOne {
-	euo.mutation.ClearRemark()
+// SetManagerID sets the "manager_id" field.
+func (euo *ExportUpdateOne) SetManagerID(u uint64) *ExportUpdateOne {
+	euo.mutation.SetManagerID(u)
 	return euo
 }
 
@@ -674,9 +657,26 @@ func (euo *ExportUpdateOne) SetInfo(m map[string]interface{}) *ExportUpdateOne {
 	return euo
 }
 
+// SetRemark sets the "remark" field.
+func (euo *ExportUpdateOne) SetRemark(s string) *ExportUpdateOne {
+	euo.mutation.SetRemark(s)
+	return euo
+}
+
+// SetManager sets the "manager" edge to the Manager entity.
+func (euo *ExportUpdateOne) SetManager(m *Manager) *ExportUpdateOne {
+	return euo.SetManagerID(m.ID)
+}
+
 // Mutation returns the ExportMutation object of the builder.
 func (euo *ExportUpdateOne) Mutation() *ExportMutation {
 	return euo.mutation
+}
+
+// ClearManager clears the "manager" edge to the Manager entity.
+func (euo *ExportUpdateOne) ClearManager() *ExportUpdateOne {
+	euo.mutation.ClearManager()
+	return euo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -692,16 +692,20 @@ func (euo *ExportUpdateOne) Save(ctx context.Context) (*Export, error) {
 		err  error
 		node *Export
 	)
-	if err := euo.defaults(); err != nil {
-		return nil, err
-	}
+	euo.defaults()
 	if len(euo.hooks) == 0 {
+		if err = euo.check(); err != nil {
+			return nil, err
+		}
 		node, err = euo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*ExportMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = euo.check(); err != nil {
+				return nil, err
 			}
 			euo.mutation = mutation
 			node, err = euo.sqlSave(ctx)
@@ -750,13 +754,17 @@ func (euo *ExportUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (euo *ExportUpdateOne) defaults() error {
+func (euo *ExportUpdateOne) defaults() {
 	if _, ok := euo.mutation.UpdatedAt(); !ok {
-		if export.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized export.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := export.UpdateDefaultUpdatedAt()
 		euo.mutation.SetUpdatedAt(v)
+	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (euo *ExportUpdateOne) check() error {
+	if _, ok := euo.mutation.ManagerID(); euo.mutation.ManagerCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Export.manager"`)
 	}
 	return nil
 }
@@ -814,38 +822,6 @@ func (euo *ExportUpdateOne) sqlSave(ctx context.Context) (_node *Export, err err
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: export.FieldDeletedAt,
-		})
-	}
-	if euo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: export.FieldCreator,
-		})
-	}
-	if value, ok := euo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: export.FieldLastModifier,
-		})
-	}
-	if euo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: export.FieldLastModifier,
-		})
-	}
-	if value, ok := euo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: export.FieldRemark,
-		})
-	}
-	if euo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: export.FieldRemark,
 		})
 	}
 	if value, ok := euo.mutation.Taxonomy(); ok {
@@ -948,6 +924,48 @@ func (euo *ExportUpdateOne) sqlSave(ctx context.Context) (_node *Export, err err
 			Value:  value,
 			Column: export.FieldInfo,
 		})
+	}
+	if value, ok := euo.mutation.Remark(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: export.FieldRemark,
+		})
+	}
+	if euo.mutation.ManagerCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   export.ManagerTable,
+			Columns: []string{export.ManagerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: manager.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.ManagerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   export.ManagerTable,
+			Columns: []string{export.ManagerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: manager.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Export{config: euo.config}
 	_spec.Assign = _node.assignValues

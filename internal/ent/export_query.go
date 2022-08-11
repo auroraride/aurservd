@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/export"
+	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -23,7 +24,9 @@ type ExportQuery struct {
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.Export
-	modifiers  []func(*sql.Selector)
+	// eager-loading edges.
+	withManager *ManagerQuery
+	modifiers   []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -58,6 +61,28 @@ func (eq *ExportQuery) Unique(unique bool) *ExportQuery {
 func (eq *ExportQuery) Order(o ...OrderFunc) *ExportQuery {
 	eq.order = append(eq.order, o...)
 	return eq
+}
+
+// QueryManager chains the current query on the "manager" edge.
+func (eq *ExportQuery) QueryManager() *ManagerQuery {
+	query := &ManagerQuery{config: eq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(export.Table, export.FieldID, selector),
+			sqlgraph.To(manager.Table, manager.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, export.ManagerTable, export.ManagerColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first Export entity from the query.
@@ -236,16 +261,28 @@ func (eq *ExportQuery) Clone() *ExportQuery {
 		return nil
 	}
 	return &ExportQuery{
-		config:     eq.config,
-		limit:      eq.limit,
-		offset:     eq.offset,
-		order:      append([]OrderFunc{}, eq.order...),
-		predicates: append([]predicate.Export{}, eq.predicates...),
+		config:      eq.config,
+		limit:       eq.limit,
+		offset:      eq.offset,
+		order:       append([]OrderFunc{}, eq.order...),
+		predicates:  append([]predicate.Export{}, eq.predicates...),
+		withManager: eq.withManager.Clone(),
 		// clone intermediate query.
 		sql:    eq.sql.Clone(),
 		path:   eq.path,
 		unique: eq.unique,
 	}
+}
+
+// WithManager tells the query-builder to eager-load the nodes that are connected to
+// the "manager" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *ExportQuery) WithManager(opts ...func(*ManagerQuery)) *ExportQuery {
+	query := &ManagerQuery{config: eq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withManager = query
+	return eq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -316,8 +353,11 @@ func (eq *ExportQuery) prepareQuery(ctx context.Context) error {
 
 func (eq *ExportQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Export, error) {
 	var (
-		nodes = []*Export{}
-		_spec = eq.querySpec()
+		nodes       = []*Export{}
+		_spec       = eq.querySpec()
+		loadedTypes = [1]bool{
+			eq.withManager != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		return (*Export).scanValues(nil, columns)
@@ -325,6 +365,7 @@ func (eq *ExportQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Expor
 	_spec.Assign = func(columns []string, values []interface{}) error {
 		node := &Export{config: eq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if len(eq.modifiers) > 0 {
@@ -339,6 +380,33 @@ func (eq *ExportQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Expor
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+
+	if query := eq.withManager; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Export)
+		for i := range nodes {
+			fk := nodes[i].ManagerID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(manager.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "manager_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Manager = n
+			}
+		}
+	}
+
 	return nodes, nil
 }
 

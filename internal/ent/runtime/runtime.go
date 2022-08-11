@@ -539,8 +539,6 @@ func init() {
 	// exchange.DefaultAlternative holds the default value on creation for the alternative field.
 	exchange.DefaultAlternative = exchangeDescAlternative.Default.(bool)
 	exportMixin := schema.Export{}.Mixin()
-	exportMixinHooks2 := exportMixin[2].Hooks()
-	export.Hooks[0] = exportMixinHooks2[0]
 	exportMixinFields0 := exportMixin[0].Fields()
 	_ = exportMixinFields0
 	exportFields := schema.Export{}.Fields()

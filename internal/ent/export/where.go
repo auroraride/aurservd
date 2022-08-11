@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -113,10 +114,10 @@ func DeletedAt(v time.Time) predicate.Export {
 	})
 }
 
-// Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
-func Remark(v string) predicate.Export {
+// ManagerID applies equality check predicate on the "manager_id" field. It's identical to ManagerIDEQ.
+func ManagerID(v uint64) predicate.Export {
 	return predicate.Export(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
+		s.Where(sql.EQ(s.C(FieldManagerID), v))
 	})
 }
 
@@ -166,6 +167,13 @@ func FinishAt(v time.Time) predicate.Export {
 func Duration(v int64) predicate.Export {
 	return predicate.Export(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldDuration), v))
+	})
+}
+
+// Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
+func Remark(v string) predicate.Export {
+	return predicate.Export(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRemark), v))
 	})
 }
 
@@ -411,50 +419,22 @@ func DeletedAtNotNil() predicate.Export {
 	})
 }
 
-// CreatorIsNil applies the IsNil predicate on the "creator" field.
-func CreatorIsNil() predicate.Export {
+// ManagerIDEQ applies the EQ predicate on the "manager_id" field.
+func ManagerIDEQ(v uint64) predicate.Export {
 	return predicate.Export(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCreator)))
+		s.Where(sql.EQ(s.C(FieldManagerID), v))
 	})
 }
 
-// CreatorNotNil applies the NotNil predicate on the "creator" field.
-func CreatorNotNil() predicate.Export {
+// ManagerIDNEQ applies the NEQ predicate on the "manager_id" field.
+func ManagerIDNEQ(v uint64) predicate.Export {
 	return predicate.Export(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCreator)))
+		s.Where(sql.NEQ(s.C(FieldManagerID), v))
 	})
 }
 
-// LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
-func LastModifierIsNil() predicate.Export {
-	return predicate.Export(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLastModifier)))
-	})
-}
-
-// LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
-func LastModifierNotNil() predicate.Export {
-	return predicate.Export(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLastModifier)))
-	})
-}
-
-// RemarkEQ applies the EQ predicate on the "remark" field.
-func RemarkEQ(v string) predicate.Export {
-	return predicate.Export(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
-}
-
-// RemarkNEQ applies the NEQ predicate on the "remark" field.
-func RemarkNEQ(v string) predicate.Export {
-	return predicate.Export(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRemark), v))
-	})
-}
-
-// RemarkIn applies the In predicate on the "remark" field.
-func RemarkIn(vs ...string) predicate.Export {
+// ManagerIDIn applies the In predicate on the "manager_id" field.
+func ManagerIDIn(vs ...uint64) predicate.Export {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -466,12 +446,12 @@ func RemarkIn(vs ...string) predicate.Export {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldRemark), v...))
+		s.Where(sql.In(s.C(FieldManagerID), v...))
 	})
 }
 
-// RemarkNotIn applies the NotIn predicate on the "remark" field.
-func RemarkNotIn(vs ...string) predicate.Export {
+// ManagerIDNotIn applies the NotIn predicate on the "manager_id" field.
+func ManagerIDNotIn(vs ...uint64) predicate.Export {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -483,84 +463,7 @@ func RemarkNotIn(vs ...string) predicate.Export {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldRemark), v...))
-	})
-}
-
-// RemarkGT applies the GT predicate on the "remark" field.
-func RemarkGT(v string) predicate.Export {
-	return predicate.Export(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRemark), v))
-	})
-}
-
-// RemarkGTE applies the GTE predicate on the "remark" field.
-func RemarkGTE(v string) predicate.Export {
-	return predicate.Export(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRemark), v))
-	})
-}
-
-// RemarkLT applies the LT predicate on the "remark" field.
-func RemarkLT(v string) predicate.Export {
-	return predicate.Export(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRemark), v))
-	})
-}
-
-// RemarkLTE applies the LTE predicate on the "remark" field.
-func RemarkLTE(v string) predicate.Export {
-	return predicate.Export(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRemark), v))
-	})
-}
-
-// RemarkContains applies the Contains predicate on the "remark" field.
-func RemarkContains(v string) predicate.Export {
-	return predicate.Export(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRemark), v))
-	})
-}
-
-// RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
-func RemarkHasPrefix(v string) predicate.Export {
-	return predicate.Export(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRemark), v))
-	})
-}
-
-// RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
-func RemarkHasSuffix(v string) predicate.Export {
-	return predicate.Export(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRemark), v))
-	})
-}
-
-// RemarkIsNil applies the IsNil predicate on the "remark" field.
-func RemarkIsNil() predicate.Export {
-	return predicate.Export(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRemark)))
-	})
-}
-
-// RemarkNotNil applies the NotNil predicate on the "remark" field.
-func RemarkNotNil() predicate.Export {
-	return predicate.Export(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRemark)))
-	})
-}
-
-// RemarkEqualFold applies the EqualFold predicate on the "remark" field.
-func RemarkEqualFold(v string) predicate.Export {
-	return predicate.Export(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRemark), v))
-	})
-}
-
-// RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
-func RemarkContainsFold(v string) predicate.Export {
-	return predicate.Export(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
+		s.Where(sql.NotIn(s.C(FieldManagerID), v...))
 	})
 }
 
@@ -1289,6 +1192,145 @@ func DurationIsNil() predicate.Export {
 func DurationNotNil() predicate.Export {
 	return predicate.Export(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldDuration)))
+	})
+}
+
+// RemarkEQ applies the EQ predicate on the "remark" field.
+func RemarkEQ(v string) predicate.Export {
+	return predicate.Export(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkNEQ applies the NEQ predicate on the "remark" field.
+func RemarkNEQ(v string) predicate.Export {
+	return predicate.Export(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkIn applies the In predicate on the "remark" field.
+func RemarkIn(vs ...string) predicate.Export {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Export(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldRemark), v...))
+	})
+}
+
+// RemarkNotIn applies the NotIn predicate on the "remark" field.
+func RemarkNotIn(vs ...string) predicate.Export {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Export(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldRemark), v...))
+	})
+}
+
+// RemarkGT applies the GT predicate on the "remark" field.
+func RemarkGT(v string) predicate.Export {
+	return predicate.Export(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkGTE applies the GTE predicate on the "remark" field.
+func RemarkGTE(v string) predicate.Export {
+	return predicate.Export(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkLT applies the LT predicate on the "remark" field.
+func RemarkLT(v string) predicate.Export {
+	return predicate.Export(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkLTE applies the LTE predicate on the "remark" field.
+func RemarkLTE(v string) predicate.Export {
+	return predicate.Export(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkContains applies the Contains predicate on the "remark" field.
+func RemarkContains(v string) predicate.Export {
+	return predicate.Export(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
+func RemarkHasPrefix(v string) predicate.Export {
+	return predicate.Export(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
+func RemarkHasSuffix(v string) predicate.Export {
+	return predicate.Export(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkEqualFold applies the EqualFold predicate on the "remark" field.
+func RemarkEqualFold(v string) predicate.Export {
+	return predicate.Export(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
+func RemarkContainsFold(v string) predicate.Export {
+	return predicate.Export(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
+	})
+}
+
+// HasManager applies the HasEdge predicate on the "manager" edge.
+func HasManager() predicate.Export {
+	return predicate.Export(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ManagerTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ManagerTable, ManagerColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasManagerWith applies the HasEdge predicate on the "manager" edge with a given conditions (other predicates).
+func HasManagerWith(preds ...predicate.Manager) predicate.Export {
+	return predicate.Export(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ManagerInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ManagerTable, ManagerColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 

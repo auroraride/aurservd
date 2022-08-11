@@ -29,6 +29,7 @@ type ExportInfoNameCallback func() string
 
 type ExportListReq struct {
     PaginationReq
+    SN string `json:"sn" query:"sn"` // 导出编号
 }
 
 type ExportListRes struct {

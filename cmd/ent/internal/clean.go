@@ -27,6 +27,7 @@ var (
     removeNotable = map[string]FileInfoType{
         "db.go":      FileInfoTypeFile,
         "connect.go": FileInfoTypeFile,
+        "slslog.go":  FileInfoTypeFile,
         "internal":   FileInfoTypeDir,
         "schema":     FileInfoTypeDir,
     }

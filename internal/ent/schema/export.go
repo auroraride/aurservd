@@ -34,6 +34,7 @@ func (Export) Fields() []ent.Field {
         field.Int64("duration").Optional().Comment("耗时"),
         field.JSON("condition", json.RawMessage{}).Comment("筛选条件"),
         field.JSON("info", map[string]interface{}{}).Comment("详细信息"),
+        field.String("remark").Comment("备注信息"),
     }
 }
 
@@ -46,7 +47,7 @@ func (Export) Mixin() []ent.Mixin {
     return []ent.Mixin{
         internal.TimeMixin{},
         internal.DeleteMixin{},
-        internal.Modifier{},
+        ManagerMixin{},
     }
 }
 

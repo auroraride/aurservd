@@ -30,7 +30,7 @@ var Export = new(export)
 // @Success      200  {object}  model.PaginationRes{items=[]model.ExportListRes}  "请求成功"
 func (*export) List(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.ExportListReq](c)
-    return ctx.SendResponse(service.NewExportWithModifier(ctx.Modifier).List(req))
+    return ctx.SendResponse(service.NewExportWithModifier(ctx.Modifier).List(ctx.Manager, req))
 }
 
 // Download

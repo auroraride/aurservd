@@ -654,21 +654,20 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Export",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			export.FieldCreatedAt:    {Type: field.TypeTime, Column: export.FieldCreatedAt},
-			export.FieldUpdatedAt:    {Type: field.TypeTime, Column: export.FieldUpdatedAt},
-			export.FieldDeletedAt:    {Type: field.TypeTime, Column: export.FieldDeletedAt},
-			export.FieldCreator:      {Type: field.TypeJSON, Column: export.FieldCreator},
-			export.FieldLastModifier: {Type: field.TypeJSON, Column: export.FieldLastModifier},
-			export.FieldRemark:       {Type: field.TypeString, Column: export.FieldRemark},
-			export.FieldTaxonomy:     {Type: field.TypeString, Column: export.FieldTaxonomy},
-			export.FieldSn:           {Type: field.TypeString, Column: export.FieldSn},
-			export.FieldStatus:       {Type: field.TypeUint8, Column: export.FieldStatus},
-			export.FieldPath:         {Type: field.TypeString, Column: export.FieldPath},
-			export.FieldMessage:      {Type: field.TypeString, Column: export.FieldMessage},
-			export.FieldFinishAt:     {Type: field.TypeTime, Column: export.FieldFinishAt},
-			export.FieldDuration:     {Type: field.TypeInt64, Column: export.FieldDuration},
-			export.FieldCondition:    {Type: field.TypeJSON, Column: export.FieldCondition},
-			export.FieldInfo:         {Type: field.TypeJSON, Column: export.FieldInfo},
+			export.FieldCreatedAt: {Type: field.TypeTime, Column: export.FieldCreatedAt},
+			export.FieldUpdatedAt: {Type: field.TypeTime, Column: export.FieldUpdatedAt},
+			export.FieldDeletedAt: {Type: field.TypeTime, Column: export.FieldDeletedAt},
+			export.FieldManagerID: {Type: field.TypeUint64, Column: export.FieldManagerID},
+			export.FieldTaxonomy:  {Type: field.TypeString, Column: export.FieldTaxonomy},
+			export.FieldSn:        {Type: field.TypeString, Column: export.FieldSn},
+			export.FieldStatus:    {Type: field.TypeUint8, Column: export.FieldStatus},
+			export.FieldPath:      {Type: field.TypeString, Column: export.FieldPath},
+			export.FieldMessage:   {Type: field.TypeString, Column: export.FieldMessage},
+			export.FieldFinishAt:  {Type: field.TypeTime, Column: export.FieldFinishAt},
+			export.FieldDuration:  {Type: field.TypeInt64, Column: export.FieldDuration},
+			export.FieldCondition: {Type: field.TypeJSON, Column: export.FieldCondition},
+			export.FieldInfo:      {Type: field.TypeJSON, Column: export.FieldInfo},
+			export.FieldRemark:    {Type: field.TypeString, Column: export.FieldRemark},
 		},
 	}
 	graph.Nodes[22] = &sqlgraph.Node{
@@ -2049,6 +2048,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Exchange",
 		"Employee",
+	)
+	graph.MustAddE(
+		"manager",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   export.ManagerTable,
+			Columns: []string{export.ManagerColumn},
+			Bidi:    false,
+		},
+		"Export",
+		"Manager",
 	)
 	graph.MustAddE(
 		"role",
@@ -6473,19 +6484,9 @@ func (f *ExportFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(export.FieldDeletedAt))
 }
 
-// WhereCreator applies the entql json.RawMessage predicate on the creator field.
-func (f *ExportFilter) WhereCreator(p entql.BytesP) {
-	f.Where(p.Field(export.FieldCreator))
-}
-
-// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
-func (f *ExportFilter) WhereLastModifier(p entql.BytesP) {
-	f.Where(p.Field(export.FieldLastModifier))
-}
-
-// WhereRemark applies the entql string predicate on the remark field.
-func (f *ExportFilter) WhereRemark(p entql.StringP) {
-	f.Where(p.Field(export.FieldRemark))
+// WhereManagerID applies the entql uint64 predicate on the manager_id field.
+func (f *ExportFilter) WhereManagerID(p entql.Uint64P) {
+	f.Where(p.Field(export.FieldManagerID))
 }
 
 // WhereTaxonomy applies the entql string predicate on the taxonomy field.
@@ -6531,6 +6532,25 @@ func (f *ExportFilter) WhereCondition(p entql.BytesP) {
 // WhereInfo applies the entql json.RawMessage predicate on the info field.
 func (f *ExportFilter) WhereInfo(p entql.BytesP) {
 	f.Where(p.Field(export.FieldInfo))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *ExportFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(export.FieldRemark))
+}
+
+// WhereHasManager applies a predicate to check if query has an edge manager.
+func (f *ExportFilter) WhereHasManager() {
+	f.Where(entql.HasEdge("manager"))
+}
+
+// WhereHasManagerWith applies a predicate to check if query has an edge manager with a given conditions (other predicates).
+func (f *ExportFilter) WhereHasManagerWith(preds ...predicate.Manager) {
+	f.Where(entql.HasEdgeWith("manager", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }
 
 // addPredicate implements the predicateAdder interface.

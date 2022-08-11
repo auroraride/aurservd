@@ -3651,10 +3651,25 @@ func (c *ExportClient) GetX(ctx context.Context, id uint64) *Export {
 	return obj
 }
 
+// QueryManager queries the manager edge of a Export.
+func (c *ExportClient) QueryManager(e *Export) *ManagerQuery {
+	query := &ManagerQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(export.Table, export.FieldID, id),
+			sqlgraph.To(manager.Table, manager.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, export.ManagerTable, export.ManagerColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *ExportClient) Hooks() []Hook {
-	hooks := c.hooks.Export
-	return append(hooks[:len(hooks):len(hooks)], export.Hooks[:]...)
+	return c.hooks.Export
 }
 
 // InventoryClient is a client for the Inventory schema.

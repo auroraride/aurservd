@@ -60,6 +60,7 @@ func (s *exportService) Start(taxonomy string, con any, info map[string]interfac
             SetTaxonomy(taxonomy).
             SetInfo(info).
             SetSn(sn).
+            SetManagerID(s.modifier.ID).
             Save(s.ctx)
         if err != nil {
             log.Error(err)
@@ -88,12 +89,19 @@ func (s *exportService) Start(taxonomy string, con any, info map[string]interfac
     return model.ExportRes{SN: sn}
 }
 
-func (s *exportService) List(req *model.ExportListReq) *model.PaginationRes {
-    q := s.orm.QueryNotDeleted().Order(ent.Desc(export.FieldCreatedAt))
+func (s *exportService) List(m *ent.Manager, req *model.ExportListReq) *model.PaginationRes {
+    q := s.orm.QueryNotDeleted().Order(ent.Desc(export.FieldCreatedAt)).WithManager()
+    if req.SN != "" {
+        q.Where(export.Sn(req.SN))
+    }
+    r := m.Edges.Role
+    if r == nil || !r.Super {
+        q.Where(export.ManagerID(m.ID))
+    }
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Export) model.ExportListRes {
         res := model.ExportListRes{
             CreatedAt: item.CreatedAt.Format(carbon.DateTimeLayout),
-            Operator:  item.Creator.Name,
+            Operator:  item.Edges.Manager.Name,
             Remark:    item.Remark,
             Taxonomy:  item.Taxonomy,
             SN:        item.Sn,
