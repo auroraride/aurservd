@@ -29,7 +29,7 @@ var Business = new(business)
 func (*business) Active(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.BusinessCabinetReq](c)
     return ctx.SendResponse(
-        service.NewRiderCabinet(ctx.Rider).Active(req),
+        service.NewRiderBusiness(ctx.Rider).Active(req),
     )
 }
 
@@ -46,7 +46,7 @@ func (*business) Active(c echo.Context) (err error) {
 func (*business) Unsubscribe(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.BusinessCabinetReq](c)
     return ctx.SendResponse(
-        service.NewRiderCabinet(ctx.Rider).Unsubscribe(req),
+        service.NewRiderBusiness(ctx.Rider).Unsubscribe(req),
     )
 }
 
@@ -63,7 +63,7 @@ func (*business) Unsubscribe(c echo.Context) (err error) {
 func (*business) Pause(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.BusinessCabinetReq](c)
     return ctx.SendResponse(
-        service.NewRiderCabinet(ctx.Rider).Pause(req),
+        service.NewRiderBusiness(ctx.Rider).Pause(req),
     )
 }
 
@@ -80,7 +80,7 @@ func (*business) Pause(c echo.Context) (err error) {
 func (*business) Continue(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.BusinessCabinetReq](c)
     return ctx.SendResponse(
-        service.NewRiderCabinet(ctx.Rider).Continue(req),
+        service.NewRiderBusiness(ctx.Rider).Continue(req),
     )
 }
 
@@ -97,6 +97,6 @@ func (*business) Continue(c echo.Context) (err error) {
 func (*business) Status(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.BusinessCabinetStatusReq](c)
     return ctx.SendResponse(
-        service.NewRiderCabinet(ctx.Rider).Status(req),
+        service.NewRiderBusiness(ctx.Rider).Status(req),
     )
 }

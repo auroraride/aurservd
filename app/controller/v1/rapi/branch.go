@@ -48,3 +48,9 @@ func (*branch) Riding(c echo.Context) (err error) {
     seconds, _, _ := amap.New().DirectionRidingPlan(req.Origin, req.Destination)
     return ctx.SendResponse(model.BranchRidingRes{Minutes: math.Round(float64(seconds) / 60.0)})
 }
+
+func (*branch) Detail(c echo.Context) (err error) {
+    ctx := app.Context(c)
+    
+    return ctx.SendResponse()
+}
