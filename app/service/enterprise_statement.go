@@ -21,7 +21,6 @@ import (
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     "github.com/google/uuid"
-    "github.com/labstack/echo/v4"
     log "github.com/sirupsen/logrus"
     "math"
     "time"
@@ -285,9 +284,9 @@ func (s *enterpriseStatementService) info(id uint64) (*ent.EnterpriseStatement, 
 }
 
 // Statement 账单明细
-func (s *enterpriseStatementService) Statement(req *model.StatementBillDetailReq) []model.StatementDetail {
-    s.info(req.ID)
-    return s.detail(req.ID)
+func (s *enterpriseStatementService) Statement(id uint64) []model.StatementDetail {
+    s.info(id)
+    return s.detail(id)
 }
 
 // detail 账单明细
@@ -341,7 +340,7 @@ func (s *enterpriseStatementService) DetailExport(req *model.StatementBillDetail
     es, e := s.info(req.ID)
     info := ar.Map{"企业": e.Name, "开始": es.Start.Format(carbon.ShortDateLayout), "结束": es.End.Format(carbon.ShortDateLayout)}
     return NewExportWithModifier(s.modifier).Start(e.Name+"账单明细", req.ID, info, req.Remark, func(path string) {
-        items := s.Statement(req.StatementBillDetailReq)
+        items := s.Statement(req.ID)
         sheet := fmt.Sprintf("%s-%s", es.Start.Format(carbon.ShortDateLayout), es.End.Format(carbon.ShortDateLayout))
         ex := tools.NewExcel(path, sheet)
         // 设置数据
@@ -370,7 +369,7 @@ func (s *enterpriseStatementService) DetailExport(req *model.StatementBillDetail
     })
 }
 
-func (s *enterpriseStatementService) usageFilter(req model.StatementUsageFilter) (q *ent.SubscribeQuery, start time.Time, end time.Time) {
+func (s *enterpriseStatementService) usageFilter(e *ent.Enterprise, req model.StatementUsageFilter) (q *ent.SubscribeQuery, start time.Time, end time.Time) {
     q = ent.Database.Subscribe.QueryNotDeleted().
         WithRider(func(rq *ent.RiderQuery) {
             rq.WithPerson()
@@ -384,17 +383,26 @@ func (s *enterpriseStatementService) usageFilter(req model.StatementUsageFilter)
 
     var bw []predicate.EnterpriseBill
 
-    start = tools.NewTime().ParseDateStringX(req.Start)
+    if req.Start == "" {
+        start = carbon.Time2Carbon(e.CreatedAt).StartOfDay().Carbon2Time()
+    } else {
+        start = tools.NewTime().ParseDateStringX(req.Start)
+    }
+
     q.Where(
         subscribe.Or(
             subscribe.EndAtIsNil(),
             subscribe.EndAtGTE(start),
         ),
     )
-
     bw = append(bw, enterprisebill.EndGTE(start))
 
-    end = tools.NewTime().ParseDateStringX(req.End)
+    if req.End == "" {
+        end = carbon.Now().StartOfDay().Carbon2Time()
+    } else {
+        end = tools.NewTime().ParseDateStringX(req.End)
+    }
+
     next := end.AddDate(0, 0, 1)
 
     // 开始时间早于结束时间
@@ -411,10 +419,10 @@ func (s *enterpriseStatementService) usageFilter(req model.StatementUsageFilter)
 }
 
 // Usage 使用明细
-func (s *enterpriseStatementService) Usage(req *model.StatementUsageReq, w echo.Context) *model.PaginationRes {
+func (s *enterpriseStatementService) Usage(req *model.StatementUsageReq) *model.PaginationRes {
     e := NewEnterprise().QueryX(req.ID)
     prices := NewEnterprise().GetPriceValues(e)
-    q, start, end := s.usageFilter(req.StatementUsageFilter)
+    q, start, end := s.usageFilter(e, req.StatementUsageFilter)
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Subscribe) model.StatementUsageRes {
         return s.usageDetail(item, start, end, prices)
     })
@@ -423,10 +431,21 @@ func (s *enterpriseStatementService) Usage(req *model.StatementUsageReq, w echo.
 func (s *enterpriseStatementService) UsageExport(req *model.StatementUsageExport) model.ExportRes {
     e := NewEnterprise().QueryX(req.ID)
     prices := NewEnterprise().GetPriceValues(e)
-    q, start, end := s.usageFilter(req.StatementUsageFilter)
+    filter := model.StatementUsageFilter{
+        ID:    req.ID,
+        Start: req.Start,
+        End:   req.End,
+    }
+    q, start, end := s.usageFilter(e, filter)
     taxonomy := fmt.Sprintf("%s使用明细", e.Name)
 
-    return NewExportWithModifier(s.modifier).Start(taxonomy, "", nil, req.Remark, func(path string) {
+    info := map[string]interface{}{
+        "企业":     e.Name,
+        "开始时间": start.Format(carbon.DateLayout),
+        "结束时间": end.Format(carbon.DateLayout),
+    }
+
+    return NewExportWithModifier(s.modifier).Start(taxonomy, filter, info, req.Remark, func(path string) {
         sheet := fmt.Sprintf("%s-%s", start.Format(carbon.ShortDateLayout), end.Format(carbon.ShortDateLayout))
         ex := tools.NewExcel(path, sheet)
 

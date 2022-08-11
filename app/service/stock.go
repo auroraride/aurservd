@@ -309,7 +309,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
         st = NewStore().Query(stID)
         cityID = st.CityID
     }
-    if cab.CityID != nil && st != nil && st.CityID != *cab.CityID {
+    if cab != nil && cab.CityID != nil && st != nil && st.CityID != *cab.CityID {
         snag.Panic("不同城市电柜和门店无法调拨")
     }
 

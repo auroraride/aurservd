@@ -87,7 +87,7 @@ type StatementBillDetailReq struct {
 }
 
 type StatementBillDetailExport struct {
-    *StatementBillDetailReq
+    ID     uint64 `json:"id" validate:"required" trans:"账单ID"`
     Remark string `json:"remark" validate:"required" trans:"备注"`
 }
 
@@ -105,8 +105,8 @@ type StatementDetail struct {
 
 type StatementUsageFilter struct {
     ID    uint64 `json:"id" query:"id" validate:"required" trans:"企业ID"`
-    Start string `json:"start" query:"start" validate:"required" trans:"开始时间"`
-    End   string `json:"end" query:"end" validate:"required" trans:"结束时间"`
+    Start string `json:"start" query:"start" trans:"开始时间"`
+    End   string `json:"end" query:"end" trans:"结束时间"`
 }
 
 type StatementUsageReq struct {
@@ -115,8 +115,10 @@ type StatementUsageReq struct {
 }
 
 type StatementUsageExport struct {
-    StatementUsageFilter
+    ID     uint64 `json:"id" validate:"required" trans:"企业ID"`
     Remark string `json:"remark" validate:"required" trans:"备注"`
+    Start  string `json:"start"` // 开始时间
+    End    string `json:"end"`   // 结束时间
 }
 
 type StatementUsageItem struct {

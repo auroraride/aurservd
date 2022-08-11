@@ -2547,6 +2547,43 @@ definitions:
         description: 编码
         type: string
     type: object
+  model.ExportListRes:
+    properties:
+      createdAt:
+        description: 创建时间
+        type: string
+      finishAt:
+        description: 完成时间, 可能不存在
+        type: string
+      info:
+        additionalProperties: true
+        description: 筛选条件, 可能不存在
+        type: object
+      message:
+        description: 错误信息, 可能不存在
+        type: string
+      operator:
+        description: 操作人
+        type: string
+      remark:
+        description: 备注
+        type: string
+      sn:
+        description: 编号
+        type: string
+      status:
+        description: 状态
+        type: string
+      taxonomy:
+        description: 类别
+        type: string
+    type: object
+  model.ExportRes:
+    properties:
+      sn:
+        description: 导出编号
+        type: string
+    type: object
   model.FaceAuthUrlResponse:
     properties:
       url:
@@ -3269,6 +3306,73 @@ definitions:
           = 1 且 remaining <= 3 的时候是即将到期'
         type: integer
     type: object
+  model.RiderListExport:
+    properties:
+      authStatus:
+        description: 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        type: integer
+      cityId:
+        description: 城市筛选
+        type: integer
+      end:
+        description: '注册结束时间, 格式为: 2022-01-01'
+        type: string
+      enterprise:
+        description: 是否团签, 0:全部 1:团签 2:个签
+        type: integer
+      enterpriseId:
+        description: 团签企业ID, `enterprise = 1`时才会生效
+        type: integer
+      keyword:
+        description: 搜索关键词
+        type: string
+      model:
+        description: 电池型号筛选
+        type: string
+      modified:
+        description: 是否被修改过
+        type: boolean
+      planId:
+        description: 骑士卡
+        type: integer
+      remaining:
+        description: 订阅剩余天数区间, 逗号分隔, 例如 `0,7`
+        type: string
+      remark:
+        description: '备注 '
+        type: string
+      start:
+        description: '注册开始时间, 格式为: 2022-01-01'
+        type: string
+      status:
+        description: 用户状态 1:正常 2:已禁用 3:黑名单
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        type: integer
+      subscribeStatus:
+        description: '业务状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期 99:未使用'
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 11
+        - 99
+        type: integer
+    required:
+    - remark
+    type: object
   model.RiderMgrDepositReq:
     properties:
       amount:
@@ -3631,6 +3735,18 @@ definitions:
         description: 订阅ID
         type: integer
     type: object
+  model.StatementBillDetailExport:
+    properties:
+      id:
+        description: '账单ID '
+        type: integer
+      remark:
+        description: '备注 '
+        type: string
+    required:
+    - id
+    - remark
+    type: object
   model.StatementBillHistoricalListRes:
     properties:
       cost:
@@ -3746,6 +3862,24 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.EnterpriseStation'
         description: 站点, 可能为空
+    type: object
+  model.StatementUsageExport:
+    properties:
+      end:
+        description: 结束时间
+        type: string
+      id:
+        description: '企业ID '
+        type: integer
+      remark:
+        description: '备注 '
+        type: string
+      start:
+        description: 开始时间
+        type: string
+    required:
+    - id
+    - remark
     type: object
   model.StatementUsageItem:
     properties:
@@ -7334,7 +7468,6 @@ paths:
       - description: '结束时间 '
         in: query
         name: end
-        required: true
         type: string
       - description: '企业ID '
         in: query
@@ -7348,7 +7481,6 @@ paths:
       - description: '开始时间 '
         in: query
         name: start
-        required: true
         type: string
       produces:
       - application/json
@@ -7750,6 +7882,148 @@ paths:
                   type: array
               type: object
       summary: M8003 换电记录
+      tags:
+      - '[M]管理接口'
+  /manager/v1/export:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerExportList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.ExportListRes'
+                  type: array
+              type: object
+      summary: MF001 导出列表
+      tags:
+      - '[M]管理接口'
+  /manager/v1/export/download/{sn}:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerExportDownload
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 编号
+        in: path
+        name: sn
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: MF002 下载文件
+      tags:
+      - '[M]管理接口'
+  /manager/v1/export/rider:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerExportRider
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 筛选条件
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/model.RiderListExport'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.ExportRes'
+      summary: MF003 导出骑手
+      tags:
+      - '[M]管理接口'
+  /manager/v1/export/statement/detail:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerExportStatementDetail
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 筛选条件
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.StatementBillDetailExport'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.ExportRes'
+      summary: MF004 导出企业账单
+      tags:
+      - '[M]管理接口'
+  /manager/v1/export/statement/usage:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerExportStatementUsage
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 筛选条件
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.StatementUsageExport'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.ExportRes'
+      summary: MF005 导出企业使用明细
       tags:
       - '[M]管理接口'
   /manager/v1/import/rider:

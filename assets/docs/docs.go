@@ -4224,8 +4224,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "结束时间 ",
                         "name": "end",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "integer",
@@ -4244,8 +4243,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "开始时间 ",
                         "name": "start",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -4970,6 +4968,226 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/export": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MF001 导出列表",
+                "operationId": "ManagerExportList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.ExportListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/export/download/{sn}": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MF002 下载文件",
+                "operationId": "ManagerExportDownload",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "编号",
+                        "name": "sn",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/export/rider": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MF003 导出骑手",
+                "operationId": "ManagerExportRider",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "筛选条件",
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderListExport"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ExportRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/export/statement/detail": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MF004 导出企业账单",
+                "operationId": "ManagerExportStatementDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "筛选条件",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.StatementBillDetailExport"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ExportRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/export/statement/usage": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MF005 导出企业使用明细",
+                "operationId": "ManagerExportStatementUsage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "筛选条件",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.StatementUsageExport"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ExportRes"
                         }
                     }
                 }
@@ -13096,6 +13314,57 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ExportListRes": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "finishAt": {
+                    "description": "完成时间, 可能不存在",
+                    "type": "string"
+                },
+                "info": {
+                    "description": "筛选条件, 可能不存在",
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "message": {
+                    "description": "错误信息, 可能不存在",
+                    "type": "string"
+                },
+                "operator": {
+                    "description": "操作人",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "编号",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态",
+                    "type": "string"
+                },
+                "taxonomy": {
+                    "description": "类别",
+                    "type": "string"
+                }
+            }
+        },
+        "model.ExportRes": {
+            "type": "object",
+            "properties": {
+                "sn": {
+                    "description": "导出编号",
+                    "type": "string"
+                }
+            }
+        },
         "model.FaceAuthUrlResponse": {
             "type": "object",
             "properties": {
@@ -14138,6 +14407,93 @@ const docTemplate = `{
                 }
             }
         },
+        "model.RiderListExport": {
+            "type": "object",
+            "required": [
+                "remark"
+            ],
+            "properties": {
+                "authStatus": {
+                    "description": "认证状态 0:未认证 1:认证中 2:已认证 3:认证失败",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                "cityId": {
+                    "description": "城市筛选",
+                    "type": "integer"
+                },
+                "end": {
+                    "description": "注册结束时间, 格式为: 2022-01-01",
+                    "type": "string"
+                },
+                "enterprise": {
+                    "description": "是否团签, 0:全部 1:团签 2:个签",
+                    "type": "integer"
+                },
+                "enterpriseId": {
+                    "description": "团签企业ID, ` + "`" + `enterprise = 1` + "`" + `时才会生效",
+                    "type": "integer"
+                },
+                "keyword": {
+                    "description": "搜索关键词",
+                    "type": "string"
+                },
+                "model": {
+                    "description": "电池型号筛选",
+                    "type": "string"
+                },
+                "modified": {
+                    "description": "是否被修改过",
+                    "type": "boolean"
+                },
+                "planId": {
+                    "description": "骑士卡",
+                    "type": "integer"
+                },
+                "remaining": {
+                    "description": "订阅剩余天数区间, 逗号分隔, 例如 ` + "`" + `0,7` + "`" + `",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注 ",
+                    "type": "string"
+                },
+                "start": {
+                    "description": "注册开始时间, 格式为: 2022-01-01",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "用户状态 1:正常 2:已禁用 3:黑名单",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4
+                    ]
+                },
+                "subscribeStatus": {
+                    "description": "业务状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期 99:未使用",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        11,
+                        99
+                    ]
+                }
+            }
+        },
         "model.RiderMgrDepositReq": {
             "type": "object",
             "required": [
@@ -14674,6 +15030,23 @@ const docTemplate = `{
                 }
             }
         },
+        "model.StatementBillDetailExport": {
+            "type": "object",
+            "required": [
+                "id",
+                "remark"
+            ],
+            "properties": {
+                "id": {
+                    "description": "账单ID ",
+                    "type": "integer"
+                },
+                "remark": {
+                    "description": "备注 ",
+                    "type": "string"
+                }
+            }
+        },
         "model.StatementBillHistoricalListRes": {
             "type": "object",
             "properties": {
@@ -14844,6 +15217,31 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.EnterpriseStation"
                         }
                     ]
+                }
+            }
+        },
+        "model.StatementUsageExport": {
+            "type": "object",
+            "required": [
+                "id",
+                "remark"
+            ],
+            "properties": {
+                "end": {
+                    "description": "结束时间",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "企业ID ",
+                    "type": "integer"
+                },
+                "remark": {
+                    "description": "备注 ",
+                    "type": "string"
+                },
+                "start": {
+                    "description": "开始时间",
+                    "type": "string"
                 }
             }
         },

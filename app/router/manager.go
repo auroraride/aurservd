@@ -168,8 +168,8 @@ func loadManagerRoutes() {
 
     // 导出数据
     export := g.Group("/export")
-    export.GET("/", mapi.Export.List)
-    export.GET("/download/:sn", mapi.Export.Download)
+    export.GET("", mapi.Export.List)
+    export.POST("/download/:sn", mapi.Export.Download)
     export.POST("/rider", mapi.Export.Rider)
     export.POST("/statement/detail", mapi.Export.StatementDetail)
     export.POST("/statement/usage", mapi.Export.StatementUsage)

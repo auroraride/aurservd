@@ -10,7 +10,10 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/export"
+    "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
+    "github.com/golang-module/carbon/v2"
     jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
     "path/filepath"
@@ -77,10 +80,38 @@ func (s *exportService) Start(taxonomy string, con any, info map[string]interfac
             }
 
             now := time.Now()
-            _, _ = ex.Update().SetStatus(status).SetMessage(message).SetPath(path).SetDuration(now.Sub(ex.CreatedAt).Milliseconds()).SetFinishAt(now).Save(s.ctx)
+            _, _ = ex.Update().SetStatus(uint8(status)).SetMessage(message).SetPath(path).SetDuration(now.Sub(ex.CreatedAt).Milliseconds()).SetFinishAt(now).Save(s.ctx)
         }()
 
         cb(path)
     }()
     return model.ExportRes{SN: sn}
+}
+
+func (s *exportService) List(req *model.ExportListReq) *model.PaginationRes {
+    q := s.orm.QueryNotDeleted().Order(ent.Desc(export.FieldCreatedAt))
+    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Export) model.ExportListRes {
+        res := model.ExportListRes{
+            CreatedAt: item.CreatedAt.Format(carbon.DateTimeLayout),
+            Operator:  item.Creator.Name,
+            Remark:    item.Remark,
+            Taxonomy:  item.Taxonomy,
+            SN:        item.Sn,
+            Status:    model.ExportStatus(item.Status).String(),
+            Message:   item.Message,
+            Info:      item.Info,
+        }
+        if !item.FinishAt.IsZero() {
+            res.FinishAt = item.FinishAt.Format(carbon.DateTimeLayout)
+        }
+        return res
+    })
+}
+
+func (s *exportService) Download(req *model.ExportDownloadReq) (string, string) {
+    e, err := s.orm.QueryNotDeleted().Where(export.Sn(req.SN), export.Status(uint8(model.ExportStatusSuccess))).First(s.ctx)
+    if err != nil {
+        snag.Panic("未找到文件")
+    }
+    return filepath.Base(e.Path), e.Path
 }
