@@ -625,9 +625,6 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
     q, info := s.listFilter(req.RiderListFilter)
     return NewExportWithModifier(s.modifier).Start("骑手列表", req, info, req.Remark, func(path string) {
         items, _ := q.All(s.ctx)
-        if len(items) == 0 {
-            snag.Panic("无效筛选")
-        }
 
         var rows [][]any
         title := []any{

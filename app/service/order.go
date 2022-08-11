@@ -508,8 +508,7 @@ func (s *orderService) RefundSuccess(req *model.PaymentRefund) {
     log.Infof("%s(OrderID:%d) [退款]提成订单更新完成", req.OutRefundNo, req.OrderID)
 }
 
-// List 获取订单列表
-func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
+func (s *orderService) listFilter(req model.OrderListFilter) (*ent.OrderQuery, map[string]interface{}) {
     tt := tools.NewTime()
     q := s.orm.QueryNotDeleted().
         Order(ent.Desc(order.FieldCreatedAt)).
@@ -546,8 +545,8 @@ func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
     if req.CityID != nil {
         q.Where(order.CityID(*req.CityID))
     }
-    if req.EmployeeID != 0 {
-        q.Where(order.HasSubscribeWith(subscribe.EmployeeID(req.EmployeeID)))
+    if req.EmployeeID != nil {
+        q.Where(order.HasSubscribeWith(subscribe.EmployeeID(*req.EmployeeID)))
     }
     if req.StoreName != nil {
         q.Where(order.HasSubscribeWith(subscribe.HasStoreWith(store.NameContainsFold(*req.StoreName))))
@@ -561,8 +560,8 @@ func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
     if req.Payway != nil {
         q.Where(order.Payway(*req.Payway))
     }
-    if req.Refund > 0 {
-        switch req.Refund {
+    if req.Refund != nil && *req.Refund > 0 {
+        switch *req.Refund {
         case 1:
             q.Where(order.StatusNotIn(model.OrderStatusRefundPending, model.OrderStatusRefundRefused, model.OrderStatusRefundSuccess))
             break
@@ -571,11 +570,87 @@ func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
             break
         }
     }
-    return model.ParsePaginationResponse[model.RiderOrder, ent.Order](
+    return q, nil
+}
+
+// List 获取订单列表
+func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
+    q, _ := s.listFilter(req.OrderListFilter)
+    return model.ParsePaginationResponse(
         q,
         req.PaginationReq,
         NewRiderOrder().Detail,
     )
+}
+
+func (s *orderService) Export(req *model.OrderListExport) model.ExportRes {
+    q, info := s.listFilter(req.OrderListFilter)
+    return NewExportWithModifier(s.modifier).Start("订单", req.OrderListFilter, info, req.Remark, func(path string) {
+        items, _ := q.All(s.ctx)
+        for _, item := range items {
+            detail := NewRiderOrder().Detail(item)
+            var rows [][]any
+
+            title := []any{
+                "类型",
+                "骑手",
+                "电话",
+                "骑士卡",
+                "天数",
+                "型号",
+                "城市",
+                "门店",
+                "店员",
+                "支付状态",
+                "订单编号",
+                "支付编号",
+                "支付方式",
+                "支付金额",
+                "支付时间",
+            }
+
+            rows = append(rows, title)
+
+            st := ""
+            if detail.Store != nil {
+                st = detail.Store.Name
+            }
+
+            em := ""
+            if detail.Employee != nil {
+                em = detail.Employee.Name
+            }
+
+            var pl string
+            var pd uint
+            if detail.Plan != nil {
+                pl = detail.Plan.Name
+                pd = detail.Plan.Days
+            }
+
+            row := []any{
+                model.OrderTypes[detail.Type],
+                detail.Rider.Name,
+                detail.Rider.Phone,
+                pl,
+                pd,
+                detail.Model,
+                detail.City.Name,
+                st,
+                em,
+                model.OrderStatuses[detail.Status],
+                detail.OutTradeNo,
+                detail.TradeNo,
+                model.OrderPayways[detail.Payway],
+                fmt.Sprintf("%.2f", detail.Amount),
+                detail.PayAt,
+            }
+
+            rows = append(rows, row)
+
+            tools.NewExcel(path).AddValues(rows).Done()
+        }
+    })
 }
 
 // QueryStatus 查询订单状态

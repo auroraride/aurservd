@@ -95,3 +95,18 @@ func (*export) StatementUsage(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.StatementUsageExport](c)
     return ctx.SendResponse(service.NewEnterpriseStatementWithModifier(ctx.Modifier).UsageExport(req))
 }
+
+// Order
+// @ID           ManagerExportOrder
+// @Router       /manager/v1/export/order [POST]
+// @Summary      MF005 导出订单
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body     model.OrderListExport  true  "筛选条件"
+// @Success      200  {object}  model.ExportRes  "请求成功"
+func (*export) Order(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.OrderListExport](c)
+    return ctx.SendResponse(service.NewOrderWithModifier(ctx.Modifier).Export(req))
+}

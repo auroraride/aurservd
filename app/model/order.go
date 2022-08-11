@@ -15,11 +15,6 @@ const (
     OrderTypeDeposit                    // 押金
 )
 
-var (
-    // OrderSubscribeTypes 骑手骑士卡订单类型
-    OrderSubscribeTypes = []uint{OrderTypeNewly, OrderTypeAgain, OrderTypeRenewal, OrderTypeTransform}
-)
-
 const (
     OrderPaywayManual uint8 = iota // 后台手动调整
     OrderPaywayAlipay              // 支付宝支付
@@ -32,6 +27,35 @@ const (
     OrderStatusRefundPending              // 申请退款, 退款后业绩订单需要删除
     OrderStatusRefundSuccess              // 已退款
     OrderStatusRefundRefused              // 退款被拒绝
+)
+
+var (
+    // OrderSubscribeTypes 骑手骑士卡订单类型
+    OrderSubscribeTypes = []uint{OrderTypeNewly, OrderTypeAgain, OrderTypeRenewal, OrderTypeTransform}
+
+    OrderTypes = map[uint]string{
+        OrderTypeNewly:      "新签",
+        OrderTypeRenewal:    "续签",
+        OrderTypeAgain:      "重签",
+        OrderTypeTransform:  "更改电池",
+        OrderTypeAssistance: "救援",
+        OrderTypeFee:        "滞纳金",
+        OrderTypeDeposit:    "押金",
+    }
+
+    OrderStatuses = map[uint8]string{
+        OrderStatusPending:       "未支付",
+        OrderStatusPaid:          "已支付",
+        OrderStatusRefundPending: "申请退款",
+        OrderStatusRefundSuccess: "已退款",
+        OrderStatusRefundRefused: "退款被拒绝",
+    }
+
+    OrderPayways = map[uint8]string{
+        OrderPaywayManual: "后台手动调整",
+        OrderPaywayAlipay: "支付宝支付",
+        OrderPaywayWechat: "微信支付",
+    }
 )
 
 // OrderCreateReq 订单创建请求
@@ -50,10 +74,7 @@ type OrderCreateRes struct {
     OutTradeNo string `json:"outTradeNo"` // 交易编码
 }
 
-// OrderListReq 订单列表请求
-type OrderListReq struct {
-    PaginationReq
-
+type OrderListFilter struct {
     RiderID    *uint64 `json:"riderId" query:"riderId"`             // 骑手ID
     Type       *uint   `json:"type" query:"type"`                   // 订单类型 1:新签 2:续签 3:重签 4:更改电池 5:救援 6:滞纳金 7:押金
     CityID     *uint64 `json:"cityId" query:"cityId"`               // 城市ID
@@ -63,9 +84,20 @@ type OrderListReq struct {
     StoreName  *string `json:"storeName" query:"storeName"`         // 门店名字
     Model      *string `json:"model" query:"model"`                 // 电池型号
     Days       *int    `json:"days" query:"days"`                   // 骑士卡时长(搜索大于等于)
-    Refund     uint8   `json:"refund" query:"refund"`               // 退款查询 0:查询全部 1:查询未申请退款 2:查询已申请退款(包含退款中/已退款/已拒绝)
-    EmployeeID uint64  `json:"employeeId" query:"employeeId"`       // 店员ID筛选
+    Refund     *uint8  `json:"refund" query:"refund"`               // 退款查询 0:查询全部 1:查询未申请退款 2:查询已申请退款(包含退款中/已退款/已拒绝)
+    EmployeeID *uint64 `json:"employeeId" query:"employeeId"`       // 店员ID筛选
     Payway     *uint8  `json:"payway" query:"payway" enums:"0,1,2"` // 支付方式 0:手动 1:支付宝 2:微信, 不携带此参数为获取全部
+}
+
+// OrderListReq 订单列表请求
+type OrderListReq struct {
+    PaginationReq
+    OrderListFilter
+}
+
+type OrderListExport struct {
+    OrderListFilter
+    Remark string `json:"remark" validate:"required" trans:"备注"`
 }
 
 type OrderEmployeeListReq struct {

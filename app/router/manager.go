@@ -173,4 +173,5 @@ func loadManagerRoutes() {
     export.POST("/rider", mapi.Export.Rider)
     export.POST("/statement/detail", mapi.Export.StatementDetail)
     export.POST("/statement/usage", mapi.Export.StatementUsage)
+    export.POST("/order", mapi.Export.Order)
 }

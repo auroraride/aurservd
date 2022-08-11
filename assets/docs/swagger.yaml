@@ -2813,6 +2813,54 @@ definitions:
         description: 预支付字符串
         type: string
     type: object
+  model.OrderListExport:
+    properties:
+      cityId:
+        description: 城市ID
+        type: integer
+      days:
+        description: 骑士卡时长(搜索大于等于)
+        type: integer
+      employeeId:
+        description: 店员ID筛选
+        type: integer
+      end:
+        description: '时间结束, 格式为: 2022-01-01'
+        type: string
+      keyword:
+        description: 骑手姓名
+        type: string
+      model:
+        description: 电池型号
+        type: string
+      payway:
+        description: 支付方式 0:手动 1:支付宝 2:微信, 不携带此参数为获取全部
+        enum:
+        - 0
+        - 1
+        - 2
+        type: integer
+      refund:
+        description: 退款查询 0:查询全部 1:查询未申请退款 2:查询已申请退款(包含退款中/已退款/已拒绝)
+        type: integer
+      remark:
+        description: '备注 '
+        type: string
+      riderId:
+        description: 骑手ID
+        type: integer
+      start:
+        description: '时间起始, 格式为: 2022-01-01'
+        type: string
+      storeName:
+        description: 门店名字
+        type: string
+      type:
+        description: 订单类型 1:新签 2:续签 3:重签 4:更改电池 5:救援 6:滞纳金 7:押金
+        type: integer
+    required:
+    - remark
+    type: object
   model.OrderStatusRes:
     properties:
       outTradeNo:
@@ -7948,6 +7996,33 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: MF002 下载文件
+      tags:
+      - '[M]管理接口'
+  /manager/v1/export/order:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerExportOrder
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 筛选条件
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.OrderListExport'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.ExportRes'
+      summary: MF005 导出订单
       tags:
       - '[M]管理接口'
   /manager/v1/export/rider:
