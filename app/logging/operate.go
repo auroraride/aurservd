@@ -22,16 +22,17 @@ type OperateLog struct {
     RefTable string `json:"refTable" sls:"关联表" index:"doc"`
 
     Operate model.Operate `json:"operate" sls:"类别" string:"true" index:"doc"`
-    Remark  string        `json:"remark" sls:"备注" index:"doc"`
-    Before  string        `json:"before" sls:"操作前" index:"doc"`
-    After   string        `json:"after" sls:"操作后" index:"doc"`
+    Remark  string        `json:"remark" sls:"备注"`
+    Before  string        `json:"before" sls:"操作前"`
+    After   string        `json:"after" sls:"操作后"`
 
     OperatorType  model.OperatorType `json:"operatorType" sls:"操作人类别" index:"doc"` // 0管理员 1员工
     OperatorID    uint64             `json:"operatorId" sls:"操作人ID" index:"doc"`
     OperatorPhone string             `json:"operatorPhone" sls:"操作人电话" index:"doc"`
     OperatorName  string             `json:"operatorName" sls:"操作人" index:"doc"`
 
-    Time string `json:"time" sls:"时间" index:"doc"`
+    Info string `json:"info" sls:"信息"`
+    Time string `json:"time" sls:"时间"`
 }
 
 func (o *OperateLog) GetLogstoreName() string {
@@ -47,6 +48,11 @@ func NewOperateLog() *OperateLog {
 func (o *OperateLog) SetRef(ref model.Table) *OperateLog {
     o.RefTable = ref.GetTableName()
     o.RefID = ref.GetID()
+    switch ref.(type) {
+    case model.TableSlsInfo:
+        o.Info = ref.(model.TableSlsInfo).GetSLSLogInfo()
+        break
+    }
     return o
 }
 

@@ -25,3 +25,7 @@ func (d *NilIDName) GetID() uint64 {
 func (d *NilIDName) GetName() string {
     return ""
 }
+
+type TableSlsInfo interface {
+    GetSLSLogInfo() string
+}
