@@ -19,39 +19,41 @@ import (
 // StockMutation represents an operation that mutates the Stock nodes in the graph.
 type StockMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *uint64
-	created_at      *time.Time
-	updated_at      *time.Time
-	deleted_at      *time.Time
-	creator         **model.Modifier
-	last_modifier   **model.Modifier
-	remark          *string
-	sn              *string
-	_type           *uint8
-	add_type        *int8
-	name            *string
-	model           *string
-	num             *int
-	addnum          *int
-	material        *stock.Material
-	clearedFields   map[string]struct{}
-	city            *uint64
-	clearedcity     bool
-	store           *uint64
-	clearedstore    bool
-	cabinet         *uint64
-	clearedcabinet  bool
-	rider           *uint64
-	clearedrider    bool
-	employee        *uint64
-	clearedemployee bool
-	spouse          *uint64
-	clearedspouse   bool
-	done            bool
-	oldValue        func(context.Context) (*Stock, error)
-	predicates      []predicate.Stock
+	op               Op
+	typ              string
+	id               *uint64
+	created_at       *time.Time
+	updated_at       *time.Time
+	deleted_at       *time.Time
+	creator          **model.Modifier
+	last_modifier    **model.Modifier
+	remark           *string
+	sn               *string
+	_type            *uint8
+	add_type         *int8
+	name             *string
+	model            *string
+	num              *int
+	addnum           *int
+	material         *stock.Material
+	clearedFields    map[string]struct{}
+	city             *uint64
+	clearedcity      bool
+	subscribe        *uint64
+	clearedsubscribe bool
+	store            *uint64
+	clearedstore     bool
+	cabinet          *uint64
+	clearedcabinet   bool
+	rider            *uint64
+	clearedrider     bool
+	employee         *uint64
+	clearedemployee  bool
+	spouse           *uint64
+	clearedspouse    bool
+	done             bool
+	oldValue         func(context.Context) (*Stock, error)
+	predicates       []predicate.Stock
 }
 
 var _ ent.Mutation = (*StockMutation)(nil)
@@ -467,6 +469,55 @@ func (m *StockMutation) CityIDCleared() bool {
 func (m *StockMutation) ResetCityID() {
 	m.city = nil
 	delete(m.clearedFields, stock.FieldCityID)
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (m *StockMutation) SetSubscribeID(u uint64) {
+	m.subscribe = &u
+}
+
+// SubscribeID returns the value of the "subscribe_id" field in the mutation.
+func (m *StockMutation) SubscribeID() (r uint64, exists bool) {
+	v := m.subscribe
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSubscribeID returns the old "subscribe_id" field's value of the Stock entity.
+// If the Stock object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StockMutation) OldSubscribeID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSubscribeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSubscribeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSubscribeID: %w", err)
+	}
+	return oldValue.SubscribeID, nil
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (m *StockMutation) ClearSubscribeID() {
+	m.subscribe = nil
+	m.clearedFields[stock.FieldSubscribeID] = struct{}{}
+}
+
+// SubscribeIDCleared returns if the "subscribe_id" field was cleared in this mutation.
+func (m *StockMutation) SubscribeIDCleared() bool {
+	_, ok := m.clearedFields[stock.FieldSubscribeID]
+	return ok
+}
+
+// ResetSubscribeID resets all changes to the "subscribe_id" field.
+func (m *StockMutation) ResetSubscribeID() {
+	m.subscribe = nil
+	delete(m.clearedFields, stock.FieldSubscribeID)
 }
 
 // SetSn sets the "sn" field.
@@ -960,6 +1011,32 @@ func (m *StockMutation) ResetCity() {
 	m.clearedcity = false
 }
 
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (m *StockMutation) ClearSubscribe() {
+	m.clearedsubscribe = true
+}
+
+// SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
+func (m *StockMutation) SubscribeCleared() bool {
+	return m.SubscribeIDCleared() || m.clearedsubscribe
+}
+
+// SubscribeIDs returns the "subscribe" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// SubscribeID instead. It exists only for internal usage by the builders.
+func (m *StockMutation) SubscribeIDs() (ids []uint64) {
+	if id := m.subscribe; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetSubscribe resets all changes to the "subscribe" edge.
+func (m *StockMutation) ResetSubscribe() {
+	m.subscribe = nil
+	m.clearedsubscribe = false
+}
+
 // ClearStore clears the "store" edge to the Store entity.
 func (m *StockMutation) ClearStore() {
 	m.clearedstore = true
@@ -1122,7 +1199,7 @@ func (m *StockMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StockMutation) Fields() []string {
-	fields := make([]string, 0, 17)
+	fields := make([]string, 0, 18)
 	if m.created_at != nil {
 		fields = append(fields, stock.FieldCreatedAt)
 	}
@@ -1143,6 +1220,9 @@ func (m *StockMutation) Fields() []string {
 	}
 	if m.city != nil {
 		fields = append(fields, stock.FieldCityID)
+	}
+	if m.subscribe != nil {
+		fields = append(fields, stock.FieldSubscribeID)
 	}
 	if m.sn != nil {
 		fields = append(fields, stock.FieldSn)
@@ -1196,6 +1276,8 @@ func (m *StockMutation) Field(name string) (ent.Value, bool) {
 		return m.Remark()
 	case stock.FieldCityID:
 		return m.CityID()
+	case stock.FieldSubscribeID:
+		return m.SubscribeID()
 	case stock.FieldSn:
 		return m.Sn()
 	case stock.FieldType:
@@ -1239,6 +1321,8 @@ func (m *StockMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldRemark(ctx)
 	case stock.FieldCityID:
 		return m.OldCityID(ctx)
+	case stock.FieldSubscribeID:
+		return m.OldSubscribeID(ctx)
 	case stock.FieldSn:
 		return m.OldSn(ctx)
 	case stock.FieldType:
@@ -1316,6 +1400,13 @@ func (m *StockMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCityID(v)
+		return nil
+	case stock.FieldSubscribeID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSubscribeID(v)
 		return nil
 	case stock.FieldSn:
 		v, ok := value.(string)
@@ -1459,6 +1550,9 @@ func (m *StockMutation) ClearedFields() []string {
 	if m.FieldCleared(stock.FieldCityID) {
 		fields = append(fields, stock.FieldCityID)
 	}
+	if m.FieldCleared(stock.FieldSubscribeID) {
+		fields = append(fields, stock.FieldSubscribeID)
+	}
 	if m.FieldCleared(stock.FieldStoreID) {
 		fields = append(fields, stock.FieldStoreID)
 	}
@@ -1502,6 +1596,9 @@ func (m *StockMutation) ClearField(name string) error {
 		return nil
 	case stock.FieldCityID:
 		m.ClearCityID()
+		return nil
+	case stock.FieldSubscribeID:
+		m.ClearSubscribeID()
 		return nil
 	case stock.FieldStoreID:
 		m.ClearStoreID()
@@ -1547,6 +1644,9 @@ func (m *StockMutation) ResetField(name string) error {
 	case stock.FieldCityID:
 		m.ResetCityID()
 		return nil
+	case stock.FieldSubscribeID:
+		m.ResetSubscribeID()
+		return nil
 	case stock.FieldSn:
 		m.ResetSn()
 		return nil
@@ -1583,9 +1683,12 @@ func (m *StockMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *StockMutation) AddedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.city != nil {
 		edges = append(edges, stock.EdgeCity)
+	}
+	if m.subscribe != nil {
+		edges = append(edges, stock.EdgeSubscribe)
 	}
 	if m.store != nil {
 		edges = append(edges, stock.EdgeStore)
@@ -1611,6 +1714,10 @@ func (m *StockMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case stock.EdgeCity:
 		if id := m.city; id != nil {
+			return []ent.Value{*id}
+		}
+	case stock.EdgeSubscribe:
+		if id := m.subscribe; id != nil {
 			return []ent.Value{*id}
 		}
 	case stock.EdgeStore:
@@ -1639,7 +1746,7 @@ func (m *StockMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *StockMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	return edges
 }
 
@@ -1653,9 +1760,12 @@ func (m *StockMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *StockMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.clearedcity {
 		edges = append(edges, stock.EdgeCity)
+	}
+	if m.clearedsubscribe {
+		edges = append(edges, stock.EdgeSubscribe)
 	}
 	if m.clearedstore {
 		edges = append(edges, stock.EdgeStore)
@@ -1681,6 +1791,8 @@ func (m *StockMutation) EdgeCleared(name string) bool {
 	switch name {
 	case stock.EdgeCity:
 		return m.clearedcity
+	case stock.EdgeSubscribe:
+		return m.clearedsubscribe
 	case stock.EdgeStore:
 		return m.clearedstore
 	case stock.EdgeCabinet:
@@ -1701,6 +1813,9 @@ func (m *StockMutation) ClearEdge(name string) error {
 	switch name {
 	case stock.EdgeCity:
 		m.ClearCity()
+		return nil
+	case stock.EdgeSubscribe:
+		m.ClearSubscribe()
 		return nil
 	case stock.EdgeStore:
 		m.ClearStore()
@@ -1727,6 +1842,9 @@ func (m *StockMutation) ResetEdge(name string) error {
 	switch name {
 	case stock.EdgeCity:
 		m.ResetCity()
+		return nil
+	case stock.EdgeSubscribe:
+		m.ResetSubscribe()
 		return nil
 	case stock.EdgeStore:
 		m.ResetStore()

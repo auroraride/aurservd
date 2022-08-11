@@ -11,9 +11,11 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/business"
     "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/plan"
     "github.com/auroraride/aurservd/internal/ent/rider"
+    "github.com/auroraride/aurservd/internal/ent/stock"
     "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/pkg/tools"
@@ -218,6 +220,7 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
 
         // 添加订阅
         sub, err = tx.Subscribe.Create().
+            SetRemark("导入数据").
             SetEmployeeID(req.EmployeeID).
             SetRider(r).
             SetInitialDays(int(s.plan.Days)).
@@ -235,12 +238,11 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
         }
 
         // 创建订单
-        o, err = tx.Order.
-            Create().
+        o, err = tx.Order.Create().
+            SetRemark("导入数据").
             SetRiderID(r.ID).
             SetSubscribeID(sub.ID).
             SetStatus(model.OrderStatusPaid).
-            SetRemark("导入数据").
             SetPayway(model.OrderPaywayManual).
             SetOutTradeNo(tools.NewUnique().NewSonyflakeID()).
             SetType(model.OrderTypeNewly).
@@ -259,6 +261,39 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
         if err != nil {
             return
         }
-        return nil
+
+        // 创建 business
+        _, err = tx.Business.Create().
+            SetRemark("导入数据").
+            SetStoreID(req.StoreID).
+            SetEmployeeID(req.EmployeeID).
+            SetRiderID(sub.RiderID).
+            SetSubscribeID(sub.ID).
+            SetCityID(sub.CityID).
+            SetNillableEnterpriseID(sub.EnterpriseID).
+            SetNillableStationID(sub.StationID).
+            SetNillablePlanID(sub.PlanID).
+            SetType(business.TypeActive).
+            Save(s.ctx)
+        if err != nil {
+            return
+        }
+
+        // 创建 stock
+        _, err = tx.Stock.Create().
+            SetRemark("导入数据").
+            SetStoreID(req.StoreID).
+            SetEmployeeID(req.EmployeeID).
+            SetName(req.Model).
+            SetRiderID(sub.RiderID).
+            SetType(model.StockTypeRiderObtain).
+            SetModel(req.Model).
+            SetNum(-1).
+            SetCityID(req.CityID).
+            SetSubscribeID(sub.ID).
+            SetMaterial(stock.MaterialBattery).
+            SetSn(tools.NewUnique().NewSN()).
+            Save(s.ctx)
+        return
     })
 }

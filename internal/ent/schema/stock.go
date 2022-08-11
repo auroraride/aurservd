@@ -61,6 +61,7 @@ func (Stock) Mixin() []ent.Mixin {
             IndexCreator: true,
         },
         CityMixin{Optional: true},
+        SubscribeMixin{Optional: true},
     }
 }
 

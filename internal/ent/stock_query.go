@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // StockQuery is the builder for querying Stock entities.
@@ -29,14 +30,15 @@ type StockQuery struct {
 	fields     []string
 	predicates []predicate.Stock
 	// eager-loading edges.
-	withCity     *CityQuery
-	withStore    *StoreQuery
-	withCabinet  *CabinetQuery
-	withRider    *RiderQuery
-	withEmployee *EmployeeQuery
-	withSpouse   *StockQuery
-	withFKs      bool
-	modifiers    []func(*sql.Selector)
+	withCity      *CityQuery
+	withSubscribe *SubscribeQuery
+	withStore     *StoreQuery
+	withCabinet   *CabinetQuery
+	withRider     *RiderQuery
+	withEmployee  *EmployeeQuery
+	withSpouse    *StockQuery
+	withFKs       bool
+	modifiers     []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -88,6 +90,28 @@ func (sq *StockQuery) QueryCity() *CityQuery {
 			sqlgraph.From(stock.Table, stock.FieldID, selector),
 			sqlgraph.To(city.Table, city.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, stock.CityTable, stock.CityColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySubscribe chains the current query on the "subscribe" edge.
+func (sq *StockQuery) QuerySubscribe() *SubscribeQuery {
+	query := &SubscribeQuery{config: sq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, selector),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stock.SubscribeTable, stock.SubscribeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -381,17 +405,18 @@ func (sq *StockQuery) Clone() *StockQuery {
 		return nil
 	}
 	return &StockQuery{
-		config:       sq.config,
-		limit:        sq.limit,
-		offset:       sq.offset,
-		order:        append([]OrderFunc{}, sq.order...),
-		predicates:   append([]predicate.Stock{}, sq.predicates...),
-		withCity:     sq.withCity.Clone(),
-		withStore:    sq.withStore.Clone(),
-		withCabinet:  sq.withCabinet.Clone(),
-		withRider:    sq.withRider.Clone(),
-		withEmployee: sq.withEmployee.Clone(),
-		withSpouse:   sq.withSpouse.Clone(),
+		config:        sq.config,
+		limit:         sq.limit,
+		offset:        sq.offset,
+		order:         append([]OrderFunc{}, sq.order...),
+		predicates:    append([]predicate.Stock{}, sq.predicates...),
+		withCity:      sq.withCity.Clone(),
+		withSubscribe: sq.withSubscribe.Clone(),
+		withStore:     sq.withStore.Clone(),
+		withCabinet:   sq.withCabinet.Clone(),
+		withRider:     sq.withRider.Clone(),
+		withEmployee:  sq.withEmployee.Clone(),
+		withSpouse:    sq.withSpouse.Clone(),
 		// clone intermediate query.
 		sql:    sq.sql.Clone(),
 		path:   sq.path,
@@ -407,6 +432,17 @@ func (sq *StockQuery) WithCity(opts ...func(*CityQuery)) *StockQuery {
 		opt(query)
 	}
 	sq.withCity = query
+	return sq
+}
+
+// WithSubscribe tells the query-builder to eager-load the nodes that are connected to
+// the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *StockQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *StockQuery {
+	query := &SubscribeQuery{config: sq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withSubscribe = query
 	return sq
 }
 
@@ -536,8 +572,9 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 		nodes       = []*Stock{}
 		withFKs     = sq.withFKs
 		_spec       = sq.querySpec()
-		loadedTypes = [6]bool{
+		loadedTypes = [7]bool{
 			sq.withCity != nil,
+			sq.withSubscribe != nil,
 			sq.withStore != nil,
 			sq.withCabinet != nil,
 			sq.withRider != nil,
@@ -545,7 +582,7 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 			sq.withSpouse != nil,
 		}
 	)
-	if sq.withCity != nil || sq.withStore != nil || sq.withCabinet != nil || sq.withRider != nil || sq.withEmployee != nil || sq.withSpouse != nil {
+	if sq.withCity != nil || sq.withSubscribe != nil || sq.withStore != nil || sq.withCabinet != nil || sq.withRider != nil || sq.withEmployee != nil || sq.withSpouse != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -598,6 +635,35 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 			}
 			for i := range nodes {
 				nodes[i].Edges.City = n
+			}
+		}
+	}
+
+	if query := sq.withSubscribe; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Stock)
+		for i := range nodes {
+			if nodes[i].SubscribeID == nil {
+				continue
+			}
+			fk := *nodes[i].SubscribeID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(subscribe.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Subscribe = n
 			}
 		}
 	}

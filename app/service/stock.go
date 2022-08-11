@@ -480,6 +480,7 @@ func (s *stockService) BatteryWithRider(cr *ent.StockCreate, req *model.StockBus
         SetModel(req.Model).
         SetNum(num).
         SetCityID(req.CityID).
+        SetNillableSubscribeID(req.SubscribeID).
         SetMaterial(stock.MaterialBattery).
         SetSn(tools.NewUnique().NewSN())
 

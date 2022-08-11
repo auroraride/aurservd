@@ -5131,6 +5131,22 @@ func (c *StockClient) QueryCity(s *Stock) *CityQuery {
 	return query
 }
 
+// QuerySubscribe queries the subscribe edge of a Stock.
+func (c *StockClient) QuerySubscribe(s *Stock) *SubscribeQuery {
+	query := &SubscribeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stock.SubscribeTable, stock.SubscribeColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryStore queries the store edge of a Stock.
 func (c *StockClient) QueryStore(s *Stock) *StoreQuery {
 	query := &StoreQuery{config: c.config}

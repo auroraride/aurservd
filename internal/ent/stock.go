@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // Stock is the model entity for the Stock schema.
@@ -41,6 +42,8 @@ type Stock struct {
 	// CityID holds the value of the "city_id" field.
 	// 城市ID
 	CityID *uint64 `json:"city_id,omitempty"`
+	// SubscribeID holds the value of the "subscribe_id" field.
+	SubscribeID *uint64 `json:"subscribe_id,omitempty"`
 	// Sn holds the value of the "sn" field.
 	// 调拨编号
 	Sn string `json:"sn,omitempty"`
@@ -81,6 +84,8 @@ type Stock struct {
 type StockEdges struct {
 	// City holds the value of the city edge.
 	City *City `json:"city,omitempty"`
+	// Subscribe holds the value of the subscribe edge.
+	Subscribe *Subscribe `json:"subscribe,omitempty"`
 	// Store holds the value of the store edge.
 	Store *Store `json:"store,omitempty"`
 	// Cabinet holds the value of the cabinet edge.
@@ -93,7 +98,7 @@ type StockEdges struct {
 	Spouse *Stock `json:"spouse,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [7]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -110,10 +115,24 @@ func (e StockEdges) CityOrErr() (*City, error) {
 	return nil, &NotLoadedError{edge: "city"}
 }
 
+// SubscribeOrErr returns the Subscribe value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e StockEdges) SubscribeOrErr() (*Subscribe, error) {
+	if e.loadedTypes[1] {
+		if e.Subscribe == nil {
+			// The edge subscribe was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: subscribe.Label}
+		}
+		return e.Subscribe, nil
+	}
+	return nil, &NotLoadedError{edge: "subscribe"}
+}
+
 // StoreOrErr returns the Store value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockEdges) StoreOrErr() (*Store, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		if e.Store == nil {
 			// The edge store was loaded in eager-loading,
 			// but was not found.
@@ -127,7 +146,7 @@ func (e StockEdges) StoreOrErr() (*Store, error) {
 // CabinetOrErr returns the Cabinet value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockEdges) CabinetOrErr() (*Cabinet, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		if e.Cabinet == nil {
 			// The edge cabinet was loaded in eager-loading,
 			// but was not found.
@@ -141,7 +160,7 @@ func (e StockEdges) CabinetOrErr() (*Cabinet, error) {
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		if e.Rider == nil {
 			// The edge rider was loaded in eager-loading,
 			// but was not found.
@@ -155,7 +174,7 @@ func (e StockEdges) RiderOrErr() (*Rider, error) {
 // EmployeeOrErr returns the Employee value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockEdges) EmployeeOrErr() (*Employee, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[5] {
 		if e.Employee == nil {
 			// The edge employee was loaded in eager-loading,
 			// but was not found.
@@ -169,7 +188,7 @@ func (e StockEdges) EmployeeOrErr() (*Employee, error) {
 // SpouseOrErr returns the Spouse value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockEdges) SpouseOrErr() (*Stock, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[6] {
 		if e.Spouse == nil {
 			// The edge spouse was loaded in eager-loading,
 			// but was not found.
@@ -187,7 +206,7 @@ func (*Stock) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case stock.FieldCreator, stock.FieldLastModifier:
 			values[i] = new([]byte)
-		case stock.FieldID, stock.FieldCityID, stock.FieldType, stock.FieldStoreID, stock.FieldCabinetID, stock.FieldRiderID, stock.FieldEmployeeID, stock.FieldNum:
+		case stock.FieldID, stock.FieldCityID, stock.FieldSubscribeID, stock.FieldType, stock.FieldStoreID, stock.FieldCabinetID, stock.FieldRiderID, stock.FieldEmployeeID, stock.FieldNum:
 			values[i] = new(sql.NullInt64)
 		case stock.FieldRemark, stock.FieldSn, stock.FieldName, stock.FieldModel, stock.FieldMaterial:
 			values[i] = new(sql.NullString)
@@ -263,6 +282,13 @@ func (s *Stock) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				s.CityID = new(uint64)
 				*s.CityID = uint64(value.Int64)
+			}
+		case stock.FieldSubscribeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field subscribe_id", values[i])
+			} else if value.Valid {
+				s.SubscribeID = new(uint64)
+				*s.SubscribeID = uint64(value.Int64)
 			}
 		case stock.FieldSn:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -346,6 +372,11 @@ func (s *Stock) QueryCity() *CityQuery {
 	return (&StockClient{config: s.config}).QueryCity(s)
 }
 
+// QuerySubscribe queries the "subscribe" edge of the Stock entity.
+func (s *Stock) QuerySubscribe() *SubscribeQuery {
+	return (&StockClient{config: s.config}).QuerySubscribe(s)
+}
+
 // QueryStore queries the "store" edge of the Stock entity.
 func (s *Stock) QueryStore() *StoreQuery {
 	return (&StockClient{config: s.config}).QueryStore(s)
@@ -410,6 +441,10 @@ func (s *Stock) String() string {
 	builder.WriteString(s.Remark)
 	if v := s.CityID; v != nil {
 		builder.WriteString(", city_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := s.SubscribeID; v != nil {
+		builder.WriteString(", subscribe_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", sn=")

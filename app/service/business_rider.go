@@ -35,7 +35,7 @@ type businessRiderService struct {
 
     task func() *ec.BinInfo // 电柜任务
 
-    storeID, employeeID, cabinetID *uint64
+    storeID, employeeID, cabinetID, subscribeID *uint64
 }
 
 func NewBusinessRider(r *ent.Rider) *businessRiderService {
@@ -203,6 +203,7 @@ func (s *businessRiderService) Inactive(id uint64) (*model.SubscribeActiveInfo, 
 // preprocess 预处理数据
 func (s *businessRiderService) preprocess(sub *ent.Subscribe) {
     s.subscribe = sub
+    s.subscribeID = tools.NewPointerInterface(sub.ID)
 
     r := sub.Edges.Rider
     if r == nil {
@@ -305,9 +306,10 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
                 CityID:    s.subscribe.CityID,
                 StockType: sts[bt],
 
-                StoreID:    s.storeID,
-                EmployeeID: s.employeeID,
-                CabinetID:  s.cabinetID,
+                StoreID:     s.storeID,
+                EmployeeID:  s.employeeID,
+                CabinetID:   s.cabinetID,
+                SubscribeID: s.subscribeID,
             },
         )
     })

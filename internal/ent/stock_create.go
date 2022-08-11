@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // StockCreate is the builder for creating a Stock entity.
@@ -106,6 +107,20 @@ func (sc *StockCreate) SetCityID(u uint64) *StockCreate {
 func (sc *StockCreate) SetNillableCityID(u *uint64) *StockCreate {
 	if u != nil {
 		sc.SetCityID(*u)
+	}
+	return sc
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (sc *StockCreate) SetSubscribeID(u uint64) *StockCreate {
+	sc.mutation.SetSubscribeID(u)
+	return sc
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (sc *StockCreate) SetNillableSubscribeID(u *uint64) *StockCreate {
+	if u != nil {
+		sc.SetSubscribeID(*u)
 	}
 	return sc
 }
@@ -221,6 +236,11 @@ func (sc *StockCreate) SetMaterial(s stock.Material) *StockCreate {
 // SetCity sets the "city" edge to the City entity.
 func (sc *StockCreate) SetCity(c *City) *StockCreate {
 	return sc.SetCityID(c.ID)
+}
+
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (sc *StockCreate) SetSubscribe(s *Subscribe) *StockCreate {
+	return sc.SetSubscribeID(s.ID)
 }
 
 // SetStore sets the "store" edge to the Store entity.
@@ -534,6 +554,26 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 		_node.CityID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := sc.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.SubscribeTable,
+			Columns: []string{stock.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.SubscribeID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := sc.mutation.StoreIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -799,6 +839,24 @@ func (u *StockUpsert) UpdateCityID() *StockUpsert {
 // ClearCityID clears the value of the "city_id" field.
 func (u *StockUpsert) ClearCityID() *StockUpsert {
 	u.SetNull(stock.FieldCityID)
+	return u
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *StockUpsert) SetSubscribeID(v uint64) *StockUpsert {
+	u.Set(stock.FieldSubscribeID, v)
+	return u
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *StockUpsert) UpdateSubscribeID() *StockUpsert {
+	u.SetExcluded(stock.FieldSubscribeID)
+	return u
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *StockUpsert) ClearSubscribeID() *StockUpsert {
+	u.SetNull(stock.FieldSubscribeID)
 	return u
 }
 
@@ -1147,6 +1205,27 @@ func (u *StockUpsertOne) UpdateCityID() *StockUpsertOne {
 func (u *StockUpsertOne) ClearCityID() *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
 		s.ClearCityID()
+	})
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *StockUpsertOne) SetSubscribeID(v uint64) *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.SetSubscribeID(v)
+	})
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *StockUpsertOne) UpdateSubscribeID() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateSubscribeID()
+	})
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *StockUpsertOne) ClearSubscribeID() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.ClearSubscribeID()
 	})
 }
 
@@ -1686,6 +1765,27 @@ func (u *StockUpsertBulk) UpdateCityID() *StockUpsertBulk {
 func (u *StockUpsertBulk) ClearCityID() *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
 		s.ClearCityID()
+	})
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *StockUpsertBulk) SetSubscribeID(v uint64) *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.SetSubscribeID(v)
+	})
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *StockUpsertBulk) UpdateSubscribeID() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateSubscribeID()
+	})
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *StockUpsertBulk) ClearSubscribeID() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.ClearSubscribeID()
 	})
 }
 

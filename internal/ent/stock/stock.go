@@ -28,6 +28,8 @@ const (
 	FieldRemark = "remark"
 	// FieldCityID holds the string denoting the city_id field in the database.
 	FieldCityID = "city_id"
+	// FieldSubscribeID holds the string denoting the subscribe_id field in the database.
+	FieldSubscribeID = "subscribe_id"
 	// FieldSn holds the string denoting the sn field in the database.
 	FieldSn = "sn"
 	// FieldType holds the string denoting the type field in the database.
@@ -50,6 +52,8 @@ const (
 	FieldMaterial = "material"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
+	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
+	EdgeSubscribe = "subscribe"
 	// EdgeStore holds the string denoting the store edge name in mutations.
 	EdgeStore = "store"
 	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
@@ -69,6 +73,13 @@ const (
 	CityInverseTable = "city"
 	// CityColumn is the table column denoting the city relation/edge.
 	CityColumn = "city_id"
+	// SubscribeTable is the table that holds the subscribe relation/edge.
+	SubscribeTable = "stock"
+	// SubscribeInverseTable is the table name for the Subscribe entity.
+	// It exists in this package in order to avoid circular dependency with the "subscribe" package.
+	SubscribeInverseTable = "subscribe"
+	// SubscribeColumn is the table column denoting the subscribe relation/edge.
+	SubscribeColumn = "subscribe_id"
 	// StoreTable is the table that holds the store relation/edge.
 	StoreTable = "stock"
 	// StoreInverseTable is the table name for the Store entity.
@@ -113,6 +124,7 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldCityID,
+	FieldSubscribeID,
 	FieldSn,
 	FieldType,
 	FieldStoreID,

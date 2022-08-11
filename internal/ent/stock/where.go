@@ -128,6 +128,13 @@ func CityID(v uint64) predicate.Stock {
 	})
 }
 
+// SubscribeID applies equality check predicate on the "subscribe_id" field. It's identical to SubscribeIDEQ.
+func SubscribeID(v uint64) predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
+	})
+}
+
 // Sn applies equality check predicate on the "sn" field. It's identical to SnEQ.
 func Sn(v string) predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
@@ -645,6 +652,68 @@ func CityIDIsNil() predicate.Stock {
 func CityIDNotNil() predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldCityID)))
+	})
+}
+
+// SubscribeIDEQ applies the EQ predicate on the "subscribe_id" field.
+func SubscribeIDEQ(v uint64) predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
+	})
+}
+
+// SubscribeIDNEQ applies the NEQ predicate on the "subscribe_id" field.
+func SubscribeIDNEQ(v uint64) predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldSubscribeID), v))
+	})
+}
+
+// SubscribeIDIn applies the In predicate on the "subscribe_id" field.
+func SubscribeIDIn(vs ...uint64) predicate.Stock {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Stock(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldSubscribeID), v...))
+	})
+}
+
+// SubscribeIDNotIn applies the NotIn predicate on the "subscribe_id" field.
+func SubscribeIDNotIn(vs ...uint64) predicate.Stock {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Stock(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldSubscribeID), v...))
+	})
+}
+
+// SubscribeIDIsNil applies the IsNil predicate on the "subscribe_id" field.
+func SubscribeIDIsNil() predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldSubscribeID)))
+	})
+}
+
+// SubscribeIDNotNil applies the NotNil predicate on the "subscribe_id" field.
+func SubscribeIDNotNil() predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldSubscribeID)))
 	})
 }
 
@@ -1462,6 +1531,34 @@ func HasCityWith(preds ...predicate.City) predicate.Stock {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(CityInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasSubscribe applies the HasEdge predicate on the "subscribe" edge.
+func HasSubscribe() predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(SubscribeTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSubscribeWith applies the HasEdge predicate on the "subscribe" edge with a given conditions (other predicates).
+func HasSubscribeWith(preds ...predicate.Subscribe) predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(SubscribeInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

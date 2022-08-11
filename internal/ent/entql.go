@@ -948,6 +948,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			stock.FieldLastModifier: {Type: field.TypeJSON, Column: stock.FieldLastModifier},
 			stock.FieldRemark:       {Type: field.TypeString, Column: stock.FieldRemark},
 			stock.FieldCityID:       {Type: field.TypeUint64, Column: stock.FieldCityID},
+			stock.FieldSubscribeID:  {Type: field.TypeUint64, Column: stock.FieldSubscribeID},
 			stock.FieldSn:           {Type: field.TypeString, Column: stock.FieldSn},
 			stock.FieldType:         {Type: field.TypeUint8, Column: stock.FieldType},
 			stock.FieldStoreID:      {Type: field.TypeUint64, Column: stock.FieldStoreID},
@@ -2408,6 +2409,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Stock",
 		"City",
+	)
+	graph.MustAddE(
+		"subscribe",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.SubscribeTable,
+			Columns: []string{stock.SubscribeColumn},
+			Bidi:    false,
+		},
+		"Stock",
+		"Subscribe",
 	)
 	graph.MustAddE(
 		"store",
@@ -8046,6 +8059,11 @@ func (f *StockFilter) WhereCityID(p entql.Uint64P) {
 	f.Where(p.Field(stock.FieldCityID))
 }
 
+// WhereSubscribeID applies the entql uint64 predicate on the subscribe_id field.
+func (f *StockFilter) WhereSubscribeID(p entql.Uint64P) {
+	f.Where(p.Field(stock.FieldSubscribeID))
+}
+
 // WhereSn applies the entql string predicate on the sn field.
 func (f *StockFilter) WhereSn(p entql.StringP) {
 	f.Where(p.Field(stock.FieldSn))
@@ -8104,6 +8122,20 @@ func (f *StockFilter) WhereHasCity() {
 // WhereHasCityWith applies a predicate to check if query has an edge city with a given conditions (other predicates).
 func (f *StockFilter) WhereHasCityWith(preds ...predicate.City) {
 	f.Where(entql.HasEdgeWith("city", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasSubscribe applies a predicate to check if query has an edge subscribe.
+func (f *StockFilter) WhereHasSubscribe() {
+	f.Where(entql.HasEdge("subscribe"))
+}
+
+// WhereHasSubscribeWith applies a predicate to check if query has an edge subscribe with a given conditions (other predicates).
+func (f *StockFilter) WhereHasSubscribeWith(preds ...predicate.Subscribe) {
+	f.Where(entql.HasEdgeWith("subscribe", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

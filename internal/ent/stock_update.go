@@ -19,6 +19,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // StockUpdate is the builder for updating Stock entities.
@@ -109,6 +110,26 @@ func (su *StockUpdate) SetNillableCityID(u *uint64) *StockUpdate {
 // ClearCityID clears the value of the "city_id" field.
 func (su *StockUpdate) ClearCityID() *StockUpdate {
 	su.mutation.ClearCityID()
+	return su
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (su *StockUpdate) SetSubscribeID(u uint64) *StockUpdate {
+	su.mutation.SetSubscribeID(u)
+	return su
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (su *StockUpdate) SetNillableSubscribeID(u *uint64) *StockUpdate {
+	if u != nil {
+		su.SetSubscribeID(*u)
+	}
+	return su
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (su *StockUpdate) ClearSubscribeID() *StockUpdate {
+	su.mutation.ClearSubscribeID()
 	return su
 }
 
@@ -256,6 +277,11 @@ func (su *StockUpdate) SetCity(c *City) *StockUpdate {
 	return su.SetCityID(c.ID)
 }
 
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (su *StockUpdate) SetSubscribe(s *Subscribe) *StockUpdate {
+	return su.SetSubscribeID(s.ID)
+}
+
 // SetStore sets the "store" edge to the Store entity.
 func (su *StockUpdate) SetStore(s *Store) *StockUpdate {
 	return su.SetStoreID(s.ID)
@@ -303,6 +329,12 @@ func (su *StockUpdate) Mutation() *StockMutation {
 // ClearCity clears the "city" edge to the City entity.
 func (su *StockUpdate) ClearCity() *StockUpdate {
 	su.mutation.ClearCity()
+	return su
+}
+
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (su *StockUpdate) ClearSubscribe() *StockUpdate {
+	su.mutation.ClearSubscribe()
 	return su
 }
 
@@ -566,6 +598,41 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if su.mutation.SubscribeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.SubscribeTable,
+			Columns: []string{stock.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.SubscribeTable,
+			Columns: []string{stock.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
 				},
 			},
 		}
@@ -846,6 +913,26 @@ func (suo *StockUpdateOne) ClearCityID() *StockUpdateOne {
 	return suo
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (suo *StockUpdateOne) SetSubscribeID(u uint64) *StockUpdateOne {
+	suo.mutation.SetSubscribeID(u)
+	return suo
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (suo *StockUpdateOne) SetNillableSubscribeID(u *uint64) *StockUpdateOne {
+	if u != nil {
+		suo.SetSubscribeID(*u)
+	}
+	return suo
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (suo *StockUpdateOne) ClearSubscribeID() *StockUpdateOne {
+	suo.mutation.ClearSubscribeID()
+	return suo
+}
+
 // SetSn sets the "sn" field.
 func (suo *StockUpdateOne) SetSn(s string) *StockUpdateOne {
 	suo.mutation.SetSn(s)
@@ -990,6 +1077,11 @@ func (suo *StockUpdateOne) SetCity(c *City) *StockUpdateOne {
 	return suo.SetCityID(c.ID)
 }
 
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (suo *StockUpdateOne) SetSubscribe(s *Subscribe) *StockUpdateOne {
+	return suo.SetSubscribeID(s.ID)
+}
+
 // SetStore sets the "store" edge to the Store entity.
 func (suo *StockUpdateOne) SetStore(s *Store) *StockUpdateOne {
 	return suo.SetStoreID(s.ID)
@@ -1037,6 +1129,12 @@ func (suo *StockUpdateOne) Mutation() *StockMutation {
 // ClearCity clears the "city" edge to the City entity.
 func (suo *StockUpdateOne) ClearCity() *StockUpdateOne {
 	suo.mutation.ClearCity()
+	return suo
+}
+
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (suo *StockUpdateOne) ClearSubscribe() *StockUpdateOne {
+	suo.mutation.ClearSubscribe()
 	return suo
 }
 
@@ -1330,6 +1428,41 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.SubscribeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.SubscribeTable,
+			Columns: []string{stock.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.SubscribeTable,
+			Columns: []string{stock.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
 				},
 			},
 		}

@@ -2029,6 +2029,7 @@ var (
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "rider_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "stock_spouse", Type: field.TypeUint64, Unique: true, Nullable: true},
 		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
 	}
@@ -2063,14 +2064,20 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "stock_stock_spouse",
+				Symbol:     "stock_subscribe_subscribe",
 				Columns:    []*schema.Column{StockColumns[17]},
+				RefColumns: []*schema.Column{SubscribeColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "stock_stock_spouse",
+				Columns:    []*schema.Column{StockColumns[18]},
 				RefColumns: []*schema.Column{StockColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "stock_store_stocks",
-				Columns:    []*schema.Column{StockColumns[18]},
+				Columns:    []*schema.Column{StockColumns[19]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2768,8 +2775,9 @@ func init() {
 	StockTable.ForeignKeys[1].RefTable = EmployeeTable
 	StockTable.ForeignKeys[2].RefTable = RiderTable
 	StockTable.ForeignKeys[3].RefTable = CityTable
-	StockTable.ForeignKeys[4].RefTable = StockTable
-	StockTable.ForeignKeys[5].RefTable = StoreTable
+	StockTable.ForeignKeys[4].RefTable = SubscribeTable
+	StockTable.ForeignKeys[5].RefTable = StockTable
+	StockTable.ForeignKeys[6].RefTable = StoreTable
 	StockTable.Annotation = &entsql.Annotation{
 		Table: "stock",
 	}

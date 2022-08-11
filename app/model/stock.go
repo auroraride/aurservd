@@ -114,9 +114,10 @@ type StockBusinessReq struct {
     StockType uint8  `json:"stockType"` // 出入库类型
     CityID    uint64 `json:"cityId"`    // 城市
 
-    StoreID    *uint64 `json:"storeId"`    // 门店ID
-    EmployeeID *uint64 `json:"employeeId"` // 店员ID
-    CabinetID  *uint64 `json:"cabinetId"`  // 电柜ID
+    StoreID     *uint64 `json:"storeId"`     // 门店ID
+    EmployeeID  *uint64 `json:"employeeId"`  // 店员ID
+    CabinetID   *uint64 `json:"cabinetId"`   // 电柜ID
+    SubscribeID *uint64 `json:"subscribeId"` // 订阅ID
 }
 
 type StockEmployeeOverviewBattery struct {
