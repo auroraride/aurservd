@@ -8022,7 +8022,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ExportRes'
-      summary: MF005 导出订单
+      summary: MF006 导出订单
       tags:
       - '[M]管理接口'
   /manager/v1/export/rider:
