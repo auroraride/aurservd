@@ -240,17 +240,17 @@ func Transferred(v bool) predicate.Cabinet {
 	})
 }
 
-// Empty applies equality check predicate on the "empty" field. It's identical to EmptyEQ.
-func Empty(v int) predicate.Cabinet {
+// EmptyBinNum applies equality check predicate on the "empty_bin_num" field. It's identical to EmptyBinNumEQ.
+func EmptyBinNum(v int) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEmpty), v))
+		s.Where(sql.EQ(s.C(FieldEmptyBinNum), v))
 	})
 }
 
-// Fully applies equality check predicate on the "fully" field. It's identical to FullyEQ.
-func Fully(v int) predicate.Cabinet {
+// LockedBinNum applies equality check predicate on the "locked_bin_num" field. It's identical to LockedBinNumEQ.
+func LockedBinNum(v int) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldFully), v))
+		s.Where(sql.EQ(s.C(FieldLockedBinNum), v))
 	})
 }
 
@@ -2145,22 +2145,22 @@ func TransferredNEQ(v bool) predicate.Cabinet {
 	})
 }
 
-// EmptyEQ applies the EQ predicate on the "empty" field.
-func EmptyEQ(v int) predicate.Cabinet {
+// EmptyBinNumEQ applies the EQ predicate on the "empty_bin_num" field.
+func EmptyBinNumEQ(v int) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEmpty), v))
+		s.Where(sql.EQ(s.C(FieldEmptyBinNum), v))
 	})
 }
 
-// EmptyNEQ applies the NEQ predicate on the "empty" field.
-func EmptyNEQ(v int) predicate.Cabinet {
+// EmptyBinNumNEQ applies the NEQ predicate on the "empty_bin_num" field.
+func EmptyBinNumNEQ(v int) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEmpty), v))
+		s.Where(sql.NEQ(s.C(FieldEmptyBinNum), v))
 	})
 }
 
-// EmptyIn applies the In predicate on the "empty" field.
-func EmptyIn(vs ...int) predicate.Cabinet {
+// EmptyBinNumIn applies the In predicate on the "empty_bin_num" field.
+func EmptyBinNumIn(vs ...int) predicate.Cabinet {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -2172,12 +2172,12 @@ func EmptyIn(vs ...int) predicate.Cabinet {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldEmpty), v...))
+		s.Where(sql.In(s.C(FieldEmptyBinNum), v...))
 	})
 }
 
-// EmptyNotIn applies the NotIn predicate on the "empty" field.
-func EmptyNotIn(vs ...int) predicate.Cabinet {
+// EmptyBinNumNotIn applies the NotIn predicate on the "empty_bin_num" field.
+func EmptyBinNumNotIn(vs ...int) predicate.Cabinet {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -2189,54 +2189,54 @@ func EmptyNotIn(vs ...int) predicate.Cabinet {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldEmpty), v...))
+		s.Where(sql.NotIn(s.C(FieldEmptyBinNum), v...))
 	})
 }
 
-// EmptyGT applies the GT predicate on the "empty" field.
-func EmptyGT(v int) predicate.Cabinet {
+// EmptyBinNumGT applies the GT predicate on the "empty_bin_num" field.
+func EmptyBinNumGT(v int) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldEmpty), v))
+		s.Where(sql.GT(s.C(FieldEmptyBinNum), v))
 	})
 }
 
-// EmptyGTE applies the GTE predicate on the "empty" field.
-func EmptyGTE(v int) predicate.Cabinet {
+// EmptyBinNumGTE applies the GTE predicate on the "empty_bin_num" field.
+func EmptyBinNumGTE(v int) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldEmpty), v))
+		s.Where(sql.GTE(s.C(FieldEmptyBinNum), v))
 	})
 }
 
-// EmptyLT applies the LT predicate on the "empty" field.
-func EmptyLT(v int) predicate.Cabinet {
+// EmptyBinNumLT applies the LT predicate on the "empty_bin_num" field.
+func EmptyBinNumLT(v int) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldEmpty), v))
+		s.Where(sql.LT(s.C(FieldEmptyBinNum), v))
 	})
 }
 
-// EmptyLTE applies the LTE predicate on the "empty" field.
-func EmptyLTE(v int) predicate.Cabinet {
+// EmptyBinNumLTE applies the LTE predicate on the "empty_bin_num" field.
+func EmptyBinNumLTE(v int) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldEmpty), v))
+		s.Where(sql.LTE(s.C(FieldEmptyBinNum), v))
 	})
 }
 
-// FullyEQ applies the EQ predicate on the "fully" field.
-func FullyEQ(v int) predicate.Cabinet {
+// LockedBinNumEQ applies the EQ predicate on the "locked_bin_num" field.
+func LockedBinNumEQ(v int) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldFully), v))
+		s.Where(sql.EQ(s.C(FieldLockedBinNum), v))
 	})
 }
 
-// FullyNEQ applies the NEQ predicate on the "fully" field.
-func FullyNEQ(v int) predicate.Cabinet {
+// LockedBinNumNEQ applies the NEQ predicate on the "locked_bin_num" field.
+func LockedBinNumNEQ(v int) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldFully), v))
+		s.Where(sql.NEQ(s.C(FieldLockedBinNum), v))
 	})
 }
 
-// FullyIn applies the In predicate on the "fully" field.
-func FullyIn(vs ...int) predicate.Cabinet {
+// LockedBinNumIn applies the In predicate on the "locked_bin_num" field.
+func LockedBinNumIn(vs ...int) predicate.Cabinet {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -2248,12 +2248,12 @@ func FullyIn(vs ...int) predicate.Cabinet {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldFully), v...))
+		s.Where(sql.In(s.C(FieldLockedBinNum), v...))
 	})
 }
 
-// FullyNotIn applies the NotIn predicate on the "fully" field.
-func FullyNotIn(vs ...int) predicate.Cabinet {
+// LockedBinNumNotIn applies the NotIn predicate on the "locked_bin_num" field.
+func LockedBinNumNotIn(vs ...int) predicate.Cabinet {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -2265,35 +2265,35 @@ func FullyNotIn(vs ...int) predicate.Cabinet {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldFully), v...))
+		s.Where(sql.NotIn(s.C(FieldLockedBinNum), v...))
 	})
 }
 
-// FullyGT applies the GT predicate on the "fully" field.
-func FullyGT(v int) predicate.Cabinet {
+// LockedBinNumGT applies the GT predicate on the "locked_bin_num" field.
+func LockedBinNumGT(v int) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldFully), v))
+		s.Where(sql.GT(s.C(FieldLockedBinNum), v))
 	})
 }
 
-// FullyGTE applies the GTE predicate on the "fully" field.
-func FullyGTE(v int) predicate.Cabinet {
+// LockedBinNumGTE applies the GTE predicate on the "locked_bin_num" field.
+func LockedBinNumGTE(v int) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldFully), v))
+		s.Where(sql.GTE(s.C(FieldLockedBinNum), v))
 	})
 }
 
-// FullyLT applies the LT predicate on the "fully" field.
-func FullyLT(v int) predicate.Cabinet {
+// LockedBinNumLT applies the LT predicate on the "locked_bin_num" field.
+func LockedBinNumLT(v int) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldFully), v))
+		s.Where(sql.LT(s.C(FieldLockedBinNum), v))
 	})
 }
 
-// FullyLTE applies the LTE predicate on the "fully" field.
-func FullyLTE(v int) predicate.Cabinet {
+// LockedBinNumLTE applies the LTE predicate on the "locked_bin_num" field.
+func LockedBinNumLTE(v int) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldFully), v))
+		s.Where(sql.LTE(s.C(FieldLockedBinNum), v))
 	})
 }
 

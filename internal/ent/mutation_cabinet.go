@@ -51,10 +51,10 @@ type CabinetMutation struct {
 	sim_sn              *string
 	sim_date            *time.Time
 	transferred         *bool
-	empty               *int
-	addempty            *int
-	fully               *int
-	addfully            *int
+	empty_bin_num       *int
+	addempty_bin_num    *int
+	locked_bin_num      *int
+	addlocked_bin_num   *int
 	clearedFields       map[string]struct{}
 	city                *uint64
 	clearedcity         bool
@@ -1337,116 +1337,116 @@ func (m *CabinetMutation) ResetTransferred() {
 	m.transferred = nil
 }
 
-// SetEmpty sets the "empty" field.
-func (m *CabinetMutation) SetEmpty(i int) {
-	m.empty = &i
-	m.addempty = nil
+// SetEmptyBinNum sets the "empty_bin_num" field.
+func (m *CabinetMutation) SetEmptyBinNum(i int) {
+	m.empty_bin_num = &i
+	m.addempty_bin_num = nil
 }
 
-// Empty returns the value of the "empty" field in the mutation.
-func (m *CabinetMutation) Empty() (r int, exists bool) {
-	v := m.empty
+// EmptyBinNum returns the value of the "empty_bin_num" field in the mutation.
+func (m *CabinetMutation) EmptyBinNum() (r int, exists bool) {
+	v := m.empty_bin_num
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldEmpty returns the old "empty" field's value of the Cabinet entity.
+// OldEmptyBinNum returns the old "empty_bin_num" field's value of the Cabinet entity.
 // If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetMutation) OldEmpty(ctx context.Context) (v int, err error) {
+func (m *CabinetMutation) OldEmptyBinNum(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldEmpty is only allowed on UpdateOne operations")
+		return v, errors.New("OldEmptyBinNum is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldEmpty requires an ID field in the mutation")
+		return v, errors.New("OldEmptyBinNum requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldEmpty: %w", err)
+		return v, fmt.Errorf("querying old value for OldEmptyBinNum: %w", err)
 	}
-	return oldValue.Empty, nil
+	return oldValue.EmptyBinNum, nil
 }
 
-// AddEmpty adds i to the "empty" field.
-func (m *CabinetMutation) AddEmpty(i int) {
-	if m.addempty != nil {
-		*m.addempty += i
+// AddEmptyBinNum adds i to the "empty_bin_num" field.
+func (m *CabinetMutation) AddEmptyBinNum(i int) {
+	if m.addempty_bin_num != nil {
+		*m.addempty_bin_num += i
 	} else {
-		m.addempty = &i
+		m.addempty_bin_num = &i
 	}
 }
 
-// AddedEmpty returns the value that was added to the "empty" field in this mutation.
-func (m *CabinetMutation) AddedEmpty() (r int, exists bool) {
-	v := m.addempty
+// AddedEmptyBinNum returns the value that was added to the "empty_bin_num" field in this mutation.
+func (m *CabinetMutation) AddedEmptyBinNum() (r int, exists bool) {
+	v := m.addempty_bin_num
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetEmpty resets all changes to the "empty" field.
-func (m *CabinetMutation) ResetEmpty() {
-	m.empty = nil
-	m.addempty = nil
+// ResetEmptyBinNum resets all changes to the "empty_bin_num" field.
+func (m *CabinetMutation) ResetEmptyBinNum() {
+	m.empty_bin_num = nil
+	m.addempty_bin_num = nil
 }
 
-// SetFully sets the "fully" field.
-func (m *CabinetMutation) SetFully(i int) {
-	m.fully = &i
-	m.addfully = nil
+// SetLockedBinNum sets the "locked_bin_num" field.
+func (m *CabinetMutation) SetLockedBinNum(i int) {
+	m.locked_bin_num = &i
+	m.addlocked_bin_num = nil
 }
 
-// Fully returns the value of the "fully" field in the mutation.
-func (m *CabinetMutation) Fully() (r int, exists bool) {
-	v := m.fully
+// LockedBinNum returns the value of the "locked_bin_num" field in the mutation.
+func (m *CabinetMutation) LockedBinNum() (r int, exists bool) {
+	v := m.locked_bin_num
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldFully returns the old "fully" field's value of the Cabinet entity.
+// OldLockedBinNum returns the old "locked_bin_num" field's value of the Cabinet entity.
 // If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetMutation) OldFully(ctx context.Context) (v int, err error) {
+func (m *CabinetMutation) OldLockedBinNum(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldFully is only allowed on UpdateOne operations")
+		return v, errors.New("OldLockedBinNum is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldFully requires an ID field in the mutation")
+		return v, errors.New("OldLockedBinNum requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldFully: %w", err)
+		return v, fmt.Errorf("querying old value for OldLockedBinNum: %w", err)
 	}
-	return oldValue.Fully, nil
+	return oldValue.LockedBinNum, nil
 }
 
-// AddFully adds i to the "fully" field.
-func (m *CabinetMutation) AddFully(i int) {
-	if m.addfully != nil {
-		*m.addfully += i
+// AddLockedBinNum adds i to the "locked_bin_num" field.
+func (m *CabinetMutation) AddLockedBinNum(i int) {
+	if m.addlocked_bin_num != nil {
+		*m.addlocked_bin_num += i
 	} else {
-		m.addfully = &i
+		m.addlocked_bin_num = &i
 	}
 }
 
-// AddedFully returns the value that was added to the "fully" field in this mutation.
-func (m *CabinetMutation) AddedFully() (r int, exists bool) {
-	v := m.addfully
+// AddedLockedBinNum returns the value that was added to the "locked_bin_num" field in this mutation.
+func (m *CabinetMutation) AddedLockedBinNum() (r int, exists bool) {
+	v := m.addlocked_bin_num
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetFully resets all changes to the "fully" field.
-func (m *CabinetMutation) ResetFully() {
-	m.fully = nil
-	m.addfully = nil
+// ResetLockedBinNum resets all changes to the "locked_bin_num" field.
+func (m *CabinetMutation) ResetLockedBinNum() {
+	m.locked_bin_num = nil
+	m.addlocked_bin_num = nil
 }
 
 // ClearCity clears the "city" edge to the City entity.
@@ -1809,11 +1809,11 @@ func (m *CabinetMutation) Fields() []string {
 	if m.transferred != nil {
 		fields = append(fields, cabinet.FieldTransferred)
 	}
-	if m.empty != nil {
-		fields = append(fields, cabinet.FieldEmpty)
+	if m.empty_bin_num != nil {
+		fields = append(fields, cabinet.FieldEmptyBinNum)
 	}
-	if m.fully != nil {
-		fields = append(fields, cabinet.FieldFully)
+	if m.locked_bin_num != nil {
+		fields = append(fields, cabinet.FieldLockedBinNum)
 	}
 	return fields
 }
@@ -1871,10 +1871,10 @@ func (m *CabinetMutation) Field(name string) (ent.Value, bool) {
 		return m.SimDate()
 	case cabinet.FieldTransferred:
 		return m.Transferred()
-	case cabinet.FieldEmpty:
-		return m.Empty()
-	case cabinet.FieldFully:
-		return m.Fully()
+	case cabinet.FieldEmptyBinNum:
+		return m.EmptyBinNum()
+	case cabinet.FieldLockedBinNum:
+		return m.LockedBinNum()
 	}
 	return nil, false
 }
@@ -1932,10 +1932,10 @@ func (m *CabinetMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldSimDate(ctx)
 	case cabinet.FieldTransferred:
 		return m.OldTransferred(ctx)
-	case cabinet.FieldEmpty:
-		return m.OldEmpty(ctx)
-	case cabinet.FieldFully:
-		return m.OldFully(ctx)
+	case cabinet.FieldEmptyBinNum:
+		return m.OldEmptyBinNum(ctx)
+	case cabinet.FieldLockedBinNum:
+		return m.OldLockedBinNum(ctx)
 	}
 	return nil, fmt.Errorf("unknown Cabinet field %s", name)
 }
@@ -2113,19 +2113,19 @@ func (m *CabinetMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetTransferred(v)
 		return nil
-	case cabinet.FieldEmpty:
+	case cabinet.FieldEmptyBinNum:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetEmpty(v)
+		m.SetEmptyBinNum(v)
 		return nil
-	case cabinet.FieldFully:
+	case cabinet.FieldLockedBinNum:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetFully(v)
+		m.SetLockedBinNum(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Cabinet field %s", name)
@@ -2156,11 +2156,11 @@ func (m *CabinetMutation) AddedFields() []string {
 	if m.addlat != nil {
 		fields = append(fields, cabinet.FieldLat)
 	}
-	if m.addempty != nil {
-		fields = append(fields, cabinet.FieldEmpty)
+	if m.addempty_bin_num != nil {
+		fields = append(fields, cabinet.FieldEmptyBinNum)
 	}
-	if m.addfully != nil {
-		fields = append(fields, cabinet.FieldFully)
+	if m.addlocked_bin_num != nil {
+		fields = append(fields, cabinet.FieldLockedBinNum)
 	}
 	return fields
 }
@@ -2184,10 +2184,10 @@ func (m *CabinetMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedLng()
 	case cabinet.FieldLat:
 		return m.AddedLat()
-	case cabinet.FieldEmpty:
-		return m.AddedEmpty()
-	case cabinet.FieldFully:
-		return m.AddedFully()
+	case cabinet.FieldEmptyBinNum:
+		return m.AddedEmptyBinNum()
+	case cabinet.FieldLockedBinNum:
+		return m.AddedLockedBinNum()
 	}
 	return nil, false
 }
@@ -2246,19 +2246,19 @@ func (m *CabinetMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddLat(v)
 		return nil
-	case cabinet.FieldEmpty:
+	case cabinet.FieldEmptyBinNum:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddEmpty(v)
+		m.AddEmptyBinNum(v)
 		return nil
-	case cabinet.FieldFully:
+	case cabinet.FieldLockedBinNum:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddFully(v)
+		m.AddLockedBinNum(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Cabinet numeric field %s", name)
@@ -2434,11 +2434,11 @@ func (m *CabinetMutation) ResetField(name string) error {
 	case cabinet.FieldTransferred:
 		m.ResetTransferred()
 		return nil
-	case cabinet.FieldEmpty:
-		m.ResetEmpty()
+	case cabinet.FieldEmptyBinNum:
+		m.ResetEmptyBinNum()
 		return nil
-	case cabinet.FieldFully:
-		m.ResetFully()
+	case cabinet.FieldLockedBinNum:
+		m.ResetLockedBinNum()
 		return nil
 	}
 	return fmt.Errorf("unknown Cabinet field %s", name)

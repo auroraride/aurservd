@@ -61,10 +61,10 @@ const (
 	FieldSimDate = "sim_date"
 	// FieldTransferred holds the string denoting the transferred field in the database.
 	FieldTransferred = "transferred"
-	// FieldEmpty holds the string denoting the empty field in the database.
-	FieldEmpty = "empty"
-	// FieldFully holds the string denoting the fully field in the database.
-	FieldFully = "fully"
+	// FieldEmptyBinNum holds the string denoting the empty_bin_num field in the database.
+	FieldEmptyBinNum = "empty_bin_num"
+	// FieldLockedBinNum holds the string denoting the locked_bin_num field in the database.
+	FieldLockedBinNum = "locked_bin_num"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeBranch holds the string denoting the branch edge name in mutations.
@@ -148,8 +148,8 @@ var Columns = []string{
 	FieldSimSn,
 	FieldSimDate,
 	FieldTransferred,
-	FieldEmpty,
-	FieldFully,
+	FieldEmptyBinNum,
+	FieldLockedBinNum,
 }
 
 var (
@@ -190,8 +190,8 @@ var (
 	DefaultBatteryFullNum uint
 	// DefaultTransferred holds the default value on creation for the "transferred" field.
 	DefaultTransferred bool
-	// DefaultEmpty holds the default value on creation for the "empty" field.
-	DefaultEmpty int
-	// DefaultFully holds the default value on creation for the "fully" field.
-	DefaultFully int
+	// DefaultEmptyBinNum holds the default value on creation for the "empty_bin_num" field.
+	DefaultEmptyBinNum int
+	// DefaultLockedBinNum holds the default value on creation for the "locked_bin_num" field.
+	DefaultLockedBinNum int
 )

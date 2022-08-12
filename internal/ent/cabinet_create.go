@@ -293,30 +293,30 @@ func (cc *CabinetCreate) SetNillableTransferred(b *bool) *CabinetCreate {
 	return cc
 }
 
-// SetEmpty sets the "empty" field.
-func (cc *CabinetCreate) SetEmpty(i int) *CabinetCreate {
-	cc.mutation.SetEmpty(i)
+// SetEmptyBinNum sets the "empty_bin_num" field.
+func (cc *CabinetCreate) SetEmptyBinNum(i int) *CabinetCreate {
+	cc.mutation.SetEmptyBinNum(i)
 	return cc
 }
 
-// SetNillableEmpty sets the "empty" field if the given value is not nil.
-func (cc *CabinetCreate) SetNillableEmpty(i *int) *CabinetCreate {
+// SetNillableEmptyBinNum sets the "empty_bin_num" field if the given value is not nil.
+func (cc *CabinetCreate) SetNillableEmptyBinNum(i *int) *CabinetCreate {
 	if i != nil {
-		cc.SetEmpty(*i)
+		cc.SetEmptyBinNum(*i)
 	}
 	return cc
 }
 
-// SetFully sets the "fully" field.
-func (cc *CabinetCreate) SetFully(i int) *CabinetCreate {
-	cc.mutation.SetFully(i)
+// SetLockedBinNum sets the "locked_bin_num" field.
+func (cc *CabinetCreate) SetLockedBinNum(i int) *CabinetCreate {
+	cc.mutation.SetLockedBinNum(i)
 	return cc
 }
 
-// SetNillableFully sets the "fully" field if the given value is not nil.
-func (cc *CabinetCreate) SetNillableFully(i *int) *CabinetCreate {
+// SetNillableLockedBinNum sets the "locked_bin_num" field if the given value is not nil.
+func (cc *CabinetCreate) SetNillableLockedBinNum(i *int) *CabinetCreate {
 	if i != nil {
-		cc.SetFully(*i)
+		cc.SetLockedBinNum(*i)
 	}
 	return cc
 }
@@ -500,13 +500,13 @@ func (cc *CabinetCreate) defaults() error {
 		v := cabinet.DefaultTransferred
 		cc.mutation.SetTransferred(v)
 	}
-	if _, ok := cc.mutation.Empty(); !ok {
-		v := cabinet.DefaultEmpty
-		cc.mutation.SetEmpty(v)
+	if _, ok := cc.mutation.EmptyBinNum(); !ok {
+		v := cabinet.DefaultEmptyBinNum
+		cc.mutation.SetEmptyBinNum(v)
 	}
-	if _, ok := cc.mutation.Fully(); !ok {
-		v := cabinet.DefaultFully
-		cc.mutation.SetFully(v)
+	if _, ok := cc.mutation.LockedBinNum(); !ok {
+		v := cabinet.DefaultLockedBinNum
+		cc.mutation.SetLockedBinNum(v)
 	}
 	return nil
 }
@@ -549,11 +549,11 @@ func (cc *CabinetCreate) check() error {
 	if _, ok := cc.mutation.Transferred(); !ok {
 		return &ValidationError{Name: "transferred", err: errors.New(`ent: missing required field "Cabinet.transferred"`)}
 	}
-	if _, ok := cc.mutation.Empty(); !ok {
-		return &ValidationError{Name: "empty", err: errors.New(`ent: missing required field "Cabinet.empty"`)}
+	if _, ok := cc.mutation.EmptyBinNum(); !ok {
+		return &ValidationError{Name: "empty_bin_num", err: errors.New(`ent: missing required field "Cabinet.empty_bin_num"`)}
 	}
-	if _, ok := cc.mutation.Fully(); !ok {
-		return &ValidationError{Name: "fully", err: errors.New(`ent: missing required field "Cabinet.fully"`)}
+	if _, ok := cc.mutation.LockedBinNum(); !ok {
+		return &ValidationError{Name: "locked_bin_num", err: errors.New(`ent: missing required field "Cabinet.locked_bin_num"`)}
 	}
 	return nil
 }
@@ -759,21 +759,21 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 		})
 		_node.Transferred = value
 	}
-	if value, ok := cc.mutation.Empty(); ok {
+	if value, ok := cc.mutation.EmptyBinNum(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Value:  value,
-			Column: cabinet.FieldEmpty,
+			Column: cabinet.FieldEmptyBinNum,
 		})
-		_node.Empty = value
+		_node.EmptyBinNum = value
 	}
-	if value, ok := cc.mutation.Fully(); ok {
+	if value, ok := cc.mutation.LockedBinNum(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Value:  value,
-			Column: cabinet.FieldFully,
+			Column: cabinet.FieldLockedBinNum,
 		})
-		_node.Fully = value
+		_node.LockedBinNum = value
 	}
 	if nodes := cc.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1347,39 +1347,39 @@ func (u *CabinetUpsert) UpdateTransferred() *CabinetUpsert {
 	return u
 }
 
-// SetEmpty sets the "empty" field.
-func (u *CabinetUpsert) SetEmpty(v int) *CabinetUpsert {
-	u.Set(cabinet.FieldEmpty, v)
+// SetEmptyBinNum sets the "empty_bin_num" field.
+func (u *CabinetUpsert) SetEmptyBinNum(v int) *CabinetUpsert {
+	u.Set(cabinet.FieldEmptyBinNum, v)
 	return u
 }
 
-// UpdateEmpty sets the "empty" field to the value that was provided on create.
-func (u *CabinetUpsert) UpdateEmpty() *CabinetUpsert {
-	u.SetExcluded(cabinet.FieldEmpty)
+// UpdateEmptyBinNum sets the "empty_bin_num" field to the value that was provided on create.
+func (u *CabinetUpsert) UpdateEmptyBinNum() *CabinetUpsert {
+	u.SetExcluded(cabinet.FieldEmptyBinNum)
 	return u
 }
 
-// AddEmpty adds v to the "empty" field.
-func (u *CabinetUpsert) AddEmpty(v int) *CabinetUpsert {
-	u.Add(cabinet.FieldEmpty, v)
+// AddEmptyBinNum adds v to the "empty_bin_num" field.
+func (u *CabinetUpsert) AddEmptyBinNum(v int) *CabinetUpsert {
+	u.Add(cabinet.FieldEmptyBinNum, v)
 	return u
 }
 
-// SetFully sets the "fully" field.
-func (u *CabinetUpsert) SetFully(v int) *CabinetUpsert {
-	u.Set(cabinet.FieldFully, v)
+// SetLockedBinNum sets the "locked_bin_num" field.
+func (u *CabinetUpsert) SetLockedBinNum(v int) *CabinetUpsert {
+	u.Set(cabinet.FieldLockedBinNum, v)
 	return u
 }
 
-// UpdateFully sets the "fully" field to the value that was provided on create.
-func (u *CabinetUpsert) UpdateFully() *CabinetUpsert {
-	u.SetExcluded(cabinet.FieldFully)
+// UpdateLockedBinNum sets the "locked_bin_num" field to the value that was provided on create.
+func (u *CabinetUpsert) UpdateLockedBinNum() *CabinetUpsert {
+	u.SetExcluded(cabinet.FieldLockedBinNum)
 	return u
 }
 
-// AddFully adds v to the "fully" field.
-func (u *CabinetUpsert) AddFully(v int) *CabinetUpsert {
-	u.Add(cabinet.FieldFully, v)
+// AddLockedBinNum adds v to the "locked_bin_num" field.
+func (u *CabinetUpsert) AddLockedBinNum(v int) *CabinetUpsert {
+	u.Add(cabinet.FieldLockedBinNum, v)
 	return u
 }
 
@@ -1902,45 +1902,45 @@ func (u *CabinetUpsertOne) UpdateTransferred() *CabinetUpsertOne {
 	})
 }
 
-// SetEmpty sets the "empty" field.
-func (u *CabinetUpsertOne) SetEmpty(v int) *CabinetUpsertOne {
+// SetEmptyBinNum sets the "empty_bin_num" field.
+func (u *CabinetUpsertOne) SetEmptyBinNum(v int) *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
-		s.SetEmpty(v)
+		s.SetEmptyBinNum(v)
 	})
 }
 
-// AddEmpty adds v to the "empty" field.
-func (u *CabinetUpsertOne) AddEmpty(v int) *CabinetUpsertOne {
+// AddEmptyBinNum adds v to the "empty_bin_num" field.
+func (u *CabinetUpsertOne) AddEmptyBinNum(v int) *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
-		s.AddEmpty(v)
+		s.AddEmptyBinNum(v)
 	})
 }
 
-// UpdateEmpty sets the "empty" field to the value that was provided on create.
-func (u *CabinetUpsertOne) UpdateEmpty() *CabinetUpsertOne {
+// UpdateEmptyBinNum sets the "empty_bin_num" field to the value that was provided on create.
+func (u *CabinetUpsertOne) UpdateEmptyBinNum() *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
-		s.UpdateEmpty()
+		s.UpdateEmptyBinNum()
 	})
 }
 
-// SetFully sets the "fully" field.
-func (u *CabinetUpsertOne) SetFully(v int) *CabinetUpsertOne {
+// SetLockedBinNum sets the "locked_bin_num" field.
+func (u *CabinetUpsertOne) SetLockedBinNum(v int) *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
-		s.SetFully(v)
+		s.SetLockedBinNum(v)
 	})
 }
 
-// AddFully adds v to the "fully" field.
-func (u *CabinetUpsertOne) AddFully(v int) *CabinetUpsertOne {
+// AddLockedBinNum adds v to the "locked_bin_num" field.
+func (u *CabinetUpsertOne) AddLockedBinNum(v int) *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
-		s.AddFully(v)
+		s.AddLockedBinNum(v)
 	})
 }
 
-// UpdateFully sets the "fully" field to the value that was provided on create.
-func (u *CabinetUpsertOne) UpdateFully() *CabinetUpsertOne {
+// UpdateLockedBinNum sets the "locked_bin_num" field to the value that was provided on create.
+func (u *CabinetUpsertOne) UpdateLockedBinNum() *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
-		s.UpdateFully()
+		s.UpdateLockedBinNum()
 	})
 }
 
@@ -2627,45 +2627,45 @@ func (u *CabinetUpsertBulk) UpdateTransferred() *CabinetUpsertBulk {
 	})
 }
 
-// SetEmpty sets the "empty" field.
-func (u *CabinetUpsertBulk) SetEmpty(v int) *CabinetUpsertBulk {
+// SetEmptyBinNum sets the "empty_bin_num" field.
+func (u *CabinetUpsertBulk) SetEmptyBinNum(v int) *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
-		s.SetEmpty(v)
+		s.SetEmptyBinNum(v)
 	})
 }
 
-// AddEmpty adds v to the "empty" field.
-func (u *CabinetUpsertBulk) AddEmpty(v int) *CabinetUpsertBulk {
+// AddEmptyBinNum adds v to the "empty_bin_num" field.
+func (u *CabinetUpsertBulk) AddEmptyBinNum(v int) *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
-		s.AddEmpty(v)
+		s.AddEmptyBinNum(v)
 	})
 }
 
-// UpdateEmpty sets the "empty" field to the value that was provided on create.
-func (u *CabinetUpsertBulk) UpdateEmpty() *CabinetUpsertBulk {
+// UpdateEmptyBinNum sets the "empty_bin_num" field to the value that was provided on create.
+func (u *CabinetUpsertBulk) UpdateEmptyBinNum() *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
-		s.UpdateEmpty()
+		s.UpdateEmptyBinNum()
 	})
 }
 
-// SetFully sets the "fully" field.
-func (u *CabinetUpsertBulk) SetFully(v int) *CabinetUpsertBulk {
+// SetLockedBinNum sets the "locked_bin_num" field.
+func (u *CabinetUpsertBulk) SetLockedBinNum(v int) *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
-		s.SetFully(v)
+		s.SetLockedBinNum(v)
 	})
 }
 
-// AddFully adds v to the "fully" field.
-func (u *CabinetUpsertBulk) AddFully(v int) *CabinetUpsertBulk {
+// AddLockedBinNum adds v to the "locked_bin_num" field.
+func (u *CabinetUpsertBulk) AddLockedBinNum(v int) *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
-		s.AddFully(v)
+		s.AddLockedBinNum(v)
 	})
 }
 
-// UpdateFully sets the "fully" field to the value that was provided on create.
-func (u *CabinetUpsertBulk) UpdateFully() *CabinetUpsertBulk {
+// UpdateLockedBinNum sets the "locked_bin_num" field to the value that was provided on create.
+func (u *CabinetUpsertBulk) UpdateLockedBinNum() *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
-		s.UpdateFully()
+		s.UpdateLockedBinNum()
 	})
 }
 

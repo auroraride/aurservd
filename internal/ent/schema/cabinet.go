@@ -73,15 +73,15 @@ func (Cabinet) Fields() []ent.Field {
         field.Uint8("health").Default(0).Comment("健康状态 0未知 1正常 2离线 3故障"),
         field.JSON("bin", model.CabinetBins{}).Optional().Comment("仓位信息"),
         field.Uint("battery_num").Default(0).Comment("电池总数"),
-        field.Uint("battery_full_num").Default(0).Comment("满电电池数"),
+        field.Uint("battery_full_num").Default(0).Comment("满电总数"),
         field.Float("lng").Optional().Comment("经度"),
         field.Float("lat").Optional().Comment("纬度"),
         field.String("address").Optional().Comment("详细地址"),
         field.String("sim_sn").Optional().Comment("SIM卡号"),
         field.Time("sim_date").Optional().Comment("SIM卡到期日期"),
         field.Bool("transferred").Default(false).Comment("电池是否已调拨"),
-        field.Int("empty").Default(0).Comment("空仓数量"),
-        field.Int("fully").Default(0).Comment("满电数量"),
+        field.Int("empty_bin_num").Default(0).Comment("空仓数量"),
+        field.Int("locked_bin_num").Default(0).Comment("锁仓数量"),
     }
 }
 

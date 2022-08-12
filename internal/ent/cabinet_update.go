@@ -386,45 +386,45 @@ func (cu *CabinetUpdate) SetNillableTransferred(b *bool) *CabinetUpdate {
 	return cu
 }
 
-// SetEmpty sets the "empty" field.
-func (cu *CabinetUpdate) SetEmpty(i int) *CabinetUpdate {
-	cu.mutation.ResetEmpty()
-	cu.mutation.SetEmpty(i)
+// SetEmptyBinNum sets the "empty_bin_num" field.
+func (cu *CabinetUpdate) SetEmptyBinNum(i int) *CabinetUpdate {
+	cu.mutation.ResetEmptyBinNum()
+	cu.mutation.SetEmptyBinNum(i)
 	return cu
 }
 
-// SetNillableEmpty sets the "empty" field if the given value is not nil.
-func (cu *CabinetUpdate) SetNillableEmpty(i *int) *CabinetUpdate {
+// SetNillableEmptyBinNum sets the "empty_bin_num" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableEmptyBinNum(i *int) *CabinetUpdate {
 	if i != nil {
-		cu.SetEmpty(*i)
+		cu.SetEmptyBinNum(*i)
 	}
 	return cu
 }
 
-// AddEmpty adds i to the "empty" field.
-func (cu *CabinetUpdate) AddEmpty(i int) *CabinetUpdate {
-	cu.mutation.AddEmpty(i)
+// AddEmptyBinNum adds i to the "empty_bin_num" field.
+func (cu *CabinetUpdate) AddEmptyBinNum(i int) *CabinetUpdate {
+	cu.mutation.AddEmptyBinNum(i)
 	return cu
 }
 
-// SetFully sets the "fully" field.
-func (cu *CabinetUpdate) SetFully(i int) *CabinetUpdate {
-	cu.mutation.ResetFully()
-	cu.mutation.SetFully(i)
+// SetLockedBinNum sets the "locked_bin_num" field.
+func (cu *CabinetUpdate) SetLockedBinNum(i int) *CabinetUpdate {
+	cu.mutation.ResetLockedBinNum()
+	cu.mutation.SetLockedBinNum(i)
 	return cu
 }
 
-// SetNillableFully sets the "fully" field if the given value is not nil.
-func (cu *CabinetUpdate) SetNillableFully(i *int) *CabinetUpdate {
+// SetNillableLockedBinNum sets the "locked_bin_num" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableLockedBinNum(i *int) *CabinetUpdate {
 	if i != nil {
-		cu.SetFully(*i)
+		cu.SetLockedBinNum(*i)
 	}
 	return cu
 }
 
-// AddFully adds i to the "fully" field.
-func (cu *CabinetUpdate) AddFully(i int) *CabinetUpdate {
-	cu.mutation.AddFully(i)
+// AddLockedBinNum adds i to the "locked_bin_num" field.
+func (cu *CabinetUpdate) AddLockedBinNum(i int) *CabinetUpdate {
+	cu.mutation.AddLockedBinNum(i)
 	return cu
 }
 
@@ -935,32 +935,32 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: cabinet.FieldTransferred,
 		})
 	}
-	if value, ok := cu.mutation.Empty(); ok {
+	if value, ok := cu.mutation.EmptyBinNum(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Value:  value,
-			Column: cabinet.FieldEmpty,
+			Column: cabinet.FieldEmptyBinNum,
 		})
 	}
-	if value, ok := cu.mutation.AddedEmpty(); ok {
+	if value, ok := cu.mutation.AddedEmptyBinNum(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Value:  value,
-			Column: cabinet.FieldEmpty,
+			Column: cabinet.FieldEmptyBinNum,
 		})
 	}
-	if value, ok := cu.mutation.Fully(); ok {
+	if value, ok := cu.mutation.LockedBinNum(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Value:  value,
-			Column: cabinet.FieldFully,
+			Column: cabinet.FieldLockedBinNum,
 		})
 	}
-	if value, ok := cu.mutation.AddedFully(); ok {
+	if value, ok := cu.mutation.AddedLockedBinNum(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Value:  value,
-			Column: cabinet.FieldFully,
+			Column: cabinet.FieldLockedBinNum,
 		})
 	}
 	if cu.mutation.CityCleared() {
@@ -1619,45 +1619,45 @@ func (cuo *CabinetUpdateOne) SetNillableTransferred(b *bool) *CabinetUpdateOne {
 	return cuo
 }
 
-// SetEmpty sets the "empty" field.
-func (cuo *CabinetUpdateOne) SetEmpty(i int) *CabinetUpdateOne {
-	cuo.mutation.ResetEmpty()
-	cuo.mutation.SetEmpty(i)
+// SetEmptyBinNum sets the "empty_bin_num" field.
+func (cuo *CabinetUpdateOne) SetEmptyBinNum(i int) *CabinetUpdateOne {
+	cuo.mutation.ResetEmptyBinNum()
+	cuo.mutation.SetEmptyBinNum(i)
 	return cuo
 }
 
-// SetNillableEmpty sets the "empty" field if the given value is not nil.
-func (cuo *CabinetUpdateOne) SetNillableEmpty(i *int) *CabinetUpdateOne {
+// SetNillableEmptyBinNum sets the "empty_bin_num" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableEmptyBinNum(i *int) *CabinetUpdateOne {
 	if i != nil {
-		cuo.SetEmpty(*i)
+		cuo.SetEmptyBinNum(*i)
 	}
 	return cuo
 }
 
-// AddEmpty adds i to the "empty" field.
-func (cuo *CabinetUpdateOne) AddEmpty(i int) *CabinetUpdateOne {
-	cuo.mutation.AddEmpty(i)
+// AddEmptyBinNum adds i to the "empty_bin_num" field.
+func (cuo *CabinetUpdateOne) AddEmptyBinNum(i int) *CabinetUpdateOne {
+	cuo.mutation.AddEmptyBinNum(i)
 	return cuo
 }
 
-// SetFully sets the "fully" field.
-func (cuo *CabinetUpdateOne) SetFully(i int) *CabinetUpdateOne {
-	cuo.mutation.ResetFully()
-	cuo.mutation.SetFully(i)
+// SetLockedBinNum sets the "locked_bin_num" field.
+func (cuo *CabinetUpdateOne) SetLockedBinNum(i int) *CabinetUpdateOne {
+	cuo.mutation.ResetLockedBinNum()
+	cuo.mutation.SetLockedBinNum(i)
 	return cuo
 }
 
-// SetNillableFully sets the "fully" field if the given value is not nil.
-func (cuo *CabinetUpdateOne) SetNillableFully(i *int) *CabinetUpdateOne {
+// SetNillableLockedBinNum sets the "locked_bin_num" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableLockedBinNum(i *int) *CabinetUpdateOne {
 	if i != nil {
-		cuo.SetFully(*i)
+		cuo.SetLockedBinNum(*i)
 	}
 	return cuo
 }
 
-// AddFully adds i to the "fully" field.
-func (cuo *CabinetUpdateOne) AddFully(i int) *CabinetUpdateOne {
-	cuo.mutation.AddFully(i)
+// AddLockedBinNum adds i to the "locked_bin_num" field.
+func (cuo *CabinetUpdateOne) AddLockedBinNum(i int) *CabinetUpdateOne {
+	cuo.mutation.AddLockedBinNum(i)
 	return cuo
 }
 
@@ -2198,32 +2198,32 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 			Column: cabinet.FieldTransferred,
 		})
 	}
-	if value, ok := cuo.mutation.Empty(); ok {
+	if value, ok := cuo.mutation.EmptyBinNum(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Value:  value,
-			Column: cabinet.FieldEmpty,
+			Column: cabinet.FieldEmptyBinNum,
 		})
 	}
-	if value, ok := cuo.mutation.AddedEmpty(); ok {
+	if value, ok := cuo.mutation.AddedEmptyBinNum(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Value:  value,
-			Column: cabinet.FieldEmpty,
+			Column: cabinet.FieldEmptyBinNum,
 		})
 	}
-	if value, ok := cuo.mutation.Fully(); ok {
+	if value, ok := cuo.mutation.LockedBinNum(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Value:  value,
-			Column: cabinet.FieldFully,
+			Column: cabinet.FieldLockedBinNum,
 		})
 	}
-	if value, ok := cuo.mutation.AddedFully(); ok {
+	if value, ok := cuo.mutation.AddedLockedBinNum(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Value:  value,
-			Column: cabinet.FieldFully,
+			Column: cabinet.FieldLockedBinNum,
 		})
 	}
 	if cuo.mutation.CityCleared() {

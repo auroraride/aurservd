@@ -7,7 +7,6 @@ package provider
 
 import (
     "context"
-    "errors"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
@@ -156,62 +155,63 @@ func (p *kaixin) GetChargerErrors(n int) (errors []string) {
     return
 }
 
-func (p *kaixin) UpdateStatus(item *ent.Cabinet, params ...any) error {
-    oldHealth := item.Health
-    oldBins := item.Bin
-    oldNum := item.BatteryNum
-
-    up := item.Update()
-
-    defer func(up *ent.CabinetUpdateOne, ctx context.Context) {
-        // 离线判定
-        if isOffline(item.Serial) {
-            up.SetHealth(model.CabinetHealthStatusOffline)
-        }
-
-        v, _ := up.Save(ctx)
-        *item = *v
-        monitor(oldBins, oldHealth, oldNum, item)
-    }(up, context.Background())
+func (p *kaixin) FetchStatus(serial string) (online bool, bins model.CabinetBins, err error) {
+    // oldHealth := item.Health
+    // oldBins := item.Bin
+    // oldNum := item.BatteryNum
+    //
+    // up := item.Update()
+    //
+    // defer func(up *ent.CabinetUpdateOne, ctx context.Context) {
+    //     // 离线判定
+    //     if isOffline(item.Serial) {
+    //         up.SetHealth(model.CabinetHealthStatusOffline)
+    //     }
+    //
+    //     v, _ := up.Save(ctx)
+    //     *item = *v
+    //     monitor(oldBins, oldHealth, oldNum, item)
+    // }(up, context.Background())
 
     res := new(KXStatusRes)
     url := p.GetUrl(kaixinUrlDetailData)
     client := resty.New().R().
         SetFormData(map[string]string{
             "user":      p.user,
-            "cupboard":  item.Serial,
-            "checkcode": p.Detailcode(item.Serial),
+            "cupboard":  serial,
+            "checkcode": p.Detailcode(serial),
         })
-    r, err := client.Post(url)
+    var r *resty.Response
+    r, err = client.Post(url)
 
     if err != nil {
-        p.logger.Write(fmt.Sprintf("凯信状态获取失败, serial: %s, err: %s\n", item.Serial, err.Error()))
-        return err
+        p.logger.Write(fmt.Sprintf("凯信状态获取失败, serial: %s, err: %s\n", serial, err.Error()))
+        return
     }
 
     err = jsoniter.Unmarshal(r.Body(), res)
     if err != nil {
-        p.logger.Write(fmt.Sprintf("凯信状态解析失败, serial: %s, body: %s\n", item.Serial, r.Body()))
-        return err
+        p.logger.Write(fmt.Sprintf("凯信状态解析失败, serial: %s, body: %s\n", serial, r.Body()))
+        return
     }
     p.logger.Write(r.Body())
 
     if res.State == "ok" {
         doors := res.GetBins()
-        bins := make(model.CabinetBins, len(doors))
-        var full uint = 0
-        var num uint = 0
+        bins = make(model.CabinetBins, len(doors))
+        // var full uint = 0
+        // var num uint = 0
         for index, ds := range doors {
             e := model.NewBatteryElectricity(utils.NewNumber().Decimal(ds.Cpg))
             hasBattery := ds.Bex == 2
             current := utils.NewNumber().Decimal(ds.Bci)
             isFull := e.IsBatteryFull()
-            if hasBattery {
-                num += 1
-            }
-            if isFull {
-                full += 1
-            }
+            // if hasBattery {
+            //     num += 1
+            // }
+            // if isFull {
+            //     full += 1
+            // }
 
             // 错误列表
             errs := p.GetChargerErrors(ds.Bft)
@@ -235,41 +235,42 @@ func (p *kaixin) UpdateStatus(item *ent.Cabinet, params ...any) error {
                 ChargerErrors: errs,
             }
 
-            if len(item.Bin) > index {
-                bin.Remark = item.Bin[index].Remark
-            }
+            // if len(item.Bin) > index {
+            //     bin.Remark = item.Bin[index].Remark
+            // }
 
-            // 仓门正常清除告警设置
-            if bin.DoorHealth {
-                delBinFault(item.Serial, index)
-            }
+            // // 仓门正常清除告警设置
+            // if bin.DoorHealth {
+            //     delBinFault(item.Serial, index)
+            // }
 
             bins[index] = bin
         }
 
-        // 判断是否处于换电过程中, 如果处于换电过程中则不保存电池数量, 以避免电池变动数量大的情况出现
-        if len(params) > 0 {
-            switch params[0].(type) {
-            case bool:
-                if !params[0].(bool) {
-                    up.SetBatteryNum(num)
-                }
-                break
-            }
-        } else {
-            up.SetBatteryNum(num)
-        }
-
-        setOfflineTime(item.Serial, false)
-        up.SetBatteryFullNum(full).
-            SetBin(bins).
-            SetHealth(model.CabinetHealthStatusOnline).
-            SetDoors(uint(len(doors)))
-        return nil
+        // // 判断是否处于换电过程中, 如果处于换电过程中则不保存电池数量, 以避免电池变动数量大的情况出现
+        // if len(params) > 0 {
+        //     switch params[0].(type) {
+        //     case bool:
+        //         if !params[0].(bool) {
+        //             up.SetBatteryNum(num)
+        //         }
+        //         break
+        //     }
+        // } else {
+        //     up.SetBatteryNum(num)
+        // }
+        //
+        // setOfflineTime(item.Serial, false)
+        // up.SetBatteryFullNum(full).
+        //     SetBin(bins).
+        //     SetHealth(model.CabinetHealthStatusOnline).
+        //     SetDoors(uint(len(doors)))
+        return
     }
 
-    setOfflineTime(item.Serial, true)
-    return errors.New("凯信状态获取失败")
+    // setOfflineTime(item.Serial, true)
+    err = fmt.Errorf("[%s]凯信状态获取失败", serial)
+    return
 }
 
 type KXOperationRes KXRes[any]

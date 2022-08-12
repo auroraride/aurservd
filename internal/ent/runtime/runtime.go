@@ -200,14 +200,14 @@ func init() {
 	cabinetDescTransferred := cabinetFields[16].Descriptor()
 	// cabinet.DefaultTransferred holds the default value on creation for the transferred field.
 	cabinet.DefaultTransferred = cabinetDescTransferred.Default.(bool)
-	// cabinetDescEmpty is the schema descriptor for empty field.
-	cabinetDescEmpty := cabinetFields[17].Descriptor()
-	// cabinet.DefaultEmpty holds the default value on creation for the empty field.
-	cabinet.DefaultEmpty = cabinetDescEmpty.Default.(int)
-	// cabinetDescFully is the schema descriptor for fully field.
-	cabinetDescFully := cabinetFields[18].Descriptor()
-	// cabinet.DefaultFully holds the default value on creation for the fully field.
-	cabinet.DefaultFully = cabinetDescFully.Default.(int)
+	// cabinetDescEmptyBinNum is the schema descriptor for empty_bin_num field.
+	cabinetDescEmptyBinNum := cabinetFields[17].Descriptor()
+	// cabinet.DefaultEmptyBinNum holds the default value on creation for the empty_bin_num field.
+	cabinet.DefaultEmptyBinNum = cabinetDescEmptyBinNum.Default.(int)
+	// cabinetDescLockedBinNum is the schema descriptor for locked_bin_num field.
+	cabinetDescLockedBinNum := cabinetFields[18].Descriptor()
+	// cabinet.DefaultLockedBinNum holds the default value on creation for the locked_bin_num field.
+	cabinet.DefaultLockedBinNum = cabinetDescLockedBinNum.Default.(int)
 	cabinetfaultMixin := schema.CabinetFault{}.Mixin()
 	cabinetfaultMixinHooks2 := cabinetfaultMixin[2].Hooks()
 	cabinetfault.Hooks[0] = cabinetfaultMixinHooks2[0]

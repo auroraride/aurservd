@@ -69,7 +69,7 @@ type Cabinet struct {
 	// 电池总数
 	BatteryNum uint `json:"battery_num,omitempty"`
 	// BatteryFullNum holds the value of the "battery_full_num" field.
-	// 满电电池数
+	// 满电总数
 	BatteryFullNum uint `json:"battery_full_num,omitempty"`
 	// Lng holds the value of the "lng" field.
 	// 经度
@@ -89,12 +89,12 @@ type Cabinet struct {
 	// Transferred holds the value of the "transferred" field.
 	// 电池是否已调拨
 	Transferred bool `json:"transferred,omitempty"`
-	// Empty holds the value of the "empty" field.
+	// EmptyBinNum holds the value of the "empty_bin_num" field.
 	// 空仓数量
-	Empty int `json:"empty,omitempty"`
-	// Fully holds the value of the "fully" field.
-	// 满电数量
-	Fully int `json:"fully,omitempty"`
+	EmptyBinNum int `json:"empty_bin_num,omitempty"`
+	// LockedBinNum holds the value of the "locked_bin_num" field.
+	// 锁仓数量
+	LockedBinNum int `json:"locked_bin_num,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CabinetQuery when eager-loading is set.
 	Edges CabinetEdges `json:"edges"`
@@ -194,7 +194,7 @@ func (*Cabinet) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case cabinet.FieldLng, cabinet.FieldLat:
 			values[i] = new(sql.NullFloat64)
-		case cabinet.FieldID, cabinet.FieldCityID, cabinet.FieldBranchID, cabinet.FieldDoors, cabinet.FieldStatus, cabinet.FieldHealth, cabinet.FieldBatteryNum, cabinet.FieldBatteryFullNum, cabinet.FieldEmpty, cabinet.FieldFully:
+		case cabinet.FieldID, cabinet.FieldCityID, cabinet.FieldBranchID, cabinet.FieldDoors, cabinet.FieldStatus, cabinet.FieldHealth, cabinet.FieldBatteryNum, cabinet.FieldBatteryFullNum, cabinet.FieldEmptyBinNum, cabinet.FieldLockedBinNum:
 			values[i] = new(sql.NullInt64)
 		case cabinet.FieldRemark, cabinet.FieldSn, cabinet.FieldBrand, cabinet.FieldSerial, cabinet.FieldName, cabinet.FieldAddress, cabinet.FieldSimSn:
 			values[i] = new(sql.NullString)
@@ -374,17 +374,17 @@ func (c *Cabinet) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				c.Transferred = value.Bool
 			}
-		case cabinet.FieldEmpty:
+		case cabinet.FieldEmptyBinNum:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field empty", values[i])
+				return fmt.Errorf("unexpected type %T for field empty_bin_num", values[i])
 			} else if value.Valid {
-				c.Empty = int(value.Int64)
+				c.EmptyBinNum = int(value.Int64)
 			}
-		case cabinet.FieldFully:
+		case cabinet.FieldLockedBinNum:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field fully", values[i])
+				return fmt.Errorf("unexpected type %T for field locked_bin_num", values[i])
 			} else if value.Valid {
-				c.Fully = int(value.Int64)
+				c.LockedBinNum = int(value.Int64)
 			}
 		}
 	}
@@ -498,10 +498,10 @@ func (c *Cabinet) String() string {
 	builder.WriteString(c.SimDate.Format(time.ANSIC))
 	builder.WriteString(", transferred=")
 	builder.WriteString(fmt.Sprintf("%v", c.Transferred))
-	builder.WriteString(", empty=")
-	builder.WriteString(fmt.Sprintf("%v", c.Empty))
-	builder.WriteString(", fully=")
-	builder.WriteString(fmt.Sprintf("%v", c.Fully))
+	builder.WriteString(", empty_bin_num=")
+	builder.WriteString(fmt.Sprintf("%v", c.EmptyBinNum))
+	builder.WriteString(", locked_bin_num=")
+	builder.WriteString(fmt.Sprintf("%v", c.LockedBinNum))
 	builder.WriteByte(')')
 	return builder.String()
 }

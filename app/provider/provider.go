@@ -29,8 +29,7 @@ type Provider interface {
     Cabinets() ([]*ent.Cabinet, error)
     Brand() string
     Logger() *Logger
-    // UpdateStatus 更新电柜状态 params 0:(true)是否换电中
-    UpdateStatus(item *ent.Cabinet, params ...any) error
+    FetchStatus(serial string) (bool, model.CabinetBins, error)
     DoorOperate(code, serial, operation string, door int) bool
     Reboot(code string, serial string) bool
 }
@@ -49,60 +48,12 @@ func getOfflineTime(serial string) time.Time {
     return t
 }
 
-// setOfflineTime 设置离线时间
-func setOfflineTime(serial string, offline bool) {
-    key := fmt.Sprintf("OFFLINE-%s", serial)
-    if offline {
-        t := getOfflineTime(serial)
-        if t.IsZero() {
-            cache.Set(context.Background(), key, time.Now(), -1)
-        }
-    } else {
-        // 在线则删除
-        cache.Del(context.Background(), key)
-    }
-}
-
-// isOffline 判定电柜是否离线, 3分钟以上算作离线
-func isOffline(serial string) bool {
-    t := getOfflineTime(serial)
-    return !t.IsZero() && time.Now().Sub(t).Minutes() > 3
-}
-
 func cabinetCity(cab *ent.Cabinet) string {
     c := cab.Edges.City
     if c == nil && cab.CityID != nil {
         c, _ = ent.Database.City.Query().Where(city.ID(*cab.CityID)).First(context.Background())
     }
     return c.Name
-}
-
-// AutoBinFault 自动处理换电仓门操作失败
-// 每次都推送, 超过两次锁仓
-func AutoBinFault(operator model.CabinetDoorOperator, cab *ent.Cabinet, index int, status bool, lock func()) {
-    binKey := fmt.Sprintf("AUTO-BINFAULT-%s-%d", cab.Serial, index)
-    ctx := context.Background()
-    if status {
-        cache.Del(ctx, binKey)
-    } else {
-        // 查询并保存失败次数
-        times, _ := cache.Get(ctx, binKey).Int()
-        times += 1
-        cache.Set(ctx, binKey, times, -1)
-        // 推送消息
-        go func() {
-            workwx.New().ExchangeBinFault(cabinetCity(cab), cab.Name, cab.Serial, fmt.Sprintf("%d号仓", index+1), operator.Name, operator.Phone, times)
-        }()
-        // 锁仓
-        if times > 2 {
-            lock()
-        }
-    }
-}
-
-// delBinFault 删除仓门自动故障
-func delBinFault(serial string, index int) {
-    cache.Del(context.Background(), fmt.Sprintf("AUTO-BINFAULT-%s-%d", serial, index))
 }
 
 // monitor 监控电柜变动
@@ -171,7 +122,7 @@ func StartCabinetProvider(providers ...Provider) {
                     }
 
                     // 更新电柜信息
-                    err = provider.UpdateStatus(item)
+                    err = provider.FetchStatus(item)
 
                     if err == nil {
                         // 提交日志

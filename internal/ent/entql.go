@@ -275,8 +275,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			cabinet.FieldSimSn:          {Type: field.TypeString, Column: cabinet.FieldSimSn},
 			cabinet.FieldSimDate:        {Type: field.TypeTime, Column: cabinet.FieldSimDate},
 			cabinet.FieldTransferred:    {Type: field.TypeBool, Column: cabinet.FieldTransferred},
-			cabinet.FieldEmpty:          {Type: field.TypeInt, Column: cabinet.FieldEmpty},
-			cabinet.FieldFully:          {Type: field.TypeInt, Column: cabinet.FieldFully},
+			cabinet.FieldEmptyBinNum:    {Type: field.TypeInt, Column: cabinet.FieldEmptyBinNum},
+			cabinet.FieldLockedBinNum:   {Type: field.TypeInt, Column: cabinet.FieldLockedBinNum},
 		},
 	}
 	graph.Nodes[7] = &sqlgraph.Node{
@@ -4181,14 +4181,14 @@ func (f *CabinetFilter) WhereTransferred(p entql.BoolP) {
 	f.Where(p.Field(cabinet.FieldTransferred))
 }
 
-// WhereEmpty applies the entql int predicate on the empty field.
-func (f *CabinetFilter) WhereEmpty(p entql.IntP) {
-	f.Where(p.Field(cabinet.FieldEmpty))
+// WhereEmptyBinNum applies the entql int predicate on the empty_bin_num field.
+func (f *CabinetFilter) WhereEmptyBinNum(p entql.IntP) {
+	f.Where(p.Field(cabinet.FieldEmptyBinNum))
 }
 
-// WhereFully applies the entql int predicate on the fully field.
-func (f *CabinetFilter) WhereFully(p entql.IntP) {
-	f.Where(p.Field(cabinet.FieldFully))
+// WhereLockedBinNum applies the entql int predicate on the locked_bin_num field.
+func (f *CabinetFilter) WhereLockedBinNum(p entql.IntP) {
+	f.Where(p.Field(cabinet.FieldLockedBinNum))
 }
 
 // WhereHasCity applies a predicate to check if query has an edge city.

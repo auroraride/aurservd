@@ -307,12 +307,12 @@ func (s *cabinetService) UpdateStatus(item *ent.Cabinet, params ...any) (err err
     } else {
         prov = provider.NewYundong()
     }
-    err = prov.UpdateStatus(item, params...)
+    err = prov.FetchStatus(item, params...)
     // 如果返回失败, 则延迟2秒后重新请求一次
     if err != nil {
         time.Sleep(2 * time.Second)
     }
-    return prov.UpdateStatus(item, params...)
+    return prov.FetchStatus(item, params...)
 }
 
 // DoorOpenStatus 获取柜门状态
@@ -414,7 +414,7 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
         if *req.Operation == model.CabinetDoorOperateUnlock {
             item.Bin[*req.Index].Remark = ""
         }
-        _ = prov.UpdateStatus(item, params...)
+        _ = prov.FetchStatus(item, params...)
     } else {
         err = errors.New("柜门开启失败")
     }
