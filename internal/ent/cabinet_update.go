@@ -158,15 +158,15 @@ func (cu *CabinetUpdate) SetName(s string) *CabinetUpdate {
 }
 
 // SetDoors sets the "doors" field.
-func (cu *CabinetUpdate) SetDoors(u uint) *CabinetUpdate {
+func (cu *CabinetUpdate) SetDoors(i int) *CabinetUpdate {
 	cu.mutation.ResetDoors()
-	cu.mutation.SetDoors(u)
+	cu.mutation.SetDoors(i)
 	return cu
 }
 
-// AddDoors adds u to the "doors" field.
-func (cu *CabinetUpdate) AddDoors(u int) *CabinetUpdate {
-	cu.mutation.AddDoors(u)
+// AddDoors adds i to the "doors" field.
+func (cu *CabinetUpdate) AddDoors(i int) *CabinetUpdate {
+	cu.mutation.AddDoors(i)
 	return cu
 }
 
@@ -768,14 +768,14 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := cu.mutation.Doors(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: cabinet.FieldDoors,
 		})
 	}
 	if value, ok := cu.mutation.AddedDoors(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: cabinet.FieldDoors,
 		})
@@ -1391,15 +1391,15 @@ func (cuo *CabinetUpdateOne) SetName(s string) *CabinetUpdateOne {
 }
 
 // SetDoors sets the "doors" field.
-func (cuo *CabinetUpdateOne) SetDoors(u uint) *CabinetUpdateOne {
+func (cuo *CabinetUpdateOne) SetDoors(i int) *CabinetUpdateOne {
 	cuo.mutation.ResetDoors()
-	cuo.mutation.SetDoors(u)
+	cuo.mutation.SetDoors(i)
 	return cuo
 }
 
-// AddDoors adds u to the "doors" field.
-func (cuo *CabinetUpdateOne) AddDoors(u int) *CabinetUpdateOne {
-	cuo.mutation.AddDoors(u)
+// AddDoors adds i to the "doors" field.
+func (cuo *CabinetUpdateOne) AddDoors(i int) *CabinetUpdateOne {
+	cuo.mutation.AddDoors(i)
 	return cuo
 }
 
@@ -2031,14 +2031,14 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 	}
 	if value, ok := cuo.mutation.Doors(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: cabinet.FieldDoors,
 		})
 	}
 	if value, ok := cuo.mutation.AddedDoors(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: cabinet.FieldDoors,
 		})

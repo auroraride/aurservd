@@ -150,8 +150,8 @@ func (cc *CabinetCreate) SetName(s string) *CabinetCreate {
 }
 
 // SetDoors sets the "doors" field.
-func (cc *CabinetCreate) SetDoors(u uint) *CabinetCreate {
-	cc.mutation.SetDoors(u)
+func (cc *CabinetCreate) SetDoors(i int) *CabinetCreate {
+	cc.mutation.SetDoors(i)
 	return cc
 }
 
@@ -665,7 +665,7 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := cc.mutation.Doors(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: cabinet.FieldDoors,
 		})
@@ -1126,7 +1126,7 @@ func (u *CabinetUpsert) UpdateName() *CabinetUpsert {
 }
 
 // SetDoors sets the "doors" field.
-func (u *CabinetUpsert) SetDoors(v uint) *CabinetUpsert {
+func (u *CabinetUpsert) SetDoors(v int) *CabinetUpsert {
 	u.Set(cabinet.FieldDoors, v)
 	return u
 }
@@ -1138,7 +1138,7 @@ func (u *CabinetUpsert) UpdateDoors() *CabinetUpsert {
 }
 
 // AddDoors adds v to the "doors" field.
-func (u *CabinetUpsert) AddDoors(v uint) *CabinetUpsert {
+func (u *CabinetUpsert) AddDoors(v int) *CabinetUpsert {
 	u.Add(cabinet.FieldDoors, v)
 	return u
 }
@@ -1644,14 +1644,14 @@ func (u *CabinetUpsertOne) UpdateName() *CabinetUpsertOne {
 }
 
 // SetDoors sets the "doors" field.
-func (u *CabinetUpsertOne) SetDoors(v uint) *CabinetUpsertOne {
+func (u *CabinetUpsertOne) SetDoors(v int) *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
 		s.SetDoors(v)
 	})
 }
 
 // AddDoors adds v to the "doors" field.
-func (u *CabinetUpsertOne) AddDoors(v uint) *CabinetUpsertOne {
+func (u *CabinetUpsertOne) AddDoors(v int) *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
 		s.AddDoors(v)
 	})
@@ -2369,14 +2369,14 @@ func (u *CabinetUpsertBulk) UpdateName() *CabinetUpsertBulk {
 }
 
 // SetDoors sets the "doors" field.
-func (u *CabinetUpsertBulk) SetDoors(v uint) *CabinetUpsertBulk {
+func (u *CabinetUpsertBulk) SetDoors(v int) *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
 		s.SetDoors(v)
 	})
 }
 
 // AddDoors adds v to the "doors" field.
-func (u *CabinetUpsertBulk) AddDoors(v uint) *CabinetUpsertBulk {
+func (u *CabinetUpsertBulk) AddDoors(v int) *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
 		s.AddDoors(v)
 	})

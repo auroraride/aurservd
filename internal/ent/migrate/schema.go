@@ -439,7 +439,7 @@ var (
 		{Name: "brand", Type: field.TypeString, Comment: "品牌"},
 		{Name: "serial", Type: field.TypeString, Comment: "原始编号"},
 		{Name: "name", Type: field.TypeString, Comment: "名称"},
-		{Name: "doors", Type: field.TypeUint, Comment: "柜门数量"},
+		{Name: "doors", Type: field.TypeInt, Comment: "柜门数量"},
 		{Name: "status", Type: field.TypeUint8, Comment: "投放状态"},
 		{Name: "health", Type: field.TypeUint8, Comment: "健康状态 0未知 1正常 2离线 3故障", Default: 0},
 		{Name: "bin", Type: field.TypeJSON, Comment: "仓位信息", Nullable: true},

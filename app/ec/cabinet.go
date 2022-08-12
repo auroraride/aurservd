@@ -67,8 +67,9 @@ func (b *BinInfo) String() string {
 
 // Cabinet 任务电柜设备信息
 type Cabinet struct {
-    Health         uint8 `json:"health" bson:"health"`                 // 电柜健康状态 0离线 1正常 2故障
-    Doors          uint  `json:"doors" bson:"doors"`                   // 总仓位
-    BatteryNum     uint  `json:"batteryNum" bson:"batteryNum"`         // 总电池数
-    BatteryFullNum uint  `json:"batteryFullNum" bson:"batteryFullNum"` // 总满电电池数
+    Health         uint8             `json:"health" bson:"health"`                 // 电柜健康状态 0离线 1正常 2故障
+    Doors          int               `json:"doors" bson:"doors"`                   // 总仓位
+    BatteryNum     int               `json:"batteryNum" bson:"batteryNum"`         // 总电池数
+    BatteryFullNum int               `json:"batteryFullNum" bson:"batteryFullNum"` // 总满电电池数
+    Bins           model.CabinetBins `json:"bins" bson:"bins"`                     // 仓位信息
 }

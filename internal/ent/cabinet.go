@@ -55,7 +55,7 @@ type Cabinet struct {
 	Name string `json:"name,omitempty"`
 	// Doors holds the value of the "doors" field.
 	// 柜门数量
-	Doors uint `json:"doors,omitempty"`
+	Doors int `json:"doors,omitempty"`
 	// Status holds the value of the "status" field.
 	// 投放状态
 	Status uint8 `json:"status,omitempty"`
@@ -304,7 +304,7 @@ func (c *Cabinet) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field doors", values[i])
 			} else if value.Valid {
-				c.Doors = uint(value.Int64)
+				c.Doors = int(value.Int64)
 			}
 		case cabinet.FieldStatus:
 			if value, ok := values[i].(*sql.NullInt64); !ok {

@@ -9,15 +9,12 @@ import (
     "context"
     "fmt"
     "github.com/auroraride/aurservd/app/ec"
-    "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/workwx"
     "github.com/auroraride/aurservd/internal/ali"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/city"
     log "github.com/sirupsen/logrus"
-    "math"
     "time"
 )
 
@@ -41,52 +38,13 @@ func Run() {
     }
 }
 
+// cabinetCity 电柜城市获取
 func cabinetCity(cab *ent.Cabinet) string {
     c := cab.Edges.City
     if c == nil && cab.CityID != nil {
         c, _ = ent.Database.City.Query().Where(city.ID(*cab.CityID)).First(context.Background())
     }
     return c.Name
-}
-
-// monitor 监控电柜变动
-// bins health num 旧数据
-func monitor(oldBins model.CabinetBins, oldHealth uint8, oldNum uint, item *ent.Cabinet) {
-    // 监控在线变化
-    if oldHealth != item.Health {
-        // 电柜在线变动日志
-        logging.NewHealthLog(item.Brand, item.Serial, item.UpdatedAt).SetStatus(oldHealth, item.Health).Send()
-        go func() {
-            workwx.New().SendCabinetOffline(item.Name, item.Serial, cabinetCity(item))
-        }()
-    }
-
-    // 监控电池变化
-    if oldNum != item.BatteryNum {
-        // 判断电柜是否正在执行业务
-        task := ec.Obtain(ec.ObtainReq{Serial: item.Serial})
-        if task != nil {
-            oldNum = task.Cabinet.BatteryNum
-        }
-        diff := int(item.BatteryNum) - int(oldNum)
-        // 当前非业务状态或电池变动数量大于1时
-        if task == nil || math.Abs(float64(diff)) > 1 {
-            status := model.CabinetStatus(item.Status)
-            logging.NewBatteryLog(item.Brand, item.Serial, int(oldNum), int(item.BatteryNum), item.UpdatedAt).
-                SetExchangeProcess(task).
-                SetBin(oldBins, item.Bin).
-                SetStatus(status).
-                Send()
-
-            // 推送消息
-            go func() {
-                // 非运营中状态不推送
-                if status == model.CabinetStatusNormal {
-                    workwx.New().SendBatteryAbnormality(cabinetCity(item), item.Serial, item.Name, oldNum, item.BatteryNum, diff)
-                }
-            }()
-        }
-    }
 }
 
 // StartCabinetProvider 开始执行任务
@@ -115,7 +73,7 @@ func StartCabinetProvider(providers ...Provider) {
                     }
 
                     // 更新电柜信息
-                    err = provider.FetchStatus(item)
+                    err = NewUpdater(item).DoUpdate()
 
                     if err == nil {
                         // 提交日志

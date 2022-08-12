@@ -35,9 +35,9 @@ type RiderExchangeInfo struct {
     Name           string       `json:"name"`           // 电柜名称
     Health         uint8        `json:"health"`         // 电柜健康状态 0离线 1正常 2故障
     Serial         string       `json:"serial"`         // 电柜编码
-    Doors          uint         `json:"doors"`          // 总仓位
-    BatteryNum     uint         `json:"batteryNum"`     // 总电池数
-    BatteryFullNum uint         `json:"batteryFullNum"` // 总满电电池数
+    Doors          int          `json:"doors"`          // 总仓位
+    BatteryNum     int          `json:"batteryNum"`     // 总电池数
+    BatteryFullNum int          `json:"batteryFullNum"` // 总满电电池数
     Brand          CabinetBrand `json:"brand"`          // 电柜型号
     Model          string       `json:"model"`          // 电池型号
     CityID         uint64       `json:"cityId"`         // 城市ID

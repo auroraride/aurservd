@@ -164,7 +164,7 @@ func Name(v string) predicate.Cabinet {
 }
 
 // Doors applies equality check predicate on the "doors" field. It's identical to DoorsEQ.
-func Doors(v uint) predicate.Cabinet {
+func Doors(v int) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldDoors), v))
 	})
@@ -1218,21 +1218,21 @@ func NameContainsFold(v string) predicate.Cabinet {
 }
 
 // DoorsEQ applies the EQ predicate on the "doors" field.
-func DoorsEQ(v uint) predicate.Cabinet {
+func DoorsEQ(v int) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldDoors), v))
 	})
 }
 
 // DoorsNEQ applies the NEQ predicate on the "doors" field.
-func DoorsNEQ(v uint) predicate.Cabinet {
+func DoorsNEQ(v int) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldDoors), v))
 	})
 }
 
 // DoorsIn applies the In predicate on the "doors" field.
-func DoorsIn(vs ...uint) predicate.Cabinet {
+func DoorsIn(vs ...int) predicate.Cabinet {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1249,7 +1249,7 @@ func DoorsIn(vs ...uint) predicate.Cabinet {
 }
 
 // DoorsNotIn applies the NotIn predicate on the "doors" field.
-func DoorsNotIn(vs ...uint) predicate.Cabinet {
+func DoorsNotIn(vs ...int) predicate.Cabinet {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1266,28 +1266,28 @@ func DoorsNotIn(vs ...uint) predicate.Cabinet {
 }
 
 // DoorsGT applies the GT predicate on the "doors" field.
-func DoorsGT(v uint) predicate.Cabinet {
+func DoorsGT(v int) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldDoors), v))
 	})
 }
 
 // DoorsGTE applies the GTE predicate on the "doors" field.
-func DoorsGTE(v uint) predicate.Cabinet {
+func DoorsGTE(v int) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldDoors), v))
 	})
 }
 
 // DoorsLT applies the LT predicate on the "doors" field.
-func DoorsLT(v uint) predicate.Cabinet {
+func DoorsLT(v int) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldDoors), v))
 	})
 }
 
 // DoorsLTE applies the LTE predicate on the "doors" field.
-func DoorsLTE(v uint) predicate.Cabinet {
+func DoorsLTE(v int) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldDoors), v))
 	})

@@ -300,24 +300,18 @@ func (s *cabinetService) Delete(req *model.CabinetDeleteReq) {
 }
 
 // UpdateStatus 立即更新电柜状态
-func (s *cabinetService) UpdateStatus(item *ent.Cabinet, params ...any) (err error) {
-    var prov provider.Provider
-    if item.Brand == model.CabinetBrandKaixin.Value() {
-        prov = provider.NewKaixin()
-    } else {
-        prov = provider.NewYundong()
-    }
-    err = prov.FetchStatus(item, params...)
+func (s *cabinetService) UpdateStatus(item *ent.Cabinet) (err error) {
+    err = provider.NewUpdater(item).DoUpdate()
     // 如果返回失败, 则延迟2秒后重新请求一次
     if err != nil {
         time.Sleep(2 * time.Second)
     }
-    return prov.FetchStatus(item, params...)
+    return provider.NewUpdater(item).DoUpdate()
 }
 
 // DoorOpenStatus 获取柜门状态
-func (s *cabinetService) DoorOpenStatus(item *ent.Cabinet, index int, params ...any) ec.DoorStatus {
-    _ = s.UpdateStatus(item, params...)
+func (s *cabinetService) DoorOpenStatus(item *ent.Cabinet, index int) ec.DoorStatus {
+    _ = s.UpdateStatus(item)
     if len(item.Bin) == 0 || len(item.Bin) < index {
         return ec.DoorStatusUnknown
     }
@@ -369,7 +363,7 @@ func (s *cabinetService) Detail(item *ent.Cabinet) *model.CabinetDetailRes {
 }
 
 // DoorOperate 操作柜门
-func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator model.CabinetDoorOperator, params ...any) (state bool, err error) {
+func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator model.CabinetDoorOperator) (state bool, err error) {
     opId := shortuuid.New()
     now := time.Now()
     // 查找柜子和仓位
@@ -414,7 +408,7 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
         if *req.Operation == model.CabinetDoorOperateUnlock {
             item.Bin[*req.Index].Remark = ""
         }
-        _ = prov.FetchStatus(item, params...)
+        _ = provider.NewUpdater(item).DoUpdate()
     } else {
         err = errors.New("柜门开启失败")
     }
@@ -578,8 +572,8 @@ func (s *cabinetService) dataDetail(item *ent.Cabinet) model.CabinetDataRes {
         Serial:     item.Serial,
         Brand:      model.CabinetBrand(item.Brand).String(),
         Online:     item.Health == model.CabinetHealthStatusOnline,
-        BinNum:     int(item.Doors),
-        BatteryNum: int(item.BatteryNum),
+        BinNum:     item.Doors,
+        BatteryNum: item.BatteryNum,
     }
 
     bms := item.Edges.Bms

@@ -186,23 +186,6 @@ func (p *yundong) FetchStatus(serial string) (online bool, bins model.CabinetBin
         return p.FetchStatus(serial)
     }
 
-    // up := item.Update().SetHealth(model.CabinetHealthStatusOffline)
-    //
-    // oldHealth := item.Health
-    // oldBins := item.Bin
-    // oldNum := item.BatteryNum
-    //
-    // defer func(up *ent.CabinetUpdateOne, ctx context.Context) {
-    //     // 离线判定
-    //     if isOffline(item.Serial) {
-    //         up.SetHealth(model.CabinetHealthStatusOffline)
-    //     }
-    //
-    //     v, _ := up.Save(ctx)
-    //     *item = *v
-    //     monitor(oldBins, oldHealth, oldNum, item)
-    // }(up, context.Background())
-
     // log.Infof("云动状态获取结果：%s", string(r.Body()))
     if err != nil {
         p.logger.Write(fmt.Sprintf("云动状态获取失败, serial: %s, err: %s, res: %s\n", serial, err.Error(), res))
@@ -213,8 +196,6 @@ func (p *yundong) FetchStatus(serial string) (online bool, bins model.CabinetBin
 
     // 仓位信息
     if res.Code == 0 {
-        // var full uint = 0
-        // var num uint = 0
         // 设置仓位状态
         bins = make(model.CabinetBins, len(res.Data.Doorstatus))
         doors := res.GetBins()
@@ -224,12 +205,6 @@ func (p *yundong) FetchStatus(serial string) (online bool, bins model.CabinetBin
             isFull := e.IsBatteryFull()
             voltage := utils.NewNumber().Decimal(float64(ds.Totalv) / 1000)
             current := utils.NewNumber().Decimal(float64(ds.Chargei) / 1000)
-            // if hasBattery {
-            //     num += 1
-            // }
-            // if isFull {
-            //     full += 1
-            // }
             errs := make([]string, 0)
             if hasBattery && voltage == 0 && current == 0 && e == 0 {
                 errs = append(errs, model.CabinetBinBatteryFault)
@@ -249,40 +224,11 @@ func (p *yundong) FetchStatus(serial string) (online bool, bins model.CabinetBin
                 ChargerErrors: errs,
             }
 
-            // if len(item.Bin) > index {
-            //     bin.Remark = item.Bin[index].Remark
-            // }
-            //
-            // // 仓门正常清除告警设置
-            // if bin.DoorHealth {
-            //     delBinFault(item.Serial, index)
-            // }
-
             bins[index] = bin
         }
-
-        // // 判断是否处于换电过程中, 如果处于换电过程中则不保存电池数量, 以避免电池变动数量大的情况出现
-        // if len(params) > 0 {
-        //     switch params[0].(type) {
-        //     case bool:
-        //         if !params[0].(bool) {
-        //             up.SetBatteryNum(num)
-        //         }
-        //         break
-        //     }
-        // } else {
-        //     up.SetBatteryNum(num)
-        // }
-        //
-        // setOfflineTime(item.Serial, false)
-        // up.SetBin(bins).
-        //     SetBatteryFullNum(full).
-        //     SetHealth(uint8(res.Data.Isonline)).
-        //     SetDoors(uint(len(doors)))
         online = res.Data.Isonline == 1
         return
     }
-    // setOfflineTime(item.Serial, true)
     err = fmt.Errorf("[%s]云动状态获取失败", serial)
     return
 }

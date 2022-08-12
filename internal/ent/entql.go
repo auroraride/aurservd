@@ -263,7 +263,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			cabinet.FieldBrand:          {Type: field.TypeString, Column: cabinet.FieldBrand},
 			cabinet.FieldSerial:         {Type: field.TypeString, Column: cabinet.FieldSerial},
 			cabinet.FieldName:           {Type: field.TypeString, Column: cabinet.FieldName},
-			cabinet.FieldDoors:          {Type: field.TypeUint, Column: cabinet.FieldDoors},
+			cabinet.FieldDoors:          {Type: field.TypeInt, Column: cabinet.FieldDoors},
 			cabinet.FieldStatus:         {Type: field.TypeUint8, Column: cabinet.FieldStatus},
 			cabinet.FieldHealth:         {Type: field.TypeUint8, Column: cabinet.FieldHealth},
 			cabinet.FieldBin:            {Type: field.TypeJSON, Column: cabinet.FieldBin},
@@ -4121,8 +4121,8 @@ func (f *CabinetFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(cabinet.FieldName))
 }
 
-// WhereDoors applies the entql uint predicate on the doors field.
-func (f *CabinetFilter) WhereDoors(p entql.UintP) {
+// WhereDoors applies the entql int predicate on the doors field.
+func (f *CabinetFilter) WhereDoors(p entql.IntP) {
 	f.Where(p.Field(cabinet.FieldDoors))
 }
 

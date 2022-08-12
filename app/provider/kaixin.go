@@ -156,23 +156,6 @@ func (p *kaixin) GetChargerErrors(n int) (errors []string) {
 }
 
 func (p *kaixin) FetchStatus(serial string) (online bool, bins model.CabinetBins, err error) {
-    // oldHealth := item.Health
-    // oldBins := item.Bin
-    // oldNum := item.BatteryNum
-    //
-    // up := item.Update()
-    //
-    // defer func(up *ent.CabinetUpdateOne, ctx context.Context) {
-    //     // 离线判定
-    //     if isOffline(item.Serial) {
-    //         up.SetHealth(model.CabinetHealthStatusOffline)
-    //     }
-    //
-    //     v, _ := up.Save(ctx)
-    //     *item = *v
-    //     monitor(oldBins, oldHealth, oldNum, item)
-    // }(up, context.Background())
-
     res := new(KXStatusRes)
     url := p.GetUrl(kaixinUrlDetailData)
     client := resty.New().R().
@@ -199,19 +182,11 @@ func (p *kaixin) FetchStatus(serial string) (online bool, bins model.CabinetBins
     if res.State == "ok" {
         doors := res.GetBins()
         bins = make(model.CabinetBins, len(doors))
-        // var full uint = 0
-        // var num uint = 0
         for index, ds := range doors {
             e := model.NewBatteryElectricity(utils.NewNumber().Decimal(ds.Cpg))
             hasBattery := ds.Bex == 2
             current := utils.NewNumber().Decimal(ds.Bci)
             isFull := e.IsBatteryFull()
-            // if hasBattery {
-            //     num += 1
-            // }
-            // if isFull {
-            //     full += 1
-            // }
 
             // 错误列表
             errs := p.GetChargerErrors(ds.Bft)
@@ -235,36 +210,9 @@ func (p *kaixin) FetchStatus(serial string) (online bool, bins model.CabinetBins
                 ChargerErrors: errs,
             }
 
-            // if len(item.Bin) > index {
-            //     bin.Remark = item.Bin[index].Remark
-            // }
-
-            // // 仓门正常清除告警设置
-            // if bin.DoorHealth {
-            //     delBinFault(item.Serial, index)
-            // }
-
             bins[index] = bin
         }
-
-        // // 判断是否处于换电过程中, 如果处于换电过程中则不保存电池数量, 以避免电池变动数量大的情况出现
-        // if len(params) > 0 {
-        //     switch params[0].(type) {
-        //     case bool:
-        //         if !params[0].(bool) {
-        //             up.SetBatteryNum(num)
-        //         }
-        //         break
-        //     }
-        // } else {
-        //     up.SetBatteryNum(num)
-        // }
-        //
-        // setOfflineTime(item.Serial, false)
-        // up.SetBatteryFullNum(full).
-        //     SetBin(bins).
-        //     SetHealth(model.CabinetHealthStatusOnline).
-        //     SetDoors(uint(len(doors)))
+        online = true
         return
     }
 

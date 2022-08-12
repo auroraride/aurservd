@@ -99,12 +99,7 @@ func (s *cabinetMgrService) BinOperate(req *model.CabinetDoorOperateReq) bool {
     task := &ec.Task{
         CabinetID: *req.ID,
         Serial:    cab.Serial,
-        Cabinet: ec.Cabinet{
-            Health:         cab.Health,
-            Doors:          cab.Doors,
-            BatteryNum:     cab.BatteryNum,
-            BatteryFullNum: cab.BatteryFullNum,
-        },
+        Cabinet:   cab.GetTaskInfo(),
     }
 
     switch *req.Operation {
@@ -188,12 +183,7 @@ func (s *cabinetMgrService) Reboot(req *model.IDPostReq) bool {
         CabinetID: req.ID,
         Serial:    cab.Serial,
         Job:       ec.JobManagerReboot,
-        Cabinet: ec.Cabinet{
-            Health:         cab.Health,
-            Doors:          cab.Doors,
-            BatteryNum:     cab.BatteryNum,
-            BatteryFullNum: cab.BatteryFullNum,
-        },
+        Cabinet:   cab.GetTaskInfo(),
     }
 
     task.CreateX().Start()

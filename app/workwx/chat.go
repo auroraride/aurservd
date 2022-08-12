@@ -113,7 +113,7 @@ func (w *Client) SendInventory(duty bool, city, store string, e model.Employee, 
 }
 
 // SendBatteryAbnormality 电池异常变动警告
-func (w *Client) SendBatteryAbnormality(city, serial, name string, from, to uint, diff int) {
+func (w *Client) SendBatteryAbnormality(city, serial, name string, from, to, diff int) {
     content := fmt.Sprintf(`电池异常变动警告
 >差值: <font color="warning">%d</font>
 >城市: %s

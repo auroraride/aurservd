@@ -93,12 +93,7 @@ func ExchangeDemo() {
 
         info := &ec.ExchangeInfo{
             Message: detail.Result.Message,
-            Cabinet: ec.Cabinet{
-                Health:         model.CabinetHealthStatusOnline,
-                Doors:          cab.Doors,
-                BatteryNum:     cab.BatteryNum,
-                BatteryFullNum: cab.BatteryFullNum,
-            },
+            Cabinet: cab.GetTaskInfo(),
             Exchange: &ec.Exchange{
                 Alternative: detail.Alternative,
                 Model:       sub.Model,

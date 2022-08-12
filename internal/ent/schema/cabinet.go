@@ -68,7 +68,7 @@ func (Cabinet) Fields() []ent.Field {
         field.String("brand").Comment("品牌"),
         field.String("serial").Comment("原始编号"),
         field.String("name").Comment("名称"),
-        field.Uint("doors").Comment("柜门数量"),
+        field.Int("doors").Comment("柜门数量"),
         field.Uint8("status").Comment("投放状态"),
         field.Uint8("health").Default(0).Comment("健康状态 0未知 1正常 2离线 3故障"),
         field.JSON("bin", model.CabinetBins{}).Optional().Comment("仓位信息"),

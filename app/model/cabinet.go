@@ -71,7 +71,7 @@ type Cabinet struct {
     Brand    CabinetBrand  `json:"brand" validate:"required" trans:"品牌" enums:"KAIXIN,YUNDONG"` // KAIXIN(凯信) YUNDONG(云动)
     Serial   string        `json:"serial" validate:"required" trans:"电柜编码"`
     Name     string        `json:"name" validate:"required" trans:"电柜名称"`
-    Doors    uint          `json:"doors"` // 柜门数量
+    Doors    int           `json:"doors"` // 柜门数量
     Remark   *string       `json:"remark" trans:"备注"`
     Health   *uint8        `json:"health"` // 在线状态 0离线 1在线 2故障
 }
@@ -181,18 +181,18 @@ func (cbs CabinetBins) MaxEmpty() (max *CabinetBin, empty *CabinetBin) {
 // 1000mV = 1V
 // (锁定状态 / 备注信息) 需要携带到下次的状态更新中
 type CabinetBin struct {
-    Index         int                `json:"index"`         // 仓位index (从0开始)
-    Name          string             `json:"name"`          // 柜门名称
-    BatterySN     string             `json:"batterySN"`     // 电池序列号
-    Full          bool               `json:"full"`          // 是否满电
-    Battery       bool               `json:"battery"`       // 是否有电池
-    Electricity   BatteryElectricity `json:"electricity"`   // 当前电量
-    OpenStatus    bool               `json:"openStatus"`    // 是否开门
-    DoorHealth    bool               `json:"doorHealth"`    // 是否锁仓 (柜门是否正常)
-    Current       float64            `json:"current"`       // 充电电流(A)
-    Voltage       float64            `json:"voltage"`       // 电压(V)
-    ChargerErrors []string           `json:"chargerErrors"` // 故障信息
-    Remark        string             `json:"remark"`        // 备注
+    Index         int                `json:"index"`                   // 仓位index (从0开始)
+    Name          string             `json:"name"`                    // 柜门名称
+    BatterySN     string             `json:"batterySN"`               // 电池序列号
+    Full          bool               `json:"full"`                    // 是否满电
+    Battery       bool               `json:"battery"`                 // 是否有电池
+    Electricity   BatteryElectricity `json:"electricity"`             // 当前电量
+    OpenStatus    bool               `json:"openStatus"`              // 是否开门
+    DoorHealth    bool               `json:"doorHealth"`              // 是否锁仓 (柜门是否正常)
+    Current       float64            `json:"current"`                 // 充电电流(A)
+    Voltage       float64            `json:"voltage"`                 // 电压(V)
+    ChargerErrors []string           `json:"chargerErrors,omitempty"` // 故障信息
+    Remark        string             `json:"remark,omitempty"`        // 备注
 }
 
 // CabinetBinRemark 仓位备注

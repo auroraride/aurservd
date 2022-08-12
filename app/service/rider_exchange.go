@@ -109,12 +109,7 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
             Name:  s.rider.Edges.Person.Name,
             Phone: s.rider.Phone,
         },
-        Cabinet: ec.Cabinet{
-            Health:         cab.Health,
-            Doors:          cab.Doors,
-            BatteryNum:     cab.BatteryNum,
-            BatteryFullNum: cab.BatteryFullNum,
-        },
+        Cabinet: cab.GetTaskInfo(),
         Exchange: &ec.Exchange{
             Model:       subd.Model,
             Alternative: info.Alternative != nil,
@@ -324,7 +319,7 @@ func (s *riderExchangeService) ProcessDoorBatteryStatus() (ds ec.DoorStatus) {
     step := s.task.Exchange.CurrentStep()
 
     // 获取仓门状态
-    ds = NewCabinet().DoorOpenStatus(s.cabinet, bin.Index, true)
+    ds = NewCabinet().DoorOpenStatus(s.cabinet, bin.Index)
 
     // 当前仓位信息
     cbin := s.cabinet.Bin[bin.Index]
@@ -471,7 +466,7 @@ func (s *riderExchangeService) ProcessOpenBin() *riderExchangeService {
         Index:     index,
         Remark:    fmt.Sprintf("骑手换电 - %s", reason),
         Operation: &operation,
-    }, operator, true)
+    }, operator)
     if err != nil {
         log.Error(err)
     }
@@ -501,7 +496,7 @@ func (s *riderExchangeService) ProcessOpenBin() *riderExchangeService {
             Index:     index,
             Remark:    fmt.Sprintf("换电仓门处理失败自动锁仓 - %s", s.rider.Phone),
             Operation: tools.NewPointerInterface(model.CabinetDoorOperateLock),
-        }, operator, true)
+        }, operator)
     })
 
     return s

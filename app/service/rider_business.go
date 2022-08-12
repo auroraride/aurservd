@@ -142,12 +142,7 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
         Job:       jobs[bt],
         Serial:    cab.Serial,
         CabinetID: cab.ID,
-        Cabinet: ec.Cabinet{
-            Health:         cab.Health,
-            Doors:          cab.Doors,
-            BatteryNum:     cab.BatteryNum,
-            BatteryFullNum: cab.BatteryFullNum,
-        },
+        Cabinet:   cab.GetTaskInfo(),
         Rider: &ec.Rider{
             ID:    s.rider.ID,
             Name:  s.rider.Edges.Person.Name,
@@ -172,7 +167,7 @@ func (s *riderBusinessService) open(bin *ec.BinInfo, remark string) (status bool
         Role:  model.CabinetDoorOperatorRoleRider,
         Name:  s.rider.Edges.Person.Name,
         Phone: s.rider.Phone,
-    }, true)
+    })
 
     return
 }
@@ -232,7 +227,7 @@ func (s *riderBusinessService) putin() *ec.BinInfo {
 
 // battery 电池检测
 func (s *riderBusinessService) battery() (ds ec.DoorStatus) {
-    ds = NewCabinet().DoorOpenStatus(s.cabinet, s.empty.Index, true)
+    ds = NewCabinet().DoorOpenStatus(s.cabinet, s.empty.Index)
     cbin := s.cabinet.Bin[s.empty.Index]
     pe := cbin.Electricity
     pv := cbin.Voltage

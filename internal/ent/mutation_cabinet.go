@@ -32,7 +32,7 @@ type CabinetMutation struct {
 	brand               *string
 	serial              *string
 	name                *string
-	doors               *uint
+	doors               *int
 	adddoors            *int
 	status              *uint8
 	addstatus           *int8
@@ -686,13 +686,13 @@ func (m *CabinetMutation) ResetName() {
 }
 
 // SetDoors sets the "doors" field.
-func (m *CabinetMutation) SetDoors(u uint) {
-	m.doors = &u
+func (m *CabinetMutation) SetDoors(i int) {
+	m.doors = &i
 	m.adddoors = nil
 }
 
 // Doors returns the value of the "doors" field in the mutation.
-func (m *CabinetMutation) Doors() (r uint, exists bool) {
+func (m *CabinetMutation) Doors() (r int, exists bool) {
 	v := m.doors
 	if v == nil {
 		return
@@ -703,7 +703,7 @@ func (m *CabinetMutation) Doors() (r uint, exists bool) {
 // OldDoors returns the old "doors" field's value of the Cabinet entity.
 // If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetMutation) OldDoors(ctx context.Context) (v uint, err error) {
+func (m *CabinetMutation) OldDoors(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDoors is only allowed on UpdateOne operations")
 	}
@@ -717,12 +717,12 @@ func (m *CabinetMutation) OldDoors(ctx context.Context) (v uint, err error) {
 	return oldValue.Doors, nil
 }
 
-// AddDoors adds u to the "doors" field.
-func (m *CabinetMutation) AddDoors(u int) {
+// AddDoors adds i to the "doors" field.
+func (m *CabinetMutation) AddDoors(i int) {
 	if m.adddoors != nil {
-		*m.adddoors += u
+		*m.adddoors += i
 	} else {
-		m.adddoors = &u
+		m.adddoors = &i
 	}
 }
 
@@ -2030,7 +2030,7 @@ func (m *CabinetMutation) SetField(name string, value ent.Value) error {
 		m.SetName(v)
 		return nil
 	case cabinet.FieldDoors:
-		v, ok := value.(uint)
+		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

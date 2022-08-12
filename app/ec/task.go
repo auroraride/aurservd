@@ -7,6 +7,7 @@ package ec
 
 import (
     "context"
+    "fmt"
     "github.com/auroraride/aurservd/internal/mgo"
     "github.com/auroraride/aurservd/pkg/snag"
     jsoniter "github.com/json-iterator/go"
@@ -90,7 +91,7 @@ func (ts TaskStatus) IsSuccess() bool {
 }
 
 // Task 电柜任务详情
-// TODO 存储骑手信息
+// TODO 存储开仓信息, 业务信息, 管理员信息
 type Task struct {
     ID       primitive.ObjectID `bson:"_id"`
     CreateAt time.Time          `bson:"createAt"`
@@ -116,6 +117,22 @@ func (t *Task) MarshalBinary() ([]byte, error) {
 
 func (t *Task) UnmarshalBinary(data []byte) error {
     return jsoniter.Unmarshal(data, t)
+}
+
+func (t *Task) String() string {
+    // TODO 开仓信息, 业务信息, 管理员信息
+    info := ""
+    if t.Job == JobExchange {
+        info += fmt.Sprintf(
+            "骑手电话: %s, 名字: %s\n步骤: %s, 空: %d仓, 满: %d仓",
+            t.Rider.Phone,
+            t.Rider.Name,
+            t.Exchange.CurrentStep().Step,
+            t.Exchange.Empty.Index+1,
+            t.Exchange.Fully.Index+1,
+        )
+    }
+    return info
 }
 
 type Rider struct {
