@@ -188,18 +188,18 @@ func init() {
 	cabinetDescHealth := cabinetFields[7].Descriptor()
 	// cabinet.DefaultHealth holds the default value on creation for the health field.
 	cabinet.DefaultHealth = cabinetDescHealth.Default.(uint8)
-	// cabinetDescBatteryNum is the schema descriptor for battery_num field.
-	cabinetDescBatteryNum := cabinetFields[9].Descriptor()
-	// cabinet.DefaultBatteryNum holds the default value on creation for the battery_num field.
-	cabinet.DefaultBatteryNum = cabinetDescBatteryNum.Default.(uint)
-	// cabinetDescBatteryFullNum is the schema descriptor for battery_full_num field.
-	cabinetDescBatteryFullNum := cabinetFields[10].Descriptor()
-	// cabinet.DefaultBatteryFullNum holds the default value on creation for the battery_full_num field.
-	cabinet.DefaultBatteryFullNum = cabinetDescBatteryFullNum.Default.(uint)
 	// cabinetDescTransferred is the schema descriptor for transferred field.
-	cabinetDescTransferred := cabinetFields[16].Descriptor()
+	cabinetDescTransferred := cabinetFields[14].Descriptor()
 	// cabinet.DefaultTransferred holds the default value on creation for the transferred field.
 	cabinet.DefaultTransferred = cabinetDescTransferred.Default.(bool)
+	// cabinetDescBatteryNum is the schema descriptor for battery_num field.
+	cabinetDescBatteryNum := cabinetFields[15].Descriptor()
+	// cabinet.DefaultBatteryNum holds the default value on creation for the battery_num field.
+	cabinet.DefaultBatteryNum = cabinetDescBatteryNum.Default.(int)
+	// cabinetDescBatteryFullNum is the schema descriptor for battery_full_num field.
+	cabinetDescBatteryFullNum := cabinetFields[16].Descriptor()
+	// cabinet.DefaultBatteryFullNum holds the default value on creation for the battery_full_num field.
+	cabinet.DefaultBatteryFullNum = cabinetDescBatteryFullNum.Default.(int)
 	// cabinetDescEmptyBinNum is the schema descriptor for empty_bin_num field.
 	cabinetDescEmptyBinNum := cabinetFields[17].Descriptor()
 	// cabinet.DefaultEmptyBinNum holds the default value on creation for the empty_bin_num field.

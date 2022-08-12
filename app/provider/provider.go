@@ -16,7 +16,6 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/city"
-    "github.com/auroraride/aurservd/pkg/cache"
     log "github.com/sirupsen/logrus"
     "math"
     "time"
@@ -40,12 +39,6 @@ func Run() {
     if ar.Config.Cabinet.Provider {
         StartCabinetProvider(yd, kx)
     }
-}
-
-// getOfflineTime 获取离线时间
-func getOfflineTime(serial string) time.Time {
-    t, _ := cache.Get(context.Background(), fmt.Sprintf("OFFLINE-%s", serial)).Time()
-    return t
 }
 
 func cabinetCity(cab *ent.Cabinet) string {

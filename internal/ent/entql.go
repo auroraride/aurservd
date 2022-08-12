@@ -267,14 +267,14 @@ var schemaGraph = func() *sqlgraph.Schema {
 			cabinet.FieldStatus:         {Type: field.TypeUint8, Column: cabinet.FieldStatus},
 			cabinet.FieldHealth:         {Type: field.TypeUint8, Column: cabinet.FieldHealth},
 			cabinet.FieldBin:            {Type: field.TypeJSON, Column: cabinet.FieldBin},
-			cabinet.FieldBatteryNum:     {Type: field.TypeUint, Column: cabinet.FieldBatteryNum},
-			cabinet.FieldBatteryFullNum: {Type: field.TypeUint, Column: cabinet.FieldBatteryFullNum},
 			cabinet.FieldLng:            {Type: field.TypeFloat64, Column: cabinet.FieldLng},
 			cabinet.FieldLat:            {Type: field.TypeFloat64, Column: cabinet.FieldLat},
 			cabinet.FieldAddress:        {Type: field.TypeString, Column: cabinet.FieldAddress},
 			cabinet.FieldSimSn:          {Type: field.TypeString, Column: cabinet.FieldSimSn},
 			cabinet.FieldSimDate:        {Type: field.TypeTime, Column: cabinet.FieldSimDate},
 			cabinet.FieldTransferred:    {Type: field.TypeBool, Column: cabinet.FieldTransferred},
+			cabinet.FieldBatteryNum:     {Type: field.TypeInt, Column: cabinet.FieldBatteryNum},
+			cabinet.FieldBatteryFullNum: {Type: field.TypeInt, Column: cabinet.FieldBatteryFullNum},
 			cabinet.FieldEmptyBinNum:    {Type: field.TypeInt, Column: cabinet.FieldEmptyBinNum},
 			cabinet.FieldLockedBinNum:   {Type: field.TypeInt, Column: cabinet.FieldLockedBinNum},
 		},
@@ -4141,16 +4141,6 @@ func (f *CabinetFilter) WhereBin(p entql.BytesP) {
 	f.Where(p.Field(cabinet.FieldBin))
 }
 
-// WhereBatteryNum applies the entql uint predicate on the battery_num field.
-func (f *CabinetFilter) WhereBatteryNum(p entql.UintP) {
-	f.Where(p.Field(cabinet.FieldBatteryNum))
-}
-
-// WhereBatteryFullNum applies the entql uint predicate on the battery_full_num field.
-func (f *CabinetFilter) WhereBatteryFullNum(p entql.UintP) {
-	f.Where(p.Field(cabinet.FieldBatteryFullNum))
-}
-
 // WhereLng applies the entql float64 predicate on the lng field.
 func (f *CabinetFilter) WhereLng(p entql.Float64P) {
 	f.Where(p.Field(cabinet.FieldLng))
@@ -4179,6 +4169,16 @@ func (f *CabinetFilter) WhereSimDate(p entql.TimeP) {
 // WhereTransferred applies the entql bool predicate on the transferred field.
 func (f *CabinetFilter) WhereTransferred(p entql.BoolP) {
 	f.Where(p.Field(cabinet.FieldTransferred))
+}
+
+// WhereBatteryNum applies the entql int predicate on the battery_num field.
+func (f *CabinetFilter) WhereBatteryNum(p entql.IntP) {
+	f.Where(p.Field(cabinet.FieldBatteryNum))
+}
+
+// WhereBatteryFullNum applies the entql int predicate on the battery_full_num field.
+func (f *CabinetFilter) WhereBatteryFullNum(p entql.IntP) {
+	f.Where(p.Field(cabinet.FieldBatteryFullNum))
 }
 
 // WhereEmptyBinNum applies the entql int predicate on the empty_bin_num field.

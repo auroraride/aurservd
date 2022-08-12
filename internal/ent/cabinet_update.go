@@ -216,48 +216,6 @@ func (cu *CabinetUpdate) ClearBin() *CabinetUpdate {
 	return cu
 }
 
-// SetBatteryNum sets the "battery_num" field.
-func (cu *CabinetUpdate) SetBatteryNum(u uint) *CabinetUpdate {
-	cu.mutation.ResetBatteryNum()
-	cu.mutation.SetBatteryNum(u)
-	return cu
-}
-
-// SetNillableBatteryNum sets the "battery_num" field if the given value is not nil.
-func (cu *CabinetUpdate) SetNillableBatteryNum(u *uint) *CabinetUpdate {
-	if u != nil {
-		cu.SetBatteryNum(*u)
-	}
-	return cu
-}
-
-// AddBatteryNum adds u to the "battery_num" field.
-func (cu *CabinetUpdate) AddBatteryNum(u int) *CabinetUpdate {
-	cu.mutation.AddBatteryNum(u)
-	return cu
-}
-
-// SetBatteryFullNum sets the "battery_full_num" field.
-func (cu *CabinetUpdate) SetBatteryFullNum(u uint) *CabinetUpdate {
-	cu.mutation.ResetBatteryFullNum()
-	cu.mutation.SetBatteryFullNum(u)
-	return cu
-}
-
-// SetNillableBatteryFullNum sets the "battery_full_num" field if the given value is not nil.
-func (cu *CabinetUpdate) SetNillableBatteryFullNum(u *uint) *CabinetUpdate {
-	if u != nil {
-		cu.SetBatteryFullNum(*u)
-	}
-	return cu
-}
-
-// AddBatteryFullNum adds u to the "battery_full_num" field.
-func (cu *CabinetUpdate) AddBatteryFullNum(u int) *CabinetUpdate {
-	cu.mutation.AddBatteryFullNum(u)
-	return cu
-}
-
 // SetLng sets the "lng" field.
 func (cu *CabinetUpdate) SetLng(f float64) *CabinetUpdate {
 	cu.mutation.ResetLng()
@@ -383,6 +341,48 @@ func (cu *CabinetUpdate) SetNillableTransferred(b *bool) *CabinetUpdate {
 	if b != nil {
 		cu.SetTransferred(*b)
 	}
+	return cu
+}
+
+// SetBatteryNum sets the "battery_num" field.
+func (cu *CabinetUpdate) SetBatteryNum(i int) *CabinetUpdate {
+	cu.mutation.ResetBatteryNum()
+	cu.mutation.SetBatteryNum(i)
+	return cu
+}
+
+// SetNillableBatteryNum sets the "battery_num" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableBatteryNum(i *int) *CabinetUpdate {
+	if i != nil {
+		cu.SetBatteryNum(*i)
+	}
+	return cu
+}
+
+// AddBatteryNum adds i to the "battery_num" field.
+func (cu *CabinetUpdate) AddBatteryNum(i int) *CabinetUpdate {
+	cu.mutation.AddBatteryNum(i)
+	return cu
+}
+
+// SetBatteryFullNum sets the "battery_full_num" field.
+func (cu *CabinetUpdate) SetBatteryFullNum(i int) *CabinetUpdate {
+	cu.mutation.ResetBatteryFullNum()
+	cu.mutation.SetBatteryFullNum(i)
+	return cu
+}
+
+// SetNillableBatteryFullNum sets the "battery_full_num" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableBatteryFullNum(i *int) *CabinetUpdate {
+	if i != nil {
+		cu.SetBatteryFullNum(*i)
+	}
+	return cu
+}
+
+// AddBatteryFullNum adds i to the "battery_full_num" field.
+func (cu *CabinetUpdate) AddBatteryFullNum(i int) *CabinetUpdate {
+	cu.mutation.AddBatteryFullNum(i)
 	return cu
 }
 
@@ -821,34 +821,6 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: cabinet.FieldBin,
 		})
 	}
-	if value, ok := cu.mutation.BatteryNum(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
-			Value:  value,
-			Column: cabinet.FieldBatteryNum,
-		})
-	}
-	if value, ok := cu.mutation.AddedBatteryNum(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
-			Value:  value,
-			Column: cabinet.FieldBatteryNum,
-		})
-	}
-	if value, ok := cu.mutation.BatteryFullNum(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
-			Value:  value,
-			Column: cabinet.FieldBatteryFullNum,
-		})
-	}
-	if value, ok := cu.mutation.AddedBatteryFullNum(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
-			Value:  value,
-			Column: cabinet.FieldBatteryFullNum,
-		})
-	}
 	if value, ok := cu.mutation.Lng(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
@@ -933,6 +905,34 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: cabinet.FieldTransferred,
+		})
+	}
+	if value, ok := cu.mutation.BatteryNum(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldBatteryNum,
+		})
+	}
+	if value, ok := cu.mutation.AddedBatteryNum(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldBatteryNum,
+		})
+	}
+	if value, ok := cu.mutation.BatteryFullNum(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldBatteryFullNum,
+		})
+	}
+	if value, ok := cu.mutation.AddedBatteryFullNum(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldBatteryFullNum,
 		})
 	}
 	if value, ok := cu.mutation.EmptyBinNum(); ok {
@@ -1449,48 +1449,6 @@ func (cuo *CabinetUpdateOne) ClearBin() *CabinetUpdateOne {
 	return cuo
 }
 
-// SetBatteryNum sets the "battery_num" field.
-func (cuo *CabinetUpdateOne) SetBatteryNum(u uint) *CabinetUpdateOne {
-	cuo.mutation.ResetBatteryNum()
-	cuo.mutation.SetBatteryNum(u)
-	return cuo
-}
-
-// SetNillableBatteryNum sets the "battery_num" field if the given value is not nil.
-func (cuo *CabinetUpdateOne) SetNillableBatteryNum(u *uint) *CabinetUpdateOne {
-	if u != nil {
-		cuo.SetBatteryNum(*u)
-	}
-	return cuo
-}
-
-// AddBatteryNum adds u to the "battery_num" field.
-func (cuo *CabinetUpdateOne) AddBatteryNum(u int) *CabinetUpdateOne {
-	cuo.mutation.AddBatteryNum(u)
-	return cuo
-}
-
-// SetBatteryFullNum sets the "battery_full_num" field.
-func (cuo *CabinetUpdateOne) SetBatteryFullNum(u uint) *CabinetUpdateOne {
-	cuo.mutation.ResetBatteryFullNum()
-	cuo.mutation.SetBatteryFullNum(u)
-	return cuo
-}
-
-// SetNillableBatteryFullNum sets the "battery_full_num" field if the given value is not nil.
-func (cuo *CabinetUpdateOne) SetNillableBatteryFullNum(u *uint) *CabinetUpdateOne {
-	if u != nil {
-		cuo.SetBatteryFullNum(*u)
-	}
-	return cuo
-}
-
-// AddBatteryFullNum adds u to the "battery_full_num" field.
-func (cuo *CabinetUpdateOne) AddBatteryFullNum(u int) *CabinetUpdateOne {
-	cuo.mutation.AddBatteryFullNum(u)
-	return cuo
-}
-
 // SetLng sets the "lng" field.
 func (cuo *CabinetUpdateOne) SetLng(f float64) *CabinetUpdateOne {
 	cuo.mutation.ResetLng()
@@ -1616,6 +1574,48 @@ func (cuo *CabinetUpdateOne) SetNillableTransferred(b *bool) *CabinetUpdateOne {
 	if b != nil {
 		cuo.SetTransferred(*b)
 	}
+	return cuo
+}
+
+// SetBatteryNum sets the "battery_num" field.
+func (cuo *CabinetUpdateOne) SetBatteryNum(i int) *CabinetUpdateOne {
+	cuo.mutation.ResetBatteryNum()
+	cuo.mutation.SetBatteryNum(i)
+	return cuo
+}
+
+// SetNillableBatteryNum sets the "battery_num" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableBatteryNum(i *int) *CabinetUpdateOne {
+	if i != nil {
+		cuo.SetBatteryNum(*i)
+	}
+	return cuo
+}
+
+// AddBatteryNum adds i to the "battery_num" field.
+func (cuo *CabinetUpdateOne) AddBatteryNum(i int) *CabinetUpdateOne {
+	cuo.mutation.AddBatteryNum(i)
+	return cuo
+}
+
+// SetBatteryFullNum sets the "battery_full_num" field.
+func (cuo *CabinetUpdateOne) SetBatteryFullNum(i int) *CabinetUpdateOne {
+	cuo.mutation.ResetBatteryFullNum()
+	cuo.mutation.SetBatteryFullNum(i)
+	return cuo
+}
+
+// SetNillableBatteryFullNum sets the "battery_full_num" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableBatteryFullNum(i *int) *CabinetUpdateOne {
+	if i != nil {
+		cuo.SetBatteryFullNum(*i)
+	}
+	return cuo
+}
+
+// AddBatteryFullNum adds i to the "battery_full_num" field.
+func (cuo *CabinetUpdateOne) AddBatteryFullNum(i int) *CabinetUpdateOne {
+	cuo.mutation.AddBatteryFullNum(i)
 	return cuo
 }
 
@@ -2084,34 +2084,6 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 			Column: cabinet.FieldBin,
 		})
 	}
-	if value, ok := cuo.mutation.BatteryNum(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
-			Value:  value,
-			Column: cabinet.FieldBatteryNum,
-		})
-	}
-	if value, ok := cuo.mutation.AddedBatteryNum(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
-			Value:  value,
-			Column: cabinet.FieldBatteryNum,
-		})
-	}
-	if value, ok := cuo.mutation.BatteryFullNum(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
-			Value:  value,
-			Column: cabinet.FieldBatteryFullNum,
-		})
-	}
-	if value, ok := cuo.mutation.AddedBatteryFullNum(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
-			Value:  value,
-			Column: cabinet.FieldBatteryFullNum,
-		})
-	}
 	if value, ok := cuo.mutation.Lng(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
@@ -2196,6 +2168,34 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: cabinet.FieldTransferred,
+		})
+	}
+	if value, ok := cuo.mutation.BatteryNum(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldBatteryNum,
+		})
+	}
+	if value, ok := cuo.mutation.AddedBatteryNum(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldBatteryNum,
+		})
+	}
+	if value, ok := cuo.mutation.BatteryFullNum(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldBatteryFullNum,
+		})
+	}
+	if value, ok := cuo.mutation.AddedBatteryFullNum(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldBatteryFullNum,
 		})
 	}
 	if value, ok := cuo.mutation.EmptyBinNum(); ok {

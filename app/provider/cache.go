@@ -15,10 +15,16 @@ import (
     "time"
 )
 
+// getOfflineTime 获取离线时间
+func getOfflineTime(serial string) time.Time {
+    t, _ := cache.Get(context.Background(), fmt.Sprintf("OFFLINE-%s", serial)).Time()
+    return t
+}
+
 // setOfflineTime 设置离线时间
-func setOfflineTime(serial string, offline bool) {
+func setOfflineTime(serial string, online bool) {
     key := fmt.Sprintf("OFFLINE-%s", serial)
-    if offline {
+    if !online {
         t := getOfflineTime(serial)
         if t.IsZero() {
             cache.Set(context.Background(), key, time.Now(), -1)

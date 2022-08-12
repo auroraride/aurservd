@@ -181,34 +181,6 @@ func (cc *CabinetCreate) SetBin(mb model.CabinetBins) *CabinetCreate {
 	return cc
 }
 
-// SetBatteryNum sets the "battery_num" field.
-func (cc *CabinetCreate) SetBatteryNum(u uint) *CabinetCreate {
-	cc.mutation.SetBatteryNum(u)
-	return cc
-}
-
-// SetNillableBatteryNum sets the "battery_num" field if the given value is not nil.
-func (cc *CabinetCreate) SetNillableBatteryNum(u *uint) *CabinetCreate {
-	if u != nil {
-		cc.SetBatteryNum(*u)
-	}
-	return cc
-}
-
-// SetBatteryFullNum sets the "battery_full_num" field.
-func (cc *CabinetCreate) SetBatteryFullNum(u uint) *CabinetCreate {
-	cc.mutation.SetBatteryFullNum(u)
-	return cc
-}
-
-// SetNillableBatteryFullNum sets the "battery_full_num" field if the given value is not nil.
-func (cc *CabinetCreate) SetNillableBatteryFullNum(u *uint) *CabinetCreate {
-	if u != nil {
-		cc.SetBatteryFullNum(*u)
-	}
-	return cc
-}
-
 // SetLng sets the "lng" field.
 func (cc *CabinetCreate) SetLng(f float64) *CabinetCreate {
 	cc.mutation.SetLng(f)
@@ -289,6 +261,34 @@ func (cc *CabinetCreate) SetTransferred(b bool) *CabinetCreate {
 func (cc *CabinetCreate) SetNillableTransferred(b *bool) *CabinetCreate {
 	if b != nil {
 		cc.SetTransferred(*b)
+	}
+	return cc
+}
+
+// SetBatteryNum sets the "battery_num" field.
+func (cc *CabinetCreate) SetBatteryNum(i int) *CabinetCreate {
+	cc.mutation.SetBatteryNum(i)
+	return cc
+}
+
+// SetNillableBatteryNum sets the "battery_num" field if the given value is not nil.
+func (cc *CabinetCreate) SetNillableBatteryNum(i *int) *CabinetCreate {
+	if i != nil {
+		cc.SetBatteryNum(*i)
+	}
+	return cc
+}
+
+// SetBatteryFullNum sets the "battery_full_num" field.
+func (cc *CabinetCreate) SetBatteryFullNum(i int) *CabinetCreate {
+	cc.mutation.SetBatteryFullNum(i)
+	return cc
+}
+
+// SetNillableBatteryFullNum sets the "battery_full_num" field if the given value is not nil.
+func (cc *CabinetCreate) SetNillableBatteryFullNum(i *int) *CabinetCreate {
+	if i != nil {
+		cc.SetBatteryFullNum(*i)
 	}
 	return cc
 }
@@ -488,6 +488,10 @@ func (cc *CabinetCreate) defaults() error {
 		v := cabinet.DefaultHealth
 		cc.mutation.SetHealth(v)
 	}
+	if _, ok := cc.mutation.Transferred(); !ok {
+		v := cabinet.DefaultTransferred
+		cc.mutation.SetTransferred(v)
+	}
 	if _, ok := cc.mutation.BatteryNum(); !ok {
 		v := cabinet.DefaultBatteryNum
 		cc.mutation.SetBatteryNum(v)
@@ -495,10 +499,6 @@ func (cc *CabinetCreate) defaults() error {
 	if _, ok := cc.mutation.BatteryFullNum(); !ok {
 		v := cabinet.DefaultBatteryFullNum
 		cc.mutation.SetBatteryFullNum(v)
-	}
-	if _, ok := cc.mutation.Transferred(); !ok {
-		v := cabinet.DefaultTransferred
-		cc.mutation.SetTransferred(v)
 	}
 	if _, ok := cc.mutation.EmptyBinNum(); !ok {
 		v := cabinet.DefaultEmptyBinNum
@@ -540,14 +540,14 @@ func (cc *CabinetCreate) check() error {
 	if _, ok := cc.mutation.Health(); !ok {
 		return &ValidationError{Name: "health", err: errors.New(`ent: missing required field "Cabinet.health"`)}
 	}
+	if _, ok := cc.mutation.Transferred(); !ok {
+		return &ValidationError{Name: "transferred", err: errors.New(`ent: missing required field "Cabinet.transferred"`)}
+	}
 	if _, ok := cc.mutation.BatteryNum(); !ok {
 		return &ValidationError{Name: "battery_num", err: errors.New(`ent: missing required field "Cabinet.battery_num"`)}
 	}
 	if _, ok := cc.mutation.BatteryFullNum(); !ok {
 		return &ValidationError{Name: "battery_full_num", err: errors.New(`ent: missing required field "Cabinet.battery_full_num"`)}
-	}
-	if _, ok := cc.mutation.Transferred(); !ok {
-		return &ValidationError{Name: "transferred", err: errors.New(`ent: missing required field "Cabinet.transferred"`)}
 	}
 	if _, ok := cc.mutation.EmptyBinNum(); !ok {
 		return &ValidationError{Name: "empty_bin_num", err: errors.New(`ent: missing required field "Cabinet.empty_bin_num"`)}
@@ -695,22 +695,6 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 		})
 		_node.Bin = value
 	}
-	if value, ok := cc.mutation.BatteryNum(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
-			Value:  value,
-			Column: cabinet.FieldBatteryNum,
-		})
-		_node.BatteryNum = value
-	}
-	if value, ok := cc.mutation.BatteryFullNum(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
-			Value:  value,
-			Column: cabinet.FieldBatteryFullNum,
-		})
-		_node.BatteryFullNum = value
-	}
 	if value, ok := cc.mutation.Lng(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
@@ -758,6 +742,22 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 			Column: cabinet.FieldTransferred,
 		})
 		_node.Transferred = value
+	}
+	if value, ok := cc.mutation.BatteryNum(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldBatteryNum,
+		})
+		_node.BatteryNum = value
+	}
+	if value, ok := cc.mutation.BatteryFullNum(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldBatteryFullNum,
+		})
+		_node.BatteryFullNum = value
 	}
 	if value, ok := cc.mutation.EmptyBinNum(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -1197,42 +1197,6 @@ func (u *CabinetUpsert) ClearBin() *CabinetUpsert {
 	return u
 }
 
-// SetBatteryNum sets the "battery_num" field.
-func (u *CabinetUpsert) SetBatteryNum(v uint) *CabinetUpsert {
-	u.Set(cabinet.FieldBatteryNum, v)
-	return u
-}
-
-// UpdateBatteryNum sets the "battery_num" field to the value that was provided on create.
-func (u *CabinetUpsert) UpdateBatteryNum() *CabinetUpsert {
-	u.SetExcluded(cabinet.FieldBatteryNum)
-	return u
-}
-
-// AddBatteryNum adds v to the "battery_num" field.
-func (u *CabinetUpsert) AddBatteryNum(v uint) *CabinetUpsert {
-	u.Add(cabinet.FieldBatteryNum, v)
-	return u
-}
-
-// SetBatteryFullNum sets the "battery_full_num" field.
-func (u *CabinetUpsert) SetBatteryFullNum(v uint) *CabinetUpsert {
-	u.Set(cabinet.FieldBatteryFullNum, v)
-	return u
-}
-
-// UpdateBatteryFullNum sets the "battery_full_num" field to the value that was provided on create.
-func (u *CabinetUpsert) UpdateBatteryFullNum() *CabinetUpsert {
-	u.SetExcluded(cabinet.FieldBatteryFullNum)
-	return u
-}
-
-// AddBatteryFullNum adds v to the "battery_full_num" field.
-func (u *CabinetUpsert) AddBatteryFullNum(v uint) *CabinetUpsert {
-	u.Add(cabinet.FieldBatteryFullNum, v)
-	return u
-}
-
 // SetLng sets the "lng" field.
 func (u *CabinetUpsert) SetLng(v float64) *CabinetUpsert {
 	u.Set(cabinet.FieldLng, v)
@@ -1344,6 +1308,42 @@ func (u *CabinetUpsert) SetTransferred(v bool) *CabinetUpsert {
 // UpdateTransferred sets the "transferred" field to the value that was provided on create.
 func (u *CabinetUpsert) UpdateTransferred() *CabinetUpsert {
 	u.SetExcluded(cabinet.FieldTransferred)
+	return u
+}
+
+// SetBatteryNum sets the "battery_num" field.
+func (u *CabinetUpsert) SetBatteryNum(v int) *CabinetUpsert {
+	u.Set(cabinet.FieldBatteryNum, v)
+	return u
+}
+
+// UpdateBatteryNum sets the "battery_num" field to the value that was provided on create.
+func (u *CabinetUpsert) UpdateBatteryNum() *CabinetUpsert {
+	u.SetExcluded(cabinet.FieldBatteryNum)
+	return u
+}
+
+// AddBatteryNum adds v to the "battery_num" field.
+func (u *CabinetUpsert) AddBatteryNum(v int) *CabinetUpsert {
+	u.Add(cabinet.FieldBatteryNum, v)
+	return u
+}
+
+// SetBatteryFullNum sets the "battery_full_num" field.
+func (u *CabinetUpsert) SetBatteryFullNum(v int) *CabinetUpsert {
+	u.Set(cabinet.FieldBatteryFullNum, v)
+	return u
+}
+
+// UpdateBatteryFullNum sets the "battery_full_num" field to the value that was provided on create.
+func (u *CabinetUpsert) UpdateBatteryFullNum() *CabinetUpsert {
+	u.SetExcluded(cabinet.FieldBatteryFullNum)
+	return u
+}
+
+// AddBatteryFullNum adds v to the "battery_full_num" field.
+func (u *CabinetUpsert) AddBatteryFullNum(v int) *CabinetUpsert {
+	u.Add(cabinet.FieldBatteryFullNum, v)
 	return u
 }
 
@@ -1727,48 +1727,6 @@ func (u *CabinetUpsertOne) ClearBin() *CabinetUpsertOne {
 	})
 }
 
-// SetBatteryNum sets the "battery_num" field.
-func (u *CabinetUpsertOne) SetBatteryNum(v uint) *CabinetUpsertOne {
-	return u.Update(func(s *CabinetUpsert) {
-		s.SetBatteryNum(v)
-	})
-}
-
-// AddBatteryNum adds v to the "battery_num" field.
-func (u *CabinetUpsertOne) AddBatteryNum(v uint) *CabinetUpsertOne {
-	return u.Update(func(s *CabinetUpsert) {
-		s.AddBatteryNum(v)
-	})
-}
-
-// UpdateBatteryNum sets the "battery_num" field to the value that was provided on create.
-func (u *CabinetUpsertOne) UpdateBatteryNum() *CabinetUpsertOne {
-	return u.Update(func(s *CabinetUpsert) {
-		s.UpdateBatteryNum()
-	})
-}
-
-// SetBatteryFullNum sets the "battery_full_num" field.
-func (u *CabinetUpsertOne) SetBatteryFullNum(v uint) *CabinetUpsertOne {
-	return u.Update(func(s *CabinetUpsert) {
-		s.SetBatteryFullNum(v)
-	})
-}
-
-// AddBatteryFullNum adds v to the "battery_full_num" field.
-func (u *CabinetUpsertOne) AddBatteryFullNum(v uint) *CabinetUpsertOne {
-	return u.Update(func(s *CabinetUpsert) {
-		s.AddBatteryFullNum(v)
-	})
-}
-
-// UpdateBatteryFullNum sets the "battery_full_num" field to the value that was provided on create.
-func (u *CabinetUpsertOne) UpdateBatteryFullNum() *CabinetUpsertOne {
-	return u.Update(func(s *CabinetUpsert) {
-		s.UpdateBatteryFullNum()
-	})
-}
-
 // SetLng sets the "lng" field.
 func (u *CabinetUpsertOne) SetLng(v float64) *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
@@ -1899,6 +1857,48 @@ func (u *CabinetUpsertOne) SetTransferred(v bool) *CabinetUpsertOne {
 func (u *CabinetUpsertOne) UpdateTransferred() *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
 		s.UpdateTransferred()
+	})
+}
+
+// SetBatteryNum sets the "battery_num" field.
+func (u *CabinetUpsertOne) SetBatteryNum(v int) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetBatteryNum(v)
+	})
+}
+
+// AddBatteryNum adds v to the "battery_num" field.
+func (u *CabinetUpsertOne) AddBatteryNum(v int) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.AddBatteryNum(v)
+	})
+}
+
+// UpdateBatteryNum sets the "battery_num" field to the value that was provided on create.
+func (u *CabinetUpsertOne) UpdateBatteryNum() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateBatteryNum()
+	})
+}
+
+// SetBatteryFullNum sets the "battery_full_num" field.
+func (u *CabinetUpsertOne) SetBatteryFullNum(v int) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetBatteryFullNum(v)
+	})
+}
+
+// AddBatteryFullNum adds v to the "battery_full_num" field.
+func (u *CabinetUpsertOne) AddBatteryFullNum(v int) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.AddBatteryFullNum(v)
+	})
+}
+
+// UpdateBatteryFullNum sets the "battery_full_num" field to the value that was provided on create.
+func (u *CabinetUpsertOne) UpdateBatteryFullNum() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateBatteryFullNum()
 	})
 }
 
@@ -2452,48 +2452,6 @@ func (u *CabinetUpsertBulk) ClearBin() *CabinetUpsertBulk {
 	})
 }
 
-// SetBatteryNum sets the "battery_num" field.
-func (u *CabinetUpsertBulk) SetBatteryNum(v uint) *CabinetUpsertBulk {
-	return u.Update(func(s *CabinetUpsert) {
-		s.SetBatteryNum(v)
-	})
-}
-
-// AddBatteryNum adds v to the "battery_num" field.
-func (u *CabinetUpsertBulk) AddBatteryNum(v uint) *CabinetUpsertBulk {
-	return u.Update(func(s *CabinetUpsert) {
-		s.AddBatteryNum(v)
-	})
-}
-
-// UpdateBatteryNum sets the "battery_num" field to the value that was provided on create.
-func (u *CabinetUpsertBulk) UpdateBatteryNum() *CabinetUpsertBulk {
-	return u.Update(func(s *CabinetUpsert) {
-		s.UpdateBatteryNum()
-	})
-}
-
-// SetBatteryFullNum sets the "battery_full_num" field.
-func (u *CabinetUpsertBulk) SetBatteryFullNum(v uint) *CabinetUpsertBulk {
-	return u.Update(func(s *CabinetUpsert) {
-		s.SetBatteryFullNum(v)
-	})
-}
-
-// AddBatteryFullNum adds v to the "battery_full_num" field.
-func (u *CabinetUpsertBulk) AddBatteryFullNum(v uint) *CabinetUpsertBulk {
-	return u.Update(func(s *CabinetUpsert) {
-		s.AddBatteryFullNum(v)
-	})
-}
-
-// UpdateBatteryFullNum sets the "battery_full_num" field to the value that was provided on create.
-func (u *CabinetUpsertBulk) UpdateBatteryFullNum() *CabinetUpsertBulk {
-	return u.Update(func(s *CabinetUpsert) {
-		s.UpdateBatteryFullNum()
-	})
-}
-
 // SetLng sets the "lng" field.
 func (u *CabinetUpsertBulk) SetLng(v float64) *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
@@ -2624,6 +2582,48 @@ func (u *CabinetUpsertBulk) SetTransferred(v bool) *CabinetUpsertBulk {
 func (u *CabinetUpsertBulk) UpdateTransferred() *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
 		s.UpdateTransferred()
+	})
+}
+
+// SetBatteryNum sets the "battery_num" field.
+func (u *CabinetUpsertBulk) SetBatteryNum(v int) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetBatteryNum(v)
+	})
+}
+
+// AddBatteryNum adds v to the "battery_num" field.
+func (u *CabinetUpsertBulk) AddBatteryNum(v int) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.AddBatteryNum(v)
+	})
+}
+
+// UpdateBatteryNum sets the "battery_num" field to the value that was provided on create.
+func (u *CabinetUpsertBulk) UpdateBatteryNum() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateBatteryNum()
+	})
+}
+
+// SetBatteryFullNum sets the "battery_full_num" field.
+func (u *CabinetUpsertBulk) SetBatteryFullNum(v int) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetBatteryFullNum(v)
+	})
+}
+
+// AddBatteryFullNum adds v to the "battery_full_num" field.
+func (u *CabinetUpsertBulk) AddBatteryFullNum(v int) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.AddBatteryFullNum(v)
+	})
+}
+
+// UpdateBatteryFullNum sets the "battery_full_num" field to the value that was provided on create.
+func (u *CabinetUpsertBulk) UpdateBatteryFullNum() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateBatteryFullNum()
 	})
 }
 

@@ -65,12 +65,6 @@ type Cabinet struct {
 	// Bin holds the value of the "bin" field.
 	// 仓位信息
 	Bin model.CabinetBins `json:"bin,omitempty"`
-	// BatteryNum holds the value of the "battery_num" field.
-	// 电池总数
-	BatteryNum uint `json:"battery_num,omitempty"`
-	// BatteryFullNum holds the value of the "battery_full_num" field.
-	// 满电总数
-	BatteryFullNum uint `json:"battery_full_num,omitempty"`
 	// Lng holds the value of the "lng" field.
 	// 经度
 	Lng float64 `json:"lng,omitempty"`
@@ -89,6 +83,12 @@ type Cabinet struct {
 	// Transferred holds the value of the "transferred" field.
 	// 电池是否已调拨
 	Transferred bool `json:"transferred,omitempty"`
+	// BatteryNum holds the value of the "battery_num" field.
+	// 电池总数
+	BatteryNum int `json:"battery_num,omitempty"`
+	// BatteryFullNum holds the value of the "battery_full_num" field.
+	// 满电总数
+	BatteryFullNum int `json:"battery_full_num,omitempty"`
 	// EmptyBinNum holds the value of the "empty_bin_num" field.
 	// 空仓数量
 	EmptyBinNum int `json:"empty_bin_num,omitempty"`
@@ -326,18 +326,6 @@ func (c *Cabinet) assignValues(columns []string, values []interface{}) error {
 					return fmt.Errorf("unmarshal field bin: %w", err)
 				}
 			}
-		case cabinet.FieldBatteryNum:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field battery_num", values[i])
-			} else if value.Valid {
-				c.BatteryNum = uint(value.Int64)
-			}
-		case cabinet.FieldBatteryFullNum:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field battery_full_num", values[i])
-			} else if value.Valid {
-				c.BatteryFullNum = uint(value.Int64)
-			}
 		case cabinet.FieldLng:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field lng", values[i])
@@ -373,6 +361,18 @@ func (c *Cabinet) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field transferred", values[i])
 			} else if value.Valid {
 				c.Transferred = value.Bool
+			}
+		case cabinet.FieldBatteryNum:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field battery_num", values[i])
+			} else if value.Valid {
+				c.BatteryNum = int(value.Int64)
+			}
+		case cabinet.FieldBatteryFullNum:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field battery_full_num", values[i])
+			} else if value.Valid {
+				c.BatteryFullNum = int(value.Int64)
 			}
 		case cabinet.FieldEmptyBinNum:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -482,10 +482,6 @@ func (c *Cabinet) String() string {
 	builder.WriteString(fmt.Sprintf("%v", c.Health))
 	builder.WriteString(", bin=")
 	builder.WriteString(fmt.Sprintf("%v", c.Bin))
-	builder.WriteString(", battery_num=")
-	builder.WriteString(fmt.Sprintf("%v", c.BatteryNum))
-	builder.WriteString(", battery_full_num=")
-	builder.WriteString(fmt.Sprintf("%v", c.BatteryFullNum))
 	builder.WriteString(", lng=")
 	builder.WriteString(fmt.Sprintf("%v", c.Lng))
 	builder.WriteString(", lat=")
@@ -498,6 +494,10 @@ func (c *Cabinet) String() string {
 	builder.WriteString(c.SimDate.Format(time.ANSIC))
 	builder.WriteString(", transferred=")
 	builder.WriteString(fmt.Sprintf("%v", c.Transferred))
+	builder.WriteString(", battery_num=")
+	builder.WriteString(fmt.Sprintf("%v", c.BatteryNum))
+	builder.WriteString(", battery_full_num=")
+	builder.WriteString(fmt.Sprintf("%v", c.BatteryFullNum))
 	builder.WriteString(", empty_bin_num=")
 	builder.WriteString(fmt.Sprintf("%v", c.EmptyBinNum))
 	builder.WriteString(", locked_bin_num=")

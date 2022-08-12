@@ -45,10 +45,6 @@ const (
 	FieldHealth = "health"
 	// FieldBin holds the string denoting the bin field in the database.
 	FieldBin = "bin"
-	// FieldBatteryNum holds the string denoting the battery_num field in the database.
-	FieldBatteryNum = "battery_num"
-	// FieldBatteryFullNum holds the string denoting the battery_full_num field in the database.
-	FieldBatteryFullNum = "battery_full_num"
 	// FieldLng holds the string denoting the lng field in the database.
 	FieldLng = "lng"
 	// FieldLat holds the string denoting the lat field in the database.
@@ -61,6 +57,10 @@ const (
 	FieldSimDate = "sim_date"
 	// FieldTransferred holds the string denoting the transferred field in the database.
 	FieldTransferred = "transferred"
+	// FieldBatteryNum holds the string denoting the battery_num field in the database.
+	FieldBatteryNum = "battery_num"
+	// FieldBatteryFullNum holds the string denoting the battery_full_num field in the database.
+	FieldBatteryFullNum = "battery_full_num"
 	// FieldEmptyBinNum holds the string denoting the empty_bin_num field in the database.
 	FieldEmptyBinNum = "empty_bin_num"
 	// FieldLockedBinNum holds the string denoting the locked_bin_num field in the database.
@@ -140,14 +140,14 @@ var Columns = []string{
 	FieldStatus,
 	FieldHealth,
 	FieldBin,
-	FieldBatteryNum,
-	FieldBatteryFullNum,
 	FieldLng,
 	FieldLat,
 	FieldAddress,
 	FieldSimSn,
 	FieldSimDate,
 	FieldTransferred,
+	FieldBatteryNum,
+	FieldBatteryFullNum,
 	FieldEmptyBinNum,
 	FieldLockedBinNum,
 }
@@ -184,12 +184,12 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultHealth holds the default value on creation for the "health" field.
 	DefaultHealth uint8
-	// DefaultBatteryNum holds the default value on creation for the "battery_num" field.
-	DefaultBatteryNum uint
-	// DefaultBatteryFullNum holds the default value on creation for the "battery_full_num" field.
-	DefaultBatteryFullNum uint
 	// DefaultTransferred holds the default value on creation for the "transferred" field.
 	DefaultTransferred bool
+	// DefaultBatteryNum holds the default value on creation for the "battery_num" field.
+	DefaultBatteryNum int
+	// DefaultBatteryFullNum holds the default value on creation for the "battery_full_num" field.
+	DefaultBatteryFullNum int
 	// DefaultEmptyBinNum holds the default value on creation for the "empty_bin_num" field.
 	DefaultEmptyBinNum int
 	// DefaultLockedBinNum holds the default value on creation for the "locked_bin_num" field.

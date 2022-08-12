@@ -279,6 +279,7 @@ func (p *yundong) FetchStatus(serial string) (online bool, bins model.CabinetBin
         //     SetBatteryFullNum(full).
         //     SetHealth(uint8(res.Data.Isonline)).
         //     SetDoors(uint(len(doors)))
+        online = res.Data.Isonline == 1
         return
     }
     // setOfflineTime(item.Serial, true)

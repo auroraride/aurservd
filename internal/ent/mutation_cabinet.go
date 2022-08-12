@@ -39,10 +39,6 @@ type CabinetMutation struct {
 	health              *uint8
 	addhealth           *int8
 	bin                 *model.CabinetBins
-	battery_num         *uint
-	addbattery_num      *int
-	battery_full_num    *uint
-	addbattery_full_num *int
 	lng                 *float64
 	addlng              *float64
 	lat                 *float64
@@ -51,6 +47,10 @@ type CabinetMutation struct {
 	sim_sn              *string
 	sim_date            *time.Time
 	transferred         *bool
+	battery_num         *int
+	addbattery_num      *int
+	battery_full_num    *int
+	addbattery_full_num *int
 	empty_bin_num       *int
 	addempty_bin_num    *int
 	locked_bin_num      *int
@@ -902,118 +902,6 @@ func (m *CabinetMutation) ResetBin() {
 	delete(m.clearedFields, cabinet.FieldBin)
 }
 
-// SetBatteryNum sets the "battery_num" field.
-func (m *CabinetMutation) SetBatteryNum(u uint) {
-	m.battery_num = &u
-	m.addbattery_num = nil
-}
-
-// BatteryNum returns the value of the "battery_num" field in the mutation.
-func (m *CabinetMutation) BatteryNum() (r uint, exists bool) {
-	v := m.battery_num
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldBatteryNum returns the old "battery_num" field's value of the Cabinet entity.
-// If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetMutation) OldBatteryNum(ctx context.Context) (v uint, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBatteryNum is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBatteryNum requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBatteryNum: %w", err)
-	}
-	return oldValue.BatteryNum, nil
-}
-
-// AddBatteryNum adds u to the "battery_num" field.
-func (m *CabinetMutation) AddBatteryNum(u int) {
-	if m.addbattery_num != nil {
-		*m.addbattery_num += u
-	} else {
-		m.addbattery_num = &u
-	}
-}
-
-// AddedBatteryNum returns the value that was added to the "battery_num" field in this mutation.
-func (m *CabinetMutation) AddedBatteryNum() (r int, exists bool) {
-	v := m.addbattery_num
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetBatteryNum resets all changes to the "battery_num" field.
-func (m *CabinetMutation) ResetBatteryNum() {
-	m.battery_num = nil
-	m.addbattery_num = nil
-}
-
-// SetBatteryFullNum sets the "battery_full_num" field.
-func (m *CabinetMutation) SetBatteryFullNum(u uint) {
-	m.battery_full_num = &u
-	m.addbattery_full_num = nil
-}
-
-// BatteryFullNum returns the value of the "battery_full_num" field in the mutation.
-func (m *CabinetMutation) BatteryFullNum() (r uint, exists bool) {
-	v := m.battery_full_num
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldBatteryFullNum returns the old "battery_full_num" field's value of the Cabinet entity.
-// If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetMutation) OldBatteryFullNum(ctx context.Context) (v uint, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBatteryFullNum is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBatteryFullNum requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBatteryFullNum: %w", err)
-	}
-	return oldValue.BatteryFullNum, nil
-}
-
-// AddBatteryFullNum adds u to the "battery_full_num" field.
-func (m *CabinetMutation) AddBatteryFullNum(u int) {
-	if m.addbattery_full_num != nil {
-		*m.addbattery_full_num += u
-	} else {
-		m.addbattery_full_num = &u
-	}
-}
-
-// AddedBatteryFullNum returns the value that was added to the "battery_full_num" field in this mutation.
-func (m *CabinetMutation) AddedBatteryFullNum() (r int, exists bool) {
-	v := m.addbattery_full_num
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetBatteryFullNum resets all changes to the "battery_full_num" field.
-func (m *CabinetMutation) ResetBatteryFullNum() {
-	m.battery_full_num = nil
-	m.addbattery_full_num = nil
-}
-
 // SetLng sets the "lng" field.
 func (m *CabinetMutation) SetLng(f float64) {
 	m.lng = &f
@@ -1335,6 +1223,118 @@ func (m *CabinetMutation) OldTransferred(ctx context.Context) (v bool, err error
 // ResetTransferred resets all changes to the "transferred" field.
 func (m *CabinetMutation) ResetTransferred() {
 	m.transferred = nil
+}
+
+// SetBatteryNum sets the "battery_num" field.
+func (m *CabinetMutation) SetBatteryNum(i int) {
+	m.battery_num = &i
+	m.addbattery_num = nil
+}
+
+// BatteryNum returns the value of the "battery_num" field in the mutation.
+func (m *CabinetMutation) BatteryNum() (r int, exists bool) {
+	v := m.battery_num
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBatteryNum returns the old "battery_num" field's value of the Cabinet entity.
+// If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CabinetMutation) OldBatteryNum(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBatteryNum is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBatteryNum requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBatteryNum: %w", err)
+	}
+	return oldValue.BatteryNum, nil
+}
+
+// AddBatteryNum adds i to the "battery_num" field.
+func (m *CabinetMutation) AddBatteryNum(i int) {
+	if m.addbattery_num != nil {
+		*m.addbattery_num += i
+	} else {
+		m.addbattery_num = &i
+	}
+}
+
+// AddedBatteryNum returns the value that was added to the "battery_num" field in this mutation.
+func (m *CabinetMutation) AddedBatteryNum() (r int, exists bool) {
+	v := m.addbattery_num
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetBatteryNum resets all changes to the "battery_num" field.
+func (m *CabinetMutation) ResetBatteryNum() {
+	m.battery_num = nil
+	m.addbattery_num = nil
+}
+
+// SetBatteryFullNum sets the "battery_full_num" field.
+func (m *CabinetMutation) SetBatteryFullNum(i int) {
+	m.battery_full_num = &i
+	m.addbattery_full_num = nil
+}
+
+// BatteryFullNum returns the value of the "battery_full_num" field in the mutation.
+func (m *CabinetMutation) BatteryFullNum() (r int, exists bool) {
+	v := m.battery_full_num
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBatteryFullNum returns the old "battery_full_num" field's value of the Cabinet entity.
+// If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CabinetMutation) OldBatteryFullNum(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBatteryFullNum is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBatteryFullNum requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBatteryFullNum: %w", err)
+	}
+	return oldValue.BatteryFullNum, nil
+}
+
+// AddBatteryFullNum adds i to the "battery_full_num" field.
+func (m *CabinetMutation) AddBatteryFullNum(i int) {
+	if m.addbattery_full_num != nil {
+		*m.addbattery_full_num += i
+	} else {
+		m.addbattery_full_num = &i
+	}
+}
+
+// AddedBatteryFullNum returns the value that was added to the "battery_full_num" field in this mutation.
+func (m *CabinetMutation) AddedBatteryFullNum() (r int, exists bool) {
+	v := m.addbattery_full_num
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetBatteryFullNum resets all changes to the "battery_full_num" field.
+func (m *CabinetMutation) ResetBatteryFullNum() {
+	m.battery_full_num = nil
+	m.addbattery_full_num = nil
 }
 
 // SetEmptyBinNum sets the "empty_bin_num" field.
@@ -1785,12 +1785,6 @@ func (m *CabinetMutation) Fields() []string {
 	if m.bin != nil {
 		fields = append(fields, cabinet.FieldBin)
 	}
-	if m.battery_num != nil {
-		fields = append(fields, cabinet.FieldBatteryNum)
-	}
-	if m.battery_full_num != nil {
-		fields = append(fields, cabinet.FieldBatteryFullNum)
-	}
 	if m.lng != nil {
 		fields = append(fields, cabinet.FieldLng)
 	}
@@ -1808,6 +1802,12 @@ func (m *CabinetMutation) Fields() []string {
 	}
 	if m.transferred != nil {
 		fields = append(fields, cabinet.FieldTransferred)
+	}
+	if m.battery_num != nil {
+		fields = append(fields, cabinet.FieldBatteryNum)
+	}
+	if m.battery_full_num != nil {
+		fields = append(fields, cabinet.FieldBatteryFullNum)
 	}
 	if m.empty_bin_num != nil {
 		fields = append(fields, cabinet.FieldEmptyBinNum)
@@ -1855,10 +1855,6 @@ func (m *CabinetMutation) Field(name string) (ent.Value, bool) {
 		return m.Health()
 	case cabinet.FieldBin:
 		return m.Bin()
-	case cabinet.FieldBatteryNum:
-		return m.BatteryNum()
-	case cabinet.FieldBatteryFullNum:
-		return m.BatteryFullNum()
 	case cabinet.FieldLng:
 		return m.Lng()
 	case cabinet.FieldLat:
@@ -1871,6 +1867,10 @@ func (m *CabinetMutation) Field(name string) (ent.Value, bool) {
 		return m.SimDate()
 	case cabinet.FieldTransferred:
 		return m.Transferred()
+	case cabinet.FieldBatteryNum:
+		return m.BatteryNum()
+	case cabinet.FieldBatteryFullNum:
+		return m.BatteryFullNum()
 	case cabinet.FieldEmptyBinNum:
 		return m.EmptyBinNum()
 	case cabinet.FieldLockedBinNum:
@@ -1916,10 +1916,6 @@ func (m *CabinetMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldHealth(ctx)
 	case cabinet.FieldBin:
 		return m.OldBin(ctx)
-	case cabinet.FieldBatteryNum:
-		return m.OldBatteryNum(ctx)
-	case cabinet.FieldBatteryFullNum:
-		return m.OldBatteryFullNum(ctx)
 	case cabinet.FieldLng:
 		return m.OldLng(ctx)
 	case cabinet.FieldLat:
@@ -1932,6 +1928,10 @@ func (m *CabinetMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldSimDate(ctx)
 	case cabinet.FieldTransferred:
 		return m.OldTransferred(ctx)
+	case cabinet.FieldBatteryNum:
+		return m.OldBatteryNum(ctx)
+	case cabinet.FieldBatteryFullNum:
+		return m.OldBatteryFullNum(ctx)
 	case cabinet.FieldEmptyBinNum:
 		return m.OldEmptyBinNum(ctx)
 	case cabinet.FieldLockedBinNum:
@@ -2057,20 +2057,6 @@ func (m *CabinetMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetBin(v)
 		return nil
-	case cabinet.FieldBatteryNum:
-		v, ok := value.(uint)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetBatteryNum(v)
-		return nil
-	case cabinet.FieldBatteryFullNum:
-		v, ok := value.(uint)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetBatteryFullNum(v)
-		return nil
 	case cabinet.FieldLng:
 		v, ok := value.(float64)
 		if !ok {
@@ -2113,6 +2099,20 @@ func (m *CabinetMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetTransferred(v)
 		return nil
+	case cabinet.FieldBatteryNum:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBatteryNum(v)
+		return nil
+	case cabinet.FieldBatteryFullNum:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBatteryFullNum(v)
+		return nil
 	case cabinet.FieldEmptyBinNum:
 		v, ok := value.(int)
 		if !ok {
@@ -2144,17 +2144,17 @@ func (m *CabinetMutation) AddedFields() []string {
 	if m.addhealth != nil {
 		fields = append(fields, cabinet.FieldHealth)
 	}
-	if m.addbattery_num != nil {
-		fields = append(fields, cabinet.FieldBatteryNum)
-	}
-	if m.addbattery_full_num != nil {
-		fields = append(fields, cabinet.FieldBatteryFullNum)
-	}
 	if m.addlng != nil {
 		fields = append(fields, cabinet.FieldLng)
 	}
 	if m.addlat != nil {
 		fields = append(fields, cabinet.FieldLat)
+	}
+	if m.addbattery_num != nil {
+		fields = append(fields, cabinet.FieldBatteryNum)
+	}
+	if m.addbattery_full_num != nil {
+		fields = append(fields, cabinet.FieldBatteryFullNum)
 	}
 	if m.addempty_bin_num != nil {
 		fields = append(fields, cabinet.FieldEmptyBinNum)
@@ -2176,14 +2176,14 @@ func (m *CabinetMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedStatus()
 	case cabinet.FieldHealth:
 		return m.AddedHealth()
-	case cabinet.FieldBatteryNum:
-		return m.AddedBatteryNum()
-	case cabinet.FieldBatteryFullNum:
-		return m.AddedBatteryFullNum()
 	case cabinet.FieldLng:
 		return m.AddedLng()
 	case cabinet.FieldLat:
 		return m.AddedLat()
+	case cabinet.FieldBatteryNum:
+		return m.AddedBatteryNum()
+	case cabinet.FieldBatteryFullNum:
+		return m.AddedBatteryFullNum()
 	case cabinet.FieldEmptyBinNum:
 		return m.AddedEmptyBinNum()
 	case cabinet.FieldLockedBinNum:
@@ -2218,20 +2218,6 @@ func (m *CabinetMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddHealth(v)
 		return nil
-	case cabinet.FieldBatteryNum:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddBatteryNum(v)
-		return nil
-	case cabinet.FieldBatteryFullNum:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddBatteryFullNum(v)
-		return nil
 	case cabinet.FieldLng:
 		v, ok := value.(float64)
 		if !ok {
@@ -2245,6 +2231,20 @@ func (m *CabinetMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddLat(v)
+		return nil
+	case cabinet.FieldBatteryNum:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddBatteryNum(v)
+		return nil
+	case cabinet.FieldBatteryFullNum:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddBatteryFullNum(v)
 		return nil
 	case cabinet.FieldEmptyBinNum:
 		v, ok := value.(int)
@@ -2410,12 +2410,6 @@ func (m *CabinetMutation) ResetField(name string) error {
 	case cabinet.FieldBin:
 		m.ResetBin()
 		return nil
-	case cabinet.FieldBatteryNum:
-		m.ResetBatteryNum()
-		return nil
-	case cabinet.FieldBatteryFullNum:
-		m.ResetBatteryFullNum()
-		return nil
 	case cabinet.FieldLng:
 		m.ResetLng()
 		return nil
@@ -2433,6 +2427,12 @@ func (m *CabinetMutation) ResetField(name string) error {
 		return nil
 	case cabinet.FieldTransferred:
 		m.ResetTransferred()
+		return nil
+	case cabinet.FieldBatteryNum:
+		m.ResetBatteryNum()
+		return nil
+	case cabinet.FieldBatteryFullNum:
+		m.ResetBatteryFullNum()
 		return nil
 	case cabinet.FieldEmptyBinNum:
 		m.ResetEmptyBinNum()

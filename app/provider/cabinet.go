@@ -6,6 +6,7 @@
 package provider
 
 import (
+    "context"
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
@@ -13,6 +14,7 @@ import (
 
 type updater struct {
     provider Provider
+    ctx      context.Context
 
     cab  *ent.Cabinet
     task *ec.Task
@@ -33,6 +35,7 @@ func NewUpdater(cab *ent.Cabinet) *updater {
     return &updater{
         cab:      cab,
         provider: prov,
+        ctx:      context.Background(),
     }
 }
 
@@ -46,13 +49,12 @@ func (s *updater) DoUpdate() (err error) {
     // 获取电柜当前执行的任务
     s.task = ec.Obtain(ec.ObtainReq{Serial: s.cab.Serial})
     var bins model.CabinetBins
-    bins, err = s.provider.FetchStatus(s.cab.Serial)
+    var online bool
+    online, bins, err = s.provider.FetchStatus(s.cab.Serial)
+    setOfflineTime(s.cab.Serial, online)
     if err != nil {
-        setOfflineTime(s.cab.Serial, true)
         return
     }
-
-    setOfflineTime(s.cab.Serial, false)
 
     old := s.cloneCabinet()
 
@@ -84,20 +86,36 @@ func (s *updater) DoUpdate() (err error) {
         }
     }
 
-    u := s.cab.
-        Update().
+    health := s.cab.Health
+    if online {
+        health = model.CabinetHealthStatusOnline
+    } else if isOffline(s.cab.Serial) {
+        health = model.CabinetHealthStatusOffline
+    }
+
+    item, _ := s.cab.Update().
         SetBin(bins).
         SetBatteryNum(uint(num)).
+        SetHealth(health).
+        SetDoors(uint(len(bins))).
+        SetLockedBinNum(locked).
+        SetEmptyBinNum(empty).
         SetBatteryFullNum(uint(full)).
-        SetHealth(uint8(res.Data.Isonline)).
-        SetDoors(uint(len(bins)))
+        Save(s.ctx)
+
+    *s.cab = *item
 
     // 判断是否处于换电过程中, 如果处于换电过程中则不保存电池数量, 以避免电池变动数量大的情况出现
     if s.task == nil {
 
     }
+
+    s.monitor()
+
+    return
 }
 
-func (s *updater) save() {
-
+func (s *updater) monitor() {
+    if s.task != nil {
+    }
 }
