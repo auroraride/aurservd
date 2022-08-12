@@ -346,3 +346,11 @@ func (s *employeeService) Signout(e *ent.Employee) {
     cache.Del(ctx, key)
     cache.Del(ctx, token)
 }
+
+func (s *employeeService) NameFromID(id uint64) string {
+    p, _ := ent.Database.Employee.QueryNotDeleted().Where(employee.ID(id)).First(s.ctx)
+    if p == nil {
+        return "-"
+    }
+    return p.Name
+}

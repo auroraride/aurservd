@@ -509,6 +509,7 @@ func (s *orderService) RefundSuccess(req *model.PaymentRefund) {
 }
 
 func (s *orderService) listFilter(req model.OrderListFilter) (*ent.OrderQuery, map[string]interface{}) {
+    info := make(ar.Map)
     tt := tools.NewTime()
     q := s.orm.QueryNotDeleted().
         Order(ent.Desc(order.FieldCreatedAt)).
@@ -523,18 +524,25 @@ func (s *orderService) listFilter(req model.OrderListFilter) (*ent.OrderQuery, m
         }).
         WithRefund()
     if req.Start != nil {
+        info["开始日期"] = req.Start
         q.Where(order.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
     }
     if req.End != nil {
+        info["结束日期"] = req.Start
         q.Where(order.CreatedAtLT(tt.ParseNextDateStringX(*req.End)))
     }
-    if req.Type != nil {
+    if req.Type != nil && *req.Type != 0 {
+        info["类别"] = model.OrderTypes[*req.Type]
         q.Where(order.Type(*req.Type))
     }
     if req.RiderID != nil {
+        info["骑手"] = func() string {
+            return NewRider().NameFromID(*req.RiderID)
+        }
         q.Where(order.RiderID(*req.RiderID))
     }
     if req.Keyword != nil {
+        info["关键词"] = *req.Keyword
         q.Where(order.HasRiderWith(
             rider.Or(
                 rider.HasPersonWith(person.NameContainsFold(*req.Keyword)),
@@ -543,34 +551,49 @@ func (s *orderService) listFilter(req model.OrderListFilter) (*ent.OrderQuery, m
         ))
     }
     if req.CityID != nil {
+        info["城市"] = func() string {
+            return NewCity().NameFromID(*req.CityID)
+        }
         q.Where(order.CityID(*req.CityID))
     }
     if req.EmployeeID != nil {
+        info["店员"] = func() string {
+            return NewEmployee().NameFromID(*req.EmployeeID)
+        }
         q.Where(order.HasSubscribeWith(subscribe.EmployeeID(*req.EmployeeID)))
     }
     if req.StoreName != nil {
+        info["门店关键词"] = *req.StoreName
         q.Where(order.HasSubscribeWith(subscribe.HasStoreWith(store.NameContainsFold(*req.StoreName))))
     }
     if req.Model != nil {
+        info["型号"] = *req.Model
         q.Where(order.HasSubscribeWith(subscribe.Model(*req.Model)))
     }
     if req.Days != nil {
+        info["最小天数"] = *req.Days
         q.Where(order.InitialDaysGTE(*req.Days))
     }
     if req.Payway != nil {
+        info["支付方式"] = model.OrderPayways[*req.Payway]
         q.Where(order.Payway(*req.Payway))
     }
     if req.Refund != nil && *req.Refund > 0 {
+        k := "退款申请"
+        v := " - "
         switch *req.Refund {
         case 1:
             q.Where(order.StatusNotIn(model.OrderStatusRefundPending, model.OrderStatusRefundRefused, model.OrderStatusRefundSuccess))
+            v = "未申请"
             break
         case 2:
             q.Where(order.StatusIn(model.OrderStatusRefundPending, model.OrderStatusRefundRefused, model.OrderStatusRefundSuccess)).WithRefund()
+            v = "已申请"
             break
         }
+        info[k] = v
     }
-    return q, nil
+    return q, info
 }
 
 // List 获取订单列表

@@ -9,6 +9,7 @@ import (
     "context"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/export"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -18,6 +19,7 @@ import (
     log "github.com/sirupsen/logrus"
     "net/url"
     "path/filepath"
+    "runtime/debug"
     "time"
 )
 
@@ -38,28 +40,20 @@ func NewExportWithModifier(m *model.Modifier) *exportService {
 }
 
 // Start 开始执行任务
-func (s *exportService) Start(taxonomy string, con any, info map[string]interface{}, remark string, cb func(path string)) model.ExportRes {
+func (s *exportService) Start(taxonomy string, con any, data map[string]interface{}, remark string, cb func(path string)) model.ExportRes {
     sn := tools.NewUnique().NewSN()
     go func() {
-        for k, v := range info {
-            switch v.(type) {
-            case func() string:
-                info[k] = v.(func() string)()
-                break
-            }
-        }
-
         b, _ := jsoniter.Marshal(con)
 
         var ex *ent.Export
         var message string
         var err error
+        info := make(ar.Map)
 
         ex, err = s.orm.Create().
             SetCondition(b).
             SetRemark(remark).
             SetTaxonomy(taxonomy).
-            SetInfo(info).
             SetSn(sn).
             SetManagerID(s.modifier.ID).
             Save(s.ctx)
@@ -77,13 +71,25 @@ func (s *exportService) Start(taxonomy string, con any, info map[string]interfac
             }
 
             if r := recover(); r != nil {
+                log.Errorf("%v\n%s", r, debug.Stack())
                 message = fmt.Sprintf("%v", r)
                 status = model.ExportStatusFail
             }
 
             now := time.Now()
-            _, _ = ex.Update().SetStatus(uint8(status)).SetMessage(message).SetPath(path).SetDuration(now.Sub(ex.CreatedAt).Milliseconds()).SetFinishAt(now).Save(s.ctx)
+            _, _ = ex.Update().SetStatus(uint8(status)).SetMessage(message).SetPath(path).SetDuration(now.Sub(ex.CreatedAt).Milliseconds()).SetInfo(info).SetFinishAt(now).Save(s.ctx)
         }()
+
+        for k, v := range data {
+            switch v.(type) {
+            case func() string:
+                info[k] = v.(func() string)()
+                break
+            default:
+                info[k] = v
+                break
+            }
+        }
 
         cb(path)
     }()

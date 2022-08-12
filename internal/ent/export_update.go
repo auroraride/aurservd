@@ -194,6 +194,12 @@ func (eu *ExportUpdate) SetInfo(m map[string]interface{}) *ExportUpdate {
 	return eu
 }
 
+// ClearInfo clears the value of the "info" field.
+func (eu *ExportUpdate) ClearInfo() *ExportUpdate {
+	eu.mutation.ClearInfo()
+	return eu
+}
+
 // SetRemark sets the "remark" field.
 func (eu *ExportUpdate) SetRemark(s string) *ExportUpdate {
 	eu.mutation.SetRemark(s)
@@ -432,6 +438,12 @@ func (eu *ExportUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: export.FieldInfo,
 		})
 	}
+	if eu.mutation.InfoCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: export.FieldInfo,
+		})
+	}
 	if value, ok := eu.mutation.Remark(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -654,6 +666,12 @@ func (euo *ExportUpdateOne) SetCondition(jm json.RawMessage) *ExportUpdateOne {
 // SetInfo sets the "info" field.
 func (euo *ExportUpdateOne) SetInfo(m map[string]interface{}) *ExportUpdateOne {
 	euo.mutation.SetInfo(m)
+	return euo
+}
+
+// ClearInfo clears the value of the "info" field.
+func (euo *ExportUpdateOne) ClearInfo() *ExportUpdateOne {
+	euo.mutation.ClearInfo()
 	return euo
 }
 
@@ -922,6 +940,12 @@ func (euo *ExportUpdateOne) sqlSave(ctx context.Context) (_node *Export, err err
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
+			Column: export.FieldInfo,
+		})
+	}
+	if euo.mutation.InfoCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
 			Column: export.FieldInfo,
 		})
 	}

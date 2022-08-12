@@ -1420,7 +1420,7 @@ var (
 		{Name: "finish_at", Type: field.TypeTime, Comment: "生成时间", Nullable: true},
 		{Name: "duration", Type: field.TypeInt64, Comment: "耗时", Nullable: true},
 		{Name: "condition", Type: field.TypeJSON, Comment: "筛选条件"},
-		{Name: "info", Type: field.TypeJSON, Comment: "详细信息"},
+		{Name: "info", Type: field.TypeJSON, Comment: "详细信息", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "备注信息"},
 		{Name: "manager_id", Type: field.TypeUint64},
 	}

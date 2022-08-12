@@ -510,7 +510,7 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 
     if req.CityID != nil {
         info["城市"] = func() string {
-            return NewCity().NameFromID(*req.EnterpriseID)
+            return NewCity().NameFromID(*req.CityID)
         }
         q.Where(rider.HasSubscribesWith(subscribe.CityID(*req.CityID)))
     }
@@ -876,4 +876,17 @@ func (s *riderService) Delete(req *model.IDParamReq) {
     if err != nil {
         snag.Panic(err)
     }
+}
+
+func (s *riderService) NameFromID(id uint64) string {
+    r, _ := ent.Database.Rider.QueryNotDeleted().WithPerson().Where(rider.ID(id)).First(s.ctx)
+    if r == nil {
+        return "-"
+    }
+    str := r.Phone
+    p := r.Edges.Person
+    if p != nil {
+        str += " - " + p.Name
+    }
+    return str
 }

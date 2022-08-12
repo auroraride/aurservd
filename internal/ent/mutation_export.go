@@ -712,9 +712,22 @@ func (m *ExportMutation) OldInfo(ctx context.Context) (v map[string]interface{},
 	return oldValue.Info, nil
 }
 
+// ClearInfo clears the value of the "info" field.
+func (m *ExportMutation) ClearInfo() {
+	m.info = nil
+	m.clearedFields[export.FieldInfo] = struct{}{}
+}
+
+// InfoCleared returns if the "info" field was cleared in this mutation.
+func (m *ExportMutation) InfoCleared() bool {
+	_, ok := m.clearedFields[export.FieldInfo]
+	return ok
+}
+
 // ResetInfo resets all changes to the "info" field.
 func (m *ExportMutation) ResetInfo() {
 	m.info = nil
+	delete(m.clearedFields, export.FieldInfo)
 }
 
 // SetRemark sets the "remark" field.
@@ -1093,6 +1106,9 @@ func (m *ExportMutation) ClearedFields() []string {
 	if m.FieldCleared(export.FieldDuration) {
 		fields = append(fields, export.FieldDuration)
 	}
+	if m.FieldCleared(export.FieldInfo) {
+		fields = append(fields, export.FieldInfo)
+	}
 	return fields
 }
 
@@ -1121,6 +1137,9 @@ func (m *ExportMutation) ClearField(name string) error {
 		return nil
 	case export.FieldDuration:
 		m.ClearDuration()
+		return nil
+	case export.FieldInfo:
+		m.ClearInfo()
 		return nil
 	}
 	return fmt.Errorf("unknown Export nullable field %s", name)
