@@ -94,7 +94,7 @@ func (*export) StatementUsage(c echo.Context) (err error) {
 // Order
 // @ID           ManagerExportOrder
 // @Router       /manager/v1/export/order [POST]
-// @Summary      MF005 导出订单
+// @Summary      MF006 导出订单
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json

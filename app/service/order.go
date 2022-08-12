@@ -610,29 +610,28 @@ func (s *orderService) Export(req *model.OrderListExport) model.ExportRes {
     q, info := s.listFilter(req.OrderListFilter)
     return NewExportWithModifier(s.modifier).Start("订单", req.OrderListFilter, info, req.Remark, func(path string) {
         items, _ := q.All(s.ctx)
+        var rows [][]any
+        title := []any{
+            "类型",
+            "骑手",
+            "电话",
+            "骑士卡",
+            "天数",
+            "型号",
+            "城市",
+            "门店",
+            "店员",
+            "支付状态",
+            "订单编号",
+            "支付编号",
+            "支付方式",
+            "支付金额",
+            "支付时间",
+        }
+        rows = append(rows, title)
+
         for _, item := range items {
             detail := NewRiderOrder().Detail(item)
-            var rows [][]any
-
-            title := []any{
-                "类型",
-                "骑手",
-                "电话",
-                "骑士卡",
-                "天数",
-                "型号",
-                "城市",
-                "门店",
-                "店员",
-                "支付状态",
-                "订单编号",
-                "支付编号",
-                "支付方式",
-                "支付金额",
-                "支付时间",
-            }
-
-            rows = append(rows, title)
 
             st := ""
             if detail.Store != nil {
@@ -670,9 +669,9 @@ func (s *orderService) Export(req *model.OrderListExport) model.ExportRes {
             }
 
             rows = append(rows, row)
-
-            tools.NewExcel(path).AddValues(rows).Done()
         }
+
+        tools.NewExcel(path).AddValues(rows).Done()
     })
 }
 

@@ -5088,7 +5088,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "MF005 导出订单",
+                "summary": "MF006 导出订单",
                 "operationId": "ManagerExportOrder",
                 "parameters": [
                     {
