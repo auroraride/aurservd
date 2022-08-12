@@ -1195,6 +1195,20 @@ func DurationNotNil() predicate.Export {
 	})
 }
 
+// InfoIsNil applies the IsNil predicate on the "info" field.
+func InfoIsNil() predicate.Export {
+	return predicate.Export(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldInfo)))
+	})
+}
+
+// InfoNotNil applies the NotNil predicate on the "info" field.
+func InfoNotNil() predicate.Export {
+	return predicate.Export(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldInfo)))
+	})
+}
+
 // RemarkEQ applies the EQ predicate on the "remark" field.
 func RemarkEQ(v string) predicate.Export {
 	return predicate.Export(func(s *sql.Selector) {

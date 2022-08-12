@@ -33,7 +33,7 @@ func (Export) Fields() []ent.Field {
         field.Time("finish_at").Optional().Comment("生成时间"),
         field.Int64("duration").Optional().Comment("耗时"),
         field.JSON("condition", json.RawMessage{}).Comment("筛选条件"),
-        field.JSON("info", map[string]interface{}{}).Comment("详细信息"),
+        field.JSON("info", map[string]interface{}{}).Optional().Comment("详细信息"),
         field.String("remark").Comment("备注信息"),
     }
 }

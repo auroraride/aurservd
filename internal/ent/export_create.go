@@ -291,9 +291,6 @@ func (ec *ExportCreate) check() error {
 	if _, ok := ec.mutation.Condition(); !ok {
 		return &ValidationError{Name: "condition", err: errors.New(`ent: missing required field "Export.condition"`)}
 	}
-	if _, ok := ec.mutation.Info(); !ok {
-		return &ValidationError{Name: "info", err: errors.New(`ent: missing required field "Export.info"`)}
-	}
 	if _, ok := ec.mutation.Remark(); !ok {
 		return &ValidationError{Name: "remark", err: errors.New(`ent: missing required field "Export.remark"`)}
 	}
@@ -704,6 +701,12 @@ func (u *ExportUpsert) UpdateInfo() *ExportUpsert {
 	return u
 }
 
+// ClearInfo clears the value of the "info" field.
+func (u *ExportUpsert) ClearInfo() *ExportUpsert {
+	u.SetNull(export.FieldInfo)
+	return u
+}
+
 // SetRemark sets the "remark" field.
 func (u *ExportUpsert) SetRemark(v string) *ExportUpsert {
 	u.Set(export.FieldRemark, v)
@@ -991,6 +994,13 @@ func (u *ExportUpsertOne) SetInfo(v map[string]interface{}) *ExportUpsertOne {
 func (u *ExportUpsertOne) UpdateInfo() *ExportUpsertOne {
 	return u.Update(func(s *ExportUpsert) {
 		s.UpdateInfo()
+	})
+}
+
+// ClearInfo clears the value of the "info" field.
+func (u *ExportUpsertOne) ClearInfo() *ExportUpsertOne {
+	return u.Update(func(s *ExportUpsert) {
+		s.ClearInfo()
 	})
 }
 
@@ -1447,6 +1457,13 @@ func (u *ExportUpsertBulk) SetInfo(v map[string]interface{}) *ExportUpsertBulk {
 func (u *ExportUpsertBulk) UpdateInfo() *ExportUpsertBulk {
 	return u.Update(func(s *ExportUpsert) {
 		s.UpdateInfo()
+	})
+}
+
+// ClearInfo clears the value of the "info" field.
+func (u *ExportUpsertBulk) ClearInfo() *ExportUpsertBulk {
+	return u.Update(func(s *ExportUpsert) {
+		s.ClearInfo()
 	})
 }
 
