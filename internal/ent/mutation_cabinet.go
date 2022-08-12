@@ -51,6 +51,10 @@ type CabinetMutation struct {
 	sim_sn              *string
 	sim_date            *time.Time
 	transferred         *bool
+	empty               *int
+	addempty            *int
+	fully               *int
+	addfully            *int
 	clearedFields       map[string]struct{}
 	city                *uint64
 	clearedcity         bool
@@ -1333,6 +1337,118 @@ func (m *CabinetMutation) ResetTransferred() {
 	m.transferred = nil
 }
 
+// SetEmpty sets the "empty" field.
+func (m *CabinetMutation) SetEmpty(i int) {
+	m.empty = &i
+	m.addempty = nil
+}
+
+// Empty returns the value of the "empty" field in the mutation.
+func (m *CabinetMutation) Empty() (r int, exists bool) {
+	v := m.empty
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmpty returns the old "empty" field's value of the Cabinet entity.
+// If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CabinetMutation) OldEmpty(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEmpty is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEmpty requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmpty: %w", err)
+	}
+	return oldValue.Empty, nil
+}
+
+// AddEmpty adds i to the "empty" field.
+func (m *CabinetMutation) AddEmpty(i int) {
+	if m.addempty != nil {
+		*m.addempty += i
+	} else {
+		m.addempty = &i
+	}
+}
+
+// AddedEmpty returns the value that was added to the "empty" field in this mutation.
+func (m *CabinetMutation) AddedEmpty() (r int, exists bool) {
+	v := m.addempty
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetEmpty resets all changes to the "empty" field.
+func (m *CabinetMutation) ResetEmpty() {
+	m.empty = nil
+	m.addempty = nil
+}
+
+// SetFully sets the "fully" field.
+func (m *CabinetMutation) SetFully(i int) {
+	m.fully = &i
+	m.addfully = nil
+}
+
+// Fully returns the value of the "fully" field in the mutation.
+func (m *CabinetMutation) Fully() (r int, exists bool) {
+	v := m.fully
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFully returns the old "fully" field's value of the Cabinet entity.
+// If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CabinetMutation) OldFully(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFully is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFully requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFully: %w", err)
+	}
+	return oldValue.Fully, nil
+}
+
+// AddFully adds i to the "fully" field.
+func (m *CabinetMutation) AddFully(i int) {
+	if m.addfully != nil {
+		*m.addfully += i
+	} else {
+		m.addfully = &i
+	}
+}
+
+// AddedFully returns the value that was added to the "fully" field in this mutation.
+func (m *CabinetMutation) AddedFully() (r int, exists bool) {
+	v := m.addfully
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetFully resets all changes to the "fully" field.
+func (m *CabinetMutation) ResetFully() {
+	m.fully = nil
+	m.addfully = nil
+}
+
 // ClearCity clears the "city" edge to the City entity.
 func (m *CabinetMutation) ClearCity() {
 	m.clearedcity = true
@@ -1620,7 +1736,7 @@ func (m *CabinetMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CabinetMutation) Fields() []string {
-	fields := make([]string, 0, 24)
+	fields := make([]string, 0, 26)
 	if m.created_at != nil {
 		fields = append(fields, cabinet.FieldCreatedAt)
 	}
@@ -1693,6 +1809,12 @@ func (m *CabinetMutation) Fields() []string {
 	if m.transferred != nil {
 		fields = append(fields, cabinet.FieldTransferred)
 	}
+	if m.empty != nil {
+		fields = append(fields, cabinet.FieldEmpty)
+	}
+	if m.fully != nil {
+		fields = append(fields, cabinet.FieldFully)
+	}
 	return fields
 }
 
@@ -1749,6 +1871,10 @@ func (m *CabinetMutation) Field(name string) (ent.Value, bool) {
 		return m.SimDate()
 	case cabinet.FieldTransferred:
 		return m.Transferred()
+	case cabinet.FieldEmpty:
+		return m.Empty()
+	case cabinet.FieldFully:
+		return m.Fully()
 	}
 	return nil, false
 }
@@ -1806,6 +1932,10 @@ func (m *CabinetMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldSimDate(ctx)
 	case cabinet.FieldTransferred:
 		return m.OldTransferred(ctx)
+	case cabinet.FieldEmpty:
+		return m.OldEmpty(ctx)
+	case cabinet.FieldFully:
+		return m.OldFully(ctx)
 	}
 	return nil, fmt.Errorf("unknown Cabinet field %s", name)
 }
@@ -1983,6 +2113,20 @@ func (m *CabinetMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetTransferred(v)
 		return nil
+	case cabinet.FieldEmpty:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmpty(v)
+		return nil
+	case cabinet.FieldFully:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFully(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Cabinet field %s", name)
 }
@@ -2012,6 +2156,12 @@ func (m *CabinetMutation) AddedFields() []string {
 	if m.addlat != nil {
 		fields = append(fields, cabinet.FieldLat)
 	}
+	if m.addempty != nil {
+		fields = append(fields, cabinet.FieldEmpty)
+	}
+	if m.addfully != nil {
+		fields = append(fields, cabinet.FieldFully)
+	}
 	return fields
 }
 
@@ -2034,6 +2184,10 @@ func (m *CabinetMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedLng()
 	case cabinet.FieldLat:
 		return m.AddedLat()
+	case cabinet.FieldEmpty:
+		return m.AddedEmpty()
+	case cabinet.FieldFully:
+		return m.AddedFully()
 	}
 	return nil, false
 }
@@ -2091,6 +2245,20 @@ func (m *CabinetMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddLat(v)
+		return nil
+	case cabinet.FieldEmpty:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddEmpty(v)
+		return nil
+	case cabinet.FieldFully:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddFully(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Cabinet numeric field %s", name)
@@ -2265,6 +2433,12 @@ func (m *CabinetMutation) ResetField(name string) error {
 		return nil
 	case cabinet.FieldTransferred:
 		m.ResetTransferred()
+		return nil
+	case cabinet.FieldEmpty:
+		m.ResetEmpty()
+		return nil
+	case cabinet.FieldFully:
+		m.ResetFully()
 		return nil
 	}
 	return fmt.Errorf("unknown Cabinet field %s", name)

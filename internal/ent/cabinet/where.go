@@ -240,6 +240,20 @@ func Transferred(v bool) predicate.Cabinet {
 	})
 }
 
+// Empty applies equality check predicate on the "empty" field. It's identical to EmptyEQ.
+func Empty(v int) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEmpty), v))
+	})
+}
+
+// Fully applies equality check predicate on the "fully" field. It's identical to FullyEQ.
+func Fully(v int) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldFully), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
@@ -2128,6 +2142,158 @@ func TransferredEQ(v bool) predicate.Cabinet {
 func TransferredNEQ(v bool) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldTransferred), v))
+	})
+}
+
+// EmptyEQ applies the EQ predicate on the "empty" field.
+func EmptyEQ(v int) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEmpty), v))
+	})
+}
+
+// EmptyNEQ applies the NEQ predicate on the "empty" field.
+func EmptyNEQ(v int) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldEmpty), v))
+	})
+}
+
+// EmptyIn applies the In predicate on the "empty" field.
+func EmptyIn(vs ...int) predicate.Cabinet {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldEmpty), v...))
+	})
+}
+
+// EmptyNotIn applies the NotIn predicate on the "empty" field.
+func EmptyNotIn(vs ...int) predicate.Cabinet {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldEmpty), v...))
+	})
+}
+
+// EmptyGT applies the GT predicate on the "empty" field.
+func EmptyGT(v int) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldEmpty), v))
+	})
+}
+
+// EmptyGTE applies the GTE predicate on the "empty" field.
+func EmptyGTE(v int) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldEmpty), v))
+	})
+}
+
+// EmptyLT applies the LT predicate on the "empty" field.
+func EmptyLT(v int) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldEmpty), v))
+	})
+}
+
+// EmptyLTE applies the LTE predicate on the "empty" field.
+func EmptyLTE(v int) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldEmpty), v))
+	})
+}
+
+// FullyEQ applies the EQ predicate on the "fully" field.
+func FullyEQ(v int) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldFully), v))
+	})
+}
+
+// FullyNEQ applies the NEQ predicate on the "fully" field.
+func FullyNEQ(v int) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldFully), v))
+	})
+}
+
+// FullyIn applies the In predicate on the "fully" field.
+func FullyIn(vs ...int) predicate.Cabinet {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldFully), v...))
+	})
+}
+
+// FullyNotIn applies the NotIn predicate on the "fully" field.
+func FullyNotIn(vs ...int) predicate.Cabinet {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldFully), v...))
+	})
+}
+
+// FullyGT applies the GT predicate on the "fully" field.
+func FullyGT(v int) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldFully), v))
+	})
+}
+
+// FullyGTE applies the GTE predicate on the "fully" field.
+func FullyGTE(v int) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldFully), v))
+	})
+}
+
+// FullyLT applies the LT predicate on the "fully" field.
+func FullyLT(v int) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldFully), v))
+	})
+}
+
+// FullyLTE applies the LTE predicate on the "fully" field.
+func FullyLTE(v int) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldFully), v))
 	})
 }
 

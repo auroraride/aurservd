@@ -451,6 +451,8 @@ var (
 		{Name: "sim_sn", Type: field.TypeString, Comment: "SIM卡号", Nullable: true},
 		{Name: "sim_date", Type: field.TypeTime, Comment: "SIM卡到期日期", Nullable: true},
 		{Name: "transferred", Type: field.TypeBool, Comment: "电池是否已调拨", Default: false},
+		{Name: "empty", Type: field.TypeInt, Comment: "空仓数量", Default: 0},
+		{Name: "fully", Type: field.TypeInt, Comment: "满电数量", Default: 0},
 		{Name: "branch_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
 	}
@@ -462,13 +464,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cabinet_branch_cabinets",
-				Columns:    []*schema.Column{CabinetColumns[23]},
+				Columns:    []*schema.Column{CabinetColumns[25]},
 				RefColumns: []*schema.Column{BranchColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "cabinet_city_city",
-				Columns:    []*schema.Column{CabinetColumns[24]},
+				Columns:    []*schema.Column{CabinetColumns[26]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -487,7 +489,7 @@ var (
 			{
 				Name:    "cabinet_branch_id",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[23]},
+				Columns: []*schema.Column{CabinetColumns[25]},
 			},
 			{
 				Name:    "cabinet_brand",

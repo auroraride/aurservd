@@ -386,6 +386,48 @@ func (cu *CabinetUpdate) SetNillableTransferred(b *bool) *CabinetUpdate {
 	return cu
 }
 
+// SetEmpty sets the "empty" field.
+func (cu *CabinetUpdate) SetEmpty(i int) *CabinetUpdate {
+	cu.mutation.ResetEmpty()
+	cu.mutation.SetEmpty(i)
+	return cu
+}
+
+// SetNillableEmpty sets the "empty" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableEmpty(i *int) *CabinetUpdate {
+	if i != nil {
+		cu.SetEmpty(*i)
+	}
+	return cu
+}
+
+// AddEmpty adds i to the "empty" field.
+func (cu *CabinetUpdate) AddEmpty(i int) *CabinetUpdate {
+	cu.mutation.AddEmpty(i)
+	return cu
+}
+
+// SetFully sets the "fully" field.
+func (cu *CabinetUpdate) SetFully(i int) *CabinetUpdate {
+	cu.mutation.ResetFully()
+	cu.mutation.SetFully(i)
+	return cu
+}
+
+// SetNillableFully sets the "fully" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableFully(i *int) *CabinetUpdate {
+	if i != nil {
+		cu.SetFully(*i)
+	}
+	return cu
+}
+
+// AddFully adds i to the "fully" field.
+func (cu *CabinetUpdate) AddFully(i int) *CabinetUpdate {
+	cu.mutation.AddFully(i)
+	return cu
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (cu *CabinetUpdate) SetCity(c *City) *CabinetUpdate {
 	return cu.SetCityID(c.ID)
@@ -891,6 +933,34 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: cabinet.FieldTransferred,
+		})
+	}
+	if value, ok := cu.mutation.Empty(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldEmpty,
+		})
+	}
+	if value, ok := cu.mutation.AddedEmpty(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldEmpty,
+		})
+	}
+	if value, ok := cu.mutation.Fully(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldFully,
+		})
+	}
+	if value, ok := cu.mutation.AddedFully(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldFully,
 		})
 	}
 	if cu.mutation.CityCleared() {
@@ -1549,6 +1619,48 @@ func (cuo *CabinetUpdateOne) SetNillableTransferred(b *bool) *CabinetUpdateOne {
 	return cuo
 }
 
+// SetEmpty sets the "empty" field.
+func (cuo *CabinetUpdateOne) SetEmpty(i int) *CabinetUpdateOne {
+	cuo.mutation.ResetEmpty()
+	cuo.mutation.SetEmpty(i)
+	return cuo
+}
+
+// SetNillableEmpty sets the "empty" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableEmpty(i *int) *CabinetUpdateOne {
+	if i != nil {
+		cuo.SetEmpty(*i)
+	}
+	return cuo
+}
+
+// AddEmpty adds i to the "empty" field.
+func (cuo *CabinetUpdateOne) AddEmpty(i int) *CabinetUpdateOne {
+	cuo.mutation.AddEmpty(i)
+	return cuo
+}
+
+// SetFully sets the "fully" field.
+func (cuo *CabinetUpdateOne) SetFully(i int) *CabinetUpdateOne {
+	cuo.mutation.ResetFully()
+	cuo.mutation.SetFully(i)
+	return cuo
+}
+
+// SetNillableFully sets the "fully" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableFully(i *int) *CabinetUpdateOne {
+	if i != nil {
+		cuo.SetFully(*i)
+	}
+	return cuo
+}
+
+// AddFully adds i to the "fully" field.
+func (cuo *CabinetUpdateOne) AddFully(i int) *CabinetUpdateOne {
+	cuo.mutation.AddFully(i)
+	return cuo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (cuo *CabinetUpdateOne) SetCity(c *City) *CabinetUpdateOne {
 	return cuo.SetCityID(c.ID)
@@ -2084,6 +2196,34 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: cabinet.FieldTransferred,
+		})
+	}
+	if value, ok := cuo.mutation.Empty(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldEmpty,
+		})
+	}
+	if value, ok := cuo.mutation.AddedEmpty(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldEmpty,
+		})
+	}
+	if value, ok := cuo.mutation.Fully(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldFully,
+		})
+	}
+	if value, ok := cuo.mutation.AddedFully(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldFully,
 		})
 	}
 	if cuo.mutation.CityCleared() {

@@ -89,6 +89,12 @@ type Cabinet struct {
 	// Transferred holds the value of the "transferred" field.
 	// 电池是否已调拨
 	Transferred bool `json:"transferred,omitempty"`
+	// Empty holds the value of the "empty" field.
+	// 空仓数量
+	Empty int `json:"empty,omitempty"`
+	// Fully holds the value of the "fully" field.
+	// 满电数量
+	Fully int `json:"fully,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CabinetQuery when eager-loading is set.
 	Edges CabinetEdges `json:"edges"`
@@ -188,7 +194,7 @@ func (*Cabinet) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case cabinet.FieldLng, cabinet.FieldLat:
 			values[i] = new(sql.NullFloat64)
-		case cabinet.FieldID, cabinet.FieldCityID, cabinet.FieldBranchID, cabinet.FieldDoors, cabinet.FieldStatus, cabinet.FieldHealth, cabinet.FieldBatteryNum, cabinet.FieldBatteryFullNum:
+		case cabinet.FieldID, cabinet.FieldCityID, cabinet.FieldBranchID, cabinet.FieldDoors, cabinet.FieldStatus, cabinet.FieldHealth, cabinet.FieldBatteryNum, cabinet.FieldBatteryFullNum, cabinet.FieldEmpty, cabinet.FieldFully:
 			values[i] = new(sql.NullInt64)
 		case cabinet.FieldRemark, cabinet.FieldSn, cabinet.FieldBrand, cabinet.FieldSerial, cabinet.FieldName, cabinet.FieldAddress, cabinet.FieldSimSn:
 			values[i] = new(sql.NullString)
@@ -368,6 +374,18 @@ func (c *Cabinet) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				c.Transferred = value.Bool
 			}
+		case cabinet.FieldEmpty:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field empty", values[i])
+			} else if value.Valid {
+				c.Empty = int(value.Int64)
+			}
+		case cabinet.FieldFully:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field fully", values[i])
+			} else if value.Valid {
+				c.Fully = int(value.Int64)
+			}
 		}
 	}
 	return nil
@@ -480,6 +498,10 @@ func (c *Cabinet) String() string {
 	builder.WriteString(c.SimDate.Format(time.ANSIC))
 	builder.WriteString(", transferred=")
 	builder.WriteString(fmt.Sprintf("%v", c.Transferred))
+	builder.WriteString(", empty=")
+	builder.WriteString(fmt.Sprintf("%v", c.Empty))
+	builder.WriteString(", fully=")
+	builder.WriteString(fmt.Sprintf("%v", c.Fully))
 	builder.WriteByte(')')
 	return builder.String()
 }

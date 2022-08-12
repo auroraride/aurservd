@@ -293,6 +293,34 @@ func (cc *CabinetCreate) SetNillableTransferred(b *bool) *CabinetCreate {
 	return cc
 }
 
+// SetEmpty sets the "empty" field.
+func (cc *CabinetCreate) SetEmpty(i int) *CabinetCreate {
+	cc.mutation.SetEmpty(i)
+	return cc
+}
+
+// SetNillableEmpty sets the "empty" field if the given value is not nil.
+func (cc *CabinetCreate) SetNillableEmpty(i *int) *CabinetCreate {
+	if i != nil {
+		cc.SetEmpty(*i)
+	}
+	return cc
+}
+
+// SetFully sets the "fully" field.
+func (cc *CabinetCreate) SetFully(i int) *CabinetCreate {
+	cc.mutation.SetFully(i)
+	return cc
+}
+
+// SetNillableFully sets the "fully" field if the given value is not nil.
+func (cc *CabinetCreate) SetNillableFully(i *int) *CabinetCreate {
+	if i != nil {
+		cc.SetFully(*i)
+	}
+	return cc
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (cc *CabinetCreate) SetCity(c *City) *CabinetCreate {
 	return cc.SetCityID(c.ID)
@@ -472,6 +500,14 @@ func (cc *CabinetCreate) defaults() error {
 		v := cabinet.DefaultTransferred
 		cc.mutation.SetTransferred(v)
 	}
+	if _, ok := cc.mutation.Empty(); !ok {
+		v := cabinet.DefaultEmpty
+		cc.mutation.SetEmpty(v)
+	}
+	if _, ok := cc.mutation.Fully(); !ok {
+		v := cabinet.DefaultFully
+		cc.mutation.SetFully(v)
+	}
 	return nil
 }
 
@@ -512,6 +548,12 @@ func (cc *CabinetCreate) check() error {
 	}
 	if _, ok := cc.mutation.Transferred(); !ok {
 		return &ValidationError{Name: "transferred", err: errors.New(`ent: missing required field "Cabinet.transferred"`)}
+	}
+	if _, ok := cc.mutation.Empty(); !ok {
+		return &ValidationError{Name: "empty", err: errors.New(`ent: missing required field "Cabinet.empty"`)}
+	}
+	if _, ok := cc.mutation.Fully(); !ok {
+		return &ValidationError{Name: "fully", err: errors.New(`ent: missing required field "Cabinet.fully"`)}
 	}
 	return nil
 }
@@ -716,6 +758,22 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 			Column: cabinet.FieldTransferred,
 		})
 		_node.Transferred = value
+	}
+	if value, ok := cc.mutation.Empty(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldEmpty,
+		})
+		_node.Empty = value
+	}
+	if value, ok := cc.mutation.Fully(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldFully,
+		})
+		_node.Fully = value
 	}
 	if nodes := cc.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1289,6 +1347,42 @@ func (u *CabinetUpsert) UpdateTransferred() *CabinetUpsert {
 	return u
 }
 
+// SetEmpty sets the "empty" field.
+func (u *CabinetUpsert) SetEmpty(v int) *CabinetUpsert {
+	u.Set(cabinet.FieldEmpty, v)
+	return u
+}
+
+// UpdateEmpty sets the "empty" field to the value that was provided on create.
+func (u *CabinetUpsert) UpdateEmpty() *CabinetUpsert {
+	u.SetExcluded(cabinet.FieldEmpty)
+	return u
+}
+
+// AddEmpty adds v to the "empty" field.
+func (u *CabinetUpsert) AddEmpty(v int) *CabinetUpsert {
+	u.Add(cabinet.FieldEmpty, v)
+	return u
+}
+
+// SetFully sets the "fully" field.
+func (u *CabinetUpsert) SetFully(v int) *CabinetUpsert {
+	u.Set(cabinet.FieldFully, v)
+	return u
+}
+
+// UpdateFully sets the "fully" field to the value that was provided on create.
+func (u *CabinetUpsert) UpdateFully() *CabinetUpsert {
+	u.SetExcluded(cabinet.FieldFully)
+	return u
+}
+
+// AddFully adds v to the "fully" field.
+func (u *CabinetUpsert) AddFully(v int) *CabinetUpsert {
+	u.Add(cabinet.FieldFully, v)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1805,6 +1899,48 @@ func (u *CabinetUpsertOne) SetTransferred(v bool) *CabinetUpsertOne {
 func (u *CabinetUpsertOne) UpdateTransferred() *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
 		s.UpdateTransferred()
+	})
+}
+
+// SetEmpty sets the "empty" field.
+func (u *CabinetUpsertOne) SetEmpty(v int) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetEmpty(v)
+	})
+}
+
+// AddEmpty adds v to the "empty" field.
+func (u *CabinetUpsertOne) AddEmpty(v int) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.AddEmpty(v)
+	})
+}
+
+// UpdateEmpty sets the "empty" field to the value that was provided on create.
+func (u *CabinetUpsertOne) UpdateEmpty() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateEmpty()
+	})
+}
+
+// SetFully sets the "fully" field.
+func (u *CabinetUpsertOne) SetFully(v int) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetFully(v)
+	})
+}
+
+// AddFully adds v to the "fully" field.
+func (u *CabinetUpsertOne) AddFully(v int) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.AddFully(v)
+	})
+}
+
+// UpdateFully sets the "fully" field to the value that was provided on create.
+func (u *CabinetUpsertOne) UpdateFully() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateFully()
 	})
 }
 
@@ -2488,6 +2624,48 @@ func (u *CabinetUpsertBulk) SetTransferred(v bool) *CabinetUpsertBulk {
 func (u *CabinetUpsertBulk) UpdateTransferred() *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
 		s.UpdateTransferred()
+	})
+}
+
+// SetEmpty sets the "empty" field.
+func (u *CabinetUpsertBulk) SetEmpty(v int) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetEmpty(v)
+	})
+}
+
+// AddEmpty adds v to the "empty" field.
+func (u *CabinetUpsertBulk) AddEmpty(v int) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.AddEmpty(v)
+	})
+}
+
+// UpdateEmpty sets the "empty" field to the value that was provided on create.
+func (u *CabinetUpsertBulk) UpdateEmpty() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateEmpty()
+	})
+}
+
+// SetFully sets the "fully" field.
+func (u *CabinetUpsertBulk) SetFully(v int) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetFully(v)
+	})
+}
+
+// AddFully adds v to the "fully" field.
+func (u *CabinetUpsertBulk) AddFully(v int) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.AddFully(v)
+	})
+}
+
+// UpdateFully sets the "fully" field to the value that was provided on create.
+func (u *CabinetUpsertBulk) UpdateFully() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateFully()
 	})
 }
 
