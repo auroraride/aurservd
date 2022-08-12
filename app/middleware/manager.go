@@ -20,8 +20,9 @@ import (
 
 var (
     managerSkipper = map[string]bool{
-        "/manager/v1/permission":  true,
-        "/manager/v1/user/signin": true,
+        "/manager/v1/permission":      true,
+        "/manager/v1/user/signin":     true,
+        "/manager/v1/export/download": true,
     }
 )
 
@@ -36,6 +37,9 @@ func ManagerMiddleware() echo.MiddlewareFunc {
 
             // 判定登录
             token := c.Request().Header.Get(app.HeaderManagerToken)
+            if token == "" {
+                token = c.QueryParam("token")
+            }
             id, err := cache.Get(context.Background(), token).Uint64()
             if err != nil {
                 snag.Panic(snag.StatusUnauthorized)

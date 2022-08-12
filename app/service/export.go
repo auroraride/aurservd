@@ -16,6 +16,7 @@ import (
     "github.com/golang-module/carbon/v2"
     jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
+    "net/url"
     "path/filepath"
     "time"
 )
@@ -121,5 +122,5 @@ func (s *exportService) Download(req *model.ExportDownloadReq) (string, string) 
     if err != nil {
         snag.Panic("未找到文件")
     }
-    return filepath.Base(e.Path), e.Path
+    return e.Path, url.QueryEscape(filepath.Base(e.Path))
 }

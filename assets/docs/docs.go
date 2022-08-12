@@ -5039,7 +5039,7 @@ const docTemplate = `{
             }
         },
         "/manager/v1/export/download/{sn}": {
-            "post": {
+            "get": {
                 "consumes": [
                     "application/json"
                 ],

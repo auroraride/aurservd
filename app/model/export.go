@@ -45,5 +45,6 @@ type ExportListRes struct {
 }
 
 type ExportDownloadReq struct {
-    SN string `json:"sn" param:"sn" validate:"required"` // 下载文件
+    SN    string `json:"sn" param:"sn" validate:"required"`       // 下载文件
+    Token string `json:"token" query:"token" validate:"required"` // 用户token
 }

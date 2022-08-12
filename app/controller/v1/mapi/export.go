@@ -9,9 +9,7 @@ import (
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/service"
-    "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
-    "strings"
 )
 
 type export struct{}
@@ -35,7 +33,7 @@ func (*export) List(c echo.Context) (err error) {
 
 // Download
 // @ID           ManagerExportDownload
-// @Router       /manager/v1/export/download/{sn} [POST]
+// @Router       /manager/v1/export/download/{sn} [GET]
 // @Summary      MF002 下载文件
 // @Tags         [M]管理接口
 // @Accept       json
@@ -45,9 +43,6 @@ func (*export) List(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*export) Download(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.ExportDownloadReq](c)
-    if !strings.HasPrefix(ctx.Request().Header.Get("Content-Type"), "multipart/form-data") {
-        snag.Panic("请求方式不正确")
-    }
     return ctx.Attachment(service.NewExportWithModifier(ctx.Modifier).Download(req))
 }
 

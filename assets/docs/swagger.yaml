@@ -7973,7 +7973,7 @@ paths:
       tags:
       - '[M]管理接口'
   /manager/v1/export/download/{sn}:
-    post:
+    get:
       consumes:
       - application/json
       operationId: ManagerExportDownload
