@@ -272,3 +272,9 @@ func BusyFromIDX(id uint64) {
         snag.Panic("电柜忙")
     }
 }
+
+// GetAllProcessing 获取所有正在进行中的任务
+func GetAllProcessing() (tasks []*Task) {
+    _ = mgo.CabinetTask.Find(context.Background(), bson.M{"status": TaskStatusProcessing}).All(&tasks)
+    return
+}

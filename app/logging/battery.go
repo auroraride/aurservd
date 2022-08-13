@@ -74,7 +74,11 @@ func (l *BatteryLog) SetBin(oldBins, bins model.CabinetBins) *BatteryLog {
     var diff []string
     for _, bin := range bins {
         old, ok := oldMap[bin.Index]
-        if ok && old.Battery == bin.Battery {
+        if !ok {
+            continue
+        }
+
+        if old.Battery == bin.Battery {
             continue
         }
 

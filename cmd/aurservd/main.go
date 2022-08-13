@@ -12,20 +12,23 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/boot"
     "github.com/auroraride/aurservd/pkg/cache"
+    "github.com/auroraride/aurservd/pkg/snag"
 )
 
 func main() {
-    boot.Bootstrap()
+    snag.WithPanicStack(func() {
+        boot.Bootstrap()
 
-    // 初始化缓存
-    createCache()
+        // 初始化缓存
+        createCache()
 
-    // 初始化系统设置
-    service.NewSetting().Initialize()
+        // 初始化系统设置
+        service.NewSetting().Initialize()
 
-    internal.Demo()
-    // 启动脚本
-    script.Execute()
+        internal.Demo()
+        // 启动脚本
+        script.Execute()
+    })
 }
 
 func createCache() {
