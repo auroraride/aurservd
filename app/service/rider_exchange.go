@@ -194,14 +194,6 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     s.logger = logging.NewExchangeLog(s.rider.ID, task.ID.Hex(), cab.Serial, s.rider.Phone, be.IsBatteryFull())
     s.cabinet = cab
 
-    // 开始任务
-    task.Start(func(task *ec.Task) {
-        task.Exchange.ExchangeID = s.exchange.ID
-        task.Exchange.Steps = []*ec.ExchangeStepInfo{
-            {Step: ec.ExchangeStepOpenEmpty, Time: time.Now()},
-        }
-    })
-
     // 记录换电人
     // TODO 超时处理
     s.exchange, _ = ent.Database.Exchange.
@@ -220,12 +212,20 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         SetNillableStationID(s.subscribe.StationID).
         SetSubscribeID(s.subscribe.ID).
         SetAlternative(task.Exchange.Alternative).
-        SetStartAt(*task.StartAt).
+        SetStartAt(time.Now()).
         Save(s.ctx)
 
     if s.exchange == nil {
         snag.Panic("换电失败")
     }
+
+    // 开始任务
+    task.Start(func(task *ec.Task) {
+        task.Exchange.ExchangeID = s.exchange.ID
+        task.Exchange.Steps = []*ec.ExchangeStepInfo{
+            {Step: ec.ExchangeStepOpenEmpty, Time: time.Now()},
+        }
+    })
 
     // 处理换电流程
     s.task = task
