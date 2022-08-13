@@ -25,7 +25,9 @@ func main() {
         // 初始化系统设置
         service.NewSetting().Initialize()
 
+        // Demo
         internal.Demo()
+
         // 启动脚本
         script.Execute()
     })

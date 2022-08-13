@@ -196,6 +196,7 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
 
     // 开始任务
     task.Start(func(task *ec.Task) {
+        task.Exchange.ExchangeID = s.exchange.ID
         task.Exchange.Steps = []*ec.ExchangeStepInfo{
             {Step: ec.ExchangeStepOpenEmpty, Time: time.Now()},
         }

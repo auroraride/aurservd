@@ -48,6 +48,7 @@ func (es ExchangeStep) IsLast() bool {
 
 // Exchange 换电信息
 type Exchange struct {
+    ExchangeID  uint64              `json:"exchangeId" bson:"exchangeId"`   // 数据库换电ID
     Alternative bool                `json:"alternative" bson:"alternative"` // 是否备选方案
     Model       string              `json:"model" bson:"model"`             // 电池型号
     Empty       *BinInfo            `json:"empty" bson:"empty"`             // 空仓位
