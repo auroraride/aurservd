@@ -17,6 +17,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/pkg/cache"
+    "github.com/auroraride/aurservd/pkg/snag"
     log "github.com/sirupsen/logrus"
     "math"
     "time"
@@ -147,56 +148,61 @@ func monitor(oldBins model.CabinetBins, oldHealth uint8, oldNum uint, item *ent.
 
 // StartCabinetProvider 开始执行任务
 func StartCabinetProvider(providers ...Provider) {
-    slsCfg := ar.Config.Aliyun.Sls
     for _, p := range providers {
         provider := p
         times := 0
         go func() {
             for {
                 times += 1
-                provider.PrepareRequest()
-                provider.Logger().Write(fmt.Sprintf("开始第%d次%s电柜状态轮询\n", times, provider.Brand()))
-                start := time.Now()
-
-                items, err := provider.Cabinets()
-                if err != nil {
-                    log.Errorf("%s电柜获取失败: %#v", provider.Brand(), err)
-                    return
-                }
-
-                for _, item := range items {
-                    // 换电过程不查询状态
-                    if ec.Busy(item.Serial) {
-                        continue
-                    }
-
-                    // 更新电柜信息
-                    err = provider.UpdateStatus(item)
-
-                    if err == nil {
-                        // 提交日志
-                        if item.Health == model.CabinetHealthStatusOnline {
-                            go func() {
-                                // 保存历史仓位信息(转换后的)
-                                lg := GenerateSlsStatusLogGroup(item)
-                                if lg != nil {
-                                    err = ali.NewSls().PutLogs(slsCfg.Project, slsCfg.CabinetLog, lg)
-                                    if err != nil {
-                                        log.Errorf("阿里云SLS提交失败: %#v", err)
-                                    }
-                                }
-                            }()
-                        }
-                    }
-
-                    time.Sleep(time.Duration((60000-int(time.Now().Sub(start).Milliseconds()))/len(items)) * time.Millisecond)
-                }
-
-                // 写入电柜日志
-                provider.Logger().Write(fmt.Sprintf("完成第%d次%s电柜状态轮询, 耗时%.2fs\n\n", times, provider.Brand(), time.Now().Sub(start).Seconds()))
-
+                doLoop(times, provider)
                 time.Sleep(1 * time.Minute)
             }
         }()
     }
+}
+
+func doLoop(times int, provider Provider) {
+    snag.WithPanicStack(func() {
+        slsCfg := ar.Config.Aliyun.Sls
+        provider.PrepareRequest()
+        provider.Logger().Write(fmt.Sprintf("开始第%d次%s电柜状态轮询\n", times, provider.Brand()))
+        start := time.Now()
+
+        items, err := provider.Cabinets()
+        if err != nil {
+            log.Errorf("%s电柜获取失败: %#v", provider.Brand(), err)
+            return
+        }
+
+        for _, item := range items {
+            // 换电过程不查询状态
+            if ec.Busy(item.Serial) {
+                continue
+            }
+
+            // 更新电柜信息
+            err = provider.UpdateStatus(item)
+
+            if err == nil {
+                // 提交日志
+                if item.Health == model.CabinetHealthStatusOnline {
+                    go func() {
+                        // 保存历史仓位信息(转换后的)
+                        lg := GenerateSlsStatusLogGroup(item)
+                        if lg != nil {
+                            err = ali.NewSls().PutLogs(slsCfg.Project, slsCfg.CabinetLog, lg)
+                            if err != nil {
+                                log.Errorf("阿里云SLS提交失败: %#v", err)
+                            }
+                        }
+                    }()
+                }
+            }
+
+            time.Sleep(time.Duration((60000-int(time.Now().Sub(start).Milliseconds()))/len(items)) * time.Millisecond)
+        }
+
+        // 写入电柜日志
+        provider.Logger().Write(fmt.Sprintf("完成第%d次%s电柜状态轮询, 耗时%.2fs\n\n", times, provider.Brand(), time.Now().Sub(start).Seconds()))
+    })
 }

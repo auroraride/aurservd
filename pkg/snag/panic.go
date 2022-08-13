@@ -7,6 +7,8 @@ package snag
 
 import (
     "fmt"
+    log "github.com/sirupsen/logrus"
+    "runtime/debug"
 )
 
 func Panic(params ...any) {
@@ -36,7 +38,7 @@ func PanicIfErrorX(err error, cb func() error, params ...any) {
     }
 }
 
-func Recover(cb func()) (err error) {
+func WithPanic(cb func()) (err error) {
     defer func() {
         if v := recover(); v != nil {
             err = fmt.Errorf("%v", v)
@@ -46,4 +48,14 @@ func Recover(cb func()) (err error) {
     cb()
 
     return
+}
+
+func WithPanicStack(cb func()) {
+    defer func() {
+        if v := recover(); v != nil {
+            log.Errorf("%v\n%s", v, debug.Stack())
+        }
+    }()
+
+    cb()
 }

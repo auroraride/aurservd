@@ -321,7 +321,7 @@ func (s *riderBusinessService) Unsubscribe(req *model.BusinessCabinetReq) model.
     }
 
     go func() {
-        err := snag.Recover(func() {
+        err := snag.WithPanic(func() {
             NewBusinessRider(s.rider).SetTask(func() *ec.BinInfo {
                 return s.putin()
             }).SetCabinet(s.cabinet).UnSubscribe(req.ID)
@@ -345,7 +345,7 @@ func (s *riderBusinessService) Pause(req *model.BusinessCabinetReq) model.Busine
     }
 
     go func() {
-        err := snag.Recover(func() {
+        err := snag.WithPanic(func() {
             NewBusinessRider(s.rider).
                 SetTask(func() *ec.BinInfo {
                     return s.putin()
