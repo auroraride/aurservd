@@ -396,7 +396,7 @@ func (s *stockService) BatteryOverview(req *model.StockOverviewReq) (items []mod
         if req.StoreID != 0 {
             extends = append(extends, fmt.Sprintf("AND (%s = %d)", stock.FieldStoreID, req.StoreID))
         } else {
-            extends = append(extends, fmt.Sprintf("AND (%s IS NOT NULL OR (%s IS NULL AND %s IS NULL))", stock.FieldStoreID, stock.FieldStoreID, stock.FieldCabinetID))
+            extends = append(extends, fmt.Sprintf("AND (%s IS NOT NULL OR (%s IS NULL AND %s IS NULL AND %s > 0))", stock.FieldStoreID, stock.FieldStoreID, stock.FieldCabinetID, stock.FieldType))
         }
         break
     case 2:
