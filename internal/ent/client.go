@@ -37,6 +37,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
 	"github.com/auroraride/aurservd/internal/ent/role"
@@ -113,6 +114,8 @@ type Client struct {
 	Person *PersonClient
 	// Plan is the client for interacting with the Plan builders.
 	Plan *PlanClient
+	// Reserve is the client for interacting with the Reserve builders.
+	Reserve *ReserveClient
 	// Rider is the client for interacting with the Rider builders.
 	Rider *RiderClient
 	// RiderFollowUp is the client for interacting with the RiderFollowUp builders.
@@ -172,6 +175,7 @@ func (c *Client) init() {
 	c.OrderRefund = NewOrderRefundClient(c.config)
 	c.Person = NewPersonClient(c.config)
 	c.Plan = NewPlanClient(c.config)
+	c.Reserve = NewReserveClient(c.config)
 	c.Rider = NewRiderClient(c.config)
 	c.RiderFollowUp = NewRiderFollowUpClient(c.config)
 	c.Role = NewRoleClient(c.config)
@@ -242,6 +246,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		OrderRefund:          NewOrderRefundClient(cfg),
 		Person:               NewPersonClient(cfg),
 		Plan:                 NewPlanClient(cfg),
+		Reserve:              NewReserveClient(cfg),
 		Rider:                NewRiderClient(cfg),
 		RiderFollowUp:        NewRiderFollowUpClient(cfg),
 		Role:                 NewRoleClient(cfg),
@@ -298,6 +303,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		OrderRefund:          NewOrderRefundClient(cfg),
 		Person:               NewPersonClient(cfg),
 		Plan:                 NewPlanClient(cfg),
+		Reserve:              NewReserveClient(cfg),
 		Rider:                NewRiderClient(cfg),
 		RiderFollowUp:        NewRiderFollowUpClient(cfg),
 		Role:                 NewRoleClient(cfg),
@@ -364,6 +370,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.OrderRefund.Use(hooks...)
 	c.Person.Use(hooks...)
 	c.Plan.Use(hooks...)
+	c.Reserve.Use(hooks...)
 	c.Rider.Use(hooks...)
 	c.RiderFollowUp.Use(hooks...)
 	c.Role.Use(hooks...)
@@ -4472,6 +4479,145 @@ func (c *PlanClient) QueryComplexes(pl *Plan) *PlanQuery {
 func (c *PlanClient) Hooks() []Hook {
 	hooks := c.hooks.Plan
 	return append(hooks[:len(hooks):len(hooks)], plan.Hooks[:]...)
+}
+
+// ReserveClient is a client for the Reserve schema.
+type ReserveClient struct {
+	config
+}
+
+// NewReserveClient returns a client for the Reserve from the given config.
+func NewReserveClient(c config) *ReserveClient {
+	return &ReserveClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `reserve.Hooks(f(g(h())))`.
+func (c *ReserveClient) Use(hooks ...Hook) {
+	c.hooks.Reserve = append(c.hooks.Reserve, hooks...)
+}
+
+// Create returns a create builder for Reserve.
+func (c *ReserveClient) Create() *ReserveCreate {
+	mutation := newReserveMutation(c.config, OpCreate)
+	return &ReserveCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Reserve entities.
+func (c *ReserveClient) CreateBulk(builders ...*ReserveCreate) *ReserveCreateBulk {
+	return &ReserveCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Reserve.
+func (c *ReserveClient) Update() *ReserveUpdate {
+	mutation := newReserveMutation(c.config, OpUpdate)
+	return &ReserveUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ReserveClient) UpdateOne(r *Reserve) *ReserveUpdateOne {
+	mutation := newReserveMutation(c.config, OpUpdateOne, withReserve(r))
+	return &ReserveUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ReserveClient) UpdateOneID(id uint64) *ReserveUpdateOne {
+	mutation := newReserveMutation(c.config, OpUpdateOne, withReserveID(id))
+	return &ReserveUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Reserve.
+func (c *ReserveClient) Delete() *ReserveDelete {
+	mutation := newReserveMutation(c.config, OpDelete)
+	return &ReserveDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ReserveClient) DeleteOne(r *Reserve) *ReserveDeleteOne {
+	return c.DeleteOneID(r.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ReserveClient) DeleteOneID(id uint64) *ReserveDeleteOne {
+	builder := c.Delete().Where(reserve.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ReserveDeleteOne{builder}
+}
+
+// Query returns a query builder for Reserve.
+func (c *ReserveClient) Query() *ReserveQuery {
+	return &ReserveQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Reserve entity by its id.
+func (c *ReserveClient) Get(ctx context.Context, id uint64) (*Reserve, error) {
+	return c.Query().Where(reserve.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ReserveClient) GetX(ctx context.Context, id uint64) *Reserve {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCabinet queries the cabinet edge of a Reserve.
+func (c *ReserveClient) QueryCabinet(r *Reserve) *CabinetQuery {
+	query := &CabinetQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(reserve.Table, reserve.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, reserve.CabinetTable, reserve.CabinetColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRider queries the rider edge of a Reserve.
+func (c *ReserveClient) QueryRider(r *Reserve) *RiderQuery {
+	query := &RiderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(reserve.Table, reserve.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, reserve.RiderTable, reserve.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBusiness queries the business edge of a Reserve.
+func (c *ReserveClient) QueryBusiness(r *Reserve) *BusinessQuery {
+	query := &BusinessQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(reserve.Table, reserve.FieldID, id),
+			sqlgraph.To(business.Table, business.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, reserve.BusinessTable, reserve.BusinessColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ReserveClient) Hooks() []Hook {
+	hooks := c.hooks.Reserve
+	return append(hooks[:len(hooks):len(hooks)], reserve.Hooks[:]...)
 }
 
 // RiderClient is a client for the Rider schema.

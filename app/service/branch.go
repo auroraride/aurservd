@@ -25,8 +25,9 @@ import (
 )
 
 type branchService struct {
-    orm *ent.BranchClient
-    ctx context.Context
+    orm   *ent.BranchClient
+    ctx   context.Context
+    rider *ent.Rider
 }
 
 func NewBranch() *branchService {
@@ -39,6 +40,14 @@ func NewBranch() *branchService {
 func NewBranchWithModifier(m *model.Modifier) *branchService {
     s := NewBranch()
     s.ctx = context.WithValue(s.ctx, "modifier", m)
+    return s
+}
+
+func NewBranchWithRider(r *ent.Rider) *branchService {
+    s := NewBranch()
+    if r != nil {
+        s.rider = r
+    }
     return s
 }
 
@@ -207,7 +216,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (temps 
     if req.Distance == nil && req.CityID == nil {
         snag.Panic("距离和城市不能同时为空")
     }
-    q := s.orm.QueryNotDeleted().
+    err := s.orm.QueryNotDeleted().
         Modify(func(sel *sql.Selector) {
             bt := sql.Table(branch.Table)
             sel.Select(bt.C(branch.FieldID), bt.C(branch.FieldName), bt.C(branch.FieldAddress), bt.C(branch.FieldLat), bt.C(branch.FieldLng)).
@@ -222,12 +231,11 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (temps 
                 sel.Where(sql.P(func(b *sql.Builder) {
                     b.WriteString(fmt.Sprintf(`ST_DWithin(%s, ST_GeogFromText('POINT(%f %f)'), %f)`, branch.FieldGeom, *req.Lng, *req.Lat, *req.Distance))
                 }))
+            } else if req.CityID != nil {
+                sel.Where(sql.EQ(sel.C(branch.FieldCityID), *req.CityID))
             }
-        })
-    if req.CityID != nil {
-        q.Where(branch.CityID(*req.CityID))
-    }
-    err := q.Scan(s.ctx, &temps)
+        }).
+        Scan(s.ctx, &temps)
     if err != nil || len(temps) == 0 {
         return
     }
@@ -339,7 +347,21 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
 
 // ListByDistanceRider 根据距离列出所有网点和电柜
 func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (items []*model.BranchWithDistanceRes) {
+    // var sub *ent.Subscribe
+    // if s.rider != nil {
+    //     _, sub = NewSubscribeWithRider(s.rider).RecentDetail(s.rider.ID)
+    // }
+
+    // TODO 业务获取限制
+    // if sub != nil {
+    //     if req.Business == business.TypeActive && sub.Status != model.SubscribeStatusInactive {}
+    //     if req.Business == business.TypePause && sub.Status != model.SubscribeStatusUsing {}
+    //     if req.Business == business.TypeContinue && sub.Status != model.SubscribeStatusPaused {}
+    //     if req.Business == business.TypeUnsubscribe && sub.Status != model.SubscribeStatusUsing {}
+    // }
+
     temps, stores, cabinets := s.ListByDistance(req)
+
     items = make([]*model.BranchWithDistanceRes, 0)
     // 三种设备类别
     itemsMap := make(map[uint64]*model.BranchWithDistanceRes, len(temps))
@@ -383,7 +405,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
                 Fid:   shortuuid.New(),
             }
             // 获取健康状态
-            // TODO 状态更新多久算离线 现在是5分钟
+            // 5分钟未更新视为离线
             if c.Health == model.CabinetHealthStatusOnline && time.Now().Sub(c.UpdatedAt).Minutes() < 5 {
                 fa.State = model.BranchFacilityStateOnline
             }

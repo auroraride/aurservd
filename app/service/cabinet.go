@@ -357,7 +357,7 @@ func (s *cabinetService) Detail(item *ent.Cabinet) *model.CabinetDetailRes {
         res.Models = append(res.Models, bm.Model)
     }
 
-    res.StockNum = NewStock().Current(item.ID, stock.FieldCabinetID)
+    res.StockNum = NewStock().CurrentBattery(item.ID, stock.FieldCabinetID)
 
     return res
 }
@@ -558,7 +558,7 @@ func (s *cabinetService) dataItems(res *model.PaginationRes) *model.PaginationRe
     for i, item := range items {
         ids[i] = item.ID
     }
-    m := NewStock().CurrentNum(ids, stock.FieldCabinetID)
+    m := NewStock().CurrentBatteryNum(ids, stock.FieldCabinetID)
     for i, item := range items {
         items[i].StockNum = m[item.ID]
     }

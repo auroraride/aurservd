@@ -10157,6 +10157,15 @@ paths:
         name: X-Rider-Token
         required: true
         type: string
+      - description: 业务选项 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+        enum:
+        - active
+        - pause
+        - continue
+        - unsubscribe
+        in: query
+        name: business
+        type: string
       - description: '城市ID '
         in: query
         name: cityId

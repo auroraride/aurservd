@@ -32,6 +32,8 @@ var (
         "internal":        FileInfoTypeDir,
         "schema":          FileInfoTypeDir,
     }
+
+    // keep = regexp.MustCompile(`^db.go|^connect.go|^slslog.go|^cabinet_task.go|^internal|^schema`)
 )
 
 func Clean(path ...string) {
@@ -39,6 +41,18 @@ func Clean(path ...string) {
     if len(path) > 0 {
         p = path[0]
     }
+
+    // _ = filepath.WalkDir(p, func(path string, d fs.DirEntry, err error) error {
+    //     name := strings.Replace(path, p, "", 1)
+    //     if name == "" || d.IsDir() {
+    //         return nil
+    //     }
+    //     if !keep.MatchString(name) {
+    //         _ = os.RemoveAll(path)
+    //     }
+    //     return nil
+    // })
+
     fs, _ := ioutil.ReadDir(p)
     for _, f := range fs {
         name := f.Name()

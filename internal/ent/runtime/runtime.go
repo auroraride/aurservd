@@ -33,6 +33,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
 	"github.com/auroraride/aurservd/internal/ent/role"
@@ -703,6 +704,27 @@ func init() {
 	plan.DefaultUpdatedAt = planDescUpdatedAt.Default.(func() time.Time)
 	// plan.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	plan.UpdateDefaultUpdatedAt = planDescUpdatedAt.UpdateDefault.(func() time.Time)
+	reserveMixin := schema.Reserve{}.Mixin()
+	reserveMixinHooks2 := reserveMixin[2].Hooks()
+	reserve.Hooks[0] = reserveMixinHooks2[0]
+	reserveMixinFields0 := reserveMixin[0].Fields()
+	_ = reserveMixinFields0
+	reserveFields := schema.Reserve{}.Fields()
+	_ = reserveFields
+	// reserveDescCreatedAt is the schema descriptor for created_at field.
+	reserveDescCreatedAt := reserveMixinFields0[0].Descriptor()
+	// reserve.DefaultCreatedAt holds the default value on creation for the created_at field.
+	reserve.DefaultCreatedAt = reserveDescCreatedAt.Default.(func() time.Time)
+	// reserveDescUpdatedAt is the schema descriptor for updated_at field.
+	reserveDescUpdatedAt := reserveMixinFields0[1].Descriptor()
+	// reserve.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	reserve.DefaultUpdatedAt = reserveDescUpdatedAt.Default.(func() time.Time)
+	// reserve.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	reserve.UpdateDefaultUpdatedAt = reserveDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// reserveDescStatus is the schema descriptor for status field.
+	reserveDescStatus := reserveFields[0].Descriptor()
+	// reserve.DefaultStatus holds the default value on creation for the status field.
+	reserve.DefaultStatus = reserveDescStatus.Default.(uint8)
 	riderMixin := schema.Rider{}.Mixin()
 	riderMixinHooks2 := riderMixin[2].Hooks()
 	rider.Hooks[0] = riderMixinHooks2[0]

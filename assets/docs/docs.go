@@ -8420,6 +8420,18 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "enum": [
+                            "active",
+                            "pause",
+                            "continue",
+                            "unsubscribe"
+                        ],
+                        "type": "string",
+                        "description": "业务选项 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                        "name": "business",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "城市ID ",
                         "name": "cityId",

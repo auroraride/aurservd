@@ -19,6 +19,32 @@ const (
     StockTargetCabinet       // 调拨对象 - 电柜
 )
 
+type StockGoal uint8
+
+const (
+    StockGoalAll StockGoal = iota
+    StockGoalStore
+    StockGoalCabinet
+)
+
+func (sg StockGoal) String() string {
+    switch sg {
+    case StockGoalStore:
+        return "门店"
+    case StockGoalCabinet:
+        return "电柜"
+    default:
+        return ""
+    }
+}
+
+func (sg StockGoal) SQLString() string {
+    return map[StockGoal]string{
+        StockGoalStore:   "store",
+        StockGoalCabinet: "cabinet",
+    }[sg]
+}
+
 // StockNumberOfRiderBusiness 出入库电池数量
 func StockNumberOfRiderBusiness(typ uint8) (num int) {
     switch typ {
@@ -47,12 +73,12 @@ type StockTransferReq struct {
 }
 
 type StockOverviewReq struct {
-    Goal      uint8  `json:"goal" query:"goal" enums:"0,1,2"` // 查询目标, 0:不筛选 1:门店(默认) 2:电柜
-    CabinetID uint64 `json:"cabinetId" query:"cabinetId"`     // 电柜ID, 仅goal为0的时候生效
-    StoreID   uint64 `json:"storeId" query:"storeId"`         // 门店ID, 仅goal为0的时候生效
-    CityID    uint64 `json:"cityId" query:"cityId"`           // 城市ID
-    Start     string `json:"start" query:"start"`             // 开始时间
-    End       string `json:"end" query:"end"`                 // 结束时间
+    Goal      StockGoal `json:"goal" query:"goal" enums:"0,1,2"` // 查询目标, 0:不筛选 1:门店(默认) 2:电柜
+    CabinetID uint64    `json:"cabinetId" query:"cabinetId"`     // 电柜ID, 仅goal为2的时候生效
+    StoreID   uint64    `json:"storeId" query:"storeId"`         // 门店ID, 仅goal为1的时候生效
+    CityID    uint64    `json:"cityId" query:"cityId"`           // 城市ID
+    Start     string    `json:"start" query:"start"`             // 开始时间
+    End       string    `json:"end" query:"end"`                 // 结束时间
 }
 
 // StockBatteryOverviewRes 电池概览
@@ -182,15 +208,15 @@ type StockCabinetListRes struct {
 type StockDetailReq struct {
     PaginationReq
 
-    Goal      uint8  `json:"goal" query:"goal" enums:"0,1,2"` // 查询目标 0:不筛选 1:门店(默认) 2:电柜
-    Materials string `json:"materials" query:"materials"`     // 查询物资类别, 默认为电池, 逗号分隔 battery:电池 frame:车架 others:其他物资
-    Serial    string `json:"serial" query:"serial"`           // 电柜编号
-    CityID    uint64 `json:"cityId" query:"cityId"`           // 城市ID
-    CabinetID uint64 `json:"cabinetId" query:"cabinetId"`     // 电柜ID
-    StoreID   uint64 `json:"storeId" query:"storeId"`         // 门店ID
-    Start     string `json:"start" query:"start"`             // 开始时间
-    End       string `json:"end" query:"end"`                 // 结束时间
-    Positive  bool   `json:"positive" query:"positive"`       // 是否正序(默认倒序)
+    Goal      StockGoal `json:"goal" query:"goal" enums:"0,1,2"` // 查询目标 0:不筛选 1:门店(默认) 2:电柜
+    Materials string    `json:"materials" query:"materials"`     // 查询物资类别, 默认为电池, 逗号分隔 battery:电池 frame:车架 others:其他物资
+    Serial    string    `json:"serial" query:"serial"`           // 电柜编号
+    CityID    uint64    `json:"cityId" query:"cityId"`           // 城市ID
+    CabinetID uint64    `json:"cabinetId" query:"cabinetId"`     // 电柜ID
+    StoreID   uint64    `json:"storeId" query:"storeId"`         // 门店ID
+    Start     string    `json:"start" query:"start"`             // 开始时间
+    End       string    `json:"end" query:"end"`                 // 结束时间
+    Positive  bool      `json:"positive" query:"positive"`       // 是否正序(默认倒序)
 }
 
 type StockDetailRes struct {
@@ -206,4 +232,21 @@ type StockDetailRes struct {
     Time     string `json:"time"`            // 时间
     Remark   string `json:"remark"`          // 备注信息
     Rider    string `json:"rider,omitempty"` // 骑手, 仅业务发生有此字段
+}
+
+type StockInventoryMapData map[uint64]map[string]map[string]StockInventory
+
+type StockInventoryReq struct {
+    IDs      []uint64  `json:"ids"`
+    Goal     StockGoal `json:"goal"`
+    Material string    `json:"material"`
+    Name     string    `json:"name"`
+}
+
+type StockInventory struct {
+    CabinetID uint64 `json:"cabinet_id,omitempty"`
+    StoreID   uint64 `json:"store_id,omitempty"`
+    Name      string `json:"name"`
+    Num       int    `json:"num"`
+    Material  string `json:"material"`
 }

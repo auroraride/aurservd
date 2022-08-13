@@ -100,6 +100,7 @@ type BranchWithDistanceReq struct {
     Lat      *float64 `json:"lat" query:"lat" validate:"required" trans:"纬度"`
     Distance *float64 `json:"distance" query:"distance" trans:"距离"`
     CityID   *uint64  `json:"cityId" query:"cityId" trans:"城市ID"`
+    Business string   `json:"business" query:"business" enums:"active,pause,continue,unsubscribe"` // 业务选项 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
 }
 
 type BranchDistanceListReq struct {

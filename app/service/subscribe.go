@@ -41,8 +41,8 @@ func NewSubscribe() *subscribeService {
     }
 }
 
-func NewSubscribeWithRider(rider *ent.Rider) *orderService {
-    s := NewOrder()
+func NewSubscribeWithRider(rider *ent.Rider) *subscribeService {
+    s := NewSubscribe()
     s.ctx = context.WithValue(s.ctx, "rider", rider)
     s.rider = rider
     return s

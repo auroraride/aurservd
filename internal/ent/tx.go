@@ -70,6 +70,8 @@ type Tx struct {
 	Person *PersonClient
 	// Plan is the client for interacting with the Plan builders.
 	Plan *PlanClient
+	// Reserve is the client for interacting with the Reserve builders.
+	Reserve *ReserveClient
 	// Rider is the client for interacting with the Rider builders.
 	Rider *RiderClient
 	// RiderFollowUp is the client for interacting with the RiderFollowUp builders.
@@ -251,6 +253,7 @@ func (tx *Tx) init() {
 	tx.OrderRefund = NewOrderRefundClient(tx.config)
 	tx.Person = NewPersonClient(tx.config)
 	tx.Plan = NewPlanClient(tx.config)
+	tx.Reserve = NewReserveClient(tx.config)
 	tx.Rider = NewRiderClient(tx.config)
 	tx.RiderFollowUp = NewRiderFollowUpClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)

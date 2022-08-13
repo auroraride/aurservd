@@ -624,6 +624,28 @@ func (pq *PlanQuery) PaginationResult(req model.PaginationReq) model.Pagination 
 	}
 }
 
+// Pagination returns pagination query builder for ReserveQuery.
+func (rq *ReserveQuery) Pagination(req model.PaginationReq) *ReserveQuery {
+	rq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return rq
+}
+
+// PaginationItems returns pagination query builder for ReserveQuery.
+func (rq *ReserveQuery) PaginationItemsX(req model.PaginationReq) any {
+	return rq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for ReserveQuery.
+func (rq *ReserveQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := rq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for RiderQuery.
 func (rq *RiderQuery) Pagination(req model.PaginationReq) *RiderQuery {
 	rq.Offset(req.GetOffset()).Limit(req.GetLimit())

@@ -30,7 +30,7 @@ var Branch = new(branch)
 // @Success      200  {object}  []model.BranchWithDistanceRes  "请求成功"
 func (*branch) List(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.BranchWithDistanceReq](c)
-    return ctx.SendResponse(service.NewBranch().ListByDistanceRider(req))
+    return ctx.SendResponse(service.NewBranchWithRider(ctx.Rider).ListByDistanceRider(req))
 }
 
 // Riding

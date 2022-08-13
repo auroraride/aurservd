@@ -28,7 +28,7 @@ type InventoryItem struct {
     Model   string `json:"model,omitempty"` // 电池型号
 }
 
-type InventoryItemWithNum struct {
+type InventoryNum struct {
     InventoryItem
     Num int `json:"num"` // 物资数量
 }

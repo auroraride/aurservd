@@ -326,6 +326,16 @@ func (pl *Plan) GetName() string {
 	return pl.Name
 }
 
+// GetTableName returns table name for Reserve.
+func (r *Reserve) GetTableName() string {
+	return "reserve"
+}
+
+// GetID returns id for Reserve.
+func (r *Reserve) GetID() uint64 {
+	return r.ID
+}
+
 // GetTableName returns table name for Rider.
 func (r *Rider) GetTableName() string {
 	return "rider"

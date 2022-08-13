@@ -43,6 +43,7 @@ const (
 	TypeOrderRefund          = "OrderRefund"
 	TypePerson               = "Person"
 	TypePlan                 = "Plan"
+	TypeReserve              = "Reserve"
 	TypeRider                = "Rider"
 	TypeRiderFollowUp        = "RiderFollowUp"
 	TypeRole                 = "Role"

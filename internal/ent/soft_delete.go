@@ -34,6 +34,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -1156,6 +1157,46 @@ func (c *PlanClient) GetNotDeleted(ctx context.Context, id uint64) (*Plan, error
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *PlanClient) GetNotDeletedX(ctx context.Context, id uint64) *Plan {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for Reserve.
+func (c *ReserveClient) SoftDelete() *ReserveUpdate {
+	mutation := newReserveMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &ReserveUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *ReserveClient) SoftDeleteOne(r *Reserve) *ReserveUpdateOne {
+	mutation := newReserveMutation(c.config, OpUpdateOne, withReserve(r))
+	mutation.SetDeletedAt(time.Now())
+	return &ReserveUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *ReserveClient) SoftDeleteOneID(id uint64) *ReserveUpdateOne {
+	mutation := newReserveMutation(c.config, OpUpdateOne, withReserveID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &ReserveUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for Reserve.
+func (c *ReserveClient) QueryNotDeleted() *ReserveQuery {
+	return c.Query().Where(reserve.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a Reserve not deleted entity by its id.
+func (c *ReserveClient) GetNotDeleted(ctx context.Context, id uint64) (*Reserve, error) {
+	return c.Query().Where(reserve.ID(id), reserve.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *ReserveClient) GetNotDeletedX(ctx context.Context, id uint64) *Reserve {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

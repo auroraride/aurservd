@@ -90,6 +90,9 @@ type Person func(*sql.Selector)
 // Plan is the predicate function for plan builders.
 type Plan func(*sql.Selector)
 
+// Reserve is the predicate function for reserve builders.
+type Reserve func(*sql.Selector)
+
 // Rider is the predicate function for rider builders.
 type Rider func(*sql.Selector)
 

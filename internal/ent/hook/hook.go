@@ -373,6 +373,19 @@ func (f PlanFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 	return f(ctx, mv)
 }
 
+// The ReserveFunc type is an adapter to allow the use of ordinary
+// function as Reserve mutator.
+type ReserveFunc func(context.Context, *ent.ReserveMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ReserveFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ReserveMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ReserveMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The RiderFunc type is an adapter to allow the use of ordinary
 // function as Rider mutator.
 type RiderFunc func(context.Context, *ent.RiderMutation) (ent.Value, error)

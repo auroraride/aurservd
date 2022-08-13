@@ -1842,6 +1842,64 @@ var (
 			},
 		},
 	}
+	// ReserveColumns holds the columns for the "reserve" table.
+	ReserveColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "status", Type: field.TypeUint8, Comment: "预约状态", Default: 0},
+		{Name: "type", Type: field.TypeString, Comment: "业务类型"},
+		{Name: "cabinet_id", Type: field.TypeUint64},
+		{Name: "rider_id", Type: field.TypeUint64},
+		{Name: "business_id", Type: field.TypeUint64, Nullable: true},
+	}
+	// ReserveTable holds the schema information for the "reserve" table.
+	ReserveTable = &schema.Table{
+		Name:       "reserve",
+		Columns:    ReserveColumns,
+		PrimaryKey: []*schema.Column{ReserveColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "reserve_cabinet_cabinet",
+				Columns:    []*schema.Column{ReserveColumns[9]},
+				RefColumns: []*schema.Column{CabinetColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "reserve_rider_rider",
+				Columns:    []*schema.Column{ReserveColumns[10]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "reserve_business_business",
+				Columns:    []*schema.Column{ReserveColumns[11]},
+				RefColumns: []*schema.Column{BusinessColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "reserve_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{ReserveColumns[1]},
+			},
+			{
+				Name:    "reserve_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{ReserveColumns[3]},
+			},
+			{
+				Name:    "reserve_type",
+				Unique:  false,
+				Columns: []*schema.Column{ReserveColumns[8]},
+			},
+		},
+	}
 	// RiderColumns holds the columns for the "rider" table.
 	RiderColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -2601,6 +2659,7 @@ var (
 		OrderRefundTable,
 		PersonTable,
 		PlanTable,
+		ReserveTable,
 		RiderTable,
 		RiderFollowUpTable,
 		RoleTable,
@@ -2763,6 +2822,12 @@ func init() {
 	PlanTable.ForeignKeys[0].RefTable = PlanTable
 	PlanTable.Annotation = &entsql.Annotation{
 		Table: "plan",
+	}
+	ReserveTable.ForeignKeys[0].RefTable = CabinetTable
+	ReserveTable.ForeignKeys[1].RefTable = RiderTable
+	ReserveTable.ForeignKeys[2].RefTable = BusinessTable
+	ReserveTable.Annotation = &entsql.Annotation{
+		Table: "reserve",
 	}
 	RiderTable.ForeignKeys[0].RefTable = EnterpriseTable
 	RiderTable.ForeignKeys[1].RefTable = PersonTable

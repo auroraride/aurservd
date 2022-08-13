@@ -45,42 +45,45 @@ func init() {
     }
 }
 
+// riderLogin 获取骑手
+func riderLogin(token, pushId string, needLogin bool) (u *ent.Rider) {
+    var err error
+    s := service.NewRider()
+    id, _ := cache.Get(context.Background(), token).Uint64()
+    u, err = s.GetRiderById(id)
+    // 判定是否需要登录
+    if needLogin && (err != nil || u == nil) {
+        snag.Panic(snag.StatusUnauthorized)
+    }
+
+    if u != nil {
+        // 延长token有效期
+        s.ExtendTokenTime(u.ID, token)
+
+        // 获取与判定是否需要更新骑手推送ID
+        if u.PushID != pushId {
+            _ = ent.Database.Rider.UpdateOneID(u.ID).SetPushID(pushId).Exec(context.Background())
+        }
+
+        // 用户被封禁
+        if s.IsBanned(u) || s.IsBlocked(u) {
+            s.Signout(u)
+            snag.Panic(snag.StatusForbidden, ar.BannedMessage)
+        }
+    }
+
+    return u
+}
+
 // RiderMiddleware 骑手中间件
 func RiderMiddleware() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(c echo.Context) error {
             url := c.Path()
-            var u *ent.Rider
-            var token string
-            if !riderLoginSkipper[url] {
-                // 获取骑手, 判定是否需要登录
-                token = c.Request().Header.Get(app.HeaderRiderToken)
-                id, err := cache.Get(context.Background(), token).Uint64()
-                if err != nil {
-                    snag.Panic(snag.StatusUnauthorized)
-                }
-                s := service.NewRider()
-                u, err = s.GetRiderById(id)
-                if err != nil || u == nil {
-                    snag.Panic(snag.StatusUnauthorized)
-                }
-
-                // 用户被封禁
-                if s.IsBanned(u) || s.IsBlocked(u) {
-                    s.Signout(u)
-                    snag.Panic(snag.StatusForbidden, ar.BannedMessage)
-                }
-
-                // 延长token有效期
-                s.ExtendTokenTime(u.ID, token)
-
-                // 获取与判定是否需要更新骑手推送ID
-                pushId := c.Request().Header.Get(app.HeaderPushId)
-                if u.PushID != pushId {
-                    _ = ent.Database.Rider.UpdateOneID(u.ID).SetPushID(pushId).Exec(context.Background())
-                }
-            }
-
+            token := c.Request().Header.Get(app.HeaderRiderToken)
+            needLogin := !riderLoginSkipper[url]
+            pushId := c.Request().Header.Get(app.HeaderPushId)
+            u := riderLogin(token, pushId, needLogin)
             // 重载context
             return next(app.NewRiderContext(c, u, token))
         }

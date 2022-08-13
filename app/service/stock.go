@@ -392,14 +392,14 @@ func (s *stockService) BatteryOverview(req *model.StockOverviewReq) (items []mod
     var extends []string
 
     switch req.Goal {
-    case 1:
+    case model.StockGoalStore:
         if req.StoreID != 0 {
             extends = append(extends, fmt.Sprintf("AND (%s = %d)", stock.FieldStoreID, req.StoreID))
         } else {
             extends = append(extends, fmt.Sprintf("AND (%s IS NOT NULL OR (%s IS NULL AND %s IS NULL))", stock.FieldStoreID, stock.FieldStoreID, stock.FieldCabinetID))
         }
         break
-    case 2:
+    case model.StockGoalCabinet:
         if req.CabinetID != 0 {
             extends = append(extends, fmt.Sprintf("AND (%s = %d)", stock.FieldCabinetID, req.StoreID))
         } else {
@@ -647,33 +647,7 @@ func (s *stockService) EmployeeList(req *model.StockEmployeeListReq) model.Stock
     }
 }
 
-// StoreCurrent 列出当前门店所有库存物资
-func (s *stockService) StoreCurrent(id uint64) []model.InventoryItemWithNum {
-    ins := make([]model.InventoryItemWithNum, 0)
-    err := s.orm.QueryNotDeleted().
-        Where(stock.StoreID(id)).
-        Modify(func(sel *sql.Selector) {
-            sel.GroupBy(stock.FieldName, stock.FieldModel).Select(stock.FieldName, stock.FieldModel).
-                AppendSelectExprAs(sql.Raw(fmt.Sprintf("%s IS NOT NULL", stock.FieldModel)), "battery").
-                AppendSelectExprAs(sql.Raw(fmt.Sprintf("SUM(%s)", stock.FieldNum)), "num")
-        }).
-        Scan(s.ctx, &ins)
-
-    if err != nil {
-        log.Error(err)
-    }
-
-    return ins
-}
-
-func (s *stockService) StoreCurrentMap(id uint64) map[string]model.InventoryItemWithNum {
-    inm := make(map[string]model.InventoryItemWithNum)
-    for _, in := range s.StoreCurrent(id) {
-        inm[in.Name] = in
-    }
-    return inm
-}
-
+// CabinetList 电柜物资列表
 func (s *stockService) CabinetList(req *model.StockCabinetListReq) *model.PaginationRes {
     q := ent.Database.Cabinet.QueryNotDeleted().
         Where(cabinet.HasStocks()).
@@ -758,7 +732,7 @@ func (s *stockService) Detail(req *model.StockDetailReq) *model.PaginationRes {
     }
 
     switch req.Goal {
-    case 1:
+    case model.StockGoalStore:
         // 门店物资
         if req.StoreID != 0 {
             q.Where(stock.StoreID(req.StoreID))
@@ -769,7 +743,7 @@ func (s *stockService) Detail(req *model.StockDetailReq) *model.PaginationRes {
             )
         }
         break
-    case 2:
+    case model.StockGoalCabinet:
         // 电柜物资
         if req.CabinetID != 0 {
             q.Where(stock.CabinetID(req.CabinetID))
@@ -926,8 +900,36 @@ func (s *stockService) target(es *ent.Store, ec *ent.Cabinet) (target string) {
     return
 }
 
-// CurrentNum 获取当前库存
-func (s *stockService) CurrentNum(ids []uint64, field string) map[uint64]int {
+// StoreCurrent 列出当前门店所有库存物资
+func (s *stockService) StoreCurrent(id uint64) []model.InventoryNum {
+    ins := make([]model.InventoryNum, 0)
+    err := s.orm.QueryNotDeleted().
+        Where(stock.StoreID(id)).
+        Modify(func(sel *sql.Selector) {
+            sel.GroupBy(stock.FieldName, stock.FieldModel).
+                Select(stock.FieldName, stock.FieldModel).
+                AppendSelectExprAs(sql.Raw(fmt.Sprintf("%s IS NOT NULL", stock.FieldModel)), "battery").
+                AppendSelectExprAs(sql.Raw(fmt.Sprintf("SUM(%s)", stock.FieldNum)), "num")
+        }).
+        Scan(s.ctx, &ins)
+
+    if err != nil {
+        log.Error(err)
+    }
+
+    return ins
+}
+
+func (s *stockService) StoreCurrentMap(id uint64) map[string]model.InventoryNum {
+    inm := make(map[string]model.InventoryNum)
+    for _, in := range s.StoreCurrent(id) {
+        inm[in.Name] = in
+    }
+    return inm
+}
+
+// CurrentBatteryNum 获取当前电池库存总数
+func (s *stockService) CurrentBatteryNum(ids []uint64, field string) map[uint64]int {
     var result []struct {
         TargetID uint64 `json:"target_id"`
         Sum      int    `json:"sum"`
@@ -953,6 +955,66 @@ func (s *stockService) CurrentNum(ids []uint64, field string) map[uint64]int {
     return m
 }
 
-func (s *stockService) Current(id uint64, field string) int {
-    return s.CurrentNum([]uint64{id}, field)[id]
+func (s *stockService) CurrentBattery(id uint64, field string) int {
+    return s.CurrentBatteryNum([]uint64{id}, field)[id]
+}
+
+// Inventory 查询所有物资
+func (s *stockService) Inventory(req *model.StockInventoryReq) (items []model.StockInventory) {
+    _ = s.orm.QueryNotDeleted().
+        Modify(func(sel *sql.Selector) {
+            sel.Select(stock.FieldCabinetID, stock.FieldStoreID, stock.FieldName, stock.FieldMaterial).
+                AppendSelectExprAs(sql.Raw(fmt.Sprintf("SUM(%s)", stock.FieldNum)), "num").
+                GroupBy(stock.FieldCabinetID, stock.FieldStoreID, stock.FieldName, stock.FieldMaterial)
+            // 如果请求参数为空则查询全部门店和电柜的全部物资
+            if req == nil {
+                sel.Where(sql.Or(
+                    sql.NotNull(stock.FieldCabinetID),
+                    sql.NotNull(stock.FieldStoreID),
+                ))
+            } else {
+                if req.Material != "" {
+                    sel.Where(sql.EQ(stock.FieldMaterial, req.Material))
+                }
+                if req.Goal != model.StockGoalAll {
+                    col := stock.FieldStoreID
+                    if req.Goal == model.StockGoalCabinet {
+                        col = stock.FieldCabinetID
+                    }
+                    if len(req.IDs) > 0 {
+                        ids := make([]any, len(req.IDs))
+                        for i, d := range req.IDs {
+                            ids[i] = d
+                        }
+                        sel.Where(sql.In(col, ids...))
+                    } else {
+                        sel.Where(sql.NotNull(col))
+                    }
+                    if req.Name != "" {
+                        sel.Where(sql.EQ(stock.FieldName, req.Name))
+                    }
+                }
+            }
+
+        }).
+        Scan(s.ctx, &items)
+    return
+}
+
+func (s *stockService) InventoryMap(req *model.StockInventoryReq) (data model.StockInventoryMapData) {
+    data = make(map[uint64]map[string]map[string]model.StockInventory)
+    for _, item := range s.Inventory(req) {
+        id := item.CabinetID
+        if id == 0 {
+            id = item.StoreID
+        }
+        if _, ok := data[id]; !ok {
+            data[id] = make(map[string]map[string]model.StockInventory)
+        }
+        if _, ok := data[id][item.Material]; !ok {
+            data[id][item.Material] = make(map[string]model.StockInventory)
+        }
+        data[id][item.Material][item.Name] = item
+    }
+    return
 }

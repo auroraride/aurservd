@@ -73,7 +73,7 @@ func compensate() {
 
     orm := ent.Database.Exchange
     ctx := context.Background()
-    items, _ := orm.QueryNotDeleted().Where(exchange.Success(false), exchange.FinishAtNotNil()).All(ctx)
+    items, _ := orm.QueryNotDeleted().Where(exchange.Success(false), exchange.FinishAtIsNil(), exchange.CabinetIDNotNil(), exchange.StartAtNotNil()).All(ctx)
     log.Infof("共获取到%d个进行中的换电", len(items))
     for _, item := range items {
         u := item.Update().

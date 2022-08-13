@@ -4,11 +4,34 @@ import (
     "entgo.io/ent"
     "entgo.io/ent/dialect/entsql"
     "entgo.io/ent/schema"
+    "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
+    "entgo.io/ent/schema/mixin"
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
+
+type BusinessMixin struct {
+    mixin.Schema
+    Optional bool
+}
+
+func (m BusinessMixin) Fields() []ent.Field {
+    f := field.Uint64("business_id")
+    if m.Optional {
+        f.Optional().Nillable()
+    }
+    return []ent.Field{f}
+}
+
+func (m BusinessMixin) Edges() []ent.Edge {
+    e := edge.To("business", Business.Type).Unique().Field("business_id")
+    if !m.Optional {
+        e.Required()
+    }
+    return []ent.Edge{e}
+}
 
 // Business holds the schema definition for the Business entity.
 type Business struct {

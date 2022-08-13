@@ -58,7 +58,7 @@ func NewAttendanceWithEmployee(e *ent.Employee) *attendanceService {
 }
 
 // check 检查是否满足打卡条件并获取需盘点物资清单
-func (s *attendanceService) check(req *model.AttendancePrecheck) (*ent.Store, float64, []model.InventoryItemWithNum) {
+func (s *attendanceService) check(req *model.AttendancePrecheck) (*ent.Store, float64, []model.InventoryNum) {
     st := NewStore().QuerySn(*req.SN)
     b := NewBranch().Query(st.BranchID)
     if st.EmployeeID != nil && req.Duty {
@@ -79,7 +79,7 @@ func (s *attendanceService) check(req *model.AttendancePrecheck) (*ent.Store, fl
     return st, meters, NewInventory().ListStockInventory(st.ID, model.InventoryListReq{Count: true})
 }
 
-func (s *attendanceService) Precheck(req *model.AttendancePrecheck) []model.InventoryItemWithNum {
+func (s *attendanceService) Precheck(req *model.AttendancePrecheck) []model.InventoryNum {
     _, _, items := s.check(req)
     return items
 }
