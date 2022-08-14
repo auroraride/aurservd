@@ -16,7 +16,7 @@ const (
 
 type ContractStatus uint8
 
-func (s ContractStatus) Raw() uint8 {
+func (s ContractStatus) Value() uint8 {
     return uint8(s)
 }
 

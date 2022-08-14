@@ -19,62 +19,64 @@ import (
 // CabinetMutation represents an operation that mutates the Cabinet nodes in the graph.
 type CabinetMutation struct {
 	config
-	op                  Op
-	typ                 string
-	id                  *uint64
-	created_at          *time.Time
-	updated_at          *time.Time
-	deleted_at          *time.Time
-	creator             **model.Modifier
-	last_modifier       **model.Modifier
-	remark              *string
-	sn                  *string
-	brand               *string
-	serial              *string
-	name                *string
-	doors               *int
-	adddoors            *int
-	status              *uint8
-	addstatus           *int8
-	health              *uint8
-	addhealth           *int8
-	bin                 *model.CabinetBins
-	lng                 *float64
-	addlng              *float64
-	lat                 *float64
-	addlat              *float64
-	address             *string
-	sim_sn              *string
-	sim_date            *time.Time
-	transferred         *bool
-	battery_num         *int
-	addbattery_num      *int
-	battery_full_num    *int
-	addbattery_full_num *int
-	empty_bin_num       *int
-	addempty_bin_num    *int
-	locked_bin_num      *int
-	addlocked_bin_num   *int
-	clearedFields       map[string]struct{}
-	city                *uint64
-	clearedcity         bool
-	branch              *uint64
-	clearedbranch       bool
-	bms                 map[uint64]struct{}
-	removedbms          map[uint64]struct{}
-	clearedbms          bool
-	faults              map[uint64]struct{}
-	removedfaults       map[uint64]struct{}
-	clearedfaults       bool
-	exchanges           map[uint64]struct{}
-	removedexchanges    map[uint64]struct{}
-	clearedexchanges    bool
-	stocks              map[uint64]struct{}
-	removedstocks       map[uint64]struct{}
-	clearedstocks       bool
-	done                bool
-	oldValue            func(context.Context) (*Cabinet, error)
-	predicates          []predicate.Cabinet
+	op                      Op
+	typ                     string
+	id                      *uint64
+	created_at              *time.Time
+	updated_at              *time.Time
+	deleted_at              *time.Time
+	creator                 **model.Modifier
+	last_modifier           **model.Modifier
+	remark                  *string
+	sn                      *string
+	brand                   *string
+	serial                  *string
+	name                    *string
+	doors                   *int
+	adddoors                *int
+	status                  *uint8
+	addstatus               *int8
+	health                  *uint8
+	addhealth               *int8
+	bin                     *model.CabinetBins
+	lng                     *float64
+	addlng                  *float64
+	lat                     *float64
+	addlat                  *float64
+	address                 *string
+	sim_sn                  *string
+	sim_date                *time.Time
+	transferred             *bool
+	battery_num             *int
+	addbattery_num          *int
+	battery_full_num        *int
+	addbattery_full_num     *int
+	battery_charging_num    *int
+	addbattery_charging_num *int
+	empty_bin_num           *int
+	addempty_bin_num        *int
+	locked_bin_num          *int
+	addlocked_bin_num       *int
+	clearedFields           map[string]struct{}
+	city                    *uint64
+	clearedcity             bool
+	branch                  *uint64
+	clearedbranch           bool
+	bms                     map[uint64]struct{}
+	removedbms              map[uint64]struct{}
+	clearedbms              bool
+	faults                  map[uint64]struct{}
+	removedfaults           map[uint64]struct{}
+	clearedfaults           bool
+	exchanges               map[uint64]struct{}
+	removedexchanges        map[uint64]struct{}
+	clearedexchanges        bool
+	stocks                  map[uint64]struct{}
+	removedstocks           map[uint64]struct{}
+	clearedstocks           bool
+	done                    bool
+	oldValue                func(context.Context) (*Cabinet, error)
+	predicates              []predicate.Cabinet
 }
 
 var _ ent.Mutation = (*CabinetMutation)(nil)
@@ -1337,6 +1339,62 @@ func (m *CabinetMutation) ResetBatteryFullNum() {
 	m.addbattery_full_num = nil
 }
 
+// SetBatteryChargingNum sets the "battery_charging_num" field.
+func (m *CabinetMutation) SetBatteryChargingNum(i int) {
+	m.battery_charging_num = &i
+	m.addbattery_charging_num = nil
+}
+
+// BatteryChargingNum returns the value of the "battery_charging_num" field in the mutation.
+func (m *CabinetMutation) BatteryChargingNum() (r int, exists bool) {
+	v := m.battery_charging_num
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBatteryChargingNum returns the old "battery_charging_num" field's value of the Cabinet entity.
+// If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CabinetMutation) OldBatteryChargingNum(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBatteryChargingNum is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBatteryChargingNum requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBatteryChargingNum: %w", err)
+	}
+	return oldValue.BatteryChargingNum, nil
+}
+
+// AddBatteryChargingNum adds i to the "battery_charging_num" field.
+func (m *CabinetMutation) AddBatteryChargingNum(i int) {
+	if m.addbattery_charging_num != nil {
+		*m.addbattery_charging_num += i
+	} else {
+		m.addbattery_charging_num = &i
+	}
+}
+
+// AddedBatteryChargingNum returns the value that was added to the "battery_charging_num" field in this mutation.
+func (m *CabinetMutation) AddedBatteryChargingNum() (r int, exists bool) {
+	v := m.addbattery_charging_num
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetBatteryChargingNum resets all changes to the "battery_charging_num" field.
+func (m *CabinetMutation) ResetBatteryChargingNum() {
+	m.battery_charging_num = nil
+	m.addbattery_charging_num = nil
+}
+
 // SetEmptyBinNum sets the "empty_bin_num" field.
 func (m *CabinetMutation) SetEmptyBinNum(i int) {
 	m.empty_bin_num = &i
@@ -1736,7 +1794,7 @@ func (m *CabinetMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CabinetMutation) Fields() []string {
-	fields := make([]string, 0, 26)
+	fields := make([]string, 0, 27)
 	if m.created_at != nil {
 		fields = append(fields, cabinet.FieldCreatedAt)
 	}
@@ -1809,6 +1867,9 @@ func (m *CabinetMutation) Fields() []string {
 	if m.battery_full_num != nil {
 		fields = append(fields, cabinet.FieldBatteryFullNum)
 	}
+	if m.battery_charging_num != nil {
+		fields = append(fields, cabinet.FieldBatteryChargingNum)
+	}
 	if m.empty_bin_num != nil {
 		fields = append(fields, cabinet.FieldEmptyBinNum)
 	}
@@ -1871,6 +1932,8 @@ func (m *CabinetMutation) Field(name string) (ent.Value, bool) {
 		return m.BatteryNum()
 	case cabinet.FieldBatteryFullNum:
 		return m.BatteryFullNum()
+	case cabinet.FieldBatteryChargingNum:
+		return m.BatteryChargingNum()
 	case cabinet.FieldEmptyBinNum:
 		return m.EmptyBinNum()
 	case cabinet.FieldLockedBinNum:
@@ -1932,6 +1995,8 @@ func (m *CabinetMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldBatteryNum(ctx)
 	case cabinet.FieldBatteryFullNum:
 		return m.OldBatteryFullNum(ctx)
+	case cabinet.FieldBatteryChargingNum:
+		return m.OldBatteryChargingNum(ctx)
 	case cabinet.FieldEmptyBinNum:
 		return m.OldEmptyBinNum(ctx)
 	case cabinet.FieldLockedBinNum:
@@ -2113,6 +2178,13 @@ func (m *CabinetMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetBatteryFullNum(v)
 		return nil
+	case cabinet.FieldBatteryChargingNum:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBatteryChargingNum(v)
+		return nil
 	case cabinet.FieldEmptyBinNum:
 		v, ok := value.(int)
 		if !ok {
@@ -2156,6 +2228,9 @@ func (m *CabinetMutation) AddedFields() []string {
 	if m.addbattery_full_num != nil {
 		fields = append(fields, cabinet.FieldBatteryFullNum)
 	}
+	if m.addbattery_charging_num != nil {
+		fields = append(fields, cabinet.FieldBatteryChargingNum)
+	}
 	if m.addempty_bin_num != nil {
 		fields = append(fields, cabinet.FieldEmptyBinNum)
 	}
@@ -2184,6 +2259,8 @@ func (m *CabinetMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedBatteryNum()
 	case cabinet.FieldBatteryFullNum:
 		return m.AddedBatteryFullNum()
+	case cabinet.FieldBatteryChargingNum:
+		return m.AddedBatteryChargingNum()
 	case cabinet.FieldEmptyBinNum:
 		return m.AddedEmptyBinNum()
 	case cabinet.FieldLockedBinNum:
@@ -2245,6 +2322,13 @@ func (m *CabinetMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddBatteryFullNum(v)
+		return nil
+	case cabinet.FieldBatteryChargingNum:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddBatteryChargingNum(v)
 		return nil
 	case cabinet.FieldEmptyBinNum:
 		v, ok := value.(int)
@@ -2433,6 +2517,9 @@ func (m *CabinetMutation) ResetField(name string) error {
 		return nil
 	case cabinet.FieldBatteryFullNum:
 		m.ResetBatteryFullNum()
+		return nil
+	case cabinet.FieldBatteryChargingNum:
+		m.ResetBatteryChargingNum()
 		return nil
 	case cabinet.FieldEmptyBinNum:
 		m.ResetEmptyBinNum()

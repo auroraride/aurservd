@@ -42,12 +42,14 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 	github.com/smartwalle/alipay/v3 v3.1.7
 	github.com/sony/sonyflake v1.0.0
+	github.com/speps/go-hashids/v2 v2.0.1
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.11.0
 	github.com/swaggo/echo-swagger v1.3.2
 	github.com/swaggo/swag v1.8.2
 	github.com/wechatpay-apiv3/wechatpay-go v0.2.13
 	github.com/xuri/excelize/v2 v2.6.0
+	go.mongodb.org/mongo-driver v1.10.0
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
 	golang.org/x/exp v0.0.0-20220613132600-b0d781184e0d
 	golang.org/x/time v0.0.0-20220411224347-583f2d630306
@@ -150,7 +152,6 @@ require (
 	github.com/xuri/nfp v0.0.0-20220409054826-5e722a1d9e22 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
 	github.com/zclconf/go-cty v1.10.0 // indirect
-	go.mongodb.org/mongo-driver v1.10.0 // indirect
 	golang.org/x/image v0.0.0-20220413100746-70e8d0d3baa9 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3 // indirect
 	golang.org/x/net v0.0.0-20220706163947-c90051bbdb60 // indirect

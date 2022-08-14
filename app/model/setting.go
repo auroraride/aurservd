@@ -100,5 +100,6 @@ var Settings = map[string]SettingItem{
 }
 
 type SettingRiderApp struct {
-    AssistanceFee float64 `json:"assistanceFee"` // 救援费用
+    AssistanceFee   float64 `json:"assistanceFee"`   // 救援费用
+    ReserveDuration int     `json:"reserveDuration"` // 预约最长时间(分钟)
 }

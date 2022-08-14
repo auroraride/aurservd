@@ -143,7 +143,7 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
         }
 
         if req.AuthStatus != nil {
-            pu.SetStatus(req.AuthStatus.Raw())
+            pu.SetStatus(req.AuthStatus.Value())
             before = append(before, fmt.Sprintf("认证状态: %s", model.PersonAuthStatus(p.Status).String()))
             after = append(after, fmt.Sprintf("认证状态: %s", req.AuthStatus.String()))
         }

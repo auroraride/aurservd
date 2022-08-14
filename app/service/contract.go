@@ -53,7 +53,7 @@ func (s *contractService) Effective(u *ent.Rider) bool {
     }
     exists, _ := s.orm.QueryNotDeleted().Where(
         contract.RiderID(u.ID),
-        contract.Status(model.ContractStatusSuccess.Raw()),
+        contract.Status(model.ContractStatusSuccess.Value()),
         contract.Effective(true),
     ).Exist(s.ctx)
     return exists
@@ -228,7 +228,7 @@ func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) mode
     err := ent.Database.Contract.Create().
         SetFlowID(flowId).
         SetRiderID(u.ID).
-        SetStatus(model.ContractStatusPending.Raw()).
+        SetStatus(model.ContractStatusPending.Value()).
         SetSn(sn).
         Exec(context.Background())
     if err != nil {
@@ -255,7 +255,7 @@ func (s *contractService) Result(u *ent.Rider, sn string) model.StatusResponse {
     if success {
         // 获取合同并上传到阿里云
         p := u.Edges.Person
-        update.SetStatus(model.ContractStatusSuccess.Raw()).
+        update.SetStatus(model.ContractStatusSuccess.Value()).
             SetFiles(s.esign.DownloadDocument(fmt.Sprintf("%s-%s/contracts/", p.Name, p.IDCardNumber), c.FlowID))
     }
     err = update.Exec(context.Background())

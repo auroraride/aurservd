@@ -66,6 +66,7 @@ func loadRideRoutes() {
     // 获取网点
     g.GET("/branch", rapi.Branch.List)
     g.GET("/branch/riding", rapi.Branch.Riding)
+    g.GET("/branch/facility/:fid", rapi.Branch.Facility)
 
     // 业务
     g.GET("/plan", rapi.Plan.List)
@@ -105,4 +106,9 @@ func loadRideRoutes() {
 
     // 设定
     g.GET("/setting/app", rapi.Setting.App)
+
+    // 预约
+    g.GET("/reserve", rapi.Reserve.Unfinished)
+    g.POST("/reserve", rapi.Reserve.Create)
+    g.DELETE("/reserve/:id", rapi.Reserve.Cancel)
 }

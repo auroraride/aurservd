@@ -386,6 +386,27 @@ func (cu *CabinetUpdate) AddBatteryFullNum(i int) *CabinetUpdate {
 	return cu
 }
 
+// SetBatteryChargingNum sets the "battery_charging_num" field.
+func (cu *CabinetUpdate) SetBatteryChargingNum(i int) *CabinetUpdate {
+	cu.mutation.ResetBatteryChargingNum()
+	cu.mutation.SetBatteryChargingNum(i)
+	return cu
+}
+
+// SetNillableBatteryChargingNum sets the "battery_charging_num" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableBatteryChargingNum(i *int) *CabinetUpdate {
+	if i != nil {
+		cu.SetBatteryChargingNum(*i)
+	}
+	return cu
+}
+
+// AddBatteryChargingNum adds i to the "battery_charging_num" field.
+func (cu *CabinetUpdate) AddBatteryChargingNum(i int) *CabinetUpdate {
+	cu.mutation.AddBatteryChargingNum(i)
+	return cu
+}
+
 // SetEmptyBinNum sets the "empty_bin_num" field.
 func (cu *CabinetUpdate) SetEmptyBinNum(i int) *CabinetUpdate {
 	cu.mutation.ResetEmptyBinNum()
@@ -933,6 +954,20 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeInt,
 			Value:  value,
 			Column: cabinet.FieldBatteryFullNum,
+		})
+	}
+	if value, ok := cu.mutation.BatteryChargingNum(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldBatteryChargingNum,
+		})
+	}
+	if value, ok := cu.mutation.AddedBatteryChargingNum(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldBatteryChargingNum,
 		})
 	}
 	if value, ok := cu.mutation.EmptyBinNum(); ok {
@@ -1619,6 +1654,27 @@ func (cuo *CabinetUpdateOne) AddBatteryFullNum(i int) *CabinetUpdateOne {
 	return cuo
 }
 
+// SetBatteryChargingNum sets the "battery_charging_num" field.
+func (cuo *CabinetUpdateOne) SetBatteryChargingNum(i int) *CabinetUpdateOne {
+	cuo.mutation.ResetBatteryChargingNum()
+	cuo.mutation.SetBatteryChargingNum(i)
+	return cuo
+}
+
+// SetNillableBatteryChargingNum sets the "battery_charging_num" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableBatteryChargingNum(i *int) *CabinetUpdateOne {
+	if i != nil {
+		cuo.SetBatteryChargingNum(*i)
+	}
+	return cuo
+}
+
+// AddBatteryChargingNum adds i to the "battery_charging_num" field.
+func (cuo *CabinetUpdateOne) AddBatteryChargingNum(i int) *CabinetUpdateOne {
+	cuo.mutation.AddBatteryChargingNum(i)
+	return cuo
+}
+
 // SetEmptyBinNum sets the "empty_bin_num" field.
 func (cuo *CabinetUpdateOne) SetEmptyBinNum(i int) *CabinetUpdateOne {
 	cuo.mutation.ResetEmptyBinNum()
@@ -2196,6 +2252,20 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 			Type:   field.TypeInt,
 			Value:  value,
 			Column: cabinet.FieldBatteryFullNum,
+		})
+	}
+	if value, ok := cuo.mutation.BatteryChargingNum(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldBatteryChargingNum,
+		})
+	}
+	if value, ok := cuo.mutation.AddedBatteryChargingNum(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: cabinet.FieldBatteryChargingNum,
 		})
 	}
 	if value, ok := cuo.mutation.EmptyBinNum(); ok {

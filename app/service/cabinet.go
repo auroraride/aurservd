@@ -90,7 +90,7 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
         SetName(req.Name).
         SetSerial(req.Serial).
         SetSn(shortuuid.New()).
-        SetStatus(req.Status.Raw()).
+        SetStatus(req.Status.Value()).
         SetDoors(req.Doors).
         SetNillableRemark(req.Remark).
         SetBrand(req.Brand.Value()).
@@ -223,7 +223,7 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
             }
         }
         if req.Status != nil {
-            q.SetStatus(req.Status.Raw())
+            q.SetStatus(req.Status.Value())
         }
         if req.Brand != nil {
             q.SetBrand(req.Brand.Value())

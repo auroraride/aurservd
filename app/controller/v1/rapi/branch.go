@@ -49,8 +49,19 @@ func (*branch) Riding(c echo.Context) (err error) {
     return ctx.SendResponse(model.BranchRidingRes{Minutes: math.Round(float64(seconds) / 60.0)})
 }
 
-func (*branch) Detail(c echo.Context) (err error) {
-    ctx := app.Context(c)
-    
-    return ctx.SendResponse()
+// Facility
+// @ID           RiderBranchFacility
+// @Router       /rider/v1/branch/facility/{fid} [GET]
+// @Summary      R2004 设施详情
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Param        fid  path  string  true  "设置标识"
+// @Param        lng  query  float64  true  "经度"
+// @Param        lat  query  float64  true  "纬度"
+// @Success      200 {object}  model.BranchFacilityRes  "请求成功"
+func (*branch) Facility(c echo.Context) (err error) {
+    ctx, req := app.RiderContextAndBinding[model.BranchFacilityReq](c)
+    return ctx.SendResponse(service.NewBranchWithRider(ctx.Rider).Facility(req))
 }

@@ -29,6 +29,7 @@ func (*setting) App(c echo.Context) (err error) {
     ctx := app.Context(c)
 
     return ctx.SendResponse(model.SettingRiderApp{
-        AssistanceFee: cache.Float64(model.SettingRescueFee),
+        AssistanceFee:   cache.Float64(model.SettingRescueFee),
+        ReserveDuration: cache.Int(model.SettingReserveDuration),
     })
 }

@@ -9,7 +9,9 @@ import (
     "context"
     "entgo.io/ent/dialect/sql"
     "fmt"
+    "github.com/LucaTheHacker/go-haversine"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/model/battery"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/branchcontract"
@@ -19,7 +21,7 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/jinzhu/copier"
-    "github.com/lithammer/shortuuid/v4"
+    "github.com/speps/go-hashids/v2"
     "sort"
     "strings"
     "time"
@@ -390,7 +392,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
                 Name:  es.Name,
                 State: model.BranchFacilityStateOnline,
                 Num:   0,
-                Fid:   shortuuid.New(),
+                Fid:   s.EncodeFacility(es, nil),
             })
         }
     }
@@ -418,7 +420,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
                 Name:  c.Name,
                 State: model.BranchFacilityStateOffline,
                 Type:  model.BranchFacilityTypeV72,
-                Fid:   shortuuid.New(),
+                Fid:   s.EncodeFacility(nil, c),
             }
             // 获取健康状态
             // 5分钟未更新视为离线
@@ -485,4 +487,203 @@ func (s *branchService) Sheet(req *model.BranchContractSheetReq) {
         snag.Panic("未找到合同信息")
     }
     bc.Update().SetSheets(req.Sheets).SaveX(s.ctx)
+}
+
+func (s *branchService) Hasher() *hashids.HashID {
+    hd := hashids.NewData()
+    hd.Salt = "branch facility"
+    hd.MinLength = 30
+    h, _ := hashids.NewWithData(hd)
+    return h
+}
+
+// EncodeFacility 加密设施
+func (s *branchService) EncodeFacility(sto *ent.Store, cab *ent.Cabinet) string {
+    if sto == nil && cab == nil {
+        return ""
+    }
+    if sto != nil {
+        return s.EncodeStoreID(sto.ID)
+    }
+    return s.EncodeCabinetID(cab.ID)
+}
+
+func (s *branchService) EncodeStoreID(storeID uint64) (fid string) {
+    fid, _ = s.Hasher().EncodeInt64([]int64{1, int64(storeID)})
+    return
+}
+
+func (s *branchService) EncodeCabinetID(CabinetID uint64) (fid string) {
+    fid, _ = s.Hasher().EncodeInt64([]int64{2, int64(CabinetID)})
+    return
+}
+
+// DecodeFacility 解码设施
+func (s *branchService) DecodeFacility(fid string) (b *ent.Branch, sto *ent.Store, cabs []*ent.Cabinet) {
+    arr, _ := s.Hasher().DecodeInt64WithError(fid)
+    if len(arr) != 2 {
+        snag.Panic("查询失败")
+    }
+    switch arr[0] {
+    case 1:
+        sto = NewStore().Query(uint64(arr[1]))
+        b, _ = sto.QueryBranch().First(s.ctx)
+        break
+    case 2:
+        cab, _ := ent.Database.Cabinet.QueryNotDeleted().
+            WithBms().
+            Where(cabinet.ID(uint64(arr[1]))).
+            First(s.ctx)
+        if cab == nil {
+            break
+        }
+        b, _ = cab.QueryBranch().First(s.ctx)
+        if b == nil {
+            break
+        }
+        // 查询其他电柜信息
+        items, _ := ent.Database.Cabinet.QueryNotDeleted().
+            WithBms().
+            Where(
+                cabinet.BranchID(b.ID),
+                cabinet.IDNEQ(cab.ID),
+                cabinet.Status(model.CabinetStatusNormal.Value()),
+                cabinet.Health(model.CabinetHealthStatusOnline),
+            ).
+            All(s.ctx)
+        cabs = append([]*ent.Cabinet{cab}, items...)
+        break
+    }
+    if b == nil || (sto == nil && len(cabs) == 0) {
+        snag.Panic("查询失败")
+    }
+    return
+}
+
+// Facility 获取设施详情
+func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.BranchFacilityRes) {
+    b, sto, cabs := s.DecodeFacility(req.Fid)
+    distance := haversine.Distance(haversine.NewCoordinates(req.Lat, req.Lng), haversine.NewCoordinates(b.Lat, b.Lng))
+    data = model.BranchFacilityRes{
+        Name:     b.Name,
+        Address:  b.Address,
+        Lng:      b.Lng,
+        Lat:      b.Lat,
+        Distance: distance.Kilometers() * 1000,
+    }
+    if sto != nil {
+        data.Type = "store"
+        // 查询门店电池库存
+        ins := NewStock().StoreCurrent(sto.ID)
+        var models []string
+        for _, in := range ins {
+            if in.Num > 0 && in.Battery {
+                models = append(models, in.Model)
+            }
+        }
+        data.Store = &model.BranchFacilityStore{Models: models}
+    } else {
+        // 订阅
+        var sub *ent.Subscribe
+        // 预约
+        var rev *model.RiderUnfinishedRes
+        // 当骑手登录时, 获取骑手的订阅信息
+        if s.rider != nil {
+            sub = NewSubscribeWithRider(s.rider).Recent(s.rider.ID)
+            rev = NewReserveWithRider(s.rider).RiderUnfinishedDetail(s.rider.ID)
+        }
+
+        // 设施详情 - 电柜
+        data.Type = "cabinet"
+        for _, cab := range cabs {
+            bms := cab.Edges.Bms
+            if len(bms) == 0 {
+                continue
+            }
+            bm := battery.New(bms[0].Model)
+            if !bm.IsVaild() {
+                continue
+            }
+
+            // 电池状态
+            batInfo := model.BranchFacilityCabinetBattery{
+                Voltage:  bm.Voltage,
+                Capacity: bm.Capacity,
+            }
+            c := model.BranchFacilityCabinet{
+                ID:         cab.ID,
+                Name:       cab.Name,
+                Serial:     cab.Serial,
+                Reserve:    nil,
+                Bins:       make([]model.BranchFacilityCabinetBin, len(cab.Bin)),
+                Businesses: make([]string, 0),
+            }
+
+            // 获取电柜状态
+            if cab.Status == model.CabinetStatusNormal.Value() {
+                if cab.Health == model.CabinetHealthStatusOnline {
+                    c.Status = 1
+                } else {
+                    c.Status = 0
+                }
+            } else {
+                c.Status = 2
+            }
+
+            // 获取仓位详情
+            for bi, bin := range cab.Bin {
+                // 锁仓
+                if !bin.DoorHealth {
+                    c.Bins[bi] = model.BranchFacilityCabinetBin{
+                        Status: 3,
+                    }
+                } else {
+                    // 有电池
+                    if bin.Battery {
+                        c.Bins[bi] = model.BranchFacilityCabinetBin{
+                            Electricity: tools.NewPointerInterface(bin.Electricity),
+                        }
+                        if bin.Electricity.IsBatteryFull() {
+                            // 满电
+                            c.Bins[bi].Status = 2
+                            batInfo.Fully += 1
+                        } else {
+                            // 充电中
+                            c.Bins[bi].Status = 1
+                            batInfo.Charging += 1
+                        }
+                    }
+                }
+            }
+
+            c.Batteries = []model.BranchFacilityCabinetBattery{batInfo}
+
+            // 当前预约
+            if rev != nil && rev.CabinetID == cab.ID {
+                c.Reserve = rev
+            }
+
+            // 当订阅非空并且订阅电池型号包含在当前电柜中时, 判定可办理业务情况
+            if sub != nil && NewCabinet().ModelInclude(cab, sub.Model) {
+                // 获取可办理业务
+                switch sub.Status {
+                case model.SubscribeStatusInactive:
+                    // 未激活时仅能办理激活业务
+                    c.Businesses = []string{business.TypeActive.String()}
+                    break
+                case model.SubscribeStatusPaused:
+                    // 寄存中时仅能办理取消寄存业务
+                    c.Businesses = []string{business.TypeContinue.String()}
+                    break
+                case model.SubscribeStatusUsing:
+                    // 使用中可办理寄存和退租业务
+                    c.Businesses = []string{business.TypePause.String(), business.TypeUnsubscribe.String()}
+                    break
+                }
+            }
+
+            data.Cabinet = append(data.Cabinet, c)
+        }
+    }
+    return
 }

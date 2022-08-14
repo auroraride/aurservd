@@ -53,7 +53,7 @@ func (cs CabinetStatus) String() string {
     return "未知"
 }
 
-func (cs CabinetStatus) Raw() uint8 {
+func (cs CabinetStatus) Value() uint8 {
     return uint8(cs)
 }
 

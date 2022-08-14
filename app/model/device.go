@@ -52,7 +52,7 @@ func (d DeviceType) String() string {
     return "unknown"
 }
 
-func (d DeviceType) Raw() uint8 {
+func (d DeviceType) Value() uint8 {
     return uint8(d)
 }
 

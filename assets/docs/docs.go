@@ -8471,6 +8471,59 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/branch/facility/{fid}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R2004 设施详情",
+                "operationId": "RiderBranchFacility",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "设置标识",
+                        "name": "fid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "经度",
+                        "name": "lng",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "纬度",
+                        "name": "lat",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.BranchFacilityRes"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/branch/riding": {
             "get": {
                 "consumes": [
@@ -9670,6 +9723,116 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.RiderSigninRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v1/reserve": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R8001 获取未完成预约",
+                "operationId": "RiderReserveUnfinished",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功, 预约不存在时为` + "`" + `null` + "`" + `",
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderUnfinishedRes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R8002 创建预约",
+                "operationId": "RiderReserveCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "预约信息",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ReserveCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderUnfinishedRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v1/reserve/{id}": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R8003 取消预约",
+                "operationId": "ManagerReserveCancel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "预约ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -11179,18 +11342,23 @@ const docTemplate = `{
                     }
                 },
                 "distance": {
+                    "description": "距离(前端处理: 超过1000米显示nKM)",
                     "type": "number"
                 },
                 "id": {
+                    "description": "网点ID",
                     "type": "integer"
                 },
                 "lat": {
+                    "description": "纬度",
                     "type": "number"
                 },
                 "lng": {
+                    "description": "经度",
                     "type": "number"
                 },
                 "name": {
+                    "description": "网点名称",
                     "type": "string"
                 },
                 "stores": {
@@ -11233,6 +11401,154 @@ const docTemplate = `{
                 },
                 "type": {
                     "description": "类别",
+                    "type": "string"
+                }
+            }
+        },
+        "model.BranchFacilityCabinet": {
+            "type": "object",
+            "properties": {
+                "batteries": {
+                    "description": "电池情况",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BranchFacilityCabinetBattery"
+                    }
+                },
+                "bins": {
+                    "description": "仓位详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BranchFacilityCabinetBin"
+                    }
+                },
+                "businesses": {
+                    "description": "可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "description": "电柜ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "电柜名称",
+                    "type": "string"
+                },
+                "reserve": {
+                    "description": "当前预约, 预约不存在时无此字段",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.RiderUnfinishedRes"
+                        }
+                    ]
+                },
+                "serial": {
+                    "description": "电柜编号",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "电柜状态 0:离线 1:在线 2:维护中",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.BranchFacilityCabinetBattery": {
+            "type": "object",
+            "properties": {
+                "capacity": {
+                    "description": "容量, 单位AH",
+                    "type": "string"
+                },
+                "charging": {
+                    "description": "充电数量",
+                    "type": "integer"
+                },
+                "fully": {
+                    "description": "可换数量",
+                    "type": "integer"
+                },
+                "voltage": {
+                    "description": "电压, 单位V",
+                    "type": "string"
+                }
+            }
+        },
+        "model.BranchFacilityCabinetBin": {
+            "type": "object",
+            "properties": {
+                "electricity": {
+                    "description": "当前电量",
+                    "type": "number"
+                },
+                "status": {
+                    "description": "状态 0:空仓 1:充电 2:可用 3:锁仓",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.BranchFacilityRes": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "地址",
+                    "type": "string"
+                },
+                "cabinet": {
+                    "description": "电柜, 当type=cabinet时存在, 根据序号显示 1号柜/2号柜 等, 当仅有一个电柜时, 电柜切换tab隐藏",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BranchFacilityCabinet"
+                    }
+                },
+                "distance": {
+                    "description": "距离(前端处理: 超过1000米显示nKM)",
+                    "type": "number"
+                },
+                "lat": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度",
+                    "type": "number"
+                },
+                "name": {
+                    "description": "网点名称",
+                    "type": "string"
+                },
+                "store": {
+                    "description": "门店, 当type=store时存在",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.BranchFacilityStore"
+                        }
+                    ]
+                },
+                "type": {
+                    "description": "设施类型 store:门店 cabinet:电柜(此时cabinet字段为数组)",
+                    "type": "string",
+                    "enum": [
+                        "store",
+                        "cabinet"
+                    ]
+                }
+            }
+        },
+        "model.BranchFacilityStore": {
+            "type": "object",
+            "properties": {
+                "models": {
+                    "description": "可用电池型号",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "description": "门店名称",
                     "type": "string"
                 }
             }
@@ -11357,30 +11673,38 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "address": {
+                    "description": "网点地址",
                     "type": "string"
                 },
                 "distance": {
+                    "description": "距离(前端处理: 超过1000米显示nKM)",
                     "type": "number"
                 },
                 "facility": {
+                    "description": "网点设施",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.BranchFacility"
                     }
                 },
                 "id": {
+                    "description": "网点ID",
                     "type": "integer"
                 },
                 "image": {
+                    "description": "网点图片",
                     "type": "string"
                 },
                 "lat": {
+                    "description": "纬度",
                     "type": "number"
                 },
                 "lng": {
+                    "description": "经度",
                     "type": "number"
                 },
                 "name": {
+                    "description": "网点名称",
                     "type": "string"
                 }
             }
@@ -14160,6 +14484,25 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ReserveCreateReq": {
+            "type": "object",
+            "properties": {
+                "business": {
+                    "description": "业务选项 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                    "type": "string",
+                    "enum": [
+                        "active",
+                        "pause",
+                        "continue",
+                        "unsubscribe"
+                    ]
+                },
+                "cabinetId": {
+                    "description": "电柜ID",
+                    "type": "integer"
+                }
+            }
+        },
         "model.RiderBasic": {
             "type": "object",
             "properties": {
@@ -14943,6 +15286,35 @@ const docTemplate = `{
                 }
             }
         },
+        "model.RiderUnfinishedRes": {
+            "type": "object",
+            "properties": {
+                "business": {
+                    "description": "预约业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                    "type": "string"
+                },
+                "cabinetId": {
+                    "description": "电柜ID",
+                    "type": "integer"
+                },
+                "fid": {
+                    "description": "设施ID",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "预约ID",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "状态 0:已预约 1:进行中",
+                    "type": "integer"
+                },
+                "time": {
+                    "description": "预约时间",
+                    "type": "string"
+                }
+            }
+        },
         "model.Role": {
             "type": "object",
             "properties": {
@@ -15036,6 +15408,10 @@ const docTemplate = `{
                 "assistanceFee": {
                     "description": "救援费用",
                     "type": "number"
+                },
+                "reserveDuration": {
+                    "description": "预约最长时间(分钟)",
+                    "type": "integer"
                 }
             }
         },

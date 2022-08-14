@@ -7,6 +7,7 @@ package ent
 
 import (
     "github.com/auroraride/aurservd/app/ec"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/business"
 )
 
@@ -23,6 +24,9 @@ func (c *Cabinet) GetTaskInfo() ec.Cabinet {
 // ReserveAble 是否可预约
 // num 当前已有预约数量
 func (c *Cabinet) ReserveAble(typ business.Type, num int) bool {
+    if c.Status != model.CabinetStatusNormal.Value() || c.Health != model.CabinetHealthStatusOnline {
+        return false
+    }
     switch typ {
     // 取电
     case business.TypeActive, business.TypeContinue:

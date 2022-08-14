@@ -252,32 +252,33 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Cabinet",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			cabinet.FieldCreatedAt:      {Type: field.TypeTime, Column: cabinet.FieldCreatedAt},
-			cabinet.FieldUpdatedAt:      {Type: field.TypeTime, Column: cabinet.FieldUpdatedAt},
-			cabinet.FieldDeletedAt:      {Type: field.TypeTime, Column: cabinet.FieldDeletedAt},
-			cabinet.FieldCreator:        {Type: field.TypeJSON, Column: cabinet.FieldCreator},
-			cabinet.FieldLastModifier:   {Type: field.TypeJSON, Column: cabinet.FieldLastModifier},
-			cabinet.FieldRemark:         {Type: field.TypeString, Column: cabinet.FieldRemark},
-			cabinet.FieldCityID:         {Type: field.TypeUint64, Column: cabinet.FieldCityID},
-			cabinet.FieldBranchID:       {Type: field.TypeUint64, Column: cabinet.FieldBranchID},
-			cabinet.FieldSn:             {Type: field.TypeString, Column: cabinet.FieldSn},
-			cabinet.FieldBrand:          {Type: field.TypeString, Column: cabinet.FieldBrand},
-			cabinet.FieldSerial:         {Type: field.TypeString, Column: cabinet.FieldSerial},
-			cabinet.FieldName:           {Type: field.TypeString, Column: cabinet.FieldName},
-			cabinet.FieldDoors:          {Type: field.TypeInt, Column: cabinet.FieldDoors},
-			cabinet.FieldStatus:         {Type: field.TypeUint8, Column: cabinet.FieldStatus},
-			cabinet.FieldHealth:         {Type: field.TypeUint8, Column: cabinet.FieldHealth},
-			cabinet.FieldBin:            {Type: field.TypeJSON, Column: cabinet.FieldBin},
-			cabinet.FieldLng:            {Type: field.TypeFloat64, Column: cabinet.FieldLng},
-			cabinet.FieldLat:            {Type: field.TypeFloat64, Column: cabinet.FieldLat},
-			cabinet.FieldAddress:        {Type: field.TypeString, Column: cabinet.FieldAddress},
-			cabinet.FieldSimSn:          {Type: field.TypeString, Column: cabinet.FieldSimSn},
-			cabinet.FieldSimDate:        {Type: field.TypeTime, Column: cabinet.FieldSimDate},
-			cabinet.FieldTransferred:    {Type: field.TypeBool, Column: cabinet.FieldTransferred},
-			cabinet.FieldBatteryNum:     {Type: field.TypeInt, Column: cabinet.FieldBatteryNum},
-			cabinet.FieldBatteryFullNum: {Type: field.TypeInt, Column: cabinet.FieldBatteryFullNum},
-			cabinet.FieldEmptyBinNum:    {Type: field.TypeInt, Column: cabinet.FieldEmptyBinNum},
-			cabinet.FieldLockedBinNum:   {Type: field.TypeInt, Column: cabinet.FieldLockedBinNum},
+			cabinet.FieldCreatedAt:          {Type: field.TypeTime, Column: cabinet.FieldCreatedAt},
+			cabinet.FieldUpdatedAt:          {Type: field.TypeTime, Column: cabinet.FieldUpdatedAt},
+			cabinet.FieldDeletedAt:          {Type: field.TypeTime, Column: cabinet.FieldDeletedAt},
+			cabinet.FieldCreator:            {Type: field.TypeJSON, Column: cabinet.FieldCreator},
+			cabinet.FieldLastModifier:       {Type: field.TypeJSON, Column: cabinet.FieldLastModifier},
+			cabinet.FieldRemark:             {Type: field.TypeString, Column: cabinet.FieldRemark},
+			cabinet.FieldCityID:             {Type: field.TypeUint64, Column: cabinet.FieldCityID},
+			cabinet.FieldBranchID:           {Type: field.TypeUint64, Column: cabinet.FieldBranchID},
+			cabinet.FieldSn:                 {Type: field.TypeString, Column: cabinet.FieldSn},
+			cabinet.FieldBrand:              {Type: field.TypeString, Column: cabinet.FieldBrand},
+			cabinet.FieldSerial:             {Type: field.TypeString, Column: cabinet.FieldSerial},
+			cabinet.FieldName:               {Type: field.TypeString, Column: cabinet.FieldName},
+			cabinet.FieldDoors:              {Type: field.TypeInt, Column: cabinet.FieldDoors},
+			cabinet.FieldStatus:             {Type: field.TypeUint8, Column: cabinet.FieldStatus},
+			cabinet.FieldHealth:             {Type: field.TypeUint8, Column: cabinet.FieldHealth},
+			cabinet.FieldBin:                {Type: field.TypeJSON, Column: cabinet.FieldBin},
+			cabinet.FieldLng:                {Type: field.TypeFloat64, Column: cabinet.FieldLng},
+			cabinet.FieldLat:                {Type: field.TypeFloat64, Column: cabinet.FieldLat},
+			cabinet.FieldAddress:            {Type: field.TypeString, Column: cabinet.FieldAddress},
+			cabinet.FieldSimSn:              {Type: field.TypeString, Column: cabinet.FieldSimSn},
+			cabinet.FieldSimDate:            {Type: field.TypeTime, Column: cabinet.FieldSimDate},
+			cabinet.FieldTransferred:        {Type: field.TypeBool, Column: cabinet.FieldTransferred},
+			cabinet.FieldBatteryNum:         {Type: field.TypeInt, Column: cabinet.FieldBatteryNum},
+			cabinet.FieldBatteryFullNum:     {Type: field.TypeInt, Column: cabinet.FieldBatteryFullNum},
+			cabinet.FieldBatteryChargingNum: {Type: field.TypeInt, Column: cabinet.FieldBatteryChargingNum},
+			cabinet.FieldEmptyBinNum:        {Type: field.TypeInt, Column: cabinet.FieldEmptyBinNum},
+			cabinet.FieldLockedBinNum:       {Type: field.TypeInt, Column: cabinet.FieldLockedBinNum},
 		},
 	}
 	graph.Nodes[7] = &sqlgraph.Node{
@@ -4253,6 +4254,11 @@ func (f *CabinetFilter) WhereBatteryNum(p entql.IntP) {
 // WhereBatteryFullNum applies the entql int predicate on the battery_full_num field.
 func (f *CabinetFilter) WhereBatteryFullNum(p entql.IntP) {
 	f.Where(p.Field(cabinet.FieldBatteryFullNum))
+}
+
+// WhereBatteryChargingNum applies the entql int predicate on the battery_charging_num field.
+func (f *CabinetFilter) WhereBatteryChargingNum(p entql.IntP) {
+	f.Where(p.Field(cabinet.FieldBatteryChargingNum))
 }
 
 // WhereEmptyBinNum applies the entql int predicate on the empty_bin_num field.

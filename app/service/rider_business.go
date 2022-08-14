@@ -378,3 +378,19 @@ func (s *riderBusinessService) Status(req *model.BusinessCabinetStatusReq) (res 
         time.Sleep(1 * time.Second)
     }
 }
+
+// Executable 业务是否可执行
+func (s *riderBusinessService) Executable(sub *ent.Subscribe, typ business.Type) bool {
+    if sub == nil {
+        return false
+    }
+    switch typ {
+    case business.TypePause, business.TypeUnsubscribe:
+        return sub.Status == model.SubscribeStatusUsing
+    case business.TypeActive:
+        return sub.Status == model.SubscribeStatusInactive
+    case business.TypeContinue:
+        return sub.Status == model.SubscribeStatusPaused
+    }
+    return false
+}

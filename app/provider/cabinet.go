@@ -62,31 +62,36 @@ func (s *updater) DoUpdate() (err error) {
 
     s.old = s.cloneCabinet()
 
-    var num, full, empty, locked int
+    var num, full, empty, locked, charging int
     for i, bin := range bins {
         // 电池数量
         if bin.Battery {
             num += 1
         }
-        // 满电数量
-        if bin.Full {
-            full += 1
-        }
-        // 锁仓数量
-        if !bin.DoorHealth {
-            locked += 1
-        }
-        // 空仓数量 = 无电池 && 仓门无锁
-        if bin.DoorHealth && !bin.Battery {
-            empty += 1
-        }
         // 仓位备注信息
         if len(s.old.Bin) > i {
             bin.Remark = s.old.Bin[i].Remark
         }
-        // 仓门正常清除告警设置
+        // 锁仓判定
         if bin.DoorHealth {
+            // 仓门正常清除告警设置
             delBinFault(s.cab.Serial, i)
+        } else {
+            // 锁仓数量
+            locked += 1
+        }
+        // 满电充电空仓判定
+        if bin.Battery {
+            if bin.Full {
+                // 满电数量
+                full += 1
+            } else {
+                // 充电数量
+                charging += 1
+            }
+        } else {
+            // 空仓数量 = 无电池 && 仓门无锁
+            empty += 1
         }
     }
 
@@ -105,6 +110,7 @@ func (s *updater) DoUpdate() (err error) {
         SetLockedBinNum(locked).
         SetEmptyBinNum(empty).
         SetBatteryFullNum(full).
+        SetBatteryChargingNum(charging).
         Save(s.ctx)
 
     *s.cab = *item

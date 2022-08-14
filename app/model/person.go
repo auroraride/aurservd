@@ -26,7 +26,7 @@ func (s PersonAuthStatus) String() string {
     return "认证失败"
 }
 
-func (s PersonAuthStatus) Raw() uint8 {
+func (s PersonAuthStatus) Value() uint8 {
     return uint8(s)
 }
 

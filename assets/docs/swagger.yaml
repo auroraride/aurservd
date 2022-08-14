@@ -1009,14 +1009,19 @@ definitions:
           $ref: '#/definitions/model.CabinetListByDistanceRes'
         type: array
       distance:
+        description: '距离(前端处理: 超过1000米显示nKM)'
         type: number
       id:
+        description: 网点ID
         type: integer
       lat:
+        description: 纬度
         type: number
       lng:
+        description: 经度
         type: number
       name:
+        description: 网点名称
         type: string
       stores:
         items:
@@ -1047,6 +1052,108 @@ definitions:
         type: integer
       type:
         description: 类别
+        type: string
+    type: object
+  model.BranchFacilityCabinet:
+    properties:
+      batteries:
+        description: 电池情况
+        items:
+          $ref: '#/definitions/model.BranchFacilityCabinetBattery'
+        type: array
+      bins:
+        description: 仓位详情
+        items:
+          $ref: '#/definitions/model.BranchFacilityCabinetBin'
+        type: array
+      businesses:
+        description: 可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+        items:
+          type: string
+        type: array
+      id:
+        description: 电柜ID
+        type: integer
+      name:
+        description: 电柜名称
+        type: string
+      reserve:
+        allOf:
+        - $ref: '#/definitions/model.RiderUnfinishedRes'
+        description: 当前预约, 预约不存在时无此字段
+      serial:
+        description: 电柜编号
+        type: string
+      status:
+        description: 电柜状态 0:离线 1:在线 2:维护中
+        type: integer
+    type: object
+  model.BranchFacilityCabinetBattery:
+    properties:
+      capacity:
+        description: 容量, 单位AH
+        type: string
+      charging:
+        description: 充电数量
+        type: integer
+      fully:
+        description: 可换数量
+        type: integer
+      voltage:
+        description: 电压, 单位V
+        type: string
+    type: object
+  model.BranchFacilityCabinetBin:
+    properties:
+      electricity:
+        description: 当前电量
+        type: number
+      status:
+        description: 状态 0:空仓 1:充电 2:可用 3:锁仓
+        type: integer
+    type: object
+  model.BranchFacilityRes:
+    properties:
+      address:
+        description: 地址
+        type: string
+      cabinet:
+        description: 电柜, 当type=cabinet时存在, 根据序号显示 1号柜/2号柜 等, 当仅有一个电柜时, 电柜切换tab隐藏
+        items:
+          $ref: '#/definitions/model.BranchFacilityCabinet'
+        type: array
+      distance:
+        description: '距离(前端处理: 超过1000米显示nKM)'
+        type: number
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      name:
+        description: 网点名称
+        type: string
+      store:
+        allOf:
+        - $ref: '#/definitions/model.BranchFacilityStore'
+        description: 门店, 当type=store时存在
+      type:
+        description: 设施类型 store:门店 cabinet:电柜(此时cabinet字段为数组)
+        enum:
+        - store
+        - cabinet
+        type: string
+    type: object
+  model.BranchFacilityStore:
+    properties:
+      models:
+        description: 可用电池型号
+        items:
+          type: string
+        type: array
+      name:
+        description: 门店名称
         type: string
     type: object
   model.BranchItem:
@@ -1132,22 +1239,30 @@ definitions:
   model.BranchWithDistanceRes:
     properties:
       address:
+        description: 网点地址
         type: string
       distance:
+        description: '距离(前端处理: 超过1000米显示nKM)'
         type: number
       facility:
+        description: 网点设施
         items:
           $ref: '#/definitions/model.BranchFacility'
         type: array
       id:
+        description: 网点ID
         type: integer
       image:
+        description: 网点图片
         type: string
       lat:
+        description: 纬度
         type: number
       lng:
+        description: 经度
         type: number
       name:
+        description: 网点名称
         type: string
     type: object
   model.BusinessCabinetReq:
@@ -3109,6 +3224,20 @@ definitions:
         description: 退款单号
         type: string
     type: object
+  model.ReserveCreateReq:
+    properties:
+      business:
+        description: 业务选项 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+        enum:
+        - active
+        - pause
+        - continue
+        - unsubscribe
+        type: string
+      cabinetId:
+        description: 电柜ID
+        type: integer
+    type: object
   model.RiderBasic:
     properties:
       id:
@@ -3637,6 +3766,27 @@ definitions:
     - smsCode
     - smsId
     type: object
+  model.RiderUnfinishedRes:
+    properties:
+      business:
+        description: 预约业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+        type: string
+      cabinetId:
+        description: 电柜ID
+        type: integer
+      fid:
+        description: 设施ID
+        type: string
+      id:
+        description: 预约ID
+        type: integer
+      status:
+        description: 状态 0:已预约 1:进行中
+        type: integer
+      time:
+        description: 预约时间
+        type: string
+    type: object
   model.Role:
     properties:
       builtin:
@@ -3702,6 +3852,9 @@ definitions:
       assistanceFee:
         description: 救援费用
         type: number
+      reserveDuration:
+        description: 预约最长时间(分钟)
+        type: integer
     type: object
   model.ShiguangjuIVRItem:
     properties:
@@ -10196,6 +10349,42 @@ paths:
       summary: R2001 列举网点
       tags:
       - '[R]骑手接口'
+  /rider/v1/branch/facility/{fid}:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderBranchFacility
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 设置标识
+        in: path
+        name: fid
+        required: true
+        type: string
+      - description: 经度
+        in: query
+        name: lng
+        required: true
+        type: number
+      - description: 纬度
+        in: query
+        name: lat
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.BranchFacilityRes'
+      summary: R2004 设施详情
+      tags:
+      - '[R]骑手接口'
   /rider/v1/branch/riding:
     get:
       consumes:
@@ -10984,6 +11173,79 @@ paths:
           schema:
             $ref: '#/definitions/model.RiderSigninRes'
       summary: R1006 获取个人信息
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/reserve:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderReserveUnfinished
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功, 预约不存在时为`null`
+          schema:
+            $ref: '#/definitions/model.RiderUnfinishedRes'
+      summary: R8001 获取未完成预约
+      tags:
+      - '[R]骑手接口'
+    post:
+      consumes:
+      - application/json
+      operationId: RiderReserveCreate
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 预约信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.ReserveCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.RiderUnfinishedRes'
+      summary: R8002 创建预约
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/reserve/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: ManagerReserveCancel
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 预约ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: R8003 取消预约
       tags:
       - '[R]骑手接口'
   /rider/v1/setting/app:

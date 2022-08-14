@@ -89,6 +89,9 @@ type Cabinet struct {
 	// BatteryFullNum holds the value of the "battery_full_num" field.
 	// 满电总数
 	BatteryFullNum int `json:"battery_full_num,omitempty"`
+	// BatteryChargingNum holds the value of the "battery_charging_num" field.
+	// 充电总数
+	BatteryChargingNum int `json:"battery_charging_num,omitempty"`
 	// EmptyBinNum holds the value of the "empty_bin_num" field.
 	// 空仓数量
 	EmptyBinNum int `json:"empty_bin_num,omitempty"`
@@ -194,7 +197,7 @@ func (*Cabinet) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case cabinet.FieldLng, cabinet.FieldLat:
 			values[i] = new(sql.NullFloat64)
-		case cabinet.FieldID, cabinet.FieldCityID, cabinet.FieldBranchID, cabinet.FieldDoors, cabinet.FieldStatus, cabinet.FieldHealth, cabinet.FieldBatteryNum, cabinet.FieldBatteryFullNum, cabinet.FieldEmptyBinNum, cabinet.FieldLockedBinNum:
+		case cabinet.FieldID, cabinet.FieldCityID, cabinet.FieldBranchID, cabinet.FieldDoors, cabinet.FieldStatus, cabinet.FieldHealth, cabinet.FieldBatteryNum, cabinet.FieldBatteryFullNum, cabinet.FieldBatteryChargingNum, cabinet.FieldEmptyBinNum, cabinet.FieldLockedBinNum:
 			values[i] = new(sql.NullInt64)
 		case cabinet.FieldRemark, cabinet.FieldSn, cabinet.FieldBrand, cabinet.FieldSerial, cabinet.FieldName, cabinet.FieldAddress, cabinet.FieldSimSn:
 			values[i] = new(sql.NullString)
@@ -374,6 +377,12 @@ func (c *Cabinet) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				c.BatteryFullNum = int(value.Int64)
 			}
+		case cabinet.FieldBatteryChargingNum:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field battery_charging_num", values[i])
+			} else if value.Valid {
+				c.BatteryChargingNum = int(value.Int64)
+			}
 		case cabinet.FieldEmptyBinNum:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field empty_bin_num", values[i])
@@ -498,6 +507,8 @@ func (c *Cabinet) String() string {
 	builder.WriteString(fmt.Sprintf("%v", c.BatteryNum))
 	builder.WriteString(", battery_full_num=")
 	builder.WriteString(fmt.Sprintf("%v", c.BatteryFullNum))
+	builder.WriteString(", battery_charging_num=")
+	builder.WriteString(fmt.Sprintf("%v", c.BatteryChargingNum))
 	builder.WriteString(", empty_bin_num=")
 	builder.WriteString(fmt.Sprintf("%v", c.EmptyBinNum))
 	builder.WriteString(", locked_bin_num=")

@@ -80,6 +80,7 @@ func (Cabinet) Fields() []ent.Field {
         field.Bool("transferred").Default(false).Comment("电池是否已调拨"),
         field.Int("battery_num").Default(0).Comment("电池总数"),
         field.Int("battery_full_num").Default(0).Comment("满电总数"),
+        field.Int("battery_charging_num").Default(0).Comment("充电总数"),
         field.Int("empty_bin_num").Default(0).Comment("空仓数量"),
         field.Int("locked_bin_num").Default(0).Comment("锁仓数量"),
     }

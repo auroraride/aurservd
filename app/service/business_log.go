@@ -81,12 +81,6 @@ func (s *businessLogService) Save(typ business.Type) (*ent.Business, error) {
     return s.creator.SetType(typ).Save(s.ctx)
 }
 
-func (s *businessLogService) SaveAsync(typ business.Type) {
-    go func() {
-        _, _ = s.Save(typ)
-    }()
-}
-
 func (s *businessLogService) SaveX(typ business.Type) *ent.Business {
     biz, err := s.Save(typ)
     if err != nil {

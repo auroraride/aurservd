@@ -61,6 +61,8 @@ const (
 	FieldBatteryNum = "battery_num"
 	// FieldBatteryFullNum holds the string denoting the battery_full_num field in the database.
 	FieldBatteryFullNum = "battery_full_num"
+	// FieldBatteryChargingNum holds the string denoting the battery_charging_num field in the database.
+	FieldBatteryChargingNum = "battery_charging_num"
 	// FieldEmptyBinNum holds the string denoting the empty_bin_num field in the database.
 	FieldEmptyBinNum = "empty_bin_num"
 	// FieldLockedBinNum holds the string denoting the locked_bin_num field in the database.
@@ -148,6 +150,7 @@ var Columns = []string{
 	FieldTransferred,
 	FieldBatteryNum,
 	FieldBatteryFullNum,
+	FieldBatteryChargingNum,
 	FieldEmptyBinNum,
 	FieldLockedBinNum,
 }
@@ -190,6 +193,8 @@ var (
 	DefaultBatteryNum int
 	// DefaultBatteryFullNum holds the default value on creation for the "battery_full_num" field.
 	DefaultBatteryFullNum int
+	// DefaultBatteryChargingNum holds the default value on creation for the "battery_charging_num" field.
+	DefaultBatteryChargingNum int
 	// DefaultEmptyBinNum holds the default value on creation for the "empty_bin_num" field.
 	DefaultEmptyBinNum int
 	// DefaultLockedBinNum holds the default value on creation for the "locked_bin_num" field.

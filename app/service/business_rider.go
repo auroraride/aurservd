@@ -19,6 +19,7 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
+    log "github.com/sirupsen/logrus"
     "time"
 )
 
@@ -32,6 +33,7 @@ type businessRiderService struct {
     cabinetInfo  *model.CabinetBasicInfo
     store        *ent.Store
     subscribe    *ent.Subscribe
+    reserve      *ent.Reserve
 
     task func() *ec.BinInfo // 电柜任务
 
@@ -152,7 +154,7 @@ func (s *businessRiderService) Inactive(id uint64) (*model.SubscribeActiveInfo, 
     NewRiderPermissionWithRider(r).BusinessX()
 
     p := sub.Edges.Rider.Edges.Person
-    if p.Status != model.PersonAuthenticated.Raw() {
+    if p.Status != model.PersonAuthenticated.Value() {
         snag.Panic("骑手还未认证")
     }
 
@@ -201,7 +203,7 @@ func (s *businessRiderService) Inactive(id uint64) (*model.SubscribeActiveInfo, 
 }
 
 // preprocess 预处理数据
-func (s *businessRiderService) preprocess(sub *ent.Subscribe) {
+func (s *businessRiderService) preprocess(typ business.Type, sub *ent.Subscribe) {
     s.subscribe = sub
     s.subscribeID = tools.NewPointerInterface(sub.ID)
 
@@ -239,6 +241,17 @@ func (s *businessRiderService) preprocess(sub *ent.Subscribe) {
     // 校验权限
     if s.employee != nil {
         NewBusinessWithEmployee(s.employee).CheckCity(s.subscribe.CityID)
+    }
+
+    // 预约检查
+    rev := NewReserveWithRider(r).RiderUnfinished(r.ID)
+    if rev != nil {
+        if s.cabinet == nil || s.cabinet.ID != rev.CabinetID || typ.String() != rev.Type {
+            _, _ = rev.Update().SetStatus(model.ReserveStatusInvalid.Value()).Save(s.ctx)
+        } else {
+            // 预约处理中
+            s.reserve, _ = rev.Update().SetStatus(model.ReserveStatusProcessing.Value()).Save(s.ctx)
+        }
     }
 }
 
@@ -317,15 +330,33 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
     // 取出电池优后执行
     if s.task != nil && (bt == business.TypeActive || bt == business.TypeContinue) {
         bin, err = s.doTask()
+        if err != nil {
+            log.Error(err)
+        }
     }
 
     // 保存业务日志
-    NewBusinessLog(s.subscribe).
+    var b *ent.Business
+    b, err = NewBusinessLog(s.subscribe).
         SetModifier(s.modifier).
         SetEmployee(s.employee).
         SetCabinet(s.cabinet).
         SetBinInfo(bin).
-        SaveAsync(bt)
+        Save(bt)
+    var bussinessID *uint64
+    revStatus := model.ReserveStatusFail
+    if b != nil {
+        revStatus = model.ReserveStatusSuccess
+        bussinessID = tools.NewPointerInterface(b.ID)
+    }
+
+    // 更新预约
+    if s.reserve != nil {
+        _, _ = s.reserve.Update().
+            SetStatus(revStatus.Value()).
+            SetNillableBusinessID(bussinessID).
+            Save(s.ctx)
+    }
 
     // 记录日志
     go logging.NewOperateLog().
@@ -344,7 +375,7 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 
 // Active 激活订阅
 func (s *businessRiderService) Active(info *model.SubscribeActiveInfo, sub *ent.Subscribe) {
-    s.preprocess(sub)
+    s.preprocess(business.TypeActive, sub)
 
     s.do(business.TypeActive, func(tx *ent.Tx) {
         // 激活
@@ -374,7 +405,7 @@ func (s *businessRiderService) Active(info *model.SubscribeActiveInfo, sub *ent.
 // UnSubscribe 退租
 // 会抹去欠费情况
 func (s *businessRiderService) UnSubscribe(subscribeID uint64) {
-    s.preprocess(s.QuerySubscribeWithRider(subscribeID))
+    s.preprocess(business.TypeUnsubscribe, s.QuerySubscribeWithRider(subscribeID))
 
     sub := s.subscribe
 
@@ -434,7 +465,7 @@ func (s *businessRiderService) UnSubscribe(subscribeID uint64) {
 
 // Pause 寄存
 func (s *businessRiderService) Pause(subscribeID uint64) {
-    s.preprocess(s.QuerySubscribeWithRider(subscribeID))
+    s.preprocess(business.TypePause, s.QuerySubscribeWithRider(subscribeID))
 
     if s.subscribe == nil || s.subscribe.Status != model.SubscribeStatusUsing {
         snag.Panic("无生效订阅")
@@ -464,7 +495,7 @@ func (s *businessRiderService) Pause(subscribeID uint64) {
 
 // Continue 继续计费
 func (s *businessRiderService) Continue(subscribeID uint64) {
-    s.preprocess(s.QuerySubscribeWithRider(subscribeID))
+    s.preprocess(business.TypeContinue, s.QuerySubscribeWithRider(subscribeID))
 
     sp, _ := ent.Database.SubscribePause.QueryNotDeleted().
         Where(subscribepause.SubscribeID(s.subscribe.ID), subscribepause.EndAtIsNil()).

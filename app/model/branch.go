@@ -5,6 +5,17 @@
 
 package model
 
+const (
+    BranchFacilityTypeStore = "store"
+    BranchFacilityTypeV72   = "v72"
+    BranchFacilityTypeV60   = "v60"
+)
+
+const (
+    BranchFacilityStateOffline uint = iota // 不在线
+    BranchFacilityStateOnline              // 在线
+)
+
 // BranchListReq 后台网点列表请求
 type BranchListReq struct {
     PaginationReq
@@ -83,17 +94,6 @@ type BranchContractSheetReq struct {
     Sheets []string `json:"sheets"` // 底单, 需携带所有`未删除`的底单
 }
 
-const (
-    BranchFacilityTypeStore = "store"
-    BranchFacilityTypeV72   = "v72"
-    BranchFacilityTypeV60   = "v60"
-)
-
-const (
-    BranchFacilityStateOffline uint = iota // 不在线
-    BranchFacilityStateOnline              // 在线
-)
-
 // BranchWithDistanceReq 根据距离获取网点请求
 type BranchWithDistanceReq struct {
     Lng      *float64 `json:"lng" query:"lng" validate:"required" trans:"经度"`
@@ -112,11 +112,11 @@ type BranchDistanceListReq struct {
 }
 
 type BranchDistanceListRes struct {
-    ID       uint64                     `json:"id"`
-    Distance float64                    `json:"distance"`
-    Name     string                     `json:"name"`
-    Lng      float64                    `json:"lng"`
-    Lat      float64                    `json:"lat"`
+    ID       uint64                     `json:"id"`       // 网点ID
+    Distance float64                    `json:"distance"` // 距离(前端处理: 超过1000米显示nKM)
+    Name     string                     `json:"name"`     // 网点名称
+    Lng      float64                    `json:"lng"`      // 经度
+    Lat      float64                    `json:"lat"`      // 纬度
     Cabinets []CabinetListByDistanceRes `json:"cabinets"`
     Stores   []StoreWithStatus          `json:"stores"`
 }
@@ -135,14 +135,14 @@ type BranchFacility struct {
 
 // BranchWithDistanceRes 根据距离获取网点结果
 type BranchWithDistanceRes struct {
-    ID          uint64                     `json:"id"`
-    Distance    float64                    `json:"distance"`
-    Name        string                     `json:"name"`
-    Lng         float64                    `json:"lng"`
-    Lat         float64                    `json:"lat"`
-    Image       string                     `json:"image"`
-    Address     string                     `json:"address"`
-    Facility    []*BranchFacility          `json:"facility"`
+    ID          uint64                     `json:"id"`       // 网点ID
+    Distance    float64                    `json:"distance"` // 距离(前端处理: 超过1000米显示nKM)
+    Name        string                     `json:"name"`     // 网点名称
+    Lng         float64                    `json:"lng"`      // 经度
+    Lat         float64                    `json:"lat"`      // 纬度
+    Image       string                     `json:"image"`    // 网点图片
+    Address     string                     `json:"address"`  // 网点地址
+    Facility    []*BranchFacility          `json:"facility"` // 网点设施
     FacilityMap map[string]*BranchFacility `json:"-" swaggerignore:"true"`
 }
 
@@ -161,4 +161,49 @@ type BranchExpriesNotice struct {
     City string `json:"city"`
     Name string `json:"name"`
     End  string `json:"end"`
+}
+
+type BranchFacilityReq struct {
+    Fid string  `json:"fid" param:"fid"` // 设施标识
+    Lng float64 `json:"lng" query:"lng"` // 经度
+    Lat float64 `json:"lat" query:"lat"` // 纬度
+}
+
+type BranchFacilityRes struct {
+    Name     string                  `json:"name"`                       // 网点名称
+    Address  string                  `json:"address"`                    // 地址
+    Lng      float64                 `json:"lng"`                        // 经度
+    Lat      float64                 `json:"lat"`                        // 纬度
+    Distance float64                 `json:"distance"`                   // 距离(前端处理: 超过1000米显示nKM)
+    Type     string                  `json:"type" enums:"store,cabinet"` // 设施类型 store:门店 cabinet:电柜(此时cabinet字段为数组)
+    Store    *BranchFacilityStore    `json:"store,omitempty"`            // 门店, 当type=store时存在
+    Cabinet  []BranchFacilityCabinet `json:"cabinet,omitempty"`          // 电柜, 当type=cabinet时存在, 根据序号显示 1号柜/2号柜 等, 当仅有一个电柜时, 电柜切换tab隐藏
+}
+
+type BranchFacilityStore struct {
+    Name   string   `json:"name"`   // 门店名称
+    Models []string `json:"models"` // 可用电池型号
+}
+
+type BranchFacilityCabinet struct {
+    ID         uint64                         `json:"id"`                // 电柜ID
+    Status     uint8                          `json:"status"`            // 电柜状态 0:离线 1:在线 2:维护中
+    Name       string                         `json:"name"`              // 电柜名称
+    Serial     string                         `json:"serial"`            // 电柜编号
+    Batteries  []BranchFacilityCabinetBattery `json:"batteries"`         // 电池情况
+    Reserve    *RiderUnfinishedRes            `json:"reserve,omitempty"` // 当前预约, 预约不存在时无此字段
+    Bins       []BranchFacilityCabinetBin     `json:"bins"`              // 仓位详情
+    Businesses []string                       `json:"businesses"`        // 可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+}
+
+type BranchFacilityCabinetBattery struct {
+    Voltage  string `json:"voltage"`  // 电压, 单位V
+    Capacity string `json:"capacity"` // 容量, 单位AH
+    Charging int    `json:"charging"` // 充电数量
+    Fully    int    `json:"fully"`    // 可换数量
+}
+
+type BranchFacilityCabinetBin struct {
+    Status      uint8               `json:"status"`                // 状态 0:空仓 1:充电 2:可用 3:锁仓
+    Electricity *BatteryElectricity `json:"electricity,omitempty"` // 当前电量 锁仓或空仓无此字段
 }

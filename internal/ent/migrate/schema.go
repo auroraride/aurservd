@@ -451,6 +451,7 @@ var (
 		{Name: "transferred", Type: field.TypeBool, Comment: "电池是否已调拨", Default: false},
 		{Name: "battery_num", Type: field.TypeInt, Comment: "电池总数", Default: 0},
 		{Name: "battery_full_num", Type: field.TypeInt, Comment: "满电总数", Default: 0},
+		{Name: "battery_charging_num", Type: field.TypeInt, Comment: "充电总数", Default: 0},
 		{Name: "empty_bin_num", Type: field.TypeInt, Comment: "空仓数量", Default: 0},
 		{Name: "locked_bin_num", Type: field.TypeInt, Comment: "锁仓数量", Default: 0},
 		{Name: "branch_id", Type: field.TypeUint64, Nullable: true},
@@ -464,13 +465,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cabinet_branch_cabinets",
-				Columns:    []*schema.Column{CabinetColumns[25]},
+				Columns:    []*schema.Column{CabinetColumns[26]},
 				RefColumns: []*schema.Column{BranchColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "cabinet_city_city",
-				Columns:    []*schema.Column{CabinetColumns[26]},
+				Columns:    []*schema.Column{CabinetColumns[27]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -489,7 +490,7 @@ var (
 			{
 				Name:    "cabinet_branch_id",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[25]},
+				Columns: []*schema.Column{CabinetColumns[26]},
 			},
 			{
 				Name:    "cabinet_brand",

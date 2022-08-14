@@ -52,7 +52,7 @@ func (s *cabinetFaultService) Report(rider *ent.Rider, req *model.CabinetFaultRe
     cab, _ := ent.Database.Cabinet.QueryNotDeleted().
         Where(
             cabinet.ID(req.CabinetID),
-            cabinet.Status(model.CabinetStatusNormal.Raw()),
+            cabinet.Status(model.CabinetStatusNormal.Value()),
         ).
         WithCity().
         WithBranch().

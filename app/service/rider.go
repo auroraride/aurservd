@@ -111,7 +111,7 @@ func (s *riderService) Signin(device *model.Device, req *model.RiderSignupReq) (
         u, err = orm.Create().
             SetPhone(req.Phone).
             SetLastDevice(device.Serial).
-            SetDeviceType(device.Type.Raw()).
+            SetDeviceType(device.Type.Value()).
             Save(ctx)
         if err != nil {
             snag.Panic(err)
@@ -163,7 +163,7 @@ func (s *riderService) SetNewDevice(u *ent.Rider, device *model.Device) {
     _, err := ent.Database.Rider.
         UpdateOneID(u.ID).
         SetLastDevice(device.Serial).
-        SetDeviceType(device.Type.Raw()).
+        SetDeviceType(device.Type.Value()).
         SetIsNewDevice(isNew).
         Save(context.Background())
     if err != nil {
@@ -198,10 +198,10 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
         return
     }
 
-    status := model.PersonAuthenticated.Raw()
+    status := model.PersonAuthenticated.Value()
     success = data.Success
     if !success {
-        status = model.PersonAuthenticationFailed.Raw()
+        status = model.PersonAuthenticationFailed.Value()
     }
 
     res := data.Result
@@ -376,7 +376,7 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
             sq.WithCity().Order(ent.Desc(subscribe.FieldCreatedAt))
         }).
         WithContracts(func(cq *ent.ContractQuery) {
-            cq.Where(contract.DeletedAtIsNil(), contract.Status(model.ContractStatusSuccess.Raw()))
+            cq.Where(contract.DeletedAtIsNil(), contract.Status(model.ContractStatusSuccess.Value()))
         }).
         WithEnterprise().
         Order(ent.Desc(rider.FieldCreatedAt))
@@ -444,12 +444,12 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
             q.Where(
                 rider.Or(
                     rider.PersonIDIsNil(),
-                    rider.HasPersonWith(person.Status(model.PersonUnauthenticated.Raw())),
+                    rider.HasPersonWith(person.Status(model.PersonUnauthenticated.Value())),
                 ),
             )
             break
         default:
-            q.Where(rider.HasPersonWith(person.Status(ra.Raw())))
+            q.Where(rider.HasPersonWith(person.Status(ra.Value())))
             break
         }
     }

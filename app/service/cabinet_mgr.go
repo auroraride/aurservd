@@ -61,7 +61,7 @@ func (s *cabinetMgrService) Maintain(req *model.CabinetMaintainReq) (detail *mod
 
     detail = NewCabinetWithModifier(s.modifier).Detail(cab)
 
-    _, err := cab.Update().SetStatus(status.Raw()).Save(s.ctx)
+    _, err := cab.Update().SetStatus(status.Value()).Save(s.ctx)
     if err != nil {
         snag.Panic(err)
     }
