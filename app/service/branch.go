@@ -13,6 +13,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/branchcontract"
+    "github.com/auroraride/aurservd/internal/ent/business"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -347,10 +348,10 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
 
 // ListByDistanceRider 根据距离列出所有网点和电柜
 func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (items []*model.BranchWithDistanceRes) {
-    // var sub *ent.Subscribe
-    // if s.rider != nil {
-    //     _, sub = NewSubscribeWithRider(s.rider).RecentDetail(s.rider.ID)
-    // }
+    var sub *ent.Subscribe
+    if s.rider != nil {
+        _, sub = NewSubscribeWithRider(s.rider).RecentDetail(s.rider.ID)
+    }
 
     // TODO 业务获取限制
     // if sub != nil {
@@ -394,9 +395,24 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
         }
     }
 
+    // 电柜id
+    var cabIDs []uint64
+    // 预约数量map
+    var rm map[uint64]int
+
+    if req.Business != "" {
+        for _, c := range cabinets {
+            cabIDs = append(cabIDs, c.ID)
+        }
+
+        rm = NewReserve().CabinetCounts(cabIDs, business.Type(req.Business))
+    }
+
     // 电柜
     for _, c := range cabinets {
-        if model.CabinetStatus(c.Status) == model.CabinetStatusNormal {
+        // 预约检查 = 非预约筛选 或 电柜可满足预约并且如果订阅非空则电柜电池型号满足订阅型号
+        resvcheck := req.Business == "" || (c.ReserveAble(business.Type(req.Business), rm[c.ID]) && (sub == nil || NewCabinet().ModelInclude(c, sub.Model)))
+        if model.CabinetStatus(c.Status) == model.CabinetStatusNormal && resvcheck {
             fa := model.BranchFacility{
                 ID:    c.ID,
                 Name:  c.Name,
@@ -438,7 +454,9 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
         for _, fa := range m.FacilityMap {
             m.Facility = append(m.Facility, fa)
         }
-        items = append(items, m)
+        if len(m.Facility) > 0 {
+            items = append(items, m)
+        }
     }
 
     sort.Slice(items, func(i, j int) bool {

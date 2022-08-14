@@ -7114,7 +7114,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "电柜ID, 仅goal为0的时候生效",
+                        "description": "电柜ID, 仅goal为2的时候生效",
                         "name": "cabinetId",
                         "in": "query"
                     },
@@ -7149,7 +7149,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "门店ID, 仅goal为0的时候生效",
+                        "description": "门店ID, 仅goal为1的时候生效",
                         "name": "storeId",
                         "in": "query"
                     }
@@ -7305,7 +7305,7 @@ const docTemplate = `{
                             2
                         ],
                         "type": "integer",
-                        "description": "查询目标 0:不筛选 1:门店(默认) 2:电柜",
+                        "description": "查询目标, 0:不筛选 1:门店(默认) 2:电柜",
                         "name": "goal",
                         "in": "query"
                     },

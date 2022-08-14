@@ -42,6 +42,7 @@ func (Reserve) Mixin() []ent.Mixin {
         internal.Modifier{},
         CabinetMixin{},
         RiderMixin{},
+        CityMixin{},
         BusinessMixin{Optional: true},
     }
 }

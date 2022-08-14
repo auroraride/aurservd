@@ -4598,6 +4598,22 @@ func (c *ReserveClient) QueryRider(r *Reserve) *RiderQuery {
 	return query
 }
 
+// QueryCity queries the city edge of a Reserve.
+func (c *ReserveClient) QueryCity(r *Reserve) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(reserve.Table, reserve.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, reserve.CityTable, reserve.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryBusiness queries the business edge of a Reserve.
 func (c *ReserveClient) QueryBusiness(r *Reserve) *BusinessQuery {
 	query := &BusinessQuery{config: c.config}

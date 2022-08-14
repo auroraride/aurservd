@@ -9336,7 +9336,7 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - description: 电柜ID, 仅goal为0的时候生效
+      - description: 电柜ID, 仅goal为2的时候生效
         in: query
         name: cabinetId
         type: integer
@@ -9360,7 +9360,7 @@ paths:
         in: query
         name: start
         type: string
-      - description: 门店ID, 仅goal为0的时候生效
+      - description: 门店ID, 仅goal为1的时候生效
         in: query
         name: storeId
         type: integer
@@ -9457,7 +9457,7 @@ paths:
         in: query
         name: end
         type: string
-      - description: 查询目标 0:不筛选 1:门店(默认) 2:电柜
+      - description: 查询目标, 0:不筛选 1:门店(默认) 2:电柜
         enum:
         - 0
         - 1

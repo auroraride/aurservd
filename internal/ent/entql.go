@@ -859,6 +859,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			reserve.FieldRemark:       {Type: field.TypeString, Column: reserve.FieldRemark},
 			reserve.FieldCabinetID:    {Type: field.TypeUint64, Column: reserve.FieldCabinetID},
 			reserve.FieldRiderID:      {Type: field.TypeUint64, Column: reserve.FieldRiderID},
+			reserve.FieldCityID:       {Type: field.TypeUint64, Column: reserve.FieldCityID},
 			reserve.FieldBusinessID:   {Type: field.TypeUint64, Column: reserve.FieldBusinessID},
 			reserve.FieldStatus:       {Type: field.TypeUint8, Column: reserve.FieldStatus},
 			reserve.FieldType:         {Type: field.TypeString, Column: reserve.FieldType},
@@ -2303,6 +2304,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Reserve",
 		"Rider",
+	)
+	graph.MustAddE(
+		"city",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   reserve.CityTable,
+			Columns: []string{reserve.CityColumn},
+			Bidi:    false,
+		},
+		"Reserve",
+		"City",
 	)
 	graph.MustAddE(
 		"business",
@@ -7615,6 +7628,11 @@ func (f *ReserveFilter) WhereRiderID(p entql.Uint64P) {
 	f.Where(p.Field(reserve.FieldRiderID))
 }
 
+// WhereCityID applies the entql uint64 predicate on the city_id field.
+func (f *ReserveFilter) WhereCityID(p entql.Uint64P) {
+	f.Where(p.Field(reserve.FieldCityID))
+}
+
 // WhereBusinessID applies the entql uint64 predicate on the business_id field.
 func (f *ReserveFilter) WhereBusinessID(p entql.Uint64P) {
 	f.Where(p.Field(reserve.FieldBusinessID))
@@ -7652,6 +7670,20 @@ func (f *ReserveFilter) WhereHasRider() {
 // WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
 func (f *ReserveFilter) WhereHasRiderWith(preds ...predicate.Rider) {
 	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasCity applies a predicate to check if query has an edge city.
+func (f *ReserveFilter) WhereHasCity() {
+	f.Where(entql.HasEdge("city"))
+}
+
+// WhereHasCityWith applies a predicate to check if query has an edge city with a given conditions (other predicates).
+func (f *ReserveFilter) WhereHasCityWith(preds ...predicate.City) {
+	f.Where(entql.HasEdgeWith("city", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

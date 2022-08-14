@@ -12,6 +12,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 )
@@ -42,6 +43,9 @@ type Reserve struct {
 	// RiderID holds the value of the "rider_id" field.
 	// 骑手ID
 	RiderID uint64 `json:"rider_id,omitempty"`
+	// CityID holds the value of the "city_id" field.
+	// 城市ID
+	CityID uint64 `json:"city_id,omitempty"`
 	// BusinessID holds the value of the "business_id" field.
 	BusinessID *uint64 `json:"business_id,omitempty"`
 	// Status holds the value of the "status" field.
@@ -61,11 +65,13 @@ type ReserveEdges struct {
 	Cabinet *Cabinet `json:"cabinet,omitempty"`
 	// Rider holds the value of the rider edge.
 	Rider *Rider `json:"rider,omitempty"`
+	// City holds the value of the city edge.
+	City *City `json:"city,omitempty"`
 	// Business holds the value of the business edge.
 	Business *Business `json:"business,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // CabinetOrErr returns the Cabinet value or an error if the edge
@@ -96,10 +102,24 @@ func (e ReserveEdges) RiderOrErr() (*Rider, error) {
 	return nil, &NotLoadedError{edge: "rider"}
 }
 
+// CityOrErr returns the City value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ReserveEdges) CityOrErr() (*City, error) {
+	if e.loadedTypes[2] {
+		if e.City == nil {
+			// The edge city was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: city.Label}
+		}
+		return e.City, nil
+	}
+	return nil, &NotLoadedError{edge: "city"}
+}
+
 // BusinessOrErr returns the Business value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ReserveEdges) BusinessOrErr() (*Business, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		if e.Business == nil {
 			// The edge business was loaded in eager-loading,
 			// but was not found.
@@ -117,7 +137,7 @@ func (*Reserve) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case reserve.FieldCreator, reserve.FieldLastModifier:
 			values[i] = new([]byte)
-		case reserve.FieldID, reserve.FieldCabinetID, reserve.FieldRiderID, reserve.FieldBusinessID, reserve.FieldStatus:
+		case reserve.FieldID, reserve.FieldCabinetID, reserve.FieldRiderID, reserve.FieldCityID, reserve.FieldBusinessID, reserve.FieldStatus:
 			values[i] = new(sql.NullInt64)
 		case reserve.FieldRemark, reserve.FieldType:
 			values[i] = new(sql.NullString)
@@ -197,6 +217,12 @@ func (r *Reserve) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				r.RiderID = uint64(value.Int64)
 			}
+		case reserve.FieldCityID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field city_id", values[i])
+			} else if value.Valid {
+				r.CityID = uint64(value.Int64)
+			}
 		case reserve.FieldBusinessID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field business_id", values[i])
@@ -229,6 +255,11 @@ func (r *Reserve) QueryCabinet() *CabinetQuery {
 // QueryRider queries the "rider" edge of the Reserve entity.
 func (r *Reserve) QueryRider() *RiderQuery {
 	return (&ReserveClient{config: r.config}).QueryRider(r)
+}
+
+// QueryCity queries the "city" edge of the Reserve entity.
+func (r *Reserve) QueryCity() *CityQuery {
+	return (&ReserveClient{config: r.config}).QueryCity(r)
 }
 
 // QueryBusiness queries the "business" edge of the Reserve entity.
@@ -277,6 +308,8 @@ func (r *Reserve) String() string {
 	builder.WriteString(fmt.Sprintf("%v", r.CabinetID))
 	builder.WriteString(", rider_id=")
 	builder.WriteString(fmt.Sprintf("%v", r.RiderID))
+	builder.WriteString(", city_id=")
+	builder.WriteString(fmt.Sprintf("%v", r.CityID))
 	if v := r.BusinessID; v != nil {
 		builder.WriteString(", business_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))

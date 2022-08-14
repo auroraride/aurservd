@@ -8,10 +8,11 @@ package model
 type ReserveStatus uint8
 
 const (
-    ReserveStatusPending ReserveStatus = iota // 已预约
-    ReserveStatusDone                         // 已完成
-    ReserveStatusOverdue                      // 已超时
-    ReserveStatusCancel                       // 已取消
+    ReserveStatusPending    ReserveStatus = iota // 已预约
+    ReserveStatusProcessing                      // 进行中
+    ReserveStatusDone                            // 已完成
+    ReserveStatusOverdue                         // 已超时
+    ReserveStatusCancel                          // 已取消
 )
 
 func (rs ReserveStatus) Value() uint8 {
@@ -24,6 +25,8 @@ func (rs ReserveStatus) String() string {
         return "已预约"
     case ReserveStatusDone:
         return "已完成"
+    case ReserveStatusProcessing:
+        return "进行中"
     case ReserveStatusOverdue:
         return "已超时"
     case ReserveStatusCancel:

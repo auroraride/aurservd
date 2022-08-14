@@ -1855,6 +1855,7 @@ var (
 		{Name: "type", Type: field.TypeString, Comment: "业务类型"},
 		{Name: "cabinet_id", Type: field.TypeUint64},
 		{Name: "rider_id", Type: field.TypeUint64},
+		{Name: "city_id", Type: field.TypeUint64},
 		{Name: "business_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// ReserveTable holds the schema information for the "reserve" table.
@@ -1876,8 +1877,14 @@ var (
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "reserve_business_business",
+				Symbol:     "reserve_city_city",
 				Columns:    []*schema.Column{ReserveColumns[11]},
+				RefColumns: []*schema.Column{CityColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "reserve_business_business",
+				Columns:    []*schema.Column{ReserveColumns[12]},
 				RefColumns: []*schema.Column{BusinessColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2825,7 +2832,8 @@ func init() {
 	}
 	ReserveTable.ForeignKeys[0].RefTable = CabinetTable
 	ReserveTable.ForeignKeys[1].RefTable = RiderTable
-	ReserveTable.ForeignKeys[2].RefTable = BusinessTable
+	ReserveTable.ForeignKeys[2].RefTable = CityTable
+	ReserveTable.ForeignKeys[3].RefTable = BusinessTable
 	ReserveTable.Annotation = &entsql.Annotation{
 		Table: "reserve",
 	}

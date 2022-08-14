@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 )
@@ -106,6 +107,12 @@ func (rc *ReserveCreate) SetRiderID(u uint64) *ReserveCreate {
 	return rc
 }
 
+// SetCityID sets the "city_id" field.
+func (rc *ReserveCreate) SetCityID(u uint64) *ReserveCreate {
+	rc.mutation.SetCityID(u)
+	return rc
+}
+
 // SetBusinessID sets the "business_id" field.
 func (rc *ReserveCreate) SetBusinessID(u uint64) *ReserveCreate {
 	rc.mutation.SetBusinessID(u)
@@ -148,6 +155,11 @@ func (rc *ReserveCreate) SetCabinet(c *Cabinet) *ReserveCreate {
 // SetRider sets the "rider" edge to the Rider entity.
 func (rc *ReserveCreate) SetRider(r *Rider) *ReserveCreate {
 	return rc.SetRiderID(r.ID)
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (rc *ReserveCreate) SetCity(c *City) *ReserveCreate {
+	return rc.SetCityID(c.ID)
 }
 
 // SetBusiness sets the "business" edge to the Business entity.
@@ -269,6 +281,9 @@ func (rc *ReserveCreate) check() error {
 	if _, ok := rc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider_id", err: errors.New(`ent: missing required field "Reserve.rider_id"`)}
 	}
+	if _, ok := rc.mutation.CityID(); !ok {
+		return &ValidationError{Name: "city_id", err: errors.New(`ent: missing required field "Reserve.city_id"`)}
+	}
 	if _, ok := rc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Reserve.status"`)}
 	}
@@ -280,6 +295,9 @@ func (rc *ReserveCreate) check() error {
 	}
 	if _, ok := rc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Reserve.rider"`)}
+	}
+	if _, ok := rc.mutation.CityID(); !ok {
+		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Reserve.city"`)}
 	}
 	return nil
 }
@@ -411,6 +429,26 @@ func (rc *ReserveCreate) createSpec() (*Reserve, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.RiderID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   reserve.CityTable,
+			Columns: []string{reserve.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CityID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := rc.mutation.BusinessIDs(); len(nodes) > 0 {
@@ -604,6 +642,18 @@ func (u *ReserveUpsert) SetRiderID(v uint64) *ReserveUpsert {
 // UpdateRiderID sets the "rider_id" field to the value that was provided on create.
 func (u *ReserveUpsert) UpdateRiderID() *ReserveUpsert {
 	u.SetExcluded(reserve.FieldRiderID)
+	return u
+}
+
+// SetCityID sets the "city_id" field.
+func (u *ReserveUpsert) SetCityID(v uint64) *ReserveUpsert {
+	u.Set(reserve.FieldCityID, v)
+	return u
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *ReserveUpsert) UpdateCityID() *ReserveUpsert {
+	u.SetExcluded(reserve.FieldCityID)
 	return u
 }
 
@@ -842,6 +892,20 @@ func (u *ReserveUpsertOne) SetRiderID(v uint64) *ReserveUpsertOne {
 func (u *ReserveUpsertOne) UpdateRiderID() *ReserveUpsertOne {
 	return u.Update(func(s *ReserveUpsert) {
 		s.UpdateRiderID()
+	})
+}
+
+// SetCityID sets the "city_id" field.
+func (u *ReserveUpsertOne) SetCityID(v uint64) *ReserveUpsertOne {
+	return u.Update(func(s *ReserveUpsert) {
+		s.SetCityID(v)
+	})
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *ReserveUpsertOne) UpdateCityID() *ReserveUpsertOne {
+	return u.Update(func(s *ReserveUpsert) {
+		s.UpdateCityID()
 	})
 }
 
@@ -1252,6 +1316,20 @@ func (u *ReserveUpsertBulk) SetRiderID(v uint64) *ReserveUpsertBulk {
 func (u *ReserveUpsertBulk) UpdateRiderID() *ReserveUpsertBulk {
 	return u.Update(func(s *ReserveUpsert) {
 		s.UpdateRiderID()
+	})
+}
+
+// SetCityID sets the "city_id" field.
+func (u *ReserveUpsertBulk) SetCityID(v uint64) *ReserveUpsertBulk {
+	return u.Update(func(s *ReserveUpsert) {
+		s.SetCityID(v)
+	})
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *ReserveUpsertBulk) UpdateCityID() *ReserveUpsertBulk {
+	return u.Update(func(s *ReserveUpsert) {
+		s.UpdateCityID()
 	})
 }
 

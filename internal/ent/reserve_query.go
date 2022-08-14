@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -29,6 +30,7 @@ type ReserveQuery struct {
 	// eager-loading edges.
 	withCabinet  *CabinetQuery
 	withRider    *RiderQuery
+	withCity     *CityQuery
 	withBusiness *BusinessQuery
 	modifiers    []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -104,6 +106,28 @@ func (rq *ReserveQuery) QueryRider() *RiderQuery {
 			sqlgraph.From(reserve.Table, reserve.FieldID, selector),
 			sqlgraph.To(rider.Table, rider.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, reserve.RiderTable, reserve.RiderColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCity chains the current query on the "city" edge.
+func (rq *ReserveQuery) QueryCity() *CityQuery {
+	query := &CityQuery{config: rq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(reserve.Table, reserve.FieldID, selector),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, reserve.CityTable, reserve.CityColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
@@ -316,6 +340,7 @@ func (rq *ReserveQuery) Clone() *ReserveQuery {
 		predicates:   append([]predicate.Reserve{}, rq.predicates...),
 		withCabinet:  rq.withCabinet.Clone(),
 		withRider:    rq.withRider.Clone(),
+		withCity:     rq.withCity.Clone(),
 		withBusiness: rq.withBusiness.Clone(),
 		// clone intermediate query.
 		sql:    rq.sql.Clone(),
@@ -343,6 +368,17 @@ func (rq *ReserveQuery) WithRider(opts ...func(*RiderQuery)) *ReserveQuery {
 		opt(query)
 	}
 	rq.withRider = query
+	return rq
+}
+
+// WithCity tells the query-builder to eager-load the nodes that are connected to
+// the "city" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *ReserveQuery) WithCity(opts ...func(*CityQuery)) *ReserveQuery {
+	query := &CityQuery{config: rq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withCity = query
 	return rq
 }
 
@@ -427,9 +463,10 @@ func (rq *ReserveQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rese
 	var (
 		nodes       = []*Reserve{}
 		_spec       = rq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			rq.withCabinet != nil,
 			rq.withRider != nil,
+			rq.withCity != nil,
 			rq.withBusiness != nil,
 		}
 	)
@@ -503,6 +540,32 @@ func (rq *ReserveQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rese
 			}
 			for i := range nodes {
 				nodes[i].Edges.Rider = n
+			}
+		}
+	}
+
+	if query := rq.withCity; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Reserve)
+		for i := range nodes {
+			fk := nodes[i].CityID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(city.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "city_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.City = n
 			}
 		}
 	}

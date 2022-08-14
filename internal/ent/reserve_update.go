@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -102,6 +103,12 @@ func (ru *ReserveUpdate) SetRiderID(u uint64) *ReserveUpdate {
 	return ru
 }
 
+// SetCityID sets the "city_id" field.
+func (ru *ReserveUpdate) SetCityID(u uint64) *ReserveUpdate {
+	ru.mutation.SetCityID(u)
+	return ru
+}
+
 // SetBusinessID sets the "business_id" field.
 func (ru *ReserveUpdate) SetBusinessID(u uint64) *ReserveUpdate {
 	ru.mutation.SetBusinessID(u)
@@ -159,6 +166,11 @@ func (ru *ReserveUpdate) SetRider(r *Rider) *ReserveUpdate {
 	return ru.SetRiderID(r.ID)
 }
 
+// SetCity sets the "city" edge to the City entity.
+func (ru *ReserveUpdate) SetCity(c *City) *ReserveUpdate {
+	return ru.SetCityID(c.ID)
+}
+
 // SetBusiness sets the "business" edge to the Business entity.
 func (ru *ReserveUpdate) SetBusiness(b *Business) *ReserveUpdate {
 	return ru.SetBusinessID(b.ID)
@@ -178,6 +190,12 @@ func (ru *ReserveUpdate) ClearCabinet() *ReserveUpdate {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (ru *ReserveUpdate) ClearRider() *ReserveUpdate {
 	ru.mutation.ClearRider()
+	return ru
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (ru *ReserveUpdate) ClearCity() *ReserveUpdate {
+	ru.mutation.ClearCity()
 	return ru
 }
 
@@ -269,6 +287,9 @@ func (ru *ReserveUpdate) check() error {
 	}
 	if _, ok := ru.mutation.RiderID(); ru.mutation.RiderCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Reserve.rider"`)
+	}
+	if _, ok := ru.mutation.CityID(); ru.mutation.CityCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Reserve.city"`)
 	}
 	return nil
 }
@@ -434,6 +455,41 @@ func (ru *ReserveUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ru.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   reserve.CityTable,
+			Columns: []string{reserve.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   reserve.CityTable,
+			Columns: []string{reserve.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if ru.mutation.BusinessCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -558,6 +614,12 @@ func (ruo *ReserveUpdateOne) SetRiderID(u uint64) *ReserveUpdateOne {
 	return ruo
 }
 
+// SetCityID sets the "city_id" field.
+func (ruo *ReserveUpdateOne) SetCityID(u uint64) *ReserveUpdateOne {
+	ruo.mutation.SetCityID(u)
+	return ruo
+}
+
 // SetBusinessID sets the "business_id" field.
 func (ruo *ReserveUpdateOne) SetBusinessID(u uint64) *ReserveUpdateOne {
 	ruo.mutation.SetBusinessID(u)
@@ -615,6 +677,11 @@ func (ruo *ReserveUpdateOne) SetRider(r *Rider) *ReserveUpdateOne {
 	return ruo.SetRiderID(r.ID)
 }
 
+// SetCity sets the "city" edge to the City entity.
+func (ruo *ReserveUpdateOne) SetCity(c *City) *ReserveUpdateOne {
+	return ruo.SetCityID(c.ID)
+}
+
 // SetBusiness sets the "business" edge to the Business entity.
 func (ruo *ReserveUpdateOne) SetBusiness(b *Business) *ReserveUpdateOne {
 	return ruo.SetBusinessID(b.ID)
@@ -634,6 +701,12 @@ func (ruo *ReserveUpdateOne) ClearCabinet() *ReserveUpdateOne {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (ruo *ReserveUpdateOne) ClearRider() *ReserveUpdateOne {
 	ruo.mutation.ClearRider()
+	return ruo
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (ruo *ReserveUpdateOne) ClearCity() *ReserveUpdateOne {
+	ruo.mutation.ClearCity()
 	return ruo
 }
 
@@ -738,6 +811,9 @@ func (ruo *ReserveUpdateOne) check() error {
 	}
 	if _, ok := ruo.mutation.RiderID(); ruo.mutation.RiderCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Reserve.rider"`)
+	}
+	if _, ok := ruo.mutation.CityID(); ruo.mutation.CityCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Reserve.city"`)
 	}
 	return nil
 }
@@ -912,6 +988,41 @@ func (ruo *ReserveUpdateOne) sqlSave(ctx context.Context) (_node *Reserve, err e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: rider.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ruo.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   reserve.CityTable,
+			Columns: []string{reserve.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   reserve.CityTable,
+			Columns: []string{reserve.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
 				},
 			},
 		}

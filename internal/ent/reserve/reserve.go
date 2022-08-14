@@ -29,6 +29,8 @@ const (
 	FieldCabinetID = "cabinet_id"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
 	FieldRiderID = "rider_id"
+	// FieldCityID holds the string denoting the city_id field in the database.
+	FieldCityID = "city_id"
 	// FieldBusinessID holds the string denoting the business_id field in the database.
 	FieldBusinessID = "business_id"
 	// FieldStatus holds the string denoting the status field in the database.
@@ -39,6 +41,8 @@ const (
 	EdgeCabinet = "cabinet"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
+	// EdgeCity holds the string denoting the city edge name in mutations.
+	EdgeCity = "city"
 	// EdgeBusiness holds the string denoting the business edge name in mutations.
 	EdgeBusiness = "business"
 	// Table holds the table name of the reserve in the database.
@@ -57,6 +61,13 @@ const (
 	RiderInverseTable = "rider"
 	// RiderColumn is the table column denoting the rider relation/edge.
 	RiderColumn = "rider_id"
+	// CityTable is the table that holds the city relation/edge.
+	CityTable = "reserve"
+	// CityInverseTable is the table name for the City entity.
+	// It exists in this package in order to avoid circular dependency with the "city" package.
+	CityInverseTable = "city"
+	// CityColumn is the table column denoting the city relation/edge.
+	CityColumn = "city_id"
 	// BusinessTable is the table that holds the business relation/edge.
 	BusinessTable = "reserve"
 	// BusinessInverseTable is the table name for the Business entity.
@@ -77,6 +88,7 @@ var Columns = []string{
 	FieldRemark,
 	FieldCabinetID,
 	FieldRiderID,
+	FieldCityID,
 	FieldBusinessID,
 	FieldStatus,
 	FieldType,

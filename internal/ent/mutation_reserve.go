@@ -36,6 +36,8 @@ type ReserveMutation struct {
 	clearedcabinet  bool
 	rider           *uint64
 	clearedrider    bool
+	city            *uint64
+	clearedcity     bool
 	business        *uint64
 	clearedbusiness bool
 	done            bool
@@ -481,6 +483,42 @@ func (m *ReserveMutation) ResetRiderID() {
 	m.rider = nil
 }
 
+// SetCityID sets the "city_id" field.
+func (m *ReserveMutation) SetCityID(u uint64) {
+	m.city = &u
+}
+
+// CityID returns the value of the "city_id" field in the mutation.
+func (m *ReserveMutation) CityID() (r uint64, exists bool) {
+	v := m.city
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCityID returns the old "city_id" field's value of the Reserve entity.
+// If the Reserve object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReserveMutation) OldCityID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCityID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCityID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCityID: %w", err)
+	}
+	return oldValue.CityID, nil
+}
+
+// ResetCityID resets all changes to the "city_id" field.
+func (m *ReserveMutation) ResetCityID() {
+	m.city = nil
+}
+
 // SetBusinessID sets the "business_id" field.
 func (m *ReserveMutation) SetBusinessID(u uint64) {
 	m.business = &u
@@ -674,6 +712,32 @@ func (m *ReserveMutation) ResetRider() {
 	m.clearedrider = false
 }
 
+// ClearCity clears the "city" edge to the City entity.
+func (m *ReserveMutation) ClearCity() {
+	m.clearedcity = true
+}
+
+// CityCleared reports if the "city" edge to the City entity was cleared.
+func (m *ReserveMutation) CityCleared() bool {
+	return m.clearedcity
+}
+
+// CityIDs returns the "city" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CityID instead. It exists only for internal usage by the builders.
+func (m *ReserveMutation) CityIDs() (ids []uint64) {
+	if id := m.city; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCity resets all changes to the "city" edge.
+func (m *ReserveMutation) ResetCity() {
+	m.city = nil
+	m.clearedcity = false
+}
+
 // ClearBusiness clears the "business" edge to the Business entity.
 func (m *ReserveMutation) ClearBusiness() {
 	m.clearedbusiness = true
@@ -719,7 +783,7 @@ func (m *ReserveMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ReserveMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
 	if m.created_at != nil {
 		fields = append(fields, reserve.FieldCreatedAt)
 	}
@@ -743,6 +807,9 @@ func (m *ReserveMutation) Fields() []string {
 	}
 	if m.rider != nil {
 		fields = append(fields, reserve.FieldRiderID)
+	}
+	if m.city != nil {
+		fields = append(fields, reserve.FieldCityID)
 	}
 	if m.business != nil {
 		fields = append(fields, reserve.FieldBusinessID)
@@ -777,6 +844,8 @@ func (m *ReserveMutation) Field(name string) (ent.Value, bool) {
 		return m.CabinetID()
 	case reserve.FieldRiderID:
 		return m.RiderID()
+	case reserve.FieldCityID:
+		return m.CityID()
 	case reserve.FieldBusinessID:
 		return m.BusinessID()
 	case reserve.FieldStatus:
@@ -808,6 +877,8 @@ func (m *ReserveMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldCabinetID(ctx)
 	case reserve.FieldRiderID:
 		return m.OldRiderID(ctx)
+	case reserve.FieldCityID:
+		return m.OldCityID(ctx)
 	case reserve.FieldBusinessID:
 		return m.OldBusinessID(ctx)
 	case reserve.FieldStatus:
@@ -878,6 +949,13 @@ func (m *ReserveMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRiderID(v)
+		return nil
+	case reserve.FieldCityID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCityID(v)
 		return nil
 	case reserve.FieldBusinessID:
 		v, ok := value.(uint64)
@@ -1021,6 +1099,9 @@ func (m *ReserveMutation) ResetField(name string) error {
 	case reserve.FieldRiderID:
 		m.ResetRiderID()
 		return nil
+	case reserve.FieldCityID:
+		m.ResetCityID()
+		return nil
 	case reserve.FieldBusinessID:
 		m.ResetBusinessID()
 		return nil
@@ -1036,12 +1117,15 @@ func (m *ReserveMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ReserveMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.cabinet != nil {
 		edges = append(edges, reserve.EdgeCabinet)
 	}
 	if m.rider != nil {
 		edges = append(edges, reserve.EdgeRider)
+	}
+	if m.city != nil {
+		edges = append(edges, reserve.EdgeCity)
 	}
 	if m.business != nil {
 		edges = append(edges, reserve.EdgeBusiness)
@@ -1061,6 +1145,10 @@ func (m *ReserveMutation) AddedIDs(name string) []ent.Value {
 		if id := m.rider; id != nil {
 			return []ent.Value{*id}
 		}
+	case reserve.EdgeCity:
+		if id := m.city; id != nil {
+			return []ent.Value{*id}
+		}
 	case reserve.EdgeBusiness:
 		if id := m.business; id != nil {
 			return []ent.Value{*id}
@@ -1071,7 +1159,7 @@ func (m *ReserveMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ReserveMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	return edges
 }
 
@@ -1085,12 +1173,15 @@ func (m *ReserveMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ReserveMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedcabinet {
 		edges = append(edges, reserve.EdgeCabinet)
 	}
 	if m.clearedrider {
 		edges = append(edges, reserve.EdgeRider)
+	}
+	if m.clearedcity {
+		edges = append(edges, reserve.EdgeCity)
 	}
 	if m.clearedbusiness {
 		edges = append(edges, reserve.EdgeBusiness)
@@ -1106,6 +1197,8 @@ func (m *ReserveMutation) EdgeCleared(name string) bool {
 		return m.clearedcabinet
 	case reserve.EdgeRider:
 		return m.clearedrider
+	case reserve.EdgeCity:
+		return m.clearedcity
 	case reserve.EdgeBusiness:
 		return m.clearedbusiness
 	}
@@ -1121,6 +1214,9 @@ func (m *ReserveMutation) ClearEdge(name string) error {
 		return nil
 	case reserve.EdgeRider:
 		m.ClearRider()
+		return nil
+	case reserve.EdgeCity:
+		m.ClearCity()
 		return nil
 	case reserve.EdgeBusiness:
 		m.ClearBusiness()
@@ -1138,6 +1234,9 @@ func (m *ReserveMutation) ResetEdge(name string) error {
 		return nil
 	case reserve.EdgeRider:
 		m.ResetRider()
+		return nil
+	case reserve.EdgeCity:
+		m.ResetCity()
 		return nil
 	case reserve.EdgeBusiness:
 		m.ResetBusiness()

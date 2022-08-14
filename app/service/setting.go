@@ -52,7 +52,8 @@ func (s *settingService) CacheSettings(sm *ent.Setting) {
         model.SettingRenewal,
         model.SettingPauseMaxDays,
         model.SettingExchangeInterval,
-        model.SettingRescueFee:
+        model.SettingRescueFee,
+        model.SettingReserveDuration:
         f, err := strconv.ParseFloat(strings.ReplaceAll(sm.Content, `"`, ""), 10)
         if err == nil {
             cache.Set(s.ctx, sm.Key, f, 0)
