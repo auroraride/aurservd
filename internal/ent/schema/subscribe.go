@@ -62,7 +62,8 @@ func (Subscribe) Fields() []ent.Field {
         // field.Int("days").Comment("总天数 = 骑士卡天数 + 改动天数 + 暂停天数 + 续费天数 + 已缴纳逾期滞纳金天数"),
         field.Int("initial_days").Optional().Comment("初始骑士卡天数"),
         field.Int("alter_days").Default(0).Comment("改动天数"),
-        field.Int("pause_days").Default(0).Comment("暂停天数"),
+        field.Int("pause_days").Default(0).Comment("寄存天数"),
+        field.Int("suspend_days").Default(0).Comment("暂停天数"),
         field.Int("renewal_days").Default(0).Comment("续期天数"),
         field.Int("overdue_days").Default(0).Comment("已缴纳逾期滞纳金天数"),
         field.Int("remaining").Default(0).Comment("剩余天数, 负数为逾期"),
@@ -83,6 +84,7 @@ func (Subscribe) Edges() []ent.Edge {
         edge.From("enterprise", Enterprise.Type).Ref("subscribes").Unique().Field("enterprise_id"),
 
         edge.To("pauses", SubscribePause.Type),
+        edge.To("suspends", SubscribeSuspend.Type),
         edge.To("alters", SubscribeAlter.Type),
         edge.To("orders", Order.Type),
 

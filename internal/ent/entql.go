@@ -42,6 +42,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
+	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -51,7 +52,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 38)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 39)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   assistance.Table,
@@ -1049,6 +1050,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldInitialDays:       {Type: field.TypeInt, Column: subscribe.FieldInitialDays},
 			subscribe.FieldAlterDays:         {Type: field.TypeInt, Column: subscribe.FieldAlterDays},
 			subscribe.FieldPauseDays:         {Type: field.TypeInt, Column: subscribe.FieldPauseDays},
+			subscribe.FieldSuspendDays:       {Type: field.TypeInt, Column: subscribe.FieldSuspendDays},
 			subscribe.FieldRenewalDays:       {Type: field.TypeInt, Column: subscribe.FieldRenewalDays},
 			subscribe.FieldOverdueDays:       {Type: field.TypeInt, Column: subscribe.FieldOverdueDays},
 			subscribe.FieldRemaining:         {Type: field.TypeInt, Column: subscribe.FieldRemaining},
@@ -1116,6 +1118,28 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribepause.FieldOverdueDays:   {Type: field.TypeInt, Column: subscribepause.FieldOverdueDays},
 			subscribepause.FieldEndModifier:   {Type: field.TypeJSON, Column: subscribepause.FieldEndModifier},
 			subscribepause.FieldPauseOverdue:  {Type: field.TypeBool, Column: subscribepause.FieldPauseOverdue},
+		},
+	}
+	graph.Nodes[38] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   subscribesuspend.Table,
+			Columns: subscribesuspend.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: subscribesuspend.FieldID,
+			},
+		},
+		Type: "SubscribeSuspend",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			subscribesuspend.FieldCreator:      {Type: field.TypeJSON, Column: subscribesuspend.FieldCreator},
+			subscribesuspend.FieldLastModifier: {Type: field.TypeJSON, Column: subscribesuspend.FieldLastModifier},
+			subscribesuspend.FieldRemark:       {Type: field.TypeString, Column: subscribesuspend.FieldRemark},
+			subscribesuspend.FieldCityID:       {Type: field.TypeUint64, Column: subscribesuspend.FieldCityID},
+			subscribesuspend.FieldRiderID:      {Type: field.TypeUint64, Column: subscribesuspend.FieldRiderID},
+			subscribesuspend.FieldSubscribeID:  {Type: field.TypeUint64, Column: subscribesuspend.FieldSubscribeID},
+			subscribesuspend.FieldDays:         {Type: field.TypeInt, Column: subscribesuspend.FieldDays},
+			subscribesuspend.FieldStartAt:      {Type: field.TypeTime, Column: subscribesuspend.FieldStartAt},
+			subscribesuspend.FieldEndAt:        {Type: field.TypeTime, Column: subscribesuspend.FieldEndAt},
 		},
 	}
 	graph.MustAddE(
@@ -2751,6 +2775,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"SubscribePause",
 	)
 	graph.MustAddE(
+		"suspends",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribe.SuspendsTable,
+			Columns: []string{subscribe.SuspendsColumn},
+			Bidi:    false,
+		},
+		"Subscribe",
+		"SubscribeSuspend",
+	)
+	graph.MustAddE(
 		"alters",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -2941,6 +2977,42 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"SubscribePause",
 		"Employee",
+	)
+	graph.MustAddE(
+		"city",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribesuspend.CityTable,
+			Columns: []string{subscribesuspend.CityColumn},
+			Bidi:    false,
+		},
+		"SubscribeSuspend",
+		"City",
+	)
+	graph.MustAddE(
+		"rider",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribesuspend.RiderTable,
+			Columns: []string{subscribesuspend.RiderColumn},
+			Bidi:    false,
+		},
+		"SubscribeSuspend",
+		"Rider",
+	)
+	graph.MustAddE(
+		"subscribe",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   subscribesuspend.SubscribeTable,
+			Columns: []string{subscribesuspend.SubscribeColumn},
+			Bidi:    false,
+		},
+		"SubscribeSuspend",
+		"Subscribe",
 	)
 	return graph
 }()
@@ -8824,6 +8896,11 @@ func (f *SubscribeFilter) WherePauseDays(p entql.IntP) {
 	f.Where(p.Field(subscribe.FieldPauseDays))
 }
 
+// WhereSuspendDays applies the entql int predicate on the suspend_days field.
+func (f *SubscribeFilter) WhereSuspendDays(p entql.IntP) {
+	f.Where(p.Field(subscribe.FieldSuspendDays))
+}
+
 // WhereRenewalDays applies the entql int predicate on the renewal_days field.
 func (f *SubscribeFilter) WhereRenewalDays(p entql.IntP) {
 	f.Where(p.Field(subscribe.FieldRenewalDays))
@@ -8994,6 +9071,20 @@ func (f *SubscribeFilter) WhereHasPauses() {
 // WhereHasPausesWith applies a predicate to check if query has an edge pauses with a given conditions (other predicates).
 func (f *SubscribeFilter) WhereHasPausesWith(preds ...predicate.SubscribePause) {
 	f.Where(entql.HasEdgeWith("pauses", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasSuspends applies a predicate to check if query has an edge suspends.
+func (f *SubscribeFilter) WhereHasSuspends() {
+	f.Where(entql.HasEdge("suspends"))
+}
+
+// WhereHasSuspendsWith applies a predicate to check if query has an edge suspends with a given conditions (other predicates).
+func (f *SubscribeFilter) WhereHasSuspendsWith(preds ...predicate.SubscribeSuspend) {
+	f.Where(entql.HasEdgeWith("suspends", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -9453,6 +9544,133 @@ func (f *SubscribePauseFilter) WhereHasEndEmployee() {
 // WhereHasEndEmployeeWith applies a predicate to check if query has an edge end_employee with a given conditions (other predicates).
 func (f *SubscribePauseFilter) WhereHasEndEmployeeWith(preds ...predicate.Employee) {
 	f.Where(entql.HasEdgeWith("end_employee", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (ssq *SubscribeSuspendQuery) addPredicate(pred func(s *sql.Selector)) {
+	ssq.predicates = append(ssq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the SubscribeSuspendQuery builder.
+func (ssq *SubscribeSuspendQuery) Filter() *SubscribeSuspendFilter {
+	return &SubscribeSuspendFilter{ssq.config, ssq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *SubscribeSuspendMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the SubscribeSuspendMutation builder.
+func (m *SubscribeSuspendMutation) Filter() *SubscribeSuspendFilter {
+	return &SubscribeSuspendFilter{m.config, m}
+}
+
+// SubscribeSuspendFilter provides a generic filtering capability at runtime for SubscribeSuspendQuery.
+type SubscribeSuspendFilter struct {
+	config
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *SubscribeSuspendFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[38].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *SubscribeSuspendFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(subscribesuspend.FieldID))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *SubscribeSuspendFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(subscribesuspend.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *SubscribeSuspendFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(subscribesuspend.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *SubscribeSuspendFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(subscribesuspend.FieldRemark))
+}
+
+// WhereCityID applies the entql uint64 predicate on the city_id field.
+func (f *SubscribeSuspendFilter) WhereCityID(p entql.Uint64P) {
+	f.Where(p.Field(subscribesuspend.FieldCityID))
+}
+
+// WhereRiderID applies the entql uint64 predicate on the rider_id field.
+func (f *SubscribeSuspendFilter) WhereRiderID(p entql.Uint64P) {
+	f.Where(p.Field(subscribesuspend.FieldRiderID))
+}
+
+// WhereSubscribeID applies the entql uint64 predicate on the subscribe_id field.
+func (f *SubscribeSuspendFilter) WhereSubscribeID(p entql.Uint64P) {
+	f.Where(p.Field(subscribesuspend.FieldSubscribeID))
+}
+
+// WhereDays applies the entql int predicate on the days field.
+func (f *SubscribeSuspendFilter) WhereDays(p entql.IntP) {
+	f.Where(p.Field(subscribesuspend.FieldDays))
+}
+
+// WhereStartAt applies the entql time.Time predicate on the start_at field.
+func (f *SubscribeSuspendFilter) WhereStartAt(p entql.TimeP) {
+	f.Where(p.Field(subscribesuspend.FieldStartAt))
+}
+
+// WhereEndAt applies the entql time.Time predicate on the end_at field.
+func (f *SubscribeSuspendFilter) WhereEndAt(p entql.TimeP) {
+	f.Where(p.Field(subscribesuspend.FieldEndAt))
+}
+
+// WhereHasCity applies a predicate to check if query has an edge city.
+func (f *SubscribeSuspendFilter) WhereHasCity() {
+	f.Where(entql.HasEdge("city"))
+}
+
+// WhereHasCityWith applies a predicate to check if query has an edge city with a given conditions (other predicates).
+func (f *SubscribeSuspendFilter) WhereHasCityWith(preds ...predicate.City) {
+	f.Where(entql.HasEdgeWith("city", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRider applies a predicate to check if query has an edge rider.
+func (f *SubscribeSuspendFilter) WhereHasRider() {
+	f.Where(entql.HasEdge("rider"))
+}
+
+// WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
+func (f *SubscribeSuspendFilter) WhereHasRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasSubscribe applies a predicate to check if query has an edge subscribe.
+func (f *SubscribeSuspendFilter) WhereHasSubscribe() {
+	f.Where(entql.HasEdge("subscribe"))
+}
+
+// WhereHasSubscribeWith applies a predicate to check if query has an edge subscribe with a given conditions (other predicates).
+func (f *SubscribeSuspendFilter) WhereHasSubscribeWith(preds ...predicate.Subscribe) {
+	f.Where(entql.HasEdgeWith("subscribe", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

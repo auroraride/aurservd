@@ -1077,6 +1077,30 @@ func (f SubscribePauseMutationRuleFunc) EvalMutation(ctx context.Context, m ent.
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.SubscribePauseMutation", m)
 }
 
+// The SubscribeSuspendQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type SubscribeSuspendQueryRuleFunc func(context.Context, *ent.SubscribeSuspendQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f SubscribeSuspendQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.SubscribeSuspendQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.SubscribeSuspendQuery", q)
+}
+
+// The SubscribeSuspendMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type SubscribeSuspendMutationRuleFunc func(context.Context, *ent.SubscribeSuspendMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f SubscribeSuspendMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.SubscribeSuspendMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.SubscribeSuspendMutation", m)
+}
+
 type (
 	// Filter is the interface that wraps the Where function
 	// for filtering nodes in queries and mutations.
@@ -1188,6 +1212,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.SubscribePauseQuery:
 		return q.Filter(), nil
+	case *ent.SubscribeSuspendQuery:
+		return q.Filter(), nil
 	default:
 		return nil, Denyf("ent/privacy: unexpected query type %T for query filter", q)
 	}
@@ -1270,6 +1296,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.SubscribeAlterMutation:
 		return m.Filter(), nil
 	case *ent.SubscribePauseMutation:
+		return m.Filter(), nil
+	case *ent.SubscribeSuspendMutation:
 		return m.Filter(), nil
 	default:
 		return nil, Denyf("ent/privacy: unexpected mutation type %T for mutation filter", m)

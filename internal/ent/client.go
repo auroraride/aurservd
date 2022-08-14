@@ -47,6 +47,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
+	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -134,6 +135,8 @@ type Client struct {
 	SubscribeAlter *SubscribeAlterClient
 	// SubscribePause is the client for interacting with the SubscribePause builders.
 	SubscribePause *SubscribePauseClient
+	// SubscribeSuspend is the client for interacting with the SubscribeSuspend builders.
+	SubscribeSuspend *SubscribeSuspendClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -185,6 +188,7 @@ func (c *Client) init() {
 	c.Subscribe = NewSubscribeClient(c.config)
 	c.SubscribeAlter = NewSubscribeAlterClient(c.config)
 	c.SubscribePause = NewSubscribePauseClient(c.config)
+	c.SubscribeSuspend = NewSubscribeSuspendClient(c.config)
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -256,6 +260,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Subscribe:            NewSubscribeClient(cfg),
 		SubscribeAlter:       NewSubscribeAlterClient(cfg),
 		SubscribePause:       NewSubscribePauseClient(cfg),
+		SubscribeSuspend:     NewSubscribeSuspendClient(cfg),
 	}, nil
 }
 
@@ -313,6 +318,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Subscribe:            NewSubscribeClient(cfg),
 		SubscribeAlter:       NewSubscribeAlterClient(cfg),
 		SubscribePause:       NewSubscribePauseClient(cfg),
+		SubscribeSuspend:     NewSubscribeSuspendClient(cfg),
 	}, nil
 }
 
@@ -380,6 +386,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Subscribe.Use(hooks...)
 	c.SubscribeAlter.Use(hooks...)
 	c.SubscribePause.Use(hooks...)
+	c.SubscribeSuspend.Use(hooks...)
 }
 
 // AssistanceClient is a client for the Assistance schema.
@@ -5826,6 +5833,22 @@ func (c *SubscribeClient) QueryPauses(s *Subscribe) *SubscribePauseQuery {
 	return query
 }
 
+// QuerySuspends queries the suspends edge of a Subscribe.
+func (c *SubscribeClient) QuerySuspends(s *Subscribe) *SubscribeSuspendQuery {
+	query := &SubscribeSuspendQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
+			sqlgraph.To(subscribesuspend.Table, subscribesuspend.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, subscribe.SuspendsTable, subscribe.SuspendsColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryAlters queries the alters edge of a Subscribe.
 func (c *SubscribeClient) QueryAlters(s *Subscribe) *SubscribeAlterQuery {
 	query := &SubscribeAlterQuery{config: c.config}
@@ -6268,4 +6291,143 @@ func (c *SubscribePauseClient) QueryEndEmployee(sp *SubscribePause) *EmployeeQue
 func (c *SubscribePauseClient) Hooks() []Hook {
 	hooks := c.hooks.SubscribePause
 	return append(hooks[:len(hooks):len(hooks)], subscribepause.Hooks[:]...)
+}
+
+// SubscribeSuspendClient is a client for the SubscribeSuspend schema.
+type SubscribeSuspendClient struct {
+	config
+}
+
+// NewSubscribeSuspendClient returns a client for the SubscribeSuspend from the given config.
+func NewSubscribeSuspendClient(c config) *SubscribeSuspendClient {
+	return &SubscribeSuspendClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `subscribesuspend.Hooks(f(g(h())))`.
+func (c *SubscribeSuspendClient) Use(hooks ...Hook) {
+	c.hooks.SubscribeSuspend = append(c.hooks.SubscribeSuspend, hooks...)
+}
+
+// Create returns a create builder for SubscribeSuspend.
+func (c *SubscribeSuspendClient) Create() *SubscribeSuspendCreate {
+	mutation := newSubscribeSuspendMutation(c.config, OpCreate)
+	return &SubscribeSuspendCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SubscribeSuspend entities.
+func (c *SubscribeSuspendClient) CreateBulk(builders ...*SubscribeSuspendCreate) *SubscribeSuspendCreateBulk {
+	return &SubscribeSuspendCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SubscribeSuspend.
+func (c *SubscribeSuspendClient) Update() *SubscribeSuspendUpdate {
+	mutation := newSubscribeSuspendMutation(c.config, OpUpdate)
+	return &SubscribeSuspendUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SubscribeSuspendClient) UpdateOne(ss *SubscribeSuspend) *SubscribeSuspendUpdateOne {
+	mutation := newSubscribeSuspendMutation(c.config, OpUpdateOne, withSubscribeSuspend(ss))
+	return &SubscribeSuspendUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SubscribeSuspendClient) UpdateOneID(id uint64) *SubscribeSuspendUpdateOne {
+	mutation := newSubscribeSuspendMutation(c.config, OpUpdateOne, withSubscribeSuspendID(id))
+	return &SubscribeSuspendUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SubscribeSuspend.
+func (c *SubscribeSuspendClient) Delete() *SubscribeSuspendDelete {
+	mutation := newSubscribeSuspendMutation(c.config, OpDelete)
+	return &SubscribeSuspendDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *SubscribeSuspendClient) DeleteOne(ss *SubscribeSuspend) *SubscribeSuspendDeleteOne {
+	return c.DeleteOneID(ss.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *SubscribeSuspendClient) DeleteOneID(id uint64) *SubscribeSuspendDeleteOne {
+	builder := c.Delete().Where(subscribesuspend.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SubscribeSuspendDeleteOne{builder}
+}
+
+// Query returns a query builder for SubscribeSuspend.
+func (c *SubscribeSuspendClient) Query() *SubscribeSuspendQuery {
+	return &SubscribeSuspendQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a SubscribeSuspend entity by its id.
+func (c *SubscribeSuspendClient) Get(ctx context.Context, id uint64) (*SubscribeSuspend, error) {
+	return c.Query().Where(subscribesuspend.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SubscribeSuspendClient) GetX(ctx context.Context, id uint64) *SubscribeSuspend {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCity queries the city edge of a SubscribeSuspend.
+func (c *SubscribeSuspendClient) QueryCity(ss *SubscribeSuspend) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ss.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribesuspend.Table, subscribesuspend.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribesuspend.CityTable, subscribesuspend.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(ss.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRider queries the rider edge of a SubscribeSuspend.
+func (c *SubscribeSuspendClient) QueryRider(ss *SubscribeSuspend) *RiderQuery {
+	query := &RiderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ss.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribesuspend.Table, subscribesuspend.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribesuspend.RiderTable, subscribesuspend.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(ss.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySubscribe queries the subscribe edge of a SubscribeSuspend.
+func (c *SubscribeSuspendClient) QuerySubscribe(ss *SubscribeSuspend) *SubscribeQuery {
+	query := &SubscribeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ss.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribesuspend.Table, subscribesuspend.FieldID, id),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, subscribesuspend.SubscribeTable, subscribesuspend.SubscribeColumn),
+		)
+		fromV = sqlgraph.Neighbors(ss.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *SubscribeSuspendClient) Hooks() []Hook {
+	hooks := c.hooks.SubscribeSuspend
+	return append(hooks[:len(hooks):len(hooks)], subscribesuspend.Hooks[:]...)
 }

@@ -843,3 +843,25 @@ func (spq *SubscribePauseQuery) PaginationResult(req model.PaginationReq) model.
 		Total:   total,
 	}
 }
+
+// Pagination returns pagination query builder for SubscribeSuspendQuery.
+func (ssq *SubscribeSuspendQuery) Pagination(req model.PaginationReq) *SubscribeSuspendQuery {
+	ssq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return ssq
+}
+
+// PaginationItems returns pagination query builder for SubscribeSuspendQuery.
+func (ssq *SubscribeSuspendQuery) PaginationItemsX(req model.PaginationReq) any {
+	return ssq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for SubscribeSuspendQuery.
+func (ssq *SubscribeSuspendQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := ssq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}

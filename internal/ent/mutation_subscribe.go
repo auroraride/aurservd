@@ -39,6 +39,8 @@ type SubscribeMutation struct {
 	addalter_days        *int
 	pause_days           *int
 	addpause_days        *int
+	suspend_days         *int
+	addsuspend_days      *int
 	renewal_days         *int
 	addrenewal_days      *int
 	overdue_days         *int
@@ -72,6 +74,9 @@ type SubscribeMutation struct {
 	pauses               map[uint64]struct{}
 	removedpauses        map[uint64]struct{}
 	clearedpauses        bool
+	suspends             map[uint64]struct{}
+	removedsuspends      map[uint64]struct{}
+	clearedsuspends      bool
 	alters               map[uint64]struct{}
 	removedalters        map[uint64]struct{}
 	clearedalters        bool
@@ -1199,6 +1204,62 @@ func (m *SubscribeMutation) ResetPauseDays() {
 	m.addpause_days = nil
 }
 
+// SetSuspendDays sets the "suspend_days" field.
+func (m *SubscribeMutation) SetSuspendDays(i int) {
+	m.suspend_days = &i
+	m.addsuspend_days = nil
+}
+
+// SuspendDays returns the value of the "suspend_days" field in the mutation.
+func (m *SubscribeMutation) SuspendDays() (r int, exists bool) {
+	v := m.suspend_days
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSuspendDays returns the old "suspend_days" field's value of the Subscribe entity.
+// If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeMutation) OldSuspendDays(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSuspendDays is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSuspendDays requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSuspendDays: %w", err)
+	}
+	return oldValue.SuspendDays, nil
+}
+
+// AddSuspendDays adds i to the "suspend_days" field.
+func (m *SubscribeMutation) AddSuspendDays(i int) {
+	if m.addsuspend_days != nil {
+		*m.addsuspend_days += i
+	} else {
+		m.addsuspend_days = &i
+	}
+}
+
+// AddedSuspendDays returns the value that was added to the "suspend_days" field in this mutation.
+func (m *SubscribeMutation) AddedSuspendDays() (r int, exists bool) {
+	v := m.addsuspend_days
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetSuspendDays resets all changes to the "suspend_days" field.
+func (m *SubscribeMutation) ResetSuspendDays() {
+	m.suspend_days = nil
+	m.addsuspend_days = nil
+}
+
 // SetRenewalDays sets the "renewal_days" field.
 func (m *SubscribeMutation) SetRenewalDays(i int) {
 	m.renewal_days = &i
@@ -1959,6 +2020,60 @@ func (m *SubscribeMutation) ResetPauses() {
 	m.removedpauses = nil
 }
 
+// AddSuspendIDs adds the "suspends" edge to the SubscribeSuspend entity by ids.
+func (m *SubscribeMutation) AddSuspendIDs(ids ...uint64) {
+	if m.suspends == nil {
+		m.suspends = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.suspends[ids[i]] = struct{}{}
+	}
+}
+
+// ClearSuspends clears the "suspends" edge to the SubscribeSuspend entity.
+func (m *SubscribeMutation) ClearSuspends() {
+	m.clearedsuspends = true
+}
+
+// SuspendsCleared reports if the "suspends" edge to the SubscribeSuspend entity was cleared.
+func (m *SubscribeMutation) SuspendsCleared() bool {
+	return m.clearedsuspends
+}
+
+// RemoveSuspendIDs removes the "suspends" edge to the SubscribeSuspend entity by IDs.
+func (m *SubscribeMutation) RemoveSuspendIDs(ids ...uint64) {
+	if m.removedsuspends == nil {
+		m.removedsuspends = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.suspends, ids[i])
+		m.removedsuspends[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedSuspends returns the removed IDs of the "suspends" edge to the SubscribeSuspend entity.
+func (m *SubscribeMutation) RemovedSuspendsIDs() (ids []uint64) {
+	for id := range m.removedsuspends {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// SuspendsIDs returns the "suspends" edge IDs in the mutation.
+func (m *SubscribeMutation) SuspendsIDs() (ids []uint64) {
+	for id := range m.suspends {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetSuspends resets all changes to the "suspends" edge.
+func (m *SubscribeMutation) ResetSuspends() {
+	m.suspends = nil
+	m.clearedsuspends = false
+	m.removedsuspends = nil
+}
+
 // AddAlterIDs adds the "alters" edge to the SubscribeAlter entity by ids.
 func (m *SubscribeMutation) AddAlterIDs(ids ...uint64) {
 	if m.alters == nil {
@@ -2166,7 +2281,7 @@ func (m *SubscribeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscribeMutation) Fields() []string {
-	fields := make([]string, 0, 31)
+	fields := make([]string, 0, 32)
 	if m.created_at != nil {
 		fields = append(fields, subscribe.FieldCreatedAt)
 	}
@@ -2229,6 +2344,9 @@ func (m *SubscribeMutation) Fields() []string {
 	}
 	if m.pause_days != nil {
 		fields = append(fields, subscribe.FieldPauseDays)
+	}
+	if m.suspend_days != nil {
+		fields = append(fields, subscribe.FieldSuspendDays)
 	}
 	if m.renewal_days != nil {
 		fields = append(fields, subscribe.FieldRenewalDays)
@@ -2310,6 +2428,8 @@ func (m *SubscribeMutation) Field(name string) (ent.Value, bool) {
 		return m.AlterDays()
 	case subscribe.FieldPauseDays:
 		return m.PauseDays()
+	case subscribe.FieldSuspendDays:
+		return m.SuspendDays()
 	case subscribe.FieldRenewalDays:
 		return m.RenewalDays()
 	case subscribe.FieldOverdueDays:
@@ -2381,6 +2501,8 @@ func (m *SubscribeMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldAlterDays(ctx)
 	case subscribe.FieldPauseDays:
 		return m.OldPauseDays(ctx)
+	case subscribe.FieldSuspendDays:
+		return m.OldSuspendDays(ctx)
 	case subscribe.FieldRenewalDays:
 		return m.OldRenewalDays(ctx)
 	case subscribe.FieldOverdueDays:
@@ -2557,6 +2679,13 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPauseDays(v)
 		return nil
+	case subscribe.FieldSuspendDays:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSuspendDays(v)
+		return nil
 	case subscribe.FieldRenewalDays:
 		v, ok := value.(int)
 		if !ok {
@@ -2650,6 +2779,9 @@ func (m *SubscribeMutation) AddedFields() []string {
 	if m.addpause_days != nil {
 		fields = append(fields, subscribe.FieldPauseDays)
 	}
+	if m.addsuspend_days != nil {
+		fields = append(fields, subscribe.FieldSuspendDays)
+	}
 	if m.addrenewal_days != nil {
 		fields = append(fields, subscribe.FieldRenewalDays)
 	}
@@ -2677,6 +2809,8 @@ func (m *SubscribeMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedAlterDays()
 	case subscribe.FieldPauseDays:
 		return m.AddedPauseDays()
+	case subscribe.FieldSuspendDays:
+		return m.AddedSuspendDays()
 	case subscribe.FieldRenewalDays:
 		return m.AddedRenewalDays()
 	case subscribe.FieldOverdueDays:
@@ -2726,6 +2860,13 @@ func (m *SubscribeMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddPauseDays(v)
+		return nil
+	case subscribe.FieldSuspendDays:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSuspendDays(v)
 		return nil
 	case subscribe.FieldRenewalDays:
 		v, ok := value.(int)
@@ -2949,6 +3090,9 @@ func (m *SubscribeMutation) ResetField(name string) error {
 	case subscribe.FieldPauseDays:
 		m.ResetPauseDays()
 		return nil
+	case subscribe.FieldSuspendDays:
+		m.ResetSuspendDays()
+		return nil
 	case subscribe.FieldRenewalDays:
 		m.ResetRenewalDays()
 		return nil
@@ -2985,7 +3129,7 @@ func (m *SubscribeMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *SubscribeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 14)
 	if m.plan != nil {
 		edges = append(edges, subscribe.EdgePlan)
 	}
@@ -3012,6 +3156,9 @@ func (m *SubscribeMutation) AddedEdges() []string {
 	}
 	if m.pauses != nil {
 		edges = append(edges, subscribe.EdgePauses)
+	}
+	if m.suspends != nil {
+		edges = append(edges, subscribe.EdgeSuspends)
 	}
 	if m.alters != nil {
 		edges = append(edges, subscribe.EdgeAlters)
@@ -3070,6 +3217,12 @@ func (m *SubscribeMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case subscribe.EdgeSuspends:
+		ids := make([]ent.Value, 0, len(m.suspends))
+		for id := range m.suspends {
+			ids = append(ids, id)
+		}
+		return ids
 	case subscribe.EdgeAlters:
 		ids := make([]ent.Value, 0, len(m.alters))
 		for id := range m.alters {
@@ -3098,9 +3251,12 @@ func (m *SubscribeMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *SubscribeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 14)
 	if m.removedpauses != nil {
 		edges = append(edges, subscribe.EdgePauses)
+	}
+	if m.removedsuspends != nil {
+		edges = append(edges, subscribe.EdgeSuspends)
 	}
 	if m.removedalters != nil {
 		edges = append(edges, subscribe.EdgeAlters)
@@ -3121,6 +3277,12 @@ func (m *SubscribeMutation) RemovedIDs(name string) []ent.Value {
 	case subscribe.EdgePauses:
 		ids := make([]ent.Value, 0, len(m.removedpauses))
 		for id := range m.removedpauses {
+			ids = append(ids, id)
+		}
+		return ids
+	case subscribe.EdgeSuspends:
+		ids := make([]ent.Value, 0, len(m.removedsuspends))
+		for id := range m.removedsuspends {
 			ids = append(ids, id)
 		}
 		return ids
@@ -3148,7 +3310,7 @@ func (m *SubscribeMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *SubscribeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 14)
 	if m.clearedplan {
 		edges = append(edges, subscribe.EdgePlan)
 	}
@@ -3175,6 +3337,9 @@ func (m *SubscribeMutation) ClearedEdges() []string {
 	}
 	if m.clearedpauses {
 		edges = append(edges, subscribe.EdgePauses)
+	}
+	if m.clearedsuspends {
+		edges = append(edges, subscribe.EdgeSuspends)
 	}
 	if m.clearedalters {
 		edges = append(edges, subscribe.EdgeAlters)
@@ -3213,6 +3378,8 @@ func (m *SubscribeMutation) EdgeCleared(name string) bool {
 		return m.clearedenterprise
 	case subscribe.EdgePauses:
 		return m.clearedpauses
+	case subscribe.EdgeSuspends:
+		return m.clearedsuspends
 	case subscribe.EdgeAlters:
 		return m.clearedalters
 	case subscribe.EdgeOrders:
@@ -3290,6 +3457,9 @@ func (m *SubscribeMutation) ResetEdge(name string) error {
 		return nil
 	case subscribe.EdgePauses:
 		m.ResetPauses()
+		return nil
+	case subscribe.EdgeSuspends:
+		m.ResetSuspends()
 		return nil
 	case subscribe.EdgeAlters:
 		m.ResetAlters()

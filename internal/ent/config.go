@@ -66,6 +66,7 @@ type hooks struct {
 	Subscribe            []ent.Hook
 	SubscribeAlter       []ent.Hook
 	SubscribePause       []ent.Hook
+	SubscribeSuspend     []ent.Hook
 }
 
 // Options applies the options on the config object.

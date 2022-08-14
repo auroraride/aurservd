@@ -4,6 +4,7 @@ import (
     "entgo.io/ent"
     "entgo.io/ent/dialect/entsql"
     "entgo.io/ent/schema"
+    "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
@@ -23,21 +24,23 @@ func (SubscribeSuspend) Annotations() []schema.Annotation {
 // Fields of the SubscribeSuspend.
 func (SubscribeSuspend) Fields() []ent.Field {
     return []ent.Field{
+        field.Uint64("subscribe_id").Comment("订阅ID"),
         field.Int("days").Default(0).Comment("暂停天数"),
         field.Time("start_at").Comment("开始时间"),
-        field.Time("stop_at").Optional().Nillable().Comment("结束时间"),
+        field.Time("end_at").Optional().Comment("结束时间"),
     }
 }
 
 // Edges of the SubscribeSuspend.
 func (SubscribeSuspend) Edges() []ent.Edge {
-    return []ent.Edge{}
+    return []ent.Edge{
+        edge.From("subscribe", Subscribe.Type).Ref("suspends").Required().Unique().Field("subscribe_id").Comment("订阅"),
+    }
 }
 
 func (SubscribeSuspend) Mixin() []ent.Mixin {
     return []ent.Mixin{
         internal.Modifier{},
-        SubscribeMixin{},
         CityMixin{},
         RiderMixin{},
     }

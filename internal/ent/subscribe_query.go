@@ -25,6 +25,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
+	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
 )
 
 // SubscribeQuery is the builder for querying Subscribe entities.
@@ -46,6 +47,7 @@ type SubscribeQuery struct {
 	withRider        *RiderQuery
 	withEnterprise   *EnterpriseQuery
 	withPauses       *SubscribePauseQuery
+	withSuspends     *SubscribeSuspendQuery
 	withAlters       *SubscribeAlterQuery
 	withOrders       *OrderQuery
 	withInitialOrder *OrderQuery
@@ -278,6 +280,28 @@ func (sq *SubscribeQuery) QueryPauses() *SubscribePauseQuery {
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, selector),
 			sqlgraph.To(subscribepause.Table, subscribepause.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, subscribe.PausesTable, subscribe.PausesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySuspends chains the current query on the "suspends" edge.
+func (sq *SubscribeQuery) QuerySuspends() *SubscribeSuspendQuery {
+	query := &SubscribeSuspendQuery{config: sq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, selector),
+			sqlgraph.To(subscribesuspend.Table, subscribesuspend.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, subscribe.SuspendsTable, subscribe.SuspendsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -563,6 +587,7 @@ func (sq *SubscribeQuery) Clone() *SubscribeQuery {
 		withRider:        sq.withRider.Clone(),
 		withEnterprise:   sq.withEnterprise.Clone(),
 		withPauses:       sq.withPauses.Clone(),
+		withSuspends:     sq.withSuspends.Clone(),
 		withAlters:       sq.withAlters.Clone(),
 		withOrders:       sq.withOrders.Clone(),
 		withInitialOrder: sq.withInitialOrder.Clone(),
@@ -670,6 +695,17 @@ func (sq *SubscribeQuery) WithPauses(opts ...func(*SubscribePauseQuery)) *Subscr
 		opt(query)
 	}
 	sq.withPauses = query
+	return sq
+}
+
+// WithSuspends tells the query-builder to eager-load the nodes that are connected to
+// the "suspends" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *SubscribeQuery) WithSuspends(opts ...func(*SubscribeSuspendQuery)) *SubscribeQuery {
+	query := &SubscribeSuspendQuery{config: sq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withSuspends = query
 	return sq
 }
 
@@ -787,7 +823,7 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 	var (
 		nodes       = []*Subscribe{}
 		_spec       = sq.querySpec()
-		loadedTypes = [13]bool{
+		loadedTypes = [14]bool{
 			sq.withPlan != nil,
 			sq.withEmployee != nil,
 			sq.withCity != nil,
@@ -797,6 +833,7 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 			sq.withRider != nil,
 			sq.withEnterprise != nil,
 			sq.withPauses != nil,
+			sq.withSuspends != nil,
 			sq.withAlters != nil,
 			sq.withOrders != nil,
 			sq.withInitialOrder != nil,
@@ -1073,6 +1110,31 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 				return nil, fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Pauses = append(node.Edges.Pauses, n)
+		}
+	}
+
+	if query := sq.withSuspends; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*Subscribe)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Suspends = []*SubscribeSuspend{}
+		}
+		query.Where(predicate.SubscribeSuspend(func(s *sql.Selector) {
+			s.Where(sql.InValues(subscribe.SuspendsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.SubscribeID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Suspends = append(node.Edges.Suspends, n)
 		}
 	}
 

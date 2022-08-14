@@ -26,6 +26,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
+	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
 )
 
 // SubscribeUpdate is the builder for updating Subscribe entities.
@@ -347,6 +348,27 @@ func (su *SubscribeUpdate) AddPauseDays(i int) *SubscribeUpdate {
 	return su
 }
 
+// SetSuspendDays sets the "suspend_days" field.
+func (su *SubscribeUpdate) SetSuspendDays(i int) *SubscribeUpdate {
+	su.mutation.ResetSuspendDays()
+	su.mutation.SetSuspendDays(i)
+	return su
+}
+
+// SetNillableSuspendDays sets the "suspend_days" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableSuspendDays(i *int) *SubscribeUpdate {
+	if i != nil {
+		su.SetSuspendDays(*i)
+	}
+	return su
+}
+
+// AddSuspendDays adds i to the "suspend_days" field.
+func (su *SubscribeUpdate) AddSuspendDays(i int) *SubscribeUpdate {
+	su.mutation.AddSuspendDays(i)
+	return su
+}
+
 // SetRenewalDays sets the "renewal_days" field.
 func (su *SubscribeUpdate) SetRenewalDays(i int) *SubscribeUpdate {
 	su.mutation.ResetRenewalDays()
@@ -599,6 +621,21 @@ func (su *SubscribeUpdate) AddPauses(s ...*SubscribePause) *SubscribeUpdate {
 	return su.AddPauseIDs(ids...)
 }
 
+// AddSuspendIDs adds the "suspends" edge to the SubscribeSuspend entity by IDs.
+func (su *SubscribeUpdate) AddSuspendIDs(ids ...uint64) *SubscribeUpdate {
+	su.mutation.AddSuspendIDs(ids...)
+	return su
+}
+
+// AddSuspends adds the "suspends" edges to the SubscribeSuspend entity.
+func (su *SubscribeUpdate) AddSuspends(s ...*SubscribeSuspend) *SubscribeUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return su.AddSuspendIDs(ids...)
+}
+
 // AddAlterIDs adds the "alters" edge to the SubscribeAlter entity by IDs.
 func (su *SubscribeUpdate) AddAlterIDs(ids ...uint64) *SubscribeUpdate {
 	su.mutation.AddAlterIDs(ids...)
@@ -721,6 +758,27 @@ func (su *SubscribeUpdate) RemovePauses(s ...*SubscribePause) *SubscribeUpdate {
 		ids[i] = s[i].ID
 	}
 	return su.RemovePauseIDs(ids...)
+}
+
+// ClearSuspends clears all "suspends" edges to the SubscribeSuspend entity.
+func (su *SubscribeUpdate) ClearSuspends() *SubscribeUpdate {
+	su.mutation.ClearSuspends()
+	return su
+}
+
+// RemoveSuspendIDs removes the "suspends" edge to SubscribeSuspend entities by IDs.
+func (su *SubscribeUpdate) RemoveSuspendIDs(ids ...uint64) *SubscribeUpdate {
+	su.mutation.RemoveSuspendIDs(ids...)
+	return su
+}
+
+// RemoveSuspends removes "suspends" edges to SubscribeSuspend entities.
+func (su *SubscribeUpdate) RemoveSuspends(s ...*SubscribeSuspend) *SubscribeUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return su.RemoveSuspendIDs(ids...)
 }
 
 // ClearAlters clears all "alters" edges to the SubscribeAlter entity.
@@ -1015,6 +1073,20 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeInt,
 			Value:  value,
 			Column: subscribe.FieldPauseDays,
+		})
+	}
+	if value, ok := su.mutation.SuspendDays(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribe.FieldSuspendDays,
+		})
+	}
+	if value, ok := su.mutation.AddedSuspendDays(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribe.FieldSuspendDays,
 		})
 	}
 	if value, ok := su.mutation.RenewalDays(); ok {
@@ -1470,6 +1542,60 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: subscribepause.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if su.mutation.SuspendsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribe.SuspendsTable,
+			Columns: []string{subscribe.SuspendsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribesuspend.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.RemovedSuspendsIDs(); len(nodes) > 0 && !su.mutation.SuspendsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribe.SuspendsTable,
+			Columns: []string{subscribe.SuspendsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribesuspend.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.SuspendsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribe.SuspendsTable,
+			Columns: []string{subscribe.SuspendsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribesuspend.FieldID,
 				},
 			},
 		}
@@ -2000,6 +2126,27 @@ func (suo *SubscribeUpdateOne) AddPauseDays(i int) *SubscribeUpdateOne {
 	return suo
 }
 
+// SetSuspendDays sets the "suspend_days" field.
+func (suo *SubscribeUpdateOne) SetSuspendDays(i int) *SubscribeUpdateOne {
+	suo.mutation.ResetSuspendDays()
+	suo.mutation.SetSuspendDays(i)
+	return suo
+}
+
+// SetNillableSuspendDays sets the "suspend_days" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableSuspendDays(i *int) *SubscribeUpdateOne {
+	if i != nil {
+		suo.SetSuspendDays(*i)
+	}
+	return suo
+}
+
+// AddSuspendDays adds i to the "suspend_days" field.
+func (suo *SubscribeUpdateOne) AddSuspendDays(i int) *SubscribeUpdateOne {
+	suo.mutation.AddSuspendDays(i)
+	return suo
+}
+
 // SetRenewalDays sets the "renewal_days" field.
 func (suo *SubscribeUpdateOne) SetRenewalDays(i int) *SubscribeUpdateOne {
 	suo.mutation.ResetRenewalDays()
@@ -2252,6 +2399,21 @@ func (suo *SubscribeUpdateOne) AddPauses(s ...*SubscribePause) *SubscribeUpdateO
 	return suo.AddPauseIDs(ids...)
 }
 
+// AddSuspendIDs adds the "suspends" edge to the SubscribeSuspend entity by IDs.
+func (suo *SubscribeUpdateOne) AddSuspendIDs(ids ...uint64) *SubscribeUpdateOne {
+	suo.mutation.AddSuspendIDs(ids...)
+	return suo
+}
+
+// AddSuspends adds the "suspends" edges to the SubscribeSuspend entity.
+func (suo *SubscribeUpdateOne) AddSuspends(s ...*SubscribeSuspend) *SubscribeUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return suo.AddSuspendIDs(ids...)
+}
+
 // AddAlterIDs adds the "alters" edge to the SubscribeAlter entity by IDs.
 func (suo *SubscribeUpdateOne) AddAlterIDs(ids ...uint64) *SubscribeUpdateOne {
 	suo.mutation.AddAlterIDs(ids...)
@@ -2374,6 +2536,27 @@ func (suo *SubscribeUpdateOne) RemovePauses(s ...*SubscribePause) *SubscribeUpda
 		ids[i] = s[i].ID
 	}
 	return suo.RemovePauseIDs(ids...)
+}
+
+// ClearSuspends clears all "suspends" edges to the SubscribeSuspend entity.
+func (suo *SubscribeUpdateOne) ClearSuspends() *SubscribeUpdateOne {
+	suo.mutation.ClearSuspends()
+	return suo
+}
+
+// RemoveSuspendIDs removes the "suspends" edge to SubscribeSuspend entities by IDs.
+func (suo *SubscribeUpdateOne) RemoveSuspendIDs(ids ...uint64) *SubscribeUpdateOne {
+	suo.mutation.RemoveSuspendIDs(ids...)
+	return suo
+}
+
+// RemoveSuspends removes "suspends" edges to SubscribeSuspend entities.
+func (suo *SubscribeUpdateOne) RemoveSuspends(s ...*SubscribeSuspend) *SubscribeUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return suo.RemoveSuspendIDs(ids...)
 }
 
 // ClearAlters clears all "alters" edges to the SubscribeAlter entity.
@@ -2698,6 +2881,20 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 			Type:   field.TypeInt,
 			Value:  value,
 			Column: subscribe.FieldPauseDays,
+		})
+	}
+	if value, ok := suo.mutation.SuspendDays(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribe.FieldSuspendDays,
+		})
+	}
+	if value, ok := suo.mutation.AddedSuspendDays(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribe.FieldSuspendDays,
 		})
 	}
 	if value, ok := suo.mutation.RenewalDays(); ok {
@@ -3153,6 +3350,60 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: subscribepause.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.SuspendsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribe.SuspendsTable,
+			Columns: []string{subscribe.SuspendsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribesuspend.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.RemovedSuspendsIDs(); len(nodes) > 0 && !suo.mutation.SuspendsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribe.SuspendsTable,
+			Columns: []string{subscribe.SuspendsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribesuspend.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.SuspendsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribe.SuspendsTable,
+			Columns: []string{subscribe.SuspendsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribesuspend.FieldID,
 				},
 			},
 		}

@@ -2286,7 +2286,8 @@ var (
 		{Name: "model", Type: field.TypeString, Comment: "电池型号"},
 		{Name: "initial_days", Type: field.TypeInt, Comment: "初始骑士卡天数", Nullable: true},
 		{Name: "alter_days", Type: field.TypeInt, Comment: "改动天数", Default: 0},
-		{Name: "pause_days", Type: field.TypeInt, Comment: "暂停天数", Default: 0},
+		{Name: "pause_days", Type: field.TypeInt, Comment: "寄存天数", Default: 0},
+		{Name: "suspend_days", Type: field.TypeInt, Comment: "暂停天数", Default: 0},
 		{Name: "renewal_days", Type: field.TypeInt, Comment: "续期天数", Default: 0},
 		{Name: "overdue_days", Type: field.TypeInt, Comment: "已缴纳逾期滞纳金天数", Default: 0},
 		{Name: "remaining", Type: field.TypeInt, Comment: "剩余天数, 负数为逾期", Default: 0},
@@ -2315,55 +2316,55 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "subscribe_enterprise_subscribes",
-				Columns:    []*schema.Column{SubscribeColumns[23]},
+				Columns:    []*schema.Column{SubscribeColumns[24]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_rider_subscribes",
-				Columns:    []*schema.Column{SubscribeColumns[24]},
+				Columns:    []*schema.Column{SubscribeColumns[25]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "subscribe_plan_plan",
-				Columns:    []*schema.Column{SubscribeColumns[25]},
+				Columns:    []*schema.Column{SubscribeColumns[26]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_employee_employee",
-				Columns:    []*schema.Column{SubscribeColumns[26]},
+				Columns:    []*schema.Column{SubscribeColumns[27]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_city_city",
-				Columns:    []*schema.Column{SubscribeColumns[27]},
+				Columns:    []*schema.Column{SubscribeColumns[28]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "subscribe_enterprise_station_station",
-				Columns:    []*schema.Column{SubscribeColumns[28]},
+				Columns:    []*schema.Column{SubscribeColumns[29]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_store_store",
-				Columns:    []*schema.Column{SubscribeColumns[29]},
+				Columns:    []*schema.Column{SubscribeColumns[30]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_cabinet_cabinet",
-				Columns:    []*schema.Column{SubscribeColumns[30]},
+				Columns:    []*schema.Column{SubscribeColumns[31]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_order_initial_order",
-				Columns:    []*schema.Column{SubscribeColumns[31]},
+				Columns:    []*schema.Column{SubscribeColumns[32]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2382,17 +2383,17 @@ var (
 			{
 				Name:    "subscribe_paused_at",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[16]},
+				Columns: []*schema.Column{SubscribeColumns[17]},
 			},
 			{
 				Name:    "subscribe_last_bill_date",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[21]},
+				Columns: []*schema.Column{SubscribeColumns[22]},
 			},
 			{
 				Name:    "subscribe_start_at_end_at",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[17], SubscribeColumns[18]},
+				Columns: []*schema.Column{SubscribeColumns[18], SubscribeColumns[19]},
 			},
 		},
 	}
@@ -2567,6 +2568,45 @@ var (
 			},
 		},
 	}
+	// SubscribeSuspendColumns holds the columns for the "subscribe_suspend" table.
+	SubscribeSuspendColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "days", Type: field.TypeInt, Comment: "暂停天数", Default: 0},
+		{Name: "start_at", Type: field.TypeTime, Comment: "开始时间"},
+		{Name: "end_at", Type: field.TypeTime, Comment: "结束时间", Nullable: true},
+		{Name: "subscribe_id", Type: field.TypeUint64},
+		{Name: "city_id", Type: field.TypeUint64},
+		{Name: "rider_id", Type: field.TypeUint64},
+	}
+	// SubscribeSuspendTable holds the schema information for the "subscribe_suspend" table.
+	SubscribeSuspendTable = &schema.Table{
+		Name:       "subscribe_suspend",
+		Columns:    SubscribeSuspendColumns,
+		PrimaryKey: []*schema.Column{SubscribeSuspendColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "subscribe_suspend_subscribe_suspends",
+				Columns:    []*schema.Column{SubscribeSuspendColumns[7]},
+				RefColumns: []*schema.Column{SubscribeColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "subscribe_suspend_city_city",
+				Columns:    []*schema.Column{SubscribeSuspendColumns[8]},
+				RefColumns: []*schema.Column{CityColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "subscribe_suspend_rider_rider",
+				Columns:    []*schema.Column{SubscribeSuspendColumns[9]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// CabinetBmsColumns holds the columns for the "cabinet_bms" table.
 	CabinetBmsColumns = []*schema.Column{
 		{Name: "cabinet_id", Type: field.TypeInt},
@@ -2682,6 +2722,7 @@ var (
 		SubscribeTable,
 		SubscribeAlterTable,
 		SubscribePauseTable,
+		SubscribeSuspendTable,
 		CabinetBmsTable,
 		PlanPmsTable,
 		PlanCitiesTable,
@@ -2905,6 +2946,12 @@ func init() {
 	SubscribePauseTable.ForeignKeys[8].RefTable = EmployeeTable
 	SubscribePauseTable.Annotation = &entsql.Annotation{
 		Table: "subscribe_pause",
+	}
+	SubscribeSuspendTable.ForeignKeys[0].RefTable = SubscribeTable
+	SubscribeSuspendTable.ForeignKeys[1].RefTable = CityTable
+	SubscribeSuspendTable.ForeignKeys[2].RefTable = RiderTable
+	SubscribeSuspendTable.Annotation = &entsql.Annotation{
+		Table: "subscribe_suspend",
 	}
 	CabinetBmsTable.ForeignKeys[0].RefTable = CabinetTable
 	CabinetBmsTable.ForeignKeys[1].RefTable = BatteryModelTable

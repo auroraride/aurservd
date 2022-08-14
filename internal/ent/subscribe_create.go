@@ -25,6 +25,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
+	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
 )
 
 // SubscribeCreate is the builder for creating a Subscribe entity.
@@ -289,6 +290,20 @@ func (sc *SubscribeCreate) SetNillablePauseDays(i *int) *SubscribeCreate {
 	return sc
 }
 
+// SetSuspendDays sets the "suspend_days" field.
+func (sc *SubscribeCreate) SetSuspendDays(i int) *SubscribeCreate {
+	sc.mutation.SetSuspendDays(i)
+	return sc
+}
+
+// SetNillableSuspendDays sets the "suspend_days" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableSuspendDays(i *int) *SubscribeCreate {
+	if i != nil {
+		sc.SetSuspendDays(*i)
+	}
+	return sc
+}
+
 // SetRenewalDays sets the "renewal_days" field.
 func (sc *SubscribeCreate) SetRenewalDays(i int) *SubscribeCreate {
 	sc.mutation.SetRenewalDays(i)
@@ -484,6 +499,21 @@ func (sc *SubscribeCreate) AddPauses(s ...*SubscribePause) *SubscribeCreate {
 	return sc.AddPauseIDs(ids...)
 }
 
+// AddSuspendIDs adds the "suspends" edge to the SubscribeSuspend entity by IDs.
+func (sc *SubscribeCreate) AddSuspendIDs(ids ...uint64) *SubscribeCreate {
+	sc.mutation.AddSuspendIDs(ids...)
+	return sc
+}
+
+// AddSuspends adds the "suspends" edges to the SubscribeSuspend entity.
+func (sc *SubscribeCreate) AddSuspends(s ...*SubscribeSuspend) *SubscribeCreate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return sc.AddSuspendIDs(ids...)
+}
+
 // AddAlterIDs adds the "alters" edge to the SubscribeAlter entity by IDs.
 func (sc *SubscribeCreate) AddAlterIDs(ids ...uint64) *SubscribeCreate {
 	sc.mutation.AddAlterIDs(ids...)
@@ -643,6 +673,10 @@ func (sc *SubscribeCreate) defaults() error {
 		v := subscribe.DefaultPauseDays
 		sc.mutation.SetPauseDays(v)
 	}
+	if _, ok := sc.mutation.SuspendDays(); !ok {
+		v := subscribe.DefaultSuspendDays
+		sc.mutation.SetSuspendDays(v)
+	}
 	if _, ok := sc.mutation.RenewalDays(); !ok {
 		v := subscribe.DefaultRenewalDays
 		sc.mutation.SetRenewalDays(v)
@@ -690,6 +724,9 @@ func (sc *SubscribeCreate) check() error {
 	}
 	if _, ok := sc.mutation.PauseDays(); !ok {
 		return &ValidationError{Name: "pause_days", err: errors.New(`ent: missing required field "Subscribe.pause_days"`)}
+	}
+	if _, ok := sc.mutation.SuspendDays(); !ok {
+		return &ValidationError{Name: "suspend_days", err: errors.New(`ent: missing required field "Subscribe.suspend_days"`)}
 	}
 	if _, ok := sc.mutation.RenewalDays(); !ok {
 		return &ValidationError{Name: "renewal_days", err: errors.New(`ent: missing required field "Subscribe.renewal_days"`)}
@@ -832,6 +869,14 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 			Column: subscribe.FieldPauseDays,
 		})
 		_node.PauseDays = value
+	}
+	if value, ok := sc.mutation.SuspendDays(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribe.FieldSuspendDays,
+		})
+		_node.SuspendDays = value
 	}
 	if value, ok := sc.mutation.RenewalDays(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -1084,6 +1129,25 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: subscribepause.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.SuspendsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribe.SuspendsTable,
+			Columns: []string{subscribe.SuspendsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribesuspend.FieldID,
 				},
 			},
 		}
@@ -1574,6 +1638,24 @@ func (u *SubscribeUpsert) UpdatePauseDays() *SubscribeUpsert {
 // AddPauseDays adds v to the "pause_days" field.
 func (u *SubscribeUpsert) AddPauseDays(v int) *SubscribeUpsert {
 	u.Add(subscribe.FieldPauseDays, v)
+	return u
+}
+
+// SetSuspendDays sets the "suspend_days" field.
+func (u *SubscribeUpsert) SetSuspendDays(v int) *SubscribeUpsert {
+	u.Set(subscribe.FieldSuspendDays, v)
+	return u
+}
+
+// UpdateSuspendDays sets the "suspend_days" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateSuspendDays() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldSuspendDays)
+	return u
+}
+
+// AddSuspendDays adds v to the "suspend_days" field.
+func (u *SubscribeUpsert) AddSuspendDays(v int) *SubscribeUpsert {
+	u.Add(subscribe.FieldSuspendDays, v)
 	return u
 }
 
@@ -2214,6 +2296,27 @@ func (u *SubscribeUpsertOne) AddPauseDays(v int) *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) UpdatePauseDays() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.UpdatePauseDays()
+	})
+}
+
+// SetSuspendDays sets the "suspend_days" field.
+func (u *SubscribeUpsertOne) SetSuspendDays(v int) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetSuspendDays(v)
+	})
+}
+
+// AddSuspendDays adds v to the "suspend_days" field.
+func (u *SubscribeUpsertOne) AddSuspendDays(v int) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.AddSuspendDays(v)
+	})
+}
+
+// UpdateSuspendDays sets the "suspend_days" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateSuspendDays() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateSuspendDays()
 	})
 }
 
@@ -3047,6 +3150,27 @@ func (u *SubscribeUpsertBulk) AddPauseDays(v int) *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) UpdatePauseDays() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.UpdatePauseDays()
+	})
+}
+
+// SetSuspendDays sets the "suspend_days" field.
+func (u *SubscribeUpsertBulk) SetSuspendDays(v int) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetSuspendDays(v)
+	})
+}
+
+// AddSuspendDays adds v to the "suspend_days" field.
+func (u *SubscribeUpsertBulk) AddSuspendDays(v int) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.AddSuspendDays(v)
+	})
+}
+
+// UpdateSuspendDays sets the "suspend_days" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateSuspendDays() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateSuspendDays()
 	})
 }
 

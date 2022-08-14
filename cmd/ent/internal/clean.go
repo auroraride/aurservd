@@ -25,12 +25,13 @@ const (
 
 var (
     removeNotable = map[string]FileInfoType{
-        "db.go":               FileInfoTypeFile,
-        "connect.go":          FileInfoTypeFile,
-        "slslog.go":           FileInfoTypeFile,
-        "cabinet_attached.go": FileInfoTypeFile,
-        "internal":            FileInfoTypeDir,
-        "schema":              FileInfoTypeDir,
+        "db.go":                 FileInfoTypeFile,
+        "connect.go":            FileInfoTypeFile,
+        "slslog.go":             FileInfoTypeFile,
+        "cabinet_attached.go":   FileInfoTypeFile,
+        "subscribe_attached.go": FileInfoTypeFile,
+        "internal":              FileInfoTypeDir,
+        "schema":                FileInfoTypeDir,
     }
 
     // keep = regexp.MustCompile(`^db.go|^connect.go|^slslog.go|^cabinet_task.go|^internal|^schema`)

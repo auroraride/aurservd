@@ -85,8 +85,11 @@ type Subscribe struct {
 	// 改动天数
 	AlterDays int `json:"alter_days,omitempty"`
 	// PauseDays holds the value of the "pause_days" field.
-	// 暂停天数
+	// 寄存天数
 	PauseDays int `json:"pause_days,omitempty"`
+	// SuspendDays holds the value of the "suspend_days" field.
+	// 暂停天数
+	SuspendDays int `json:"suspend_days,omitempty"`
 	// RenewalDays holds the value of the "renewal_days" field.
 	// 续期天数
 	RenewalDays int `json:"renewal_days,omitempty"`
@@ -142,6 +145,8 @@ type SubscribeEdges struct {
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
 	// Pauses holds the value of the pauses edge.
 	Pauses []*SubscribePause `json:"pauses,omitempty"`
+	// Suspends holds the value of the suspends edge.
+	Suspends []*SubscribeSuspend `json:"suspends,omitempty"`
 	// Alters holds the value of the alters edge.
 	Alters []*SubscribeAlter `json:"alters,omitempty"`
 	// Orders holds the value of the orders edge.
@@ -152,7 +157,7 @@ type SubscribeEdges struct {
 	Bills []*EnterpriseBill `json:"bills,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [13]bool
+	loadedTypes [14]bool
 }
 
 // PlanOrErr returns the Plan value or an error if the edge
@@ -276,10 +281,19 @@ func (e SubscribeEdges) PausesOrErr() ([]*SubscribePause, error) {
 	return nil, &NotLoadedError{edge: "pauses"}
 }
 
+// SuspendsOrErr returns the Suspends value or an error if the edge
+// was not loaded in eager-loading.
+func (e SubscribeEdges) SuspendsOrErr() ([]*SubscribeSuspend, error) {
+	if e.loadedTypes[9] {
+		return e.Suspends, nil
+	}
+	return nil, &NotLoadedError{edge: "suspends"}
+}
+
 // AltersOrErr returns the Alters value or an error if the edge
 // was not loaded in eager-loading.
 func (e SubscribeEdges) AltersOrErr() ([]*SubscribeAlter, error) {
-	if e.loadedTypes[9] {
+	if e.loadedTypes[10] {
 		return e.Alters, nil
 	}
 	return nil, &NotLoadedError{edge: "alters"}
@@ -288,7 +302,7 @@ func (e SubscribeEdges) AltersOrErr() ([]*SubscribeAlter, error) {
 // OrdersOrErr returns the Orders value or an error if the edge
 // was not loaded in eager-loading.
 func (e SubscribeEdges) OrdersOrErr() ([]*Order, error) {
-	if e.loadedTypes[10] {
+	if e.loadedTypes[11] {
 		return e.Orders, nil
 	}
 	return nil, &NotLoadedError{edge: "orders"}
@@ -297,7 +311,7 @@ func (e SubscribeEdges) OrdersOrErr() ([]*Order, error) {
 // InitialOrderOrErr returns the InitialOrder value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e SubscribeEdges) InitialOrderOrErr() (*Order, error) {
-	if e.loadedTypes[11] {
+	if e.loadedTypes[12] {
 		if e.InitialOrder == nil {
 			// The edge initial_order was loaded in eager-loading,
 			// but was not found.
@@ -311,7 +325,7 @@ func (e SubscribeEdges) InitialOrderOrErr() (*Order, error) {
 // BillsOrErr returns the Bills value or an error if the edge
 // was not loaded in eager-loading.
 func (e SubscribeEdges) BillsOrErr() ([]*EnterpriseBill, error) {
-	if e.loadedTypes[12] {
+	if e.loadedTypes[13] {
 		return e.Bills, nil
 	}
 	return nil, &NotLoadedError{edge: "bills"}
@@ -326,7 +340,7 @@ func (*Subscribe) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case subscribe.FieldPauseOverdue:
 			values[i] = new(sql.NullBool)
-		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldStationID, subscribe.FieldStoreID, subscribe.FieldCabinetID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldEnterpriseID, subscribe.FieldStatus, subscribe.FieldType, subscribe.FieldInitialDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays, subscribe.FieldRenewalDays, subscribe.FieldOverdueDays, subscribe.FieldRemaining:
+		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldStationID, subscribe.FieldStoreID, subscribe.FieldCabinetID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldEnterpriseID, subscribe.FieldStatus, subscribe.FieldType, subscribe.FieldInitialDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays, subscribe.FieldSuspendDays, subscribe.FieldRenewalDays, subscribe.FieldOverdueDays, subscribe.FieldRemaining:
 			values[i] = new(sql.NullInt64)
 		case subscribe.FieldRemark, subscribe.FieldModel, subscribe.FieldUnsubscribeReason:
 			values[i] = new(sql.NullString)
@@ -490,6 +504,12 @@ func (s *Subscribe) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				s.PauseDays = int(value.Int64)
 			}
+		case subscribe.FieldSuspendDays:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field suspend_days", values[i])
+			} else if value.Valid {
+				s.SuspendDays = int(value.Int64)
+			}
 		case subscribe.FieldRenewalDays:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field renewal_days", values[i])
@@ -605,6 +625,11 @@ func (s *Subscribe) QueryPauses() *SubscribePauseQuery {
 	return (&SubscribeClient{config: s.config}).QueryPauses(s)
 }
 
+// QuerySuspends queries the "suspends" edge of the Subscribe entity.
+func (s *Subscribe) QuerySuspends() *SubscribeSuspendQuery {
+	return (&SubscribeClient{config: s.config}).QuerySuspends(s)
+}
+
 // QueryAlters queries the "alters" edge of the Subscribe entity.
 func (s *Subscribe) QueryAlters() *SubscribeAlterQuery {
 	return (&SubscribeClient{config: s.config}).QueryAlters(s)
@@ -704,6 +729,8 @@ func (s *Subscribe) String() string {
 	builder.WriteString(fmt.Sprintf("%v", s.AlterDays))
 	builder.WriteString(", pause_days=")
 	builder.WriteString(fmt.Sprintf("%v", s.PauseDays))
+	builder.WriteString(", suspend_days=")
+	builder.WriteString(fmt.Sprintf("%v", s.SuspendDays))
 	builder.WriteString(", renewal_days=")
 	builder.WriteString(fmt.Sprintf("%v", s.RenewalDays))
 	builder.WriteString(", overdue_days=")

@@ -55,6 +55,8 @@ const (
 	FieldAlterDays = "alter_days"
 	// FieldPauseDays holds the string denoting the pause_days field in the database.
 	FieldPauseDays = "pause_days"
+	// FieldSuspendDays holds the string denoting the suspend_days field in the database.
+	FieldSuspendDays = "suspend_days"
 	// FieldRenewalDays holds the string denoting the renewal_days field in the database.
 	FieldRenewalDays = "renewal_days"
 	// FieldOverdueDays holds the string denoting the overdue_days field in the database.
@@ -93,6 +95,8 @@ const (
 	EdgeEnterprise = "enterprise"
 	// EdgePauses holds the string denoting the pauses edge name in mutations.
 	EdgePauses = "pauses"
+	// EdgeSuspends holds the string denoting the suspends edge name in mutations.
+	EdgeSuspends = "suspends"
 	// EdgeAlters holds the string denoting the alters edge name in mutations.
 	EdgeAlters = "alters"
 	// EdgeOrders holds the string denoting the orders edge name in mutations.
@@ -166,6 +170,13 @@ const (
 	PausesInverseTable = "subscribe_pause"
 	// PausesColumn is the table column denoting the pauses relation/edge.
 	PausesColumn = "subscribe_id"
+	// SuspendsTable is the table that holds the suspends relation/edge.
+	SuspendsTable = "subscribe_suspend"
+	// SuspendsInverseTable is the table name for the SubscribeSuspend entity.
+	// It exists in this package in order to avoid circular dependency with the "subscribesuspend" package.
+	SuspendsInverseTable = "subscribe_suspend"
+	// SuspendsColumn is the table column denoting the suspends relation/edge.
+	SuspendsColumn = "subscribe_id"
 	// AltersTable is the table that holds the alters relation/edge.
 	AltersTable = "subscribe_alter"
 	// AltersInverseTable is the table name for the SubscribeAlter entity.
@@ -220,6 +231,7 @@ var Columns = []string{
 	FieldInitialDays,
 	FieldAlterDays,
 	FieldPauseDays,
+	FieldSuspendDays,
 	FieldRenewalDays,
 	FieldOverdueDays,
 	FieldRemaining,
@@ -264,6 +276,8 @@ var (
 	DefaultAlterDays int
 	// DefaultPauseDays holds the default value on creation for the "pause_days" field.
 	DefaultPauseDays int
+	// DefaultSuspendDays holds the default value on creation for the "suspend_days" field.
+	DefaultSuspendDays int
 	// DefaultRenewalDays holds the default value on creation for the "renewal_days" field.
 	DefaultRenewalDays int
 	// DefaultOverdueDays holds the default value on creation for the "overdue_days" field.

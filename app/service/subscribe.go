@@ -17,6 +17,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
+    "github.com/auroraride/aurservd/internal/ent/subscribesuspend"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
@@ -250,7 +251,10 @@ func (s *subscribeService) QueryAllRidersEffective() []*ent.Subscribe {
             subscribe.EnterpriseIDIsNil(),
         ).
         WithPauses(func(spq *ent.SubscribePauseQuery) {
-            spq.Order(ent.Desc(subscribepause.FieldCreatedAt))
+            spq.Order(ent.Desc(subscribepause.FieldStartAt))
+        }).
+        WithSuspends(func(spq *ent.SubscribeSuspendQuery) {
+            spq.Order(ent.Desc(subscribesuspend.FieldStartAt))
         }).
         All(s.ctx)
     return items
@@ -266,44 +270,25 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe) error {
     // 已用天数
     pastDays := tt.UsedDaysToNow(*item.StartAt)
     status := item.Status
-    // 寄存中
-    var pause *ent.SubscribePause // 当前寄存中
-    var pauseDays int             // 总寄存天数
-    var currPauseDays int         // 当前寄存天数
-    var pauseOverdueDays int      // 寄存超期天数
 
     // 计算寄存
-    pauses := item.Edges.Pauses
-    if pauses == nil {
-        pauses, _ = item.QueryPauses().Order(ent.Desc(subscribepause.FieldCreatedAt)).All(s.ctx)
-    }
-    for _, p := range pauses {
-        var pd int
-        if p.EndAt.IsZero() {
-            // 寄存未结束
-            pause = p
-            pd, pauseOverdueDays = s.PausedDays(p.StartAt, time.Now())
-            currPauseDays = pd
-        } else {
-            // 寄存已结束按寄存结束时间计算
-            pd, _ = s.PausedDays(p.StartAt, p.EndAt)
-        }
-        // 寄存已过时间需要尽可能的少算
-        pauseDays += pd
-    }
+    pauses, suspends := item.AdditionalItems()
+    pause := ent.SubscribeAdditionalCalculate[*ent.SubscribePause](pauses)
+    suspend := ent.SubscribeAdditionalCalculate[*ent.SubscribeSuspend](suspends)
+
     // 剩余天数
-    remaining := item.InitialDays + item.AlterDays + item.OverdueDays + item.RenewalDays + pauseDays - pastDays
+    remaining := item.InitialDays + item.AlterDays + item.OverdueDays + item.RenewalDays + pause.TotalDays + suspend.TotalDays - pastDays
     if remaining < 0 {
         status = model.SubscribeStatusOverdue
     }
 
     return ent.WithTx(s.ctx, func(tx *ent.Tx) error {
-        up := tx.Subscribe.UpdateOne(item).SetPauseDays(pauseDays).SetRemaining(remaining)
+        up := tx.Subscribe.UpdateOne(item).SetPauseDays(pause.TotalDays).SetSuspendDays(suspend.TotalDays).SetRemaining(remaining)
 
         // 寄存中的如果欠费则自动退租: 超过寄存设置的最大时间继续计费, 直到欠费自动退租
         var unsub bool
-        if pause != nil {
-            pup := tx.SubscribePause.UpdateOne(pause).SetDays(currPauseDays).SetOverdueDays(pauseOverdueDays)
+        if pause.Current != nil {
+            pup := tx.SubscribePause.UpdateOne(pause.Current).SetDays(pause.CurrentDays).SetOverdueDays(pause.OverdueDays)
             if remaining < 0 {
                 status = model.SubscribeStatusUnSubscribed
                 unsub = true
@@ -317,7 +302,15 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe) error {
             }
             _, err := pup.Save(s.ctx)
             if err != nil {
-                log.Errorf("[SUBSCRIBE TASK PAUSE] %d 更新失败: %v", pause.ID, err)
+                log.Errorf("[SUBSCRIBE TASK PAUSE] %d 更新失败: %v", pause.Current.ID, err)
+                return err
+            }
+        }
+
+        if suspend.Current != nil {
+            _, err := tx.SubscribeSuspend.UpdateOne(suspend.Current).SetDays(suspend.CurrentDays).Save(s.ctx)
+            if err != nil {
+                log.Errorf("[SUBSCRIBE TASK SUSPEND] %d 更新失败: %v", suspend.Current.ID, err)
                 return err
             }
         }

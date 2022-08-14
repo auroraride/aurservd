@@ -44,6 +44,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
+	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -901,20 +902,24 @@ func init() {
 	subscribeDescPauseDays := subscribeFields[8].Descriptor()
 	// subscribe.DefaultPauseDays holds the default value on creation for the pause_days field.
 	subscribe.DefaultPauseDays = subscribeDescPauseDays.Default.(int)
+	// subscribeDescSuspendDays is the schema descriptor for suspend_days field.
+	subscribeDescSuspendDays := subscribeFields[9].Descriptor()
+	// subscribe.DefaultSuspendDays holds the default value on creation for the suspend_days field.
+	subscribe.DefaultSuspendDays = subscribeDescSuspendDays.Default.(int)
 	// subscribeDescRenewalDays is the schema descriptor for renewal_days field.
-	subscribeDescRenewalDays := subscribeFields[9].Descriptor()
+	subscribeDescRenewalDays := subscribeFields[10].Descriptor()
 	// subscribe.DefaultRenewalDays holds the default value on creation for the renewal_days field.
 	subscribe.DefaultRenewalDays = subscribeDescRenewalDays.Default.(int)
 	// subscribeDescOverdueDays is the schema descriptor for overdue_days field.
-	subscribeDescOverdueDays := subscribeFields[10].Descriptor()
+	subscribeDescOverdueDays := subscribeFields[11].Descriptor()
 	// subscribe.DefaultOverdueDays holds the default value on creation for the overdue_days field.
 	subscribe.DefaultOverdueDays = subscribeDescOverdueDays.Default.(int)
 	// subscribeDescRemaining is the schema descriptor for remaining field.
-	subscribeDescRemaining := subscribeFields[11].Descriptor()
+	subscribeDescRemaining := subscribeFields[12].Descriptor()
 	// subscribe.DefaultRemaining holds the default value on creation for the remaining field.
 	subscribe.DefaultRemaining = subscribeDescRemaining.Default.(int)
 	// subscribeDescPauseOverdue is the schema descriptor for pause_overdue field.
-	subscribeDescPauseOverdue := subscribeFields[18].Descriptor()
+	subscribeDescPauseOverdue := subscribeFields[19].Descriptor()
 	// subscribe.DefaultPauseOverdue holds the default value on creation for the pause_overdue field.
 	subscribe.DefaultPauseOverdue = subscribeDescPauseOverdue.Default.(bool)
 	subscribealterMixin := schema.SubscribeAlter{}.Mixin()
@@ -959,6 +964,15 @@ func init() {
 	subscribepauseDescPauseOverdue := subscribepauseFields[7].Descriptor()
 	// subscribepause.DefaultPauseOverdue holds the default value on creation for the pause_overdue field.
 	subscribepause.DefaultPauseOverdue = subscribepauseDescPauseOverdue.Default.(bool)
+	subscribesuspendMixin := schema.SubscribeSuspend{}.Mixin()
+	subscribesuspendMixinHooks0 := subscribesuspendMixin[0].Hooks()
+	subscribesuspend.Hooks[0] = subscribesuspendMixinHooks0[0]
+	subscribesuspendFields := schema.SubscribeSuspend{}.Fields()
+	_ = subscribesuspendFields
+	// subscribesuspendDescDays is the schema descriptor for days field.
+	subscribesuspendDescDays := subscribesuspendFields[1].Descriptor()
+	// subscribesuspend.DefaultDays holds the default value on creation for the days field.
+	subscribesuspend.DefaultDays = subscribesuspendDescDays.Default.(int)
 }
 
 const (
