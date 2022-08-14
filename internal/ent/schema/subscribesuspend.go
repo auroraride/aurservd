@@ -6,6 +6,7 @@ import (
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -25,16 +26,20 @@ func (SubscribeSuspend) Annotations() []schema.Annotation {
 func (SubscribeSuspend) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("subscribe_id").Comment("订阅ID"),
+        field.Uint64("pause_id").Optional().Comment("寄存ID"),
         field.Int("days").Default(0).Comment("暂停天数"),
         field.Time("start_at").Comment("开始时间"),
         field.Time("end_at").Optional().Comment("结束时间"),
+        field.String("end_reason").Optional().Comment("结束理由"),
+        field.JSON("end_modifier", &model.Modifier{}).Optional().Comment("继续计费管理员信息"),
     }
 }
 
 // Edges of the SubscribeSuspend.
 func (SubscribeSuspend) Edges() []ent.Edge {
     return []ent.Edge{
-        edge.From("subscribe", Subscribe.Type).Ref("suspends").Required().Unique().Field("subscribe_id").Comment("订阅"),
+        edge.From("subscribe", Subscribe.Type).Ref("suspends").Required().Unique().Field("subscribe_id"),
+        edge.From("pause", SubscribePause.Type).Ref("suspends").Unique().Field("pause_id"),
     }
 }
 

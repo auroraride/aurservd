@@ -121,6 +121,13 @@ func SubscribeID(v uint64) predicate.SubscribeSuspend {
 	})
 }
 
+// PauseID applies equality check predicate on the "pause_id" field. It's identical to PauseIDEQ.
+func PauseID(v uint64) predicate.SubscribeSuspend {
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPauseID), v))
+	})
+}
+
 // Days applies equality check predicate on the "days" field. It's identical to DaysEQ.
 func Days(v int) predicate.SubscribeSuspend {
 	return predicate.SubscribeSuspend(func(s *sql.Selector) {
@@ -139,6 +146,13 @@ func StartAt(v time.Time) predicate.SubscribeSuspend {
 func EndAt(v time.Time) predicate.SubscribeSuspend {
 	return predicate.SubscribeSuspend(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldEndAt), v))
+	})
+}
+
+// EndReason applies equality check predicate on the "end_reason" field. It's identical to EndReasonEQ.
+func EndReason(v string) predicate.SubscribeSuspend {
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEndReason), v))
 	})
 }
 
@@ -439,6 +453,68 @@ func SubscribeIDNotIn(vs ...uint64) predicate.SubscribeSuspend {
 	})
 }
 
+// PauseIDEQ applies the EQ predicate on the "pause_id" field.
+func PauseIDEQ(v uint64) predicate.SubscribeSuspend {
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPauseID), v))
+	})
+}
+
+// PauseIDNEQ applies the NEQ predicate on the "pause_id" field.
+func PauseIDNEQ(v uint64) predicate.SubscribeSuspend {
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPauseID), v))
+	})
+}
+
+// PauseIDIn applies the In predicate on the "pause_id" field.
+func PauseIDIn(vs ...uint64) predicate.SubscribeSuspend {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldPauseID), v...))
+	})
+}
+
+// PauseIDNotIn applies the NotIn predicate on the "pause_id" field.
+func PauseIDNotIn(vs ...uint64) predicate.SubscribeSuspend {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldPauseID), v...))
+	})
+}
+
+// PauseIDIsNil applies the IsNil predicate on the "pause_id" field.
+func PauseIDIsNil() predicate.SubscribeSuspend {
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldPauseID)))
+	})
+}
+
+// PauseIDNotNil applies the NotNil predicate on the "pause_id" field.
+func PauseIDNotNil() predicate.SubscribeSuspend {
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldPauseID)))
+	})
+}
+
 // DaysEQ applies the EQ predicate on the "days" field.
 func DaysEQ(v int) predicate.SubscribeSuspend {
 	return predicate.SubscribeSuspend(func(s *sql.Selector) {
@@ -681,6 +757,145 @@ func EndAtNotNil() predicate.SubscribeSuspend {
 	})
 }
 
+// EndReasonEQ applies the EQ predicate on the "end_reason" field.
+func EndReasonEQ(v string) predicate.SubscribeSuspend {
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEndReason), v))
+	})
+}
+
+// EndReasonNEQ applies the NEQ predicate on the "end_reason" field.
+func EndReasonNEQ(v string) predicate.SubscribeSuspend {
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldEndReason), v))
+	})
+}
+
+// EndReasonIn applies the In predicate on the "end_reason" field.
+func EndReasonIn(vs ...string) predicate.SubscribeSuspend {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldEndReason), v...))
+	})
+}
+
+// EndReasonNotIn applies the NotIn predicate on the "end_reason" field.
+func EndReasonNotIn(vs ...string) predicate.SubscribeSuspend {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldEndReason), v...))
+	})
+}
+
+// EndReasonGT applies the GT predicate on the "end_reason" field.
+func EndReasonGT(v string) predicate.SubscribeSuspend {
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldEndReason), v))
+	})
+}
+
+// EndReasonGTE applies the GTE predicate on the "end_reason" field.
+func EndReasonGTE(v string) predicate.SubscribeSuspend {
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldEndReason), v))
+	})
+}
+
+// EndReasonLT applies the LT predicate on the "end_reason" field.
+func EndReasonLT(v string) predicate.SubscribeSuspend {
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldEndReason), v))
+	})
+}
+
+// EndReasonLTE applies the LTE predicate on the "end_reason" field.
+func EndReasonLTE(v string) predicate.SubscribeSuspend {
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldEndReason), v))
+	})
+}
+
+// EndReasonContains applies the Contains predicate on the "end_reason" field.
+func EndReasonContains(v string) predicate.SubscribeSuspend {
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldEndReason), v))
+	})
+}
+
+// EndReasonHasPrefix applies the HasPrefix predicate on the "end_reason" field.
+func EndReasonHasPrefix(v string) predicate.SubscribeSuspend {
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldEndReason), v))
+	})
+}
+
+// EndReasonHasSuffix applies the HasSuffix predicate on the "end_reason" field.
+func EndReasonHasSuffix(v string) predicate.SubscribeSuspend {
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldEndReason), v))
+	})
+}
+
+// EndReasonIsNil applies the IsNil predicate on the "end_reason" field.
+func EndReasonIsNil() predicate.SubscribeSuspend {
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldEndReason)))
+	})
+}
+
+// EndReasonNotNil applies the NotNil predicate on the "end_reason" field.
+func EndReasonNotNil() predicate.SubscribeSuspend {
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldEndReason)))
+	})
+}
+
+// EndReasonEqualFold applies the EqualFold predicate on the "end_reason" field.
+func EndReasonEqualFold(v string) predicate.SubscribeSuspend {
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldEndReason), v))
+	})
+}
+
+// EndReasonContainsFold applies the ContainsFold predicate on the "end_reason" field.
+func EndReasonContainsFold(v string) predicate.SubscribeSuspend {
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldEndReason), v))
+	})
+}
+
+// EndModifierIsNil applies the IsNil predicate on the "end_modifier" field.
+func EndModifierIsNil() predicate.SubscribeSuspend {
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldEndModifier)))
+	})
+}
+
+// EndModifierNotNil applies the NotNil predicate on the "end_modifier" field.
+func EndModifierNotNil() predicate.SubscribeSuspend {
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldEndModifier)))
+	})
+}
+
 // HasCity applies the HasEdge predicate on the "city" edge.
 func HasCity() predicate.SubscribeSuspend {
 	return predicate.SubscribeSuspend(func(s *sql.Selector) {
@@ -756,6 +971,34 @@ func HasSubscribeWith(preds ...predicate.Subscribe) predicate.SubscribeSuspend {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(SubscribeInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, SubscribeTable, SubscribeColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasPause applies the HasEdge predicate on the "pause" edge.
+func HasPause() predicate.SubscribeSuspend {
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(PauseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, PauseTable, PauseColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPauseWith applies the HasEdge predicate on the "pause" edge with a given conditions (other predicates).
+func HasPauseWith(preds ...predicate.SubscribePause) predicate.SubscribeSuspend {
+	return predicate.SubscribeSuspend(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(PauseInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, PauseTable, PauseColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

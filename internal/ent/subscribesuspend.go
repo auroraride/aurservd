@@ -13,6 +13,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
+	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
 )
 
@@ -39,6 +40,9 @@ type SubscribeSuspend struct {
 	// SubscribeID holds the value of the "subscribe_id" field.
 	// 订阅ID
 	SubscribeID uint64 `json:"subscribe_id,omitempty"`
+	// PauseID holds the value of the "pause_id" field.
+	// 寄存ID
+	PauseID uint64 `json:"pause_id,omitempty"`
 	// Days holds the value of the "days" field.
 	// 暂停天数
 	Days int `json:"days,omitempty"`
@@ -48,6 +52,12 @@ type SubscribeSuspend struct {
 	// EndAt holds the value of the "end_at" field.
 	// 结束时间
 	EndAt time.Time `json:"end_at,omitempty"`
+	// EndReason holds the value of the "end_reason" field.
+	// 结束理由
+	EndReason string `json:"end_reason,omitempty"`
+	// EndModifier holds the value of the "end_modifier" field.
+	// 继续计费管理员信息
+	EndModifier *model.Modifier `json:"end_modifier,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribeSuspendQuery when eager-loading is set.
 	Edges SubscribeSuspendEdges `json:"edges"`
@@ -61,9 +71,11 @@ type SubscribeSuspendEdges struct {
 	Rider *Rider `json:"rider,omitempty"`
 	// Subscribe holds the value of the subscribe edge.
 	Subscribe *Subscribe `json:"subscribe,omitempty"`
+	// Pause holds the value of the pause edge.
+	Pause *SubscribePause `json:"pause,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -108,16 +120,30 @@ func (e SubscribeSuspendEdges) SubscribeOrErr() (*Subscribe, error) {
 	return nil, &NotLoadedError{edge: "subscribe"}
 }
 
+// PauseOrErr returns the Pause value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e SubscribeSuspendEdges) PauseOrErr() (*SubscribePause, error) {
+	if e.loadedTypes[3] {
+		if e.Pause == nil {
+			// The edge pause was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: subscribepause.Label}
+		}
+		return e.Pause, nil
+	}
+	return nil, &NotLoadedError{edge: "pause"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*SubscribeSuspend) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case subscribesuspend.FieldCreator, subscribesuspend.FieldLastModifier:
+		case subscribesuspend.FieldCreator, subscribesuspend.FieldLastModifier, subscribesuspend.FieldEndModifier:
 			values[i] = new([]byte)
-		case subscribesuspend.FieldID, subscribesuspend.FieldCityID, subscribesuspend.FieldRiderID, subscribesuspend.FieldSubscribeID, subscribesuspend.FieldDays:
+		case subscribesuspend.FieldID, subscribesuspend.FieldCityID, subscribesuspend.FieldRiderID, subscribesuspend.FieldSubscribeID, subscribesuspend.FieldPauseID, subscribesuspend.FieldDays:
 			values[i] = new(sql.NullInt64)
-		case subscribesuspend.FieldRemark:
+		case subscribesuspend.FieldRemark, subscribesuspend.FieldEndReason:
 			values[i] = new(sql.NullString)
 		case subscribesuspend.FieldStartAt, subscribesuspend.FieldEndAt:
 			values[i] = new(sql.NullTime)
@@ -182,6 +208,12 @@ func (ss *SubscribeSuspend) assignValues(columns []string, values []interface{})
 			} else if value.Valid {
 				ss.SubscribeID = uint64(value.Int64)
 			}
+		case subscribesuspend.FieldPauseID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field pause_id", values[i])
+			} else if value.Valid {
+				ss.PauseID = uint64(value.Int64)
+			}
 		case subscribesuspend.FieldDays:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field days", values[i])
@@ -199,6 +231,20 @@ func (ss *SubscribeSuspend) assignValues(columns []string, values []interface{})
 				return fmt.Errorf("unexpected type %T for field end_at", values[i])
 			} else if value.Valid {
 				ss.EndAt = value.Time
+			}
+		case subscribesuspend.FieldEndReason:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field end_reason", values[i])
+			} else if value.Valid {
+				ss.EndReason = value.String
+			}
+		case subscribesuspend.FieldEndModifier:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field end_modifier", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &ss.EndModifier); err != nil {
+					return fmt.Errorf("unmarshal field end_modifier: %w", err)
+				}
 			}
 		}
 	}
@@ -218,6 +264,11 @@ func (ss *SubscribeSuspend) QueryRider() *RiderQuery {
 // QuerySubscribe queries the "subscribe" edge of the SubscribeSuspend entity.
 func (ss *SubscribeSuspend) QuerySubscribe() *SubscribeQuery {
 	return (&SubscribeSuspendClient{config: ss.config}).QuerySubscribe(ss)
+}
+
+// QueryPause queries the "pause" edge of the SubscribeSuspend entity.
+func (ss *SubscribeSuspend) QueryPause() *SubscribePauseQuery {
+	return (&SubscribeSuspendClient{config: ss.config}).QueryPause(ss)
 }
 
 // Update returns a builder for updating this SubscribeSuspend.
@@ -255,12 +306,18 @@ func (ss *SubscribeSuspend) String() string {
 	builder.WriteString(fmt.Sprintf("%v", ss.RiderID))
 	builder.WriteString(", subscribe_id=")
 	builder.WriteString(fmt.Sprintf("%v", ss.SubscribeID))
+	builder.WriteString(", pause_id=")
+	builder.WriteString(fmt.Sprintf("%v", ss.PauseID))
 	builder.WriteString(", days=")
 	builder.WriteString(fmt.Sprintf("%v", ss.Days))
 	builder.WriteString(", start_at=")
 	builder.WriteString(ss.StartAt.Format(time.ANSIC))
 	builder.WriteString(", end_at=")
 	builder.WriteString(ss.EndAt.Format(time.ANSIC))
+	builder.WriteString(", end_reason=")
+	builder.WriteString(ss.EndReason)
+	builder.WriteString(", end_modifier=")
+	builder.WriteString(fmt.Sprintf("%v", ss.EndModifier))
 	builder.WriteByte(')')
 	return builder.String()
 }

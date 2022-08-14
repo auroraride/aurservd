@@ -452,6 +452,26 @@ func (su *SubscribeUpdate) ClearPausedAt() *SubscribeUpdate {
 	return su
 }
 
+// SetSuspendAt sets the "suspend_at" field.
+func (su *SubscribeUpdate) SetSuspendAt(t time.Time) *SubscribeUpdate {
+	su.mutation.SetSuspendAt(t)
+	return su
+}
+
+// SetNillableSuspendAt sets the "suspend_at" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableSuspendAt(t *time.Time) *SubscribeUpdate {
+	if t != nil {
+		su.SetSuspendAt(*t)
+	}
+	return su
+}
+
+// ClearSuspendAt clears the value of the "suspend_at" field.
+func (su *SubscribeUpdate) ClearSuspendAt() *SubscribeUpdate {
+	su.mutation.ClearSuspendAt()
+	return su
+}
+
 // SetStartAt sets the "start_at" field.
 func (su *SubscribeUpdate) SetStartAt(t time.Time) *SubscribeUpdate {
 	su.mutation.SetStartAt(t)
@@ -1142,6 +1162,19 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: subscribe.FieldPausedAt,
+		})
+	}
+	if value, ok := su.mutation.SuspendAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: subscribe.FieldSuspendAt,
+		})
+	}
+	if su.mutation.SuspendAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: subscribe.FieldSuspendAt,
 		})
 	}
 	if value, ok := su.mutation.StartAt(); ok {
@@ -2230,6 +2263,26 @@ func (suo *SubscribeUpdateOne) ClearPausedAt() *SubscribeUpdateOne {
 	return suo
 }
 
+// SetSuspendAt sets the "suspend_at" field.
+func (suo *SubscribeUpdateOne) SetSuspendAt(t time.Time) *SubscribeUpdateOne {
+	suo.mutation.SetSuspendAt(t)
+	return suo
+}
+
+// SetNillableSuspendAt sets the "suspend_at" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableSuspendAt(t *time.Time) *SubscribeUpdateOne {
+	if t != nil {
+		suo.SetSuspendAt(*t)
+	}
+	return suo
+}
+
+// ClearSuspendAt clears the value of the "suspend_at" field.
+func (suo *SubscribeUpdateOne) ClearSuspendAt() *SubscribeUpdateOne {
+	suo.mutation.ClearSuspendAt()
+	return suo
+}
+
 // SetStartAt sets the "start_at" field.
 func (suo *SubscribeUpdateOne) SetStartAt(t time.Time) *SubscribeUpdateOne {
 	suo.mutation.SetStartAt(t)
@@ -2950,6 +3003,19 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: subscribe.FieldPausedAt,
+		})
+	}
+	if value, ok := suo.mutation.SuspendAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: subscribe.FieldSuspendAt,
+		})
+	}
+	if suo.mutation.SuspendAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: subscribe.FieldSuspendAt,
 		})
 	}
 	if value, ok := suo.mutation.StartAt(); ok {

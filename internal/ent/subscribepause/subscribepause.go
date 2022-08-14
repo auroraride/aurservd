@@ -55,6 +55,8 @@ const (
 	FieldEndModifier = "end_modifier"
 	// FieldPauseOverdue holds the string denoting the pause_overdue field in the database.
 	FieldPauseOverdue = "pause_overdue"
+	// FieldSuspendDays holds the string denoting the suspend_days field in the database.
+	FieldSuspendDays = "suspend_days"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
@@ -73,6 +75,8 @@ const (
 	EdgeSubscribe = "subscribe"
 	// EdgeEndEmployee holds the string denoting the end_employee edge name in mutations.
 	EdgeEndEmployee = "end_employee"
+	// EdgeSuspends holds the string denoting the suspends edge name in mutations.
+	EdgeSuspends = "suspends"
 	// Table holds the table name of the subscribepause in the database.
 	Table = "subscribe_pause"
 	// RiderTable is the table that holds the rider relation/edge.
@@ -138,6 +142,13 @@ const (
 	EndEmployeeInverseTable = "employee"
 	// EndEmployeeColumn is the table column denoting the end_employee relation/edge.
 	EndEmployeeColumn = "end_employee_id"
+	// SuspendsTable is the table that holds the suspends relation/edge.
+	SuspendsTable = "subscribe_suspend"
+	// SuspendsInverseTable is the table name for the SubscribeSuspend entity.
+	// It exists in this package in order to avoid circular dependency with the "subscribesuspend" package.
+	SuspendsInverseTable = "subscribe_suspend"
+	// SuspendsColumn is the table column denoting the suspends relation/edge.
+	SuspendsColumn = "pause_id"
 )
 
 // Columns holds all SQL columns for subscribepause fields.
@@ -164,6 +175,7 @@ var Columns = []string{
 	FieldOverdueDays,
 	FieldEndModifier,
 	FieldPauseOverdue,
+	FieldSuspendDays,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -194,4 +206,6 @@ var (
 	DefaultOverdueDays int
 	// DefaultPauseOverdue holds the default value on creation for the "pause_overdue" field.
 	DefaultPauseOverdue bool
+	// DefaultSuspendDays holds the default value on creation for the "suspend_days" field.
+	DefaultSuspendDays int
 )

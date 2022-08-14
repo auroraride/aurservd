@@ -537,6 +537,16 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 
         q.Where(rider.HasSubscribesWith(subqs...))
     }
+
+    if req.Suspend != nil {
+        if *req.Suspend {
+            q.Where(rider.HasSubscribesWith(subscribe.SuspendAtNotNil()))
+            info["暂停扣费"] = "是"
+        } else {
+            q.Where(rider.HasSubscribesWith(subscribe.SuspendAtIsNil()))
+            info["暂停扣费"] = "否"
+        }
+    }
     return
 }
 
@@ -606,6 +616,7 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
             Status:    sub.Status,
             Remaining: sub.Remaining,
             Model:     sub.Model,
+            Suspend:   sub.SuspendAt != nil,
         }
         ri.City = &model.City{
             ID: sub.CityID,

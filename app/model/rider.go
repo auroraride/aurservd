@@ -103,6 +103,7 @@ type RiderListFilter struct {
     AuthStatus      *PersonAuthStatus `json:"authStatus,omitempty" enums:"0,1,2,3" query:"authStatus"`                     // 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
     PlanID          *uint64           `json:"planId,omitempty" query:"planId"`                                             // 骑士卡
     Remaining       *string           `json:"remaining,omitempty" query:"remaining"`                                       // 订阅剩余天数区间, 逗号分隔, 例如 `0,7`
+    Suspend         *bool             `json:"suspend,omitempty" query:"suspend"`                                           // 是否筛选暂停扣费中, 不携带此参数获取全部, 携带此参数`true`暂停中 `false`非暂停
 }
 
 // RiderItemSubscribe 骑手骑士卡简单信息
@@ -111,6 +112,7 @@ type RiderItemSubscribe struct {
     Status    uint8  `json:"status"`    // 订阅状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期(计算状态) 当 status = 1 且 remaining <= 3 的时候是即将到期
     Remaining int    `json:"remaining"` // 剩余天数
     Model     string `json:"model"`     // 骑士卡可用电池型号
+    Suspend   bool   `json:"suspend"`   // 是否暂停中
 }
 
 // RiderItem 骑手信息

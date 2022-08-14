@@ -86,4 +86,5 @@ type BusinessPauseListRes struct {
     Days            int    `json:"days"`            // 寄存天数
     OverdueDays     int    `json:"overdueDays"`     // 超期天数
     Remaining       int    `json:"remaining"`       // 剩余天数
+    SuspendDays     int    `json:"suspendDays"`     // 暂停扣费天数
 }

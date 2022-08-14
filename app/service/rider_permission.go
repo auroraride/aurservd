@@ -59,10 +59,14 @@ func (s *riderPermissionService) BusinessX() *riderPermissionService {
 }
 
 // SubscribeX 检查骑士卡权限
-// TODO 暂停扣费中 -> 骑士卡暂停中
+// 暂停扣费中 -> 骑士卡暂停中
 func (s *riderPermissionService) SubscribeX(typ model.RiderPermissionType, sub *ent.Subscribe) {
     if sub == nil {
         snag.Panic("未找到有效骑士卡")
+    }
+    // 当骑士卡暂停时无法办理任何业务
+    if sub.SuspendAt != nil {
+        snag.Panic("骑士卡暂停中")
     }
 
     switch typ {

@@ -1410,6 +1410,9 @@ definitions:
       subscribe:
         description: 骑士卡
         type: string
+      suspendDays:
+        description: 暂停扣费天数
+        type: integer
     type: object
   model.BusinessSubscribeID:
     properties:
@@ -3482,6 +3485,9 @@ definitions:
         description: '订阅状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期(计算状态) 当 status
           = 1 且 remaining <= 3 的时候是即将到期'
         type: integer
+      suspend:
+        description: 是否暂停中
+        type: boolean
     type: object
   model.RiderListExport:
     properties:
@@ -3547,6 +3553,9 @@ definitions:
         - 11
         - 99
         type: integer
+      suspend:
+        description: 是否筛选暂停扣费中, 不携带此参数获取全部, 携带此参数`true`暂停中 `false`非暂停
+        type: boolean
     required:
     - remark
     type: object
@@ -4703,6 +4712,18 @@ definitions:
       total:
         description: 总支付金额, 总金额为 amount + deposit
         type: number
+    type: object
+  model.SuspendReq:
+    properties:
+      id:
+        description: '订阅ID '
+        type: integer
+      remark:
+        description: '备注 '
+        type: string
+    required:
+    - id
+    - remark
     type: object
   permission.Group:
     properties:
@@ -8847,6 +8868,10 @@ paths:
         in: query
         name: subscribeStatus
         type: integer
+      - description: 是否筛选暂停扣费中, 不携带此参数获取全部, 携带此参数`true`暂停中 `false`非暂停
+        in: query
+        name: suspend
+        type: boolean
       produces:
       - application/json
       responses:
@@ -9979,6 +10004,60 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M7006 暂停计费
+      tags:
+      - '[M]管理接口'
+  /manager/v1/subscribe/suspend:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerSubscribeSuspend
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求字段
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.SuspendReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M7010 暂停扣费
+      tags:
+      - '[M]管理接口'
+  /manager/v1/subscribe/unSuspend:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerSubscribeUnSuspend
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求字段
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.SuspendReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M7011 继续扣费
       tags:
       - '[M]管理接口'
   /manager/v1/user:

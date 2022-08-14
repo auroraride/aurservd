@@ -506,7 +506,7 @@ func (s *businessRiderService) Continue(subscribeID uint64) {
     now := time.Now()
 
     // 已寄存天数
-    days, overdue := NewSubscribe().PausedDays(sp.StartAt, now)
+    days, overdue, _ := sp.GetAdditionalDays()
 
     s.do(business.TypeContinue, func(tx *ent.Tx) {
         _, err := tx.SubscribePause.
@@ -518,6 +518,7 @@ func (s *businessRiderService) Continue(subscribeID uint64) {
             SetOverdueDays(overdue).
             SetNillableEndStoreID(s.storeID).
             SetNillableEndCabinetID(s.cabinetID).
+            SetSuspendDays(sp.GetDuplicateDays()).
             Save(s.ctx)
         snag.PanicIfError(err)
 

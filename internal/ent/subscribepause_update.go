@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
+	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
 )
 
 // SubscribePauseUpdate is the builder for updating SubscribePause entities.
@@ -345,6 +346,27 @@ func (spu *SubscribePauseUpdate) SetNillablePauseOverdue(b *bool) *SubscribePaus
 	return spu
 }
 
+// SetSuspendDays sets the "suspend_days" field.
+func (spu *SubscribePauseUpdate) SetSuspendDays(i int) *SubscribePauseUpdate {
+	spu.mutation.ResetSuspendDays()
+	spu.mutation.SetSuspendDays(i)
+	return spu
+}
+
+// SetNillableSuspendDays sets the "suspend_days" field if the given value is not nil.
+func (spu *SubscribePauseUpdate) SetNillableSuspendDays(i *int) *SubscribePauseUpdate {
+	if i != nil {
+		spu.SetSuspendDays(*i)
+	}
+	return spu
+}
+
+// AddSuspendDays adds i to the "suspend_days" field.
+func (spu *SubscribePauseUpdate) AddSuspendDays(i int) *SubscribePauseUpdate {
+	spu.mutation.AddSuspendDays(i)
+	return spu
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (spu *SubscribePauseUpdate) SetRider(r *Rider) *SubscribePauseUpdate {
 	return spu.SetRiderID(r.ID)
@@ -388,6 +410,21 @@ func (spu *SubscribePauseUpdate) SetSubscribe(s *Subscribe) *SubscribePauseUpdat
 // SetEndEmployee sets the "end_employee" edge to the Employee entity.
 func (spu *SubscribePauseUpdate) SetEndEmployee(e *Employee) *SubscribePauseUpdate {
 	return spu.SetEndEmployeeID(e.ID)
+}
+
+// AddSuspendIDs adds the "suspends" edge to the SubscribeSuspend entity by IDs.
+func (spu *SubscribePauseUpdate) AddSuspendIDs(ids ...uint64) *SubscribePauseUpdate {
+	spu.mutation.AddSuspendIDs(ids...)
+	return spu
+}
+
+// AddSuspends adds the "suspends" edges to the SubscribeSuspend entity.
+func (spu *SubscribePauseUpdate) AddSuspends(s ...*SubscribeSuspend) *SubscribePauseUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return spu.AddSuspendIDs(ids...)
 }
 
 // Mutation returns the SubscribePauseMutation object of the builder.
@@ -447,6 +484,27 @@ func (spu *SubscribePauseUpdate) ClearSubscribe() *SubscribePauseUpdate {
 func (spu *SubscribePauseUpdate) ClearEndEmployee() *SubscribePauseUpdate {
 	spu.mutation.ClearEndEmployee()
 	return spu
+}
+
+// ClearSuspends clears all "suspends" edges to the SubscribeSuspend entity.
+func (spu *SubscribePauseUpdate) ClearSuspends() *SubscribePauseUpdate {
+	spu.mutation.ClearSuspends()
+	return spu
+}
+
+// RemoveSuspendIDs removes the "suspends" edge to SubscribeSuspend entities by IDs.
+func (spu *SubscribePauseUpdate) RemoveSuspendIDs(ids ...uint64) *SubscribePauseUpdate {
+	spu.mutation.RemoveSuspendIDs(ids...)
+	return spu
+}
+
+// RemoveSuspends removes "suspends" edges to SubscribeSuspend entities.
+func (spu *SubscribePauseUpdate) RemoveSuspends(s ...*SubscribeSuspend) *SubscribePauseUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return spu.RemoveSuspendIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -677,6 +735,20 @@ func (spu *SubscribePauseUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: subscribepause.FieldPauseOverdue,
+		})
+	}
+	if value, ok := spu.mutation.SuspendDays(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribepause.FieldSuspendDays,
+		})
+	}
+	if value, ok := spu.mutation.AddedSuspendDays(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribepause.FieldSuspendDays,
 		})
 	}
 	if spu.mutation.RiderCleared() {
@@ -986,6 +1058,60 @@ func (spu *SubscribePauseUpdate) sqlSave(ctx context.Context) (n int, err error)
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: employee.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if spu.mutation.SuspendsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribepause.SuspendsTable,
+			Columns: []string{subscribepause.SuspendsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribesuspend.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := spu.mutation.RemovedSuspendsIDs(); len(nodes) > 0 && !spu.mutation.SuspendsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribepause.SuspendsTable,
+			Columns: []string{subscribepause.SuspendsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribesuspend.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := spu.mutation.SuspendsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribepause.SuspendsTable,
+			Columns: []string{subscribepause.SuspendsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribesuspend.FieldID,
 				},
 			},
 		}
@@ -1323,6 +1449,27 @@ func (spuo *SubscribePauseUpdateOne) SetNillablePauseOverdue(b *bool) *Subscribe
 	return spuo
 }
 
+// SetSuspendDays sets the "suspend_days" field.
+func (spuo *SubscribePauseUpdateOne) SetSuspendDays(i int) *SubscribePauseUpdateOne {
+	spuo.mutation.ResetSuspendDays()
+	spuo.mutation.SetSuspendDays(i)
+	return spuo
+}
+
+// SetNillableSuspendDays sets the "suspend_days" field if the given value is not nil.
+func (spuo *SubscribePauseUpdateOne) SetNillableSuspendDays(i *int) *SubscribePauseUpdateOne {
+	if i != nil {
+		spuo.SetSuspendDays(*i)
+	}
+	return spuo
+}
+
+// AddSuspendDays adds i to the "suspend_days" field.
+func (spuo *SubscribePauseUpdateOne) AddSuspendDays(i int) *SubscribePauseUpdateOne {
+	spuo.mutation.AddSuspendDays(i)
+	return spuo
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (spuo *SubscribePauseUpdateOne) SetRider(r *Rider) *SubscribePauseUpdateOne {
 	return spuo.SetRiderID(r.ID)
@@ -1366,6 +1513,21 @@ func (spuo *SubscribePauseUpdateOne) SetSubscribe(s *Subscribe) *SubscribePauseU
 // SetEndEmployee sets the "end_employee" edge to the Employee entity.
 func (spuo *SubscribePauseUpdateOne) SetEndEmployee(e *Employee) *SubscribePauseUpdateOne {
 	return spuo.SetEndEmployeeID(e.ID)
+}
+
+// AddSuspendIDs adds the "suspends" edge to the SubscribeSuspend entity by IDs.
+func (spuo *SubscribePauseUpdateOne) AddSuspendIDs(ids ...uint64) *SubscribePauseUpdateOne {
+	spuo.mutation.AddSuspendIDs(ids...)
+	return spuo
+}
+
+// AddSuspends adds the "suspends" edges to the SubscribeSuspend entity.
+func (spuo *SubscribePauseUpdateOne) AddSuspends(s ...*SubscribeSuspend) *SubscribePauseUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return spuo.AddSuspendIDs(ids...)
 }
 
 // Mutation returns the SubscribePauseMutation object of the builder.
@@ -1425,6 +1587,27 @@ func (spuo *SubscribePauseUpdateOne) ClearSubscribe() *SubscribePauseUpdateOne {
 func (spuo *SubscribePauseUpdateOne) ClearEndEmployee() *SubscribePauseUpdateOne {
 	spuo.mutation.ClearEndEmployee()
 	return spuo
+}
+
+// ClearSuspends clears all "suspends" edges to the SubscribeSuspend entity.
+func (spuo *SubscribePauseUpdateOne) ClearSuspends() *SubscribePauseUpdateOne {
+	spuo.mutation.ClearSuspends()
+	return spuo
+}
+
+// RemoveSuspendIDs removes the "suspends" edge to SubscribeSuspend entities by IDs.
+func (spuo *SubscribePauseUpdateOne) RemoveSuspendIDs(ids ...uint64) *SubscribePauseUpdateOne {
+	spuo.mutation.RemoveSuspendIDs(ids...)
+	return spuo
+}
+
+// RemoveSuspends removes "suspends" edges to SubscribeSuspend entities.
+func (spuo *SubscribePauseUpdateOne) RemoveSuspends(s ...*SubscribeSuspend) *SubscribePauseUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return spuo.RemoveSuspendIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1685,6 +1868,20 @@ func (spuo *SubscribePauseUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: subscribepause.FieldPauseOverdue,
+		})
+	}
+	if value, ok := spuo.mutation.SuspendDays(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribepause.FieldSuspendDays,
+		})
+	}
+	if value, ok := spuo.mutation.AddedSuspendDays(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribepause.FieldSuspendDays,
 		})
 	}
 	if spuo.mutation.RiderCleared() {
@@ -1994,6 +2191,60 @@ func (spuo *SubscribePauseUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: employee.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if spuo.mutation.SuspendsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribepause.SuspendsTable,
+			Columns: []string{subscribepause.SuspendsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribesuspend.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := spuo.mutation.RemovedSuspendsIDs(); len(nodes) > 0 && !spuo.mutation.SuspendsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribepause.SuspendsTable,
+			Columns: []string{subscribepause.SuspendsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribesuspend.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := spuo.mutation.SuspendsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribepause.SuspendsTable,
+			Columns: []string{subscribepause.SuspendsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribesuspend.FieldID,
 				},
 			},
 		}

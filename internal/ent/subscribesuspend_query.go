@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
+	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
 )
 
@@ -30,6 +31,7 @@ type SubscribeSuspendQuery struct {
 	withCity      *CityQuery
 	withRider     *RiderQuery
 	withSubscribe *SubscribeQuery
+	withPause     *SubscribePauseQuery
 	modifiers     []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -126,6 +128,28 @@ func (ssq *SubscribeSuspendQuery) QuerySubscribe() *SubscribeQuery {
 			sqlgraph.From(subscribesuspend.Table, subscribesuspend.FieldID, selector),
 			sqlgraph.To(subscribe.Table, subscribe.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, subscribesuspend.SubscribeTable, subscribesuspend.SubscribeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ssq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPause chains the current query on the "pause" edge.
+func (ssq *SubscribeSuspendQuery) QueryPause() *SubscribePauseQuery {
+	query := &SubscribePauseQuery{config: ssq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ssq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ssq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribesuspend.Table, subscribesuspend.FieldID, selector),
+			sqlgraph.To(subscribepause.Table, subscribepause.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, subscribesuspend.PauseTable, subscribesuspend.PauseColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ssq.driver.Dialect(), step)
 		return fromU, nil
@@ -317,6 +341,7 @@ func (ssq *SubscribeSuspendQuery) Clone() *SubscribeSuspendQuery {
 		withCity:      ssq.withCity.Clone(),
 		withRider:     ssq.withRider.Clone(),
 		withSubscribe: ssq.withSubscribe.Clone(),
+		withPause:     ssq.withPause.Clone(),
 		// clone intermediate query.
 		sql:    ssq.sql.Clone(),
 		path:   ssq.path,
@@ -354,6 +379,17 @@ func (ssq *SubscribeSuspendQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *
 		opt(query)
 	}
 	ssq.withSubscribe = query
+	return ssq
+}
+
+// WithPause tells the query-builder to eager-load the nodes that are connected to
+// the "pause" edge. The optional arguments are used to configure the query builder of the edge.
+func (ssq *SubscribeSuspendQuery) WithPause(opts ...func(*SubscribePauseQuery)) *SubscribeSuspendQuery {
+	query := &SubscribePauseQuery{config: ssq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	ssq.withPause = query
 	return ssq
 }
 
@@ -427,10 +463,11 @@ func (ssq *SubscribeSuspendQuery) sqlAll(ctx context.Context, hooks ...queryHook
 	var (
 		nodes       = []*SubscribeSuspend{}
 		_spec       = ssq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			ssq.withCity != nil,
 			ssq.withRider != nil,
 			ssq.withSubscribe != nil,
+			ssq.withPause != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -529,6 +566,32 @@ func (ssq *SubscribeSuspendQuery) sqlAll(ctx context.Context, hooks ...queryHook
 			}
 			for i := range nodes {
 				nodes[i].Edges.Subscribe = n
+			}
+		}
+	}
+
+	if query := ssq.withPause; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*SubscribeSuspend)
+		for i := range nodes {
+			fk := nodes[i].PauseID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(subscribepause.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "pause_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Pause = n
 			}
 		}
 	}

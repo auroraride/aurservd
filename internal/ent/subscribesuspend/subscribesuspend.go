@@ -23,18 +23,26 @@ const (
 	FieldRiderID = "rider_id"
 	// FieldSubscribeID holds the string denoting the subscribe_id field in the database.
 	FieldSubscribeID = "subscribe_id"
+	// FieldPauseID holds the string denoting the pause_id field in the database.
+	FieldPauseID = "pause_id"
 	// FieldDays holds the string denoting the days field in the database.
 	FieldDays = "days"
 	// FieldStartAt holds the string denoting the start_at field in the database.
 	FieldStartAt = "start_at"
 	// FieldEndAt holds the string denoting the end_at field in the database.
 	FieldEndAt = "end_at"
+	// FieldEndReason holds the string denoting the end_reason field in the database.
+	FieldEndReason = "end_reason"
+	// FieldEndModifier holds the string denoting the end_modifier field in the database.
+	FieldEndModifier = "end_modifier"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
 	EdgeSubscribe = "subscribe"
+	// EdgePause holds the string denoting the pause edge name in mutations.
+	EdgePause = "pause"
 	// Table holds the table name of the subscribesuspend in the database.
 	Table = "subscribe_suspend"
 	// CityTable is the table that holds the city relation/edge.
@@ -58,6 +66,13 @@ const (
 	SubscribeInverseTable = "subscribe"
 	// SubscribeColumn is the table column denoting the subscribe relation/edge.
 	SubscribeColumn = "subscribe_id"
+	// PauseTable is the table that holds the pause relation/edge.
+	PauseTable = "subscribe_suspend"
+	// PauseInverseTable is the table name for the SubscribePause entity.
+	// It exists in this package in order to avoid circular dependency with the "subscribepause" package.
+	PauseInverseTable = "subscribe_pause"
+	// PauseColumn is the table column denoting the pause relation/edge.
+	PauseColumn = "pause_id"
 )
 
 // Columns holds all SQL columns for subscribesuspend fields.
@@ -69,9 +84,12 @@ var Columns = []string{
 	FieldCityID,
 	FieldRiderID,
 	FieldSubscribeID,
+	FieldPauseID,
 	FieldDays,
 	FieldStartAt,
 	FieldEndAt,
+	FieldEndReason,
+	FieldEndModifier,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

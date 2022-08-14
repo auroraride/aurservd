@@ -89,11 +89,43 @@ func (*subscribe) Halt(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        body  body     model.BusinessSubscribeReq  true  "订阅信息"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
-func (*business) Active(c echo.Context) (err error) {
+func (*subscribe) Active(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.BusinessSubscribeReq](c)
     service.NewBusinessRiderWithModifier(ctx.Modifier).
         SetCabinetID(req.CabinetID).
         SetStoreID(req.StoreID).
         Active(service.NewBusinessRiderWithModifier(ctx.Modifier).Inactive(req.ID))
+    return ctx.SendResponse()
+}
+
+// Suspend
+// @ID           ManagerSubscribeSuspend
+// @Router       /manager/v1/subscribe/suspend [POST]
+// @Summary      M7010 暂停扣费
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body     model.SuspendReq  true  "请求字段"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*subscribe) Suspend(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.SuspendReq](c)
+    service.NewSuspendWithModifier(ctx.Modifier).Suspend(req)
+    return ctx.SendResponse()
+}
+
+// UnSuspend
+// @ID           ManagerSubscribeUnSuspend
+// @Router       /manager/v1/subscribe/unSuspend [POST]
+// @Summary      M7011 继续扣费
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body     model.SuspendReq  true  "请求字段"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*subscribe) UnSuspend(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.SuspendReq](c)
+    service.NewSuspendWithModifier(ctx.Modifier).UnSuspend(req)
     return ctx.SendResponse()
 }

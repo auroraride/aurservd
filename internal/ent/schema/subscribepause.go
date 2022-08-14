@@ -28,13 +28,14 @@ func (SubscribePause) Annotations() []schema.Annotation {
 func (SubscribePause) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("subscribe_id").Comment("订阅ID"),
-        field.Time("start_at").Comment("暂停开始时间"),
-        field.Time("end_at").Optional().Comment("暂停结束时间"),
-        field.Int("days").Optional().Comment("暂停天数"),
+        field.Time("start_at").Comment("寄存开始时间"),
+        field.Time("end_at").Optional().Comment("寄存结束时间"),
+        field.Int("days").Optional().Comment("寄存天数 = 天数差 - 重复天数"),
         field.Uint64("end_employee_id").Optional().Nillable().Comment("结束寄存店员ID"),
         field.Int("overdue_days").Default(0).Comment("超期天数"),
         field.JSON("end_modifier", &model.Modifier{}).Optional().Comment("结束寄存管理员信息"),
         field.Bool("pause_overdue").Default(false).Comment("是否超期退租"),
+        field.Int("suspend_days").Default(0).Comment("重复天数, 寄存过程中暂停扣费天数"),
     }
 }
 
@@ -43,6 +44,7 @@ func (SubscribePause) Edges() []ent.Edge {
     return []ent.Edge{
         edge.From("subscribe", Subscribe.Type).Ref("pauses").Required().Unique().Field("subscribe_id").Comment("订阅"),
         edge.To("end_employee", Employee.Type).Unique().Field("end_employee_id"),
+        edge.To("suspends", SubscribeSuspend.Type),
     }
 }
 

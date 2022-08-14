@@ -261,6 +261,13 @@ func PausedAt(v time.Time) predicate.Subscribe {
 	})
 }
 
+// SuspendAt applies equality check predicate on the "suspend_at" field. It's identical to SuspendAtEQ.
+func SuspendAt(v time.Time) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSuspendAt), v))
+	})
+}
+
 // StartAt applies equality check predicate on the "start_at" field. It's identical to StartAtEQ.
 func StartAt(v time.Time) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
@@ -2124,6 +2131,96 @@ func PausedAtIsNil() predicate.Subscribe {
 func PausedAtNotNil() predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldPausedAt)))
+	})
+}
+
+// SuspendAtEQ applies the EQ predicate on the "suspend_at" field.
+func SuspendAtEQ(v time.Time) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSuspendAt), v))
+	})
+}
+
+// SuspendAtNEQ applies the NEQ predicate on the "suspend_at" field.
+func SuspendAtNEQ(v time.Time) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldSuspendAt), v))
+	})
+}
+
+// SuspendAtIn applies the In predicate on the "suspend_at" field.
+func SuspendAtIn(vs ...time.Time) predicate.Subscribe {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Subscribe(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldSuspendAt), v...))
+	})
+}
+
+// SuspendAtNotIn applies the NotIn predicate on the "suspend_at" field.
+func SuspendAtNotIn(vs ...time.Time) predicate.Subscribe {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Subscribe(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldSuspendAt), v...))
+	})
+}
+
+// SuspendAtGT applies the GT predicate on the "suspend_at" field.
+func SuspendAtGT(v time.Time) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldSuspendAt), v))
+	})
+}
+
+// SuspendAtGTE applies the GTE predicate on the "suspend_at" field.
+func SuspendAtGTE(v time.Time) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldSuspendAt), v))
+	})
+}
+
+// SuspendAtLT applies the LT predicate on the "suspend_at" field.
+func SuspendAtLT(v time.Time) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldSuspendAt), v))
+	})
+}
+
+// SuspendAtLTE applies the LTE predicate on the "suspend_at" field.
+func SuspendAtLTE(v time.Time) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldSuspendAt), v))
+	})
+}
+
+// SuspendAtIsNil applies the IsNil predicate on the "suspend_at" field.
+func SuspendAtIsNil() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldSuspendAt)))
+	})
+}
+
+// SuspendAtNotNil applies the NotNil predicate on the "suspend_at" field.
+func SuspendAtNotNil() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldSuspendAt)))
 	})
 }
 

@@ -79,16 +79,21 @@ func loadManagerRoutes() {
     g.GET("/rider", mapi.Rider.List)
     g.POST("/rider/ban", mapi.Rider.Ban)
     g.POST("/rider/block", mapi.Rider.Block)
-    g.POST("/subscribe/alter", mapi.Subscribe.Alter)
-    g.GET("/rider/log", mapi.Rider.Log)
-    g.POST("/subscribe/pause", mapi.Subscribe.Pause)
-    g.POST("/subscribe/continue", mapi.Subscribe.Continue)
-    g.POST("/subscribe/halt", mapi.Subscribe.Halt)
     g.POST("/rider/deposit", mapi.Rider.Deposit)
     g.POST("/rider/modify", mapi.Rider.Modify)
     g.DELETE("/rider/:id", mapi.Rider.Delete)
     g.POST("/rider/followup", mapi.Rider.FollowUpCreate)
     g.GET("/rider/followup", mapi.Rider.FollowUpList)
+
+    // 订阅
+    g.POST("/subscribe/alter", mapi.Subscribe.Alter)
+    g.GET("/rider/log", mapi.Rider.Log)
+    g.POST("/subscribe/pause", mapi.Subscribe.Pause)
+    g.POST("/subscribe/continue", mapi.Subscribe.Continue)
+    g.POST("/subscribe/halt", mapi.Subscribe.Halt)
+    g.POST("/subscribe/active", mapi.Subscribe.Active)
+    g.POST("/subscribe/suspend", mapi.Subscribe.Suspend)
+    g.POST("/subscribe/unsuspend", mapi.Subscribe.UnSuspend)
 
     // 业务
     g.GET("/order", mapi.Order.List)

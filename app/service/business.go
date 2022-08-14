@@ -409,6 +409,7 @@ func (s *businessService) pauseDetail(item *ent.SubscribePause) (res model.Busin
         Days:            item.Days,
         OverdueDays:     item.OverdueDays,
         Remaining:       sub.Remaining,
+        SuspendDays:     item.SuspendDays,
     }
 
     if item.EndAt.IsZero() {

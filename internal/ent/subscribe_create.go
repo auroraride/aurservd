@@ -360,6 +360,20 @@ func (sc *SubscribeCreate) SetNillablePausedAt(t *time.Time) *SubscribeCreate {
 	return sc
 }
 
+// SetSuspendAt sets the "suspend_at" field.
+func (sc *SubscribeCreate) SetSuspendAt(t time.Time) *SubscribeCreate {
+	sc.mutation.SetSuspendAt(t)
+	return sc
+}
+
+// SetNillableSuspendAt sets the "suspend_at" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableSuspendAt(t *time.Time) *SubscribeCreate {
+	if t != nil {
+		sc.SetSuspendAt(*t)
+	}
+	return sc
+}
+
 // SetStartAt sets the "start_at" field.
 func (sc *SubscribeCreate) SetStartAt(t time.Time) *SubscribeCreate {
 	sc.mutation.SetStartAt(t)
@@ -909,6 +923,14 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 			Column: subscribe.FieldPausedAt,
 		})
 		_node.PausedAt = &value
+	}
+	if value, ok := sc.mutation.SuspendAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: subscribe.FieldSuspendAt,
+		})
+		_node.SuspendAt = &value
 	}
 	if value, ok := sc.mutation.StartAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -1731,6 +1753,24 @@ func (u *SubscribeUpsert) ClearPausedAt() *SubscribeUpsert {
 	return u
 }
 
+// SetSuspendAt sets the "suspend_at" field.
+func (u *SubscribeUpsert) SetSuspendAt(v time.Time) *SubscribeUpsert {
+	u.Set(subscribe.FieldSuspendAt, v)
+	return u
+}
+
+// UpdateSuspendAt sets the "suspend_at" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateSuspendAt() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldSuspendAt)
+	return u
+}
+
+// ClearSuspendAt clears the value of the "suspend_at" field.
+func (u *SubscribeUpsert) ClearSuspendAt() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldSuspendAt)
+	return u
+}
+
 // SetStartAt sets the "start_at" field.
 func (u *SubscribeUpsert) SetStartAt(v time.Time) *SubscribeUpsert {
 	u.Set(subscribe.FieldStartAt, v)
@@ -2401,6 +2441,27 @@ func (u *SubscribeUpsertOne) UpdatePausedAt() *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) ClearPausedAt() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearPausedAt()
+	})
+}
+
+// SetSuspendAt sets the "suspend_at" field.
+func (u *SubscribeUpsertOne) SetSuspendAt(v time.Time) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetSuspendAt(v)
+	})
+}
+
+// UpdateSuspendAt sets the "suspend_at" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateSuspendAt() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateSuspendAt()
+	})
+}
+
+// ClearSuspendAt clears the value of the "suspend_at" field.
+func (u *SubscribeUpsertOne) ClearSuspendAt() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearSuspendAt()
 	})
 }
 
@@ -3255,6 +3316,27 @@ func (u *SubscribeUpsertBulk) UpdatePausedAt() *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) ClearPausedAt() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearPausedAt()
+	})
+}
+
+// SetSuspendAt sets the "suspend_at" field.
+func (u *SubscribeUpsertBulk) SetSuspendAt(v time.Time) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetSuspendAt(v)
+	})
+}
+
+// UpdateSuspendAt sets the "suspend_at" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateSuspendAt() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateSuspendAt()
+	})
+}
+
+// ClearSuspendAt clears the value of the "suspend_at" field.
+func (u *SubscribeUpsertBulk) ClearSuspendAt() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearSuspendAt()
 	})
 }
 

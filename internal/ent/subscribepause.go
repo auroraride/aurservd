@@ -64,13 +64,13 @@ type SubscribePause struct {
 	// 订阅ID
 	SubscribeID uint64 `json:"subscribe_id,omitempty"`
 	// StartAt holds the value of the "start_at" field.
-	// 暂停开始时间
+	// 寄存开始时间
 	StartAt time.Time `json:"start_at,omitempty"`
 	// EndAt holds the value of the "end_at" field.
-	// 暂停结束时间
+	// 寄存结束时间
 	EndAt time.Time `json:"end_at,omitempty"`
 	// Days holds the value of the "days" field.
-	// 暂停天数
+	// 寄存天数 = 天数差 - 重复天数
 	Days int `json:"days,omitempty"`
 	// EndEmployeeID holds the value of the "end_employee_id" field.
 	// 结束寄存店员ID
@@ -84,6 +84,9 @@ type SubscribePause struct {
 	// PauseOverdue holds the value of the "pause_overdue" field.
 	// 是否超期退租
 	PauseOverdue bool `json:"pause_overdue,omitempty"`
+	// SuspendDays holds the value of the "suspend_days" field.
+	// 重复天数, 寄存过程中暂停扣费天数
+	SuspendDays int `json:"suspend_days,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribePauseQuery when eager-loading is set.
 	Edges SubscribePauseEdges `json:"edges"`
@@ -109,9 +112,11 @@ type SubscribePauseEdges struct {
 	Subscribe *Subscribe `json:"subscribe,omitempty"`
 	// EndEmployee holds the value of the end_employee edge.
 	EndEmployee *Employee `json:"end_employee,omitempty"`
+	// Suspends holds the value of the suspends edge.
+	Suspends []*SubscribeSuspend `json:"suspends,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [9]bool
+	loadedTypes [10]bool
 }
 
 // RiderOrErr returns the Rider value or an error if the edge
@@ -240,6 +245,15 @@ func (e SubscribePauseEdges) EndEmployeeOrErr() (*Employee, error) {
 	return nil, &NotLoadedError{edge: "end_employee"}
 }
 
+// SuspendsOrErr returns the Suspends value or an error if the edge
+// was not loaded in eager-loading.
+func (e SubscribePauseEdges) SuspendsOrErr() ([]*SubscribeSuspend, error) {
+	if e.loadedTypes[9] {
+		return e.Suspends, nil
+	}
+	return nil, &NotLoadedError{edge: "suspends"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*SubscribePause) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -249,7 +263,7 @@ func (*SubscribePause) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case subscribepause.FieldPauseOverdue:
 			values[i] = new(sql.NullBool)
-		case subscribepause.FieldID, subscribepause.FieldRiderID, subscribepause.FieldEmployeeID, subscribepause.FieldCityID, subscribepause.FieldStoreID, subscribepause.FieldEndStoreID, subscribepause.FieldCabinetID, subscribepause.FieldEndCabinetID, subscribepause.FieldSubscribeID, subscribepause.FieldDays, subscribepause.FieldEndEmployeeID, subscribepause.FieldOverdueDays:
+		case subscribepause.FieldID, subscribepause.FieldRiderID, subscribepause.FieldEmployeeID, subscribepause.FieldCityID, subscribepause.FieldStoreID, subscribepause.FieldEndStoreID, subscribepause.FieldCabinetID, subscribepause.FieldEndCabinetID, subscribepause.FieldSubscribeID, subscribepause.FieldDays, subscribepause.FieldEndEmployeeID, subscribepause.FieldOverdueDays, subscribepause.FieldSuspendDays:
 			values[i] = new(sql.NullInt64)
 		case subscribepause.FieldRemark:
 			values[i] = new(sql.NullString)
@@ -416,6 +430,12 @@ func (sp *SubscribePause) assignValues(columns []string, values []interface{}) e
 			} else if value.Valid {
 				sp.PauseOverdue = value.Bool
 			}
+		case subscribepause.FieldSuspendDays:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field suspend_days", values[i])
+			} else if value.Valid {
+				sp.SuspendDays = int(value.Int64)
+			}
 		}
 	}
 	return nil
@@ -464,6 +484,11 @@ func (sp *SubscribePause) QuerySubscribe() *SubscribeQuery {
 // QueryEndEmployee queries the "end_employee" edge of the SubscribePause entity.
 func (sp *SubscribePause) QueryEndEmployee() *EmployeeQuery {
 	return (&SubscribePauseClient{config: sp.config}).QueryEndEmployee(sp)
+}
+
+// QuerySuspends queries the "suspends" edge of the SubscribePause entity.
+func (sp *SubscribePause) QuerySuspends() *SubscribeSuspendQuery {
+	return (&SubscribePauseClient{config: sp.config}).QuerySuspends(sp)
 }
 
 // Update returns a builder for updating this SubscribePause.
@@ -547,6 +572,8 @@ func (sp *SubscribePause) String() string {
 	builder.WriteString(fmt.Sprintf("%v", sp.EndModifier))
 	builder.WriteString(", pause_overdue=")
 	builder.WriteString(fmt.Sprintf("%v", sp.PauseOverdue))
+	builder.WriteString(", suspend_days=")
+	builder.WriteString(fmt.Sprintf("%v", sp.SuspendDays))
 	builder.WriteByte(')')
 	return builder.String()
 }

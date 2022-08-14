@@ -14,7 +14,6 @@ import (
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
-    log "github.com/sirupsen/logrus"
     "time"
 )
 
@@ -94,14 +93,14 @@ func (s *reserveService) Detail(rev *ent.Reserve) *model.RiderUnfinishedRes {
 
 // Timeout 标记任务超时, 条件为: 一个小时之前未开始
 func (s *reserveService) Timeout() {
-    x, _ := s.orm.Update().
+    _, _ = s.orm.Update().
         Where(
             reserve.Status(model.ReserveStatusPending.Value()),
             reserve.CreatedAtLT(time.Now().Add(-s.max*time.Minute)),
         ).
         SetStatus(model.ReserveStatusTimeout.Value()).
         Save(s.ctx)
-    log.Infof("标记任务超时数量: %d", x)
+    // log.Infof("标记任务超时数量: %d", x)
 }
 
 // CabinetCounts 获取电柜当前预约数量

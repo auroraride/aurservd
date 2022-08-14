@@ -36,6 +36,8 @@ type SubscribePauseMutation struct {
 	addoverdue_days     *int
 	end_modifier        **model.Modifier
 	pause_overdue       *bool
+	suspend_days        *int
+	addsuspend_days     *int
 	clearedFields       map[string]struct{}
 	rider               *uint64
 	clearedrider        bool
@@ -55,6 +57,9 @@ type SubscribePauseMutation struct {
 	clearedsubscribe    bool
 	end_employee        *uint64
 	clearedend_employee bool
+	suspends            map[uint64]struct{}
+	removedsuspends     map[uint64]struct{}
+	clearedsuspends     bool
 	done                bool
 	oldValue            func(context.Context) (*SubscribePause, error)
 	predicates          []predicate.SubscribePause
@@ -1137,6 +1142,62 @@ func (m *SubscribePauseMutation) ResetPauseOverdue() {
 	m.pause_overdue = nil
 }
 
+// SetSuspendDays sets the "suspend_days" field.
+func (m *SubscribePauseMutation) SetSuspendDays(i int) {
+	m.suspend_days = &i
+	m.addsuspend_days = nil
+}
+
+// SuspendDays returns the value of the "suspend_days" field in the mutation.
+func (m *SubscribePauseMutation) SuspendDays() (r int, exists bool) {
+	v := m.suspend_days
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSuspendDays returns the old "suspend_days" field's value of the SubscribePause entity.
+// If the SubscribePause object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribePauseMutation) OldSuspendDays(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSuspendDays is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSuspendDays requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSuspendDays: %w", err)
+	}
+	return oldValue.SuspendDays, nil
+}
+
+// AddSuspendDays adds i to the "suspend_days" field.
+func (m *SubscribePauseMutation) AddSuspendDays(i int) {
+	if m.addsuspend_days != nil {
+		*m.addsuspend_days += i
+	} else {
+		m.addsuspend_days = &i
+	}
+}
+
+// AddedSuspendDays returns the value that was added to the "suspend_days" field in this mutation.
+func (m *SubscribePauseMutation) AddedSuspendDays() (r int, exists bool) {
+	v := m.addsuspend_days
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetSuspendDays resets all changes to the "suspend_days" field.
+func (m *SubscribePauseMutation) ResetSuspendDays() {
+	m.suspend_days = nil
+	m.addsuspend_days = nil
+}
+
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *SubscribePauseMutation) ClearRider() {
 	m.clearedrider = true
@@ -1371,6 +1432,60 @@ func (m *SubscribePauseMutation) ResetEndEmployee() {
 	m.clearedend_employee = false
 }
 
+// AddSuspendIDs adds the "suspends" edge to the SubscribeSuspend entity by ids.
+func (m *SubscribePauseMutation) AddSuspendIDs(ids ...uint64) {
+	if m.suspends == nil {
+		m.suspends = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.suspends[ids[i]] = struct{}{}
+	}
+}
+
+// ClearSuspends clears the "suspends" edge to the SubscribeSuspend entity.
+func (m *SubscribePauseMutation) ClearSuspends() {
+	m.clearedsuspends = true
+}
+
+// SuspendsCleared reports if the "suspends" edge to the SubscribeSuspend entity was cleared.
+func (m *SubscribePauseMutation) SuspendsCleared() bool {
+	return m.clearedsuspends
+}
+
+// RemoveSuspendIDs removes the "suspends" edge to the SubscribeSuspend entity by IDs.
+func (m *SubscribePauseMutation) RemoveSuspendIDs(ids ...uint64) {
+	if m.removedsuspends == nil {
+		m.removedsuspends = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.suspends, ids[i])
+		m.removedsuspends[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedSuspends returns the removed IDs of the "suspends" edge to the SubscribeSuspend entity.
+func (m *SubscribePauseMutation) RemovedSuspendsIDs() (ids []uint64) {
+	for id := range m.removedsuspends {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// SuspendsIDs returns the "suspends" edge IDs in the mutation.
+func (m *SubscribePauseMutation) SuspendsIDs() (ids []uint64) {
+	for id := range m.suspends {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetSuspends resets all changes to the "suspends" edge.
+func (m *SubscribePauseMutation) ResetSuspends() {
+	m.suspends = nil
+	m.clearedsuspends = false
+	m.removedsuspends = nil
+}
+
 // Where appends a list predicates to the SubscribePauseMutation builder.
 func (m *SubscribePauseMutation) Where(ps ...predicate.SubscribePause) {
 	m.predicates = append(m.predicates, ps...)
@@ -1390,7 +1505,7 @@ func (m *SubscribePauseMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscribePauseMutation) Fields() []string {
-	fields := make([]string, 0, 21)
+	fields := make([]string, 0, 22)
 	if m.created_at != nil {
 		fields = append(fields, subscribepause.FieldCreatedAt)
 	}
@@ -1454,6 +1569,9 @@ func (m *SubscribePauseMutation) Fields() []string {
 	if m.pause_overdue != nil {
 		fields = append(fields, subscribepause.FieldPauseOverdue)
 	}
+	if m.suspend_days != nil {
+		fields = append(fields, subscribepause.FieldSuspendDays)
+	}
 	return fields
 }
 
@@ -1504,6 +1622,8 @@ func (m *SubscribePauseMutation) Field(name string) (ent.Value, bool) {
 		return m.EndModifier()
 	case subscribepause.FieldPauseOverdue:
 		return m.PauseOverdue()
+	case subscribepause.FieldSuspendDays:
+		return m.SuspendDays()
 	}
 	return nil, false
 }
@@ -1555,6 +1675,8 @@ func (m *SubscribePauseMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldEndModifier(ctx)
 	case subscribepause.FieldPauseOverdue:
 		return m.OldPauseOverdue(ctx)
+	case subscribepause.FieldSuspendDays:
+		return m.OldSuspendDays(ctx)
 	}
 	return nil, fmt.Errorf("unknown SubscribePause field %s", name)
 }
@@ -1711,6 +1833,13 @@ func (m *SubscribePauseMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPauseOverdue(v)
 		return nil
+	case subscribepause.FieldSuspendDays:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSuspendDays(v)
+		return nil
 	}
 	return fmt.Errorf("unknown SubscribePause field %s", name)
 }
@@ -1725,6 +1854,9 @@ func (m *SubscribePauseMutation) AddedFields() []string {
 	if m.addoverdue_days != nil {
 		fields = append(fields, subscribepause.FieldOverdueDays)
 	}
+	if m.addsuspend_days != nil {
+		fields = append(fields, subscribepause.FieldSuspendDays)
+	}
 	return fields
 }
 
@@ -1737,6 +1869,8 @@ func (m *SubscribePauseMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedDays()
 	case subscribepause.FieldOverdueDays:
 		return m.AddedOverdueDays()
+	case subscribepause.FieldSuspendDays:
+		return m.AddedSuspendDays()
 	}
 	return nil, false
 }
@@ -1759,6 +1893,13 @@ func (m *SubscribePauseMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddOverdueDays(v)
+		return nil
+	case subscribepause.FieldSuspendDays:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSuspendDays(v)
 		return nil
 	}
 	return fmt.Errorf("unknown SubscribePause numeric field %s", name)
@@ -1937,13 +2078,16 @@ func (m *SubscribePauseMutation) ResetField(name string) error {
 	case subscribepause.FieldPauseOverdue:
 		m.ResetPauseOverdue()
 		return nil
+	case subscribepause.FieldSuspendDays:
+		m.ResetSuspendDays()
+		return nil
 	}
 	return fmt.Errorf("unknown SubscribePause field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *SubscribePauseMutation) AddedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.rider != nil {
 		edges = append(edges, subscribepause.EdgeRider)
 	}
@@ -1970,6 +2114,9 @@ func (m *SubscribePauseMutation) AddedEdges() []string {
 	}
 	if m.end_employee != nil {
 		edges = append(edges, subscribepause.EdgeEndEmployee)
+	}
+	if m.suspends != nil {
+		edges = append(edges, subscribepause.EdgeSuspends)
 	}
 	return edges
 }
@@ -2014,13 +2161,22 @@ func (m *SubscribePauseMutation) AddedIDs(name string) []ent.Value {
 		if id := m.end_employee; id != nil {
 			return []ent.Value{*id}
 		}
+	case subscribepause.EdgeSuspends:
+		ids := make([]ent.Value, 0, len(m.suspends))
+		for id := range m.suspends {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *SubscribePauseMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
+	if m.removedsuspends != nil {
+		edges = append(edges, subscribepause.EdgeSuspends)
+	}
 	return edges
 }
 
@@ -2028,13 +2184,19 @@ func (m *SubscribePauseMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *SubscribePauseMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
+	case subscribepause.EdgeSuspends:
+		ids := make([]ent.Value, 0, len(m.removedsuspends))
+		for id := range m.removedsuspends {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *SubscribePauseMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.clearedrider {
 		edges = append(edges, subscribepause.EdgeRider)
 	}
@@ -2062,6 +2224,9 @@ func (m *SubscribePauseMutation) ClearedEdges() []string {
 	if m.clearedend_employee {
 		edges = append(edges, subscribepause.EdgeEndEmployee)
 	}
+	if m.clearedsuspends {
+		edges = append(edges, subscribepause.EdgeSuspends)
+	}
 	return edges
 }
 
@@ -2087,6 +2252,8 @@ func (m *SubscribePauseMutation) EdgeCleared(name string) bool {
 		return m.clearedsubscribe
 	case subscribepause.EdgeEndEmployee:
 		return m.clearedend_employee
+	case subscribepause.EdgeSuspends:
+		return m.clearedsuspends
 	}
 	return false
 }
@@ -2156,6 +2323,9 @@ func (m *SubscribePauseMutation) ResetEdge(name string) error {
 		return nil
 	case subscribepause.EdgeEndEmployee:
 		m.ResetEndEmployee()
+		return nil
+	case subscribepause.EdgeSuspends:
+		m.ResetSuspends()
 		return nil
 	}
 	return fmt.Errorf("unknown SubscribePause edge %s", name)

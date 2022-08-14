@@ -6287,6 +6287,22 @@ func (c *SubscribePauseClient) QueryEndEmployee(sp *SubscribePause) *EmployeeQue
 	return query
 }
 
+// QuerySuspends queries the suspends edge of a SubscribePause.
+func (c *SubscribePauseClient) QuerySuspends(sp *SubscribePause) *SubscribeSuspendQuery {
+	query := &SubscribeSuspendQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := sp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, id),
+			sqlgraph.To(subscribesuspend.Table, subscribesuspend.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, subscribepause.SuspendsTable, subscribepause.SuspendsColumn),
+		)
+		fromV = sqlgraph.Neighbors(sp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *SubscribePauseClient) Hooks() []Hook {
 	hooks := c.hooks.SubscribePause
@@ -6419,6 +6435,22 @@ func (c *SubscribeSuspendClient) QuerySubscribe(ss *SubscribeSuspend) *Subscribe
 			sqlgraph.From(subscribesuspend.Table, subscribesuspend.FieldID, id),
 			sqlgraph.To(subscribe.Table, subscribe.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, subscribesuspend.SubscribeTable, subscribesuspend.SubscribeColumn),
+		)
+		fromV = sqlgraph.Neighbors(ss.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPause queries the pause edge of a SubscribeSuspend.
+func (c *SubscribeSuspendClient) QueryPause(ss *SubscribeSuspend) *SubscribePauseQuery {
+	query := &SubscribePauseQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ss.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribesuspend.Table, subscribesuspend.FieldID, id),
+			sqlgraph.To(subscribepause.Table, subscribepause.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, subscribesuspend.PauseTable, subscribesuspend.PauseColumn),
 		)
 		fromV = sqlgraph.Neighbors(ss.driver.Dialect(), step)
 		return fromV, nil

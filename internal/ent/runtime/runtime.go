@@ -919,7 +919,7 @@ func init() {
 	// subscribe.DefaultRemaining holds the default value on creation for the remaining field.
 	subscribe.DefaultRemaining = subscribeDescRemaining.Default.(int)
 	// subscribeDescPauseOverdue is the schema descriptor for pause_overdue field.
-	subscribeDescPauseOverdue := subscribeFields[19].Descriptor()
+	subscribeDescPauseOverdue := subscribeFields[20].Descriptor()
 	// subscribe.DefaultPauseOverdue holds the default value on creation for the pause_overdue field.
 	subscribe.DefaultPauseOverdue = subscribeDescPauseOverdue.Default.(bool)
 	subscribealterMixin := schema.SubscribeAlter{}.Mixin()
@@ -964,13 +964,17 @@ func init() {
 	subscribepauseDescPauseOverdue := subscribepauseFields[7].Descriptor()
 	// subscribepause.DefaultPauseOverdue holds the default value on creation for the pause_overdue field.
 	subscribepause.DefaultPauseOverdue = subscribepauseDescPauseOverdue.Default.(bool)
+	// subscribepauseDescSuspendDays is the schema descriptor for suspend_days field.
+	subscribepauseDescSuspendDays := subscribepauseFields[8].Descriptor()
+	// subscribepause.DefaultSuspendDays holds the default value on creation for the suspend_days field.
+	subscribepause.DefaultSuspendDays = subscribepauseDescSuspendDays.Default.(int)
 	subscribesuspendMixin := schema.SubscribeSuspend{}.Mixin()
 	subscribesuspendMixinHooks0 := subscribesuspendMixin[0].Hooks()
 	subscribesuspend.Hooks[0] = subscribesuspendMixinHooks0[0]
 	subscribesuspendFields := schema.SubscribeSuspend{}.Fields()
 	_ = subscribesuspendFields
 	// subscribesuspendDescDays is the schema descriptor for days field.
-	subscribesuspendDescDays := subscribesuspendFields[1].Descriptor()
+	subscribesuspendDescDays := subscribesuspendFields[2].Descriptor()
 	// subscribesuspend.DefaultDays holds the default value on creation for the days field.
 	subscribesuspend.DefaultDays = subscribesuspendDescDays.Default.(int)
 }

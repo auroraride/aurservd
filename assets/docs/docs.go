@@ -6131,6 +6131,12 @@ const docTemplate = `{
                         "description": "业务状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期 99:未使用",
                         "name": "subscribeStatus",
                         "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否筛选暂停扣费中, 不携带此参数获取全部, 携带此参数` + "`" + `true` + "`" + `暂停中 ` + "`" + `false` + "`" + `非暂停",
+                        "name": "suspend",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -7853,6 +7859,88 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/model.BusinessSubscribeReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/subscribe/suspend": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M7010 暂停扣费",
+                "operationId": "ManagerSubscribeSuspend",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求字段",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.SuspendReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/subscribe/unSuspend": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M7011 继续扣费",
+                "operationId": "ManagerSubscribeUnSuspend",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求字段",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.SuspendReq"
                         }
                     }
                 ],
@@ -11926,6 +12014,10 @@ const docTemplate = `{
                 "subscribe": {
                     "description": "骑士卡",
                     "type": "string"
+                },
+                "suspendDays": {
+                    "description": "暂停扣费天数",
+                    "type": "integer"
                 }
             }
         },
@@ -14871,6 +14963,10 @@ const docTemplate = `{
                 "status": {
                     "description": "订阅状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期(计算状态) 当 status = 1 且 remaining \u003c= 3 的时候是即将到期",
                     "type": "integer"
+                },
+                "suspend": {
+                    "description": "是否暂停中",
+                    "type": "boolean"
                 }
             }
         },
@@ -14958,6 +15054,10 @@ const docTemplate = `{
                         11,
                         99
                     ]
+                },
+                "suspend": {
+                    "description": "是否筛选暂停扣费中, 不携带此参数获取全部, 携带此参数` + "`" + `true` + "`" + `暂停中 ` + "`" + `false` + "`" + `非暂停",
+                    "type": "boolean"
                 }
             }
         },
@@ -16647,6 +16747,23 @@ const docTemplate = `{
                 "total": {
                     "description": "总支付金额, 总金额为 amount + deposit",
                     "type": "number"
+                }
+            }
+        },
+        "model.SuspendReq": {
+            "type": "object",
+            "required": [
+                "id",
+                "remark"
+            ],
+            "properties": {
+                "id": {
+                    "description": "订阅ID ",
+                    "type": "integer"
+                },
+                "remark": {
+                    "description": "备注 ",
+                    "type": "string"
                 }
             }
         },

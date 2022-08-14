@@ -48,6 +48,7 @@ type SubscribeMutation struct {
 	remaining            *int
 	addremaining         *int
 	paused_at            *time.Time
+	suspend_at           *time.Time
 	start_at             *time.Time
 	end_at               *time.Time
 	refund_at            *time.Time
@@ -1477,6 +1478,55 @@ func (m *SubscribeMutation) ResetPausedAt() {
 	delete(m.clearedFields, subscribe.FieldPausedAt)
 }
 
+// SetSuspendAt sets the "suspend_at" field.
+func (m *SubscribeMutation) SetSuspendAt(t time.Time) {
+	m.suspend_at = &t
+}
+
+// SuspendAt returns the value of the "suspend_at" field in the mutation.
+func (m *SubscribeMutation) SuspendAt() (r time.Time, exists bool) {
+	v := m.suspend_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSuspendAt returns the old "suspend_at" field's value of the Subscribe entity.
+// If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeMutation) OldSuspendAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSuspendAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSuspendAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSuspendAt: %w", err)
+	}
+	return oldValue.SuspendAt, nil
+}
+
+// ClearSuspendAt clears the value of the "suspend_at" field.
+func (m *SubscribeMutation) ClearSuspendAt() {
+	m.suspend_at = nil
+	m.clearedFields[subscribe.FieldSuspendAt] = struct{}{}
+}
+
+// SuspendAtCleared returns if the "suspend_at" field was cleared in this mutation.
+func (m *SubscribeMutation) SuspendAtCleared() bool {
+	_, ok := m.clearedFields[subscribe.FieldSuspendAt]
+	return ok
+}
+
+// ResetSuspendAt resets all changes to the "suspend_at" field.
+func (m *SubscribeMutation) ResetSuspendAt() {
+	m.suspend_at = nil
+	delete(m.clearedFields, subscribe.FieldSuspendAt)
+}
+
 // SetStartAt sets the "start_at" field.
 func (m *SubscribeMutation) SetStartAt(t time.Time) {
 	m.start_at = &t
@@ -2281,7 +2331,7 @@ func (m *SubscribeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscribeMutation) Fields() []string {
-	fields := make([]string, 0, 32)
+	fields := make([]string, 0, 33)
 	if m.created_at != nil {
 		fields = append(fields, subscribe.FieldCreatedAt)
 	}
@@ -2359,6 +2409,9 @@ func (m *SubscribeMutation) Fields() []string {
 	}
 	if m.paused_at != nil {
 		fields = append(fields, subscribe.FieldPausedAt)
+	}
+	if m.suspend_at != nil {
+		fields = append(fields, subscribe.FieldSuspendAt)
 	}
 	if m.start_at != nil {
 		fields = append(fields, subscribe.FieldStartAt)
@@ -2438,6 +2491,8 @@ func (m *SubscribeMutation) Field(name string) (ent.Value, bool) {
 		return m.Remaining()
 	case subscribe.FieldPausedAt:
 		return m.PausedAt()
+	case subscribe.FieldSuspendAt:
+		return m.SuspendAt()
 	case subscribe.FieldStartAt:
 		return m.StartAt()
 	case subscribe.FieldEndAt:
@@ -2511,6 +2566,8 @@ func (m *SubscribeMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldRemaining(ctx)
 	case subscribe.FieldPausedAt:
 		return m.OldPausedAt(ctx)
+	case subscribe.FieldSuspendAt:
+		return m.OldSuspendAt(ctx)
 	case subscribe.FieldStartAt:
 		return m.OldStartAt(ctx)
 	case subscribe.FieldEndAt:
@@ -2713,6 +2770,13 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPausedAt(v)
+		return nil
+	case subscribe.FieldSuspendAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSuspendAt(v)
 		return nil
 	case subscribe.FieldStartAt:
 		v, ok := value.(time.Time)
@@ -2936,6 +3000,9 @@ func (m *SubscribeMutation) ClearedFields() []string {
 	if m.FieldCleared(subscribe.FieldPausedAt) {
 		fields = append(fields, subscribe.FieldPausedAt)
 	}
+	if m.FieldCleared(subscribe.FieldSuspendAt) {
+		fields = append(fields, subscribe.FieldSuspendAt)
+	}
 	if m.FieldCleared(subscribe.FieldStartAt) {
 		fields = append(fields, subscribe.FieldStartAt)
 	}
@@ -3003,6 +3070,9 @@ func (m *SubscribeMutation) ClearField(name string) error {
 		return nil
 	case subscribe.FieldPausedAt:
 		m.ClearPausedAt()
+		return nil
+	case subscribe.FieldSuspendAt:
+		m.ClearSuspendAt()
 		return nil
 	case subscribe.FieldStartAt:
 		m.ClearStartAt()
@@ -3104,6 +3174,9 @@ func (m *SubscribeMutation) ResetField(name string) error {
 		return nil
 	case subscribe.FieldPausedAt:
 		m.ResetPausedAt()
+		return nil
+	case subscribe.FieldSuspendAt:
+		m.ResetSuspendAt()
 		return nil
 	case subscribe.FieldStartAt:
 		m.ResetStartAt()

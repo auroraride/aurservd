@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -18,6 +19,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
+	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
 )
 
 // SubscribePauseQuery is the builder for querying SubscribePause entities.
@@ -39,6 +41,7 @@ type SubscribePauseQuery struct {
 	withEndCabinet  *CabinetQuery
 	withSubscribe   *SubscribeQuery
 	withEndEmployee *EmployeeQuery
+	withSuspends    *SubscribeSuspendQuery
 	modifiers       []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -274,6 +277,28 @@ func (spq *SubscribePauseQuery) QueryEndEmployee() *EmployeeQuery {
 	return query
 }
 
+// QuerySuspends chains the current query on the "suspends" edge.
+func (spq *SubscribePauseQuery) QuerySuspends() *SubscribeSuspendQuery {
+	query := &SubscribeSuspendQuery{config: spq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := spq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := spq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, selector),
+			sqlgraph.To(subscribesuspend.Table, subscribesuspend.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, subscribepause.SuspendsTable, subscribepause.SuspendsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(spq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first SubscribePause entity from the query.
 // Returns a *NotFoundError when no SubscribePause was found.
 func (spq *SubscribePauseQuery) First(ctx context.Context) (*SubscribePause, error) {
@@ -464,6 +489,7 @@ func (spq *SubscribePauseQuery) Clone() *SubscribePauseQuery {
 		withEndCabinet:  spq.withEndCabinet.Clone(),
 		withSubscribe:   spq.withSubscribe.Clone(),
 		withEndEmployee: spq.withEndEmployee.Clone(),
+		withSuspends:    spq.withSuspends.Clone(),
 		// clone intermediate query.
 		sql:    spq.sql.Clone(),
 		path:   spq.path,
@@ -570,6 +596,17 @@ func (spq *SubscribePauseQuery) WithEndEmployee(opts ...func(*EmployeeQuery)) *S
 	return spq
 }
 
+// WithSuspends tells the query-builder to eager-load the nodes that are connected to
+// the "suspends" edge. The optional arguments are used to configure the query builder of the edge.
+func (spq *SubscribePauseQuery) WithSuspends(opts ...func(*SubscribeSuspendQuery)) *SubscribePauseQuery {
+	query := &SubscribeSuspendQuery{config: spq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	spq.withSuspends = query
+	return spq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -640,7 +677,7 @@ func (spq *SubscribePauseQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 	var (
 		nodes       = []*SubscribePause{}
 		_spec       = spq.querySpec()
-		loadedTypes = [9]bool{
+		loadedTypes = [10]bool{
 			spq.withRider != nil,
 			spq.withEmployee != nil,
 			spq.withCity != nil,
@@ -650,6 +687,7 @@ func (spq *SubscribePauseQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 			spq.withEndCabinet != nil,
 			spq.withSubscribe != nil,
 			spq.withEndEmployee != nil,
+			spq.withSuspends != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -926,6 +964,31 @@ func (spq *SubscribePauseQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 			for i := range nodes {
 				nodes[i].Edges.EndEmployee = n
 			}
+		}
+	}
+
+	if query := spq.withSuspends; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*SubscribePause)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Suspends = []*SubscribeSuspend{}
+		}
+		query.Where(predicate.SubscribeSuspend(func(s *sql.Selector) {
+			s.Where(sql.InValues(subscribepause.SuspendsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.PauseID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "pause_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Suspends = append(node.Edges.Suspends, n)
 		}
 	}
 

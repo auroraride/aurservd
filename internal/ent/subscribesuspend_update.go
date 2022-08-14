@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
+	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
 )
 
@@ -82,6 +83,26 @@ func (ssu *SubscribeSuspendUpdate) SetSubscribeID(u uint64) *SubscribeSuspendUpd
 	return ssu
 }
 
+// SetPauseID sets the "pause_id" field.
+func (ssu *SubscribeSuspendUpdate) SetPauseID(u uint64) *SubscribeSuspendUpdate {
+	ssu.mutation.SetPauseID(u)
+	return ssu
+}
+
+// SetNillablePauseID sets the "pause_id" field if the given value is not nil.
+func (ssu *SubscribeSuspendUpdate) SetNillablePauseID(u *uint64) *SubscribeSuspendUpdate {
+	if u != nil {
+		ssu.SetPauseID(*u)
+	}
+	return ssu
+}
+
+// ClearPauseID clears the value of the "pause_id" field.
+func (ssu *SubscribeSuspendUpdate) ClearPauseID() *SubscribeSuspendUpdate {
+	ssu.mutation.ClearPauseID()
+	return ssu
+}
+
 // SetDays sets the "days" field.
 func (ssu *SubscribeSuspendUpdate) SetDays(i int) *SubscribeSuspendUpdate {
 	ssu.mutation.ResetDays()
@@ -129,6 +150,38 @@ func (ssu *SubscribeSuspendUpdate) ClearEndAt() *SubscribeSuspendUpdate {
 	return ssu
 }
 
+// SetEndReason sets the "end_reason" field.
+func (ssu *SubscribeSuspendUpdate) SetEndReason(s string) *SubscribeSuspendUpdate {
+	ssu.mutation.SetEndReason(s)
+	return ssu
+}
+
+// SetNillableEndReason sets the "end_reason" field if the given value is not nil.
+func (ssu *SubscribeSuspendUpdate) SetNillableEndReason(s *string) *SubscribeSuspendUpdate {
+	if s != nil {
+		ssu.SetEndReason(*s)
+	}
+	return ssu
+}
+
+// ClearEndReason clears the value of the "end_reason" field.
+func (ssu *SubscribeSuspendUpdate) ClearEndReason() *SubscribeSuspendUpdate {
+	ssu.mutation.ClearEndReason()
+	return ssu
+}
+
+// SetEndModifier sets the "end_modifier" field.
+func (ssu *SubscribeSuspendUpdate) SetEndModifier(m *model.Modifier) *SubscribeSuspendUpdate {
+	ssu.mutation.SetEndModifier(m)
+	return ssu
+}
+
+// ClearEndModifier clears the value of the "end_modifier" field.
+func (ssu *SubscribeSuspendUpdate) ClearEndModifier() *SubscribeSuspendUpdate {
+	ssu.mutation.ClearEndModifier()
+	return ssu
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (ssu *SubscribeSuspendUpdate) SetCity(c *City) *SubscribeSuspendUpdate {
 	return ssu.SetCityID(c.ID)
@@ -142,6 +195,11 @@ func (ssu *SubscribeSuspendUpdate) SetRider(r *Rider) *SubscribeSuspendUpdate {
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (ssu *SubscribeSuspendUpdate) SetSubscribe(s *Subscribe) *SubscribeSuspendUpdate {
 	return ssu.SetSubscribeID(s.ID)
+}
+
+// SetPause sets the "pause" edge to the SubscribePause entity.
+func (ssu *SubscribeSuspendUpdate) SetPause(s *SubscribePause) *SubscribeSuspendUpdate {
+	return ssu.SetPauseID(s.ID)
 }
 
 // Mutation returns the SubscribeSuspendMutation object of the builder.
@@ -164,6 +222,12 @@ func (ssu *SubscribeSuspendUpdate) ClearRider() *SubscribeSuspendUpdate {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (ssu *SubscribeSuspendUpdate) ClearSubscribe() *SubscribeSuspendUpdate {
 	ssu.mutation.ClearSubscribe()
+	return ssu
+}
+
+// ClearPause clears the "pause" edge to the SubscribePause entity.
+func (ssu *SubscribeSuspendUpdate) ClearPause() *SubscribeSuspendUpdate {
+	ssu.mutation.ClearPause()
 	return ssu
 }
 
@@ -325,6 +389,32 @@ func (ssu *SubscribeSuspendUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Column: subscribesuspend.FieldEndAt,
 		})
 	}
+	if value, ok := ssu.mutation.EndReason(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: subscribesuspend.FieldEndReason,
+		})
+	}
+	if ssu.mutation.EndReasonCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: subscribesuspend.FieldEndReason,
+		})
+	}
+	if value, ok := ssu.mutation.EndModifier(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: subscribesuspend.FieldEndModifier,
+		})
+	}
+	if ssu.mutation.EndModifierCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: subscribesuspend.FieldEndModifier,
+		})
+	}
 	if ssu.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -430,6 +520,41 @@ func (ssu *SubscribeSuspendUpdate) sqlSave(ctx context.Context) (n int, err erro
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ssu.mutation.PauseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   subscribesuspend.PauseTable,
+			Columns: []string{subscribesuspend.PauseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribepause.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ssu.mutation.PauseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   subscribesuspend.PauseTable,
+			Columns: []string{subscribesuspend.PauseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribepause.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ssu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{subscribesuspend.Label}
@@ -499,6 +624,26 @@ func (ssuo *SubscribeSuspendUpdateOne) SetSubscribeID(u uint64) *SubscribeSuspen
 	return ssuo
 }
 
+// SetPauseID sets the "pause_id" field.
+func (ssuo *SubscribeSuspendUpdateOne) SetPauseID(u uint64) *SubscribeSuspendUpdateOne {
+	ssuo.mutation.SetPauseID(u)
+	return ssuo
+}
+
+// SetNillablePauseID sets the "pause_id" field if the given value is not nil.
+func (ssuo *SubscribeSuspendUpdateOne) SetNillablePauseID(u *uint64) *SubscribeSuspendUpdateOne {
+	if u != nil {
+		ssuo.SetPauseID(*u)
+	}
+	return ssuo
+}
+
+// ClearPauseID clears the value of the "pause_id" field.
+func (ssuo *SubscribeSuspendUpdateOne) ClearPauseID() *SubscribeSuspendUpdateOne {
+	ssuo.mutation.ClearPauseID()
+	return ssuo
+}
+
 // SetDays sets the "days" field.
 func (ssuo *SubscribeSuspendUpdateOne) SetDays(i int) *SubscribeSuspendUpdateOne {
 	ssuo.mutation.ResetDays()
@@ -546,6 +691,38 @@ func (ssuo *SubscribeSuspendUpdateOne) ClearEndAt() *SubscribeSuspendUpdateOne {
 	return ssuo
 }
 
+// SetEndReason sets the "end_reason" field.
+func (ssuo *SubscribeSuspendUpdateOne) SetEndReason(s string) *SubscribeSuspendUpdateOne {
+	ssuo.mutation.SetEndReason(s)
+	return ssuo
+}
+
+// SetNillableEndReason sets the "end_reason" field if the given value is not nil.
+func (ssuo *SubscribeSuspendUpdateOne) SetNillableEndReason(s *string) *SubscribeSuspendUpdateOne {
+	if s != nil {
+		ssuo.SetEndReason(*s)
+	}
+	return ssuo
+}
+
+// ClearEndReason clears the value of the "end_reason" field.
+func (ssuo *SubscribeSuspendUpdateOne) ClearEndReason() *SubscribeSuspendUpdateOne {
+	ssuo.mutation.ClearEndReason()
+	return ssuo
+}
+
+// SetEndModifier sets the "end_modifier" field.
+func (ssuo *SubscribeSuspendUpdateOne) SetEndModifier(m *model.Modifier) *SubscribeSuspendUpdateOne {
+	ssuo.mutation.SetEndModifier(m)
+	return ssuo
+}
+
+// ClearEndModifier clears the value of the "end_modifier" field.
+func (ssuo *SubscribeSuspendUpdateOne) ClearEndModifier() *SubscribeSuspendUpdateOne {
+	ssuo.mutation.ClearEndModifier()
+	return ssuo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (ssuo *SubscribeSuspendUpdateOne) SetCity(c *City) *SubscribeSuspendUpdateOne {
 	return ssuo.SetCityID(c.ID)
@@ -559,6 +736,11 @@ func (ssuo *SubscribeSuspendUpdateOne) SetRider(r *Rider) *SubscribeSuspendUpdat
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (ssuo *SubscribeSuspendUpdateOne) SetSubscribe(s *Subscribe) *SubscribeSuspendUpdateOne {
 	return ssuo.SetSubscribeID(s.ID)
+}
+
+// SetPause sets the "pause" edge to the SubscribePause entity.
+func (ssuo *SubscribeSuspendUpdateOne) SetPause(s *SubscribePause) *SubscribeSuspendUpdateOne {
+	return ssuo.SetPauseID(s.ID)
 }
 
 // Mutation returns the SubscribeSuspendMutation object of the builder.
@@ -581,6 +763,12 @@ func (ssuo *SubscribeSuspendUpdateOne) ClearRider() *SubscribeSuspendUpdateOne {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (ssuo *SubscribeSuspendUpdateOne) ClearSubscribe() *SubscribeSuspendUpdateOne {
 	ssuo.mutation.ClearSubscribe()
+	return ssuo
+}
+
+// ClearPause clears the "pause" edge to the SubscribePause entity.
+func (ssuo *SubscribeSuspendUpdateOne) ClearPause() *SubscribeSuspendUpdateOne {
+	ssuo.mutation.ClearPause()
 	return ssuo
 }
 
@@ -772,6 +960,32 @@ func (ssuo *SubscribeSuspendUpdateOne) sqlSave(ctx context.Context) (_node *Subs
 			Column: subscribesuspend.FieldEndAt,
 		})
 	}
+	if value, ok := ssuo.mutation.EndReason(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: subscribesuspend.FieldEndReason,
+		})
+	}
+	if ssuo.mutation.EndReasonCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: subscribesuspend.FieldEndReason,
+		})
+	}
+	if value, ok := ssuo.mutation.EndModifier(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: subscribesuspend.FieldEndModifier,
+		})
+	}
+	if ssuo.mutation.EndModifierCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: subscribesuspend.FieldEndModifier,
+		})
+	}
 	if ssuo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -869,6 +1083,41 @@ func (ssuo *SubscribeSuspendUpdateOne) sqlSave(ctx context.Context) (_node *Subs
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ssuo.mutation.PauseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   subscribesuspend.PauseTable,
+			Columns: []string{subscribesuspend.PauseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribepause.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ssuo.mutation.PauseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   subscribesuspend.PauseTable,
+			Columns: []string{subscribesuspend.PauseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribepause.FieldID,
 				},
 			},
 		}

@@ -1055,6 +1055,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldOverdueDays:       {Type: field.TypeInt, Column: subscribe.FieldOverdueDays},
 			subscribe.FieldRemaining:         {Type: field.TypeInt, Column: subscribe.FieldRemaining},
 			subscribe.FieldPausedAt:          {Type: field.TypeTime, Column: subscribe.FieldPausedAt},
+			subscribe.FieldSuspendAt:         {Type: field.TypeTime, Column: subscribe.FieldSuspendAt},
 			subscribe.FieldStartAt:           {Type: field.TypeTime, Column: subscribe.FieldStartAt},
 			subscribe.FieldEndAt:             {Type: field.TypeTime, Column: subscribe.FieldEndAt},
 			subscribe.FieldRefundAt:          {Type: field.TypeTime, Column: subscribe.FieldRefundAt},
@@ -1118,6 +1119,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribepause.FieldOverdueDays:   {Type: field.TypeInt, Column: subscribepause.FieldOverdueDays},
 			subscribepause.FieldEndModifier:   {Type: field.TypeJSON, Column: subscribepause.FieldEndModifier},
 			subscribepause.FieldPauseOverdue:  {Type: field.TypeBool, Column: subscribepause.FieldPauseOverdue},
+			subscribepause.FieldSuspendDays:   {Type: field.TypeInt, Column: subscribepause.FieldSuspendDays},
 		},
 	}
 	graph.Nodes[38] = &sqlgraph.Node{
@@ -1137,9 +1139,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribesuspend.FieldCityID:       {Type: field.TypeUint64, Column: subscribesuspend.FieldCityID},
 			subscribesuspend.FieldRiderID:      {Type: field.TypeUint64, Column: subscribesuspend.FieldRiderID},
 			subscribesuspend.FieldSubscribeID:  {Type: field.TypeUint64, Column: subscribesuspend.FieldSubscribeID},
+			subscribesuspend.FieldPauseID:      {Type: field.TypeUint64, Column: subscribesuspend.FieldPauseID},
 			subscribesuspend.FieldDays:         {Type: field.TypeInt, Column: subscribesuspend.FieldDays},
 			subscribesuspend.FieldStartAt:      {Type: field.TypeTime, Column: subscribesuspend.FieldStartAt},
 			subscribesuspend.FieldEndAt:        {Type: field.TypeTime, Column: subscribesuspend.FieldEndAt},
+			subscribesuspend.FieldEndReason:    {Type: field.TypeString, Column: subscribesuspend.FieldEndReason},
+			subscribesuspend.FieldEndModifier:  {Type: field.TypeJSON, Column: subscribesuspend.FieldEndModifier},
 		},
 	}
 	graph.MustAddE(
@@ -2979,6 +2984,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Employee",
 	)
 	graph.MustAddE(
+		"suspends",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribepause.SuspendsTable,
+			Columns: []string{subscribepause.SuspendsColumn},
+			Bidi:    false,
+		},
+		"SubscribePause",
+		"SubscribeSuspend",
+	)
+	graph.MustAddE(
 		"city",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -3013,6 +3030,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"SubscribeSuspend",
 		"Subscribe",
+	)
+	graph.MustAddE(
+		"pause",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   subscribesuspend.PauseTable,
+			Columns: []string{subscribesuspend.PauseColumn},
+			Bidi:    false,
+		},
+		"SubscribeSuspend",
+		"SubscribePause",
 	)
 	return graph
 }()
@@ -8921,6 +8950,11 @@ func (f *SubscribeFilter) WherePausedAt(p entql.TimeP) {
 	f.Where(p.Field(subscribe.FieldPausedAt))
 }
 
+// WhereSuspendAt applies the entql time.Time predicate on the suspend_at field.
+func (f *SubscribeFilter) WhereSuspendAt(p entql.TimeP) {
+	f.Where(p.Field(subscribe.FieldSuspendAt))
+}
+
 // WhereStartAt applies the entql time.Time predicate on the start_at field.
 func (f *SubscribeFilter) WhereStartAt(p entql.TimeP) {
 	f.Where(p.Field(subscribe.FieldStartAt))
@@ -9424,6 +9458,11 @@ func (f *SubscribePauseFilter) WherePauseOverdue(p entql.BoolP) {
 	f.Where(p.Field(subscribepause.FieldPauseOverdue))
 }
 
+// WhereSuspendDays applies the entql int predicate on the suspend_days field.
+func (f *SubscribePauseFilter) WhereSuspendDays(p entql.IntP) {
+	f.Where(p.Field(subscribepause.FieldSuspendDays))
+}
+
 // WhereHasRider applies a predicate to check if query has an edge rider.
 func (f *SubscribePauseFilter) WhereHasRider() {
 	f.Where(entql.HasEdge("rider"))
@@ -9550,6 +9589,20 @@ func (f *SubscribePauseFilter) WhereHasEndEmployeeWith(preds ...predicate.Employ
 	})))
 }
 
+// WhereHasSuspends applies a predicate to check if query has an edge suspends.
+func (f *SubscribePauseFilter) WhereHasSuspends() {
+	f.Where(entql.HasEdge("suspends"))
+}
+
+// WhereHasSuspendsWith applies a predicate to check if query has an edge suspends with a given conditions (other predicates).
+func (f *SubscribePauseFilter) WhereHasSuspendsWith(preds ...predicate.SubscribeSuspend) {
+	f.Where(entql.HasEdgeWith("suspends", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
 // addPredicate implements the predicateAdder interface.
 func (ssq *SubscribeSuspendQuery) addPredicate(pred func(s *sql.Selector)) {
 	ssq.predicates = append(ssq.predicates, pred)
@@ -9620,6 +9673,11 @@ func (f *SubscribeSuspendFilter) WhereSubscribeID(p entql.Uint64P) {
 	f.Where(p.Field(subscribesuspend.FieldSubscribeID))
 }
 
+// WherePauseID applies the entql uint64 predicate on the pause_id field.
+func (f *SubscribeSuspendFilter) WherePauseID(p entql.Uint64P) {
+	f.Where(p.Field(subscribesuspend.FieldPauseID))
+}
+
 // WhereDays applies the entql int predicate on the days field.
 func (f *SubscribeSuspendFilter) WhereDays(p entql.IntP) {
 	f.Where(p.Field(subscribesuspend.FieldDays))
@@ -9633,6 +9691,16 @@ func (f *SubscribeSuspendFilter) WhereStartAt(p entql.TimeP) {
 // WhereEndAt applies the entql time.Time predicate on the end_at field.
 func (f *SubscribeSuspendFilter) WhereEndAt(p entql.TimeP) {
 	f.Where(p.Field(subscribesuspend.FieldEndAt))
+}
+
+// WhereEndReason applies the entql string predicate on the end_reason field.
+func (f *SubscribeSuspendFilter) WhereEndReason(p entql.StringP) {
+	f.Where(p.Field(subscribesuspend.FieldEndReason))
+}
+
+// WhereEndModifier applies the entql json.RawMessage predicate on the end_modifier field.
+func (f *SubscribeSuspendFilter) WhereEndModifier(p entql.BytesP) {
+	f.Where(p.Field(subscribesuspend.FieldEndModifier))
 }
 
 // WhereHasCity applies a predicate to check if query has an edge city.
@@ -9671,6 +9739,20 @@ func (f *SubscribeSuspendFilter) WhereHasSubscribe() {
 // WhereHasSubscribeWith applies a predicate to check if query has an edge subscribe with a given conditions (other predicates).
 func (f *SubscribeSuspendFilter) WhereHasSubscribeWith(preds ...predicate.Subscribe) {
 	f.Where(entql.HasEdgeWith("subscribe", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasPause applies a predicate to check if query has an edge pause.
+func (f *SubscribeSuspendFilter) WhereHasPause() {
+	f.Where(entql.HasEdge("pause"))
+}
+
+// WhereHasPauseWith applies a predicate to check if query has an edge pause with a given conditions (other predicates).
+func (f *SubscribeSuspendFilter) WhereHasPauseWith(preds ...predicate.SubscribePause) {
+	f.Where(entql.HasEdgeWith("pause", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

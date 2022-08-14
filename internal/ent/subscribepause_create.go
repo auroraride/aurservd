@@ -19,6 +19,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
+	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
 )
 
 // SubscribePauseCreate is the builder for creating a SubscribePause entity.
@@ -275,6 +276,20 @@ func (spc *SubscribePauseCreate) SetNillablePauseOverdue(b *bool) *SubscribePaus
 	return spc
 }
 
+// SetSuspendDays sets the "suspend_days" field.
+func (spc *SubscribePauseCreate) SetSuspendDays(i int) *SubscribePauseCreate {
+	spc.mutation.SetSuspendDays(i)
+	return spc
+}
+
+// SetNillableSuspendDays sets the "suspend_days" field if the given value is not nil.
+func (spc *SubscribePauseCreate) SetNillableSuspendDays(i *int) *SubscribePauseCreate {
+	if i != nil {
+		spc.SetSuspendDays(*i)
+	}
+	return spc
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (spc *SubscribePauseCreate) SetRider(r *Rider) *SubscribePauseCreate {
 	return spc.SetRiderID(r.ID)
@@ -318,6 +333,21 @@ func (spc *SubscribePauseCreate) SetSubscribe(s *Subscribe) *SubscribePauseCreat
 // SetEndEmployee sets the "end_employee" edge to the Employee entity.
 func (spc *SubscribePauseCreate) SetEndEmployee(e *Employee) *SubscribePauseCreate {
 	return spc.SetEndEmployeeID(e.ID)
+}
+
+// AddSuspendIDs adds the "suspends" edge to the SubscribeSuspend entity by IDs.
+func (spc *SubscribePauseCreate) AddSuspendIDs(ids ...uint64) *SubscribePauseCreate {
+	spc.mutation.AddSuspendIDs(ids...)
+	return spc
+}
+
+// AddSuspends adds the "suspends" edges to the SubscribeSuspend entity.
+func (spc *SubscribePauseCreate) AddSuspends(s ...*SubscribeSuspend) *SubscribePauseCreate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return spc.AddSuspendIDs(ids...)
 }
 
 // Mutation returns the SubscribePauseMutation object of the builder.
@@ -421,6 +451,10 @@ func (spc *SubscribePauseCreate) defaults() error {
 		v := subscribepause.DefaultPauseOverdue
 		spc.mutation.SetPauseOverdue(v)
 	}
+	if _, ok := spc.mutation.SuspendDays(); !ok {
+		v := subscribepause.DefaultSuspendDays
+		spc.mutation.SetSuspendDays(v)
+	}
 	return nil
 }
 
@@ -446,6 +480,9 @@ func (spc *SubscribePauseCreate) check() error {
 	}
 	if _, ok := spc.mutation.PauseOverdue(); !ok {
 		return &ValidationError{Name: "pause_overdue", err: errors.New(`ent: missing required field "SubscribePause.pause_overdue"`)}
+	}
+	if _, ok := spc.mutation.SuspendDays(); !ok {
+		return &ValidationError{Name: "suspend_days", err: errors.New(`ent: missing required field "SubscribePause.suspend_days"`)}
 	}
 	if _, ok := spc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "SubscribePause.rider"`)}
@@ -576,6 +613,14 @@ func (spc *SubscribePauseCreate) createSpec() (*SubscribePause, *sqlgraph.Create
 			Column: subscribepause.FieldPauseOverdue,
 		})
 		_node.PauseOverdue = value
+	}
+	if value, ok := spc.mutation.SuspendDays(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribepause.FieldSuspendDays,
+		})
+		_node.SuspendDays = value
 	}
 	if nodes := spc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -755,6 +800,25 @@ func (spc *SubscribePauseCreate) createSpec() (*SubscribePause, *sqlgraph.Create
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.EndEmployeeID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := spc.mutation.SuspendsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribepause.SuspendsTable,
+			Columns: []string{subscribepause.SuspendsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribesuspend.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -1156,6 +1220,24 @@ func (u *SubscribePauseUpsert) SetPauseOverdue(v bool) *SubscribePauseUpsert {
 // UpdatePauseOverdue sets the "pause_overdue" field to the value that was provided on create.
 func (u *SubscribePauseUpsert) UpdatePauseOverdue() *SubscribePauseUpsert {
 	u.SetExcluded(subscribepause.FieldPauseOverdue)
+	return u
+}
+
+// SetSuspendDays sets the "suspend_days" field.
+func (u *SubscribePauseUpsert) SetSuspendDays(v int) *SubscribePauseUpsert {
+	u.Set(subscribepause.FieldSuspendDays, v)
+	return u
+}
+
+// UpdateSuspendDays sets the "suspend_days" field to the value that was provided on create.
+func (u *SubscribePauseUpsert) UpdateSuspendDays() *SubscribePauseUpsert {
+	u.SetExcluded(subscribepause.FieldSuspendDays)
+	return u
+}
+
+// AddSuspendDays adds v to the "suspend_days" field.
+func (u *SubscribePauseUpsert) AddSuspendDays(v int) *SubscribePauseUpsert {
+	u.Add(subscribepause.FieldSuspendDays, v)
 	return u
 }
 
@@ -1612,6 +1694,27 @@ func (u *SubscribePauseUpsertOne) SetPauseOverdue(v bool) *SubscribePauseUpsertO
 func (u *SubscribePauseUpsertOne) UpdatePauseOverdue() *SubscribePauseUpsertOne {
 	return u.Update(func(s *SubscribePauseUpsert) {
 		s.UpdatePauseOverdue()
+	})
+}
+
+// SetSuspendDays sets the "suspend_days" field.
+func (u *SubscribePauseUpsertOne) SetSuspendDays(v int) *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.SetSuspendDays(v)
+	})
+}
+
+// AddSuspendDays adds v to the "suspend_days" field.
+func (u *SubscribePauseUpsertOne) AddSuspendDays(v int) *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.AddSuspendDays(v)
+	})
+}
+
+// UpdateSuspendDays sets the "suspend_days" field to the value that was provided on create.
+func (u *SubscribePauseUpsertOne) UpdateSuspendDays() *SubscribePauseUpsertOne {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.UpdateSuspendDays()
 	})
 }
 
@@ -2232,6 +2335,27 @@ func (u *SubscribePauseUpsertBulk) SetPauseOverdue(v bool) *SubscribePauseUpsert
 func (u *SubscribePauseUpsertBulk) UpdatePauseOverdue() *SubscribePauseUpsertBulk {
 	return u.Update(func(s *SubscribePauseUpsert) {
 		s.UpdatePauseOverdue()
+	})
+}
+
+// SetSuspendDays sets the "suspend_days" field.
+func (u *SubscribePauseUpsertBulk) SetSuspendDays(v int) *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.SetSuspendDays(v)
+	})
+}
+
+// AddSuspendDays adds v to the "suspend_days" field.
+func (u *SubscribePauseUpsertBulk) AddSuspendDays(v int) *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.AddSuspendDays(v)
+	})
+}
+
+// UpdateSuspendDays sets the "suspend_days" field to the value that was provided on create.
+func (u *SubscribePauseUpsertBulk) UpdateSuspendDays() *SubscribePauseUpsertBulk {
+	return u.Update(func(s *SubscribePauseUpsert) {
+		s.UpdateSuspendDays()
 	})
 }
 

@@ -219,6 +219,13 @@ func PauseOverdue(v bool) predicate.SubscribePause {
 	})
 }
 
+// SuspendDays applies equality check predicate on the "suspend_days" field. It's identical to SuspendDaysEQ.
+func SuspendDays(v int) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSuspendDays), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
@@ -1504,6 +1511,82 @@ func PauseOverdueNEQ(v bool) predicate.SubscribePause {
 	})
 }
 
+// SuspendDaysEQ applies the EQ predicate on the "suspend_days" field.
+func SuspendDaysEQ(v int) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSuspendDays), v))
+	})
+}
+
+// SuspendDaysNEQ applies the NEQ predicate on the "suspend_days" field.
+func SuspendDaysNEQ(v int) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldSuspendDays), v))
+	})
+}
+
+// SuspendDaysIn applies the In predicate on the "suspend_days" field.
+func SuspendDaysIn(vs ...int) predicate.SubscribePause {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldSuspendDays), v...))
+	})
+}
+
+// SuspendDaysNotIn applies the NotIn predicate on the "suspend_days" field.
+func SuspendDaysNotIn(vs ...int) predicate.SubscribePause {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldSuspendDays), v...))
+	})
+}
+
+// SuspendDaysGT applies the GT predicate on the "suspend_days" field.
+func SuspendDaysGT(v int) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldSuspendDays), v))
+	})
+}
+
+// SuspendDaysGTE applies the GTE predicate on the "suspend_days" field.
+func SuspendDaysGTE(v int) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldSuspendDays), v))
+	})
+}
+
+// SuspendDaysLT applies the LT predicate on the "suspend_days" field.
+func SuspendDaysLT(v int) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldSuspendDays), v))
+	})
+}
+
+// SuspendDaysLTE applies the LTE predicate on the "suspend_days" field.
+func SuspendDaysLTE(v int) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldSuspendDays), v))
+	})
+}
+
 // HasRider applies the HasEdge predicate on the "rider" edge.
 func HasRider() predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
@@ -1747,6 +1830,34 @@ func HasEndEmployeeWith(preds ...predicate.Employee) predicate.SubscribePause {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(EndEmployeeInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, EndEmployeeTable, EndEmployeeColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasSuspends applies the HasEdge predicate on the "suspends" edge.
+func HasSuspends() predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(SuspendsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SuspendsTable, SuspendsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSuspendsWith applies the HasEdge predicate on the "suspends" edge with a given conditions (other predicates).
+func HasSuspendsWith(preds ...predicate.SubscribeSuspend) predicate.SubscribePause {
+	return predicate.SubscribePause(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(SuspendsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SuspendsTable, SuspendsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

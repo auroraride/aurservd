@@ -65,6 +65,8 @@ const (
 	FieldRemaining = "remaining"
 	// FieldPausedAt holds the string denoting the paused_at field in the database.
 	FieldPausedAt = "paused_at"
+	// FieldSuspendAt holds the string denoting the suspend_at field in the database.
+	FieldSuspendAt = "suspend_at"
 	// FieldStartAt holds the string denoting the start_at field in the database.
 	FieldStartAt = "start_at"
 	// FieldEndAt holds the string denoting the end_at field in the database.
@@ -236,6 +238,7 @@ var Columns = []string{
 	FieldOverdueDays,
 	FieldRemaining,
 	FieldPausedAt,
+	FieldSuspendAt,
 	FieldStartAt,
 	FieldEndAt,
 	FieldRefundAt,

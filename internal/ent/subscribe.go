@@ -100,8 +100,11 @@ type Subscribe struct {
 	// 剩余天数, 负数为逾期
 	Remaining int `json:"remaining,omitempty"`
 	// PausedAt holds the value of the "paused_at" field.
-	// 当前是否暂停计费, 暂停计费时间
+	// 当前寄存时间
 	PausedAt *time.Time `json:"paused_at,omitempty"`
+	// SuspendAt holds the value of the "suspend_at" field.
+	// 当前暂停时间
+	SuspendAt *time.Time `json:"suspend_at,omitempty"`
 	// StartAt holds the value of the "start_at" field.
 	// 激活时间
 	StartAt *time.Time `json:"start_at,omitempty"`
@@ -344,7 +347,7 @@ func (*Subscribe) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case subscribe.FieldRemark, subscribe.FieldModel, subscribe.FieldUnsubscribeReason:
 			values[i] = new(sql.NullString)
-		case subscribe.FieldCreatedAt, subscribe.FieldUpdatedAt, subscribe.FieldDeletedAt, subscribe.FieldPausedAt, subscribe.FieldStartAt, subscribe.FieldEndAt, subscribe.FieldRefundAt, subscribe.FieldLastBillDate:
+		case subscribe.FieldCreatedAt, subscribe.FieldUpdatedAt, subscribe.FieldDeletedAt, subscribe.FieldPausedAt, subscribe.FieldSuspendAt, subscribe.FieldStartAt, subscribe.FieldEndAt, subscribe.FieldRefundAt, subscribe.FieldLastBillDate:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Subscribe", columns[i])
@@ -534,6 +537,13 @@ func (s *Subscribe) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				s.PausedAt = new(time.Time)
 				*s.PausedAt = value.Time
+			}
+		case subscribe.FieldSuspendAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field suspend_at", values[i])
+			} else if value.Valid {
+				s.SuspendAt = new(time.Time)
+				*s.SuspendAt = value.Time
 			}
 		case subscribe.FieldStartAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -739,6 +749,10 @@ func (s *Subscribe) String() string {
 	builder.WriteString(fmt.Sprintf("%v", s.Remaining))
 	if v := s.PausedAt; v != nil {
 		builder.WriteString(", paused_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	if v := s.SuspendAt; v != nil {
+		builder.WriteString(", suspend_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	if v := s.StartAt; v != nil {

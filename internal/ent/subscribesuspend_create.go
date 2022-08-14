@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
+	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
 )
 
@@ -70,6 +71,20 @@ func (ssc *SubscribeSuspendCreate) SetSubscribeID(u uint64) *SubscribeSuspendCre
 	return ssc
 }
 
+// SetPauseID sets the "pause_id" field.
+func (ssc *SubscribeSuspendCreate) SetPauseID(u uint64) *SubscribeSuspendCreate {
+	ssc.mutation.SetPauseID(u)
+	return ssc
+}
+
+// SetNillablePauseID sets the "pause_id" field if the given value is not nil.
+func (ssc *SubscribeSuspendCreate) SetNillablePauseID(u *uint64) *SubscribeSuspendCreate {
+	if u != nil {
+		ssc.SetPauseID(*u)
+	}
+	return ssc
+}
+
 // SetDays sets the "days" field.
 func (ssc *SubscribeSuspendCreate) SetDays(i int) *SubscribeSuspendCreate {
 	ssc.mutation.SetDays(i)
@@ -104,6 +119,26 @@ func (ssc *SubscribeSuspendCreate) SetNillableEndAt(t *time.Time) *SubscribeSusp
 	return ssc
 }
 
+// SetEndReason sets the "end_reason" field.
+func (ssc *SubscribeSuspendCreate) SetEndReason(s string) *SubscribeSuspendCreate {
+	ssc.mutation.SetEndReason(s)
+	return ssc
+}
+
+// SetNillableEndReason sets the "end_reason" field if the given value is not nil.
+func (ssc *SubscribeSuspendCreate) SetNillableEndReason(s *string) *SubscribeSuspendCreate {
+	if s != nil {
+		ssc.SetEndReason(*s)
+	}
+	return ssc
+}
+
+// SetEndModifier sets the "end_modifier" field.
+func (ssc *SubscribeSuspendCreate) SetEndModifier(m *model.Modifier) *SubscribeSuspendCreate {
+	ssc.mutation.SetEndModifier(m)
+	return ssc
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (ssc *SubscribeSuspendCreate) SetCity(c *City) *SubscribeSuspendCreate {
 	return ssc.SetCityID(c.ID)
@@ -117,6 +152,11 @@ func (ssc *SubscribeSuspendCreate) SetRider(r *Rider) *SubscribeSuspendCreate {
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (ssc *SubscribeSuspendCreate) SetSubscribe(s *Subscribe) *SubscribeSuspendCreate {
 	return ssc.SetSubscribeID(s.ID)
+}
+
+// SetPause sets the "pause" edge to the SubscribePause entity.
+func (ssc *SubscribeSuspendCreate) SetPause(s *SubscribePause) *SubscribeSuspendCreate {
+	return ssc.SetPauseID(s.ID)
 }
 
 // Mutation returns the SubscribeSuspendMutation object of the builder.
@@ -307,6 +347,22 @@ func (ssc *SubscribeSuspendCreate) createSpec() (*SubscribeSuspend, *sqlgraph.Cr
 		})
 		_node.EndAt = value
 	}
+	if value, ok := ssc.mutation.EndReason(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: subscribesuspend.FieldEndReason,
+		})
+		_node.EndReason = value
+	}
+	if value, ok := ssc.mutation.EndModifier(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: subscribesuspend.FieldEndModifier,
+		})
+		_node.EndModifier = value
+	}
 	if nodes := ssc.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -365,6 +421,26 @@ func (ssc *SubscribeSuspendCreate) createSpec() (*SubscribeSuspend, *sqlgraph.Cr
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.SubscribeID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ssc.mutation.PauseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   subscribesuspend.PauseTable,
+			Columns: []string{subscribesuspend.PauseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribepause.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.PauseID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -511,6 +587,24 @@ func (u *SubscribeSuspendUpsert) UpdateSubscribeID() *SubscribeSuspendUpsert {
 	return u
 }
 
+// SetPauseID sets the "pause_id" field.
+func (u *SubscribeSuspendUpsert) SetPauseID(v uint64) *SubscribeSuspendUpsert {
+	u.Set(subscribesuspend.FieldPauseID, v)
+	return u
+}
+
+// UpdatePauseID sets the "pause_id" field to the value that was provided on create.
+func (u *SubscribeSuspendUpsert) UpdatePauseID() *SubscribeSuspendUpsert {
+	u.SetExcluded(subscribesuspend.FieldPauseID)
+	return u
+}
+
+// ClearPauseID clears the value of the "pause_id" field.
+func (u *SubscribeSuspendUpsert) ClearPauseID() *SubscribeSuspendUpsert {
+	u.SetNull(subscribesuspend.FieldPauseID)
+	return u
+}
+
 // SetDays sets the "days" field.
 func (u *SubscribeSuspendUpsert) SetDays(v int) *SubscribeSuspendUpsert {
 	u.Set(subscribesuspend.FieldDays, v)
@@ -556,6 +650,42 @@ func (u *SubscribeSuspendUpsert) UpdateEndAt() *SubscribeSuspendUpsert {
 // ClearEndAt clears the value of the "end_at" field.
 func (u *SubscribeSuspendUpsert) ClearEndAt() *SubscribeSuspendUpsert {
 	u.SetNull(subscribesuspend.FieldEndAt)
+	return u
+}
+
+// SetEndReason sets the "end_reason" field.
+func (u *SubscribeSuspendUpsert) SetEndReason(v string) *SubscribeSuspendUpsert {
+	u.Set(subscribesuspend.FieldEndReason, v)
+	return u
+}
+
+// UpdateEndReason sets the "end_reason" field to the value that was provided on create.
+func (u *SubscribeSuspendUpsert) UpdateEndReason() *SubscribeSuspendUpsert {
+	u.SetExcluded(subscribesuspend.FieldEndReason)
+	return u
+}
+
+// ClearEndReason clears the value of the "end_reason" field.
+func (u *SubscribeSuspendUpsert) ClearEndReason() *SubscribeSuspendUpsert {
+	u.SetNull(subscribesuspend.FieldEndReason)
+	return u
+}
+
+// SetEndModifier sets the "end_modifier" field.
+func (u *SubscribeSuspendUpsert) SetEndModifier(v *model.Modifier) *SubscribeSuspendUpsert {
+	u.Set(subscribesuspend.FieldEndModifier, v)
+	return u
+}
+
+// UpdateEndModifier sets the "end_modifier" field to the value that was provided on create.
+func (u *SubscribeSuspendUpsert) UpdateEndModifier() *SubscribeSuspendUpsert {
+	u.SetExcluded(subscribesuspend.FieldEndModifier)
+	return u
+}
+
+// ClearEndModifier clears the value of the "end_modifier" field.
+func (u *SubscribeSuspendUpsert) ClearEndModifier() *SubscribeSuspendUpsert {
+	u.SetNull(subscribesuspend.FieldEndModifier)
 	return u
 }
 
@@ -711,6 +841,27 @@ func (u *SubscribeSuspendUpsertOne) UpdateSubscribeID() *SubscribeSuspendUpsertO
 	})
 }
 
+// SetPauseID sets the "pause_id" field.
+func (u *SubscribeSuspendUpsertOne) SetPauseID(v uint64) *SubscribeSuspendUpsertOne {
+	return u.Update(func(s *SubscribeSuspendUpsert) {
+		s.SetPauseID(v)
+	})
+}
+
+// UpdatePauseID sets the "pause_id" field to the value that was provided on create.
+func (u *SubscribeSuspendUpsertOne) UpdatePauseID() *SubscribeSuspendUpsertOne {
+	return u.Update(func(s *SubscribeSuspendUpsert) {
+		s.UpdatePauseID()
+	})
+}
+
+// ClearPauseID clears the value of the "pause_id" field.
+func (u *SubscribeSuspendUpsertOne) ClearPauseID() *SubscribeSuspendUpsertOne {
+	return u.Update(func(s *SubscribeSuspendUpsert) {
+		s.ClearPauseID()
+	})
+}
+
 // SetDays sets the "days" field.
 func (u *SubscribeSuspendUpsertOne) SetDays(v int) *SubscribeSuspendUpsertOne {
 	return u.Update(func(s *SubscribeSuspendUpsert) {
@@ -764,6 +915,48 @@ func (u *SubscribeSuspendUpsertOne) UpdateEndAt() *SubscribeSuspendUpsertOne {
 func (u *SubscribeSuspendUpsertOne) ClearEndAt() *SubscribeSuspendUpsertOne {
 	return u.Update(func(s *SubscribeSuspendUpsert) {
 		s.ClearEndAt()
+	})
+}
+
+// SetEndReason sets the "end_reason" field.
+func (u *SubscribeSuspendUpsertOne) SetEndReason(v string) *SubscribeSuspendUpsertOne {
+	return u.Update(func(s *SubscribeSuspendUpsert) {
+		s.SetEndReason(v)
+	})
+}
+
+// UpdateEndReason sets the "end_reason" field to the value that was provided on create.
+func (u *SubscribeSuspendUpsertOne) UpdateEndReason() *SubscribeSuspendUpsertOne {
+	return u.Update(func(s *SubscribeSuspendUpsert) {
+		s.UpdateEndReason()
+	})
+}
+
+// ClearEndReason clears the value of the "end_reason" field.
+func (u *SubscribeSuspendUpsertOne) ClearEndReason() *SubscribeSuspendUpsertOne {
+	return u.Update(func(s *SubscribeSuspendUpsert) {
+		s.ClearEndReason()
+	})
+}
+
+// SetEndModifier sets the "end_modifier" field.
+func (u *SubscribeSuspendUpsertOne) SetEndModifier(v *model.Modifier) *SubscribeSuspendUpsertOne {
+	return u.Update(func(s *SubscribeSuspendUpsert) {
+		s.SetEndModifier(v)
+	})
+}
+
+// UpdateEndModifier sets the "end_modifier" field to the value that was provided on create.
+func (u *SubscribeSuspendUpsertOne) UpdateEndModifier() *SubscribeSuspendUpsertOne {
+	return u.Update(func(s *SubscribeSuspendUpsert) {
+		s.UpdateEndModifier()
+	})
+}
+
+// ClearEndModifier clears the value of the "end_modifier" field.
+func (u *SubscribeSuspendUpsertOne) ClearEndModifier() *SubscribeSuspendUpsertOne {
+	return u.Update(func(s *SubscribeSuspendUpsert) {
+		s.ClearEndModifier()
 	})
 }
 
@@ -1083,6 +1276,27 @@ func (u *SubscribeSuspendUpsertBulk) UpdateSubscribeID() *SubscribeSuspendUpsert
 	})
 }
 
+// SetPauseID sets the "pause_id" field.
+func (u *SubscribeSuspendUpsertBulk) SetPauseID(v uint64) *SubscribeSuspendUpsertBulk {
+	return u.Update(func(s *SubscribeSuspendUpsert) {
+		s.SetPauseID(v)
+	})
+}
+
+// UpdatePauseID sets the "pause_id" field to the value that was provided on create.
+func (u *SubscribeSuspendUpsertBulk) UpdatePauseID() *SubscribeSuspendUpsertBulk {
+	return u.Update(func(s *SubscribeSuspendUpsert) {
+		s.UpdatePauseID()
+	})
+}
+
+// ClearPauseID clears the value of the "pause_id" field.
+func (u *SubscribeSuspendUpsertBulk) ClearPauseID() *SubscribeSuspendUpsertBulk {
+	return u.Update(func(s *SubscribeSuspendUpsert) {
+		s.ClearPauseID()
+	})
+}
+
 // SetDays sets the "days" field.
 func (u *SubscribeSuspendUpsertBulk) SetDays(v int) *SubscribeSuspendUpsertBulk {
 	return u.Update(func(s *SubscribeSuspendUpsert) {
@@ -1136,6 +1350,48 @@ func (u *SubscribeSuspendUpsertBulk) UpdateEndAt() *SubscribeSuspendUpsertBulk {
 func (u *SubscribeSuspendUpsertBulk) ClearEndAt() *SubscribeSuspendUpsertBulk {
 	return u.Update(func(s *SubscribeSuspendUpsert) {
 		s.ClearEndAt()
+	})
+}
+
+// SetEndReason sets the "end_reason" field.
+func (u *SubscribeSuspendUpsertBulk) SetEndReason(v string) *SubscribeSuspendUpsertBulk {
+	return u.Update(func(s *SubscribeSuspendUpsert) {
+		s.SetEndReason(v)
+	})
+}
+
+// UpdateEndReason sets the "end_reason" field to the value that was provided on create.
+func (u *SubscribeSuspendUpsertBulk) UpdateEndReason() *SubscribeSuspendUpsertBulk {
+	return u.Update(func(s *SubscribeSuspendUpsert) {
+		s.UpdateEndReason()
+	})
+}
+
+// ClearEndReason clears the value of the "end_reason" field.
+func (u *SubscribeSuspendUpsertBulk) ClearEndReason() *SubscribeSuspendUpsertBulk {
+	return u.Update(func(s *SubscribeSuspendUpsert) {
+		s.ClearEndReason()
+	})
+}
+
+// SetEndModifier sets the "end_modifier" field.
+func (u *SubscribeSuspendUpsertBulk) SetEndModifier(v *model.Modifier) *SubscribeSuspendUpsertBulk {
+	return u.Update(func(s *SubscribeSuspendUpsert) {
+		s.SetEndModifier(v)
+	})
+}
+
+// UpdateEndModifier sets the "end_modifier" field to the value that was provided on create.
+func (u *SubscribeSuspendUpsertBulk) UpdateEndModifier() *SubscribeSuspendUpsertBulk {
+	return u.Update(func(s *SubscribeSuspendUpsert) {
+		s.UpdateEndModifier()
+	})
+}
+
+// ClearEndModifier clears the value of the "end_modifier" field.
+func (u *SubscribeSuspendUpsertBulk) ClearEndModifier() *SubscribeSuspendUpsertBulk {
+	return u.Update(func(s *SubscribeSuspendUpsert) {
+		s.ClearEndModifier()
 	})
 }
 
