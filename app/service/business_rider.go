@@ -151,12 +151,7 @@ func (s *businessRiderService) Inactive(id uint64) (*model.SubscribeActiveInfo, 
         snag.Panic("骑手信息获取失败")
     }
 
-    NewRiderPermissionWithRider(r).BusinessX()
-
     p := sub.Edges.Rider.Edges.Person
-    if p.Status != model.PersonAuthenticated.Value() {
-        snag.Panic("骑手还未认证")
-    }
 
     res := &model.SubscribeActiveInfo{
         ID:           sub.ID,
@@ -215,6 +210,14 @@ func (s *businessRiderService) preprocess(typ business.Type, sub *ent.Subscribe)
     if r == nil {
         snag.Panic("骑手查询失败")
     }
+
+    // 骑士卡状态
+    if !NewRiderBusiness(r).Executable(sub, typ) {
+        snag.Panic("骑士卡状态错误")
+    }
+
+    // 检查用户是否可以办理业务
+    NewRiderPermissionWithRider(r).BusinessX().SubscribeX(model.RiderPermissionTypeBusiness, sub)
 
     s.rider = r
 
@@ -425,10 +428,6 @@ func (s *businessRiderService) UnSubscribe(subscribeID uint64) {
         }
     }
 
-    if sub.Status != model.SubscribeStatusUsing {
-        snag.Panic("无法退租, 骑士卡当前非使用中")
-    }
-
     s.do(business.TypeUnsubscribe, func(tx *ent.Tx) {
         var reason string
         if s.cabinet != nil {
@@ -467,9 +466,6 @@ func (s *businessRiderService) UnSubscribe(subscribeID uint64) {
 func (s *businessRiderService) Pause(subscribeID uint64) {
     s.preprocess(business.TypePause, s.QuerySubscribeWithRider(subscribeID))
 
-    if s.subscribe == nil || s.subscribe.Status != model.SubscribeStatusUsing {
-        snag.Panic("无生效订阅")
-    }
     if s.subscribe.EnterpriseID != nil {
         snag.Panic("团签用户无法办理")
     }
@@ -493,7 +489,7 @@ func (s *businessRiderService) Pause(subscribeID uint64) {
     })
 }
 
-// Continue 继续计费
+// Continue 取消寄存
 func (s *businessRiderService) Continue(subscribeID uint64) {
     s.preprocess(business.TypeContinue, s.QuerySubscribeWithRider(subscribeID))
 
@@ -502,8 +498,8 @@ func (s *businessRiderService) Continue(subscribeID uint64) {
         Order(ent.Desc(subscribepause.FieldCreatedAt)).
         First(s.ctx)
 
-    if sp == nil || s.subscribe.Status != model.SubscribeStatusPaused {
-        snag.Panic("骑士卡状态错误")
+    if sp == nil {
+        snag.Panic("未找到寄存信息")
     }
 
     // 当前时间

@@ -52,9 +52,6 @@ func NewRiderBusiness(rider *ent.Rider) *riderBusinessService {
 func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
     NewSetting().SystemMaintainX()
 
-    // 检查用户是否可以办理业务
-    NewRiderPermissionWithRider(s.rider).BusinessX()
-
     cs := NewCabinet()
 
     cab := cs.QueryOneSerialX(serial)
@@ -63,7 +60,7 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
     }
 
     // 是否有生效中套餐
-    _, sub := NewSubscribe().RecentDetail(s.rider.ID)
+    sub := NewSubscribe().Recent(s.rider.ID)
     if sub == nil {
         snag.Panic("无生效中的骑行卡")
     }
@@ -285,9 +282,11 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
     }
 
     srv := NewBusinessRider(s.rider)
-    srv.SetCabinet(s.cabinet).SetTask(func() *ec.BinInfo {
-        return s.putout()
-    }).Active(srv.Inactive(req.ID))
+    srv.SetCabinet(s.cabinet).
+        SetTask(func() *ec.BinInfo {
+            return s.putout()
+        }).
+        Active(srv.Inactive(req.ID))
     return model.BusinessCabinetStatus{
         UUID:  s.task.ID.Hex(),
         Index: s.max.Index,

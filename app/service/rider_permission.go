@@ -7,6 +7,7 @@ package service
 
 import (
     "context"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/pkg/snag"
 )
@@ -49,9 +50,33 @@ func (s *riderPermissionService) Business() (err error) {
     return
 }
 
-func (s *riderPermissionService) BusinessX() {
+func (s *riderPermissionService) BusinessX() *riderPermissionService {
     err := s.Business()
     if err != nil {
         snag.Panic(err)
+    }
+    return s
+}
+
+// SubscribeX 检查骑士卡权限
+// TODO 暂停扣费中 -> 骑士卡暂停中
+func (s *riderPermissionService) SubscribeX(typ model.RiderPermissionType, sub *ent.Subscribe) {
+    if sub == nil {
+        snag.Panic("未找到有效骑士卡")
+    }
+
+    switch typ {
+    case model.RiderPermissionTypeAssistance:
+        if sub.Status != model.SubscribeStatusUsing {
+            snag.Panic("无法发起救援")
+        }
+        return
+    case model.RiderPermissionTypeBusiness:
+        return
+    case model.RiderPermissionTypeExchange:
+        if sub.Status != model.SubscribeStatusUsing {
+            snag.Panic("骑士卡状态异常")
+        }
+        return
     }
 }

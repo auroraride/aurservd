@@ -125,7 +125,12 @@ func (s *reserveService) Create(req *model.ReserveCreateReq) *model.RiderUnfinis
     typ := business.Type(req.Business)
 
     // 检查订阅状态
-    _, sub := NewSubscribeWithRider(s.rider).RecentDetail(s.rider.ID)
+    sub := NewSubscribeWithRider(s.rider).RecentX(s.rider.ID)
+
+    // 检查骑手权限以及是否可办理业务
+    NewRiderPermissionWithRider(s.rider).BusinessX().SubscribeX(model.RiderPermissionTypeBusiness, sub)
+
+    // 骑士卡状态
     if !NewRiderBusiness(s.rider).Executable(sub, typ) {
         snag.Panic("骑士卡状态错误")
     }

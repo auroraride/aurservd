@@ -260,12 +260,9 @@ func (s *assistanceService) CurrentMessage(riderID uint64) *model.AssistanceSock
 // 救援订单支付状态可以直接在后台修改为不需要支付
 func (s *assistanceService) Create(req *model.AssistanceCreateReq) model.AssistanceCreateRes {
     sub := NewSubscribe().Recent(s.rider.ID)
-    if sub == nil || sub.Status != model.SubscribeStatusUsing {
-        snag.Panic("无法发起救援")
-    }
 
     // 检查是否可发起救援
-    NewRiderPermissionWithRider(s.rider).BusinessX()
+    NewRiderPermissionWithRider(s.rider).BusinessX().SubscribeX(model.RiderPermissionTypeAssistance, sub)
 
     // 检查是否已有救援订单
     if exists := s.Current(s.rider.ID); exists != nil {

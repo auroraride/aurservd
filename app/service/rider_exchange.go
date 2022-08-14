@@ -49,21 +49,18 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
 
     NewExchange().RiderInterval(s.rider.ID)
 
-    // 检查用户是否可以办理业务
-    NewRiderPermissionWithRider(s.rider).BusinessX()
-
     // 是否有生效中套餐
-    subd, _ := NewSubscribe().RecentDetail(s.rider.ID)
-    if subd == nil || subd.Status != model.SubscribeStatusUsing {
-        snag.Panic("无生效中的骑行卡")
-    }
+    sub := NewSubscribe().RecentX(s.rider.ID)
+
+    // 检查用户是否可以办理业务
+    NewRiderPermissionWithRider(s.rider).BusinessX().SubscribeX(model.RiderPermissionTypeExchange, sub)
 
     // 查询电柜
     cs := NewCabinet()
     cab := cs.QueryOneSerialX(req.Serial)
 
     // 检查可用电池型号
-    if !cs.ModelInclude(cab, subd.Model) {
+    if !cs.ModelInclude(cab, sub.Model) {
         snag.Panic("电池型号不兼容")
     }
 
@@ -111,7 +108,7 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
         },
         Cabinet: cab.GetTaskInfo(),
         Exchange: &ec.Exchange{
-            Model:       subd.Model,
+            Model:       sub.Model,
             Alternative: info.Alternative != nil,
             Empty: &ec.BinInfo{
                 Index: info.EmptyBin.Index,
@@ -133,8 +130,8 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
         BatteryNum:                 cab.BatteryNum,
         BatteryFullNum:             cab.BatteryFullNum,
         RiderCabinetOperateProcess: info,
-        Model:                      subd.Model,
-        CityID:                     subd.City.ID,
+        Model:                      sub.Model,
+        CityID:                     sub.CityID,
         Brand:                      model.CabinetBrand(cab.Brand),
     }
 
@@ -147,9 +144,6 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
 func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     // 检查是否维护中
     NewSetting().SystemMaintainX()
-
-    // 检查用户是否可以办理业务
-    NewRiderPermissionWithRider(s.rider).BusinessX()
 
     // 校验换电信息
     iv := cache.Int(model.SettingExchangeInterval)
@@ -170,10 +164,10 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     }
 
     // 是否有生效中套餐
-    subd, sub := NewSubscribe().RecentDetail(s.rider.ID)
-    if subd == nil || subd.Status != model.SubscribeStatusUsing {
-        snag.Panic("无生效中的骑行卡")
-    }
+    sub := NewSubscribe().RecentX(s.rider.ID)
+
+    // 检查用户是否可以办理业务
+    NewRiderPermissionWithRider(s.rider).BusinessX().SubscribeX(model.RiderPermissionTypeExchange, sub)
 
     s.subscribe = sub
 

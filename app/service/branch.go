@@ -352,7 +352,7 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
 func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (items []*model.BranchWithDistanceRes) {
     var sub *ent.Subscribe
     if s.rider != nil {
-        _, sub = NewSubscribeWithRider(s.rider).RecentDetail(s.rider.ID)
+        sub = NewSubscribeWithRider(s.rider).Recent(s.rider.ID)
     }
 
     // TODO 业务获取限制

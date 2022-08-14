@@ -82,9 +82,6 @@ func (s *exchangeService) RiderInterval(riderID uint64) {
 func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStoreRes {
     s.RiderInterval(s.rider.ID)
 
-    // 检查用户是否可以办理业务
-    NewRiderPermissionWithRider(s.rider).BusinessX()
-
     qr := strings.ReplaceAll(req.Code, "STORE:", "")
     item := NewStore().QuerySn(qr)
     // 门店状态
@@ -98,15 +95,10 @@ func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStor
     }
 
     // 获取套餐
-    subd, sub := NewSubscribe().RecentDetail(s.rider.ID)
+    sub := NewSubscribe().RecentX(s.rider.ID)
 
-    if subd == nil {
-        snag.Panic("未找到有效订阅")
-    }
-
-    if subd.Status != model.SubscribeStatusUsing {
-        snag.Panic("骑士卡状态异常")
-    }
+    // 检查用户是否可以办理业务
+    NewRiderPermissionWithRider(s.rider).BusinessX().SubscribeX(model.RiderPermissionTypeExchange, sub)
 
     // 存储
     uid := shortuuid.New()
@@ -115,9 +107,9 @@ func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStor
         SetRider(s.rider).
         SetSuccess(true).
         SetStoreID(item.ID).
-        SetCityID(subd.City.ID).
+        SetCityID(sub.CityID).
         SetUUID(uid).
-        SetModel(subd.Model).
+        SetModel(sub.Model).
         SetNillableEnterpriseID(sub.EnterpriseID).
         SetNillableStationID(sub.StationID).
         SetSubscribeID(sub.ID).
@@ -130,7 +122,7 @@ func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStor
     NewSpeech().SendSpeech(ee.ID, fmt.Sprintf("%s扫码换电%s", s.rider.Edges.Person.Name, message))
 
     return &model.ExchangeStoreRes{
-        Model:     subd.Model,
+        Model:     sub.Model,
         StoreName: item.Name,
         Time:      time.Now().Unix(),
         UUID:      uid,

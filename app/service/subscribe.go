@@ -88,6 +88,7 @@ func (s *subscribeService) QueryAndDetailX(id uint64) (sub *ent.Subscribe, detai
 }
 
 // Recent 查询骑手最近的订阅
+// params 查询实名认证的订阅
 func (s *subscribeService) Recent(riderID uint64, params ...uint64) *ent.Subscribe {
     q := s.orm.QueryNotDeleted().
         Where(subscribe.StatusNotIn(model.SubscribeStatusCanceled)).
@@ -112,6 +113,14 @@ func (s *subscribeService) Recent(riderID uint64, params ...uint64) *ent.Subscri
     }
     sub, _ := q.First(s.ctx)
 
+    return sub
+}
+
+func (s *subscribeService) RecentX(riderID uint64) *ent.Subscribe {
+    sub := s.Recent(riderID)
+    if sub == nil {
+        snag.Panic("未找到骑士卡")
+    }
     return sub
 }
 
