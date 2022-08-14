@@ -12,7 +12,7 @@ const (
     ReserveStatusProcessing                      // 进行中
     ReserveStatusSuccess                         // 已完成
     ReserveStatusFail                            // 已失败
-    ReserveStatusOverdue                         // 已超时
+    ReserveStatusTimeout                         // 已超时
     ReserveStatusCancel                          // 已取消
     ReserveStatusInvalid                         // 已失效
 )
@@ -31,7 +31,7 @@ func (rs ReserveStatus) String() string {
         return "已完成"
     case ReserveStatusFail:
         return "已失败"
-    case ReserveStatusOverdue:
+    case ReserveStatusTimeout:
         return "已超时"
     case ReserveStatusCancel:
         return "已取消"

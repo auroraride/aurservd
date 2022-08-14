@@ -43,6 +43,9 @@ func serverCommand() *cobra.Command {
             // 启动 branch task
             go task.NewBranchTask().Start()
 
+            // 启动 reserve task
+            go task.NewReserve().Start()
+
             // 启动 任务补偿
             compensate()
 
