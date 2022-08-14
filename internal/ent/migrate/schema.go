@@ -1906,6 +1906,11 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{ReserveColumns[8]},
 			},
+			{
+				Name:    "reserve_status",
+				Unique:  false,
+				Columns: []*schema.Column{ReserveColumns[7]},
+			},
 		},
 	}
 	// RiderColumns holds the columns for the "rider" table.

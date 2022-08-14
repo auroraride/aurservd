@@ -50,5 +50,6 @@ func (Reserve) Mixin() []ent.Mixin {
 func (Reserve) Indexes() []ent.Index {
     return []ent.Index{
         index.Fields("type"),
+        index.Fields("status"),
     }
 }
