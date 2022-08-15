@@ -32,3 +32,11 @@ type BusinessCabinetStatusRes struct {
     Stop    bool   `json:"stop"`    // 是否终止
     Message string `json:"message"` // 失败消息
 }
+
+type BusinessPauseInfoRes struct {
+    Start     string `json:"start"`             // 寄存开始日期
+    End       string `json:"end"`               // 寄存结束日期
+    Days      int    `json:"days"`              // 寄存天数
+    Overdue   int    `json:"overdue,omitempty"` // 超期天数, 当此字段不存在时, 前端不显示`超出单词最长寄存时长`
+    Remaining int    `json:"remaining"`         // 剩余天数
+}

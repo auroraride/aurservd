@@ -13,8 +13,10 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/business"
+    "github.com/auroraride/aurservd/internal/ent/subscribepause"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
+    "github.com/golang-module/carbon/v2"
     log "github.com/sirupsen/logrus"
     "time"
 )
@@ -392,4 +394,38 @@ func (s *riderBusinessService) Executable(sub *ent.Subscribe, typ business.Type)
         return sub.Status == model.SubscribeStatusPaused
     }
     return false
+}
+
+// PauseInfo 寄存信息
+func (s *riderBusinessService) PauseInfo() (res model.BusinessPauseInfoRes) {
+    sub, _ := ent.Database.Subscribe.QueryNotDeleted().WithPauses(func(query *ent.SubscribePauseQuery) {
+        query.Where(subscribepause.EndAtIsNil())
+    }).First(s.ctx)
+    if sub == nil {
+        snag.Panic("未找到骑士卡信息")
+    }
+    ps := sub.Edges.Pauses
+    if len(ps) == 0 {
+        snag.Panic("未找到寄存信息")
+    }
+
+    p := ps[0]
+    res = model.BusinessPauseInfoRes{
+        Days:      p.Days,
+        Overdue:   p.OverdueDays,
+        Remaining: sub.Remaining,
+    }
+    start := p.StartAt
+    // 判断寄存开始日期
+    if carbon.Time2Carbon(start).Timestamp() != carbon.Time2Carbon(start).StartOfDay().Timestamp() {
+        start = carbon.Time2Carbon(start).Tomorrow().StartOfDay().Carbon2Time()
+    }
+    res.Start = start.Format(carbon.DateLayout)
+    now := carbon.Now()
+    if now.Timestamp() != now.StartOfDay().Timestamp() {
+        now = now.Yesterday()
+    }
+    res.End = now.Carbon2Time().Format(carbon.DateLayout)
+
+    return
 }

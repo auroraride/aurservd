@@ -1360,6 +1360,24 @@ definitions:
         description: 业务类别
         type: string
     type: object
+  model.BusinessPauseInfoRes:
+    properties:
+      days:
+        description: 寄存天数
+        type: integer
+      end:
+        description: 寄存结束日期
+        type: string
+      overdue:
+        description: 超期天数, 当此字段不存在时, 前端不显示`超出单词最长寄存时长`
+        type: integer
+      remaining:
+        description: 剩余天数
+        type: integer
+      start:
+        description: 寄存开始日期
+        type: string
+    type: object
   model.BusinessPauseListRes:
     properties:
       city:
@@ -10759,6 +10777,27 @@ paths:
           schema:
             $ref: '#/definitions/model.BusinessCabinetStatus'
       summary: R7003 寄存
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/business/pause/info:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderBusinessPauseInfo
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.BusinessPauseInfoRes'
+      summary: R7006 寄存信息
       tags:
       - '[R]骑手接口'
   /rider/v1/business/status:

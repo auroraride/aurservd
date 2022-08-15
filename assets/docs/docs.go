@@ -8969,6 +8969,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/business/pause/info": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R7006 寄存信息",
+                "operationId": "RiderBusinessPauseInfo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.BusinessPauseInfoRes"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/business/status": {
             "get": {
                 "consumes": [
@@ -12134,6 +12166,31 @@ const docTemplate = `{
                 },
                 "type": {
                     "description": "业务类别",
+                    "type": "string"
+                }
+            }
+        },
+        "model.BusinessPauseInfoRes": {
+            "type": "object",
+            "properties": {
+                "days": {
+                    "description": "寄存天数",
+                    "type": "integer"
+                },
+                "end": {
+                    "description": "寄存结束日期",
+                    "type": "string"
+                },
+                "overdue": {
+                    "description": "超期天数, 当此字段不存在时, 前端不显示` + "`" + `超出单词最长寄存时长` + "`" + `",
+                    "type": "integer"
+                },
+                "remaining": {
+                    "description": "剩余天数",
+                    "type": "integer"
+                },
+                "start": {
+                    "description": "寄存开始日期",
                     "type": "string"
                 }
             }

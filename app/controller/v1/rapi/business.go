@@ -100,3 +100,17 @@ func (*business) Status(c echo.Context) (err error) {
         service.NewRiderBusiness(ctx.Rider).Status(req),
     )
 }
+
+// PauseInfo
+// @ID           RiderBusinessPauseInfo
+// @Router       /rider/v1/business/pause/info [GET]
+// @Summary      R7006 寄存信息
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Success      200 {object}  model.BusinessPauseInfoRes  "请求成功"
+func (*business) PauseInfo(c echo.Context) (err error) {
+    ctx := app.ContextX[app.RiderContext](c)
+    return ctx.SendResponse(service.NewRiderBusiness(ctx.Rider).PauseInfo())
+}
