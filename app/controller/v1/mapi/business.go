@@ -60,3 +60,18 @@ func (*business) Reserve(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.ReserveListReq](c)
     return ctx.SendResponse(service.NewReserveWithModifier(ctx.Modifier).List(req))
 }
+
+// Suspend
+// @ID           ManagerBusinessSuspend
+// @Router       /manager/v1/business/suspend [GET]
+// @Summary      MG005 暂停记录
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query   model.SuspendListReq  true  "列表请求筛选参数"
+// @Success      200  {object}  model.PaginationRes{items=[]model.SuspendListRes}  "请求成功"
+func (*business) Suspend(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.SuspendListReq](c)
+    return ctx.SendResponse(service.NewSuspendWithModifier(ctx.Modifier).List(req))
+}

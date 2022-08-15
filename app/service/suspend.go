@@ -9,7 +9,10 @@ import (
     "context"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/city"
+    "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
     "github.com/auroraride/aurservd/internal/ent/subscribesuspend"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -116,4 +119,67 @@ func (s *suspendService) UnSuspend(req *model.SuspendReq) {
         SetModifier(s.modifier).
         SetDiff("暂停扣费", model.SubscribeStatusText(sub.Status)).
         Send()
+}
+
+func (s *suspendService) listFilter(req model.SuspendListFilter) (q *ent.SubscribeSuspendQuery, info ar.Map) {
+    info = make(ar.Map)
+    q = s.orm.Query().WithRider(func(query *ent.RiderQuery) {
+        query.WithPerson()
+    }).WithCity().WithSubscribe(func(query *ent.SubscribeQuery) {
+        query.WithPlan()
+    })
+    if req.CityID != 0 {
+        q.Where(subscribesuspend.CityID(req.CityID))
+        info["城市"] = ent.NewExportInfo(req.CityID, city.Table)
+    }
+    if req.RiderID != 0 {
+        q.Where(subscribesuspend.RiderID(req.RiderID))
+        info["骑手"] = ent.NewExportInfo(req.RiderID, rider.Table)
+    }
+    if req.Start != "" {
+        q.Where(subscribesuspend.StartAt(tools.NewTime().ParseDateStringX(req.Start)))
+        info["开始日期"] = req.Start
+    }
+    if req.End != "" {
+        q.Where(
+            subscribesuspend.Or(
+                subscribesuspend.EndAtIsNil(),
+                subscribesuspend.EndAtLT(tools.NewTime().ParseNextDateStringX(req.End)),
+            ),
+        )
+        info["结束日期"] = req.End
+    }
+    return
+}
+
+func (s *suspendService) List(req *model.SuspendListReq) *model.PaginationRes {
+    q, _ := s.listFilter(req.SuspendListFilter)
+    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.SubscribeSuspend) (res model.SuspendListRes) {
+        status := "暂停中"
+        if item.EndAt.IsZero() {
+            status = "已结束"
+        }
+        sub := item.Edges.Subscribe
+        res = model.SuspendListRes{
+            City:            item.Edges.City.Name,
+            Name:            item.Edges.Rider.Edges.Person.Name,
+            Phone:           item.Edges.Rider.Phone,
+            Plan:            item.Edges.Subscribe.Edges.Plan.Name,
+            Status:          status,
+            SubscribeDays:   sub.Remaining,
+            SubscribeStatus: model.SubscribeStatusText(sub.Status),
+            Days:            item.Days,
+            Start:           item.StartAt.Format(carbon.DateTimeLayout),
+        }
+        if item.Creator != nil {
+            res.StartBy = item.Creator.Name
+        }
+        if !item.EndAt.IsZero() {
+            res.End = item.EndAt.Format(carbon.DateTimeLayout)
+            if item.EndModifier != nil {
+                res.EndBy = item.EndModifier.Name
+            }
+        }
+        return
+    })
 }

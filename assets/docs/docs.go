@@ -2703,6 +2703,89 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/business/suspend": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MG005 暂停记录",
+                "operationId": "ManagerBusinessSuspend",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束日期, 如 2022-08-07",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "骑手ID",
+                        "name": "riderId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始日期, 如 2022-08-01",
+                        "name": "start",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.SuspendListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/cabinet": {
             "get": {
                 "consumes": [
@@ -16891,6 +16974,59 @@ const docTemplate = `{
                 "total": {
                     "description": "总支付金额, 总金额为 amount + deposit",
                     "type": "number"
+                }
+            }
+        },
+        "model.SuspendListRes": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "description": "城市",
+                    "type": "string"
+                },
+                "days": {
+                    "description": "暂停天数",
+                    "type": "integer"
+                },
+                "end": {
+                    "description": "结束时间",
+                    "type": "string"
+                },
+                "endBy": {
+                    "description": "结束操作人",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "plan": {
+                    "description": "骑士卡",
+                    "type": "string"
+                },
+                "start": {
+                    "description": "开始时间",
+                    "type": "string"
+                },
+                "startBy": {
+                    "description": "开始操作人",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态",
+                    "type": "string"
+                },
+                "subscribeDays": {
+                    "description": "剩余天数",
+                    "type": "integer"
+                },
+                "subscribeStatus": {
+                    "description": "骑士卡状态",
+                    "type": "string"
                 }
             }
         },

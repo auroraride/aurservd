@@ -4740,6 +4740,45 @@ definitions:
         description: 总支付金额, 总金额为 amount + deposit
         type: number
     type: object
+  model.SuspendListRes:
+    properties:
+      city:
+        description: 城市
+        type: string
+      days:
+        description: 暂停天数
+        type: integer
+      end:
+        description: 结束时间
+        type: string
+      endBy:
+        description: 结束操作人
+        type: string
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 手机号
+        type: string
+      plan:
+        description: 骑士卡
+        type: string
+      start:
+        description: 开始时间
+        type: string
+      startBy:
+        description: 开始操作人
+        type: string
+      status:
+        description: 状态
+        type: string
+      subscribeDays:
+        description: 剩余天数
+        type: integer
+      subscribeStatus:
+        description: 骑士卡状态
+        type: string
+    type: object
   model.SuspendReq:
     properties:
       id:
@@ -6648,6 +6687,58 @@ paths:
                   type: array
               type: object
       summary: MG004 预约记录
+      tags:
+      - '[M]管理接口'
+  /manager/v1/business/suspend:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerBusinessSuspend
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 结束日期, 如 2022-08-07
+        in: query
+        name: end
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 骑手ID
+        in: query
+        name: riderId
+        type: integer
+      - description: 开始日期, 如 2022-08-01
+        in: query
+        name: start
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.SuspendListRes'
+                  type: array
+              type: object
+      summary: MG005 暂停记录
       tags:
       - '[M]管理接口'
   /manager/v1/cabinet:
