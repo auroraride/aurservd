@@ -34,9 +34,9 @@ type BusinessCabinetStatusRes struct {
 }
 
 type BusinessPauseInfoRes struct {
-    Start     string `json:"start"`             // 寄存开始日期
-    End       string `json:"end"`               // 寄存结束日期
+    Start     string `json:"start,omitempty"`   // 寄存开始日期, 若此字段和`end`都不存在或为空时, 前端`寄存开始日期和结束寄存日期`显示未生效
+    End       string `json:"end,omitempty"`     // 寄存结束日期
     Days      int    `json:"days"`              // 寄存天数
-    Overdue   int    `json:"overdue,omitempty"` // 超期天数, 当此字段不存在时, 前端不显示`超出单词最长寄存时长`
+    Overdue   int    `json:"overdue,omitempty"` // 超期天数, 当此字段不存在时或为空时, 前端不显示`超出单词最长寄存时长`
     Remaining int    `json:"remaining"`         // 剩余天数
 }

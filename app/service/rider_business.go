@@ -427,5 +427,11 @@ func (s *riderBusinessService) PauseInfo() (res model.BusinessPauseInfoRes) {
     }
     res.End = now.Carbon2Time().Format(carbon.DateLayout)
 
+    if p.Days < 1 {
+        res.Start = ""
+        res.End = ""
+        p.Days = 0
+    }
+
     return
 }

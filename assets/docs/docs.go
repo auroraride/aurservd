@@ -12182,7 +12182,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "overdue": {
-                    "description": "超期天数, 当此字段不存在时, 前端不显示` + "`" + `超出单词最长寄存时长` + "`" + `",
+                    "description": "超期天数, 当此字段不存在时或为空时, 前端不显示` + "`" + `超出单词最长寄存时长` + "`" + `",
                     "type": "integer"
                 },
                 "remaining": {
@@ -12190,7 +12190,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "start": {
-                    "description": "寄存开始日期",
+                    "description": "寄存开始日期, 若此字段和` + "`" + `end` + "`" + `都不存在或为空时, 前端` + "`" + `寄存开始日期和结束寄存日期` + "`" + `显示未生效",
                     "type": "string"
                 }
             }
