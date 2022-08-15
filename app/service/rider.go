@@ -639,20 +639,21 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 
         var rows [][]any
         title := []any{
-            "城市",
-            "骑手",
-            "电话",
-            "证件",
-            "户籍",
-            "企业",
-            "押金",
-            "订阅",
-            "电池",
-            "剩余",
-            "状态",
-            "认证",
-            "紧急联系",
-            "注册时间",
+            "城市",     // 0
+            "骑手",     // 1
+            "电话",     // 2
+            "证件",     // 3
+            "户籍",     // 4
+            "企业",     // 5
+            "押金",     // 6
+            "订阅",     // 7
+            "暂停",     // 8
+            "电池",     // 9
+            "剩余",     // 10
+            "状态",     // 11
+            "认证",     // 12
+            "紧急联系", // 13
+            "注册时间", // 14
         }
         rows = append(rows, title)
         for _, item := range items {
@@ -666,6 +667,7 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
                 "",
                 detail.Deposit,
                 "",
+                "否",
                 "",
                 "",
                 []string{"正常", "正常", "禁用", "黑名单"}[detail.Status],
@@ -684,11 +686,14 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
             }
             if detail.Subscribe != nil {
                 row[7] = model.SubscribeStatusText(detail.Subscribe.Status)
-                row[8] = detail.Subscribe.Model
-                row[9] = detail.Subscribe.Remaining
+                if detail.Subscribe.Suspend {
+                    row[8] = "是"
+                }
+                row[9] = detail.Subscribe.Model
+                row[10] = detail.Subscribe.Remaining
             }
             if item.Contact != nil {
-                row[12] = item.Contact.String()
+                row[13] = item.Contact.String()
             }
             rows = append(rows, row)
         }
