@@ -101,7 +101,7 @@ func (*subscribe) Active(c echo.Context) (err error) {
 // Suspend
 // @ID           ManagerSubscribeSuspend
 // @Router       /manager/v1/subscribe/suspend [POST]
-// @Summary      M7010 暂停扣费
+// @Summary      M7014 暂停扣费
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -117,7 +117,7 @@ func (*subscribe) Suspend(c echo.Context) (err error) {
 // UnSuspend
 // @ID           ManagerSubscribeUnSuspend
 // @Router       /manager/v1/subscribe/unSuspend [POST]
-// @Summary      M7011 继续扣费
+// @Summary      M7015 继续扣费
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json

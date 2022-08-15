@@ -139,12 +139,11 @@ func SubscribeAdditionalCalculate[T SubscribeAdditional](items []T) (data Subscr
 }
 
 func subscribeAdditionalDays[T SubscribeAdditional](item T) (days int, overdue int, current bool) {
+    // 判定是否已结束, 若已结束按结束时间计算
     endAt := item.GetEndAt()
     if endAt.IsZero() {
         // 未结束使用当前时间计算
         current = true
-    } else {
-        // 已结束按结束时间计算
         endAt = time.Now()
     }
 

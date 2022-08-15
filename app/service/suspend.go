@@ -77,7 +77,7 @@ func (s *suspendService) Suspend(req *model.SuspendReq) {
 
     // 记录日志
     go logging.NewOperateLog().
-        SetRef(NewRider().Query(sub.ID)).
+        SetRef(NewRider().Query(sub.RiderID)).
         SetOperate(model.OperateSuspend).
         SetModifier(s.modifier).
         SetDiff(model.SubscribeStatusText(sub.Status), "暂停扣费").
@@ -108,7 +108,7 @@ func (s *suspendService) UnSuspend(req *model.SuspendReq) {
 
     // 记录日志
     go logging.NewOperateLog().
-        SetRef(NewRider().Query(sub.ID)).
+        SetRef(NewRider().Query(sub.RiderID)).
         SetOperate(model.OperateResume).
         SetModifier(s.modifier).
         SetDiff("暂停扣费", model.SubscribeStatusText(sub.Status)).

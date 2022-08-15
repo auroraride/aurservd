@@ -720,6 +720,9 @@ func (s *riderService) CheckForBusiness(u *ent.Rider) {
 }
 
 func (s *riderService) Permission(u *ent.Rider) (err error) {
+    if u.Edges.Person == nil {
+        u.Edges.Person, _ = u.QueryPerson().First(s.ctx)
+    }
     if u.IsNewDevice {
         err = errors.New("骑手未人脸识别")
     }

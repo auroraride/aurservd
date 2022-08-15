@@ -7883,7 +7883,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M7010 暂停扣费",
+                "summary": "M7014 暂停扣费",
                 "operationId": "ManagerSubscribeSuspend",
                 "parameters": [
                     {
@@ -7924,7 +7924,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M7011 继续扣费",
+                "summary": "M7015 继续扣费",
                 "operationId": "ManagerSubscribeUnSuspend",
                 "parameters": [
                     {

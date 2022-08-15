@@ -10030,7 +10030,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7010 暂停扣费
+      summary: M7014 暂停扣费
       tags:
       - '[M]管理接口'
   /manager/v1/subscribe/unSuspend:
@@ -10057,7 +10057,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7011 继续扣费
+      summary: M7015 继续扣费
       tags:
       - '[M]管理接口'
   /manager/v1/user:
