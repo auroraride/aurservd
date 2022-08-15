@@ -2351,7 +2351,7 @@
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M8004 业务记录",
+                "summary": "MG001 骑手业务记录",
                 "operationId": "ManagerBusinessList",
                 "parameters": [
                     {
@@ -2458,7 +2458,7 @@
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M8005 寄存记录",
+                "summary": "MG002 寄存记录",
                 "operationId": "ManagerBusinessPause",
                 "parameters": [
                     {
@@ -2578,6 +2578,113 @@
                                             "type": "array",
                                             "items": {
                                                 "$ref": "#/definitions/model.BusinessPauseListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/business/reserve": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MG004 预约记录",
+                "operationId": "ManagerBusinessReserve",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "active",
+                            "pause",
+                            "continue",
+                            "unsubscribe"
+                        ],
+                        "type": "string",
+                        "description": "预约业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                        "name": "business",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "电柜ID",
+                        "name": "cabinetId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束日期, 如 2022-08-07",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "骑手ID",
+                        "name": "riderId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜编号",
+                        "name": "serial",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始日期, 如 2022-08-01",
+                        "name": "start",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.ReserveListRes"
                                             }
                                         }
                                     }
@@ -4825,7 +4932,7 @@
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M8003 换电记录",
+                "summary": "MG003 换电记录",
                 "operationId": "ManagerExchangeList",
                 "parameters": [
                     {
@@ -7905,7 +8012,7 @@
                 }
             }
         },
-        "/manager/v1/subscribe/unSuspend": {
+        "/manager/v1/subscribe/unsuspend": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -9834,7 +9941,7 @@
                     "200": {
                         "description": "请求成功, 预约不存在时为`null`",
                         "schema": {
-                            "$ref": "#/definitions/model.RiderUnfinishedRes"
+                            "$ref": "#/definitions/model.ReserveUnfinishedRes"
                         }
                     }
                 }
@@ -9873,7 +9980,7 @@
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.RiderUnfinishedRes"
+                            "$ref": "#/definitions/model.ReserveUnfinishedRes"
                         }
                     }
                 }
@@ -11521,7 +11628,7 @@
                     "description": "当前预约, 预约不存在时无此字段",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.RiderUnfinishedRes"
+                            "$ref": "#/definitions/model.ReserveUnfinishedRes"
                         }
                     ]
                 },
@@ -14587,6 +14694,68 @@
                 }
             }
         },
+        "model.ReserveListRes": {
+            "type": "object",
+            "properties": {
+                "business": {
+                    "description": "业务",
+                    "type": "string"
+                },
+                "cabinetName": {
+                    "description": "电柜名称",
+                    "type": "string"
+                },
+                "city": {
+                    "description": "城市",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                },
+                "serial": {
+                    "description": "电柜编号",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态",
+                    "type": "string"
+                }
+            }
+        },
+        "model.ReserveUnfinishedRes": {
+            "type": "object",
+            "properties": {
+                "business": {
+                    "description": "预约业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                    "type": "string"
+                },
+                "cabinetId": {
+                    "description": "电柜ID",
+                    "type": "integer"
+                },
+                "fid": {
+                    "description": "设施ID",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "预约ID",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "状态 0:已预约 1:进行中",
+                    "type": "integer"
+                },
+                "time": {
+                    "description": "预约时间",
+                    "type": "string"
+                }
+            }
+        },
         "model.RiderBasic": {
             "type": "object",
             "properties": {
@@ -15374,35 +15543,6 @@
                 },
                 "smsId": {
                     "description": "短信ID ",
-                    "type": "string"
-                }
-            }
-        },
-        "model.RiderUnfinishedRes": {
-            "type": "object",
-            "properties": {
-                "business": {
-                    "description": "预约业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
-                    "type": "string"
-                },
-                "cabinetId": {
-                    "description": "电柜ID",
-                    "type": "integer"
-                },
-                "fid": {
-                    "description": "设施ID",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "预约ID",
-                    "type": "integer"
-                },
-                "status": {
-                    "description": "状态 0:已预约 1:进行中",
-                    "type": "integer"
-                },
-                "time": {
-                    "description": "预约时间",
                     "type": "string"
                 }
             }
@@ -16575,6 +16715,10 @@
                         4,
                         5
                     ]
+                },
+                "suspend": {
+                    "description": "是否暂停扣费",
+                    "type": "boolean"
                 }
             }
         },

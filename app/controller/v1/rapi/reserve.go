@@ -24,7 +24,7 @@ var Reserve = new(reserve)
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Success      200 {object}  model.RiderUnfinishedRes  "请求成功, 预约不存在时为`null`"
+// @Success      200 {object}  model.ReserveUnfinishedRes  "请求成功, 预约不存在时为`null`"
 func (*reserve) Unfinished(c echo.Context) (err error) {
     ctx := app.ContextX[app.RiderContext](c)
     return ctx.SendResponse(service.NewReserve().RiderUnfinishedDetail(ctx.Rider.ID))
@@ -39,7 +39,7 @@ func (*reserve) Unfinished(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
 // @Param        body  body     model.ReserveCreateReq  true  "预约信息"
-// @Success      200 {object}   model.RiderUnfinishedRes  "请求成功"
+// @Success      200 {object}   model.ReserveUnfinishedRes  "请求成功"
 func (*reserve) Create(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.ReserveCreateReq](c)
     return ctx.SendResponse(service.NewReserveWithRider(ctx.Rider).Create(req))

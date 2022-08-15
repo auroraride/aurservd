@@ -11,6 +11,15 @@ const (
     BusinessAimedEnterprise              // 团签
 )
 
+func BusinessTypeText(bt string) string {
+    return map[string]string{
+        "active":      "激活",
+        "pause":       "寄存",
+        "continue":    "结束寄存",
+        "unsubscribe": "退租",
+    }[bt]
+}
+
 type BusinessSubscribeID struct {
     SubscribeID uint64 `json:"subscribeId" validate:"required" trans:"订阅ID"`
 }

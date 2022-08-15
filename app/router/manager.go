@@ -101,6 +101,7 @@ func loadManagerRoutes() {
     g.GET("/exchange", mapi.Exchange.List)
     g.GET("/business", mapi.Business.List)
     g.GET("/business/pause", mapi.Business.Pause)
+    g.GET("/business/reserve", mapi.Business.Reserve)
 
     // 企业
     g.POST("/enterprise", mapi.Enterprise.Create)

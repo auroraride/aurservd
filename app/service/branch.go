@@ -586,7 +586,7 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
         // 订阅
         var sub *ent.Subscribe
         // 预约
-        var rev *model.RiderUnfinishedRes
+        var rev *model.ReserveUnfinishedRes
         // 当骑手登录时, 获取骑手的订阅信息
         if s.rider != nil {
             sub = NewSubscribeWithRider(s.rider).Recent(s.rider.ID)

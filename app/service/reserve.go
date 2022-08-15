@@ -8,11 +8,16 @@ package service
 import (
     "context"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/business"
+    "github.com/auroraride/aurservd/internal/ent/cabinet"
+    "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/reserve"
+    "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     "time"
 )
@@ -72,7 +77,7 @@ func (s *reserveService) RiderUnfinished(riderID uint64) *ent.Reserve {
     return rev
 }
 
-func (s *reserveService) RiderUnfinishedDetail(riderID uint64) *model.RiderUnfinishedRes {
+func (s *reserveService) RiderUnfinishedDetail(riderID uint64) *model.ReserveUnfinishedRes {
     rev := s.RiderUnfinished(riderID)
     if rev == nil {
         return nil
@@ -80,8 +85,8 @@ func (s *reserveService) RiderUnfinishedDetail(riderID uint64) *model.RiderUnfin
     return s.Detail(rev)
 }
 
-func (s *reserveService) Detail(rev *ent.Reserve) *model.RiderUnfinishedRes {
-    return &model.RiderUnfinishedRes{
+func (s *reserveService) Detail(rev *ent.Reserve) *model.ReserveUnfinishedRes {
+    return &model.ReserveUnfinishedRes{
         ID:        rev.ID,
         CabinetID: rev.CabinetID,
         Business:  rev.Type,
@@ -133,7 +138,7 @@ func (s *reserveService) CabinetCounts(ids []uint64, typ business.Type) (data ma
 }
 
 // Create 创建预约
-func (s *reserveService) Create(req *model.ReserveCreateReq) *model.RiderUnfinishedRes {
+func (s *reserveService) Create(req *model.ReserveCreateReq) *model.ReserveUnfinishedRes {
     typ := business.Type(req.Business)
 
     // 检查订阅状态
@@ -176,4 +181,63 @@ func (s *reserveService) Create(req *model.ReserveCreateReq) *model.RiderUnfinis
 // Cancel 取消预约
 func (s *reserveService) Cancel(req *model.IDParamReq) {
     _, _ = s.QueryX(req.ID).Update().SetStatus(model.ReserveStatusCancel.Value()).Save(s.ctx)
+}
+
+func (s *reserveService) listFilter(req model.ReserveListFilter) (q *ent.ReserveQuery, info ar.Map) {
+    q = s.orm.QueryNotDeleted().WithCity().WithCabinet().WithRider(func(query *ent.RiderQuery) {
+        query.WithPerson()
+    }).Order(ent.Desc(reserve.FieldCreatedAt))
+    info = make(ar.Map)
+    if req.CityID != 0 {
+        q.Where(reserve.CityID(req.CityID))
+        info["城市"] = ent.NewExportInfo(req.CityID, city.Table)
+    }
+    if req.RiderID != 0 {
+        q.Where(reserve.RiderID(req.RiderID))
+        info["骑手"] = ent.NewExportInfo(req.RiderID, rider.Table)
+    }
+    if req.Serial != "" {
+        q.Where(reserve.HasCabinetWith(cabinet.Serial(req.Serial)))
+        info["电柜编码"] = req.Serial
+    }
+    if req.Start != "" {
+        q.Where(reserve.CreatedAtGTE(tools.NewTime().ParseDateStringX(req.Start)))
+        info["开始日期"] = req.Start
+    }
+    if req.End != "" {
+        q.Where(reserve.CreatedAtLT(tools.NewTime().ParseNextDateStringX(req.End)))
+        info["结束日期"] = req.End
+    }
+    if req.CabinetID != 0 {
+        q.Where(reserve.CabinetID(req.CabinetID))
+        info["电柜"] = ent.NewExportInfo(req.CabinetID, cabinet.Table)
+    }
+    if req.Business != "" {
+        q.Where(reserve.Type(req.Business))
+        info["业务"] = model.BusinessTypeText(req.Business)
+    }
+    return
+}
+
+func (s *reserveService) List(req *model.ReserveListReq) *model.PaginationRes {
+    q, _ := s.listFilter(req.ReserveListFilter)
+    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Reserve) model.ReserveListRes {
+        return s.listDetail(item)
+    })
+}
+
+func (s *reserveService) listDetail(item *ent.Reserve) (res model.ReserveListRes) {
+    res = model.ReserveListRes{
+        City:     item.Edges.City.Name,
+        Name:     item.Edges.Rider.Edges.Person.Name,
+        Phone:    item.Edges.Rider.Phone,
+        Business: model.BusinessTypeText(item.Type),
+        Status:   model.ReserveStatus(item.Status).String(),
+    }
+    cab := item.Edges.Cabinet
+    if cab != nil {
+        res.CabinetName = cab.Name
+        res.Serial = cab.Serial
+    }
+    return
 }

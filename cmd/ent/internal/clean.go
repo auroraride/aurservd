@@ -29,6 +29,7 @@ var (
         "connect.go":            FileInfoTypeFile,
         "slslog.go":             FileInfoTypeFile,
         "cabinet_attached.go":   FileInfoTypeFile,
+        "export_info.go":        FileInfoTypeFile,
         "subscribe_attached.go": FileInfoTypeFile,
         "internal":              FileInfoTypeDir,
         "schema":                FileInfoTypeDir,

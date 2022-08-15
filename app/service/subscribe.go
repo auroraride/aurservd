@@ -154,6 +154,7 @@ func (s *subscribeService) Detail(sub *ent.Subscribe) *model.Subscribe {
         Remaining:   sub.Remaining,
         OverdueDays: sub.OverdueDays,
         Business:    model.SubscribeBusinessable(sub.Status),
+        Suspend:     sub.SuspendAt != nil,
         City: &model.City{
             ID:   sub.Edges.City.ID,
             Name: sub.Edges.City.Name,

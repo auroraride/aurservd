@@ -19,7 +19,7 @@ var Business = new(business)
 // List
 // @ID           ManagerBusinessList
 // @Router       /manager/v1/business [GET]
-// @Summary      M8004 业务记录
+// @Summary      MG001 骑手业务记录
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -34,7 +34,7 @@ func (*business) List(c echo.Context) (err error) {
 // Pause
 // @ID           ManagerBusinessPause
 // @Router       /manager/v1/business/pause [GET]
-// @Summary      M8005 寄存记录
+// @Summary      MG002 寄存记录
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -44,4 +44,19 @@ func (*business) List(c echo.Context) (err error) {
 func (*business) Pause(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.BusinessPauseList](c)
     return ctx.SendResponse(service.NewBusinessWithModifier(ctx.Modifier).ListPause(req))
+}
+
+// Reserve
+// @ID           ManagerBusinessReserve
+// @Router       /manager/v1/business/reserve [GET]
+// @Summary      MG004 预约记录
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query   model.ReserveListReq  true  "列表请求筛选参数"
+// @Success      200  {object}  model.PaginationRes{items=[]model.ReserveListRes}  "请求成功"
+func (*business) Reserve(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.ReserveListReq](c)
+    return ctx.SendResponse(service.NewReserveWithModifier(ctx.Modifier).List(req))
 }

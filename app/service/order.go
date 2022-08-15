@@ -12,7 +12,9 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/commission"
+    "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/internal/ent/order"
     "github.com/auroraride/aurservd/internal/ent/orderrefund"
     "github.com/auroraride/aurservd/internal/ent/person"
@@ -508,7 +510,7 @@ func (s *orderService) RefundSuccess(req *model.PaymentRefund) {
     log.Infof("%s(OrderID:%d) [退款]提成订单更新完成", req.OutRefundNo, req.OrderID)
 }
 
-func (s *orderService) listFilter(req model.OrderListFilter) (*ent.OrderQuery, map[string]interface{}) {
+func (s *orderService) listFilter(req model.OrderListFilter) (*ent.OrderQuery, ar.Map) {
     info := make(ar.Map)
     tt := tools.NewTime()
     q := s.orm.QueryNotDeleted().
@@ -536,9 +538,7 @@ func (s *orderService) listFilter(req model.OrderListFilter) (*ent.OrderQuery, m
         q.Where(order.Type(*req.Type))
     }
     if req.RiderID != nil {
-        info["骑手"] = func() string {
-            return NewRider().NameFromID(*req.RiderID)
-        }
+        info["骑手"] = ent.NewExportInfo(*req.RiderID, rider.Table)
         q.Where(order.RiderID(*req.RiderID))
     }
     if req.Keyword != nil {
@@ -551,15 +551,11 @@ func (s *orderService) listFilter(req model.OrderListFilter) (*ent.OrderQuery, m
         ))
     }
     if req.CityID != nil {
-        info["城市"] = func() string {
-            return NewCity().NameFromID(*req.CityID)
-        }
+        info["城市"] = ent.NewExportInfo(*req.CityID, city.Table)
         q.Where(order.CityID(*req.CityID))
     }
     if req.EmployeeID != nil {
-        info["店员"] = func() string {
-            return NewEmployee().NameFromID(*req.EmployeeID)
-        }
+        info["店员"] = ent.NewExportInfo(*req.EmployeeID, employee.Table)
         q.Where(order.HasSubscribeWith(subscribe.EmployeeID(*req.EmployeeID)))
     }
     if req.StoreName != nil {

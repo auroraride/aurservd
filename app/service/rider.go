@@ -17,9 +17,12 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/baidu"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/contract"
+    "github.com/auroraride/aurservd/internal/ent/enterprise"
     "github.com/auroraride/aurservd/internal/ent/order"
     "github.com/auroraride/aurservd/internal/ent/person"
+    "github.com/auroraride/aurservd/internal/ent/plan"
     "github.com/auroraride/aurservd/internal/ent/predicate"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -483,9 +486,8 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
         }[*req.SubscribeStatus]
     }
     if req.PlanID != nil {
-        info["骑士卡ID"] = func() string {
-            return NewPlan().NameFromID(*req.PlanID)
-        }
+        // ent.NewExportInfo(*req.CityID, rider.Table)
+        info["骑士卡"] = ent.NewExportInfo(*req.PlanID, plan.Table)
         q.Where(rider.HasSubscribesWith(subscribe.PlanID(*req.PlanID)))
     }
     if req.Enterprise != nil && *req.Enterprise != 0 {
@@ -496,9 +498,7 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
             if req.EnterpriseID == nil {
                 q.Where(rider.EnterpriseIDNotNil())
             } else {
-                info["团签企业"] = func() string {
-                    return NewEnterprise().NameFromID(*req.EnterpriseID)
-                }
+                info["团签企业"] = ent.NewExportInfo(*req.EnterpriseID, enterprise.Table)
                 q.Where(rider.EnterpriseID(*req.EnterpriseID))
             }
         } else {
@@ -509,9 +509,7 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
     }
 
     if req.CityID != nil {
-        info["城市"] = func() string {
-            return NewCity().NameFromID(*req.CityID)
-        }
+        info["城市"] = ent.NewExportInfo(*req.CityID, city.Table)
         q.Where(rider.HasSubscribesWith(subscribe.CityID(*req.CityID)))
     }
 

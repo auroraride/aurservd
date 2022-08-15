@@ -13,6 +13,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
     "github.com/auroraride/aurservd/internal/ent/subscribesuspend"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     "time"
 )
@@ -59,6 +60,7 @@ func (s *suspendService) Suspend(req *model.SuspendReq) {
 
     ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
         now := time.Now()
+        var pauseID *uint64
         // 判断是否寄存中, 如果是寄存中的话时间计算为当日寄存生效时间
         if pause != nil {
             // 判断当日0点是否是寄存状态
@@ -66,8 +68,9 @@ func (s *suspendService) Suspend(req *model.SuspendReq) {
             if beginning.After(pause.StartAt) {
                 now = beginning
             }
+            pauseID = tools.NewPointerInterface(pause.ID)
         }
-        _, err = tx.SubscribeSuspend.Create().SetStartAt(time.Now()).SetRemark(req.Remark).SetStartAt(now).SetSubscribeID(sub.ID).SetCityID(sub.CityID).SetRiderID(sub.RiderID).SetPause(pause).Save(s.ctx)
+        _, err = tx.SubscribeSuspend.Create().SetStartAt(time.Now()).SetRemark(req.Remark).SetStartAt(now).SetSubscribeID(sub.ID).SetCityID(sub.CityID).SetRiderID(sub.RiderID).SetNillablePauseID(pauseID).Save(s.ctx)
         if err != nil {
             snag.Panic("暂停失败")
         }

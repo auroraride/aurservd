@@ -1079,7 +1079,7 @@ definitions:
         type: string
       reserve:
         allOf:
-        - $ref: '#/definitions/model.RiderUnfinishedRes'
+        - $ref: '#/definitions/model.ReserveUnfinishedRes'
         description: 当前预约, 预约不存在时无此字段
       serial:
         description: 电柜编号
@@ -3241,6 +3241,51 @@ definitions:
         description: 电柜ID
         type: integer
     type: object
+  model.ReserveListRes:
+    properties:
+      business:
+        description: 业务
+        type: string
+      cabinetName:
+        description: 电柜名称
+        type: string
+      city:
+        description: 城市
+        type: string
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 电话
+        type: string
+      serial:
+        description: 电柜编号
+        type: string
+      status:
+        description: 状态
+        type: string
+    type: object
+  model.ReserveUnfinishedRes:
+    properties:
+      business:
+        description: 预约业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+        type: string
+      cabinetId:
+        description: 电柜ID
+        type: integer
+      fid:
+        description: 设施ID
+        type: string
+      id:
+        description: 预约ID
+        type: integer
+      status:
+        description: 状态 0:已预约 1:进行中
+        type: integer
+      time:
+        description: 预约时间
+        type: string
+    type: object
   model.RiderBasic:
     properties:
       id:
@@ -3774,27 +3819,6 @@ definitions:
     - phone
     - smsCode
     - smsId
-    type: object
-  model.RiderUnfinishedRes:
-    properties:
-      business:
-        description: 预约业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
-        type: string
-      cabinetId:
-        description: 电柜ID
-        type: integer
-      fid:
-        description: 设施ID
-        type: string
-      id:
-        description: 预约ID
-        type: integer
-      status:
-        description: 状态 0:已预约 1:进行中
-        type: integer
-      time:
-        description: 预约时间
-        type: string
     type: object
   model.Role:
     properties:
@@ -4601,6 +4625,9 @@ definitions:
         - 4
         - 5
         type: integer
+      suspend:
+        description: 是否暂停扣费
+        type: boolean
     type: object
   model.SubscribeActiveInfo:
     properties:
@@ -6459,7 +6486,7 @@ paths:
                     $ref: '#/definitions/model.BusinessListRes'
                   type: array
               type: object
-      summary: M8004 业务记录
+      summary: MG001 骑手业务记录
       tags:
       - '[M]管理接口'
   /manager/v1/business/pause:
@@ -6551,7 +6578,76 @@ paths:
                     $ref: '#/definitions/model.BusinessPauseListRes'
                   type: array
               type: object
-      summary: M8005 寄存记录
+      summary: MG002 寄存记录
+      tags:
+      - '[M]管理接口'
+  /manager/v1/business/reserve:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerBusinessReserve
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 预约业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+        enum:
+        - active
+        - pause
+        - continue
+        - unsubscribe
+        in: query
+        name: business
+        type: string
+      - description: 电柜ID
+        in: query
+        name: cabinetId
+        type: integer
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 结束日期, 如 2022-08-07
+        in: query
+        name: end
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 骑手ID
+        in: query
+        name: riderId
+        type: integer
+      - description: 电柜编号
+        in: query
+        name: serial
+        type: string
+      - description: 开始日期, 如 2022-08-01
+        in: query
+        name: start
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.ReserveListRes'
+                  type: array
+              type: object
+      summary: MG004 预约记录
       tags:
       - '[M]管理接口'
   /manager/v1/cabinet:
@@ -8103,7 +8199,7 @@ paths:
                     $ref: '#/definitions/model.ExchangeManagerListRes'
                   type: array
               type: object
-      summary: M8003 换电记录
+      summary: MG003 换电记录
       tags:
       - '[M]管理接口'
   /manager/v1/export:
@@ -10033,7 +10129,7 @@ paths:
       summary: M7014 暂停扣费
       tags:
       - '[M]管理接口'
-  /manager/v1/subscribe/unSuspend:
+  /manager/v1/subscribe/unsuspend:
     post:
       consumes:
       - application/json
@@ -11271,7 +11367,7 @@ paths:
         "200":
           description: 请求成功, 预约不存在时为`null`
           schema:
-            $ref: '#/definitions/model.RiderUnfinishedRes'
+            $ref: '#/definitions/model.ReserveUnfinishedRes'
       summary: R8001 获取未完成预约
       tags:
       - '[R]骑手接口'
@@ -11297,7 +11393,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.RiderUnfinishedRes'
+            $ref: '#/definitions/model.ReserveUnfinishedRes'
       summary: R8002 创建预约
       tags:
       - '[R]骑手接口'

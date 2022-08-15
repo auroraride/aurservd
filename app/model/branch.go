@@ -191,7 +191,7 @@ type BranchFacilityCabinet struct {
     Name       string                         `json:"name"`              // 电柜名称
     Serial     string                         `json:"serial"`            // 电柜编号
     Batteries  []BranchFacilityCabinetBattery `json:"batteries"`         // 电池情况
-    Reserve    *RiderUnfinishedRes            `json:"reserve,omitempty"` // 当前预约, 预约不存在时无此字段
+    Reserve    *ReserveUnfinishedRes          `json:"reserve,omitempty"` // 当前预约, 预约不存在时无此字段
     Bins       []BranchFacilityCabinetBin     `json:"bins"`              // 仓位详情
     Businesses []string                       `json:"businesses"`        // 可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
 }
