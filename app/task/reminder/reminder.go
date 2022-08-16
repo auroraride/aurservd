@@ -109,7 +109,8 @@ func (r *reminderTask) run() {
         select {
         case <-r.ticker.C:
             h := time.Now().Hour()
-            if h == 4 {
+            // 下午4点发送
+            if h == 16 {
 
                 duplicateRemove()
 
