@@ -61,7 +61,7 @@ func newReminder() {
             var smserr, vmserr error
             runner.smsdays, smserr = strconv.Atoi(notice.Sms)
             runner.vmsdays, vmserr = strconv.Atoi(notice.Call)
-            runner.running = smserr == nil && vmserr == nil
+            runner.running = smserr == nil && vmserr == nil && ar.Config.App.Reminder
         }
     }
 
@@ -69,6 +69,10 @@ func newReminder() {
 }
 
 func Subscribe(sub *ent.Subscribe) {
+    if !runner.running {
+        return
+    }
+
     ri := sub.Edges.Rider
     if ri == nil {
         return

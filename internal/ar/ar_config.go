@@ -63,8 +63,11 @@ type config struct {
         BodyLimit    string
         RateLimit    float64
         CabinetDebug bool
-        Task         bool
-        Debug        struct {
+        // 是否运行计算任务
+        Task bool
+        // 是否运行催费服务
+        Reminder bool
+        Debug    struct {
             Phone map[string]bool
         }
         Captcha struct {

@@ -614,6 +614,7 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
                 ID:         cab.ID,
                 Name:       cab.Name,
                 Serial:     cab.Serial,
+                Image:      b.Photos[0],
                 Reserve:    nil,
                 Bins:       make([]model.BranchFacilityCabinetBin, len(cab.Bin)),
                 Businesses: make([]string, 0),

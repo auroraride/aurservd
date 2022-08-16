@@ -11743,6 +11743,10 @@ const docTemplate = `{
                     "description": "电柜ID",
                     "type": "integer"
                 },
+                "image": {
+                    "description": "网点图片",
+                    "type": "string"
+                },
                 "name": {
                     "description": "电柜名称",
                     "type": "string"

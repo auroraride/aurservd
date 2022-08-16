@@ -189,6 +189,7 @@ type BranchFacilityCabinet struct {
     ID         uint64                         `json:"id"`                // 电柜ID
     Status     uint8                          `json:"status"`            // 电柜状态 0:离线 1:在线 2:维护中
     Name       string                         `json:"name"`              // 电柜名称
+    Image      string                         `json:"image"`             // 网点图片
     Serial     string                         `json:"serial"`            // 电柜编号
     Batteries  []BranchFacilityCabinetBattery `json:"batteries"`         // 电池情况
     Reserve    *ReserveUnfinishedRes          `json:"reserve,omitempty"` // 当前预约, 预约不存在时无此字段
