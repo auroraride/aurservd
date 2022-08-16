@@ -63,16 +63,20 @@ type config struct {
         BodyLimit    string
         RateLimit    float64
         CabinetDebug bool
-        // 是否运行计算任务
-        Task bool
-        // 是否运行催费服务
-        Reminder bool
-        Debug    struct {
+        Debug        struct {
             Phone map[string]bool
         }
         Captcha struct {
             Names map[string]string
         }
+    }
+    Task struct {
+        Branch     bool // 网点合同到期提醒
+        Enterprise bool // 团签账单
+        Sim        bool // SIM卡到期提醒
+        Subscribe  bool // 个签订阅日期计算
+        Reserve    bool // 预约到期计算
+        Reminder   bool // 个签到期提醒
     }
     Cabinet struct {
         Debug    bool

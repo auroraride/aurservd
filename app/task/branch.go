@@ -25,7 +25,7 @@ func NewBranchTask() *branchTask {
 }
 
 func (t *branchTask) Start() {
-    if !ar.Config.App.Task {
+    if !ar.Config.Task.Branch {
         return
     }
 

@@ -20,7 +20,7 @@ func NewSubscribe() *subscribeTask {
 }
 
 func (t *subscribeTask) Start() {
-    if !ar.Config.App.Task {
+    if !ar.Config.Task.Subscribe {
         return
     }
 

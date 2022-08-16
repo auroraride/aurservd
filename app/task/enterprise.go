@@ -20,7 +20,7 @@ func NewEnterprise() *enterpriseTask {
 }
 
 func (t *enterpriseTask) Start() {
-    if !ar.Config.App.Task {
+    if !ar.Config.Task.Enterprise {
         return
     }
 

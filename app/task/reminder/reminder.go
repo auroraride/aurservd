@@ -47,7 +47,7 @@ func newReminder() {
     vmscfg := ar.Config.Aliyun.Vms.Reminder
     runner = &reminderTask{
         ctx:      context.Background(),
-        ticker:   time.NewTicker(5 * time.Second),
+        ticker:   time.NewTicker(1 * time.Minute),
         vmstempl: vmscfg.Template,
         vmstel:   vmscfg.Tel,
         smstempl: ar.Config.Aliyun.Sms.Template.Reminder,
@@ -61,7 +61,7 @@ func newReminder() {
             var smserr, vmserr error
             runner.smsdays, smserr = strconv.Atoi(notice.Sms)
             runner.vmsdays, vmserr = strconv.Atoi(notice.Call)
-            runner.running = smserr == nil && vmserr == nil && ar.Config.App.Reminder
+            runner.running = smserr == nil && vmserr == nil && ar.Config.Task.Reminder
         }
     }
 

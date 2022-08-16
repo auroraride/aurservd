@@ -25,7 +25,7 @@ func NewCabinetTask() *simTask {
 }
 
 func (t *simTask) Start() {
-    if !ar.Config.App.Task {
+    if !ar.Config.Task.Sim {
         return
     }
 
