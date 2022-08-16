@@ -438,6 +438,20 @@ func (sp *SubscribePause) GetID() uint64 {
 	return sp.ID
 }
 
+// GetTableName returns table name for SubscribeReminder.
+func (sr *SubscribeReminder) GetTableName() string {
+	return "subscribe_reminder"
+}
+
+// GetID returns id for SubscribeReminder.
+func (sr *SubscribeReminder) GetID() uint64 {
+	return sr.ID
+}
+
+func (sr *SubscribeReminder) GetName() string {
+	return sr.Name
+}
+
 // GetTableName returns table name for SubscribeSuspend.
 func (ss *SubscribeSuspend) GetTableName() string {
 	return "subscribe_suspend"

@@ -1077,6 +1077,30 @@ func (f SubscribePauseMutationRuleFunc) EvalMutation(ctx context.Context, m ent.
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.SubscribePauseMutation", m)
 }
 
+// The SubscribeReminderQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type SubscribeReminderQueryRuleFunc func(context.Context, *ent.SubscribeReminderQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f SubscribeReminderQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.SubscribeReminderQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.SubscribeReminderQuery", q)
+}
+
+// The SubscribeReminderMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type SubscribeReminderMutationRuleFunc func(context.Context, *ent.SubscribeReminderMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f SubscribeReminderMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.SubscribeReminderMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.SubscribeReminderMutation", m)
+}
+
 // The SubscribeSuspendQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type SubscribeSuspendQueryRuleFunc func(context.Context, *ent.SubscribeSuspendQuery) error
@@ -1212,6 +1236,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.SubscribePauseQuery:
 		return q.Filter(), nil
+	case *ent.SubscribeReminderQuery:
+		return q.Filter(), nil
 	case *ent.SubscribeSuspendQuery:
 		return q.Filter(), nil
 	default:
@@ -1296,6 +1322,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.SubscribeAlterMutation:
 		return m.Filter(), nil
 	case *ent.SubscribePauseMutation:
+		return m.Filter(), nil
+	case *ent.SubscribeReminderMutation:
 		return m.Filter(), nil
 	case *ent.SubscribeSuspendMutation:
 		return m.Filter(), nil

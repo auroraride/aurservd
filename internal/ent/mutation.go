@@ -53,5 +53,6 @@ const (
 	TypeSubscribe            = "Subscribe"
 	TypeSubscribeAlter       = "SubscribeAlter"
 	TypeSubscribePause       = "SubscribePause"
+	TypeSubscribeReminder    = "SubscribeReminder"
 	TypeSubscribeSuspend     = "SubscribeSuspend"
 )

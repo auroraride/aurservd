@@ -129,7 +129,8 @@ type config struct {
             AccessKeyId     string
             AccessKeySecret string
             Endpoint        string
-            Overdue         struct {
+            // 语音催费配置
+            Reminder struct {
                 Template *string // tts 模板ID
                 Tel      *string // 独立号码为空的时候使用公共号码进行发送
             }
@@ -140,9 +141,10 @@ type config struct {
             Endpoint        string
             Sign            string
             Template        struct {
-                General struct {
-                    Code string
-                }
+                // 验证码
+                General string
+                // 短信催费
+                Reminder string
             }
         }
         Sls struct {

@@ -16,8 +16,8 @@ type csc struct{}
 
 var Csc = new(csc)
 
-// IvrShiguangju
-// @ID           CscIvrShiguangju
+// BatchReminder
+// @ID           CscBatchReminder
 // @Router       /manager/v1/csc/irv [POST]
 // @Summary      MT1001 时光驹催费工具
 // @Tags         [M]管理接口
@@ -26,11 +26,11 @@ var Csc = new(csc)
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        file  formData  file  true  "外呼文件"
 // @Success      200  {object}  model.ShiguangjuIVRRes  "请求成功"
-func (*csc) IvrShiguangju(c echo.Context) (err error) {
+func (*csc) BatchReminder(c echo.Context) (err error) {
     file, err := c.FormFile("file")
     if err != nil {
         snag.Panic(err)
     }
 
-    return app.ContextX[app.ManagerContext](c).SendResponse(service.NewCSC().ParseNameListShiguangju(file))
+    return app.ContextX[app.ManagerContext](c).SendResponse(service.NewCSC().BatchReminder(file))
 }

@@ -7263,7 +7263,7 @@ paths:
     post:
       consumes:
       - multipart/form-data
-      operationId: CscIvrShiguangju
+      operationId: CscBatchReminder
       parameters:
       - description: 管理员校验token
         in: header

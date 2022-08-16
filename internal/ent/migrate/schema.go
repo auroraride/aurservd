@@ -2570,6 +2570,46 @@ var (
 			},
 		},
 	}
+	// SubscribeReminderColumns holds the columns for the "subscribe_reminder" table.
+	SubscribeReminderColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "type", Type: field.TypeEnum, Comment: "催费类型", Enums: []string{"sms", "vms"}},
+		{Name: "phone", Type: field.TypeString, Comment: "电话"},
+		{Name: "name", Type: field.TypeString, Comment: "姓名"},
+		{Name: "success", Type: field.TypeBool, Comment: "是否成功"},
+		{Name: "days", Type: field.TypeInt, Comment: "剩余天数"},
+		{Name: "plan_name", Type: field.TypeString, Comment: "套餐名称"},
+		{Name: "date", Type: field.TypeString, Comment: "发送日期"},
+		{Name: "subscribe_id", Type: field.TypeUint64},
+	}
+	// SubscribeReminderTable holds the schema information for the "subscribe_reminder" table.
+	SubscribeReminderTable = &schema.Table{
+		Name:       "subscribe_reminder",
+		Columns:    SubscribeReminderColumns,
+		PrimaryKey: []*schema.Column{SubscribeReminderColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "subscribe_reminder_subscribe_subscribe",
+				Columns:    []*schema.Column{SubscribeReminderColumns[10]},
+				RefColumns: []*schema.Column{SubscribeColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "subscribereminder_type",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeReminderColumns[3]},
+			},
+			{
+				Name:    "subscribereminder_date",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeReminderColumns[9]},
+			},
+		},
+	}
 	// SubscribeSuspendColumns holds the columns for the "subscribe_suspend" table.
 	SubscribeSuspendColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -2733,6 +2773,7 @@ var (
 		SubscribeTable,
 		SubscribeAlterTable,
 		SubscribePauseTable,
+		SubscribeReminderTable,
 		SubscribeSuspendTable,
 		CabinetBmsTable,
 		PlanPmsTable,
@@ -2957,6 +2998,10 @@ func init() {
 	SubscribePauseTable.ForeignKeys[8].RefTable = EmployeeTable
 	SubscribePauseTable.Annotation = &entsql.Annotation{
 		Table: "subscribe_pause",
+	}
+	SubscribeReminderTable.ForeignKeys[0].RefTable = SubscribeTable
+	SubscribeReminderTable.Annotation = &entsql.Annotation{
+		Table: "subscribe_reminder",
 	}
 	SubscribeSuspendTable.ForeignKeys[0].RefTable = SubscribeTable
 	SubscribeSuspendTable.ForeignKeys[1].RefTable = SubscribePauseTable

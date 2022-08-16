@@ -10,6 +10,7 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/task/reminder"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/contract"
     "github.com/auroraride/aurservd/internal/ent/order"
@@ -268,12 +269,17 @@ func (s *subscribeService) QueryAllRidersEffective() []*ent.Subscribe {
         WithSuspends(func(spq *ent.SubscribeSuspendQuery) {
             spq.Order(ent.Desc(subscribesuspend.FieldStartAt))
         }).
+        WithPlan().
+        WithRider(func(query *ent.RiderQuery) {
+            query.WithPerson()
+        }).
         All(s.ctx)
     return items
 }
 
 // UpdateStatus 更新订阅状态
-func (s *subscribeService) UpdateStatus(item *ent.Subscribe) error {
+// notice 是否发送催费通知
+func (s *subscribeService) UpdateStatus(item *ent.Subscribe, notice bool) error {
     if item.EnterpriseID != nil {
         return nil
     }
@@ -338,6 +344,7 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe) error {
             log.Errorf("[SUBSCRIBE TASK] %d 更新失败: %v", item.ID, err)
             return err
         }
+        sub.Edges = item.Edges
 
         *item = *sub
         log.Infof("[SUBSCRIBE TASK] %d 更新成功, 状态: %d, 剩余天数: %d", item.ID, status, remaining)
@@ -348,6 +355,10 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe) error {
 
             // 查询并标记用户合同为失效
             _, _ = tx.Contract.Update().Where(contract.RiderID(sub.RiderID)).SetEffective(false).Save(s.ctx)
+        }
+
+        if notice {
+            reminder.Subscribe(item)
         }
         return nil
     })

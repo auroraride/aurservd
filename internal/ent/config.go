@@ -66,6 +66,7 @@ type hooks struct {
 	Subscribe            []ent.Hook
 	SubscribeAlter       []ent.Hook
 	SubscribePause       []ent.Hook
+	SubscribeReminder    []ent.Hook
 	SubscribeSuspend     []ent.Hook
 }
 

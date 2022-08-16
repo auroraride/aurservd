@@ -45,6 +45,6 @@ func (*subscribeTask) Do() {
     // 获取当前所有生效的订阅
     items := srv.QueryAllRidersEffective()
     for _, item := range items {
-        _ = srv.UpdateStatus(item)
+        _ = srv.UpdateStatus(item, true)
     }
 }

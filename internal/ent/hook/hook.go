@@ -503,6 +503,19 @@ func (f SubscribePauseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Val
 	return f(ctx, mv)
 }
 
+// The SubscribeReminderFunc type is an adapter to allow the use of ordinary
+// function as SubscribeReminder mutator.
+type SubscribeReminderFunc func(context.Context, *ent.SubscribeReminderMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SubscribeReminderFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.SubscribeReminderMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SubscribeReminderMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The SubscribeSuspendFunc type is an adapter to allow the use of ordinary
 // function as SubscribeSuspend mutator.
 type SubscribeSuspendFunc func(context.Context, *ent.SubscribeSuspendMutation) (ent.Value, error)

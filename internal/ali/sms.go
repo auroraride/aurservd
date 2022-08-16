@@ -23,8 +23,8 @@ type smsClient struct {
     data string
 }
 
-// NewSmsClient 创建sms客户端
-func NewSmsClient() (c *smsClient, err error) {
+// NewSms 创建sms客户端
+func NewSms() (c *smsClient, err error) {
     cfg := ar.Config.Aliyun.Sms
     config := &openapi.Config{
         AccessKeyId:     &cfg.AccessKeyId,
@@ -44,8 +44,8 @@ func NewSmsClient() (c *smsClient, err error) {
     return
 }
 
-// SetTmplate 设置模板
-func (c *smsClient) SetTmplate(tmpl string) *smsClient {
+// SetTemplate 设置模板
+func (c *smsClient) SetTemplate(tmpl string) *smsClient {
     c.tmpl = tmpl
     return c
 }

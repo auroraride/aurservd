@@ -844,6 +844,28 @@ func (spq *SubscribePauseQuery) PaginationResult(req model.PaginationReq) model.
 	}
 }
 
+// Pagination returns pagination query builder for SubscribeReminderQuery.
+func (srq *SubscribeReminderQuery) Pagination(req model.PaginationReq) *SubscribeReminderQuery {
+	srq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return srq
+}
+
+// PaginationItems returns pagination query builder for SubscribeReminderQuery.
+func (srq *SubscribeReminderQuery) PaginationItemsX(req model.PaginationReq) any {
+	return srq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for SubscribeReminderQuery.
+func (srq *SubscribeReminderQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := srq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for SubscribeSuspendQuery.
 func (ssq *SubscribeSuspendQuery) Pagination(req model.PaginationReq) *SubscribeSuspendQuery {
 	ssq.Offset(req.GetOffset()).Limit(req.GetLimit())

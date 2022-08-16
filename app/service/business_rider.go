@@ -412,7 +412,7 @@ func (s *businessRiderService) UnSubscribe(subscribeID uint64) {
 
     sub := s.subscribe
 
-    err := NewSubscribe().UpdateStatus(sub)
+    err := NewSubscribe().UpdateStatus(sub, false)
     if err != nil {
         snag.Panic(err)
     }

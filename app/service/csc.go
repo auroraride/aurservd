@@ -10,6 +10,7 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ali"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/h2non/filetype"
@@ -29,10 +30,9 @@ func NewCSC() *cscService {
     }
 }
 
-// ParseNameListShiguangju 时光驹催缴工具
-func (*cscService) ParseNameListShiguangju(source *multipart.FileHeader) []*model.ShiguangjuIVRItem {
-    tel := "02863804608"
-    tmpl := "TTS_235791551"
+// BatchReminder 时光驹催缴工具
+func (*cscService) BatchReminder(source *multipart.FileHeader) []*model.ShiguangjuIVRItem {
+    cfg := ar.Config.Aliyun.Vms.Reminder
 
     f, err := source.Open()
     if err != nil {
@@ -76,7 +76,7 @@ func (*cscService) ParseNameListShiguangju(source *multipart.FileHeader) []*mode
                 Phone:   row[1],
                 Product: row[2],
             }
-            item.Status = ali.NewVms().SendVoiceMessageByTts(tools.NewPointerInterface(item.Phone), tools.NewPointerInterface(fmt.Sprintf(`{"name":"%s","product": "%s"}`, item.Name, item.Product)), &tel, &tmpl)
+            item.Status = ali.NewVms().SendVoiceMessageByTts(tools.NewPointerInterface(item.Phone), tools.NewPointerInterface(fmt.Sprintf(`{"name":"%s","product": "%s"}`, item.Name, item.Product)), cfg.Tel, cfg.Template)
             items[i-1] = item
         }
     }

@@ -34,7 +34,7 @@ func (s *sms) SendCode(phone string) (string, error) {
     if t-time.Now().Unix() > 0 {
         return "", errors.New("请勿频繁请求")
     }
-    c, err := ali.NewSmsClient()
+    c, err := ali.NewSms()
     if err != nil {
         return "", err
     }
@@ -43,7 +43,7 @@ func (s *sms) SendCode(phone string) (string, error) {
     // log.Info(*c.Endpoint)
     // id = "test"
     cfg := ar.Config.Aliyun.Sms
-    id, err = c.SetTmplate(cfg.Template.General.Code).SetParam(map[string]string{"code": code}).SendCode(phone)
+    id, err = c.SetTemplate(cfg.Template.General).SetParam(map[string]string{"code": code}).SendCode(phone)
     if err != nil {
         return "", err
     }

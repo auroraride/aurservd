@@ -12,6 +12,7 @@ import (
     "github.com/auroraride/aurservd/app/router"
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/app/task"
+    "github.com/auroraride/aurservd/app/task/reminder"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/exchange"
     log "github.com/sirupsen/logrus"
@@ -27,6 +28,9 @@ func serverCommand() *cobra.Command {
         Run: func(cmd *cobra.Command, args []string) {
             // 初始化数据
             service.DatabaseInitial()
+
+            // 启动催费服务
+            go reminder.Run()
 
             // 启动电柜服务
             go pvd.Run()

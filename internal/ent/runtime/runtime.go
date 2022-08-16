@@ -44,6 +44,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
+	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
 )
 
@@ -968,6 +969,21 @@ func init() {
 	subscribepauseDescSuspendDays := subscribepauseFields[8].Descriptor()
 	// subscribepause.DefaultSuspendDays holds the default value on creation for the suspend_days field.
 	subscribepause.DefaultSuspendDays = subscribepauseDescSuspendDays.Default.(int)
+	subscribereminderMixin := schema.SubscribeReminder{}.Mixin()
+	subscribereminderMixinFields0 := subscribereminderMixin[0].Fields()
+	_ = subscribereminderMixinFields0
+	subscribereminderFields := schema.SubscribeReminder{}.Fields()
+	_ = subscribereminderFields
+	// subscribereminderDescCreatedAt is the schema descriptor for created_at field.
+	subscribereminderDescCreatedAt := subscribereminderMixinFields0[0].Descriptor()
+	// subscribereminder.DefaultCreatedAt holds the default value on creation for the created_at field.
+	subscribereminder.DefaultCreatedAt = subscribereminderDescCreatedAt.Default.(func() time.Time)
+	// subscribereminderDescUpdatedAt is the schema descriptor for updated_at field.
+	subscribereminderDescUpdatedAt := subscribereminderMixinFields0[1].Descriptor()
+	// subscribereminder.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	subscribereminder.DefaultUpdatedAt = subscribereminderDescUpdatedAt.Default.(func() time.Time)
+	// subscribereminder.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	subscribereminder.UpdateDefaultUpdatedAt = subscribereminderDescUpdatedAt.UpdateDefault.(func() time.Time)
 	subscribesuspendMixin := schema.SubscribeSuspend{}.Mixin()
 	subscribesuspendMixinHooks0 := subscribesuspendMixin[0].Hooks()
 	subscribesuspend.Hooks[0] = subscribesuspendMixinHooks0[0]

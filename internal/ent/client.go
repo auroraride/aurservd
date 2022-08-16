@@ -47,6 +47,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
+	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
 
 	"entgo.io/ent/dialect"
@@ -135,6 +136,8 @@ type Client struct {
 	SubscribeAlter *SubscribeAlterClient
 	// SubscribePause is the client for interacting with the SubscribePause builders.
 	SubscribePause *SubscribePauseClient
+	// SubscribeReminder is the client for interacting with the SubscribeReminder builders.
+	SubscribeReminder *SubscribeReminderClient
 	// SubscribeSuspend is the client for interacting with the SubscribeSuspend builders.
 	SubscribeSuspend *SubscribeSuspendClient
 }
@@ -188,6 +191,7 @@ func (c *Client) init() {
 	c.Subscribe = NewSubscribeClient(c.config)
 	c.SubscribeAlter = NewSubscribeAlterClient(c.config)
 	c.SubscribePause = NewSubscribePauseClient(c.config)
+	c.SubscribeReminder = NewSubscribeReminderClient(c.config)
 	c.SubscribeSuspend = NewSubscribeSuspendClient(c.config)
 }
 
@@ -260,6 +264,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Subscribe:            NewSubscribeClient(cfg),
 		SubscribeAlter:       NewSubscribeAlterClient(cfg),
 		SubscribePause:       NewSubscribePauseClient(cfg),
+		SubscribeReminder:    NewSubscribeReminderClient(cfg),
 		SubscribeSuspend:     NewSubscribeSuspendClient(cfg),
 	}, nil
 }
@@ -318,6 +323,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Subscribe:            NewSubscribeClient(cfg),
 		SubscribeAlter:       NewSubscribeAlterClient(cfg),
 		SubscribePause:       NewSubscribePauseClient(cfg),
+		SubscribeReminder:    NewSubscribeReminderClient(cfg),
 		SubscribeSuspend:     NewSubscribeSuspendClient(cfg),
 	}, nil
 }
@@ -386,6 +392,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Subscribe.Use(hooks...)
 	c.SubscribeAlter.Use(hooks...)
 	c.SubscribePause.Use(hooks...)
+	c.SubscribeReminder.Use(hooks...)
 	c.SubscribeSuspend.Use(hooks...)
 }
 
@@ -6307,6 +6314,112 @@ func (c *SubscribePauseClient) QuerySuspends(sp *SubscribePause) *SubscribeSuspe
 func (c *SubscribePauseClient) Hooks() []Hook {
 	hooks := c.hooks.SubscribePause
 	return append(hooks[:len(hooks):len(hooks)], subscribepause.Hooks[:]...)
+}
+
+// SubscribeReminderClient is a client for the SubscribeReminder schema.
+type SubscribeReminderClient struct {
+	config
+}
+
+// NewSubscribeReminderClient returns a client for the SubscribeReminder from the given config.
+func NewSubscribeReminderClient(c config) *SubscribeReminderClient {
+	return &SubscribeReminderClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `subscribereminder.Hooks(f(g(h())))`.
+func (c *SubscribeReminderClient) Use(hooks ...Hook) {
+	c.hooks.SubscribeReminder = append(c.hooks.SubscribeReminder, hooks...)
+}
+
+// Create returns a create builder for SubscribeReminder.
+func (c *SubscribeReminderClient) Create() *SubscribeReminderCreate {
+	mutation := newSubscribeReminderMutation(c.config, OpCreate)
+	return &SubscribeReminderCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SubscribeReminder entities.
+func (c *SubscribeReminderClient) CreateBulk(builders ...*SubscribeReminderCreate) *SubscribeReminderCreateBulk {
+	return &SubscribeReminderCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SubscribeReminder.
+func (c *SubscribeReminderClient) Update() *SubscribeReminderUpdate {
+	mutation := newSubscribeReminderMutation(c.config, OpUpdate)
+	return &SubscribeReminderUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SubscribeReminderClient) UpdateOne(sr *SubscribeReminder) *SubscribeReminderUpdateOne {
+	mutation := newSubscribeReminderMutation(c.config, OpUpdateOne, withSubscribeReminder(sr))
+	return &SubscribeReminderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SubscribeReminderClient) UpdateOneID(id uint64) *SubscribeReminderUpdateOne {
+	mutation := newSubscribeReminderMutation(c.config, OpUpdateOne, withSubscribeReminderID(id))
+	return &SubscribeReminderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SubscribeReminder.
+func (c *SubscribeReminderClient) Delete() *SubscribeReminderDelete {
+	mutation := newSubscribeReminderMutation(c.config, OpDelete)
+	return &SubscribeReminderDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *SubscribeReminderClient) DeleteOne(sr *SubscribeReminder) *SubscribeReminderDeleteOne {
+	return c.DeleteOneID(sr.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *SubscribeReminderClient) DeleteOneID(id uint64) *SubscribeReminderDeleteOne {
+	builder := c.Delete().Where(subscribereminder.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SubscribeReminderDeleteOne{builder}
+}
+
+// Query returns a query builder for SubscribeReminder.
+func (c *SubscribeReminderClient) Query() *SubscribeReminderQuery {
+	return &SubscribeReminderQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a SubscribeReminder entity by its id.
+func (c *SubscribeReminderClient) Get(ctx context.Context, id uint64) (*SubscribeReminder, error) {
+	return c.Query().Where(subscribereminder.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SubscribeReminderClient) GetX(ctx context.Context, id uint64) *SubscribeReminder {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QuerySubscribe queries the subscribe edge of a SubscribeReminder.
+func (c *SubscribeReminderClient) QuerySubscribe(sr *SubscribeReminder) *SubscribeQuery {
+	query := &SubscribeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := sr.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribereminder.Table, subscribereminder.FieldID, id),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribereminder.SubscribeTable, subscribereminder.SubscribeColumn),
+		)
+		fromV = sqlgraph.Neighbors(sr.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *SubscribeReminderClient) Hooks() []Hook {
+	return c.hooks.SubscribeReminder
 }
 
 // SubscribeSuspendClient is a client for the SubscribeSuspend schema.

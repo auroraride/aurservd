@@ -90,6 +90,8 @@ type Tx struct {
 	SubscribeAlter *SubscribeAlterClient
 	// SubscribePause is the client for interacting with the SubscribePause builders.
 	SubscribePause *SubscribePauseClient
+	// SubscribeReminder is the client for interacting with the SubscribeReminder builders.
+	SubscribeReminder *SubscribeReminderClient
 	// SubscribeSuspend is the client for interacting with the SubscribeSuspend builders.
 	SubscribeSuspend *SubscribeSuspendClient
 
@@ -265,6 +267,7 @@ func (tx *Tx) init() {
 	tx.Subscribe = NewSubscribeClient(tx.config)
 	tx.SubscribeAlter = NewSubscribeAlterClient(tx.config)
 	tx.SubscribePause = NewSubscribePauseClient(tx.config)
+	tx.SubscribeReminder = NewSubscribeReminderClient(tx.config)
 	tx.SubscribeSuspend = NewSubscribeSuspendClient(tx.config)
 }
 

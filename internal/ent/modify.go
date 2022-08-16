@@ -317,6 +317,13 @@ func (c *SubscribePauseClient) ModifyOne(old *SubscribePause, data any) *Subscri
 	return EntitySetAttributes[SubscribePauseUpdateOne, SubscribePause](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for SubscribeReminder.
+func (c *SubscribeReminderClient) ModifyOne(old *SubscribeReminder, data any) *SubscribeReminderUpdateOne {
+	mutation := newSubscribeReminderMutation(c.config, OpUpdateOne, withSubscribeReminder(old))
+	up := &SubscribeReminderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[SubscribeReminderUpdateOne, SubscribeReminder](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for SubscribeSuspend.
 func (c *SubscribeSuspendClient) ModifyOne(old *SubscribeSuspend, data any) *SubscribeSuspendUpdateOne {
 	mutation := newSubscribeSuspendMutation(c.config, OpUpdateOne, withSubscribeSuspend(old))

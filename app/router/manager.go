@@ -49,7 +49,7 @@ func loadManagerRoutes() {
     g.DELETE("/store/:id", mapi.Store.Delete)
 
     // 客服工具
-    g.POST("/csc/irv", mapi.Csc.IvrShiguangju) // 逾期催费
+    g.POST("/csc/irv", mapi.Csc.BatchReminder) // 逾期催费
 
     // 电池
     g.GET("/battery/model", mapi.Battery.ListModels)

@@ -3569,7 +3569,7 @@ const docTemplate = `{
                     "[M]管理接口"
                 ],
                 "summary": "MT1001 时光驹催费工具",
-                "operationId": "CscIvrShiguangju",
+                "operationId": "CscBatchReminder",
                 "parameters": [
                     {
                         "type": "string",

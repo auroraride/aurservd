@@ -120,5 +120,8 @@ type SubscribeAlter func(*sql.Selector)
 // SubscribePause is the predicate function for subscribepause builders.
 type SubscribePause func(*sql.Selector)
 
+// SubscribeReminder is the predicate function for subscribereminder builders.
+type SubscribeReminder func(*sql.Selector)
+
 // SubscribeSuspend is the predicate function for subscribesuspend builders.
 type SubscribeSuspend func(*sql.Selector)

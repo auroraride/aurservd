@@ -42,6 +42,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
+	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
 
 	"entgo.io/ent/dialect/sql"
@@ -52,7 +53,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 39)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 40)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   assistance.Table,
@@ -1123,6 +1124,29 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 	}
 	graph.Nodes[38] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   subscribereminder.Table,
+			Columns: subscribereminder.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: subscribereminder.FieldID,
+			},
+		},
+		Type: "SubscribeReminder",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			subscribereminder.FieldCreatedAt:   {Type: field.TypeTime, Column: subscribereminder.FieldCreatedAt},
+			subscribereminder.FieldUpdatedAt:   {Type: field.TypeTime, Column: subscribereminder.FieldUpdatedAt},
+			subscribereminder.FieldSubscribeID: {Type: field.TypeUint64, Column: subscribereminder.FieldSubscribeID},
+			subscribereminder.FieldType:        {Type: field.TypeEnum, Column: subscribereminder.FieldType},
+			subscribereminder.FieldPhone:       {Type: field.TypeString, Column: subscribereminder.FieldPhone},
+			subscribereminder.FieldName:        {Type: field.TypeString, Column: subscribereminder.FieldName},
+			subscribereminder.FieldSuccess:     {Type: field.TypeBool, Column: subscribereminder.FieldSuccess},
+			subscribereminder.FieldDays:        {Type: field.TypeInt, Column: subscribereminder.FieldDays},
+			subscribereminder.FieldPlanName:    {Type: field.TypeString, Column: subscribereminder.FieldPlanName},
+			subscribereminder.FieldDate:        {Type: field.TypeString, Column: subscribereminder.FieldDate},
+		},
+	}
+	graph.Nodes[39] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribesuspend.Table,
 			Columns: subscribesuspend.Columns,
@@ -2994,6 +3018,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"SubscribePause",
 		"SubscribeSuspend",
+	)
+	graph.MustAddE(
+		"subscribe",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribereminder.SubscribeTable,
+			Columns: []string{subscribereminder.SubscribeColumn},
+			Bidi:    false,
+		},
+		"SubscribeReminder",
+		"Subscribe",
 	)
 	graph.MustAddE(
 		"city",
@@ -9604,6 +9640,110 @@ func (f *SubscribePauseFilter) WhereHasSuspendsWith(preds ...predicate.Subscribe
 }
 
 // addPredicate implements the predicateAdder interface.
+func (srq *SubscribeReminderQuery) addPredicate(pred func(s *sql.Selector)) {
+	srq.predicates = append(srq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the SubscribeReminderQuery builder.
+func (srq *SubscribeReminderQuery) Filter() *SubscribeReminderFilter {
+	return &SubscribeReminderFilter{srq.config, srq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *SubscribeReminderMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the SubscribeReminderMutation builder.
+func (m *SubscribeReminderMutation) Filter() *SubscribeReminderFilter {
+	return &SubscribeReminderFilter{m.config, m}
+}
+
+// SubscribeReminderFilter provides a generic filtering capability at runtime for SubscribeReminderQuery.
+type SubscribeReminderFilter struct {
+	config
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *SubscribeReminderFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[38].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *SubscribeReminderFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(subscribereminder.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *SubscribeReminderFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(subscribereminder.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *SubscribeReminderFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(subscribereminder.FieldUpdatedAt))
+}
+
+// WhereSubscribeID applies the entql uint64 predicate on the subscribe_id field.
+func (f *SubscribeReminderFilter) WhereSubscribeID(p entql.Uint64P) {
+	f.Where(p.Field(subscribereminder.FieldSubscribeID))
+}
+
+// WhereType applies the entql string predicate on the type field.
+func (f *SubscribeReminderFilter) WhereType(p entql.StringP) {
+	f.Where(p.Field(subscribereminder.FieldType))
+}
+
+// WherePhone applies the entql string predicate on the phone field.
+func (f *SubscribeReminderFilter) WherePhone(p entql.StringP) {
+	f.Where(p.Field(subscribereminder.FieldPhone))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *SubscribeReminderFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(subscribereminder.FieldName))
+}
+
+// WhereSuccess applies the entql bool predicate on the success field.
+func (f *SubscribeReminderFilter) WhereSuccess(p entql.BoolP) {
+	f.Where(p.Field(subscribereminder.FieldSuccess))
+}
+
+// WhereDays applies the entql int predicate on the days field.
+func (f *SubscribeReminderFilter) WhereDays(p entql.IntP) {
+	f.Where(p.Field(subscribereminder.FieldDays))
+}
+
+// WherePlanName applies the entql string predicate on the plan_name field.
+func (f *SubscribeReminderFilter) WherePlanName(p entql.StringP) {
+	f.Where(p.Field(subscribereminder.FieldPlanName))
+}
+
+// WhereDate applies the entql string predicate on the date field.
+func (f *SubscribeReminderFilter) WhereDate(p entql.StringP) {
+	f.Where(p.Field(subscribereminder.FieldDate))
+}
+
+// WhereHasSubscribe applies a predicate to check if query has an edge subscribe.
+func (f *SubscribeReminderFilter) WhereHasSubscribe() {
+	f.Where(entql.HasEdge("subscribe"))
+}
+
+// WhereHasSubscribeWith applies a predicate to check if query has an edge subscribe with a given conditions (other predicates).
+func (f *SubscribeReminderFilter) WhereHasSubscribeWith(preds ...predicate.Subscribe) {
+	f.Where(entql.HasEdgeWith("subscribe", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (ssq *SubscribeSuspendQuery) addPredicate(pred func(s *sql.Selector)) {
 	ssq.predicates = append(ssq.predicates, pred)
 }
@@ -9632,7 +9772,7 @@ type SubscribeSuspendFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribeSuspendFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[38].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[39].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
