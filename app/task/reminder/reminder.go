@@ -36,16 +36,16 @@ type reminderTask struct {
     running  bool
 }
 
-var r *reminderTask
+var runner *reminderTask
 
 func Run() {
     newReminder()
-    r.run()
+    runner.run()
 }
 
 func newReminder() {
     vmscfg := ar.Config.Aliyun.Vms.Reminder
-    r = &reminderTask{
+    runner = &reminderTask{
         ctx:      context.Background(),
         ticker:   time.NewTicker(5 * time.Second),
         vmstempl: vmscfg.Template,
@@ -59,9 +59,9 @@ func newReminder() {
         err := jsoniter.Unmarshal([]byte(sm.Content), notice)
         if err == nil {
             var smserr, vmserr error
-            r.smsdays, smserr = strconv.Atoi(notice.Sms)
-            r.vmsdays, vmserr = strconv.Atoi(notice.Call)
-            r.running = smserr == nil && vmserr == nil
+            runner.smsdays, smserr = strconv.Atoi(notice.Sms)
+            runner.vmsdays, vmserr = strconv.Atoi(notice.Call)
+            runner.running = smserr == nil && vmserr == nil
         }
     }
 
@@ -88,10 +88,10 @@ func Subscribe(sub *ent.Subscribe) {
     }
 
     switch true {
-    case r.vmsdays == sub.Remaining:
+    case runner.vmsdays == sub.Remaining:
         task.Type = subscribereminder.TypeVms
         break
-    case r.smsdays == sub.Remaining:
+    case runner.smsdays == sub.Remaining:
         task.Type = subscribereminder.TypeSms
         break
     default:
