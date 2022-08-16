@@ -382,15 +382,15 @@ func init() {
 	// enterprise.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	enterprise.UpdateDefaultUpdatedAt = enterpriseDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// enterpriseDescDeposit is the schema descriptor for deposit field.
-	enterpriseDescDeposit := enterpriseFields[7].Descriptor()
+	enterpriseDescDeposit := enterpriseFields[8].Descriptor()
 	// enterprise.DefaultDeposit holds the default value on creation for the deposit field.
 	enterprise.DefaultDeposit = enterpriseDescDeposit.Default.(float64)
 	// enterpriseDescBalance is the schema descriptor for balance field.
-	enterpriseDescBalance := enterpriseFields[8].Descriptor()
+	enterpriseDescBalance := enterpriseFields[9].Descriptor()
 	// enterprise.DefaultBalance holds the default value on creation for the balance field.
 	enterprise.DefaultBalance = enterpriseDescBalance.Default.(float64)
 	// enterpriseDescPrepaymentTotal is the schema descriptor for prepayment_total field.
-	enterpriseDescPrepaymentTotal := enterpriseFields[9].Descriptor()
+	enterpriseDescPrepaymentTotal := enterpriseFields[10].Descriptor()
 	// enterprise.DefaultPrepaymentTotal holds the default value on creation for the prepayment_total field.
 	enterprise.DefaultPrepaymentTotal = enterpriseDescPrepaymentTotal.Default.(float64)
 	enterprisebillMixin := schema.EnterpriseBill{}.Mixin()

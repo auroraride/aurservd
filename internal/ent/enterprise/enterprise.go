@@ -29,6 +29,8 @@ const (
 	FieldCityID = "city_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldCompanyName holds the string denoting the company_name field in the database.
+	FieldCompanyName = "company_name"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldContactName holds the string denoting the contact_name field in the database.
@@ -136,6 +138,7 @@ var Columns = []string{
 	FieldRemark,
 	FieldCityID,
 	FieldName,
+	FieldCompanyName,
 	FieldStatus,
 	FieldContactName,
 	FieldContactPhone,

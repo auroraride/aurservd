@@ -55,7 +55,8 @@ type EnterpriseBasic struct {
 
 // EnterpriseDetail 企业详细字段
 type EnterpriseDetail struct {
-    Name         *string  `json:"name" validate:"required" trans:"企业名称"`
+    Name         *string  `json:"name" validate:"required" trans:"团签名称"`
+    CompanyName  *string  `json:"companyName" validate:"required" trans:"企业全称"`
     Status       *uint8   `json:"status" enums:"0,1,2" validate:"required,min=0,max=2" trans:"合作状态"` // 0:未合作 1:合作中 2:已暂停
     ContactName  *string  `json:"contactName" validate:"required" trans:"联系人"`
     ContactPhone *string  `json:"contactPhone" validate:"required" trans:"联系电话"`
@@ -88,7 +89,8 @@ type EnterpriseRes struct {
     ID             uint64                    `json:"id"`                       // 企业ID
     Balance        float64                   `json:"balance"`                  // 可用余额
     Unsettlement   int                       `json:"unsettlement"`             // 未结算天数, 预付费企业此字段强制为0
-    Name           string                    `json:"name"`                     // 企业名称
+    Name           string                    `json:"name"`                     // 团签名称
+    CompanyName    string                    `json:"companyName"`              // 企业全称
     Status         uint8                     `json:"status" enums:"0,1,2" `    // 合作状态 0:未合作 1:已合作 2:已暂停
     ContactName    string                    `json:"contactName"`              // 联系人
     ContactPhone   string                    `json:"contactPhone"`             // 联系电话

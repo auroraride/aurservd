@@ -111,6 +111,12 @@ func (ec *EnterpriseCreate) SetName(s string) *EnterpriseCreate {
 	return ec
 }
 
+// SetCompanyName sets the "company_name" field.
+func (ec *EnterpriseCreate) SetCompanyName(s string) *EnterpriseCreate {
+	ec.mutation.SetCompanyName(s)
+	return ec
+}
+
 // SetStatus sets the "status" field.
 func (ec *EnterpriseCreate) SetStatus(u uint8) *EnterpriseCreate {
 	ec.mutation.SetStatus(u)
@@ -435,6 +441,9 @@ func (ec *EnterpriseCreate) check() error {
 	if _, ok := ec.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Enterprise.name"`)}
 	}
+	if _, ok := ec.mutation.CompanyName(); !ok {
+		return &ValidationError{Name: "company_name", err: errors.New(`ent: missing required field "Enterprise.company_name"`)}
+	}
 	if _, ok := ec.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Enterprise.status"`)}
 	}
@@ -548,6 +557,14 @@ func (ec *EnterpriseCreate) createSpec() (*Enterprise, *sqlgraph.CreateSpec) {
 			Column: enterprise.FieldName,
 		})
 		_node.Name = value
+	}
+	if value, ok := ec.mutation.CompanyName(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: enterprise.FieldCompanyName,
+		})
+		_node.CompanyName = value
 	}
 	if value, ok := ec.mutation.Status(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -956,6 +973,18 @@ func (u *EnterpriseUpsert) UpdateName() *EnterpriseUpsert {
 	return u
 }
 
+// SetCompanyName sets the "company_name" field.
+func (u *EnterpriseUpsert) SetCompanyName(v string) *EnterpriseUpsert {
+	u.Set(enterprise.FieldCompanyName, v)
+	return u
+}
+
+// UpdateCompanyName sets the "company_name" field to the value that was provided on create.
+func (u *EnterpriseUpsert) UpdateCompanyName() *EnterpriseUpsert {
+	u.SetExcluded(enterprise.FieldCompanyName)
+	return u
+}
+
 // SetStatus sets the "status" field.
 func (u *EnterpriseUpsert) SetStatus(v uint8) *EnterpriseUpsert {
 	u.Set(enterprise.FieldStatus, v)
@@ -1299,6 +1328,20 @@ func (u *EnterpriseUpsertOne) SetName(v string) *EnterpriseUpsertOne {
 func (u *EnterpriseUpsertOne) UpdateName() *EnterpriseUpsertOne {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetCompanyName sets the "company_name" field.
+func (u *EnterpriseUpsertOne) SetCompanyName(v string) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetCompanyName(v)
+	})
+}
+
+// UpdateCompanyName sets the "company_name" field to the value that was provided on create.
+func (u *EnterpriseUpsertOne) UpdateCompanyName() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateCompanyName()
 	})
 }
 
@@ -1835,6 +1878,20 @@ func (u *EnterpriseUpsertBulk) SetName(v string) *EnterpriseUpsertBulk {
 func (u *EnterpriseUpsertBulk) UpdateName() *EnterpriseUpsertBulk {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetCompanyName sets the "company_name" field.
+func (u *EnterpriseUpsertBulk) SetCompanyName(v string) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetCompanyName(v)
+	})
+}
+
+// UpdateCompanyName sets the "company_name" field to the value that was provided on create.
+func (u *EnterpriseUpsertBulk) UpdateCompanyName() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateCompanyName()
 	})
 }
 

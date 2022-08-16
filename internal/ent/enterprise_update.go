@@ -107,6 +107,12 @@ func (eu *EnterpriseUpdate) SetName(s string) *EnterpriseUpdate {
 	return eu
 }
 
+// SetCompanyName sets the "company_name" field.
+func (eu *EnterpriseUpdate) SetCompanyName(s string) *EnterpriseUpdate {
+	eu.mutation.SetCompanyName(s)
+	return eu
+}
+
 // SetStatus sets the "status" field.
 func (eu *EnterpriseUpdate) SetStatus(u uint8) *EnterpriseUpdate {
 	eu.mutation.ResetStatus()
@@ -666,6 +672,13 @@ func (eu *EnterpriseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: enterprise.FieldName,
+		})
+	}
+	if value, ok := eu.mutation.CompanyName(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: enterprise.FieldCompanyName,
 		})
 	}
 	if value, ok := eu.mutation.Status(); ok {
@@ -1281,6 +1294,12 @@ func (euo *EnterpriseUpdateOne) SetName(s string) *EnterpriseUpdateOne {
 	return euo
 }
 
+// SetCompanyName sets the "company_name" field.
+func (euo *EnterpriseUpdateOne) SetCompanyName(s string) *EnterpriseUpdateOne {
+	euo.mutation.SetCompanyName(s)
+	return euo
+}
+
 // SetStatus sets the "status" field.
 func (euo *EnterpriseUpdateOne) SetStatus(u uint8) *EnterpriseUpdateOne {
 	euo.mutation.ResetStatus()
@@ -1870,6 +1889,13 @@ func (euo *EnterpriseUpdateOne) sqlSave(ctx context.Context) (_node *Enterprise,
 			Type:   field.TypeString,
 			Value:  value,
 			Column: enterprise.FieldName,
+		})
+	}
+	if value, ok := euo.mutation.CompanyName(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: enterprise.FieldCompanyName,
 		})
 	}
 	if value, ok := euo.mutation.Status(); ok {

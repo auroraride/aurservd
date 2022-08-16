@@ -38,8 +38,11 @@ type Enterprise struct {
 	// 城市ID
 	CityID uint64 `json:"city_id,omitempty"`
 	// Name holds the value of the "name" field.
-	// 企业名称
+	// 团签名称
 	Name string `json:"name,omitempty"`
+	// CompanyName holds the value of the "company_name" field.
+	// 企业全称
+	CompanyName string `json:"company_name,omitempty"`
 	// Status holds the value of the "status" field.
 	// 合作状态 0未合作 1合作中 2暂停合作
 	Status uint8 `json:"status,omitempty"`
@@ -186,7 +189,7 @@ func (*Enterprise) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullFloat64)
 		case enterprise.FieldID, enterprise.FieldCityID, enterprise.FieldStatus, enterprise.FieldPayment:
 			values[i] = new(sql.NullInt64)
-		case enterprise.FieldRemark, enterprise.FieldName, enterprise.FieldContactName, enterprise.FieldContactPhone, enterprise.FieldIdcardNumber, enterprise.FieldAddress:
+		case enterprise.FieldRemark, enterprise.FieldName, enterprise.FieldCompanyName, enterprise.FieldContactName, enterprise.FieldContactPhone, enterprise.FieldIdcardNumber, enterprise.FieldAddress:
 			values[i] = new(sql.NullString)
 		case enterprise.FieldCreatedAt, enterprise.FieldUpdatedAt, enterprise.FieldDeletedAt, enterprise.FieldSuspensedAt:
 			values[i] = new(sql.NullTime)
@@ -263,6 +266,12 @@ func (e *Enterprise) assignValues(columns []string, values []interface{}) error 
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				e.Name = value.String
+			}
+		case enterprise.FieldCompanyName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field company_name", values[i])
+			} else if value.Valid {
+				e.CompanyName = value.String
 			}
 		case enterprise.FieldStatus:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -411,6 +420,8 @@ func (e *Enterprise) String() string {
 	builder.WriteString(fmt.Sprintf("%v", e.CityID))
 	builder.WriteString(", name=")
 	builder.WriteString(e.Name)
+	builder.WriteString(", company_name=")
+	builder.WriteString(e.CompanyName)
 	builder.WriteString(", status=")
 	builder.WriteString(fmt.Sprintf("%v", e.Status))
 	builder.WriteString(", contact_name=")

@@ -135,6 +135,13 @@ func Name(v string) predicate.Enterprise {
 	})
 }
 
+// CompanyName applies equality check predicate on the "company_name" field. It's identical to CompanyNameEQ.
+func CompanyName(v string) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCompanyName), v))
+	})
+}
+
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v uint8) predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {
@@ -756,6 +763,117 @@ func NameEqualFold(v string) predicate.Enterprise {
 func NameContainsFold(v string) predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldName), v))
+	})
+}
+
+// CompanyNameEQ applies the EQ predicate on the "company_name" field.
+func CompanyNameEQ(v string) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCompanyName), v))
+	})
+}
+
+// CompanyNameNEQ applies the NEQ predicate on the "company_name" field.
+func CompanyNameNEQ(v string) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldCompanyName), v))
+	})
+}
+
+// CompanyNameIn applies the In predicate on the "company_name" field.
+func CompanyNameIn(vs ...string) predicate.Enterprise {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Enterprise(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldCompanyName), v...))
+	})
+}
+
+// CompanyNameNotIn applies the NotIn predicate on the "company_name" field.
+func CompanyNameNotIn(vs ...string) predicate.Enterprise {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Enterprise(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldCompanyName), v...))
+	})
+}
+
+// CompanyNameGT applies the GT predicate on the "company_name" field.
+func CompanyNameGT(v string) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldCompanyName), v))
+	})
+}
+
+// CompanyNameGTE applies the GTE predicate on the "company_name" field.
+func CompanyNameGTE(v string) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldCompanyName), v))
+	})
+}
+
+// CompanyNameLT applies the LT predicate on the "company_name" field.
+func CompanyNameLT(v string) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldCompanyName), v))
+	})
+}
+
+// CompanyNameLTE applies the LTE predicate on the "company_name" field.
+func CompanyNameLTE(v string) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldCompanyName), v))
+	})
+}
+
+// CompanyNameContains applies the Contains predicate on the "company_name" field.
+func CompanyNameContains(v string) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldCompanyName), v))
+	})
+}
+
+// CompanyNameHasPrefix applies the HasPrefix predicate on the "company_name" field.
+func CompanyNameHasPrefix(v string) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldCompanyName), v))
+	})
+}
+
+// CompanyNameHasSuffix applies the HasSuffix predicate on the "company_name" field.
+func CompanyNameHasSuffix(v string) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldCompanyName), v))
+	})
+}
+
+// CompanyNameEqualFold applies the EqualFold predicate on the "company_name" field.
+func CompanyNameEqualFold(v string) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldCompanyName), v))
+	})
+}
+
+// CompanyNameContainsFold applies the ContainsFold predicate on the "company_name" field.
+func CompanyNameContainsFold(v string) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldCompanyName), v))
 	})
 }
 

@@ -426,6 +426,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			enterprise.FieldRemark:          {Type: field.TypeString, Column: enterprise.FieldRemark},
 			enterprise.FieldCityID:          {Type: field.TypeUint64, Column: enterprise.FieldCityID},
 			enterprise.FieldName:            {Type: field.TypeString, Column: enterprise.FieldName},
+			enterprise.FieldCompanyName:     {Type: field.TypeString, Column: enterprise.FieldCompanyName},
 			enterprise.FieldStatus:          {Type: field.TypeUint8, Column: enterprise.FieldStatus},
 			enterprise.FieldContactName:     {Type: field.TypeString, Column: enterprise.FieldContactName},
 			enterprise.FieldContactPhone:    {Type: field.TypeString, Column: enterprise.FieldContactPhone},
@@ -5303,6 +5304,11 @@ func (f *EnterpriseFilter) WhereCityID(p entql.Uint64P) {
 // WhereName applies the entql string predicate on the name field.
 func (f *EnterpriseFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(enterprise.FieldName))
+}
+
+// WhereCompanyName applies the entql string predicate on the company_name field.
+func (f *EnterpriseFilter) WhereCompanyName(p entql.StringP) {
+	f.Where(p.Field(enterprise.FieldCompanyName))
 }
 
 // WhereStatus applies the entql uint8 predicate on the status field.

@@ -826,7 +826,8 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
-		{Name: "name", Type: field.TypeString, Comment: "企业名称"},
+		{Name: "name", Type: field.TypeString, Comment: "团签名称"},
+		{Name: "company_name", Type: field.TypeString, Comment: "企业全称"},
 		{Name: "status", Type: field.TypeUint8, Comment: "合作状态 0未合作 1合作中 2暂停合作"},
 		{Name: "contact_name", Type: field.TypeString, Comment: "联系人姓名"},
 		{Name: "contact_phone", Type: field.TypeString, Comment: "联系人电话"},
@@ -847,7 +848,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "enterprise_city_city",
-				Columns:    []*schema.Column{EnterpriseColumns[18]},
+				Columns:    []*schema.Column{EnterpriseColumns[19]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -866,12 +867,12 @@ var (
 			{
 				Name:    "enterprise_payment",
 				Unique:  false,
-				Columns: []*schema.Column{EnterpriseColumns[13]},
+				Columns: []*schema.Column{EnterpriseColumns[14]},
 			},
 			{
 				Name:    "enterprise_balance",
 				Unique:  false,
-				Columns: []*schema.Column{EnterpriseColumns[15]},
+				Columns: []*schema.Column{EnterpriseColumns[16]},
 			},
 			{
 				Name:    "enterprise_name",
@@ -886,7 +887,7 @@ var (
 			{
 				Name:    "enterprise_contact_name",
 				Unique:  false,
-				Columns: []*schema.Column{EnterpriseColumns[9]},
+				Columns: []*schema.Column{EnterpriseColumns[10]},
 				Annotation: &entsql.IndexAnnotation{
 					Types: map[string]string{
 						"postgres": "GIN",
@@ -896,7 +897,7 @@ var (
 			{
 				Name:    "enterprise_contact_phone",
 				Unique:  false,
-				Columns: []*schema.Column{EnterpriseColumns[10]},
+				Columns: []*schema.Column{EnterpriseColumns[11]},
 				Annotation: &entsql.IndexAnnotation{
 					Types: map[string]string{
 						"postgres": "GIN",
@@ -906,7 +907,7 @@ var (
 			{
 				Name:    "enterprise_idcard_number",
 				Unique:  false,
-				Columns: []*schema.Column{EnterpriseColumns[11]},
+				Columns: []*schema.Column{EnterpriseColumns[12]},
 				Annotation: &entsql.IndexAnnotation{
 					Types: map[string]string{
 						"postgres": "GIN",

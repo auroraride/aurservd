@@ -29,6 +29,7 @@ type EnterpriseMutation struct {
 	last_modifier       **model.Modifier
 	remark              *string
 	name                *string
+	company_name        *string
 	status              *uint8
 	addstatus           *int8
 	contact_name        *string
@@ -509,6 +510,42 @@ func (m *EnterpriseMutation) OldName(ctx context.Context) (v string, err error) 
 // ResetName resets all changes to the "name" field.
 func (m *EnterpriseMutation) ResetName() {
 	m.name = nil
+}
+
+// SetCompanyName sets the "company_name" field.
+func (m *EnterpriseMutation) SetCompanyName(s string) {
+	m.company_name = &s
+}
+
+// CompanyName returns the value of the "company_name" field in the mutation.
+func (m *EnterpriseMutation) CompanyName() (r string, exists bool) {
+	v := m.company_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCompanyName returns the old "company_name" field's value of the Enterprise entity.
+// If the Enterprise object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseMutation) OldCompanyName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCompanyName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCompanyName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCompanyName: %w", err)
+	}
+	return oldValue.CompanyName, nil
+}
+
+// ResetCompanyName resets all changes to the "company_name" field.
+func (m *EnterpriseMutation) ResetCompanyName() {
+	m.company_name = nil
 }
 
 // SetStatus sets the "status" field.
@@ -1407,7 +1444,7 @@ func (m *EnterpriseMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EnterpriseMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, enterprise.FieldCreatedAt)
 	}
@@ -1431,6 +1468,9 @@ func (m *EnterpriseMutation) Fields() []string {
 	}
 	if m.name != nil {
 		fields = append(fields, enterprise.FieldName)
+	}
+	if m.company_name != nil {
+		fields = append(fields, enterprise.FieldCompanyName)
 	}
 	if m.status != nil {
 		fields = append(fields, enterprise.FieldStatus)
@@ -1486,6 +1526,8 @@ func (m *EnterpriseMutation) Field(name string) (ent.Value, bool) {
 		return m.CityID()
 	case enterprise.FieldName:
 		return m.Name()
+	case enterprise.FieldCompanyName:
+		return m.CompanyName()
 	case enterprise.FieldStatus:
 		return m.Status()
 	case enterprise.FieldContactName:
@@ -1531,6 +1573,8 @@ func (m *EnterpriseMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldCityID(ctx)
 	case enterprise.FieldName:
 		return m.OldName(ctx)
+	case enterprise.FieldCompanyName:
+		return m.OldCompanyName(ctx)
 	case enterprise.FieldStatus:
 		return m.OldStatus(ctx)
 	case enterprise.FieldContactName:
@@ -1615,6 +1659,13 @@ func (m *EnterpriseMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case enterprise.FieldCompanyName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCompanyName(v)
 		return nil
 	case enterprise.FieldStatus:
 		v, ok := value.(uint8)
@@ -1854,6 +1905,9 @@ func (m *EnterpriseMutation) ResetField(name string) error {
 		return nil
 	case enterprise.FieldName:
 		m.ResetName()
+		return nil
+	case enterprise.FieldCompanyName:
+		m.ResetCompanyName()
 		return nil
 	case enterprise.FieldStatus:
 		m.ResetStatus()

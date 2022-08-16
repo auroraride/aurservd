@@ -13349,6 +13349,7 @@ const docTemplate = `{
             "required": [
                 "address",
                 "cityId",
+                "companyName",
                 "contactName",
                 "contactPhone",
                 "deposit",
@@ -13365,6 +13366,10 @@ const docTemplate = `{
                 "cityId": {
                     "description": "所在城市 ",
                     "type": "integer"
+                },
+                "companyName": {
+                    "description": "企业全称 ",
+                    "type": "string"
                 },
                 "contactName": {
                     "description": "联系人 ",
@@ -13383,7 +13388,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
-                    "description": "企业名称 ",
+                    "description": "团签名称 ",
                     "type": "string"
                 },
                 "payment": {
@@ -13414,6 +13419,7 @@ const docTemplate = `{
             "required": [
                 "address",
                 "cityId",
+                "companyName",
                 "contactName",
                 "contactPhone",
                 "deposit",
@@ -13430,6 +13436,10 @@ const docTemplate = `{
                 "cityId": {
                     "description": "所在城市 ",
                     "type": "integer"
+                },
+                "companyName": {
+                    "description": "企业全称 ",
+                    "type": "string"
                 },
                 "contactName": {
                     "description": "联系人 ",
@@ -13448,7 +13458,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
-                    "description": "企业名称 ",
+                    "description": "团签名称 ",
                     "type": "string"
                 },
                 "payment": {
@@ -13566,6 +13576,10 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "companyName": {
+                    "description": "企业全称",
+                    "type": "string"
+                },
                 "contactName": {
                     "description": "联系人",
                     "type": "string"
@@ -13594,7 +13608,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
-                    "description": "企业名称",
+                    "description": "团签名称",
                     "type": "string"
                 },
                 "payment": {

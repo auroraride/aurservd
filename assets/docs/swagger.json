@@ -13341,6 +13341,7 @@
             "required": [
                 "address",
                 "cityId",
+                "companyName",
                 "contactName",
                 "contactPhone",
                 "deposit",
@@ -13357,6 +13358,10 @@
                 "cityId": {
                     "description": "所在城市 ",
                     "type": "integer"
+                },
+                "companyName": {
+                    "description": "企业全称 ",
+                    "type": "string"
                 },
                 "contactName": {
                     "description": "联系人 ",
@@ -13375,7 +13380,7 @@
                     "type": "string"
                 },
                 "name": {
-                    "description": "企业名称 ",
+                    "description": "团签名称 ",
                     "type": "string"
                 },
                 "payment": {
@@ -13406,6 +13411,7 @@
             "required": [
                 "address",
                 "cityId",
+                "companyName",
                 "contactName",
                 "contactPhone",
                 "deposit",
@@ -13422,6 +13428,10 @@
                 "cityId": {
                     "description": "所在城市 ",
                     "type": "integer"
+                },
+                "companyName": {
+                    "description": "企业全称 ",
+                    "type": "string"
                 },
                 "contactName": {
                     "description": "联系人 ",
@@ -13440,7 +13450,7 @@
                     "type": "string"
                 },
                 "name": {
-                    "description": "企业名称 ",
+                    "description": "团签名称 ",
                     "type": "string"
                 },
                 "payment": {
@@ -13558,6 +13568,10 @@
                         }
                     ]
                 },
+                "companyName": {
+                    "description": "企业全称",
+                    "type": "string"
+                },
                 "contactName": {
                     "description": "联系人",
                     "type": "string"
@@ -13586,7 +13600,7 @@
                     "type": "string"
                 },
                 "name": {
-                    "description": "企业名称",
+                    "description": "团签名称",
                     "type": "string"
                 },
                 "payment": {
