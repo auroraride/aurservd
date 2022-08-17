@@ -49,7 +49,7 @@ func (Enterprise) Annotations() []schema.Annotation {
 func (Enterprise) Fields() []ent.Field {
     return []ent.Field{
         field.String("name").Comment("团签名称"),
-        field.String("company_name").Comment("企业全称"),
+        field.String("company_name").Optional().Comment("企业全称"),
         field.Uint8("status").Comment("合作状态 0未合作 1合作中 2暂停合作"),
         field.String("contact_name").Comment("联系人姓名"),
         field.String("contact_phone").Comment("联系人电话"),

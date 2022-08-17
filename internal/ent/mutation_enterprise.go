@@ -543,9 +543,22 @@ func (m *EnterpriseMutation) OldCompanyName(ctx context.Context) (v string, err 
 	return oldValue.CompanyName, nil
 }
 
+// ClearCompanyName clears the value of the "company_name" field.
+func (m *EnterpriseMutation) ClearCompanyName() {
+	m.company_name = nil
+	m.clearedFields[enterprise.FieldCompanyName] = struct{}{}
+}
+
+// CompanyNameCleared returns if the "company_name" field was cleared in this mutation.
+func (m *EnterpriseMutation) CompanyNameCleared() bool {
+	_, ok := m.clearedFields[enterprise.FieldCompanyName]
+	return ok
+}
+
 // ResetCompanyName resets all changes to the "company_name" field.
 func (m *EnterpriseMutation) ResetCompanyName() {
 	m.company_name = nil
+	delete(m.clearedFields, enterprise.FieldCompanyName)
 }
 
 // SetStatus sets the "status" field.
@@ -1842,6 +1855,9 @@ func (m *EnterpriseMutation) ClearedFields() []string {
 	if m.FieldCleared(enterprise.FieldRemark) {
 		fields = append(fields, enterprise.FieldRemark)
 	}
+	if m.FieldCleared(enterprise.FieldCompanyName) {
+		fields = append(fields, enterprise.FieldCompanyName)
+	}
 	if m.FieldCleared(enterprise.FieldSuspensedAt) {
 		fields = append(fields, enterprise.FieldSuspensedAt)
 	}
@@ -1870,6 +1886,9 @@ func (m *EnterpriseMutation) ClearField(name string) error {
 		return nil
 	case enterprise.FieldRemark:
 		m.ClearRemark()
+		return nil
+	case enterprise.FieldCompanyName:
+		m.ClearCompanyName()
 		return nil
 	case enterprise.FieldSuspensedAt:
 		m.ClearSuspensedAt()

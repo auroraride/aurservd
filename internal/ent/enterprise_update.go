@@ -113,6 +113,20 @@ func (eu *EnterpriseUpdate) SetCompanyName(s string) *EnterpriseUpdate {
 	return eu
 }
 
+// SetNillableCompanyName sets the "company_name" field if the given value is not nil.
+func (eu *EnterpriseUpdate) SetNillableCompanyName(s *string) *EnterpriseUpdate {
+	if s != nil {
+		eu.SetCompanyName(*s)
+	}
+	return eu
+}
+
+// ClearCompanyName clears the value of the "company_name" field.
+func (eu *EnterpriseUpdate) ClearCompanyName() *EnterpriseUpdate {
+	eu.mutation.ClearCompanyName()
+	return eu
+}
+
 // SetStatus sets the "status" field.
 func (eu *EnterpriseUpdate) SetStatus(u uint8) *EnterpriseUpdate {
 	eu.mutation.ResetStatus()
@@ -678,6 +692,12 @@ func (eu *EnterpriseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
+			Column: enterprise.FieldCompanyName,
+		})
+	}
+	if eu.mutation.CompanyNameCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
 			Column: enterprise.FieldCompanyName,
 		})
 	}
@@ -1300,6 +1320,20 @@ func (euo *EnterpriseUpdateOne) SetCompanyName(s string) *EnterpriseUpdateOne {
 	return euo
 }
 
+// SetNillableCompanyName sets the "company_name" field if the given value is not nil.
+func (euo *EnterpriseUpdateOne) SetNillableCompanyName(s *string) *EnterpriseUpdateOne {
+	if s != nil {
+		euo.SetCompanyName(*s)
+	}
+	return euo
+}
+
+// ClearCompanyName clears the value of the "company_name" field.
+func (euo *EnterpriseUpdateOne) ClearCompanyName() *EnterpriseUpdateOne {
+	euo.mutation.ClearCompanyName()
+	return euo
+}
+
 // SetStatus sets the "status" field.
 func (euo *EnterpriseUpdateOne) SetStatus(u uint8) *EnterpriseUpdateOne {
 	euo.mutation.ResetStatus()
@@ -1895,6 +1929,12 @@ func (euo *EnterpriseUpdateOne) sqlSave(ctx context.Context) (_node *Enterprise,
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
+			Column: enterprise.FieldCompanyName,
+		})
+	}
+	if euo.mutation.CompanyNameCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
 			Column: enterprise.FieldCompanyName,
 		})
 	}

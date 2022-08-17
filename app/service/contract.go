@@ -17,9 +17,7 @@ import (
     "github.com/auroraride/aurservd/internal/esign"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
-    "github.com/golang-module/carbon/v2"
     "math"
-    "strconv"
     "strings"
     "time"
 )
@@ -35,14 +33,24 @@ type contractService struct {
     esign *esign.Esign
     ctx   context.Context
     orm   *ent.ContractClient
+    now   struct {
+        year  int
+        month int
+        day   int
+    }
 }
 
 func NewContract() *contractService {
-    return &contractService{
+    s := &contractService{
         esign: esign.New(),
         orm:   ent.Database.Contract,
         ctx:   context.Background(),
     }
+    now := time.Now()
+    s.now.year = now.Year()
+    s.now.month = int(now.Month())
+    s.now.day = now.Day()
+    return s
 }
 
 // Effective 查询骑手是否存在生效中的合同
@@ -67,13 +75,22 @@ func (s *contractService) planData(planID uint64, m ar.Map) {
     if month > 1 {
         price = price / month
     }
+    // 总月数
     m["month"] = fmt.Sprintf("%.0f", month)
+    // 首次缴纳月数
     m["payMonth"] = fmt.Sprintf("%.0f", month)
+    // 月租金
     m["price"] = fmt.Sprintf("%.2f", price)
+    // 总租金
     m["amount"] = fmt.Sprintf("%.2f", p.Price)
+    // 截止年月日
+    end := tools.NewTime().WillEnd(time.Now(), int(p.Days))
+    m["endYear"] = end.Year()
+    m["endMonth"] = int(end.Month())
+    m["endDay"] = end.Day()
 }
 
-func (s *contractService) enterpriseData(u *ent.Rider, m ar.Map) {
+func (s *contractService) enterpriseData(u *ent.Rider, m ar.Map, cityID uint64, bm string) {
     e := u.Edges.Enterprise
     if e == nil {
         e, _ = ent.Database.Enterprise.QueryNotDeleted().Where(enterprise.ID(*u.EnterpriseID)).First(s.ctx)
@@ -90,12 +107,36 @@ func (s *contractService) enterpriseData(u *ent.Rider, m ar.Map) {
         snag.Panic("骑手站点查找失败")
     }
 
+    // 获取企业费用信息
+    srv := NewEnterprise()
+    prices := srv.GetPriceValues(e)
+    pk := srv.PriceKey(cityID, bm)
+    price, ok := prices[pk]
+    if !ok {
+        snag.Panic("企业费用查询失败")
+    }
+
     // entName entPhone station payerEnt
-    m["entName"] = e.Name
+    m["entName"] = e.CompanyName
+    // 企业联系电话
     m["entPhone"] = e.ContactPhone
+    // 站点
     m["station"] = sta.Name
+    // 首次缴纳月数
     m["payMonth"] = 1
+    // 企业付款
     m["payerEnt"] = true
+    // 月租金
+    m["price"] = fmt.Sprintf("%.2f", price)
+    // 总月数
+    m["month"] = 1
+    // 总租金
+    m["amount"] = fmt.Sprintf("%.2f", price*31.0)
+    // 截止年月日
+    end := tools.NewTime().WillEnd(time.Now(), 31)
+    m["endYear"] = end.Year()
+    m["endMonth"] = int(end.Month())
+    m["endDay"] = end.Day()
 }
 
 // Sign 签署合同
@@ -108,11 +149,7 @@ func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) mode
         snag.Panic("未补充紧急联系人")
     }
 
-    now := make([]int, 3)
-    arr := strings.Split(time.Now().Format(carbon.DateLayout), "-")
-    for i, a := range arr {
-        now[i], _ = strconv.Atoi(a)
-    }
+    ci := NewCity().Query(params.CityID)
 
     var (
         m            = make(ar.Map)
@@ -132,29 +169,32 @@ func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) mode
     m["idcard"] = p.IDCardNumber
     m["address"] = p.AuthResult.Address
     m["phone"] = u.Phone
-    m["startYear"] = now[0]
-    m["startMonth"] = now[1]
-    m["startDay"] = now[2]
-    m["aurYear"] = now[0]
-    m["aurMonth"] = now[1]
-    m["aurDay"] = now[2]
-    m["riderYear"] = now[0]
-    m["riderMonth"] = now[1]
-    m["riderDay"] = now[2]
-    m["contactPhone"] = u.Contact.Phone
+    m["startYear"] = s.now.year
+    m["startMonth"] = s.now.month
+    m["startDay"] = s.now.day
+    m["aurYear"] = s.now.year
+    m["aurMonth"] = s.now.month
+    m["aurDay"] = s.now.day
+    m["riderYear"] = s.now.year
+    m["riderMonth"] = s.now.month
+    m["riderDay"] = s.now.day
+    // 紧急联系人
+    m["contact"] = u.Contact.String()
     // 勾选租赁电池
     m["battery"] = true
     // 电池型号
     m["model"] = strings.ToUpper(params.Model)
+    // 限制城市
+    m["city"] = ci.Name
 
-    if params.PlanID != nil {
-        s.planData(*params.PlanID, m)
+    if params.PlanID != 0 {
+        s.planData(params.PlanID, m)
     }
 
     if isEnterprise {
         templateId = cfg.Group.TemplateId
         scene = cfg.Group.Scene
-        s.enterpriseData(u, m)
+        s.enterpriseData(u, m, params.CityID, params.Model)
     }
 
     // 创建 / 获取 签约个人账号

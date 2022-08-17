@@ -863,6 +863,20 @@ func CompanyNameHasSuffix(v string) predicate.Enterprise {
 	})
 }
 
+// CompanyNameIsNil applies the IsNil predicate on the "company_name" field.
+func CompanyNameIsNil() predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldCompanyName)))
+	})
+}
+
+// CompanyNameNotNil applies the NotNil predicate on the "company_name" field.
+func CompanyNameNotNil() predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldCompanyName)))
+	})
+}
+
 // CompanyNameEqualFold applies the EqualFold predicate on the "company_name" field.
 func CompanyNameEqualFold(v string) predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {

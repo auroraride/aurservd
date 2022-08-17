@@ -117,6 +117,14 @@ func (ec *EnterpriseCreate) SetCompanyName(s string) *EnterpriseCreate {
 	return ec
 }
 
+// SetNillableCompanyName sets the "company_name" field if the given value is not nil.
+func (ec *EnterpriseCreate) SetNillableCompanyName(s *string) *EnterpriseCreate {
+	if s != nil {
+		ec.SetCompanyName(*s)
+	}
+	return ec
+}
+
 // SetStatus sets the "status" field.
 func (ec *EnterpriseCreate) SetStatus(u uint8) *EnterpriseCreate {
 	ec.mutation.SetStatus(u)
@@ -440,9 +448,6 @@ func (ec *EnterpriseCreate) check() error {
 	}
 	if _, ok := ec.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Enterprise.name"`)}
-	}
-	if _, ok := ec.mutation.CompanyName(); !ok {
-		return &ValidationError{Name: "company_name", err: errors.New(`ent: missing required field "Enterprise.company_name"`)}
 	}
 	if _, ok := ec.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Enterprise.status"`)}
@@ -985,6 +990,12 @@ func (u *EnterpriseUpsert) UpdateCompanyName() *EnterpriseUpsert {
 	return u
 }
 
+// ClearCompanyName clears the value of the "company_name" field.
+func (u *EnterpriseUpsert) ClearCompanyName() *EnterpriseUpsert {
+	u.SetNull(enterprise.FieldCompanyName)
+	return u
+}
+
 // SetStatus sets the "status" field.
 func (u *EnterpriseUpsert) SetStatus(v uint8) *EnterpriseUpsert {
 	u.Set(enterprise.FieldStatus, v)
@@ -1342,6 +1353,13 @@ func (u *EnterpriseUpsertOne) SetCompanyName(v string) *EnterpriseUpsertOne {
 func (u *EnterpriseUpsertOne) UpdateCompanyName() *EnterpriseUpsertOne {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.UpdateCompanyName()
+	})
+}
+
+// ClearCompanyName clears the value of the "company_name" field.
+func (u *EnterpriseUpsertOne) ClearCompanyName() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.ClearCompanyName()
 	})
 }
 
@@ -1892,6 +1910,13 @@ func (u *EnterpriseUpsertBulk) SetCompanyName(v string) *EnterpriseUpsertBulk {
 func (u *EnterpriseUpsertBulk) UpdateCompanyName() *EnterpriseUpsertBulk {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.UpdateCompanyName()
+	})
+}
+
+// ClearCompanyName clears the value of the "company_name" field.
+func (u *EnterpriseUpsertBulk) ClearCompanyName() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.ClearCompanyName()
 	})
 }
 

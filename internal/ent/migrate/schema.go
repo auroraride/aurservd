@@ -827,7 +827,7 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "name", Type: field.TypeString, Comment: "团签名称"},
-		{Name: "company_name", Type: field.TypeString, Comment: "企业全称"},
+		{Name: "company_name", Type: field.TypeString, Comment: "企业全称", Nullable: true},
 		{Name: "status", Type: field.TypeUint8, Comment: "合作状态 0未合作 1合作中 2暂停合作"},
 		{Name: "contact_name", Type: field.TypeString, Comment: "联系人姓名"},
 		{Name: "contact_phone", Type: field.TypeString, Comment: "联系人电话"},

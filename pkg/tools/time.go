@@ -61,6 +61,10 @@ func (t *timeTool) UsedDaysToNowString(before string) int {
     return int(carbon.Parse(before).StartOfDay().DiffInDays(carbon.Now().StartOfDay().AddDay()))
 }
 
+func (t *timeTool) WillEnd(before time.Time, days int) time.Time {
+    return before.AddDate(0, 0, days-1)
+}
+
 // ParseDateString 格式化日期字符串
 func (*timeTool) ParseDateString(str string) (time.Time, error) {
     res := carbon.ParseByLayout(str, carbon.DateLayout)

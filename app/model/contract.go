@@ -40,9 +40,9 @@ func (s ContractStatus) String() string {
 
 // ContractSignReq 签约请求
 type ContractSignReq struct {
-    PlanID *uint64 `json:"planId"` // 骑士卡ID
-    Model  string  `json:"model" validate:"required" trans:"电池型号"`
-    CityID *uint64 `json:"cityId" validate:"required" trans:"城市ID"`
+    PlanID uint64 `json:"planId"` // 骑士卡ID
+    Model  string `json:"model" validate:"required" trans:"电池型号"`
+    CityID uint64 `json:"cityId" validate:"required" trans:"城市ID"`
 }
 
 // ContractSignRes 合同签订返回

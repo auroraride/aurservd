@@ -68,7 +68,7 @@ type RiderContact struct {
 }
 
 func (c *RiderContact) String() string {
-    return fmt.Sprintf("%s,%s,%s", c.Name, c.Relation, c.Phone)
+    return fmt.Sprintf("[%s]%s - %s", c.Relation, c.Name, c.Phone)
 }
 
 // RiderSampleInfo 骑手简单信息

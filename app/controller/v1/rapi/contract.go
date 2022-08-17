@@ -30,7 +30,7 @@ var Contract = new(contract)
 // @Success      200  {object}  model.ContractSignRes  "请求成功"
 func (*contract) Sign(c echo.Context) error {
     ctx, req := app.RiderContextAndBinding[model.ContractSignReq](c)
-    if req.PlanID == nil && ctx.Rider.EnterpriseID == nil {
+    if req.PlanID == 0 && ctx.Rider.EnterpriseID == nil {
         snag.Panic("签约参数错误")
     }
     return ctx.SendResponse(service.NewContract().Sign(ctx.Rider, req))
