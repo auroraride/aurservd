@@ -11,7 +11,7 @@ import (
     "github.com/auroraride/aurservd/internal/ali"
     "github.com/golang-module/carbon/v2"
     "github.com/spf13/cobra"
-    "io/ioutil"
+    "os"
     "strings"
     "time"
 )
@@ -43,14 +43,14 @@ func customerAppNotice() *cobra.Command {
 
             vms := ali.NewVms()
 
-            b, err := ioutil.ReadFile(path)
+            b, err := os.ReadFile(path)
             if err != nil {
                 fmt.Println(err)
                 return
             }
             arr := strings.Split(string(b), "\n")
             for _, s := range arr {
-                s = strings.ReplaceAll(s, " ", "")
+                s = strings.ReplaceAll(strings.TrimSpace(s), " ", "")
                 if s == "" {
                     continue
                 }
@@ -65,7 +65,7 @@ func customerAppNotice() *cobra.Command {
                 buf.WriteString("\n")
             }
 
-            err = ioutil.WriteFile(fmt.Sprintf("runtime/appnotice-%s.txt", time.Now().Format(carbon.ShortDateTimeLayout)), buf.Bytes(), 0755)
+            err = os.WriteFile(fmt.Sprintf("runtime/appnotice-%s.txt", time.Now().Format(carbon.ShortDateTimeLayout)), buf.Bytes(), 0755)
             if err != nil {
                 fmt.Println(err)
             }
