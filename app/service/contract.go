@@ -142,13 +142,10 @@ func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) mode
     m["riderMonth"] = now[1]
     m["riderDay"] = now[2]
     m["contactPhone"] = u.Contact.Phone
-
+    // 勾选租赁电池
+    m["battery"] = true
     // 电池型号
-    if strings.HasPrefix(strings.ToUpper(params.Model), "72V") {
-        m["v72"] = true
-    } else {
-        m["v60"] = true
-    }
+    m["model"] = strings.ToUpper(params.Model)
 
     if params.PlanID != nil {
         s.planData(*params.PlanID, m)
