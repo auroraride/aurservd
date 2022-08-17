@@ -570,18 +570,22 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
         Lng:      b.Lng,
         Lat:      b.Lat,
         Distance: distance.Kilometers() * 1000,
+        Image:    b.Photos[0],
     }
     if sto != nil {
         data.Type = "store"
         // 查询门店电池库存
         ins := NewStock().StoreCurrent(sto.ID)
-        var models []string
+        models := make([]string, 0)
         for _, in := range ins {
             if in.Num > 0 && in.Battery {
                 models = append(models, in.Model)
             }
         }
-        data.Store = &model.BranchFacilityStore{Models: models}
+        data.Store = &model.BranchFacilityStore{
+            Models: models,
+            Name:   sto.Name,
+        }
     } else {
         // 订阅
         var sub *ent.Subscribe
@@ -614,7 +618,6 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
                 ID:         cab.ID,
                 Name:       cab.Name,
                 Serial:     cab.Serial,
-                Image:      b.Photos[0],
                 Reserve:    nil,
                 Bins:       make([]model.BranchFacilityCabinetBin, len(cab.Bin)),
                 Businesses: make([]string, 0),

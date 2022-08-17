@@ -12,6 +12,7 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/assistance"
+    "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/commission"
     "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/internal/ent/exchange"
@@ -155,60 +156,73 @@ func (s *employeeService) List(req *model.EmployeeListReq) *model.PaginationRes 
     })
 }
 
-// Activity 店员动态
-func (s *employeeService) Activity(req *model.EmployeeActivityListReq) *model.PaginationRes {
-    aq := new(ent.AssistanceQuery)
-    q := s.orm.QueryNotDeleted().
+func (s *employeeService) activityListFilter(req model.EmployeeActivityListFilter) (q *ent.EmployeeQuery, info ar.Map) {
+    var start, end time.Time
+    if req.Start != "" {
+        info["开始日期"] = req.Start
+        start = tools.NewTime().ParseDateStringX(req.Start)
+    }
+    if req.End != "" {
+        info["截止日期"] = req.Start
+        end = tools.NewTime().ParseNextDateStringX(req.End)
+    }
+
+    q = s.orm.QueryNotDeleted().
         WithStore().
         WithCity().
-        WithExchanges().
-        WithCommissions().
+        WithExchanges(func(query *ent.ExchangeQuery) {
+            if !start.IsZero() {
+                query.Where(exchange.CreatedAtGTE(start))
+            }
+            if !end.IsZero() {
+                query.Where(exchange.CreatedAtLT(end))
+            }
+        }).
+        WithCommissions(func(query *ent.CommissionQuery) {
+            if !start.IsZero() {
+                query.Where(commission.CreatedAtGTE(start))
+            }
+            if !end.IsZero() {
+                query.Where(commission.CreatedAtLT(end))
+            }
+        }).
         WithAssistances(func(query *ent.AssistanceQuery) {
             query.Where(assistance.StatusIn(model.AssistanceStatusSuccess, model.AssistanceStatusUnpaid))
-            *aq = *query
+
+            if !start.IsZero() {
+                query.Where(assistance.CreatedAtGTE(start))
+            }
+            if !end.IsZero() {
+                query.Where(assistance.CreatedAtLT(end))
+            }
         })
 
-    if req.Keyword != nil {
+    if req.Keyword != "" {
+        info["关键词"] = req.Keyword
         q.Where(
             employee.Or(
-                employee.NameContainsFold(*req.Keyword),
-                employee.PhoneContainsFold(*req.Keyword),
+                employee.NameContainsFold(req.Keyword),
+                employee.PhoneContainsFold(req.Keyword),
             ),
         )
     }
 
-    if req.StoreID != nil {
-        q.Where(employee.HasStoreWith(store.ID(*req.StoreID)))
+    if req.StoreID != 0 {
+        info["门店"] = ent.NewExportInfo(req.StoreID, store.Table)
+        q.Where(employee.HasStoreWith(store.ID(req.StoreID)))
     }
 
-    if req.CityID != nil {
-        q.Where(employee.CityID(*req.CityID))
+    if req.CityID != 0 {
+        info["城市"] = ent.NewExportInfo(req.CityID, city.Table)
+        q.Where(employee.CityID(req.CityID))
     }
 
-    tt := tools.NewTime()
-    if req.Start != nil {
-        rs := tt.ParseDateStringX(*req.Start)
-        q.WithExchanges(func(query *ent.ExchangeQuery) {
-            query.Where(exchange.CreatedAtGTE(rs))
-        }).WithCommissions(func(query *ent.CommissionQuery) {
-            query.Where(commission.CreatedAtGTE(rs))
-        }).WithAssistances(func(query *ent.AssistanceQuery) {
-            *query = *aq
-            query.Where(assistance.CreatedAtGTE(rs))
-        })
-    }
-    if req.End != nil {
-        re := tt.ParseNextDateStringX(*req.End)
-        q.WithExchanges(func(query *ent.ExchangeQuery) {
-            query.Where(exchange.CreatedAtLT(re))
-        }).WithCommissions(func(query *ent.CommissionQuery) {
-            query.Where(commission.CreatedAtLT(re))
-        }).WithAssistances(func(query *ent.AssistanceQuery) {
-            *query = *aq
-            query.Where(assistance.CreatedAtLT(re))
-        })
-    }
+    return
+}
 
+// Activity 店员动态
+func (s *employeeService) Activity(req *model.EmployeeActivityListReq) *model.PaginationRes {
+    q, _ := s.activityListFilter(req.EmployeeActivityListFilter)
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Employee) model.EmployeeActivityListRes {
         res := model.EmployeeActivityListRes{
             ID:            item.ID,

@@ -14,6 +14,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/enterprise"
     "github.com/auroraride/aurservd/internal/ent/plan"
     "github.com/auroraride/aurservd/internal/ent/rider"
+    "github.com/auroraride/aurservd/internal/ent/store"
 )
 
 type ExportInfoData interface {
@@ -49,6 +50,10 @@ func (c *Cabinet) GetExportInfo() string {
     return c.Name + " - " + c.Serial
 }
 
+func (s *Store) GetExportInfo() string {
+    return s.Name
+}
+
 type ExportInfo struct {
     id    uint64
     table string
@@ -82,6 +87,9 @@ func (ei *ExportInfo) GetExportInfoData() string {
         break
     case cabinet.Table:
         m, _ = Database.Cabinet.QueryNotDeleted().Where(cabinet.ID(ei.id)).First(ctx)
+        break
+    case store.Table:
+        m, _ = Database.Store.QueryNotDeleted().Where(store.ID(ei.id)).First(ctx)
         break
     }
     if m == nil {

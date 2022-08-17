@@ -11743,10 +11743,6 @@ const docTemplate = `{
                     "description": "电柜ID",
                     "type": "integer"
                 },
-                "image": {
-                    "description": "网点图片",
-                    "type": "string"
-                },
                 "name": {
                     "description": "电柜名称",
                     "type": "string"
@@ -11820,6 +11816,10 @@ const docTemplate = `{
                 "distance": {
                     "description": "距离(前端处理: 超过1000米显示nKM)",
                     "type": "number"
+                },
+                "image": {
+                    "description": "网点图片",
+                    "type": "string"
                 },
                 "lat": {
                     "description": "纬度",

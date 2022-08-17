@@ -55,44 +55,49 @@ func (s *updater) DoUpdate() (err error) {
     var bins model.CabinetBins
     var online bool
     online, bins, err = s.provider.FetchStatus(s.cab.Serial)
+
+    // 设置是否离线
     setOfflineTime(s.cab.Serial, online)
-    if err != nil {
-        return
-    }
 
     s.old = s.cloneCabinet()
 
-    var num, full, empty, locked, charging int
-    for i, bin := range bins {
-        // 电池数量
-        if bin.Battery {
-            num += 1
-        }
-        // 仓位备注信息
-        if len(s.old.Bin) > i {
-            bin.Remark = s.old.Bin[i].Remark
-        }
-        // 锁仓判定
-        if bin.DoorHealth {
-            // 仓门正常清除告警设置
-            delBinFault(s.cab.Serial, i)
-        } else {
-            // 锁仓数量
-            locked += 1
-        }
-        // 满电充电空仓判定
-        if bin.Battery {
-            if bin.Full {
-                // 满电数量
-                full += 1
-            } else {
-                // 充电数量
-                charging += 1
+    up := s.cab.Update()
+
+    if err == nil && online {
+        var num, full, empty, locked, charging int
+        for i, bin := range bins {
+            // 电池数量
+            if bin.Battery {
+                num += 1
             }
-        } else {
-            // 空仓数量 = 无电池 && 仓门无锁
-            empty += 1
+            // 仓位备注信息
+            if len(s.old.Bin) > i {
+                bin.Remark = s.old.Bin[i].Remark
+            }
+            // 锁仓判定
+            if bin.DoorHealth {
+                // 仓门正常清除告警设置
+                delBinFault(s.cab.Serial, i)
+            } else {
+                // 锁仓数量
+                locked += 1
+            }
+            // 满电充电空仓判定
+            if bin.Battery {
+                if bin.Full {
+                    // 满电数量
+                    full += 1
+                } else {
+                    // 充电数量
+                    charging += 1
+                }
+            } else {
+                // 空仓数量 = 无电池 && 仓门无锁
+                empty += 1
+            }
         }
+
+        up.SetBin(bins).SetBatteryNum(num).SetDoors(len(bins)).SetLockedBinNum(locked).SetEmptyBinNum(empty).SetBatteryFullNum(full).SetBatteryChargingNum(charging)
     }
 
     health := s.cab.Health
@@ -102,18 +107,7 @@ func (s *updater) DoUpdate() (err error) {
         health = model.CabinetHealthStatusOffline
     }
 
-    item, _ := s.cab.Update().
-        SetBin(bins).
-        SetBatteryNum(num).
-        SetHealth(health).
-        SetDoors(len(bins)).
-        SetLockedBinNum(locked).
-        SetEmptyBinNum(empty).
-        SetBatteryFullNum(full).
-        SetBatteryChargingNum(charging).
-        Save(s.ctx)
-
-    *s.cab = *item
+    item, _ := up.SetHealth(health).Save(s.ctx)
 
     // 在线变化
     if s.old.Health != health {
@@ -124,7 +118,12 @@ func (s *updater) DoUpdate() (err error) {
         }
     }
 
-    s.batteryMonitor()
+    *s.cab = *item
+
+    if item.Health == model.CabinetHealthStatusOnline {
+        // 电池变动
+        s.batteryMonitor()
+    }
 
     return
 }

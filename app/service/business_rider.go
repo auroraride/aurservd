@@ -77,6 +77,9 @@ func (s *businessRiderService) SetCabinetID(id *uint64) *businessRiderService {
 func (s *businessRiderService) SetStoreID(id *uint64) *businessRiderService {
     if id != nil {
         s.store = NewStore().Query(*id)
+        if s.store.Edges.Employee != nil {
+            s.employee = s.store.Edges.Employee
+        }
     }
     return s
 }
@@ -143,7 +146,7 @@ func (s *businessRiderService) Inactive(id uint64) (*model.SubscribeActiveInfo, 
     }
 
     if s.employee != nil {
-        NewBusinessWithEmployee(s.employee).CheckCity(sub.CityID)
+        NewBusinessWithEmployee(s.employee).CheckCity(sub.CityID, s.store)
     }
 
     r := sub.Edges.Rider
@@ -243,7 +246,8 @@ func (s *businessRiderService) preprocess(typ business.Type, sub *ent.Subscribe)
 
     // 校验权限
     if s.employee != nil {
-        NewBusinessWithEmployee(s.employee).CheckCity(s.subscribe.CityID)
+        log.Println(s.employee.ID)
+        NewBusinessWithEmployee(s.employee).CheckCity(s.subscribe.CityID, s.store)
     }
 
     // 预约检查
@@ -344,6 +348,7 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
         SetModifier(s.modifier).
         SetEmployee(s.employee).
         SetCabinet(s.cabinet).
+        SetStore(s.store).
         SetBinInfo(bin).
         Save(bt)
     var bussinessID *uint64

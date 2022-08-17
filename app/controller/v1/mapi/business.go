@@ -75,3 +75,9 @@ func (*business) Suspend(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.SuspendListReq](c)
     return ctx.SendResponse(service.NewSuspendWithModifier(ctx.Modifier).List(req))
 }
+
+func (*business) Commission(c echo.Context) (err error) {
+    ctx := app.Context(c)
+
+    return ctx.SendResponse()
+}

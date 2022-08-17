@@ -53,6 +53,13 @@ func (s *businessLogService) SetEmployee(e *ent.Employee) *businessLogService {
     return s
 }
 
+func (s *businessLogService) SetStore(sto *ent.Store) *businessLogService {
+    if sto != nil {
+        s.creator.SetStore(sto)
+    }
+    return s
+}
+
 // SetCabinet 设置电柜
 func (s *businessLogService) SetCabinet(cab *ent.Cabinet) *businessLogService {
     if cab != nil {

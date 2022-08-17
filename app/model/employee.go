@@ -24,13 +24,17 @@ type EmployeeModifyReq struct {
     Phone  *string `json:"phone"`  // 手机号
 }
 
+type EmployeeActivityListFilter struct {
+    StoreID uint64 `json:"storeId" query:"storeId"` // 门店ID
+    Keyword string `json:"name" query:"keyword"`    // 查询店员电话或姓名
+    CityID  uint64 `json:"cityId" query:"cityId"`   // 城市ID
+    Start   string `json:"start" query:"start"`     // 业绩统计开始时间
+    End     string `json:"end" query:"end"`         // 业绩统计结束时间
+}
+
 type EmployeeActivityListReq struct {
     PaginationReq
-    StoreID *uint64 `json:"storeId" query:"storeId"` // 门店ID
-    Keyword *string `json:"name" query:"keyword"`    // 查询店员电话或姓名
-    CityID  *uint64 `json:"cityId" query:"cityId"`   // 城市ID
-    Start   *string `json:"start" query:"start"`     // 业绩统计开始时间
-    End     *string `json:"end" query:"end"`         // 业绩统计结束时间
+    EmployeeActivityListFilter
 }
 
 type EmployeeActivityListRes struct {

@@ -33,9 +33,11 @@ var (
     }
     riderAuthSkipper = map[string]bool{
         "/rider/v1/profile": true,
+        "/rider/v1/reserve": true,
     }
     riderFaceSkipper = map[string]bool{
         "/rider/v1/profile": true,
+        "/rider/v1/reserve": true,
     }
 )
 

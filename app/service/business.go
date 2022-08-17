@@ -55,8 +55,8 @@ func NewBusinessWithModifier(m *model.Modifier) *businessService {
 }
 
 // CheckCity 检查城市
-func (s *businessService) CheckCity(cityID uint64) {
-    if s.employee != nil && s.employee.Edges.Store.CityID != cityID {
+func (s *businessService) CheckCity(cityID uint64, sto *ent.Store) {
+    if s.employee != nil && sto != nil && sto.CityID != cityID {
         snag.Panic("不能跨城市操作")
     }
 }
@@ -74,7 +74,7 @@ func (s *businessService) Detail(id uint64) (res model.SubscribeBusiness) {
         snag.Panic("未找到有效订阅")
     }
 
-    s.CheckCity(subd.City.ID)
+    s.CheckCity(subd.City.ID, s.employee.Edges.Store)
 
     ic := r.Edges.Person.IDCardNumber
     res = model.SubscribeBusiness{
@@ -104,7 +104,7 @@ func (s *businessService) Detail(id uint64) (res model.SubscribeBusiness) {
 func (s *businessService) Plans(subscribeID uint64) {
     sub := NewSubscribe().QueryEdgesX(subscribeID)
 
-    s.CheckCity(sub.CityID)
+    s.CheckCity(sub.CityID, s.employee.Edges.Store)
     NewRider().CheckForBusiness(sub.Edges.Rider)
 
     if sub.Status != model.SubscribeStatusUsing {

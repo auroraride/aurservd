@@ -176,6 +176,7 @@ type BranchFacilityRes struct {
     Lat      float64                 `json:"lat"`                        // 纬度
     Distance float64                 `json:"distance"`                   // 距离(前端处理: 超过1000米显示nKM)
     Type     string                  `json:"type" enums:"store,cabinet"` // 设施类型 store:门店 cabinet:电柜(此时cabinet字段为数组)
+    Image    string                  `json:"image"`                      // 网点图片
     Store    *BranchFacilityStore    `json:"store,omitempty"`            // 门店, 当type=store时存在
     Cabinet  []BranchFacilityCabinet `json:"cabinet,omitempty"`          // 电柜, 当type=cabinet时存在, 根据序号显示 1号柜/2号柜 等, 当仅有一个电柜时, 电柜切换tab隐藏
 }
@@ -189,7 +190,6 @@ type BranchFacilityCabinet struct {
     ID         uint64                         `json:"id"`                // 电柜ID
     Status     uint8                          `json:"status"`            // 电柜状态 0:离线 1:在线 2:维护中
     Name       string                         `json:"name"`              // 电柜名称
-    Image      string                         `json:"image"`             // 网点图片
     Serial     string                         `json:"serial"`            // 电柜编号
     Batteries  []BranchFacilityCabinetBattery `json:"batteries"`         // 电池情况
     Reserve    *ReserveUnfinishedRes          `json:"reserve,omitempty"` // 当前预约, 预约不存在时无此字段
