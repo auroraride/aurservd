@@ -939,7 +939,6 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (cc *CabinetCreate) OnConflict(opts ...sql.ConflictOption) *CabinetUpsertOne {
 	cc.conflict = opts
 	return &CabinetUpsertOne{
@@ -953,7 +952,6 @@ func (cc *CabinetCreate) OnConflict(opts ...sql.ConflictOption) *CabinetUpsertOn
 //	client.Cabinet.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (cc *CabinetCreate) OnConflictColumns(columns ...string) *CabinetUpsertOne {
 	cc.conflict = append(cc.conflict, sql.ConflictColumns(columns...))
 	return &CabinetUpsertOne{
@@ -1438,7 +1436,6 @@ func (u *CabinetUpsert) AddLockedBinNum(v int) *CabinetUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *CabinetUpsertOne) UpdateNewValues() *CabinetUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1455,10 +1452,9 @@ func (u *CabinetUpsertOne) UpdateNewValues() *CabinetUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//  client.Cabinet.Create().
-//      OnConflict(sql.ResolveWithIgnore()).
-//      Exec(ctx)
-//
+//	client.Cabinet.Create().
+//	    OnConflict(sql.ResolveWithIgnore()).
+//	    Exec(ctx)
 func (u *CabinetUpsertOne) Ignore() *CabinetUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -2146,7 +2142,6 @@ func (ccb *CabinetCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (ccb *CabinetCreateBulk) OnConflict(opts ...sql.ConflictOption) *CabinetUpsertBulk {
 	ccb.conflict = opts
 	return &CabinetUpsertBulk{
@@ -2160,7 +2155,6 @@ func (ccb *CabinetCreateBulk) OnConflict(opts ...sql.ConflictOption) *CabinetUps
 //	client.Cabinet.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (ccb *CabinetCreateBulk) OnConflictColumns(columns ...string) *CabinetUpsertBulk {
 	ccb.conflict = append(ccb.conflict, sql.ConflictColumns(columns...))
 	return &CabinetUpsertBulk{
@@ -2182,7 +2176,6 @@ type CabinetUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *CabinetUpsertBulk) UpdateNewValues() *CabinetUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -2204,7 +2197,6 @@ func (u *CabinetUpsertBulk) UpdateNewValues() *CabinetUpsertBulk {
 //	client.Cabinet.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
-//
 func (u *CabinetUpsertBulk) Ignore() *CabinetUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

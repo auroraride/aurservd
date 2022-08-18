@@ -418,7 +418,6 @@ func (orc *OrderRefundCreate) createSpec() (*OrderRefund, *sqlgraph.CreateSpec) 
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (orc *OrderRefundCreate) OnConflict(opts ...sql.ConflictOption) *OrderRefundUpsertOne {
 	orc.conflict = opts
 	return &OrderRefundUpsertOne{
@@ -432,7 +431,6 @@ func (orc *OrderRefundCreate) OnConflict(opts ...sql.ConflictOption) *OrderRefun
 //	client.OrderRefund.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (orc *OrderRefundCreate) OnConflictColumns(columns ...string) *OrderRefundUpsertOne {
 	orc.conflict = append(orc.conflict, sql.ConflictColumns(columns...))
 	return &OrderRefundUpsertOne{
@@ -647,7 +645,6 @@ func (u *OrderRefundUpsert) ClearRefundAt() *OrderRefundUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *OrderRefundUpsertOne) UpdateNewValues() *OrderRefundUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -664,10 +661,9 @@ func (u *OrderRefundUpsertOne) UpdateNewValues() *OrderRefundUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//  client.OrderRefund.Create().
-//      OnConflict(sql.ResolveWithIgnore()).
-//      Exec(ctx)
-//
+//	client.OrderRefund.Create().
+//	    OnConflict(sql.ResolveWithIgnore()).
+//	    Exec(ctx)
 func (u *OrderRefundUpsertOne) Ignore() *OrderRefundUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -1040,7 +1036,6 @@ func (orcb *OrderRefundCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (orcb *OrderRefundCreateBulk) OnConflict(opts ...sql.ConflictOption) *OrderRefundUpsertBulk {
 	orcb.conflict = opts
 	return &OrderRefundUpsertBulk{
@@ -1054,7 +1049,6 @@ func (orcb *OrderRefundCreateBulk) OnConflict(opts ...sql.ConflictOption) *Order
 //	client.OrderRefund.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (orcb *OrderRefundCreateBulk) OnConflictColumns(columns ...string) *OrderRefundUpsertBulk {
 	orcb.conflict = append(orcb.conflict, sql.ConflictColumns(columns...))
 	return &OrderRefundUpsertBulk{
@@ -1076,7 +1070,6 @@ type OrderRefundUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *OrderRefundUpsertBulk) UpdateNewValues() *OrderRefundUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1098,7 +1091,6 @@ func (u *OrderRefundUpsertBulk) UpdateNewValues() *OrderRefundUpsertBulk {
 //	client.OrderRefund.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
-//
 func (u *OrderRefundUpsertBulk) Ignore() *OrderRefundUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

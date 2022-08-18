@@ -299,7 +299,6 @@ func (mq *ManagerQuery) WithRole(opts ...func(*RoleQuery)) *ManagerQuery {
 //		GroupBy(manager.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (mq *ManagerQuery) GroupBy(field string, fields ...string) *ManagerGroupBy {
 	grbuild := &ManagerGroupBy{config: mq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -326,7 +325,6 @@ func (mq *ManagerQuery) GroupBy(field string, fields ...string) *ManagerGroupBy 
 //	client.Manager.Query().
 //		Select(manager.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (mq *ManagerQuery) Select(fields ...string) *ManagerSelect {
 	mq.fields = append(mq.fields, fields...)
 	selbuild := &ManagerSelect{ManagerQuery: mq}

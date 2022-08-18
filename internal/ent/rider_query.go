@@ -624,7 +624,6 @@ func (rq *RiderQuery) WithFollowups(opts ...func(*RiderFollowUpQuery)) *RiderQue
 //		GroupBy(rider.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (rq *RiderQuery) GroupBy(field string, fields ...string) *RiderGroupBy {
 	grbuild := &RiderGroupBy{config: rq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -651,7 +650,6 @@ func (rq *RiderQuery) GroupBy(field string, fields ...string) *RiderGroupBy {
 //	client.Rider.Query().
 //		Select(rider.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (rq *RiderQuery) Select(fields ...string) *RiderSelect {
 	rq.fields = append(rq.fields, fields...)
 	selbuild := &RiderSelect{RiderQuery: rq}

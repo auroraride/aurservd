@@ -370,7 +370,6 @@ func (src *SubscribeReminderCreate) createSpec() (*SubscribeReminder, *sqlgraph.
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (src *SubscribeReminderCreate) OnConflict(opts ...sql.ConflictOption) *SubscribeReminderUpsertOne {
 	src.conflict = opts
 	return &SubscribeReminderUpsertOne{
@@ -384,7 +383,6 @@ func (src *SubscribeReminderCreate) OnConflict(opts ...sql.ConflictOption) *Subs
 //	client.SubscribeReminder.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (src *SubscribeReminderCreate) OnConflictColumns(columns ...string) *SubscribeReminderUpsertOne {
 	src.conflict = append(src.conflict, sql.ConflictColumns(columns...))
 	return &SubscribeReminderUpsertOne{
@@ -539,7 +537,6 @@ func (u *SubscribeReminderUpsert) UpdateDate() *SubscribeReminderUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *SubscribeReminderUpsertOne) UpdateNewValues() *SubscribeReminderUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -553,10 +550,9 @@ func (u *SubscribeReminderUpsertOne) UpdateNewValues() *SubscribeReminderUpsertO
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//  client.SubscribeReminder.Create().
-//      OnConflict(sql.ResolveWithIgnore()).
-//      Exec(ctx)
-//
+//	client.SubscribeReminder.Create().
+//	    OnConflict(sql.ResolveWithIgnore()).
+//	    Exec(ctx)
 func (u *SubscribeReminderUpsertOne) Ignore() *SubscribeReminderUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -859,7 +855,6 @@ func (srcb *SubscribeReminderCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (srcb *SubscribeReminderCreateBulk) OnConflict(opts ...sql.ConflictOption) *SubscribeReminderUpsertBulk {
 	srcb.conflict = opts
 	return &SubscribeReminderUpsertBulk{
@@ -873,7 +868,6 @@ func (srcb *SubscribeReminderCreateBulk) OnConflict(opts ...sql.ConflictOption) 
 //	client.SubscribeReminder.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (srcb *SubscribeReminderCreateBulk) OnConflictColumns(columns ...string) *SubscribeReminderUpsertBulk {
 	srcb.conflict = append(srcb.conflict, sql.ConflictColumns(columns...))
 	return &SubscribeReminderUpsertBulk{
@@ -895,7 +889,6 @@ type SubscribeReminderUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *SubscribeReminderUpsertBulk) UpdateNewValues() *SubscribeReminderUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -914,7 +907,6 @@ func (u *SubscribeReminderUpsertBulk) UpdateNewValues() *SubscribeReminderUpsert
 //	client.SubscribeReminder.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
-//
 func (u *SubscribeReminderUpsertBulk) Ignore() *SubscribeReminderUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

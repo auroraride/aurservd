@@ -38,7 +38,7 @@ func setOfflineTime(serial string, online bool) {
 // isOffline 判定电柜是否离线, 3分钟以上算作离线
 func isOffline(serial string) bool {
     t := getOfflineTime(serial)
-    return !t.IsZero() && time.Now().Sub(t).Minutes() > 3
+    return !t.IsZero() && time.Now().Sub(t).Minutes() >= 3
 }
 
 func binFaultKey(serial string, index int) string {

@@ -41,7 +41,8 @@ func NewExcel(path string, args ...any) (e *excel) {
 }
 
 func (e *excel) CellString(row, column int) string {
-    return fmt.Sprintf("%s%d", string(rune(65+column)), row+1)
+    name := fmt.Sprintf("%s%d", string(rune(65+column)), row+1)
+    return name
 }
 
 // AddData 添加数据
@@ -54,26 +55,48 @@ func (e *excel) AddData(row, column int, data any) *excel {
     return e
 }
 
+// AddValuesFromStruct 从结构添加 TODO
+func (e *excel) AddValuesFromStruct() *excel {
+    return e
+}
+
 // AddValues 批量添加数据
 func (e *excel) AddValues(rows [][]any) *excel {
-    for row, data := range rows {
+    row := -1
+    rowFrom := 0
+    rowEnd := 0
+    for _, data := range rows {
+        row += 1
+        rowFrom = row
+
+        var mr int // 合并项
+        var mergeColumns []int
         for column, v := range data {
             rt := reflect.TypeOf(v)
             if rt.Kind() == reflect.Slice {
                 items := v.([]any)
                 for m, subs := range items {
                     for n, sub := range subs.([]any) {
-                        if m > 0 {
-                            err := e.MergeCell(e.sheet, e.CellString(row, column+n), e.CellString(row+m, column+n))
-                            if err != nil {
-                                snag.Panic(err)
-                            }
-                        }
                         e.AddData(row+m, column+n, sub)
                     }
                 }
+                mr = len(items) - 1
+                row += mr
             } else {
                 e.AddData(row, column, v)
+                mergeColumns = append(mergeColumns, column)
+            }
+        }
+
+        rowEnd = row
+
+        // 合并单元格
+        if mr > 0 && len(mergeColumns) > 0 {
+            for _, mc := range mergeColumns {
+                err := e.MergeCell(e.sheet, e.CellString(rowFrom, mc), e.CellString(rowEnd, mc))
+                if err != nil {
+                    snag.Panic(err)
+                }
             }
         }
     }

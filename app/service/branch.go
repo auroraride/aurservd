@@ -384,16 +384,18 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
 
     // 进行关联查询
     // 门店
-    for _, es := range stores {
-        if es.Status == model.StoreStatusOpen {
-            s.facility(itemsMap[es.BranchID].FacilityMap, model.BranchFacility{
-                ID:    es.ID,
-                Type:  model.BranchFacilityTypeStore,
-                Name:  es.Name,
-                State: model.BranchFacilityStateOnline,
-                Num:   0,
-                Fid:   s.EncodeFacility(es, nil),
-            })
+    if req.Business == "" {
+        for _, es := range stores {
+            if es.Status == model.StoreStatusOpen {
+                s.facility(itemsMap[es.BranchID].FacilityMap, model.BranchFacility{
+                    ID:    es.ID,
+                    Type:  model.BranchFacilityTypeStore,
+                    Name:  es.Name,
+                    State: model.BranchFacilityStateOnline,
+                    Num:   0,
+                    Fid:   s.EncodeFacility(es, nil),
+                })
+            }
         }
     }
 
@@ -413,7 +415,12 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
     // 电柜
     for _, c := range cabinets {
         // 预约检查 = 非预约筛选 或 电柜可满足预约并且如果订阅非空则电柜电池型号满足订阅型号
-        resvcheck := req.Business == "" || (c.ReserveAble(business.Type(req.Business), rm[c.ID]) && (sub == nil || NewCabinet().ModelInclude(c, sub.Model)))
+        // resvcheck := req.Business == "" || (c.ReserveAble(business.Type(req.Business), rm[c.ID]) && (sub == nil || NewCabinet().ModelInclude(c, sub.Model)))
+        resvcheck := req.Business == ""
+        if c.ReserveAble(business.Type(req.Business), rm[c.ID]) {
+            resvcheck = sub == nil || NewCabinet().ModelInclude(c, sub.Model)
+        }
+
         if model.CabinetStatus(c.Status) == model.CabinetStatusNormal && resvcheck {
             fa := model.BranchFacility{
                 ID:    c.ID,

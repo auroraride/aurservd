@@ -335,7 +335,6 @@ func (rfuq *RiderFollowUpQuery) WithRider(opts ...func(*RiderQuery)) *RiderFollo
 //		GroupBy(riderfollowup.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (rfuq *RiderFollowUpQuery) GroupBy(field string, fields ...string) *RiderFollowUpGroupBy {
 	grbuild := &RiderFollowUpGroupBy{config: rfuq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -362,7 +361,6 @@ func (rfuq *RiderFollowUpQuery) GroupBy(field string, fields ...string) *RiderFo
 //	client.RiderFollowUp.Query().
 //		Select(riderfollowup.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (rfuq *RiderFollowUpQuery) Select(fields ...string) *RiderFollowUpSelect {
 	rfuq.fields = append(rfuq.fields, fields...)
 	selbuild := &RiderFollowUpSelect{RiderFollowUpQuery: rfuq}

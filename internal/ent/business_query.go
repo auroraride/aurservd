@@ -587,7 +587,6 @@ func (bq *BusinessQuery) WithCabinet(opts ...func(*CabinetQuery)) *BusinessQuery
 //		GroupBy(business.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (bq *BusinessQuery) GroupBy(field string, fields ...string) *BusinessGroupBy {
 	grbuild := &BusinessGroupBy{config: bq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -614,7 +613,6 @@ func (bq *BusinessQuery) GroupBy(field string, fields ...string) *BusinessGroupB
 //	client.Business.Query().
 //		Select(business.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (bq *BusinessQuery) Select(fields ...string) *BusinessSelect {
 	bq.fields = append(bq.fields, fields...)
 	selbuild := &BusinessSelect{BusinessQuery: bq}

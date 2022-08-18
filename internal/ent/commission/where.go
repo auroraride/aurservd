@@ -121,6 +121,27 @@ func Remark(v string) predicate.Commission {
 	})
 }
 
+// BusinessID applies equality check predicate on the "business_id" field. It's identical to BusinessIDEQ.
+func BusinessID(v uint64) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBusinessID), v))
+	})
+}
+
+// SubscribeID applies equality check predicate on the "subscribe_id" field. It's identical to SubscribeIDEQ.
+func SubscribeID(v uint64) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
+	})
+}
+
+// PlanID applies equality check predicate on the "plan_id" field. It's identical to PlanIDEQ.
+func PlanID(v uint64) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPlanID), v))
+	})
+}
+
 // OrderID applies equality check predicate on the "order_id" field. It's identical to OrderIDEQ.
 func OrderID(v uint64) predicate.Commission {
 	return predicate.Commission(func(s *sql.Selector) {
@@ -544,6 +565,192 @@ func RemarkContainsFold(v string) predicate.Commission {
 	})
 }
 
+// BusinessIDEQ applies the EQ predicate on the "business_id" field.
+func BusinessIDEQ(v uint64) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBusinessID), v))
+	})
+}
+
+// BusinessIDNEQ applies the NEQ predicate on the "business_id" field.
+func BusinessIDNEQ(v uint64) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldBusinessID), v))
+	})
+}
+
+// BusinessIDIn applies the In predicate on the "business_id" field.
+func BusinessIDIn(vs ...uint64) predicate.Commission {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Commission(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldBusinessID), v...))
+	})
+}
+
+// BusinessIDNotIn applies the NotIn predicate on the "business_id" field.
+func BusinessIDNotIn(vs ...uint64) predicate.Commission {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Commission(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldBusinessID), v...))
+	})
+}
+
+// BusinessIDIsNil applies the IsNil predicate on the "business_id" field.
+func BusinessIDIsNil() predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldBusinessID)))
+	})
+}
+
+// BusinessIDNotNil applies the NotNil predicate on the "business_id" field.
+func BusinessIDNotNil() predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldBusinessID)))
+	})
+}
+
+// SubscribeIDEQ applies the EQ predicate on the "subscribe_id" field.
+func SubscribeIDEQ(v uint64) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
+	})
+}
+
+// SubscribeIDNEQ applies the NEQ predicate on the "subscribe_id" field.
+func SubscribeIDNEQ(v uint64) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldSubscribeID), v))
+	})
+}
+
+// SubscribeIDIn applies the In predicate on the "subscribe_id" field.
+func SubscribeIDIn(vs ...uint64) predicate.Commission {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Commission(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldSubscribeID), v...))
+	})
+}
+
+// SubscribeIDNotIn applies the NotIn predicate on the "subscribe_id" field.
+func SubscribeIDNotIn(vs ...uint64) predicate.Commission {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Commission(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldSubscribeID), v...))
+	})
+}
+
+// SubscribeIDIsNil applies the IsNil predicate on the "subscribe_id" field.
+func SubscribeIDIsNil() predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldSubscribeID)))
+	})
+}
+
+// SubscribeIDNotNil applies the NotNil predicate on the "subscribe_id" field.
+func SubscribeIDNotNil() predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldSubscribeID)))
+	})
+}
+
+// PlanIDEQ applies the EQ predicate on the "plan_id" field.
+func PlanIDEQ(v uint64) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPlanID), v))
+	})
+}
+
+// PlanIDNEQ applies the NEQ predicate on the "plan_id" field.
+func PlanIDNEQ(v uint64) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPlanID), v))
+	})
+}
+
+// PlanIDIn applies the In predicate on the "plan_id" field.
+func PlanIDIn(vs ...uint64) predicate.Commission {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Commission(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldPlanID), v...))
+	})
+}
+
+// PlanIDNotIn applies the NotIn predicate on the "plan_id" field.
+func PlanIDNotIn(vs ...uint64) predicate.Commission {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Commission(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldPlanID), v...))
+	})
+}
+
+// PlanIDIsNil applies the IsNil predicate on the "plan_id" field.
+func PlanIDIsNil() predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldPlanID)))
+	})
+}
+
+// PlanIDNotNil applies the NotNil predicate on the "plan_id" field.
+func PlanIDNotNil() predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldPlanID)))
+	})
+}
+
 // OrderIDEQ applies the EQ predicate on the "order_id" field.
 func OrderIDEQ(v uint64) predicate.Commission {
 	return predicate.Commission(func(s *sql.Selector) {
@@ -803,6 +1010,90 @@ func EmployeeIDIsNil() predicate.Commission {
 func EmployeeIDNotNil() predicate.Commission {
 	return predicate.Commission(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldEmployeeID)))
+	})
+}
+
+// HasBusiness applies the HasEdge predicate on the "business" edge.
+func HasBusiness() predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(BusinessTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, BusinessTable, BusinessColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasBusinessWith applies the HasEdge predicate on the "business" edge with a given conditions (other predicates).
+func HasBusinessWith(preds ...predicate.Business) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(BusinessInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, BusinessTable, BusinessColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasSubscribe applies the HasEdge predicate on the "subscribe" edge.
+func HasSubscribe() predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(SubscribeTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSubscribeWith applies the HasEdge predicate on the "subscribe" edge with a given conditions (other predicates).
+func HasSubscribeWith(preds ...predicate.Subscribe) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(SubscribeInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasPlan applies the HasEdge predicate on the "plan" edge.
+func HasPlan() predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(PlanTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, PlanTable, PlanColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPlanWith applies the HasEdge predicate on the "plan" edge with a given conditions (other predicates).
+func HasPlanWith(preds ...predicate.Plan) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(PlanInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, PlanTable, PlanColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 

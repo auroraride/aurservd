@@ -693,7 +693,6 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (sc *StockCreate) OnConflict(opts ...sql.ConflictOption) *StockUpsertOne {
 	sc.conflict = opts
 	return &StockUpsertOne{
@@ -707,7 +706,6 @@ func (sc *StockCreate) OnConflict(opts ...sql.ConflictOption) *StockUpsertOne {
 //	client.Stock.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (sc *StockCreate) OnConflictColumns(columns ...string) *StockUpsertOne {
 	sc.conflict = append(sc.conflict, sql.ConflictColumns(columns...))
 	return &StockUpsertOne{
@@ -1030,7 +1028,6 @@ func (u *StockUpsert) UpdateMaterial() *StockUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *StockUpsertOne) UpdateNewValues() *StockUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1050,10 +1047,9 @@ func (u *StockUpsertOne) UpdateNewValues() *StockUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//  client.Stock.Create().
-//      OnConflict(sql.ResolveWithIgnore()).
-//      Exec(ctx)
-//
+//	client.Stock.Create().
+//	    OnConflict(sql.ResolveWithIgnore()).
+//	    Exec(ctx)
 func (u *StockUpsertOne) Ignore() *StockUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -1552,7 +1548,6 @@ func (scb *StockCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (scb *StockCreateBulk) OnConflict(opts ...sql.ConflictOption) *StockUpsertBulk {
 	scb.conflict = opts
 	return &StockUpsertBulk{
@@ -1566,7 +1561,6 @@ func (scb *StockCreateBulk) OnConflict(opts ...sql.ConflictOption) *StockUpsertB
 //	client.Stock.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (scb *StockCreateBulk) OnConflictColumns(columns ...string) *StockUpsertBulk {
 	scb.conflict = append(scb.conflict, sql.ConflictColumns(columns...))
 	return &StockUpsertBulk{
@@ -1588,7 +1582,6 @@ type StockUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *StockUpsertBulk) UpdateNewValues() *StockUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1613,7 +1606,6 @@ func (u *StockUpsertBulk) UpdateNewValues() *StockUpsertBulk {
 //	client.Stock.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
-//
 func (u *StockUpsertBulk) Ignore() *StockUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

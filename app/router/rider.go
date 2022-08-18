@@ -84,6 +84,7 @@ func loadRideRoutes() {
     g.POST("/business/pause", rapi.Business.Pause)
     g.POST("/business/continue", rapi.Business.Continue)
     g.GET("/business/status", rapi.Business.Status)
+    g.GET("/business/pause/info", rapi.Business.PauseInfo)
 
     // 电柜
     cabinet := g.Group("/cabinet")

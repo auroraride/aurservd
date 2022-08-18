@@ -13,6 +13,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/business"
+    "github.com/auroraride/aurservd/internal/ent/commission"
     "github.com/auroraride/aurservd/internal/ent/contract"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
@@ -315,6 +316,12 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
         }
     }
 
+    // 激活业务查找提成
+    var co *ent.Commission
+    if bt == business.TypeActive {
+        co, _ = ent.Database.Commission.QueryNotDeleted().Where(commission.SubscribeID(s.subscribe.ID)).First(s.ctx)
+    }
+
     ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
         cb(tx)
 
@@ -366,6 +373,11 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
             Save(s.ctx)
     }
 
+    // 更新提成
+    if bt == business.TypeActive && co != nil && b != nil && s.employeeID != nil {
+        _, _ = co.Update().SetBusiness(b).SetEmployeeID(*s.employeeID).Save(s.ctx)
+    }
+
     // 记录日志
     go logging.NewOperateLog().
         SetRef(s.rider).
@@ -397,11 +409,11 @@ func (s *businessRiderService) Active(info *model.SubscribeActiveInfo, sub *ent.
             Save(s.ctx)
         snag.PanicIfError(err)
 
-        // 提成
-        if info.CommissionID != nil && s.employeeID != nil {
-            _, err = tx.Commission.UpdateOneID(*info.CommissionID).SetEmployeeID(*s.employeeID).Save(s.ctx)
-            snag.PanicIfError(err)
-        }
+        // // 提成
+        // if info.CommissionID != nil && s.employeeID != nil {
+        //     _, err = tx.Commission.UpdateOneID(*info.CommissionID).SetEmployeeID(*s.employeeID).Save(s.ctx)
+        //     snag.PanicIfError(err)
+        // }
     })
 
     if info.EnterpriseID != nil {

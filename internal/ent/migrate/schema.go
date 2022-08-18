@@ -664,6 +664,9 @@ var (
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "amount", Type: field.TypeFloat64, Comment: "提成金额"},
 		{Name: "status", Type: field.TypeUint8, Comment: "提成状态 0未发放 1已发放", Default: 0},
+		{Name: "business_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "order_id", Type: field.TypeUint64, Unique: true},
 	}
@@ -674,14 +677,32 @@ var (
 		PrimaryKey: []*schema.Column{CommissionColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "commission_employee_commissions",
+				Symbol:     "commission_business_business",
 				Columns:    []*schema.Column{CommissionColumns[9]},
+				RefColumns: []*schema.Column{BusinessColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "commission_subscribe_subscribe",
+				Columns:    []*schema.Column{CommissionColumns[10]},
+				RefColumns: []*schema.Column{SubscribeColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "commission_plan_plan",
+				Columns:    []*schema.Column{CommissionColumns[11]},
+				RefColumns: []*schema.Column{PlanColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "commission_employee_commissions",
+				Columns:    []*schema.Column{CommissionColumns[12]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "commission_order_commission",
-				Columns:    []*schema.Column{CommissionColumns[10]},
+				Columns:    []*schema.Column{CommissionColumns[13]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -2836,8 +2857,11 @@ func init() {
 	CityTable.Annotation = &entsql.Annotation{
 		Table: "city",
 	}
-	CommissionTable.ForeignKeys[0].RefTable = EmployeeTable
-	CommissionTable.ForeignKeys[1].RefTable = OrderTable
+	CommissionTable.ForeignKeys[0].RefTable = BusinessTable
+	CommissionTable.ForeignKeys[1].RefTable = SubscribeTable
+	CommissionTable.ForeignKeys[2].RefTable = PlanTable
+	CommissionTable.ForeignKeys[3].RefTable = EmployeeTable
+	CommissionTable.ForeignKeys[4].RefTable = OrderTable
 	CommissionTable.Annotation = &entsql.Annotation{
 		Table: "commission",
 	}

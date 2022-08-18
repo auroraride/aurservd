@@ -400,7 +400,6 @@ func (epc *EnterprisePriceCreate) createSpec() (*EnterprisePrice, *sqlgraph.Crea
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (epc *EnterprisePriceCreate) OnConflict(opts ...sql.ConflictOption) *EnterprisePriceUpsertOne {
 	epc.conflict = opts
 	return &EnterprisePriceUpsertOne{
@@ -414,7 +413,6 @@ func (epc *EnterprisePriceCreate) OnConflict(opts ...sql.ConflictOption) *Enterp
 //	client.EnterprisePrice.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (epc *EnterprisePriceCreate) OnConflictColumns(columns ...string) *EnterprisePriceUpsertOne {
 	epc.conflict = append(epc.conflict, sql.ConflictColumns(columns...))
 	return &EnterprisePriceUpsertOne{
@@ -593,7 +591,6 @@ func (u *EnterprisePriceUpsert) UpdateModel() *EnterprisePriceUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *EnterprisePriceUpsertOne) UpdateNewValues() *EnterprisePriceUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -610,10 +607,9 @@ func (u *EnterprisePriceUpsertOne) UpdateNewValues() *EnterprisePriceUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//  client.EnterprisePrice.Create().
-//      OnConflict(sql.ResolveWithIgnore()).
-//      Exec(ctx)
-//
+//	client.EnterprisePrice.Create().
+//	    OnConflict(sql.ResolveWithIgnore()).
+//	    Exec(ctx)
 func (u *EnterprisePriceUpsertOne) Ignore() *EnterprisePriceUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -944,7 +940,6 @@ func (epcb *EnterprisePriceCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (epcb *EnterprisePriceCreateBulk) OnConflict(opts ...sql.ConflictOption) *EnterprisePriceUpsertBulk {
 	epcb.conflict = opts
 	return &EnterprisePriceUpsertBulk{
@@ -958,7 +953,6 @@ func (epcb *EnterprisePriceCreateBulk) OnConflict(opts ...sql.ConflictOption) *E
 //	client.EnterprisePrice.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (epcb *EnterprisePriceCreateBulk) OnConflictColumns(columns ...string) *EnterprisePriceUpsertBulk {
 	epcb.conflict = append(epcb.conflict, sql.ConflictColumns(columns...))
 	return &EnterprisePriceUpsertBulk{
@@ -980,7 +974,6 @@ type EnterprisePriceUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *EnterprisePriceUpsertBulk) UpdateNewValues() *EnterprisePriceUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1002,7 +995,6 @@ func (u *EnterprisePriceUpsertBulk) UpdateNewValues() *EnterprisePriceUpsertBulk
 //	client.EnterprisePrice.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
-//
 func (u *EnterprisePriceUpsertBulk) Ignore() *EnterprisePriceUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

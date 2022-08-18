@@ -358,7 +358,6 @@ func (ic *InventoryCreate) createSpec() (*Inventory, *sqlgraph.CreateSpec) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (ic *InventoryCreate) OnConflict(opts ...sql.ConflictOption) *InventoryUpsertOne {
 	ic.conflict = opts
 	return &InventoryUpsertOne{
@@ -372,7 +371,6 @@ func (ic *InventoryCreate) OnConflict(opts ...sql.ConflictOption) *InventoryUpse
 //	client.Inventory.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (ic *InventoryCreate) OnConflictColumns(columns ...string) *InventoryUpsertOne {
 	ic.conflict = append(ic.conflict, sql.ConflictColumns(columns...))
 	return &InventoryUpsertOne{
@@ -545,7 +543,6 @@ func (u *InventoryUpsert) UpdatePurchase() *InventoryUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *InventoryUpsertOne) UpdateNewValues() *InventoryUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -562,10 +559,9 @@ func (u *InventoryUpsertOne) UpdateNewValues() *InventoryUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//  client.Inventory.Create().
-//      OnConflict(sql.ResolveWithIgnore()).
-//      Exec(ctx)
-//
+//	client.Inventory.Create().
+//	    OnConflict(sql.ResolveWithIgnore()).
+//	    Exec(ctx)
 func (u *InventoryUpsertOne) Ignore() *InventoryUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -889,7 +885,6 @@ func (icb *InventoryCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (icb *InventoryCreateBulk) OnConflict(opts ...sql.ConflictOption) *InventoryUpsertBulk {
 	icb.conflict = opts
 	return &InventoryUpsertBulk{
@@ -903,7 +898,6 @@ func (icb *InventoryCreateBulk) OnConflict(opts ...sql.ConflictOption) *Inventor
 //	client.Inventory.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (icb *InventoryCreateBulk) OnConflictColumns(columns ...string) *InventoryUpsertBulk {
 	icb.conflict = append(icb.conflict, sql.ConflictColumns(columns...))
 	return &InventoryUpsertBulk{
@@ -925,7 +919,6 @@ type InventoryUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *InventoryUpsertBulk) UpdateNewValues() *InventoryUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -947,7 +940,6 @@ func (u *InventoryUpsertBulk) UpdateNewValues() *InventoryUpsertBulk {
 //	client.Inventory.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
-//
 func (u *InventoryUpsertBulk) Ignore() *InventoryUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

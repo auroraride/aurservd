@@ -516,7 +516,6 @@ func (eq *EmployeeQuery) WithAssistances(opts ...func(*AssistanceQuery)) *Employ
 //		GroupBy(employee.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (eq *EmployeeQuery) GroupBy(field string, fields ...string) *EmployeeGroupBy {
 	grbuild := &EmployeeGroupBy{config: eq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -543,7 +542,6 @@ func (eq *EmployeeQuery) GroupBy(field string, fields ...string) *EmployeeGroupB
 //	client.Employee.Query().
 //		Select(employee.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (eq *EmployeeQuery) Select(fields ...string) *EmployeeSelect {
 	eq.fields = append(eq.fields, fields...)
 	selbuild := &EmployeeSelect{EmployeeQuery: eq}

@@ -19,27 +19,33 @@ import (
 // CommissionMutation represents an operation that mutates the Commission nodes in the graph.
 type CommissionMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *uint64
-	created_at      *time.Time
-	updated_at      *time.Time
-	deleted_at      *time.Time
-	creator         **model.Modifier
-	last_modifier   **model.Modifier
-	remark          *string
-	amount          *float64
-	addamount       *float64
-	status          *uint8
-	addstatus       *int8
-	clearedFields   map[string]struct{}
-	_order          *uint64
-	cleared_order   bool
-	employee        *uint64
-	clearedemployee bool
-	done            bool
-	oldValue        func(context.Context) (*Commission, error)
-	predicates      []predicate.Commission
+	op               Op
+	typ              string
+	id               *uint64
+	created_at       *time.Time
+	updated_at       *time.Time
+	deleted_at       *time.Time
+	creator          **model.Modifier
+	last_modifier    **model.Modifier
+	remark           *string
+	amount           *float64
+	addamount        *float64
+	status           *uint8
+	addstatus        *int8
+	clearedFields    map[string]struct{}
+	business         *uint64
+	clearedbusiness  bool
+	subscribe        *uint64
+	clearedsubscribe bool
+	plan             *uint64
+	clearedplan      bool
+	_order           *uint64
+	cleared_order    bool
+	employee         *uint64
+	clearedemployee  bool
+	done             bool
+	oldValue         func(context.Context) (*Commission, error)
+	predicates       []predicate.Commission
 }
 
 var _ ent.Mutation = (*CommissionMutation)(nil)
@@ -408,6 +414,153 @@ func (m *CommissionMutation) ResetRemark() {
 	delete(m.clearedFields, commission.FieldRemark)
 }
 
+// SetBusinessID sets the "business_id" field.
+func (m *CommissionMutation) SetBusinessID(u uint64) {
+	m.business = &u
+}
+
+// BusinessID returns the value of the "business_id" field in the mutation.
+func (m *CommissionMutation) BusinessID() (r uint64, exists bool) {
+	v := m.business
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBusinessID returns the old "business_id" field's value of the Commission entity.
+// If the Commission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CommissionMutation) OldBusinessID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBusinessID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBusinessID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBusinessID: %w", err)
+	}
+	return oldValue.BusinessID, nil
+}
+
+// ClearBusinessID clears the value of the "business_id" field.
+func (m *CommissionMutation) ClearBusinessID() {
+	m.business = nil
+	m.clearedFields[commission.FieldBusinessID] = struct{}{}
+}
+
+// BusinessIDCleared returns if the "business_id" field was cleared in this mutation.
+func (m *CommissionMutation) BusinessIDCleared() bool {
+	_, ok := m.clearedFields[commission.FieldBusinessID]
+	return ok
+}
+
+// ResetBusinessID resets all changes to the "business_id" field.
+func (m *CommissionMutation) ResetBusinessID() {
+	m.business = nil
+	delete(m.clearedFields, commission.FieldBusinessID)
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (m *CommissionMutation) SetSubscribeID(u uint64) {
+	m.subscribe = &u
+}
+
+// SubscribeID returns the value of the "subscribe_id" field in the mutation.
+func (m *CommissionMutation) SubscribeID() (r uint64, exists bool) {
+	v := m.subscribe
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSubscribeID returns the old "subscribe_id" field's value of the Commission entity.
+// If the Commission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CommissionMutation) OldSubscribeID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSubscribeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSubscribeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSubscribeID: %w", err)
+	}
+	return oldValue.SubscribeID, nil
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (m *CommissionMutation) ClearSubscribeID() {
+	m.subscribe = nil
+	m.clearedFields[commission.FieldSubscribeID] = struct{}{}
+}
+
+// SubscribeIDCleared returns if the "subscribe_id" field was cleared in this mutation.
+func (m *CommissionMutation) SubscribeIDCleared() bool {
+	_, ok := m.clearedFields[commission.FieldSubscribeID]
+	return ok
+}
+
+// ResetSubscribeID resets all changes to the "subscribe_id" field.
+func (m *CommissionMutation) ResetSubscribeID() {
+	m.subscribe = nil
+	delete(m.clearedFields, commission.FieldSubscribeID)
+}
+
+// SetPlanID sets the "plan_id" field.
+func (m *CommissionMutation) SetPlanID(u uint64) {
+	m.plan = &u
+}
+
+// PlanID returns the value of the "plan_id" field in the mutation.
+func (m *CommissionMutation) PlanID() (r uint64, exists bool) {
+	v := m.plan
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlanID returns the old "plan_id" field's value of the Commission entity.
+// If the Commission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CommissionMutation) OldPlanID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlanID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlanID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlanID: %w", err)
+	}
+	return oldValue.PlanID, nil
+}
+
+// ClearPlanID clears the value of the "plan_id" field.
+func (m *CommissionMutation) ClearPlanID() {
+	m.plan = nil
+	m.clearedFields[commission.FieldPlanID] = struct{}{}
+}
+
+// PlanIDCleared returns if the "plan_id" field was cleared in this mutation.
+func (m *CommissionMutation) PlanIDCleared() bool {
+	_, ok := m.clearedFields[commission.FieldPlanID]
+	return ok
+}
+
+// ResetPlanID resets all changes to the "plan_id" field.
+func (m *CommissionMutation) ResetPlanID() {
+	m.plan = nil
+	delete(m.clearedFields, commission.FieldPlanID)
+}
+
 // SetOrderID sets the "order_id" field.
 func (m *CommissionMutation) SetOrderID(u uint64) {
 	m._order = &u
@@ -605,6 +758,84 @@ func (m *CommissionMutation) ResetEmployeeID() {
 	delete(m.clearedFields, commission.FieldEmployeeID)
 }
 
+// ClearBusiness clears the "business" edge to the Business entity.
+func (m *CommissionMutation) ClearBusiness() {
+	m.clearedbusiness = true
+}
+
+// BusinessCleared reports if the "business" edge to the Business entity was cleared.
+func (m *CommissionMutation) BusinessCleared() bool {
+	return m.BusinessIDCleared() || m.clearedbusiness
+}
+
+// BusinessIDs returns the "business" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// BusinessID instead. It exists only for internal usage by the builders.
+func (m *CommissionMutation) BusinessIDs() (ids []uint64) {
+	if id := m.business; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetBusiness resets all changes to the "business" edge.
+func (m *CommissionMutation) ResetBusiness() {
+	m.business = nil
+	m.clearedbusiness = false
+}
+
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (m *CommissionMutation) ClearSubscribe() {
+	m.clearedsubscribe = true
+}
+
+// SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
+func (m *CommissionMutation) SubscribeCleared() bool {
+	return m.SubscribeIDCleared() || m.clearedsubscribe
+}
+
+// SubscribeIDs returns the "subscribe" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// SubscribeID instead. It exists only for internal usage by the builders.
+func (m *CommissionMutation) SubscribeIDs() (ids []uint64) {
+	if id := m.subscribe; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetSubscribe resets all changes to the "subscribe" edge.
+func (m *CommissionMutation) ResetSubscribe() {
+	m.subscribe = nil
+	m.clearedsubscribe = false
+}
+
+// ClearPlan clears the "plan" edge to the Plan entity.
+func (m *CommissionMutation) ClearPlan() {
+	m.clearedplan = true
+}
+
+// PlanCleared reports if the "plan" edge to the Plan entity was cleared.
+func (m *CommissionMutation) PlanCleared() bool {
+	return m.PlanIDCleared() || m.clearedplan
+}
+
+// PlanIDs returns the "plan" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// PlanID instead. It exists only for internal usage by the builders.
+func (m *CommissionMutation) PlanIDs() (ids []uint64) {
+	if id := m.plan; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPlan resets all changes to the "plan" edge.
+func (m *CommissionMutation) ResetPlan() {
+	m.plan = nil
+	m.clearedplan = false
+}
+
 // ClearOrder clears the "order" edge to the Order entity.
 func (m *CommissionMutation) ClearOrder() {
 	m.cleared_order = true
@@ -676,7 +907,7 @@ func (m *CommissionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CommissionMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 13)
 	if m.created_at != nil {
 		fields = append(fields, commission.FieldCreatedAt)
 	}
@@ -694,6 +925,15 @@ func (m *CommissionMutation) Fields() []string {
 	}
 	if m.remark != nil {
 		fields = append(fields, commission.FieldRemark)
+	}
+	if m.business != nil {
+		fields = append(fields, commission.FieldBusinessID)
+	}
+	if m.subscribe != nil {
+		fields = append(fields, commission.FieldSubscribeID)
+	}
+	if m.plan != nil {
+		fields = append(fields, commission.FieldPlanID)
 	}
 	if m._order != nil {
 		fields = append(fields, commission.FieldOrderID)
@@ -727,6 +967,12 @@ func (m *CommissionMutation) Field(name string) (ent.Value, bool) {
 		return m.LastModifier()
 	case commission.FieldRemark:
 		return m.Remark()
+	case commission.FieldBusinessID:
+		return m.BusinessID()
+	case commission.FieldSubscribeID:
+		return m.SubscribeID()
+	case commission.FieldPlanID:
+		return m.PlanID()
 	case commission.FieldOrderID:
 		return m.OrderID()
 	case commission.FieldAmount:
@@ -756,6 +1002,12 @@ func (m *CommissionMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldLastModifier(ctx)
 	case commission.FieldRemark:
 		return m.OldRemark(ctx)
+	case commission.FieldBusinessID:
+		return m.OldBusinessID(ctx)
+	case commission.FieldSubscribeID:
+		return m.OldSubscribeID(ctx)
+	case commission.FieldPlanID:
+		return m.OldPlanID(ctx)
 	case commission.FieldOrderID:
 		return m.OldOrderID(ctx)
 	case commission.FieldAmount:
@@ -814,6 +1066,27 @@ func (m *CommissionMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRemark(v)
+		return nil
+	case commission.FieldBusinessID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBusinessID(v)
+		return nil
+	case commission.FieldSubscribeID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSubscribeID(v)
+		return nil
+	case commission.FieldPlanID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlanID(v)
 		return nil
 	case commission.FieldOrderID:
 		v, ok := value.(uint64)
@@ -912,6 +1185,15 @@ func (m *CommissionMutation) ClearedFields() []string {
 	if m.FieldCleared(commission.FieldRemark) {
 		fields = append(fields, commission.FieldRemark)
 	}
+	if m.FieldCleared(commission.FieldBusinessID) {
+		fields = append(fields, commission.FieldBusinessID)
+	}
+	if m.FieldCleared(commission.FieldSubscribeID) {
+		fields = append(fields, commission.FieldSubscribeID)
+	}
+	if m.FieldCleared(commission.FieldPlanID) {
+		fields = append(fields, commission.FieldPlanID)
+	}
 	if m.FieldCleared(commission.FieldEmployeeID) {
 		fields = append(fields, commission.FieldEmployeeID)
 	}
@@ -940,6 +1222,15 @@ func (m *CommissionMutation) ClearField(name string) error {
 		return nil
 	case commission.FieldRemark:
 		m.ClearRemark()
+		return nil
+	case commission.FieldBusinessID:
+		m.ClearBusinessID()
+		return nil
+	case commission.FieldSubscribeID:
+		m.ClearSubscribeID()
+		return nil
+	case commission.FieldPlanID:
+		m.ClearPlanID()
 		return nil
 	case commission.FieldEmployeeID:
 		m.ClearEmployeeID()
@@ -970,6 +1261,15 @@ func (m *CommissionMutation) ResetField(name string) error {
 	case commission.FieldRemark:
 		m.ResetRemark()
 		return nil
+	case commission.FieldBusinessID:
+		m.ResetBusinessID()
+		return nil
+	case commission.FieldSubscribeID:
+		m.ResetSubscribeID()
+		return nil
+	case commission.FieldPlanID:
+		m.ResetPlanID()
+		return nil
 	case commission.FieldOrderID:
 		m.ResetOrderID()
 		return nil
@@ -988,7 +1288,16 @@ func (m *CommissionMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CommissionMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 5)
+	if m.business != nil {
+		edges = append(edges, commission.EdgeBusiness)
+	}
+	if m.subscribe != nil {
+		edges = append(edges, commission.EdgeSubscribe)
+	}
+	if m.plan != nil {
+		edges = append(edges, commission.EdgePlan)
+	}
 	if m._order != nil {
 		edges = append(edges, commission.EdgeOrder)
 	}
@@ -1002,6 +1311,18 @@ func (m *CommissionMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *CommissionMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case commission.EdgeBusiness:
+		if id := m.business; id != nil {
+			return []ent.Value{*id}
+		}
+	case commission.EdgeSubscribe:
+		if id := m.subscribe; id != nil {
+			return []ent.Value{*id}
+		}
+	case commission.EdgePlan:
+		if id := m.plan; id != nil {
+			return []ent.Value{*id}
+		}
 	case commission.EdgeOrder:
 		if id := m._order; id != nil {
 			return []ent.Value{*id}
@@ -1016,7 +1337,7 @@ func (m *CommissionMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CommissionMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 5)
 	return edges
 }
 
@@ -1030,7 +1351,16 @@ func (m *CommissionMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CommissionMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 5)
+	if m.clearedbusiness {
+		edges = append(edges, commission.EdgeBusiness)
+	}
+	if m.clearedsubscribe {
+		edges = append(edges, commission.EdgeSubscribe)
+	}
+	if m.clearedplan {
+		edges = append(edges, commission.EdgePlan)
+	}
 	if m.cleared_order {
 		edges = append(edges, commission.EdgeOrder)
 	}
@@ -1044,6 +1374,12 @@ func (m *CommissionMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *CommissionMutation) EdgeCleared(name string) bool {
 	switch name {
+	case commission.EdgeBusiness:
+		return m.clearedbusiness
+	case commission.EdgeSubscribe:
+		return m.clearedsubscribe
+	case commission.EdgePlan:
+		return m.clearedplan
 	case commission.EdgeOrder:
 		return m.cleared_order
 	case commission.EdgeEmployee:
@@ -1056,6 +1392,15 @@ func (m *CommissionMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *CommissionMutation) ClearEdge(name string) error {
 	switch name {
+	case commission.EdgeBusiness:
+		m.ClearBusiness()
+		return nil
+	case commission.EdgeSubscribe:
+		m.ClearSubscribe()
+		return nil
+	case commission.EdgePlan:
+		m.ClearPlan()
+		return nil
 	case commission.EdgeOrder:
 		m.ClearOrder()
 		return nil
@@ -1070,6 +1415,15 @@ func (m *CommissionMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *CommissionMutation) ResetEdge(name string) error {
 	switch name {
+	case commission.EdgeBusiness:
+		m.ResetBusiness()
+		return nil
+	case commission.EdgeSubscribe:
+		m.ResetSubscribe()
+		return nil
+	case commission.EdgePlan:
+		m.ResetPlan()
+		return nil
 	case commission.EdgeOrder:
 		m.ResetOrder()
 		return nil

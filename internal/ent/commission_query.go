@@ -10,10 +10,13 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/order"
+	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // CommissionQuery is the builder for querying Commission entities.
@@ -26,9 +29,12 @@ type CommissionQuery struct {
 	fields     []string
 	predicates []predicate.Commission
 	// eager-loading edges.
-	withOrder    *OrderQuery
-	withEmployee *EmployeeQuery
-	modifiers    []func(*sql.Selector)
+	withBusiness  *BusinessQuery
+	withSubscribe *SubscribeQuery
+	withPlan      *PlanQuery
+	withOrder     *OrderQuery
+	withEmployee  *EmployeeQuery
+	modifiers     []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -63,6 +69,72 @@ func (cq *CommissionQuery) Unique(unique bool) *CommissionQuery {
 func (cq *CommissionQuery) Order(o ...OrderFunc) *CommissionQuery {
 	cq.order = append(cq.order, o...)
 	return cq
+}
+
+// QueryBusiness chains the current query on the "business" edge.
+func (cq *CommissionQuery) QueryBusiness() *BusinessQuery {
+	query := &BusinessQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(commission.Table, commission.FieldID, selector),
+			sqlgraph.To(business.Table, business.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, commission.BusinessTable, commission.BusinessColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySubscribe chains the current query on the "subscribe" edge.
+func (cq *CommissionQuery) QuerySubscribe() *SubscribeQuery {
+	query := &SubscribeQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(commission.Table, commission.FieldID, selector),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, commission.SubscribeTable, commission.SubscribeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPlan chains the current query on the "plan" edge.
+func (cq *CommissionQuery) QueryPlan() *PlanQuery {
+	query := &PlanQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(commission.Table, commission.FieldID, selector),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, commission.PlanTable, commission.PlanColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryOrder chains the current query on the "order" edge.
@@ -285,18 +357,54 @@ func (cq *CommissionQuery) Clone() *CommissionQuery {
 		return nil
 	}
 	return &CommissionQuery{
-		config:       cq.config,
-		limit:        cq.limit,
-		offset:       cq.offset,
-		order:        append([]OrderFunc{}, cq.order...),
-		predicates:   append([]predicate.Commission{}, cq.predicates...),
-		withOrder:    cq.withOrder.Clone(),
-		withEmployee: cq.withEmployee.Clone(),
+		config:        cq.config,
+		limit:         cq.limit,
+		offset:        cq.offset,
+		order:         append([]OrderFunc{}, cq.order...),
+		predicates:    append([]predicate.Commission{}, cq.predicates...),
+		withBusiness:  cq.withBusiness.Clone(),
+		withSubscribe: cq.withSubscribe.Clone(),
+		withPlan:      cq.withPlan.Clone(),
+		withOrder:     cq.withOrder.Clone(),
+		withEmployee:  cq.withEmployee.Clone(),
 		// clone intermediate query.
 		sql:    cq.sql.Clone(),
 		path:   cq.path,
 		unique: cq.unique,
 	}
+}
+
+// WithBusiness tells the query-builder to eager-load the nodes that are connected to
+// the "business" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CommissionQuery) WithBusiness(opts ...func(*BusinessQuery)) *CommissionQuery {
+	query := &BusinessQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withBusiness = query
+	return cq
+}
+
+// WithSubscribe tells the query-builder to eager-load the nodes that are connected to
+// the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CommissionQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *CommissionQuery {
+	query := &SubscribeQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withSubscribe = query
+	return cq
+}
+
+// WithPlan tells the query-builder to eager-load the nodes that are connected to
+// the "plan" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CommissionQuery) WithPlan(opts ...func(*PlanQuery)) *CommissionQuery {
+	query := &PlanQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withPlan = query
+	return cq
 }
 
 // WithOrder tells the query-builder to eager-load the nodes that are connected to
@@ -335,7 +443,6 @@ func (cq *CommissionQuery) WithEmployee(opts ...func(*EmployeeQuery)) *Commissio
 //		GroupBy(commission.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (cq *CommissionQuery) GroupBy(field string, fields ...string) *CommissionGroupBy {
 	grbuild := &CommissionGroupBy{config: cq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -362,7 +469,6 @@ func (cq *CommissionQuery) GroupBy(field string, fields ...string) *CommissionGr
 //	client.Commission.Query().
 //		Select(commission.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (cq *CommissionQuery) Select(fields ...string) *CommissionSelect {
 	cq.fields = append(cq.fields, fields...)
 	selbuild := &CommissionSelect{CommissionQuery: cq}
@@ -391,7 +497,10 @@ func (cq *CommissionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*C
 	var (
 		nodes       = []*Commission{}
 		_spec       = cq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [5]bool{
+			cq.withBusiness != nil,
+			cq.withSubscribe != nil,
+			cq.withPlan != nil,
 			cq.withOrder != nil,
 			cq.withEmployee != nil,
 		}
@@ -416,6 +525,93 @@ func (cq *CommissionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*C
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
+	}
+
+	if query := cq.withBusiness; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Commission)
+		for i := range nodes {
+			if nodes[i].BusinessID == nil {
+				continue
+			}
+			fk := *nodes[i].BusinessID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(business.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "business_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Business = n
+			}
+		}
+	}
+
+	if query := cq.withSubscribe; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Commission)
+		for i := range nodes {
+			if nodes[i].SubscribeID == nil {
+				continue
+			}
+			fk := *nodes[i].SubscribeID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(subscribe.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Subscribe = n
+			}
+		}
+	}
+
+	if query := cq.withPlan; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Commission)
+		for i := range nodes {
+			if nodes[i].PlanID == nil {
+				continue
+			}
+			fk := *nodes[i].PlanID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(plan.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "plan_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Plan = n
+			}
+		}
 	}
 
 	if query := cq.withOrder; query != nil {

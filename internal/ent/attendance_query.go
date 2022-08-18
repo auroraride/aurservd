@@ -335,7 +335,6 @@ func (aq *AttendanceQuery) WithEmployee(opts ...func(*EmployeeQuery)) *Attendanc
 //		GroupBy(attendance.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (aq *AttendanceQuery) GroupBy(field string, fields ...string) *AttendanceGroupBy {
 	grbuild := &AttendanceGroupBy{config: aq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -362,7 +361,6 @@ func (aq *AttendanceQuery) GroupBy(field string, fields ...string) *AttendanceGr
 //	client.Attendance.Query().
 //		Select(attendance.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (aq *AttendanceQuery) Select(fields ...string) *AttendanceSelect {
 	aq.fields = append(aq.fields, fields...)
 	selbuild := &AttendanceSelect{AttendanceQuery: aq}

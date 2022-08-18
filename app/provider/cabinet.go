@@ -75,25 +75,25 @@ func (s *updater) DoUpdate() (err error) {
                 bin.Remark = s.old.Bin[i].Remark
             }
             // 锁仓判定
-            if bin.DoorHealth {
+            if bin.DoorHealth && len(bin.ChargerErrors) == 0 {
                 // 仓门正常清除告警设置
                 delBinFault(s.cab.Serial, i)
+                // 满电充电空仓判定
+                if bin.Battery {
+                    if bin.Full {
+                        // 满电数量
+                        full += 1
+                    } else {
+                        // 充电数量
+                        charging += 1
+                    }
+                } else {
+                    // 空仓数量 = 无电池 && 仓门无锁
+                    empty += 1
+                }
             } else {
                 // 锁仓数量
                 locked += 1
-            }
-            // 满电充电空仓判定
-            if bin.Battery {
-                if bin.Full {
-                    // 满电数量
-                    full += 1
-                } else {
-                    // 充电数量
-                    charging += 1
-                }
-            } else {
-                // 空仓数量 = 无电池 && 仓门无锁
-                empty += 1
             }
         }
 

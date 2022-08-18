@@ -262,7 +262,6 @@ func (sq *SettingQuery) Clone() *SettingQuery {
 //		GroupBy(setting.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (sq *SettingQuery) GroupBy(field string, fields ...string) *SettingGroupBy {
 	grbuild := &SettingGroupBy{config: sq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -289,7 +288,6 @@ func (sq *SettingQuery) GroupBy(field string, fields ...string) *SettingGroupBy 
 //	client.Setting.Query().
 //		Select(setting.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (sq *SettingQuery) Select(fields ...string) *SettingSelect {
 	sq.fields = append(sq.fields, fields...)
 	selbuild := &SettingSelect{SettingQuery: sq}

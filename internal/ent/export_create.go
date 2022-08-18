@@ -468,7 +468,6 @@ func (ec *ExportCreate) createSpec() (*Export, *sqlgraph.CreateSpec) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (ec *ExportCreate) OnConflict(opts ...sql.ConflictOption) *ExportUpsertOne {
 	ec.conflict = opts
 	return &ExportUpsertOne{
@@ -482,7 +481,6 @@ func (ec *ExportCreate) OnConflict(opts ...sql.ConflictOption) *ExportUpsertOne 
 //	client.Export.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (ec *ExportCreate) OnConflictColumns(columns ...string) *ExportUpsertOne {
 	ec.conflict = append(ec.conflict, sql.ConflictColumns(columns...))
 	return &ExportUpsertOne{
@@ -727,7 +725,6 @@ func (u *ExportUpsert) UpdateRemark() *ExportUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *ExportUpsertOne) UpdateNewValues() *ExportUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -741,10 +738,9 @@ func (u *ExportUpsertOne) UpdateNewValues() *ExportUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//  client.Export.Create().
-//      OnConflict(sql.ResolveWithIgnore()).
-//      Exec(ctx)
-//
+//	client.Export.Create().
+//	    OnConflict(sql.ResolveWithIgnore()).
+//	    Exec(ctx)
 func (u *ExportUpsertOne) Ignore() *ExportUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -1152,7 +1148,6 @@ func (ecb *ExportCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (ecb *ExportCreateBulk) OnConflict(opts ...sql.ConflictOption) *ExportUpsertBulk {
 	ecb.conflict = opts
 	return &ExportUpsertBulk{
@@ -1166,7 +1161,6 @@ func (ecb *ExportCreateBulk) OnConflict(opts ...sql.ConflictOption) *ExportUpser
 //	client.Export.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (ecb *ExportCreateBulk) OnConflictColumns(columns ...string) *ExportUpsertBulk {
 	ecb.conflict = append(ecb.conflict, sql.ConflictColumns(columns...))
 	return &ExportUpsertBulk{
@@ -1188,7 +1182,6 @@ type ExportUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *ExportUpsertBulk) UpdateNewValues() *ExportUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1207,7 +1200,6 @@ func (u *ExportUpsertBulk) UpdateNewValues() *ExportUpsertBulk {
 //	client.Export.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
-//
 func (u *ExportUpsertBulk) Ignore() *ExportUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

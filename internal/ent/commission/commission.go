@@ -25,6 +25,12 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
+	// FieldBusinessID holds the string denoting the business_id field in the database.
+	FieldBusinessID = "business_id"
+	// FieldSubscribeID holds the string denoting the subscribe_id field in the database.
+	FieldSubscribeID = "subscribe_id"
+	// FieldPlanID holds the string denoting the plan_id field in the database.
+	FieldPlanID = "plan_id"
 	// FieldOrderID holds the string denoting the order_id field in the database.
 	FieldOrderID = "order_id"
 	// FieldAmount holds the string denoting the amount field in the database.
@@ -33,12 +39,39 @@ const (
 	FieldStatus = "status"
 	// FieldEmployeeID holds the string denoting the employee_id field in the database.
 	FieldEmployeeID = "employee_id"
+	// EdgeBusiness holds the string denoting the business edge name in mutations.
+	EdgeBusiness = "business"
+	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
+	EdgeSubscribe = "subscribe"
+	// EdgePlan holds the string denoting the plan edge name in mutations.
+	EdgePlan = "plan"
 	// EdgeOrder holds the string denoting the order edge name in mutations.
 	EdgeOrder = "order"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
 	EdgeEmployee = "employee"
 	// Table holds the table name of the commission in the database.
 	Table = "commission"
+	// BusinessTable is the table that holds the business relation/edge.
+	BusinessTable = "commission"
+	// BusinessInverseTable is the table name for the Business entity.
+	// It exists in this package in order to avoid circular dependency with the "business" package.
+	BusinessInverseTable = "business"
+	// BusinessColumn is the table column denoting the business relation/edge.
+	BusinessColumn = "business_id"
+	// SubscribeTable is the table that holds the subscribe relation/edge.
+	SubscribeTable = "commission"
+	// SubscribeInverseTable is the table name for the Subscribe entity.
+	// It exists in this package in order to avoid circular dependency with the "subscribe" package.
+	SubscribeInverseTable = "subscribe"
+	// SubscribeColumn is the table column denoting the subscribe relation/edge.
+	SubscribeColumn = "subscribe_id"
+	// PlanTable is the table that holds the plan relation/edge.
+	PlanTable = "commission"
+	// PlanInverseTable is the table name for the Plan entity.
+	// It exists in this package in order to avoid circular dependency with the "plan" package.
+	PlanInverseTable = "plan"
+	// PlanColumn is the table column denoting the plan relation/edge.
+	PlanColumn = "plan_id"
 	// OrderTable is the table that holds the order relation/edge.
 	OrderTable = "commission"
 	// OrderInverseTable is the table name for the Order entity.
@@ -64,6 +97,9 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
+	FieldBusinessID,
+	FieldSubscribeID,
+	FieldPlanID,
 	FieldOrderID,
 	FieldAmount,
 	FieldStatus,
@@ -85,7 +121,6 @@ func ValidColumn(column string) bool {
 // it should be imported in the main as follows:
 //
 //	import _ "github.com/auroraride/aurservd/internal/ent/runtime"
-//
 var (
 	Hooks [1]ent.Hook
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.

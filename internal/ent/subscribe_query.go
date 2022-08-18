@@ -767,7 +767,6 @@ func (sq *SubscribeQuery) WithBills(opts ...func(*EnterpriseBillQuery)) *Subscri
 //		GroupBy(subscribe.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (sq *SubscribeQuery) GroupBy(field string, fields ...string) *SubscribeGroupBy {
 	grbuild := &SubscribeGroupBy{config: sq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -794,7 +793,6 @@ func (sq *SubscribeQuery) GroupBy(field string, fields ...string) *SubscribeGrou
 //	client.Subscribe.Query().
 //		Select(subscribe.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (sq *SubscribeQuery) Select(fields ...string) *SubscribeSelect {
 	sq.fields = append(sq.fields, fields...)
 	selbuild := &SubscribeSelect{SubscribeQuery: sq}

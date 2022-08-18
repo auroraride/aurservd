@@ -480,7 +480,6 @@ func (sq *StoreQuery) WithExceptions(opts ...func(*ExceptionQuery)) *StoreQuery 
 //		GroupBy(store.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (sq *StoreQuery) GroupBy(field string, fields ...string) *StoreGroupBy {
 	grbuild := &StoreGroupBy{config: sq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -507,7 +506,6 @@ func (sq *StoreQuery) GroupBy(field string, fields ...string) *StoreGroupBy {
 //	client.Store.Query().
 //		Select(store.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (sq *StoreQuery) Select(fields ...string) *StoreSelect {
 	sq.fields = append(sq.fields, fields...)
 	selbuild := &StoreSelect{StoreQuery: sq}

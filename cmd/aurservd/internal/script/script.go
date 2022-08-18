@@ -19,6 +19,7 @@ func Execute() {
         importCmd,
         serverCommand(),
         customerCommand(),
+        fixCommand(),
     )
     _ = rootCmd.Execute()
 }

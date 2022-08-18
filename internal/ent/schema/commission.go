@@ -46,6 +46,9 @@ func (Commission) Mixin() []ent.Mixin {
         internal.TimeMixin{},
         internal.DeleteMixin{},
         internal.Modifier{},
+        BusinessMixin{Optional: true},
+        SubscribeMixin{Optional: true},
+        PlanMixin{Optional: true},
     }
 }
 

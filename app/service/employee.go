@@ -156,7 +156,7 @@ func (s *employeeService) List(req *model.EmployeeListReq) *model.PaginationRes 
     })
 }
 
-func (s *employeeService) activityListFilter(req model.EmployeeActivityListFilter) (q *ent.EmployeeQuery, info ar.Map) {
+func (s *employeeService) activityListFilter(req model.EmployeeActivityListFilter, export bool) (q *ent.EmployeeQuery, info ar.Map) {
     var start, end time.Time
     if req.Start != "" {
         info["开始日期"] = req.Start
@@ -185,6 +185,11 @@ func (s *employeeService) activityListFilter(req model.EmployeeActivityListFilte
             if !end.IsZero() {
                 query.Where(commission.CreatedAtLT(end))
             }
+            if export {
+                query.WithPlan().WithOrder(func(oq *ent.OrderQuery) {
+                    oq.WithRider()
+                })
+            }
         }).
         WithAssistances(func(query *ent.AssistanceQuery) {
             query.Where(assistance.StatusIn(model.AssistanceStatusSuccess, model.AssistanceStatusUnpaid))
@@ -194,6 +199,9 @@ func (s *employeeService) activityListFilter(req model.EmployeeActivityListFilte
             }
             if !end.IsZero() {
                 query.Where(assistance.CreatedAtLT(end))
+            }
+            if export {
+                query.WithRider()
             }
         })
 
@@ -222,7 +230,7 @@ func (s *employeeService) activityListFilter(req model.EmployeeActivityListFilte
 
 // Activity 店员动态
 func (s *employeeService) Activity(req *model.EmployeeActivityListReq) *model.PaginationRes {
-    q, _ := s.activityListFilter(req.EmployeeActivityListFilter)
+    q, _ := s.activityListFilter(req.EmployeeActivityListFilter, false)
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Employee) model.EmployeeActivityListRes {
         res := model.EmployeeActivityListRes{
             ID:            item.ID,
@@ -256,6 +264,47 @@ func (s *employeeService) Activity(req *model.EmployeeActivityListReq) *model.Pa
             res.AssistanceMeters += ass.Distance
         }
         return res
+    })
+}
+
+func (s *employeeService) ActivityExport(req *model.EmployeeActivityExportReq) model.ExportRes {
+    q, info := s.activityListFilter(req.EmployeeActivityListFilter, true)
+    return NewExportWithModifier(s.modifier).Start("店员业绩", req.EmployeeActivityListFilter, info, req.Remark, func(path string) {
+        items, _ := q.All(s.ctx)
+        title := []any{
+            "城市",          // 0
+            "店员",          // 1
+            "换电次数",      // 2
+            "救援次数",      // 3
+            "救援里程 (米)", // 4
+            "救援开始位置",  // 5
+            "救援结束位置",  // 6
+            "耗时 (分)",     // 7
+            "骑手",          // 8
+            "时间",          // 9
+            "业绩提成",      // 10
+            "业务",          // 11
+            "骑手",          // 12
+            "骑士卡",        // 13
+            "订单金额",      // 14
+            "提成金额",      // 15
+            "时间",          // 16
+        }
+        rows := [][]any{title}
+        for _, item := range items {
+            row := make([]any, 17)
+            ec := item.Edges.City
+            if ec != nil {
+                row[0] = ec.Name
+            }
+            row[1] = fmt.Sprintf("%s - %s", item.Name, item.Phone)
+            row[2] = len(item.Edges.Exchanges)
+            row[3] = len(item.Edges.Assistances)
+            row[5] = make([][3]any, len(item.Edges.Assistances))
+            // for _, a := range item.Edges.Assistances {
+            // }
+        }
+        println(rows, items)
     })
 }
 

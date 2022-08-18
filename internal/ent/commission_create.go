@@ -12,9 +12,12 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/order"
+	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // CommissionCreate is the builder for creating a Commission entity.
@@ -93,6 +96,48 @@ func (cc *CommissionCreate) SetNillableRemark(s *string) *CommissionCreate {
 	return cc
 }
 
+// SetBusinessID sets the "business_id" field.
+func (cc *CommissionCreate) SetBusinessID(u uint64) *CommissionCreate {
+	cc.mutation.SetBusinessID(u)
+	return cc
+}
+
+// SetNillableBusinessID sets the "business_id" field if the given value is not nil.
+func (cc *CommissionCreate) SetNillableBusinessID(u *uint64) *CommissionCreate {
+	if u != nil {
+		cc.SetBusinessID(*u)
+	}
+	return cc
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (cc *CommissionCreate) SetSubscribeID(u uint64) *CommissionCreate {
+	cc.mutation.SetSubscribeID(u)
+	return cc
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (cc *CommissionCreate) SetNillableSubscribeID(u *uint64) *CommissionCreate {
+	if u != nil {
+		cc.SetSubscribeID(*u)
+	}
+	return cc
+}
+
+// SetPlanID sets the "plan_id" field.
+func (cc *CommissionCreate) SetPlanID(u uint64) *CommissionCreate {
+	cc.mutation.SetPlanID(u)
+	return cc
+}
+
+// SetNillablePlanID sets the "plan_id" field if the given value is not nil.
+func (cc *CommissionCreate) SetNillablePlanID(u *uint64) *CommissionCreate {
+	if u != nil {
+		cc.SetPlanID(*u)
+	}
+	return cc
+}
+
 // SetOrderID sets the "order_id" field.
 func (cc *CommissionCreate) SetOrderID(u uint64) *CommissionCreate {
 	cc.mutation.SetOrderID(u)
@@ -131,6 +176,21 @@ func (cc *CommissionCreate) SetNillableEmployeeID(u *uint64) *CommissionCreate {
 		cc.SetEmployeeID(*u)
 	}
 	return cc
+}
+
+// SetBusiness sets the "business" edge to the Business entity.
+func (cc *CommissionCreate) SetBusiness(b *Business) *CommissionCreate {
+	return cc.SetBusinessID(b.ID)
+}
+
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (cc *CommissionCreate) SetSubscribe(s *Subscribe) *CommissionCreate {
+	return cc.SetSubscribeID(s.ID)
+}
+
+// SetPlan sets the "plan" edge to the Plan entity.
+func (cc *CommissionCreate) SetPlan(p *Plan) *CommissionCreate {
+	return cc.SetPlanID(p.ID)
 }
 
 // SetOrder sets the "order" edge to the Order entity.
@@ -355,6 +415,66 @@ func (cc *CommissionCreate) createSpec() (*Commission, *sqlgraph.CreateSpec) {
 		})
 		_node.Status = value
 	}
+	if nodes := cc.mutation.BusinessIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.BusinessTable,
+			Columns: []string{commission.BusinessColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: business.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.BusinessID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.SubscribeTable,
+			Columns: []string{commission.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.SubscribeID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.PlanIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.PlanTable,
+			Columns: []string{commission.PlanColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.PlanID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := cc.mutation.OrderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
@@ -414,7 +534,6 @@ func (cc *CommissionCreate) createSpec() (*Commission, *sqlgraph.CreateSpec) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (cc *CommissionCreate) OnConflict(opts ...sql.ConflictOption) *CommissionUpsertOne {
 	cc.conflict = opts
 	return &CommissionUpsertOne{
@@ -428,7 +547,6 @@ func (cc *CommissionCreate) OnConflict(opts ...sql.ConflictOption) *CommissionUp
 //	client.Commission.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (cc *CommissionCreate) OnConflictColumns(columns ...string) *CommissionUpsertOne {
 	cc.conflict = append(cc.conflict, sql.ConflictColumns(columns...))
 	return &CommissionUpsertOne{
@@ -545,6 +663,60 @@ func (u *CommissionUpsert) ClearRemark() *CommissionUpsert {
 	return u
 }
 
+// SetBusinessID sets the "business_id" field.
+func (u *CommissionUpsert) SetBusinessID(v uint64) *CommissionUpsert {
+	u.Set(commission.FieldBusinessID, v)
+	return u
+}
+
+// UpdateBusinessID sets the "business_id" field to the value that was provided on create.
+func (u *CommissionUpsert) UpdateBusinessID() *CommissionUpsert {
+	u.SetExcluded(commission.FieldBusinessID)
+	return u
+}
+
+// ClearBusinessID clears the value of the "business_id" field.
+func (u *CommissionUpsert) ClearBusinessID() *CommissionUpsert {
+	u.SetNull(commission.FieldBusinessID)
+	return u
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *CommissionUpsert) SetSubscribeID(v uint64) *CommissionUpsert {
+	u.Set(commission.FieldSubscribeID, v)
+	return u
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *CommissionUpsert) UpdateSubscribeID() *CommissionUpsert {
+	u.SetExcluded(commission.FieldSubscribeID)
+	return u
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *CommissionUpsert) ClearSubscribeID() *CommissionUpsert {
+	u.SetNull(commission.FieldSubscribeID)
+	return u
+}
+
+// SetPlanID sets the "plan_id" field.
+func (u *CommissionUpsert) SetPlanID(v uint64) *CommissionUpsert {
+	u.Set(commission.FieldPlanID, v)
+	return u
+}
+
+// UpdatePlanID sets the "plan_id" field to the value that was provided on create.
+func (u *CommissionUpsert) UpdatePlanID() *CommissionUpsert {
+	u.SetExcluded(commission.FieldPlanID)
+	return u
+}
+
+// ClearPlanID clears the value of the "plan_id" field.
+func (u *CommissionUpsert) ClearPlanID() *CommissionUpsert {
+	u.SetNull(commission.FieldPlanID)
+	return u
+}
+
 // SetOrderID sets the "order_id" field.
 func (u *CommissionUpsert) SetOrderID(v uint64) *CommissionUpsert {
 	u.Set(commission.FieldOrderID, v)
@@ -619,7 +791,6 @@ func (u *CommissionUpsert) ClearEmployeeID() *CommissionUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *CommissionUpsertOne) UpdateNewValues() *CommissionUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -639,10 +810,9 @@ func (u *CommissionUpsertOne) UpdateNewValues() *CommissionUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//  client.Commission.Create().
-//      OnConflict(sql.ResolveWithIgnore()).
-//      Exec(ctx)
-//
+//	client.Commission.Create().
+//	    OnConflict(sql.ResolveWithIgnore()).
+//	    Exec(ctx)
 func (u *CommissionUpsertOne) Ignore() *CommissionUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -773,6 +943,69 @@ func (u *CommissionUpsertOne) UpdateRemark() *CommissionUpsertOne {
 func (u *CommissionUpsertOne) ClearRemark() *CommissionUpsertOne {
 	return u.Update(func(s *CommissionUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetBusinessID sets the "business_id" field.
+func (u *CommissionUpsertOne) SetBusinessID(v uint64) *CommissionUpsertOne {
+	return u.Update(func(s *CommissionUpsert) {
+		s.SetBusinessID(v)
+	})
+}
+
+// UpdateBusinessID sets the "business_id" field to the value that was provided on create.
+func (u *CommissionUpsertOne) UpdateBusinessID() *CommissionUpsertOne {
+	return u.Update(func(s *CommissionUpsert) {
+		s.UpdateBusinessID()
+	})
+}
+
+// ClearBusinessID clears the value of the "business_id" field.
+func (u *CommissionUpsertOne) ClearBusinessID() *CommissionUpsertOne {
+	return u.Update(func(s *CommissionUpsert) {
+		s.ClearBusinessID()
+	})
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *CommissionUpsertOne) SetSubscribeID(v uint64) *CommissionUpsertOne {
+	return u.Update(func(s *CommissionUpsert) {
+		s.SetSubscribeID(v)
+	})
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *CommissionUpsertOne) UpdateSubscribeID() *CommissionUpsertOne {
+	return u.Update(func(s *CommissionUpsert) {
+		s.UpdateSubscribeID()
+	})
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *CommissionUpsertOne) ClearSubscribeID() *CommissionUpsertOne {
+	return u.Update(func(s *CommissionUpsert) {
+		s.ClearSubscribeID()
+	})
+}
+
+// SetPlanID sets the "plan_id" field.
+func (u *CommissionUpsertOne) SetPlanID(v uint64) *CommissionUpsertOne {
+	return u.Update(func(s *CommissionUpsert) {
+		s.SetPlanID(v)
+	})
+}
+
+// UpdatePlanID sets the "plan_id" field to the value that was provided on create.
+func (u *CommissionUpsertOne) UpdatePlanID() *CommissionUpsertOne {
+	return u.Update(func(s *CommissionUpsert) {
+		s.UpdatePlanID()
+	})
+}
+
+// ClearPlanID clears the value of the "plan_id" field.
+func (u *CommissionUpsertOne) ClearPlanID() *CommissionUpsertOne {
+	return u.Update(func(s *CommissionUpsert) {
+		s.ClearPlanID()
 	})
 }
 
@@ -987,7 +1220,6 @@ func (ccb *CommissionCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (ccb *CommissionCreateBulk) OnConflict(opts ...sql.ConflictOption) *CommissionUpsertBulk {
 	ccb.conflict = opts
 	return &CommissionUpsertBulk{
@@ -1001,7 +1233,6 @@ func (ccb *CommissionCreateBulk) OnConflict(opts ...sql.ConflictOption) *Commiss
 //	client.Commission.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (ccb *CommissionCreateBulk) OnConflictColumns(columns ...string) *CommissionUpsertBulk {
 	ccb.conflict = append(ccb.conflict, sql.ConflictColumns(columns...))
 	return &CommissionUpsertBulk{
@@ -1023,7 +1254,6 @@ type CommissionUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *CommissionUpsertBulk) UpdateNewValues() *CommissionUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1048,7 +1278,6 @@ func (u *CommissionUpsertBulk) UpdateNewValues() *CommissionUpsertBulk {
 //	client.Commission.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
-//
 func (u *CommissionUpsertBulk) Ignore() *CommissionUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -1179,6 +1408,69 @@ func (u *CommissionUpsertBulk) UpdateRemark() *CommissionUpsertBulk {
 func (u *CommissionUpsertBulk) ClearRemark() *CommissionUpsertBulk {
 	return u.Update(func(s *CommissionUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetBusinessID sets the "business_id" field.
+func (u *CommissionUpsertBulk) SetBusinessID(v uint64) *CommissionUpsertBulk {
+	return u.Update(func(s *CommissionUpsert) {
+		s.SetBusinessID(v)
+	})
+}
+
+// UpdateBusinessID sets the "business_id" field to the value that was provided on create.
+func (u *CommissionUpsertBulk) UpdateBusinessID() *CommissionUpsertBulk {
+	return u.Update(func(s *CommissionUpsert) {
+		s.UpdateBusinessID()
+	})
+}
+
+// ClearBusinessID clears the value of the "business_id" field.
+func (u *CommissionUpsertBulk) ClearBusinessID() *CommissionUpsertBulk {
+	return u.Update(func(s *CommissionUpsert) {
+		s.ClearBusinessID()
+	})
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *CommissionUpsertBulk) SetSubscribeID(v uint64) *CommissionUpsertBulk {
+	return u.Update(func(s *CommissionUpsert) {
+		s.SetSubscribeID(v)
+	})
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *CommissionUpsertBulk) UpdateSubscribeID() *CommissionUpsertBulk {
+	return u.Update(func(s *CommissionUpsert) {
+		s.UpdateSubscribeID()
+	})
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *CommissionUpsertBulk) ClearSubscribeID() *CommissionUpsertBulk {
+	return u.Update(func(s *CommissionUpsert) {
+		s.ClearSubscribeID()
+	})
+}
+
+// SetPlanID sets the "plan_id" field.
+func (u *CommissionUpsertBulk) SetPlanID(v uint64) *CommissionUpsertBulk {
+	return u.Update(func(s *CommissionUpsert) {
+		s.SetPlanID(v)
+	})
+}
+
+// UpdatePlanID sets the "plan_id" field to the value that was provided on create.
+func (u *CommissionUpsertBulk) UpdatePlanID() *CommissionUpsertBulk {
+	return u.Update(func(s *CommissionUpsert) {
+		s.UpdatePlanID()
+	})
+}
+
+// ClearPlanID clears the value of the "plan_id" field.
+func (u *CommissionUpsertBulk) ClearPlanID() *CommissionUpsertBulk {
+	return u.Update(func(s *CommissionUpsert) {
+		s.ClearPlanID()
 	})
 }
 

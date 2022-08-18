@@ -12,10 +12,13 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/order"
+	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // CommissionUpdate is the builder for updating Commission entities.
@@ -89,6 +92,66 @@ func (cu *CommissionUpdate) ClearRemark() *CommissionUpdate {
 	return cu
 }
 
+// SetBusinessID sets the "business_id" field.
+func (cu *CommissionUpdate) SetBusinessID(u uint64) *CommissionUpdate {
+	cu.mutation.SetBusinessID(u)
+	return cu
+}
+
+// SetNillableBusinessID sets the "business_id" field if the given value is not nil.
+func (cu *CommissionUpdate) SetNillableBusinessID(u *uint64) *CommissionUpdate {
+	if u != nil {
+		cu.SetBusinessID(*u)
+	}
+	return cu
+}
+
+// ClearBusinessID clears the value of the "business_id" field.
+func (cu *CommissionUpdate) ClearBusinessID() *CommissionUpdate {
+	cu.mutation.ClearBusinessID()
+	return cu
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (cu *CommissionUpdate) SetSubscribeID(u uint64) *CommissionUpdate {
+	cu.mutation.SetSubscribeID(u)
+	return cu
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (cu *CommissionUpdate) SetNillableSubscribeID(u *uint64) *CommissionUpdate {
+	if u != nil {
+		cu.SetSubscribeID(*u)
+	}
+	return cu
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (cu *CommissionUpdate) ClearSubscribeID() *CommissionUpdate {
+	cu.mutation.ClearSubscribeID()
+	return cu
+}
+
+// SetPlanID sets the "plan_id" field.
+func (cu *CommissionUpdate) SetPlanID(u uint64) *CommissionUpdate {
+	cu.mutation.SetPlanID(u)
+	return cu
+}
+
+// SetNillablePlanID sets the "plan_id" field if the given value is not nil.
+func (cu *CommissionUpdate) SetNillablePlanID(u *uint64) *CommissionUpdate {
+	if u != nil {
+		cu.SetPlanID(*u)
+	}
+	return cu
+}
+
+// ClearPlanID clears the value of the "plan_id" field.
+func (cu *CommissionUpdate) ClearPlanID() *CommissionUpdate {
+	cu.mutation.ClearPlanID()
+	return cu
+}
+
 // SetOrderID sets the "order_id" field.
 func (cu *CommissionUpdate) SetOrderID(u uint64) *CommissionUpdate {
 	cu.mutation.SetOrderID(u)
@@ -136,6 +199,21 @@ func (cu *CommissionUpdate) ClearEmployeeID() *CommissionUpdate {
 	return cu
 }
 
+// SetBusiness sets the "business" edge to the Business entity.
+func (cu *CommissionUpdate) SetBusiness(b *Business) *CommissionUpdate {
+	return cu.SetBusinessID(b.ID)
+}
+
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (cu *CommissionUpdate) SetSubscribe(s *Subscribe) *CommissionUpdate {
+	return cu.SetSubscribeID(s.ID)
+}
+
+// SetPlan sets the "plan" edge to the Plan entity.
+func (cu *CommissionUpdate) SetPlan(p *Plan) *CommissionUpdate {
+	return cu.SetPlanID(p.ID)
+}
+
 // SetOrder sets the "order" edge to the Order entity.
 func (cu *CommissionUpdate) SetOrder(o *Order) *CommissionUpdate {
 	return cu.SetOrderID(o.ID)
@@ -149,6 +227,24 @@ func (cu *CommissionUpdate) SetEmployee(e *Employee) *CommissionUpdate {
 // Mutation returns the CommissionMutation object of the builder.
 func (cu *CommissionUpdate) Mutation() *CommissionMutation {
 	return cu.mutation
+}
+
+// ClearBusiness clears the "business" edge to the Business entity.
+func (cu *CommissionUpdate) ClearBusiness() *CommissionUpdate {
+	cu.mutation.ClearBusiness()
+	return cu
+}
+
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (cu *CommissionUpdate) ClearSubscribe() *CommissionUpdate {
+	cu.mutation.ClearSubscribe()
+	return cu
+}
+
+// ClearPlan clears the "plan" edge to the Plan entity.
+func (cu *CommissionUpdate) ClearPlan() *CommissionUpdate {
+	cu.mutation.ClearPlan()
+	return cu
 }
 
 // ClearOrder clears the "order" edge to the Order entity.
@@ -330,6 +426,111 @@ func (cu *CommissionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: commission.FieldStatus,
 		})
 	}
+	if cu.mutation.BusinessCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.BusinessTable,
+			Columns: []string{commission.BusinessColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: business.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.BusinessIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.BusinessTable,
+			Columns: []string{commission.BusinessColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: business.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cu.mutation.SubscribeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.SubscribeTable,
+			Columns: []string{commission.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.SubscribeTable,
+			Columns: []string{commission.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cu.mutation.PlanCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.PlanTable,
+			Columns: []string{commission.PlanColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.PlanIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.PlanTable,
+			Columns: []string{commission.PlanColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if cu.mutation.OrderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
@@ -477,6 +678,66 @@ func (cuo *CommissionUpdateOne) ClearRemark() *CommissionUpdateOne {
 	return cuo
 }
 
+// SetBusinessID sets the "business_id" field.
+func (cuo *CommissionUpdateOne) SetBusinessID(u uint64) *CommissionUpdateOne {
+	cuo.mutation.SetBusinessID(u)
+	return cuo
+}
+
+// SetNillableBusinessID sets the "business_id" field if the given value is not nil.
+func (cuo *CommissionUpdateOne) SetNillableBusinessID(u *uint64) *CommissionUpdateOne {
+	if u != nil {
+		cuo.SetBusinessID(*u)
+	}
+	return cuo
+}
+
+// ClearBusinessID clears the value of the "business_id" field.
+func (cuo *CommissionUpdateOne) ClearBusinessID() *CommissionUpdateOne {
+	cuo.mutation.ClearBusinessID()
+	return cuo
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (cuo *CommissionUpdateOne) SetSubscribeID(u uint64) *CommissionUpdateOne {
+	cuo.mutation.SetSubscribeID(u)
+	return cuo
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (cuo *CommissionUpdateOne) SetNillableSubscribeID(u *uint64) *CommissionUpdateOne {
+	if u != nil {
+		cuo.SetSubscribeID(*u)
+	}
+	return cuo
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (cuo *CommissionUpdateOne) ClearSubscribeID() *CommissionUpdateOne {
+	cuo.mutation.ClearSubscribeID()
+	return cuo
+}
+
+// SetPlanID sets the "plan_id" field.
+func (cuo *CommissionUpdateOne) SetPlanID(u uint64) *CommissionUpdateOne {
+	cuo.mutation.SetPlanID(u)
+	return cuo
+}
+
+// SetNillablePlanID sets the "plan_id" field if the given value is not nil.
+func (cuo *CommissionUpdateOne) SetNillablePlanID(u *uint64) *CommissionUpdateOne {
+	if u != nil {
+		cuo.SetPlanID(*u)
+	}
+	return cuo
+}
+
+// ClearPlanID clears the value of the "plan_id" field.
+func (cuo *CommissionUpdateOne) ClearPlanID() *CommissionUpdateOne {
+	cuo.mutation.ClearPlanID()
+	return cuo
+}
+
 // SetOrderID sets the "order_id" field.
 func (cuo *CommissionUpdateOne) SetOrderID(u uint64) *CommissionUpdateOne {
 	cuo.mutation.SetOrderID(u)
@@ -524,6 +785,21 @@ func (cuo *CommissionUpdateOne) ClearEmployeeID() *CommissionUpdateOne {
 	return cuo
 }
 
+// SetBusiness sets the "business" edge to the Business entity.
+func (cuo *CommissionUpdateOne) SetBusiness(b *Business) *CommissionUpdateOne {
+	return cuo.SetBusinessID(b.ID)
+}
+
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (cuo *CommissionUpdateOne) SetSubscribe(s *Subscribe) *CommissionUpdateOne {
+	return cuo.SetSubscribeID(s.ID)
+}
+
+// SetPlan sets the "plan" edge to the Plan entity.
+func (cuo *CommissionUpdateOne) SetPlan(p *Plan) *CommissionUpdateOne {
+	return cuo.SetPlanID(p.ID)
+}
+
 // SetOrder sets the "order" edge to the Order entity.
 func (cuo *CommissionUpdateOne) SetOrder(o *Order) *CommissionUpdateOne {
 	return cuo.SetOrderID(o.ID)
@@ -537,6 +813,24 @@ func (cuo *CommissionUpdateOne) SetEmployee(e *Employee) *CommissionUpdateOne {
 // Mutation returns the CommissionMutation object of the builder.
 func (cuo *CommissionUpdateOne) Mutation() *CommissionMutation {
 	return cuo.mutation
+}
+
+// ClearBusiness clears the "business" edge to the Business entity.
+func (cuo *CommissionUpdateOne) ClearBusiness() *CommissionUpdateOne {
+	cuo.mutation.ClearBusiness()
+	return cuo
+}
+
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (cuo *CommissionUpdateOne) ClearSubscribe() *CommissionUpdateOne {
+	cuo.mutation.ClearSubscribe()
+	return cuo
+}
+
+// ClearPlan clears the "plan" edge to the Plan entity.
+func (cuo *CommissionUpdateOne) ClearPlan() *CommissionUpdateOne {
+	cuo.mutation.ClearPlan()
+	return cuo
 }
 
 // ClearOrder clears the "order" edge to the Order entity.
@@ -747,6 +1041,111 @@ func (cuo *CommissionUpdateOne) sqlSave(ctx context.Context) (_node *Commission,
 			Value:  value,
 			Column: commission.FieldStatus,
 		})
+	}
+	if cuo.mutation.BusinessCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.BusinessTable,
+			Columns: []string{commission.BusinessColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: business.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.BusinessIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.BusinessTable,
+			Columns: []string{commission.BusinessColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: business.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.SubscribeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.SubscribeTable,
+			Columns: []string{commission.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.SubscribeTable,
+			Columns: []string{commission.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.PlanCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.PlanTable,
+			Columns: []string{commission.PlanColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.PlanIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.PlanTable,
+			Columns: []string{commission.PlanColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if cuo.mutation.OrderCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -334,7 +334,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 //		Assistance.
 //		Query().
 //		Count(ctx)
-//
 func (c *Client) Debug() *Client {
 	if c.debug {
 		return c
@@ -1906,6 +1905,54 @@ func (c *CommissionClient) GetX(ctx context.Context, id uint64) *Commission {
 		panic(err)
 	}
 	return obj
+}
+
+// QueryBusiness queries the business edge of a Commission.
+func (c *CommissionClient) QueryBusiness(co *Commission) *BusinessQuery {
+	query := &BusinessQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(commission.Table, commission.FieldID, id),
+			sqlgraph.To(business.Table, business.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, commission.BusinessTable, commission.BusinessColumn),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySubscribe queries the subscribe edge of a Commission.
+func (c *CommissionClient) QuerySubscribe(co *Commission) *SubscribeQuery {
+	query := &SubscribeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(commission.Table, commission.FieldID, id),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, commission.SubscribeTable, commission.SubscribeColumn),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPlan queries the plan edge of a Commission.
+func (c *CommissionClient) QueryPlan(co *Commission) *PlanQuery {
+	query := &PlanQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(commission.Table, commission.FieldID, id),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, commission.PlanTable, commission.PlanColumn),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // QueryOrder queries the order edge of a Commission.

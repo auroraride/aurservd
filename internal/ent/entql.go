@@ -352,6 +352,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			commission.FieldCreator:      {Type: field.TypeJSON, Column: commission.FieldCreator},
 			commission.FieldLastModifier: {Type: field.TypeJSON, Column: commission.FieldLastModifier},
 			commission.FieldRemark:       {Type: field.TypeString, Column: commission.FieldRemark},
+			commission.FieldBusinessID:   {Type: field.TypeUint64, Column: commission.FieldBusinessID},
+			commission.FieldSubscribeID:  {Type: field.TypeUint64, Column: commission.FieldSubscribeID},
+			commission.FieldPlanID:       {Type: field.TypeUint64, Column: commission.FieldPlanID},
 			commission.FieldOrderID:      {Type: field.TypeUint64, Column: commission.FieldOrderID},
 			commission.FieldAmount:       {Type: field.TypeFloat64, Column: commission.FieldAmount},
 			commission.FieldStatus:       {Type: field.TypeUint8, Column: commission.FieldStatus},
@@ -1627,6 +1630,42 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"City",
 		"City",
+	)
+	graph.MustAddE(
+		"business",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.BusinessTable,
+			Columns: []string{commission.BusinessColumn},
+			Bidi:    false,
+		},
+		"Commission",
+		"Business",
+	)
+	graph.MustAddE(
+		"subscribe",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.SubscribeTable,
+			Columns: []string{commission.SubscribeColumn},
+			Bidi:    false,
+		},
+		"Commission",
+		"Subscribe",
+	)
+	graph.MustAddE(
+		"plan",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.PlanTable,
+			Columns: []string{commission.PlanColumn},
+			Bidi:    false,
+		},
+		"Commission",
+		"Plan",
 	)
 	graph.MustAddE(
 		"order",
@@ -4871,6 +4910,21 @@ func (f *CommissionFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(commission.FieldRemark))
 }
 
+// WhereBusinessID applies the entql uint64 predicate on the business_id field.
+func (f *CommissionFilter) WhereBusinessID(p entql.Uint64P) {
+	f.Where(p.Field(commission.FieldBusinessID))
+}
+
+// WhereSubscribeID applies the entql uint64 predicate on the subscribe_id field.
+func (f *CommissionFilter) WhereSubscribeID(p entql.Uint64P) {
+	f.Where(p.Field(commission.FieldSubscribeID))
+}
+
+// WherePlanID applies the entql uint64 predicate on the plan_id field.
+func (f *CommissionFilter) WherePlanID(p entql.Uint64P) {
+	f.Where(p.Field(commission.FieldPlanID))
+}
+
 // WhereOrderID applies the entql uint64 predicate on the order_id field.
 func (f *CommissionFilter) WhereOrderID(p entql.Uint64P) {
 	f.Where(p.Field(commission.FieldOrderID))
@@ -4889,6 +4943,48 @@ func (f *CommissionFilter) WhereStatus(p entql.Uint8P) {
 // WhereEmployeeID applies the entql uint64 predicate on the employee_id field.
 func (f *CommissionFilter) WhereEmployeeID(p entql.Uint64P) {
 	f.Where(p.Field(commission.FieldEmployeeID))
+}
+
+// WhereHasBusiness applies a predicate to check if query has an edge business.
+func (f *CommissionFilter) WhereHasBusiness() {
+	f.Where(entql.HasEdge("business"))
+}
+
+// WhereHasBusinessWith applies a predicate to check if query has an edge business with a given conditions (other predicates).
+func (f *CommissionFilter) WhereHasBusinessWith(preds ...predicate.Business) {
+	f.Where(entql.HasEdgeWith("business", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasSubscribe applies a predicate to check if query has an edge subscribe.
+func (f *CommissionFilter) WhereHasSubscribe() {
+	f.Where(entql.HasEdge("subscribe"))
+}
+
+// WhereHasSubscribeWith applies a predicate to check if query has an edge subscribe with a given conditions (other predicates).
+func (f *CommissionFilter) WhereHasSubscribeWith(preds ...predicate.Subscribe) {
+	f.Where(entql.HasEdgeWith("subscribe", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasPlan applies a predicate to check if query has an edge plan.
+func (f *CommissionFilter) WhereHasPlan() {
+	f.Where(entql.HasEdge("plan"))
+}
+
+// WhereHasPlanWith applies a predicate to check if query has an edge plan with a given conditions (other predicates).
+func (f *CommissionFilter) WhereHasPlanWith(preds ...predicate.Plan) {
+	f.Where(entql.HasEdgeWith("plan", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }
 
 // WhereHasOrder applies a predicate to check if query has an edge order.

@@ -479,7 +479,6 @@ func (ebq *EnterpriseBillQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *En
 //		GroupBy(enterprisebill.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (ebq *EnterpriseBillQuery) GroupBy(field string, fields ...string) *EnterpriseBillGroupBy {
 	grbuild := &EnterpriseBillGroupBy{config: ebq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -506,7 +505,6 @@ func (ebq *EnterpriseBillQuery) GroupBy(field string, fields ...string) *Enterpr
 //	client.EnterpriseBill.Query().
 //		Select(enterprisebill.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (ebq *EnterpriseBillQuery) Select(fields ...string) *EnterpriseBillSelect {
 	ebq.fields = append(ebq.fields, fields...)
 	selbuild := &EnterpriseBillSelect{EnterpriseBillQuery: ebq}

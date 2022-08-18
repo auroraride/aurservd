@@ -479,7 +479,6 @@ func (aq *AssistanceQuery) WithEmployee(opts ...func(*EmployeeQuery)) *Assistanc
 //		GroupBy(assistance.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (aq *AssistanceQuery) GroupBy(field string, fields ...string) *AssistanceGroupBy {
 	grbuild := &AssistanceGroupBy{config: aq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -506,7 +505,6 @@ func (aq *AssistanceQuery) GroupBy(field string, fields ...string) *AssistanceGr
 //	client.Assistance.Query().
 //		Select(assistance.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (aq *AssistanceQuery) Select(fields ...string) *AssistanceSelect {
 	aq.fields = append(aq.fields, fields...)
 	selbuild := &AssistanceSelect{AssistanceQuery: aq}

@@ -299,7 +299,6 @@ func (eq *ExportQuery) WithManager(opts ...func(*ManagerQuery)) *ExportQuery {
 //		GroupBy(export.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (eq *ExportQuery) GroupBy(field string, fields ...string) *ExportGroupBy {
 	grbuild := &ExportGroupBy{config: eq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -326,7 +325,6 @@ func (eq *ExportQuery) GroupBy(field string, fields ...string) *ExportGroupBy {
 //	client.Export.Query().
 //		Select(export.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (eq *ExportQuery) Select(fields ...string) *ExportSelect {
 	eq.fields = append(eq.fields, fields...)
 	selbuild := &ExportSelect{ExportQuery: eq}

@@ -542,7 +542,6 @@ func (ec *ExceptionCreate) createSpec() (*Exception, *sqlgraph.CreateSpec) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (ec *ExceptionCreate) OnConflict(opts ...sql.ConflictOption) *ExceptionUpsertOne {
 	ec.conflict = opts
 	return &ExceptionUpsertOne{
@@ -556,7 +555,6 @@ func (ec *ExceptionCreate) OnConflict(opts ...sql.ConflictOption) *ExceptionUpse
 //	client.Exception.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (ec *ExceptionCreate) OnConflictColumns(columns ...string) *ExceptionUpsertOne {
 	ec.conflict = append(ec.conflict, sql.ConflictColumns(columns...))
 	return &ExceptionUpsertOne{
@@ -831,7 +829,6 @@ func (u *ExceptionUpsert) ClearAttachments() *ExceptionUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *ExceptionUpsertOne) UpdateNewValues() *ExceptionUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -851,10 +848,9 @@ func (u *ExceptionUpsertOne) UpdateNewValues() *ExceptionUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//  client.Exception.Create().
-//      OnConflict(sql.ResolveWithIgnore()).
-//      Exec(ctx)
-//
+//	client.Exception.Create().
+//	    OnConflict(sql.ResolveWithIgnore()).
+//	    Exec(ctx)
 func (u *ExceptionUpsertOne) Ignore() *ExceptionUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -1297,7 +1293,6 @@ func (ecb *ExceptionCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (ecb *ExceptionCreateBulk) OnConflict(opts ...sql.ConflictOption) *ExceptionUpsertBulk {
 	ecb.conflict = opts
 	return &ExceptionUpsertBulk{
@@ -1311,7 +1306,6 @@ func (ecb *ExceptionCreateBulk) OnConflict(opts ...sql.ConflictOption) *Exceptio
 //	client.Exception.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (ecb *ExceptionCreateBulk) OnConflictColumns(columns ...string) *ExceptionUpsertBulk {
 	ecb.conflict = append(ecb.conflict, sql.ConflictColumns(columns...))
 	return &ExceptionUpsertBulk{
@@ -1333,7 +1327,6 @@ type ExceptionUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *ExceptionUpsertBulk) UpdateNewValues() *ExceptionUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1358,7 +1351,6 @@ func (u *ExceptionUpsertBulk) UpdateNewValues() *ExceptionUpsertBulk {
 //	client.Exception.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
-//
 func (u *ExceptionUpsertBulk) Ignore() *ExceptionUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

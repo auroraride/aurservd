@@ -413,9 +413,10 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 
         // 创建或更新subscribe
         // 新签或重签
+        var sub *ent.Subscribe
         if trade.OrderType == model.OrderTypeNewly || trade.OrderType == model.OrderTypeAgain {
             // 创建subscribe
-            sc := tx.Subscribe.Create().
+            sq := tx.Subscribe.Create().
                 SetType(trade.OrderType).
                 SetRiderID(trade.RiderID).
                 SetModel(trade.Model).
@@ -427,9 +428,9 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
                 SetInitialOrderID(o.ID).
                 AddOrders(o)
             if do != nil {
-                sc.AddOrders(do)
+                sq.AddOrders(do)
             }
-            _, err = sc.Save(s.ctx)
+            sub, err = sq.Save(s.ctx)
             if err != nil {
                 log.Errorf("[ORDER PAID %s SUBSCRIBE(%d) ERROR]: %s", trade.OutTradeNo, o.ID, err.Error())
                 return
@@ -450,9 +451,9 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
         }
 
         // 当新签和重签的时候有提成
-        if trade.OrderType == model.OrderTypeNewly {
+        if trade.OrderType == model.OrderTypeNewly && trade.Commission > 0 && sub != nil {
             // 创建提成
-            _, err = tx.Commission.Create().SetOrderID(o.ID).SetAmount(trade.Commission).SetStatus(model.CommissionStatusPending).Save(s.ctx)
+            _, err = tx.Commission.Create().SetOrderID(o.ID).SetPlanID(trade.PlanID).SetAmount(trade.Commission).SetStatus(model.CommissionStatusPending).SetSubscribe(sub).Save(s.ctx)
             if err != nil {
                 log.Errorf("[ORDER PAID %s COMMISSION(%d) ERROR]: %s", trade.OutTradeNo, o.ID, err.Error())
                 return

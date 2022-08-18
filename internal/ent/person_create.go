@@ -629,7 +629,6 @@ func (pc *PersonCreate) createSpec() (*Person, *sqlgraph.CreateSpec) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (pc *PersonCreate) OnConflict(opts ...sql.ConflictOption) *PersonUpsertOne {
 	pc.conflict = opts
 	return &PersonUpsertOne{
@@ -643,7 +642,6 @@ func (pc *PersonCreate) OnConflict(opts ...sql.ConflictOption) *PersonUpsertOne 
 //	client.Person.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (pc *PersonCreate) OnConflictColumns(columns ...string) *PersonUpsertOne {
 	pc.conflict = append(pc.conflict, sql.ConflictColumns(columns...))
 	return &PersonUpsertOne{
@@ -990,7 +988,6 @@ func (u *PersonUpsert) ClearBaiduLogID() *PersonUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *PersonUpsertOne) UpdateNewValues() *PersonUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1007,10 +1004,9 @@ func (u *PersonUpsertOne) UpdateNewValues() *PersonUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//  client.Person.Create().
-//      OnConflict(sql.ResolveWithIgnore()).
-//      Exec(ctx)
-//
+//	client.Person.Create().
+//	    OnConflict(sql.ResolveWithIgnore()).
+//	    Exec(ctx)
 func (u *PersonUpsertOne) Ignore() *PersonUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -1537,7 +1533,6 @@ func (pcb *PersonCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (pcb *PersonCreateBulk) OnConflict(opts ...sql.ConflictOption) *PersonUpsertBulk {
 	pcb.conflict = opts
 	return &PersonUpsertBulk{
@@ -1551,7 +1546,6 @@ func (pcb *PersonCreateBulk) OnConflict(opts ...sql.ConflictOption) *PersonUpser
 //	client.Person.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (pcb *PersonCreateBulk) OnConflictColumns(columns ...string) *PersonUpsertBulk {
 	pcb.conflict = append(pcb.conflict, sql.ConflictColumns(columns...))
 	return &PersonUpsertBulk{
@@ -1573,7 +1567,6 @@ type PersonUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *PersonUpsertBulk) UpdateNewValues() *PersonUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1595,7 +1588,6 @@ func (u *PersonUpsertBulk) UpdateNewValues() *PersonUpsertBulk {
 //	client.Person.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
-//
 func (u *PersonUpsertBulk) Ignore() *PersonUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

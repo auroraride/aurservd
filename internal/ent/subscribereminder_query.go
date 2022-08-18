@@ -299,7 +299,6 @@ func (srq *SubscribeReminderQuery) WithSubscribe(opts ...func(*SubscribeQuery)) 
 //		GroupBy(subscribereminder.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (srq *SubscribeReminderQuery) GroupBy(field string, fields ...string) *SubscribeReminderGroupBy {
 	grbuild := &SubscribeReminderGroupBy{config: srq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -326,7 +325,6 @@ func (srq *SubscribeReminderQuery) GroupBy(field string, fields ...string) *Subs
 //	client.SubscribeReminder.Query().
 //		Select(subscribereminder.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (srq *SubscribeReminderQuery) Select(fields ...string) *SubscribeReminderSelect {
 	srq.fields = append(srq.fields, fields...)
 	selbuild := &SubscribeReminderSelect{SubscribeReminderQuery: srq}

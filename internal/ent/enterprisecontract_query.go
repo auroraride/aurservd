@@ -299,7 +299,6 @@ func (ecq *EnterpriseContractQuery) WithEnterprise(opts ...func(*EnterpriseQuery
 //		GroupBy(enterprisecontract.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (ecq *EnterpriseContractQuery) GroupBy(field string, fields ...string) *EnterpriseContractGroupBy {
 	grbuild := &EnterpriseContractGroupBy{config: ecq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -326,7 +325,6 @@ func (ecq *EnterpriseContractQuery) GroupBy(field string, fields ...string) *Ent
 //	client.EnterpriseContract.Query().
 //		Select(enterprisecontract.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (ecq *EnterpriseContractQuery) Select(fields ...string) *EnterpriseContractSelect {
 	ecq.fields = append(ecq.fields, fields...)
 	selbuild := &EnterpriseContractSelect{EnterpriseContractQuery: ecq}

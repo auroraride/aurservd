@@ -191,6 +191,10 @@ func (p *kaixin) FetchStatus(serial string) (online bool, bins model.CabinetBins
             // 错误列表
             errs := p.GetChargerErrors(ds.Bft)
 
+            // 2022-08-18 15:00 姓曹的说:
+            // 仓位是否锁仓要加入电柜错误判定
+            doorHealth := ds.Dft == 1 && len(errs) == 0
+
             voltage := utils.NewNumber().Decimal(ds.Bcu)
             if voltage == 0 && hasBattery {
                 errs = append(errs, model.CabinetBinBatteryFault)
@@ -204,7 +208,7 @@ func (p *kaixin) FetchStatus(serial string) (online bool, bins model.CabinetBins
                 Battery:       hasBattery,
                 Electricity:   e,
                 OpenStatus:    ds.Dst == 1,
-                DoorHealth:    ds.Dft == 1,
+                DoorHealth:    doorHealth,
                 Current:       current,
                 Voltage:       voltage,
                 ChargerErrors: errs,

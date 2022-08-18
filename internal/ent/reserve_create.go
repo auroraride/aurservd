@@ -490,7 +490,6 @@ func (rc *ReserveCreate) createSpec() (*Reserve, *sqlgraph.CreateSpec) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (rc *ReserveCreate) OnConflict(opts ...sql.ConflictOption) *ReserveUpsertOne {
 	rc.conflict = opts
 	return &ReserveUpsertOne{
@@ -504,7 +503,6 @@ func (rc *ReserveCreate) OnConflict(opts ...sql.ConflictOption) *ReserveUpsertOn
 //	client.Reserve.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (rc *ReserveCreate) OnConflictColumns(columns ...string) *ReserveUpsertOne {
 	rc.conflict = append(rc.conflict, sql.ConflictColumns(columns...))
 	return &ReserveUpsertOne{
@@ -713,7 +711,6 @@ func (u *ReserveUpsert) UpdateType() *ReserveUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *ReserveUpsertOne) UpdateNewValues() *ReserveUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -730,10 +727,9 @@ func (u *ReserveUpsertOne) UpdateNewValues() *ReserveUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//  client.Reserve.Create().
-//      OnConflict(sql.ResolveWithIgnore()).
-//      Exec(ctx)
-//
+//	client.Reserve.Create().
+//	    OnConflict(sql.ResolveWithIgnore()).
+//	    Exec(ctx)
 func (u *ReserveUpsertOne) Ignore() *ReserveUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -1099,7 +1095,6 @@ func (rcb *ReserveCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (rcb *ReserveCreateBulk) OnConflict(opts ...sql.ConflictOption) *ReserveUpsertBulk {
 	rcb.conflict = opts
 	return &ReserveUpsertBulk{
@@ -1113,7 +1108,6 @@ func (rcb *ReserveCreateBulk) OnConflict(opts ...sql.ConflictOption) *ReserveUps
 //	client.Reserve.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (rcb *ReserveCreateBulk) OnConflictColumns(columns ...string) *ReserveUpsertBulk {
 	rcb.conflict = append(rcb.conflict, sql.ConflictColumns(columns...))
 	return &ReserveUpsertBulk{
@@ -1135,7 +1129,6 @@ type ReserveUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *ReserveUpsertBulk) UpdateNewValues() *ReserveUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1157,7 +1150,6 @@ func (u *ReserveUpsertBulk) UpdateNewValues() *ReserveUpsertBulk {
 //	client.Reserve.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
-//
 func (u *ReserveUpsertBulk) Ignore() *ReserveUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

@@ -111,44 +111,46 @@ func BodyDumpRawWithInterval(skipper map[string]bool) echo.MiddlewareFunc {
 
 func logBuffer(config BodyDumpConfig, c echo.Context, reqBody, resBody []byte) (buffer bytes.Buffer) {
     buffer.WriteString(fmt.Sprintf("%s [%s] %s", time.Now().Format("2006-01-02 15:04:05.00000"), c.Request().Method, c.Request().RequestURI))
-    if config.WithRequestHeaders {
-        buffer.WriteRune('\n')
-        buffer.WriteString("-----Request Header-----")
-        buffer.WriteRune('\n')
-        for k, v := range c.Request().Header {
-            buffer.WriteString(k)
-            buffer.WriteString(": ")
-            buffer.WriteString(strings.Join(v, ","))
+    if !config.Skipper[c.Path()] {
+        if config.WithRequestHeaders {
+            buffer.WriteRune('\n')
+            buffer.WriteString("-----Request Header-----")
+            buffer.WriteRune('\n')
+            for k, v := range c.Request().Header {
+                buffer.WriteString(k)
+                buffer.WriteString(": ")
+                buffer.WriteString(strings.Join(v, ","))
+                buffer.WriteRune('\n')
+            }
+        }
+        if len(reqBody) > 0 {
+            buffer.WriteString("\n[REQ] ")
+            buffer.Write(reqBody)
+        }
+        if config.WithResponseHeaders {
+            buffer.WriteRune('\n')
+            buffer.WriteString(fmt.Sprintf("-----Response[%d] Header-----", c.Response().Status))
+            buffer.WriteRune('\n')
+            for k, v := range c.Response().Header() {
+                buffer.WriteString(k)
+                buffer.WriteString(": ")
+                buffer.WriteString(strings.Join(v, ","))
+                buffer.WriteRune('\n')
+            }
+        }
+        if len(resBody) > 0 {
+            buffer.WriteString("\n[RES] ")
+            buffer.Write(resBody)
+        }
+        if buffer.Bytes()[len(buffer.Bytes())-1] != '\n' {
             buffer.WriteRune('\n')
         }
-    }
-    if len(reqBody) > 0 {
-        buffer.WriteString("\n[REQ] ")
-        buffer.Write(reqBody)
-    }
-    if config.WithResponseHeaders {
-        buffer.WriteRune('\n')
-        buffer.WriteString(fmt.Sprintf("-----Response[%d] Header-----", c.Response().Status))
-        buffer.WriteRune('\n')
-        for k, v := range c.Response().Header() {
-            buffer.WriteString(k)
-            buffer.WriteString(": ")
-            buffer.WriteString(strings.Join(v, ","))
+        if ctx, ok := c.(*app.RiderContext); ok && ctx.Rider != nil {
+            buffer.WriteString(fmt.Sprintf("[RIDER] ID:%d Phone:%s", ctx.Rider.ID, ctx.Rider.Phone))
+        }
+        if buffer.Bytes()[len(buffer.Bytes())-1] != '\n' {
             buffer.WriteRune('\n')
         }
-    }
-    if len(resBody) > 0 {
-        buffer.WriteString("\n[RES] ")
-        buffer.Write(resBody)
-    }
-    if buffer.Bytes()[len(buffer.Bytes())-1] != '\n' {
-        buffer.WriteRune('\n')
-    }
-    if ctx, ok := c.(*app.RiderContext); ok && ctx.Rider != nil {
-        buffer.WriteString(fmt.Sprintf("[RIDER] ID:%d Phone:%s", ctx.Rider.ID, ctx.Rider.Phone))
-    }
-    if buffer.Bytes()[len(buffer.Bytes())-1] != '\n' {
-        buffer.WriteRune('\n')
     }
     buffer.WriteRune('\n')
     return
@@ -165,9 +167,6 @@ func BodyDumpWithConfig(config BodyDumpConfig) echo.MiddlewareFunc {
 // BodyDumpWithInterval 保存请求/返回日志(定时删除 7day)
 func BodyDumpWithInterval(config BodyDumpConfig) echo.MiddlewareFunc {
     return dump(func(c echo.Context, reqBody, resBody []byte) {
-        if config.Skipper[c.Path()] {
-            return
-        }
         now := time.Now()
         d := "runtime/logs/api"
         p := filepath.Join(d, fmt.Sprintf("%s.log", now.Format(carbon.DateLayout)))

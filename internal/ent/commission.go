@@ -10,9 +10,12 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/order"
+	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // Commission is the model entity for the Commission schema.
@@ -35,6 +38,13 @@ type Commission struct {
 	// Remark holds the value of the "remark" field.
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
+	// BusinessID holds the value of the "business_id" field.
+	BusinessID *uint64 `json:"business_id,omitempty"`
+	// SubscribeID holds the value of the "subscribe_id" field.
+	SubscribeID *uint64 `json:"subscribe_id,omitempty"`
+	// PlanID holds the value of the "plan_id" field.
+	// 骑士卡ID
+	PlanID *uint64 `json:"plan_id,omitempty"`
 	// OrderID holds the value of the "order_id" field.
 	// 订单ID
 	OrderID uint64 `json:"order_id,omitempty"`
@@ -54,19 +64,67 @@ type Commission struct {
 
 // CommissionEdges holds the relations/edges for other nodes in the graph.
 type CommissionEdges struct {
+	// Business holds the value of the business edge.
+	Business *Business `json:"business,omitempty"`
+	// Subscribe holds the value of the subscribe edge.
+	Subscribe *Subscribe `json:"subscribe,omitempty"`
+	// Plan holds the value of the plan edge.
+	Plan *Plan `json:"plan,omitempty"`
 	// Order holds the value of the order edge.
 	Order *Order `json:"order,omitempty"`
 	// Employee holds the value of the employee edge.
 	Employee *Employee `json:"employee,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [5]bool
+}
+
+// BusinessOrErr returns the Business value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CommissionEdges) BusinessOrErr() (*Business, error) {
+	if e.loadedTypes[0] {
+		if e.Business == nil {
+			// The edge business was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: business.Label}
+		}
+		return e.Business, nil
+	}
+	return nil, &NotLoadedError{edge: "business"}
+}
+
+// SubscribeOrErr returns the Subscribe value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CommissionEdges) SubscribeOrErr() (*Subscribe, error) {
+	if e.loadedTypes[1] {
+		if e.Subscribe == nil {
+			// The edge subscribe was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: subscribe.Label}
+		}
+		return e.Subscribe, nil
+	}
+	return nil, &NotLoadedError{edge: "subscribe"}
+}
+
+// PlanOrErr returns the Plan value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CommissionEdges) PlanOrErr() (*Plan, error) {
+	if e.loadedTypes[2] {
+		if e.Plan == nil {
+			// The edge plan was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: plan.Label}
+		}
+		return e.Plan, nil
+	}
+	return nil, &NotLoadedError{edge: "plan"}
 }
 
 // OrderOrErr returns the Order value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CommissionEdges) OrderOrErr() (*Order, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[3] {
 		if e.Order == nil {
 			// The edge order was loaded in eager-loading,
 			// but was not found.
@@ -80,7 +138,7 @@ func (e CommissionEdges) OrderOrErr() (*Order, error) {
 // EmployeeOrErr returns the Employee value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CommissionEdges) EmployeeOrErr() (*Employee, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[4] {
 		if e.Employee == nil {
 			// The edge employee was loaded in eager-loading,
 			// but was not found.
@@ -100,7 +158,7 @@ func (*Commission) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case commission.FieldAmount:
 			values[i] = new(sql.NullFloat64)
-		case commission.FieldID, commission.FieldOrderID, commission.FieldStatus, commission.FieldEmployeeID:
+		case commission.FieldID, commission.FieldBusinessID, commission.FieldSubscribeID, commission.FieldPlanID, commission.FieldOrderID, commission.FieldStatus, commission.FieldEmployeeID:
 			values[i] = new(sql.NullInt64)
 		case commission.FieldRemark:
 			values[i] = new(sql.NullString)
@@ -168,6 +226,27 @@ func (c *Commission) assignValues(columns []string, values []interface{}) error 
 			} else if value.Valid {
 				c.Remark = value.String
 			}
+		case commission.FieldBusinessID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field business_id", values[i])
+			} else if value.Valid {
+				c.BusinessID = new(uint64)
+				*c.BusinessID = uint64(value.Int64)
+			}
+		case commission.FieldSubscribeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field subscribe_id", values[i])
+			} else if value.Valid {
+				c.SubscribeID = new(uint64)
+				*c.SubscribeID = uint64(value.Int64)
+			}
+		case commission.FieldPlanID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field plan_id", values[i])
+			} else if value.Valid {
+				c.PlanID = new(uint64)
+				*c.PlanID = uint64(value.Int64)
+			}
 		case commission.FieldOrderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field order_id", values[i])
@@ -196,6 +275,21 @@ func (c *Commission) assignValues(columns []string, values []interface{}) error 
 		}
 	}
 	return nil
+}
+
+// QueryBusiness queries the "business" edge of the Commission entity.
+func (c *Commission) QueryBusiness() *BusinessQuery {
+	return (&CommissionClient{config: c.config}).QueryBusiness(c)
+}
+
+// QuerySubscribe queries the "subscribe" edge of the Commission entity.
+func (c *Commission) QuerySubscribe() *SubscribeQuery {
+	return (&CommissionClient{config: c.config}).QuerySubscribe(c)
+}
+
+// QueryPlan queries the "plan" edge of the Commission entity.
+func (c *Commission) QueryPlan() *PlanQuery {
+	return (&CommissionClient{config: c.config}).QueryPlan(c)
 }
 
 // QueryOrder queries the "order" edge of the Commission entity.
@@ -245,6 +339,18 @@ func (c *Commission) String() string {
 	builder.WriteString(fmt.Sprintf("%v", c.LastModifier))
 	builder.WriteString(", remark=")
 	builder.WriteString(c.Remark)
+	if v := c.BusinessID; v != nil {
+		builder.WriteString(", business_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := c.SubscribeID; v != nil {
+		builder.WriteString(", subscribe_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := c.PlanID; v != nil {
+		builder.WriteString(", plan_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", order_id=")
 	builder.WriteString(fmt.Sprintf("%v", c.OrderID))
 	builder.WriteString(", amount=")

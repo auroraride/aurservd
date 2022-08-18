@@ -1037,7 +1037,6 @@ func (ac *AssistanceCreate) createSpec() (*Assistance, *sqlgraph.CreateSpec) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (ac *AssistanceCreate) OnConflict(opts ...sql.ConflictOption) *AssistanceUpsertOne {
 	ac.conflict = opts
 	return &AssistanceUpsertOne{
@@ -1051,7 +1050,6 @@ func (ac *AssistanceCreate) OnConflict(opts ...sql.ConflictOption) *AssistanceUp
 //	client.Assistance.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (ac *AssistanceCreate) OnConflictColumns(columns ...string) *AssistanceUpsertOne {
 	ac.conflict = append(ac.conflict, sql.ConflictColumns(columns...))
 	return &AssistanceUpsertOne{
@@ -1704,7 +1702,6 @@ func (u *AssistanceUpsert) ClearNaviPolylines() *AssistanceUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *AssistanceUpsertOne) UpdateNewValues() *AssistanceUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1721,10 +1718,9 @@ func (u *AssistanceUpsertOne) UpdateNewValues() *AssistanceUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//  client.Assistance.Create().
-//      OnConflict(sql.ResolveWithIgnore()).
-//      Exec(ctx)
-//
+//	client.Assistance.Create().
+//	    OnConflict(sql.ResolveWithIgnore()).
+//	    Exec(ctx)
 func (u *AssistanceUpsertOne) Ignore() *AssistanceUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -2608,7 +2604,6 @@ func (acb *AssistanceCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (acb *AssistanceCreateBulk) OnConflict(opts ...sql.ConflictOption) *AssistanceUpsertBulk {
 	acb.conflict = opts
 	return &AssistanceUpsertBulk{
@@ -2622,7 +2617,6 @@ func (acb *AssistanceCreateBulk) OnConflict(opts ...sql.ConflictOption) *Assista
 //	client.Assistance.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (acb *AssistanceCreateBulk) OnConflictColumns(columns ...string) *AssistanceUpsertBulk {
 	acb.conflict = append(acb.conflict, sql.ConflictColumns(columns...))
 	return &AssistanceUpsertBulk{
@@ -2644,7 +2638,6 @@ type AssistanceUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *AssistanceUpsertBulk) UpdateNewValues() *AssistanceUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -2666,7 +2659,6 @@ func (u *AssistanceUpsertBulk) UpdateNewValues() *AssistanceUpsertBulk {
 //	client.Assistance.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
-//
 func (u *AssistanceUpsertBulk) Ignore() *AssistanceUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

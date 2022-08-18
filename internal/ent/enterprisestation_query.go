@@ -299,7 +299,6 @@ func (esq *EnterpriseStationQuery) WithEnterprise(opts ...func(*EnterpriseQuery)
 //		GroupBy(enterprisestation.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (esq *EnterpriseStationQuery) GroupBy(field string, fields ...string) *EnterpriseStationGroupBy {
 	grbuild := &EnterpriseStationGroupBy{config: esq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -326,7 +325,6 @@ func (esq *EnterpriseStationQuery) GroupBy(field string, fields ...string) *Ente
 //	client.EnterpriseStation.Query().
 //		Select(enterprisestation.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (esq *EnterpriseStationQuery) Select(fields ...string) *EnterpriseStationSelect {
 	esq.fields = append(esq.fields, fields...)
 	selbuild := &EnterpriseStationSelect{EnterpriseStationQuery: esq}

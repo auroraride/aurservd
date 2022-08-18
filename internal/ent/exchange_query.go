@@ -551,7 +551,6 @@ func (eq *ExchangeQuery) WithEmployee(opts ...func(*EmployeeQuery)) *ExchangeQue
 //		GroupBy(exchange.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (eq *ExchangeQuery) GroupBy(field string, fields ...string) *ExchangeGroupBy {
 	grbuild := &ExchangeGroupBy{config: eq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -578,7 +577,6 @@ func (eq *ExchangeQuery) GroupBy(field string, fields ...string) *ExchangeGroupB
 //	client.Exchange.Query().
 //		Select(exchange.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (eq *ExchangeQuery) Select(fields ...string) *ExchangeSelect {
 	eq.fields = append(eq.fields, fields...)
 	selbuild := &ExchangeSelect{ExchangeQuery: eq}

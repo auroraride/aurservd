@@ -524,7 +524,6 @@ func (ac *AttendanceCreate) createSpec() (*Attendance, *sqlgraph.CreateSpec) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (ac *AttendanceCreate) OnConflict(opts ...sql.ConflictOption) *AttendanceUpsertOne {
 	ac.conflict = opts
 	return &AttendanceUpsertOne{
@@ -538,7 +537,6 @@ func (ac *AttendanceCreate) OnConflict(opts ...sql.ConflictOption) *AttendanceUp
 //	client.Attendance.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (ac *AttendanceCreate) OnConflictColumns(columns ...string) *AttendanceUpsertOne {
 	ac.conflict = append(ac.conflict, sql.ConflictColumns(columns...))
 	return &AttendanceUpsertOne{
@@ -837,7 +835,6 @@ func (u *AttendanceUpsert) ClearDistance() *AttendanceUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *AttendanceUpsertOne) UpdateNewValues() *AttendanceUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -854,10 +851,9 @@ func (u *AttendanceUpsertOne) UpdateNewValues() *AttendanceUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//  client.Attendance.Create().
-//      OnConflict(sql.ResolveWithIgnore()).
-//      Exec(ctx)
-//
+//	client.Attendance.Create().
+//	    OnConflict(sql.ResolveWithIgnore()).
+//	    Exec(ctx)
 func (u *AttendanceUpsertOne) Ignore() *AttendanceUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -1328,7 +1324,6 @@ func (acb *AttendanceCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-//
 func (acb *AttendanceCreateBulk) OnConflict(opts ...sql.ConflictOption) *AttendanceUpsertBulk {
 	acb.conflict = opts
 	return &AttendanceUpsertBulk{
@@ -1342,7 +1337,6 @@ func (acb *AttendanceCreateBulk) OnConflict(opts ...sql.ConflictOption) *Attenda
 //	client.Attendance.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-//
 func (acb *AttendanceCreateBulk) OnConflictColumns(columns ...string) *AttendanceUpsertBulk {
 	acb.conflict = append(acb.conflict, sql.ConflictColumns(columns...))
 	return &AttendanceUpsertBulk{
@@ -1364,7 +1358,6 @@ type AttendanceUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-//
 func (u *AttendanceUpsertBulk) UpdateNewValues() *AttendanceUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1386,7 +1379,6 @@ func (u *AttendanceUpsertBulk) UpdateNewValues() *AttendanceUpsertBulk {
 //	client.Attendance.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
-//
 func (u *AttendanceUpsertBulk) Ignore() *AttendanceUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

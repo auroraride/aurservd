@@ -153,6 +153,7 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
 
 func (s *riderBusinessService) open(bin *ec.BinInfo, remark string) (status bool, err error) {
     s.task.Start()
+    s.task.BussinessBinInfo = bin
 
     operation := model.CabinetDoorOperateOpen
 
@@ -398,18 +399,22 @@ func (s *riderBusinessService) Executable(sub *ent.Subscribe, typ business.Type)
 
 // PauseInfo 寄存信息
 func (s *riderBusinessService) PauseInfo() (res model.BusinessPauseInfoRes) {
-    sub, _ := ent.Database.Subscribe.QueryNotDeleted().WithPauses(func(query *ent.SubscribePauseQuery) {
-        query.Where(subscribepause.EndAtIsNil())
-    }).First(s.ctx)
+    // 查找订阅信息
+    sub := NewSubscribe().Recent(s.rider.ID)
     if sub == nil {
-        snag.Panic("未找到骑士卡信息")
+        snag.Panic("无生效中的骑行卡")
     }
-    ps := sub.Edges.Pauses
-    if len(ps) == 0 {
+
+    // 查找寄存信息
+    p, _ := ent.Database.SubscribePause.QueryNotDeleted().
+        Where(subscribepause.SubscribeID(sub.ID), subscribepause.EndAtIsNil()).
+        Order(ent.Desc(subscribepause.FieldCreatedAt)).
+        First(s.ctx)
+
+    if p == nil {
         snag.Panic("未找到寄存信息")
     }
 
-    p := ps[0]
     res = model.BusinessPauseInfoRes{
         Days:      p.Days,
         Overdue:   p.OverdueDays,

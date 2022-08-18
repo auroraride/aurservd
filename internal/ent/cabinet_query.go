@@ -480,7 +480,6 @@ func (cq *CabinetQuery) WithStocks(opts ...func(*StockQuery)) *CabinetQuery {
 //		GroupBy(cabinet.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (cq *CabinetQuery) GroupBy(field string, fields ...string) *CabinetGroupBy {
 	grbuild := &CabinetGroupBy{config: cq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -507,7 +506,6 @@ func (cq *CabinetQuery) GroupBy(field string, fields ...string) *CabinetGroupBy 
 //	client.Cabinet.Query().
 //		Select(cabinet.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (cq *CabinetQuery) Select(fields ...string) *CabinetSelect {
 	cq.fields = append(cq.fields, fields...)
 	selbuild := &CabinetSelect{CabinetQuery: cq}

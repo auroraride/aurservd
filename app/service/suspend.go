@@ -127,7 +127,7 @@ func (s *suspendService) listFilter(req model.SuspendListFilter) (q *ent.Subscri
         query.WithPerson()
     }).WithCity().WithSubscribe(func(query *ent.SubscribeQuery) {
         query.WithPlan()
-    })
+    }).Order(ent.Desc(subscribesuspend.FieldStartAt))
     if req.CityID != 0 {
         q.Where(subscribesuspend.CityID(req.CityID))
         info["城市"] = ent.NewExportInfo(req.CityID, city.Table)
