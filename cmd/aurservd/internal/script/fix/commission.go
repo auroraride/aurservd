@@ -40,7 +40,7 @@ func Commission() *cobra.Command {
                     continue
                 }
 
-                _, _ = item.Update().SetSubscribeID(o.SubscribeID).SetNillablePlanID(o.PlanID).SetSubscribeID(sub.ID).SetBusiness(b).Save(ctx)
+                _, _ = item.Update().SetSubscribeID(o.SubscribeID).SetNillablePlanID(o.PlanID).SetSubscribeID(sub.ID).SetBusiness(b).SetRiderID(sub.RiderID).Save(ctx)
             }
         },
     }

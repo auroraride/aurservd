@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
@@ -152,6 +153,26 @@ func (cu *CommissionUpdate) ClearPlanID() *CommissionUpdate {
 	return cu
 }
 
+// SetRiderID sets the "rider_id" field.
+func (cu *CommissionUpdate) SetRiderID(u uint64) *CommissionUpdate {
+	cu.mutation.SetRiderID(u)
+	return cu
+}
+
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (cu *CommissionUpdate) SetNillableRiderID(u *uint64) *CommissionUpdate {
+	if u != nil {
+		cu.SetRiderID(*u)
+	}
+	return cu
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (cu *CommissionUpdate) ClearRiderID() *CommissionUpdate {
+	cu.mutation.ClearRiderID()
+	return cu
+}
+
 // SetOrderID sets the "order_id" field.
 func (cu *CommissionUpdate) SetOrderID(u uint64) *CommissionUpdate {
 	cu.mutation.SetOrderID(u)
@@ -214,6 +235,11 @@ func (cu *CommissionUpdate) SetPlan(p *Plan) *CommissionUpdate {
 	return cu.SetPlanID(p.ID)
 }
 
+// SetRider sets the "rider" edge to the Rider entity.
+func (cu *CommissionUpdate) SetRider(r *Rider) *CommissionUpdate {
+	return cu.SetRiderID(r.ID)
+}
+
 // SetOrder sets the "order" edge to the Order entity.
 func (cu *CommissionUpdate) SetOrder(o *Order) *CommissionUpdate {
 	return cu.SetOrderID(o.ID)
@@ -244,6 +270,12 @@ func (cu *CommissionUpdate) ClearSubscribe() *CommissionUpdate {
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (cu *CommissionUpdate) ClearPlan() *CommissionUpdate {
 	cu.mutation.ClearPlan()
+	return cu
+}
+
+// ClearRider clears the "rider" edge to the Rider entity.
+func (cu *CommissionUpdate) ClearRider() *CommissionUpdate {
+	cu.mutation.ClearRider()
 	return cu
 }
 
@@ -531,6 +563,41 @@ func (cu *CommissionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if cu.mutation.RiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.RiderTable,
+			Columns: []string{commission.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: rider.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.RiderTable,
+			Columns: []string{commission.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: rider.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if cu.mutation.OrderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
@@ -738,6 +805,26 @@ func (cuo *CommissionUpdateOne) ClearPlanID() *CommissionUpdateOne {
 	return cuo
 }
 
+// SetRiderID sets the "rider_id" field.
+func (cuo *CommissionUpdateOne) SetRiderID(u uint64) *CommissionUpdateOne {
+	cuo.mutation.SetRiderID(u)
+	return cuo
+}
+
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (cuo *CommissionUpdateOne) SetNillableRiderID(u *uint64) *CommissionUpdateOne {
+	if u != nil {
+		cuo.SetRiderID(*u)
+	}
+	return cuo
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (cuo *CommissionUpdateOne) ClearRiderID() *CommissionUpdateOne {
+	cuo.mutation.ClearRiderID()
+	return cuo
+}
+
 // SetOrderID sets the "order_id" field.
 func (cuo *CommissionUpdateOne) SetOrderID(u uint64) *CommissionUpdateOne {
 	cuo.mutation.SetOrderID(u)
@@ -800,6 +887,11 @@ func (cuo *CommissionUpdateOne) SetPlan(p *Plan) *CommissionUpdateOne {
 	return cuo.SetPlanID(p.ID)
 }
 
+// SetRider sets the "rider" edge to the Rider entity.
+func (cuo *CommissionUpdateOne) SetRider(r *Rider) *CommissionUpdateOne {
+	return cuo.SetRiderID(r.ID)
+}
+
 // SetOrder sets the "order" edge to the Order entity.
 func (cuo *CommissionUpdateOne) SetOrder(o *Order) *CommissionUpdateOne {
 	return cuo.SetOrderID(o.ID)
@@ -830,6 +922,12 @@ func (cuo *CommissionUpdateOne) ClearSubscribe() *CommissionUpdateOne {
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (cuo *CommissionUpdateOne) ClearPlan() *CommissionUpdateOne {
 	cuo.mutation.ClearPlan()
+	return cuo
+}
+
+// ClearRider clears the "rider" edge to the Rider entity.
+func (cuo *CommissionUpdateOne) ClearRider() *CommissionUpdateOne {
+	cuo.mutation.ClearRider()
 	return cuo
 }
 
@@ -1139,6 +1237,41 @@ func (cuo *CommissionUpdateOne) sqlSave(ctx context.Context) (_node *Commission,
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: plan.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.RiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.RiderTable,
+			Columns: []string{commission.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: rider.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.RiderTable,
+			Columns: []string{commission.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: rider.FieldID,
 				},
 			},
 		}

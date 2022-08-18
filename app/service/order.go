@@ -453,7 +453,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
         // 当新签和重签的时候有提成
         if trade.OrderType == model.OrderTypeNewly && trade.Commission > 0 && sub != nil {
             // 创建提成
-            _, err = tx.Commission.Create().SetOrderID(o.ID).SetPlanID(trade.PlanID).SetAmount(trade.Commission).SetStatus(model.CommissionStatusPending).SetSubscribe(sub).Save(s.ctx)
+            _, err = tx.Commission.Create().SetOrderID(o.ID).SetPlanID(trade.PlanID).SetAmount(trade.Commission).SetStatus(model.CommissionStatusPending).SetRiderID(sub.RiderID).SetSubscribe(sub).Save(s.ctx)
             if err != nil {
                 log.Errorf("[ORDER PAID %s COMMISSION(%d) ERROR]: %s", trade.OutTradeNo, o.ID, err.Error())
                 return
@@ -607,7 +607,7 @@ func (s *orderService) Export(req *model.OrderListExport) model.ExportRes {
     q, info := s.listFilter(req.OrderListFilter)
     return NewExportWithModifier(s.modifier).Start("订单", req.OrderListFilter, info, req.Remark, func(path string) {
         items, _ := q.All(s.ctx)
-        var rows [][]any
+        var rows tools.ExcelItems
         title := []any{
             "类型",
             "骑手",

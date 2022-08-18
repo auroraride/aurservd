@@ -336,6 +336,7 @@ func (esq *EnterpriseStatementQuery) WithBills(opts ...func(*EnterpriseBillQuery
 //		GroupBy(enterprisestatement.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
+//
 func (esq *EnterpriseStatementQuery) GroupBy(field string, fields ...string) *EnterpriseStatementGroupBy {
 	grbuild := &EnterpriseStatementGroupBy{config: esq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -362,6 +363,7 @@ func (esq *EnterpriseStatementQuery) GroupBy(field string, fields ...string) *En
 //	client.EnterpriseStatement.Query().
 //		Select(enterprisestatement.FieldCreatedAt).
 //		Scan(ctx, &v)
+//
 func (esq *EnterpriseStatementQuery) Select(fields ...string) *EnterpriseStatementSelect {
 	esq.fields = append(esq.fields, fields...)
 	selbuild := &EnterpriseStatementSelect{EnterpriseStatementQuery: esq}

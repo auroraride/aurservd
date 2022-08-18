@@ -336,6 +336,7 @@ func (bmq *BatteryModelQuery) WithPlans(opts ...func(*PlanQuery)) *BatteryModelQ
 //		GroupBy(batterymodel.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
+//
 func (bmq *BatteryModelQuery) GroupBy(field string, fields ...string) *BatteryModelGroupBy {
 	grbuild := &BatteryModelGroupBy{config: bmq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -362,6 +363,7 @@ func (bmq *BatteryModelQuery) GroupBy(field string, fields ...string) *BatteryMo
 //	client.BatteryModel.Query().
 //		Select(batterymodel.FieldCreatedAt).
 //		Scan(ctx, &v)
+//
 func (bmq *BatteryModelQuery) Select(fields ...string) *BatteryModelSelect {
 	bmq.fields = append(bmq.fields, fields...)
 	selbuild := &BatteryModelSelect{BatteryModelQuery: bmq}

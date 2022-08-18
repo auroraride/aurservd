@@ -300,6 +300,7 @@ func (pq *PersonQuery) WithRider(opts ...func(*RiderQuery)) *PersonQuery {
 //		GroupBy(person.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
+//
 func (pq *PersonQuery) GroupBy(field string, fields ...string) *PersonGroupBy {
 	grbuild := &PersonGroupBy{config: pq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -326,6 +327,7 @@ func (pq *PersonQuery) GroupBy(field string, fields ...string) *PersonGroupBy {
 //	client.Person.Query().
 //		Select(person.FieldCreatedAt).
 //		Scan(ctx, &v)
+//
 func (pq *PersonQuery) Select(fields ...string) *PersonSelect {
 	pq.fields = append(pq.fields, fields...)
 	selbuild := &PersonSelect{PersonQuery: pq}

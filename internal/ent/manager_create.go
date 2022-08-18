@@ -413,6 +413,7 @@ func (mc *ManagerCreate) createSpec() (*Manager, *sqlgraph.CreateSpec) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (mc *ManagerCreate) OnConflict(opts ...sql.ConflictOption) *ManagerUpsertOne {
 	mc.conflict = opts
 	return &ManagerUpsertOne{
@@ -426,6 +427,7 @@ func (mc *ManagerCreate) OnConflict(opts ...sql.ConflictOption) *ManagerUpsertOn
 //	client.Manager.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (mc *ManagerCreate) OnConflictColumns(columns ...string) *ManagerUpsertOne {
 	mc.conflict = append(mc.conflict, sql.ConflictColumns(columns...))
 	return &ManagerUpsertOne{
@@ -622,6 +624,7 @@ func (u *ManagerUpsert) ClearLastSigninAt() *ManagerUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *ManagerUpsertOne) UpdateNewValues() *ManagerUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -638,9 +641,10 @@ func (u *ManagerUpsertOne) UpdateNewValues() *ManagerUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//	client.Manager.Create().
-//	    OnConflict(sql.ResolveWithIgnore()).
-//	    Exec(ctx)
+//  client.Manager.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
 func (u *ManagerUpsertOne) Ignore() *ManagerUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -992,6 +996,7 @@ func (mcb *ManagerCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (mcb *ManagerCreateBulk) OnConflict(opts ...sql.ConflictOption) *ManagerUpsertBulk {
 	mcb.conflict = opts
 	return &ManagerUpsertBulk{
@@ -1005,6 +1010,7 @@ func (mcb *ManagerCreateBulk) OnConflict(opts ...sql.ConflictOption) *ManagerUps
 //	client.Manager.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (mcb *ManagerCreateBulk) OnConflictColumns(columns ...string) *ManagerUpsertBulk {
 	mcb.conflict = append(mcb.conflict, sql.ConflictColumns(columns...))
 	return &ManagerUpsertBulk{
@@ -1026,6 +1032,7 @@ type ManagerUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *ManagerUpsertBulk) UpdateNewValues() *ManagerUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1047,6 +1054,7 @@ func (u *ManagerUpsertBulk) UpdateNewValues() *ManagerUpsertBulk {
 //	client.Manager.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
+//
 func (u *ManagerUpsertBulk) Ignore() *ManagerUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

@@ -667,6 +667,7 @@ var (
 		{Name: "business_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "rider_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "order_id", Type: field.TypeUint64, Unique: true},
 	}
@@ -695,14 +696,20 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "commission_employee_commissions",
+				Symbol:     "commission_rider_rider",
 				Columns:    []*schema.Column{CommissionColumns[12]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "commission_employee_commissions",
+				Columns:    []*schema.Column{CommissionColumns[13]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "commission_order_commission",
-				Columns:    []*schema.Column{CommissionColumns[13]},
+				Columns:    []*schema.Column{CommissionColumns[14]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -2860,8 +2867,9 @@ func init() {
 	CommissionTable.ForeignKeys[0].RefTable = BusinessTable
 	CommissionTable.ForeignKeys[1].RefTable = SubscribeTable
 	CommissionTable.ForeignKeys[2].RefTable = PlanTable
-	CommissionTable.ForeignKeys[3].RefTable = EmployeeTable
-	CommissionTable.ForeignKeys[4].RefTable = OrderTable
+	CommissionTable.ForeignKeys[3].RefTable = RiderTable
+	CommissionTable.ForeignKeys[4].RefTable = EmployeeTable
+	CommissionTable.ForeignKeys[5].RefTable = OrderTable
 	CommissionTable.Annotation = &entsql.Annotation{
 		Table: "commission",
 	}

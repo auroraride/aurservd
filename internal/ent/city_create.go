@@ -520,6 +520,7 @@ func (cc *CityCreate) createSpec() (*City, *sqlgraph.CreateSpec) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (cc *CityCreate) OnConflict(opts ...sql.ConflictOption) *CityUpsertOne {
 	cc.conflict = opts
 	return &CityUpsertOne{
@@ -533,6 +534,7 @@ func (cc *CityCreate) OnConflict(opts ...sql.ConflictOption) *CityUpsertOne {
 //	client.City.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (cc *CityCreate) OnConflictColumns(columns ...string) *CityUpsertOne {
 	cc.conflict = append(cc.conflict, sql.ConflictColumns(columns...))
 	return &CityUpsertOne{
@@ -768,6 +770,7 @@ func (u *CityUpsert) ClearLat() *CityUpsert {
 //			}),
 //		).
 //		Exec(ctx)
+//
 func (u *CityUpsertOne) UpdateNewValues() *CityUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -787,9 +790,10 @@ func (u *CityUpsertOne) UpdateNewValues() *CityUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//	client.City.Create().
-//	    OnConflict(sql.ResolveWithIgnore()).
-//	    Exec(ctx)
+//  client.City.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
 func (u *CityUpsertOne) Ignore() *CityUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -1183,6 +1187,7 @@ func (ccb *CityCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (ccb *CityCreateBulk) OnConflict(opts ...sql.ConflictOption) *CityUpsertBulk {
 	ccb.conflict = opts
 	return &CityUpsertBulk{
@@ -1196,6 +1201,7 @@ func (ccb *CityCreateBulk) OnConflict(opts ...sql.ConflictOption) *CityUpsertBul
 //	client.City.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (ccb *CityCreateBulk) OnConflictColumns(columns ...string) *CityUpsertBulk {
 	ccb.conflict = append(ccb.conflict, sql.ConflictColumns(columns...))
 	return &CityUpsertBulk{
@@ -1220,6 +1226,7 @@ type CityUpsertBulk struct {
 //			}),
 //		).
 //		Exec(ctx)
+//
 func (u *CityUpsertBulk) UpdateNewValues() *CityUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1245,6 +1252,7 @@ func (u *CityUpsertBulk) UpdateNewValues() *CityUpsertBulk {
 //	client.City.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
+//
 func (u *CityUpsertBulk) Ignore() *CityUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

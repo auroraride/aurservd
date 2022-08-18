@@ -371,6 +371,7 @@ func (saq *SubscribeAlterQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *Su
 //		GroupBy(subscribealter.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
+//
 func (saq *SubscribeAlterQuery) GroupBy(field string, fields ...string) *SubscribeAlterGroupBy {
 	grbuild := &SubscribeAlterGroupBy{config: saq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -397,6 +398,7 @@ func (saq *SubscribeAlterQuery) GroupBy(field string, fields ...string) *Subscri
 //	client.SubscribeAlter.Query().
 //		Select(subscribealter.FieldCreatedAt).
 //		Scan(ctx, &v)
+//
 func (saq *SubscribeAlterQuery) Select(fields ...string) *SubscribeAlterSelect {
 	saq.fields = append(saq.fields, fields...)
 	selbuild := &SubscribeAlterSelect{SubscribeAlterQuery: saq}

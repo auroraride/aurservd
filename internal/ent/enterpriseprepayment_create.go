@@ -345,6 +345,7 @@ func (epc *EnterprisePrepaymentCreate) createSpec() (*EnterprisePrepayment, *sql
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (epc *EnterprisePrepaymentCreate) OnConflict(opts ...sql.ConflictOption) *EnterprisePrepaymentUpsertOne {
 	epc.conflict = opts
 	return &EnterprisePrepaymentUpsertOne{
@@ -358,6 +359,7 @@ func (epc *EnterprisePrepaymentCreate) OnConflict(opts ...sql.ConflictOption) *E
 //	client.EnterprisePrepayment.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (epc *EnterprisePrepaymentCreate) OnConflictColumns(columns ...string) *EnterprisePrepaymentUpsertOne {
 	epc.conflict = append(epc.conflict, sql.ConflictColumns(columns...))
 	return &EnterprisePrepaymentUpsertOne{
@@ -512,6 +514,7 @@ func (u *EnterprisePrepaymentUpsert) AddAmount(v float64) *EnterprisePrepaymentU
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *EnterprisePrepaymentUpsertOne) UpdateNewValues() *EnterprisePrepaymentUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -531,9 +534,10 @@ func (u *EnterprisePrepaymentUpsertOne) UpdateNewValues() *EnterprisePrepaymentU
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//	client.EnterprisePrepayment.Create().
-//	    OnConflict(sql.ResolveWithIgnore()).
-//	    Exec(ctx)
+//  client.EnterprisePrepayment.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
 func (u *EnterprisePrepaymentUpsertOne) Ignore() *EnterprisePrepaymentUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -836,6 +840,7 @@ func (epcb *EnterprisePrepaymentCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (epcb *EnterprisePrepaymentCreateBulk) OnConflict(opts ...sql.ConflictOption) *EnterprisePrepaymentUpsertBulk {
 	epcb.conflict = opts
 	return &EnterprisePrepaymentUpsertBulk{
@@ -849,6 +854,7 @@ func (epcb *EnterprisePrepaymentCreateBulk) OnConflict(opts ...sql.ConflictOptio
 //	client.EnterprisePrepayment.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (epcb *EnterprisePrepaymentCreateBulk) OnConflictColumns(columns ...string) *EnterprisePrepaymentUpsertBulk {
 	epcb.conflict = append(epcb.conflict, sql.ConflictColumns(columns...))
 	return &EnterprisePrepaymentUpsertBulk{
@@ -870,6 +876,7 @@ type EnterprisePrepaymentUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *EnterprisePrepaymentUpsertBulk) UpdateNewValues() *EnterprisePrepaymentUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -894,6 +901,7 @@ func (u *EnterprisePrepaymentUpsertBulk) UpdateNewValues() *EnterprisePrepayment
 //	client.EnterprisePrepayment.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
+//
 func (u *EnterprisePrepaymentUpsertBulk) Ignore() *EnterprisePrepaymentUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

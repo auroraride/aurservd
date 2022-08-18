@@ -895,6 +895,7 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (rc *RiderCreate) OnConflict(opts ...sql.ConflictOption) *RiderUpsertOne {
 	rc.conflict = opts
 	return &RiderUpsertOne{
@@ -908,6 +909,7 @@ func (rc *RiderCreate) OnConflict(opts ...sql.ConflictOption) *RiderUpsertOne {
 //	client.Rider.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (rc *RiderCreate) OnConflictColumns(columns ...string) *RiderUpsertOne {
 	rc.conflict = append(rc.conflict, sql.ConflictColumns(columns...))
 	return &RiderUpsertOne{
@@ -1254,6 +1256,7 @@ func (u *RiderUpsert) ClearContractual() *RiderUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *RiderUpsertOne) UpdateNewValues() *RiderUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1270,9 +1273,10 @@ func (u *RiderUpsertOne) UpdateNewValues() *RiderUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//	client.Rider.Create().
-//	    OnConflict(sql.ResolveWithIgnore()).
-//	    Exec(ctx)
+//  client.Rider.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
 func (u *RiderUpsertOne) Ignore() *RiderUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -1799,6 +1803,7 @@ func (rcb *RiderCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (rcb *RiderCreateBulk) OnConflict(opts ...sql.ConflictOption) *RiderUpsertBulk {
 	rcb.conflict = opts
 	return &RiderUpsertBulk{
@@ -1812,6 +1817,7 @@ func (rcb *RiderCreateBulk) OnConflict(opts ...sql.ConflictOption) *RiderUpsertB
 //	client.Rider.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (rcb *RiderCreateBulk) OnConflictColumns(columns ...string) *RiderUpsertBulk {
 	rcb.conflict = append(rcb.conflict, sql.ConflictColumns(columns...))
 	return &RiderUpsertBulk{
@@ -1833,6 +1839,7 @@ type RiderUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *RiderUpsertBulk) UpdateNewValues() *RiderUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1854,6 +1861,7 @@ func (u *RiderUpsertBulk) UpdateNewValues() *RiderUpsertBulk {
 //	client.Rider.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
+//
 func (u *RiderUpsertBulk) Ignore() *RiderUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

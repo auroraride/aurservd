@@ -299,6 +299,7 @@ func (cq *ContractQuery) WithRider(opts ...func(*RiderQuery)) *ContractQuery {
 //		GroupBy(contract.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
+//
 func (cq *ContractQuery) GroupBy(field string, fields ...string) *ContractGroupBy {
 	grbuild := &ContractGroupBy{config: cq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -325,6 +326,7 @@ func (cq *ContractQuery) GroupBy(field string, fields ...string) *ContractGroupB
 //	client.Contract.Query().
 //		Select(contract.FieldCreatedAt).
 //		Scan(ctx, &v)
+//
 func (cq *ContractQuery) Select(fields ...string) *ContractSelect {
 	cq.fields = append(cq.fields, fields...)
 	selbuild := &ContractSelect{ContractQuery: cq}

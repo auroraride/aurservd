@@ -355,6 +355,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			commission.FieldBusinessID:   {Type: field.TypeUint64, Column: commission.FieldBusinessID},
 			commission.FieldSubscribeID:  {Type: field.TypeUint64, Column: commission.FieldSubscribeID},
 			commission.FieldPlanID:       {Type: field.TypeUint64, Column: commission.FieldPlanID},
+			commission.FieldRiderID:      {Type: field.TypeUint64, Column: commission.FieldRiderID},
 			commission.FieldOrderID:      {Type: field.TypeUint64, Column: commission.FieldOrderID},
 			commission.FieldAmount:       {Type: field.TypeFloat64, Column: commission.FieldAmount},
 			commission.FieldStatus:       {Type: field.TypeUint8, Column: commission.FieldStatus},
@@ -1666,6 +1667,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Commission",
 		"Plan",
+	)
+	graph.MustAddE(
+		"rider",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.RiderTable,
+			Columns: []string{commission.RiderColumn},
+			Bidi:    false,
+		},
+		"Commission",
+		"Rider",
 	)
 	graph.MustAddE(
 		"order",
@@ -4925,6 +4938,11 @@ func (f *CommissionFilter) WherePlanID(p entql.Uint64P) {
 	f.Where(p.Field(commission.FieldPlanID))
 }
 
+// WhereRiderID applies the entql uint64 predicate on the rider_id field.
+func (f *CommissionFilter) WhereRiderID(p entql.Uint64P) {
+	f.Where(p.Field(commission.FieldRiderID))
+}
+
 // WhereOrderID applies the entql uint64 predicate on the order_id field.
 func (f *CommissionFilter) WhereOrderID(p entql.Uint64P) {
 	f.Where(p.Field(commission.FieldOrderID))
@@ -4981,6 +4999,20 @@ func (f *CommissionFilter) WhereHasPlan() {
 // WhereHasPlanWith applies a predicate to check if query has an edge plan with a given conditions (other predicates).
 func (f *CommissionFilter) WhereHasPlanWith(preds ...predicate.Plan) {
 	f.Where(entql.HasEdgeWith("plan", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRider applies a predicate to check if query has an edge rider.
+func (f *CommissionFilter) WhereHasRider() {
+	f.Where(entql.HasEdge("rider"))
+}
+
+// WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
+func (f *CommissionFilter) WhereHasRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

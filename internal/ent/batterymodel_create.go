@@ -406,6 +406,7 @@ func (bmc *BatteryModelCreate) createSpec() (*BatteryModel, *sqlgraph.CreateSpec
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (bmc *BatteryModelCreate) OnConflict(opts ...sql.ConflictOption) *BatteryModelUpsertOne {
 	bmc.conflict = opts
 	return &BatteryModelUpsertOne{
@@ -419,6 +420,7 @@ func (bmc *BatteryModelCreate) OnConflict(opts ...sql.ConflictOption) *BatteryMo
 //	client.BatteryModel.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (bmc *BatteryModelCreate) OnConflictColumns(columns ...string) *BatteryModelUpsertOne {
 	bmc.conflict = append(bmc.conflict, sql.ConflictColumns(columns...))
 	return &BatteryModelUpsertOne{
@@ -567,6 +569,7 @@ func (u *BatteryModelUpsert) UpdateEnable() *BatteryModelUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *BatteryModelUpsertOne) UpdateNewValues() *BatteryModelUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -583,9 +586,10 @@ func (u *BatteryModelUpsertOne) UpdateNewValues() *BatteryModelUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//	client.BatteryModel.Create().
-//	    OnConflict(sql.ResolveWithIgnore()).
-//	    Exec(ctx)
+//  client.BatteryModel.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
 func (u *BatteryModelUpsertOne) Ignore() *BatteryModelUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -881,6 +885,7 @@ func (bmcb *BatteryModelCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (bmcb *BatteryModelCreateBulk) OnConflict(opts ...sql.ConflictOption) *BatteryModelUpsertBulk {
 	bmcb.conflict = opts
 	return &BatteryModelUpsertBulk{
@@ -894,6 +899,7 @@ func (bmcb *BatteryModelCreateBulk) OnConflict(opts ...sql.ConflictOption) *Batt
 //	client.BatteryModel.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (bmcb *BatteryModelCreateBulk) OnConflictColumns(columns ...string) *BatteryModelUpsertBulk {
 	bmcb.conflict = append(bmcb.conflict, sql.ConflictColumns(columns...))
 	return &BatteryModelUpsertBulk{
@@ -915,6 +921,7 @@ type BatteryModelUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *BatteryModelUpsertBulk) UpdateNewValues() *BatteryModelUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -936,6 +943,7 @@ func (u *BatteryModelUpsertBulk) UpdateNewValues() *BatteryModelUpsertBulk {
 //	client.BatteryModel.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
+//
 func (u *BatteryModelUpsertBulk) Ignore() *BatteryModelUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

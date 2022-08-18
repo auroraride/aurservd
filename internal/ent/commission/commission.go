@@ -31,6 +31,8 @@ const (
 	FieldSubscribeID = "subscribe_id"
 	// FieldPlanID holds the string denoting the plan_id field in the database.
 	FieldPlanID = "plan_id"
+	// FieldRiderID holds the string denoting the rider_id field in the database.
+	FieldRiderID = "rider_id"
 	// FieldOrderID holds the string denoting the order_id field in the database.
 	FieldOrderID = "order_id"
 	// FieldAmount holds the string denoting the amount field in the database.
@@ -45,6 +47,8 @@ const (
 	EdgeSubscribe = "subscribe"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
+	// EdgeRider holds the string denoting the rider edge name in mutations.
+	EdgeRider = "rider"
 	// EdgeOrder holds the string denoting the order edge name in mutations.
 	EdgeOrder = "order"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
@@ -72,6 +76,13 @@ const (
 	PlanInverseTable = "plan"
 	// PlanColumn is the table column denoting the plan relation/edge.
 	PlanColumn = "plan_id"
+	// RiderTable is the table that holds the rider relation/edge.
+	RiderTable = "commission"
+	// RiderInverseTable is the table name for the Rider entity.
+	// It exists in this package in order to avoid circular dependency with the "rider" package.
+	RiderInverseTable = "rider"
+	// RiderColumn is the table column denoting the rider relation/edge.
+	RiderColumn = "rider_id"
 	// OrderTable is the table that holds the order relation/edge.
 	OrderTable = "commission"
 	// OrderInverseTable is the table name for the Order entity.
@@ -100,6 +111,7 @@ var Columns = []string{
 	FieldBusinessID,
 	FieldSubscribeID,
 	FieldPlanID,
+	FieldRiderID,
 	FieldOrderID,
 	FieldAmount,
 	FieldStatus,
@@ -121,6 +133,7 @@ func ValidColumn(column string) bool {
 // it should be imported in the main as follows:
 //
 //	import _ "github.com/auroraride/aurservd/internal/ent/runtime"
+//
 var (
 	Hooks [1]ent.Hook
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.

@@ -406,6 +406,7 @@ func (pq *PlanQuery) WithComplexes(opts ...func(*PlanQuery)) *PlanQuery {
 //		GroupBy(plan.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
+//
 func (pq *PlanQuery) GroupBy(field string, fields ...string) *PlanGroupBy {
 	grbuild := &PlanGroupBy{config: pq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -432,6 +433,7 @@ func (pq *PlanQuery) GroupBy(field string, fields ...string) *PlanGroupBy {
 //	client.Plan.Query().
 //		Select(plan.FieldCreatedAt).
 //		Scan(ctx, &v)
+//
 func (pq *PlanQuery) Select(fields ...string) *PlanSelect {
 	pq.fields = append(pq.fields, fields...)
 	selbuild := &PlanSelect{PlanQuery: pq}

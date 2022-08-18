@@ -840,6 +840,7 @@ func (spc *SubscribePauseCreate) createSpec() (*SubscribePause, *sqlgraph.Create
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (spc *SubscribePauseCreate) OnConflict(opts ...sql.ConflictOption) *SubscribePauseUpsertOne {
 	spc.conflict = opts
 	return &SubscribePauseUpsertOne{
@@ -853,6 +854,7 @@ func (spc *SubscribePauseCreate) OnConflict(opts ...sql.ConflictOption) *Subscri
 //	client.SubscribePause.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (spc *SubscribePauseCreate) OnConflictColumns(columns ...string) *SubscribePauseUpsertOne {
 	spc.conflict = append(spc.conflict, sql.ConflictColumns(columns...))
 	return &SubscribePauseUpsertOne{
@@ -1247,6 +1249,7 @@ func (u *SubscribePauseUpsert) AddSuspendDays(v int) *SubscribePauseUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *SubscribePauseUpsertOne) UpdateNewValues() *SubscribePauseUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1263,9 +1266,10 @@ func (u *SubscribePauseUpsertOne) UpdateNewValues() *SubscribePauseUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//	client.SubscribePause.Create().
-//	    OnConflict(sql.ResolveWithIgnore()).
-//	    Exec(ctx)
+//  client.SubscribePause.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
 func (u *SubscribePauseUpsertOne) Ignore() *SubscribePauseUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -1848,6 +1852,7 @@ func (spcb *SubscribePauseCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (spcb *SubscribePauseCreateBulk) OnConflict(opts ...sql.ConflictOption) *SubscribePauseUpsertBulk {
 	spcb.conflict = opts
 	return &SubscribePauseUpsertBulk{
@@ -1861,6 +1866,7 @@ func (spcb *SubscribePauseCreateBulk) OnConflict(opts ...sql.ConflictOption) *Su
 //	client.SubscribePause.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (spcb *SubscribePauseCreateBulk) OnConflictColumns(columns ...string) *SubscribePauseUpsertBulk {
 	spcb.conflict = append(spcb.conflict, sql.ConflictColumns(columns...))
 	return &SubscribePauseUpsertBulk{
@@ -1882,6 +1888,7 @@ type SubscribePauseUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *SubscribePauseUpsertBulk) UpdateNewValues() *SubscribePauseUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1903,6 +1910,7 @@ func (u *SubscribePauseUpsertBulk) UpdateNewValues() *SubscribePauseUpsertBulk {
 //	client.SubscribePause.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
+//
 func (u *SubscribePauseUpsertBulk) Ignore() *SubscribePauseUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

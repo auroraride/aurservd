@@ -17,7 +17,19 @@ type excel struct {
     path  string
     sheet string
 
+    row    int // 当前行
+    column int // 当前列
+
     *excelize.File
+}
+
+type ExcelItems [][]any
+
+func (e ExcelItems) Columns() int {
+    if len(e) == 0 {
+        return 0
+    }
+    return len(e[0])
 }
 
 func NewExcel(path string, args ...any) (e *excel) {
@@ -48,57 +60,57 @@ func (e *excel) CellString(row, column int) string {
 // AddData 添加数据
 // rows, column 从0开始
 func (e *excel) AddData(row, column int, data any) *excel {
-    err := e.SetCellValue(e.sheet, e.CellString(row, column), data)
+    cell := e.CellString(row, column)
+    err := e.SetCellValue(e.sheet, cell, data)
     if err != nil {
         snag.Panic(err)
     }
     return e
 }
 
-// AddValuesFromStruct 从结构添加 TODO
-func (e *excel) AddValuesFromStruct() *excel {
-    return e
-}
-
 // AddValues 批量添加数据
-func (e *excel) AddValues(rows [][]any) *excel {
-    row := -1
+func (e *excel) AddValues(rows ExcelItems) *excel {
     rowFrom := 0
-    rowEnd := 0
     for _, data := range rows {
-        row += 1
-        rowFrom = row
+        e.column = 0
+        rowFrom = e.row
 
         var mr int // 合并项
         var mergeColumns []int
-        for column, v := range data {
+        for _, v := range data {
             rt := reflect.TypeOf(v)
             if rt.Kind() == reflect.Slice {
-                items := v.([]any)
+                items := v.(ExcelItems)
+                colFrom := e.column
                 for m, subs := range items {
-                    for n, sub := range subs.([]any) {
-                        e.AddData(row+m, column+n, sub)
+                    for n, sub := range subs {
+                        e.AddData(e.row+m, colFrom+n, sub)
                     }
                 }
+                // 子项目结束后需要加上列数
+                e.column += items.Columns() - 1
                 mr = len(items) - 1
-                row += mr
             } else {
-                e.AddData(row, column, v)
-                mergeColumns = append(mergeColumns, column)
+                e.AddData(e.row, e.column, v)
+                mergeColumns = append(mergeColumns, e.column)
             }
+
+            e.column += 1
         }
 
-        rowEnd = row
+        e.row += mr
 
         // 合并单元格
         if mr > 0 && len(mergeColumns) > 0 {
             for _, mc := range mergeColumns {
-                err := e.MergeCell(e.sheet, e.CellString(rowFrom, mc), e.CellString(rowEnd, mc))
+                err := e.MergeCell(e.sheet, e.CellString(rowFrom, mc), e.CellString(e.row, mc))
                 if err != nil {
                     snag.Panic(err)
                 }
             }
         }
+
+        e.row += 1
     }
     return e
 }

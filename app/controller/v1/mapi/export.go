@@ -105,3 +105,18 @@ func (*export) Order(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.OrderListExport](c)
     return ctx.SendResponse(service.NewOrderWithModifier(ctx.Modifier).Export(req))
 }
+
+// Commission
+// @ID           ManagerExportCommission
+// @Router       /manager/v1/export/commission [POST]
+// @Summary      MF007 导出业绩
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body     model.EmployeeActivityExportReq  true  "筛选条件"
+// @Success      200  {object}  model.ExportRes  "请求成功"
+func (*export) Commission(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.EmployeeActivityExportReq](c)
+    return ctx.SendResponse(service.NewEmployeeWithModifier(ctx.Modifier).ActivityExport(req))
+}

@@ -635,7 +635,7 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
     return NewExportWithModifier(s.modifier).Start("骑手列表", req, info, req.Remark, func(path string) {
         items, _ := q.All(s.ctx)
 
-        var rows [][]any
+        var rows tools.ExcelItems
         title := []any{
             "城市",     // 0
             "骑手",     // 1

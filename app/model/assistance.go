@@ -199,7 +199,3 @@ type AssistanceNotice struct {
     Address       string `json:"address"`
     AddressDetail string `json:"addressDetail"`
 }
-
-type AssistanceExportItem struct {
-    Rider string `json:"rider"`
-}

@@ -42,17 +42,6 @@ type EmployeeActivityExportReq struct {
     Remark string `json:"remark" validate:"required" trans:"备注"`
 }
 
-type EmployeeActivityExport struct {
-    City             string                 `json:"city"`             // 城市
-    Employee         string                 `json:"employee"`         // 店员
-    ExchangeTimes    int                    `json:"exchangeTimes"`    // 换电次数
-    AssistanceTimes  int                    `json:"assistanceTimes"`  // 救援次数
-    AssistanceMeters float64                `json:"assistanceMeters"` // 救援里程(米)
-    Assistances      []AssistanceExportItem `json:"assistances"`      // 救援详情
-    CommissionAmount float64                `json:"commissionAmount"` // 业绩提成
-    Comissions       []ComissionExportItem  `json:"comissions"`       // 业绩提成详情
-}
-
 type EmployeeActivityListRes struct {
     ID               uint64  `json:"id"`
     Name             string  `json:"name"`             // 姓名

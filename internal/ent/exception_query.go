@@ -371,6 +371,7 @@ func (eq *ExceptionQuery) WithStore(opts ...func(*StoreQuery)) *ExceptionQuery {
 //		GroupBy(exception.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
+//
 func (eq *ExceptionQuery) GroupBy(field string, fields ...string) *ExceptionGroupBy {
 	grbuild := &ExceptionGroupBy{config: eq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -397,6 +398,7 @@ func (eq *ExceptionQuery) GroupBy(field string, fields ...string) *ExceptionGrou
 //	client.Exception.Query().
 //		Select(exception.FieldCreatedAt).
 //		Scan(ctx, &v)
+//
 func (eq *ExceptionQuery) Select(fields ...string) *ExceptionSelect {
 	eq.fields = append(eq.fields, fields...)
 	selbuild := &ExceptionSelect{ExceptionQuery: eq}

@@ -1274,6 +1274,7 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (sc *SubscribeCreate) OnConflict(opts ...sql.ConflictOption) *SubscribeUpsertOne {
 	sc.conflict = opts
 	return &SubscribeUpsertOne{
@@ -1287,6 +1288,7 @@ func (sc *SubscribeCreate) OnConflict(opts ...sql.ConflictOption) *SubscribeUpse
 //	client.Subscribe.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (sc *SubscribeCreate) OnConflictColumns(columns ...string) *SubscribeUpsertOne {
 	sc.conflict = append(sc.conflict, sql.ConflictColumns(columns...))
 	return &SubscribeUpsertOne{
@@ -1879,6 +1881,7 @@ func (u *SubscribeUpsert) UpdatePauseOverdue() *SubscribeUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *SubscribeUpsertOne) UpdateNewValues() *SubscribeUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1898,9 +1901,10 @@ func (u *SubscribeUpsertOne) UpdateNewValues() *SubscribeUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//	client.Subscribe.Create().
-//	    OnConflict(sql.ResolveWithIgnore()).
-//	    Exec(ctx)
+//  client.Subscribe.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
 func (u *SubscribeUpsertOne) Ignore() *SubscribeUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -2714,6 +2718,7 @@ func (scb *SubscribeCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (scb *SubscribeCreateBulk) OnConflict(opts ...sql.ConflictOption) *SubscribeUpsertBulk {
 	scb.conflict = opts
 	return &SubscribeUpsertBulk{
@@ -2727,6 +2732,7 @@ func (scb *SubscribeCreateBulk) OnConflict(opts ...sql.ConflictOption) *Subscrib
 //	client.Subscribe.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (scb *SubscribeCreateBulk) OnConflictColumns(columns ...string) *SubscribeUpsertBulk {
 	scb.conflict = append(scb.conflict, sql.ConflictColumns(columns...))
 	return &SubscribeUpsertBulk{
@@ -2748,6 +2754,7 @@ type SubscribeUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *SubscribeUpsertBulk) UpdateNewValues() *SubscribeUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -2772,6 +2779,7 @@ func (u *SubscribeUpsertBulk) UpdateNewValues() *SubscribeUpsertBulk {
 //	client.Subscribe.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
+//
 func (u *SubscribeUpsertBulk) Ignore() *SubscribeUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

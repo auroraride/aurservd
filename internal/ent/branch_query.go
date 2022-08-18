@@ -444,6 +444,7 @@ func (bq *BranchQuery) WithStores(opts ...func(*StoreQuery)) *BranchQuery {
 //		GroupBy(branch.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
+//
 func (bq *BranchQuery) GroupBy(field string, fields ...string) *BranchGroupBy {
 	grbuild := &BranchGroupBy{config: bq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -470,6 +471,7 @@ func (bq *BranchQuery) GroupBy(field string, fields ...string) *BranchGroupBy {
 //	client.Branch.Query().
 //		Select(branch.FieldCreatedAt).
 //		Scan(ctx, &v)
+//
 func (bq *BranchQuery) Select(fields ...string) *BranchSelect {
 	bq.fields = append(bq.fields, fields...)
 	selbuild := &BranchSelect{BranchQuery: bq}

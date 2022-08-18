@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
@@ -45,6 +46,9 @@ type Commission struct {
 	// PlanID holds the value of the "plan_id" field.
 	// 骑士卡ID
 	PlanID *uint64 `json:"plan_id,omitempty"`
+	// RiderID holds the value of the "rider_id" field.
+	// 骑手ID
+	RiderID *uint64 `json:"rider_id,omitempty"`
 	// OrderID holds the value of the "order_id" field.
 	// 订单ID
 	OrderID uint64 `json:"order_id,omitempty"`
@@ -70,13 +74,15 @@ type CommissionEdges struct {
 	Subscribe *Subscribe `json:"subscribe,omitempty"`
 	// Plan holds the value of the plan edge.
 	Plan *Plan `json:"plan,omitempty"`
+	// Rider holds the value of the rider edge.
+	Rider *Rider `json:"rider,omitempty"`
 	// Order holds the value of the order edge.
 	Order *Order `json:"order,omitempty"`
 	// Employee holds the value of the employee edge.
 	Employee *Employee `json:"employee,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 }
 
 // BusinessOrErr returns the Business value or an error if the edge
@@ -121,10 +127,24 @@ func (e CommissionEdges) PlanOrErr() (*Plan, error) {
 	return nil, &NotLoadedError{edge: "plan"}
 }
 
+// RiderOrErr returns the Rider value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CommissionEdges) RiderOrErr() (*Rider, error) {
+	if e.loadedTypes[3] {
+		if e.Rider == nil {
+			// The edge rider was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: rider.Label}
+		}
+		return e.Rider, nil
+	}
+	return nil, &NotLoadedError{edge: "rider"}
+}
+
 // OrderOrErr returns the Order value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CommissionEdges) OrderOrErr() (*Order, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		if e.Order == nil {
 			// The edge order was loaded in eager-loading,
 			// but was not found.
@@ -138,7 +158,7 @@ func (e CommissionEdges) OrderOrErr() (*Order, error) {
 // EmployeeOrErr returns the Employee value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CommissionEdges) EmployeeOrErr() (*Employee, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[5] {
 		if e.Employee == nil {
 			// The edge employee was loaded in eager-loading,
 			// but was not found.
@@ -158,7 +178,7 @@ func (*Commission) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case commission.FieldAmount:
 			values[i] = new(sql.NullFloat64)
-		case commission.FieldID, commission.FieldBusinessID, commission.FieldSubscribeID, commission.FieldPlanID, commission.FieldOrderID, commission.FieldStatus, commission.FieldEmployeeID:
+		case commission.FieldID, commission.FieldBusinessID, commission.FieldSubscribeID, commission.FieldPlanID, commission.FieldRiderID, commission.FieldOrderID, commission.FieldStatus, commission.FieldEmployeeID:
 			values[i] = new(sql.NullInt64)
 		case commission.FieldRemark:
 			values[i] = new(sql.NullString)
@@ -247,6 +267,13 @@ func (c *Commission) assignValues(columns []string, values []interface{}) error 
 				c.PlanID = new(uint64)
 				*c.PlanID = uint64(value.Int64)
 			}
+		case commission.FieldRiderID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field rider_id", values[i])
+			} else if value.Valid {
+				c.RiderID = new(uint64)
+				*c.RiderID = uint64(value.Int64)
+			}
 		case commission.FieldOrderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field order_id", values[i])
@@ -290,6 +317,11 @@ func (c *Commission) QuerySubscribe() *SubscribeQuery {
 // QueryPlan queries the "plan" edge of the Commission entity.
 func (c *Commission) QueryPlan() *PlanQuery {
 	return (&CommissionClient{config: c.config}).QueryPlan(c)
+}
+
+// QueryRider queries the "rider" edge of the Commission entity.
+func (c *Commission) QueryRider() *RiderQuery {
+	return (&CommissionClient{config: c.config}).QueryRider(c)
 }
 
 // QueryOrder queries the "order" edge of the Commission entity.
@@ -349,6 +381,10 @@ func (c *Commission) String() string {
 	}
 	if v := c.PlanID; v != nil {
 		builder.WriteString(", plan_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := c.RiderID; v != nil {
+		builder.WriteString(", rider_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", order_id=")

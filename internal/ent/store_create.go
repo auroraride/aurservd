@@ -625,6 +625,7 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (sc *StoreCreate) OnConflict(opts ...sql.ConflictOption) *StoreUpsertOne {
 	sc.conflict = opts
 	return &StoreUpsertOne{
@@ -638,6 +639,7 @@ func (sc *StoreCreate) OnConflict(opts ...sql.ConflictOption) *StoreUpsertOne {
 //	client.Store.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (sc *StoreCreate) OnConflictColumns(columns ...string) *StoreUpsertOne {
 	sc.conflict = append(sc.conflict, sql.ConflictColumns(columns...))
 	return &StoreUpsertOne{
@@ -894,6 +896,7 @@ func (u *StoreUpsert) UpdateAddress() *StoreUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *StoreUpsertOne) UpdateNewValues() *StoreUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -913,9 +916,10 @@ func (u *StoreUpsertOne) UpdateNewValues() *StoreUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//	client.Store.Create().
-//	    OnConflict(sql.ResolveWithIgnore()).
-//	    Exec(ctx)
+//  client.Store.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
 func (u *StoreUpsertOne) Ignore() *StoreUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -1337,6 +1341,7 @@ func (scb *StoreCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (scb *StoreCreateBulk) OnConflict(opts ...sql.ConflictOption) *StoreUpsertBulk {
 	scb.conflict = opts
 	return &StoreUpsertBulk{
@@ -1350,6 +1355,7 @@ func (scb *StoreCreateBulk) OnConflict(opts ...sql.ConflictOption) *StoreUpsertB
 //	client.Store.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (scb *StoreCreateBulk) OnConflictColumns(columns ...string) *StoreUpsertBulk {
 	scb.conflict = append(scb.conflict, sql.ConflictColumns(columns...))
 	return &StoreUpsertBulk{
@@ -1371,6 +1377,7 @@ type StoreUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *StoreUpsertBulk) UpdateNewValues() *StoreUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1395,6 +1402,7 @@ func (u *StoreUpsertBulk) UpdateNewValues() *StoreUpsertBulk {
 //	client.Store.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
+//
 func (u *StoreUpsertBulk) Ignore() *StoreUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

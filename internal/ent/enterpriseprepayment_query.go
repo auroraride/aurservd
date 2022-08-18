@@ -299,6 +299,7 @@ func (epq *EnterprisePrepaymentQuery) WithEnterprise(opts ...func(*EnterpriseQue
 //		GroupBy(enterpriseprepayment.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
+//
 func (epq *EnterprisePrepaymentQuery) GroupBy(field string, fields ...string) *EnterprisePrepaymentGroupBy {
 	grbuild := &EnterprisePrepaymentGroupBy{config: epq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -325,6 +326,7 @@ func (epq *EnterprisePrepaymentQuery) GroupBy(field string, fields ...string) *E
 //	client.EnterprisePrepayment.Query().
 //		Select(enterpriseprepayment.FieldCreatedAt).
 //		Scan(ctx, &v)
+//
 func (epq *EnterprisePrepaymentQuery) Select(fields ...string) *EnterprisePrepaymentSelect {
 	epq.fields = append(epq.fields, fields...)
 	selbuild := &EnterprisePrepaymentSelect{EnterprisePrepaymentQuery: epq}

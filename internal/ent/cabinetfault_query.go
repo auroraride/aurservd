@@ -407,6 +407,7 @@ func (cfq *CabinetFaultQuery) WithRider(opts ...func(*RiderQuery)) *CabinetFault
 //		GroupBy(cabinetfault.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
+//
 func (cfq *CabinetFaultQuery) GroupBy(field string, fields ...string) *CabinetFaultGroupBy {
 	grbuild := &CabinetFaultGroupBy{config: cfq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -433,6 +434,7 @@ func (cfq *CabinetFaultQuery) GroupBy(field string, fields ...string) *CabinetFa
 //	client.CabinetFault.Query().
 //		Select(cabinetfault.FieldCreatedAt).
 //		Scan(ctx, &v)
+//
 func (cfq *CabinetFaultQuery) Select(fields ...string) *CabinetFaultSelect {
 	cfq.fields = append(cfq.fields, fields...)
 	selbuild := &CabinetFaultSelect{CabinetFaultQuery: cfq}

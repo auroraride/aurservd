@@ -299,6 +299,7 @@ func (bcq *BranchContractQuery) WithBranch(opts ...func(*BranchQuery)) *BranchCo
 //		GroupBy(branchcontract.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
+//
 func (bcq *BranchContractQuery) GroupBy(field string, fields ...string) *BranchContractGroupBy {
 	grbuild := &BranchContractGroupBy{config: bcq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -325,6 +326,7 @@ func (bcq *BranchContractQuery) GroupBy(field string, fields ...string) *BranchC
 //	client.BranchContract.Query().
 //		Select(branchcontract.FieldCreatedAt).
 //		Scan(ctx, &v)
+//
 func (bcq *BranchContractQuery) Select(fields ...string) *BranchContractSelect {
 	bcq.fields = append(bcq.fields, fields...)
 	selbuild := &BranchContractSelect{BranchContractQuery: bcq}

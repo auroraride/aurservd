@@ -5228,6 +5228,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/export/commission": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MF007 导出业绩",
+                "operationId": "ManagerExportCommission",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "筛选条件",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EmployeeActivityExportReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ExportRes"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/export/download/{sn}": {
             "get": {
                 "consumes": [
@@ -13139,6 +13180,38 @@ const docTemplate = `{
                 "phone": {
                     "description": "店员电话",
                     "type": "string"
+                }
+            }
+        },
+        "model.EmployeeActivityExportReq": {
+            "type": "object",
+            "required": [
+                "remark"
+            ],
+            "properties": {
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
+                "end": {
+                    "description": "业绩统计结束时间",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "查询店员电话或姓名",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注 ",
+                    "type": "string"
+                },
+                "start": {
+                    "description": "业绩统计开始时间",
+                    "type": "string"
+                },
+                "storeId": {
+                    "description": "门店ID",
+                    "type": "integer"
                 }
             }
         },

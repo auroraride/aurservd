@@ -335,6 +335,7 @@ func (epq *EnterprisePriceQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) 
 //		GroupBy(enterpriseprice.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
+//
 func (epq *EnterprisePriceQuery) GroupBy(field string, fields ...string) *EnterprisePriceGroupBy {
 	grbuild := &EnterprisePriceGroupBy{config: epq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -361,6 +362,7 @@ func (epq *EnterprisePriceQuery) GroupBy(field string, fields ...string) *Enterp
 //	client.EnterprisePrice.Query().
 //		Select(enterpriseprice.FieldCreatedAt).
 //		Scan(ctx, &v)
+//
 func (epq *EnterprisePriceQuery) Select(fields ...string) *EnterprisePriceSelect {
 	epq.fields = append(epq.fields, fields...)
 	selbuild := &EnterprisePriceSelect{EnterprisePriceQuery: epq}

@@ -407,6 +407,7 @@ func (rq *ReserveQuery) WithBusiness(opts ...func(*BusinessQuery)) *ReserveQuery
 //		GroupBy(reserve.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
+//
 func (rq *ReserveQuery) GroupBy(field string, fields ...string) *ReserveGroupBy {
 	grbuild := &ReserveGroupBy{config: rq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -433,6 +434,7 @@ func (rq *ReserveQuery) GroupBy(field string, fields ...string) *ReserveGroupBy 
 //	client.Reserve.Query().
 //		Select(reserve.FieldCreatedAt).
 //		Scan(ctx, &v)
+//
 func (rq *ReserveQuery) Select(fields ...string) *ReserveSelect {
 	rq.fields = append(rq.fields, fields...)
 	selbuild := &ReserveSelect{ReserveQuery: rq}

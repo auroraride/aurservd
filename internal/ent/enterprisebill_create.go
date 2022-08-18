@@ -622,6 +622,7 @@ func (ebc *EnterpriseBillCreate) createSpec() (*EnterpriseBill, *sqlgraph.Create
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (ebc *EnterpriseBillCreate) OnConflict(opts ...sql.ConflictOption) *EnterpriseBillUpsertOne {
 	ebc.conflict = opts
 	return &EnterpriseBillUpsertOne{
@@ -635,6 +636,7 @@ func (ebc *EnterpriseBillCreate) OnConflict(opts ...sql.ConflictOption) *Enterpr
 //	client.EnterpriseBill.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (ebc *EnterpriseBillCreate) OnConflictColumns(columns ...string) *EnterpriseBillUpsertOne {
 	ebc.conflict = append(ebc.conflict, sql.ConflictColumns(columns...))
 	return &EnterpriseBillUpsertOne{
@@ -927,6 +929,7 @@ func (u *EnterpriseBillUpsert) UpdateModel() *EnterpriseBillUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *EnterpriseBillUpsertOne) UpdateNewValues() *EnterpriseBillUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -943,9 +946,10 @@ func (u *EnterpriseBillUpsertOne) UpdateNewValues() *EnterpriseBillUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//	client.EnterpriseBill.Create().
-//	    OnConflict(sql.ResolveWithIgnore()).
-//	    Exec(ctx)
+//  client.EnterpriseBill.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
 func (u *EnterpriseBillUpsertOne) Ignore() *EnterpriseBillUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -1409,6 +1413,7 @@ func (ebcb *EnterpriseBillCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (ebcb *EnterpriseBillCreateBulk) OnConflict(opts ...sql.ConflictOption) *EnterpriseBillUpsertBulk {
 	ebcb.conflict = opts
 	return &EnterpriseBillUpsertBulk{
@@ -1422,6 +1427,7 @@ func (ebcb *EnterpriseBillCreateBulk) OnConflict(opts ...sql.ConflictOption) *En
 //	client.EnterpriseBill.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (ebcb *EnterpriseBillCreateBulk) OnConflictColumns(columns ...string) *EnterpriseBillUpsertBulk {
 	ebcb.conflict = append(ebcb.conflict, sql.ConflictColumns(columns...))
 	return &EnterpriseBillUpsertBulk{
@@ -1443,6 +1449,7 @@ type EnterpriseBillUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *EnterpriseBillUpsertBulk) UpdateNewValues() *EnterpriseBillUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1464,6 +1471,7 @@ func (u *EnterpriseBillUpsertBulk) UpdateNewValues() *EnterpriseBillUpsertBulk {
 //	client.EnterpriseBill.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
+//
 func (u *EnterpriseBillUpsertBulk) Ignore() *EnterpriseBillUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

@@ -823,6 +823,7 @@ func (ec *EnterpriseCreate) createSpec() (*Enterprise, *sqlgraph.CreateSpec) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (ec *EnterpriseCreate) OnConflict(opts ...sql.ConflictOption) *EnterpriseUpsertOne {
 	ec.conflict = opts
 	return &EnterpriseUpsertOne{
@@ -836,6 +837,7 @@ func (ec *EnterpriseCreate) OnConflict(opts ...sql.ConflictOption) *EnterpriseUp
 //	client.Enterprise.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (ec *EnterpriseCreate) OnConflictColumns(columns ...string) *EnterpriseUpsertOne {
 	ec.conflict = append(ec.conflict, sql.ConflictColumns(columns...))
 	return &EnterpriseUpsertOne{
@@ -1158,6 +1160,7 @@ func (u *EnterpriseUpsert) ClearSuspensedAt() *EnterpriseUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *EnterpriseUpsertOne) UpdateNewValues() *EnterpriseUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1174,9 +1177,10 @@ func (u *EnterpriseUpsertOne) UpdateNewValues() *EnterpriseUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//	client.Enterprise.Create().
-//	    OnConflict(sql.ResolveWithIgnore()).
-//	    Exec(ctx)
+//  client.Enterprise.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
 func (u *EnterpriseUpsertOne) Ignore() *EnterpriseUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -1675,6 +1679,7 @@ func (ecb *EnterpriseCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (ecb *EnterpriseCreateBulk) OnConflict(opts ...sql.ConflictOption) *EnterpriseUpsertBulk {
 	ecb.conflict = opts
 	return &EnterpriseUpsertBulk{
@@ -1688,6 +1693,7 @@ func (ecb *EnterpriseCreateBulk) OnConflict(opts ...sql.ConflictOption) *Enterpr
 //	client.Enterprise.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (ecb *EnterpriseCreateBulk) OnConflictColumns(columns ...string) *EnterpriseUpsertBulk {
 	ecb.conflict = append(ecb.conflict, sql.ConflictColumns(columns...))
 	return &EnterpriseUpsertBulk{
@@ -1709,6 +1715,7 @@ type EnterpriseUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *EnterpriseUpsertBulk) UpdateNewValues() *EnterpriseUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1730,6 +1737,7 @@ func (u *EnterpriseUpsertBulk) UpdateNewValues() *EnterpriseUpsertBulk {
 //	client.Enterprise.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
+//
 func (u *EnterpriseUpsertBulk) Ignore() *EnterpriseUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

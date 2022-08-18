@@ -570,6 +570,7 @@ func (bc *BranchCreate) createSpec() (*Branch, *sqlgraph.CreateSpec) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (bc *BranchCreate) OnConflict(opts ...sql.ConflictOption) *BranchUpsertOne {
 	bc.conflict = opts
 	return &BranchUpsertOne{
@@ -583,6 +584,7 @@ func (bc *BranchCreate) OnConflict(opts ...sql.ConflictOption) *BranchUpsertOne 
 //	client.Branch.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (bc *BranchCreate) OnConflictColumns(columns ...string) *BranchUpsertOne {
 	bc.conflict = append(bc.conflict, sql.ConflictColumns(columns...))
 	return &BranchUpsertOne{
@@ -803,6 +805,7 @@ func (u *BranchUpsert) UpdateGeom() *BranchUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *BranchUpsertOne) UpdateNewValues() *BranchUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -819,9 +822,10 @@ func (u *BranchUpsertOne) UpdateNewValues() *BranchUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//	client.Branch.Create().
-//	    OnConflict(sql.ResolveWithIgnore()).
-//	    Exec(ctx)
+//  client.Branch.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
 func (u *BranchUpsertOne) Ignore() *BranchUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -1201,6 +1205,7 @@ func (bcb *BranchCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (bcb *BranchCreateBulk) OnConflict(opts ...sql.ConflictOption) *BranchUpsertBulk {
 	bcb.conflict = opts
 	return &BranchUpsertBulk{
@@ -1214,6 +1219,7 @@ func (bcb *BranchCreateBulk) OnConflict(opts ...sql.ConflictOption) *BranchUpser
 //	client.Branch.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (bcb *BranchCreateBulk) OnConflictColumns(columns ...string) *BranchUpsertBulk {
 	bcb.conflict = append(bcb.conflict, sql.ConflictColumns(columns...))
 	return &BranchUpsertBulk{
@@ -1235,6 +1241,7 @@ type BranchUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *BranchUpsertBulk) UpdateNewValues() *BranchUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1256,6 +1263,7 @@ func (u *BranchUpsertBulk) UpdateNewValues() *BranchUpsertBulk {
 //	client.Branch.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
+//
 func (u *BranchUpsertBulk) Ignore() *BranchUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

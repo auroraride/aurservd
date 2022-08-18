@@ -142,6 +142,13 @@ func PlanID(v uint64) predicate.Commission {
 	})
 }
 
+// RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
+func RiderID(v uint64) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRiderID), v))
+	})
+}
+
 // OrderID applies equality check predicate on the "order_id" field. It's identical to OrderIDEQ.
 func OrderID(v uint64) predicate.Commission {
 	return predicate.Commission(func(s *sql.Selector) {
@@ -751,6 +758,68 @@ func PlanIDNotNil() predicate.Commission {
 	})
 }
 
+// RiderIDEQ applies the EQ predicate on the "rider_id" field.
+func RiderIDEQ(v uint64) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRiderID), v))
+	})
+}
+
+// RiderIDNEQ applies the NEQ predicate on the "rider_id" field.
+func RiderIDNEQ(v uint64) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldRiderID), v))
+	})
+}
+
+// RiderIDIn applies the In predicate on the "rider_id" field.
+func RiderIDIn(vs ...uint64) predicate.Commission {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Commission(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldRiderID), v...))
+	})
+}
+
+// RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
+func RiderIDNotIn(vs ...uint64) predicate.Commission {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Commission(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldRiderID), v...))
+	})
+}
+
+// RiderIDIsNil applies the IsNil predicate on the "rider_id" field.
+func RiderIDIsNil() predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldRiderID)))
+	})
+}
+
+// RiderIDNotNil applies the NotNil predicate on the "rider_id" field.
+func RiderIDNotNil() predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldRiderID)))
+	})
+}
+
 // OrderIDEQ applies the EQ predicate on the "order_id" field.
 func OrderIDEQ(v uint64) predicate.Commission {
 	return predicate.Commission(func(s *sql.Selector) {
@@ -1088,6 +1157,34 @@ func HasPlanWith(preds ...predicate.Plan) predicate.Commission {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(PlanInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, PlanTable, PlanColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRider applies the HasEdge predicate on the "rider" edge.
+func HasRider() predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(RiderTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRiderWith applies the HasEdge predicate on the "rider" edge with a given conditions (other predicates).
+func HasRiderWith(preds ...predicate.Rider) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(RiderInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

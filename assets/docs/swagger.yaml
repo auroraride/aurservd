@@ -2056,6 +2056,29 @@ definitions:
         description: 店员电话
         type: string
     type: object
+  model.EmployeeActivityExportReq:
+    properties:
+      cityId:
+        description: 城市ID
+        type: integer
+      end:
+        description: 业绩统计结束时间
+        type: string
+      name:
+        description: 查询店员电话或姓名
+        type: string
+      remark:
+        description: '备注 '
+        type: string
+      start:
+        description: 业绩统计开始时间
+        type: string
+      storeId:
+        description: 门店ID
+        type: integer
+    required:
+    - remark
+    type: object
   model.EmployeeCreateReq:
     properties:
       cityId:
@@ -8363,6 +8386,33 @@ paths:
                   type: array
               type: object
       summary: MF001 导出列表
+      tags:
+      - '[M]管理接口'
+  /manager/v1/export/commission:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerExportCommission
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 筛选条件
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.EmployeeActivityExportReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.ExportRes'
+      summary: MF007 导出业绩
       tags:
       - '[M]管理接口'
   /manager/v1/export/download/{sn}:

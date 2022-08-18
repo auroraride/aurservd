@@ -49,6 +49,7 @@ func (Commission) Mixin() []ent.Mixin {
         BusinessMixin{Optional: true},
         SubscribeMixin{Optional: true},
         PlanMixin{Optional: true},
+        RiderMixin{Optional: true},
     }
 }
 

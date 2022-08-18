@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
@@ -138,6 +139,20 @@ func (cc *CommissionCreate) SetNillablePlanID(u *uint64) *CommissionCreate {
 	return cc
 }
 
+// SetRiderID sets the "rider_id" field.
+func (cc *CommissionCreate) SetRiderID(u uint64) *CommissionCreate {
+	cc.mutation.SetRiderID(u)
+	return cc
+}
+
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (cc *CommissionCreate) SetNillableRiderID(u *uint64) *CommissionCreate {
+	if u != nil {
+		cc.SetRiderID(*u)
+	}
+	return cc
+}
+
 // SetOrderID sets the "order_id" field.
 func (cc *CommissionCreate) SetOrderID(u uint64) *CommissionCreate {
 	cc.mutation.SetOrderID(u)
@@ -191,6 +206,11 @@ func (cc *CommissionCreate) SetSubscribe(s *Subscribe) *CommissionCreate {
 // SetPlan sets the "plan" edge to the Plan entity.
 func (cc *CommissionCreate) SetPlan(p *Plan) *CommissionCreate {
 	return cc.SetPlanID(p.ID)
+}
+
+// SetRider sets the "rider" edge to the Rider entity.
+func (cc *CommissionCreate) SetRider(r *Rider) *CommissionCreate {
+	return cc.SetRiderID(r.ID)
 }
 
 // SetOrder sets the "order" edge to the Order entity.
@@ -475,6 +495,26 @@ func (cc *CommissionCreate) createSpec() (*Commission, *sqlgraph.CreateSpec) {
 		_node.PlanID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := cc.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   commission.RiderTable,
+			Columns: []string{commission.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: rider.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RiderID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := cc.mutation.OrderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
@@ -534,6 +574,7 @@ func (cc *CommissionCreate) createSpec() (*Commission, *sqlgraph.CreateSpec) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (cc *CommissionCreate) OnConflict(opts ...sql.ConflictOption) *CommissionUpsertOne {
 	cc.conflict = opts
 	return &CommissionUpsertOne{
@@ -547,6 +588,7 @@ func (cc *CommissionCreate) OnConflict(opts ...sql.ConflictOption) *CommissionUp
 //	client.Commission.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (cc *CommissionCreate) OnConflictColumns(columns ...string) *CommissionUpsertOne {
 	cc.conflict = append(cc.conflict, sql.ConflictColumns(columns...))
 	return &CommissionUpsertOne{
@@ -717,6 +759,24 @@ func (u *CommissionUpsert) ClearPlanID() *CommissionUpsert {
 	return u
 }
 
+// SetRiderID sets the "rider_id" field.
+func (u *CommissionUpsert) SetRiderID(v uint64) *CommissionUpsert {
+	u.Set(commission.FieldRiderID, v)
+	return u
+}
+
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *CommissionUpsert) UpdateRiderID() *CommissionUpsert {
+	u.SetExcluded(commission.FieldRiderID)
+	return u
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *CommissionUpsert) ClearRiderID() *CommissionUpsert {
+	u.SetNull(commission.FieldRiderID)
+	return u
+}
+
 // SetOrderID sets the "order_id" field.
 func (u *CommissionUpsert) SetOrderID(v uint64) *CommissionUpsert {
 	u.Set(commission.FieldOrderID, v)
@@ -791,6 +851,7 @@ func (u *CommissionUpsert) ClearEmployeeID() *CommissionUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *CommissionUpsertOne) UpdateNewValues() *CommissionUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -810,9 +871,10 @@ func (u *CommissionUpsertOne) UpdateNewValues() *CommissionUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//	client.Commission.Create().
-//	    OnConflict(sql.ResolveWithIgnore()).
-//	    Exec(ctx)
+//  client.Commission.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
 func (u *CommissionUpsertOne) Ignore() *CommissionUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -1006,6 +1068,27 @@ func (u *CommissionUpsertOne) UpdatePlanID() *CommissionUpsertOne {
 func (u *CommissionUpsertOne) ClearPlanID() *CommissionUpsertOne {
 	return u.Update(func(s *CommissionUpsert) {
 		s.ClearPlanID()
+	})
+}
+
+// SetRiderID sets the "rider_id" field.
+func (u *CommissionUpsertOne) SetRiderID(v uint64) *CommissionUpsertOne {
+	return u.Update(func(s *CommissionUpsert) {
+		s.SetRiderID(v)
+	})
+}
+
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *CommissionUpsertOne) UpdateRiderID() *CommissionUpsertOne {
+	return u.Update(func(s *CommissionUpsert) {
+		s.UpdateRiderID()
+	})
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *CommissionUpsertOne) ClearRiderID() *CommissionUpsertOne {
+	return u.Update(func(s *CommissionUpsert) {
+		s.ClearRiderID()
 	})
 }
 
@@ -1220,6 +1303,7 @@ func (ccb *CommissionCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (ccb *CommissionCreateBulk) OnConflict(opts ...sql.ConflictOption) *CommissionUpsertBulk {
 	ccb.conflict = opts
 	return &CommissionUpsertBulk{
@@ -1233,6 +1317,7 @@ func (ccb *CommissionCreateBulk) OnConflict(opts ...sql.ConflictOption) *Commiss
 //	client.Commission.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (ccb *CommissionCreateBulk) OnConflictColumns(columns ...string) *CommissionUpsertBulk {
 	ccb.conflict = append(ccb.conflict, sql.ConflictColumns(columns...))
 	return &CommissionUpsertBulk{
@@ -1254,6 +1339,7 @@ type CommissionUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *CommissionUpsertBulk) UpdateNewValues() *CommissionUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1278,6 +1364,7 @@ func (u *CommissionUpsertBulk) UpdateNewValues() *CommissionUpsertBulk {
 //	client.Commission.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
+//
 func (u *CommissionUpsertBulk) Ignore() *CommissionUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -1471,6 +1558,27 @@ func (u *CommissionUpsertBulk) UpdatePlanID() *CommissionUpsertBulk {
 func (u *CommissionUpsertBulk) ClearPlanID() *CommissionUpsertBulk {
 	return u.Update(func(s *CommissionUpsert) {
 		s.ClearPlanID()
+	})
+}
+
+// SetRiderID sets the "rider_id" field.
+func (u *CommissionUpsertBulk) SetRiderID(v uint64) *CommissionUpsertBulk {
+	return u.Update(func(s *CommissionUpsert) {
+		s.SetRiderID(v)
+	})
+}
+
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *CommissionUpsertBulk) UpdateRiderID() *CommissionUpsertBulk {
+	return u.Update(func(s *CommissionUpsert) {
+		s.UpdateRiderID()
+	})
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *CommissionUpsertBulk) ClearRiderID() *CommissionUpsertBulk {
+	return u.Update(func(s *CommissionUpsert) {
+		s.ClearRiderID()
 	})
 }
 

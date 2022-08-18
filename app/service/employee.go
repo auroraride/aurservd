@@ -21,6 +21,7 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/auroraride/aurservd/pkg/utils"
+    "github.com/golang-module/carbon/v2"
     "github.com/google/uuid"
     "github.com/rs/xid"
     log "github.com/sirupsen/logrus"
@@ -186,8 +187,8 @@ func (s *employeeService) activityListFilter(req model.EmployeeActivityListFilte
                 query.Where(commission.CreatedAtLT(end))
             }
             if export {
-                query.WithPlan().WithOrder(func(oq *ent.OrderQuery) {
-                    oq.WithRider()
+                query.WithPlan().WithOrder().WithRider(func(rq *ent.RiderQuery) {
+                    rq.WithPerson()
                 })
             }
         }).
@@ -201,7 +202,9 @@ func (s *employeeService) activityListFilter(req model.EmployeeActivityListFilte
                 query.Where(assistance.CreatedAtLT(end))
             }
             if export {
-                query.WithRider()
+                query.WithRider(func(rq *ent.RiderQuery) {
+                    rq.WithPerson()
+                }).WithStore()
             }
         })
 
@@ -277,34 +280,70 @@ func (s *employeeService) ActivityExport(req *model.EmployeeActivityExportReq) m
             "换电次数",      // 2
             "救援次数",      // 3
             "救援里程 (米)", // 4
-            "救援开始位置",  // 5
-            "救援结束位置",  // 6
-            "耗时 (分)",     // 7
+            "里程",          // 5
+            "原因",          // 6
             "骑手",          // 8
+            "位置",          // 7
             "时间",          // 9
             "业绩提成",      // 10
-            "业务",          // 11
-            "骑手",          // 12
-            "骑士卡",        // 13
-            "订单金额",      // 14
-            "提成金额",      // 15
-            "时间",          // 16
+            "骑手",          // 11
+            "骑士卡",        // 12
+            "订单金额",      // 13
+            "提成金额",      // 14
+            "时间",          // 15
         }
-        rows := [][]any{title}
+        rows := tools.ExcelItems{title}
         for _, item := range items {
-            row := make([]any, 17)
-            ec := item.Edges.City
-            if ec != nil {
-                row[0] = ec.Name
+            row := []any{
+                item.Edges.City.Name,
+                fmt.Sprintf("%s - %s", item.Name, item.Phone),
+                len(item.Edges.Exchanges),
+                len(item.Edges.Assistances),
             }
-            row[1] = fmt.Sprintf("%s - %s", item.Name, item.Phone)
-            row[2] = len(item.Edges.Exchanges)
-            row[3] = len(item.Edges.Assistances)
-            row[5] = make([][3]any, len(item.Edges.Assistances))
-            // for _, a := range item.Edges.Assistances {
-            // }
+            // 救援
+            asstotal := 0.0
+            var assistances tools.ExcelItems
+            if len(item.Edges.Assistances) == 0 {
+                assistances = [][]any{{"", "", "", "", ""}}
+            }
+            for _, a := range item.Edges.Assistances {
+                asto := "-"
+                if a.Edges.Store != nil {
+                    asto = a.Edges.Store.Name
+                }
+
+                asstotal += a.Distance
+                assistances = append(assistances, []any{
+                    a.Distance,
+                    a.Breakdown,
+                    fmt.Sprintf("%s - %s", a.Edges.Rider.Edges.Person.Name, a.Edges.Rider.Phone),
+                    fmt.Sprintf("[%s] %s", asto, a.Address),
+                    a.CreatedAt.Format(carbon.DateTimeLayout),
+                })
+            }
+            row = append(row, []any{asstotal, assistances}...)
+
+            // 业绩
+            comtotal := 0.0
+            var coms tools.ExcelItems
+            if len(item.Edges.Commissions) == 0 {
+                coms = [][]any{{"", "", "", "", ""}}
+            }
+            for _, c := range item.Edges.Commissions {
+                comtotal = tools.NewDecimal().Sum(comtotal, c.Amount)
+                coms = append(coms, []any{
+                    fmt.Sprintf("%s - %s", c.Edges.Rider.Edges.Person.Name, c.Edges.Rider.Phone),
+                    fmt.Sprintf("%s - %d天", c.Edges.Plan.Name, c.Edges.Plan.Days),
+                    fmt.Sprintf("%.2f", c.Edges.Order.Amount),
+                    fmt.Sprintf("%.2f", c.Amount),
+                    c.CreatedAt.Format(carbon.DateTimeLayout),
+                })
+            }
+
+            row = append(row, []any{comtotal, coms}...)
+            rows = append(rows, row)
         }
-        println(rows, items)
+        tools.NewExcel(path).AddValues(rows).Done()
     })
 }
 

@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
@@ -32,6 +33,7 @@ type CommissionQuery struct {
 	withBusiness  *BusinessQuery
 	withSubscribe *SubscribeQuery
 	withPlan      *PlanQuery
+	withRider     *RiderQuery
 	withOrder     *OrderQuery
 	withEmployee  *EmployeeQuery
 	modifiers     []func(*sql.Selector)
@@ -130,6 +132,28 @@ func (cq *CommissionQuery) QueryPlan() *PlanQuery {
 			sqlgraph.From(commission.Table, commission.FieldID, selector),
 			sqlgraph.To(plan.Table, plan.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, commission.PlanTable, commission.PlanColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRider chains the current query on the "rider" edge.
+func (cq *CommissionQuery) QueryRider() *RiderQuery {
+	query := &RiderQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(commission.Table, commission.FieldID, selector),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, commission.RiderTable, commission.RiderColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -365,6 +389,7 @@ func (cq *CommissionQuery) Clone() *CommissionQuery {
 		withBusiness:  cq.withBusiness.Clone(),
 		withSubscribe: cq.withSubscribe.Clone(),
 		withPlan:      cq.withPlan.Clone(),
+		withRider:     cq.withRider.Clone(),
 		withOrder:     cq.withOrder.Clone(),
 		withEmployee:  cq.withEmployee.Clone(),
 		// clone intermediate query.
@@ -407,6 +432,17 @@ func (cq *CommissionQuery) WithPlan(opts ...func(*PlanQuery)) *CommissionQuery {
 	return cq
 }
 
+// WithRider tells the query-builder to eager-load the nodes that are connected to
+// the "rider" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CommissionQuery) WithRider(opts ...func(*RiderQuery)) *CommissionQuery {
+	query := &RiderQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withRider = query
+	return cq
+}
+
 // WithOrder tells the query-builder to eager-load the nodes that are connected to
 // the "order" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *CommissionQuery) WithOrder(opts ...func(*OrderQuery)) *CommissionQuery {
@@ -443,6 +479,7 @@ func (cq *CommissionQuery) WithEmployee(opts ...func(*EmployeeQuery)) *Commissio
 //		GroupBy(commission.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
+//
 func (cq *CommissionQuery) GroupBy(field string, fields ...string) *CommissionGroupBy {
 	grbuild := &CommissionGroupBy{config: cq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -469,6 +506,7 @@ func (cq *CommissionQuery) GroupBy(field string, fields ...string) *CommissionGr
 //	client.Commission.Query().
 //		Select(commission.FieldCreatedAt).
 //		Scan(ctx, &v)
+//
 func (cq *CommissionQuery) Select(fields ...string) *CommissionSelect {
 	cq.fields = append(cq.fields, fields...)
 	selbuild := &CommissionSelect{CommissionQuery: cq}
@@ -497,10 +535,11 @@ func (cq *CommissionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*C
 	var (
 		nodes       = []*Commission{}
 		_spec       = cq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			cq.withBusiness != nil,
 			cq.withSubscribe != nil,
 			cq.withPlan != nil,
+			cq.withRider != nil,
 			cq.withOrder != nil,
 			cq.withEmployee != nil,
 		}
@@ -610,6 +649,35 @@ func (cq *CommissionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*C
 			}
 			for i := range nodes {
 				nodes[i].Edges.Plan = n
+			}
+		}
+	}
+
+	if query := cq.withRider; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Commission)
+		for i := range nodes {
+			if nodes[i].RiderID == nil {
+				continue
+			}
+			fk := *nodes[i].RiderID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(rider.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "rider_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Rider = n
 			}
 		}
 	}

@@ -366,6 +366,7 @@ func (rfuc *RiderFollowUpCreate) createSpec() (*RiderFollowUp, *sqlgraph.CreateS
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (rfuc *RiderFollowUpCreate) OnConflict(opts ...sql.ConflictOption) *RiderFollowUpUpsertOne {
 	rfuc.conflict = opts
 	return &RiderFollowUpUpsertOne{
@@ -379,6 +380,7 @@ func (rfuc *RiderFollowUpCreate) OnConflict(opts ...sql.ConflictOption) *RiderFo
 //	client.RiderFollowUp.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (rfuc *RiderFollowUpCreate) OnConflictColumns(columns ...string) *RiderFollowUpUpsertOne {
 	rfuc.conflict = append(rfuc.conflict, sql.ConflictColumns(columns...))
 	return &RiderFollowUpUpsertOne{
@@ -527,6 +529,7 @@ func (u *RiderFollowUpUpsert) UpdateRiderID() *RiderFollowUpUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *RiderFollowUpUpsertOne) UpdateNewValues() *RiderFollowUpUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -543,9 +546,10 @@ func (u *RiderFollowUpUpsertOne) UpdateNewValues() *RiderFollowUpUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//	client.RiderFollowUp.Create().
-//	    OnConflict(sql.ResolveWithIgnore()).
-//	    Exec(ctx)
+//  client.RiderFollowUp.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
 func (u *RiderFollowUpUpsertOne) Ignore() *RiderFollowUpUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -841,6 +845,7 @@ func (rfucb *RiderFollowUpCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (rfucb *RiderFollowUpCreateBulk) OnConflict(opts ...sql.ConflictOption) *RiderFollowUpUpsertBulk {
 	rfucb.conflict = opts
 	return &RiderFollowUpUpsertBulk{
@@ -854,6 +859,7 @@ func (rfucb *RiderFollowUpCreateBulk) OnConflict(opts ...sql.ConflictOption) *Ri
 //	client.RiderFollowUp.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (rfucb *RiderFollowUpCreateBulk) OnConflictColumns(columns ...string) *RiderFollowUpUpsertBulk {
 	rfucb.conflict = append(rfucb.conflict, sql.ConflictColumns(columns...))
 	return &RiderFollowUpUpsertBulk{
@@ -875,6 +881,7 @@ type RiderFollowUpUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *RiderFollowUpUpsertBulk) UpdateNewValues() *RiderFollowUpUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -896,6 +903,7 @@ func (u *RiderFollowUpUpsertBulk) UpdateNewValues() *RiderFollowUpUpsertBulk {
 //	client.RiderFollowUp.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
+//
 func (u *RiderFollowUpUpsertBulk) Ignore() *RiderFollowUpUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

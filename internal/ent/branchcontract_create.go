@@ -566,6 +566,7 @@ func (bcc *BranchContractCreate) createSpec() (*BranchContract, *sqlgraph.Create
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (bcc *BranchContractCreate) OnConflict(opts ...sql.ConflictOption) *BranchContractUpsertOne {
 	bcc.conflict = opts
 	return &BranchContractUpsertOne{
@@ -579,6 +580,7 @@ func (bcc *BranchContractCreate) OnConflict(opts ...sql.ConflictOption) *BranchC
 //	client.BranchContract.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (bcc *BranchContractCreate) OnConflictColumns(columns ...string) *BranchContractUpsertOne {
 	bcc.conflict = append(bcc.conflict, sql.ConflictColumns(columns...))
 	return &BranchContractUpsertOne{
@@ -913,6 +915,7 @@ func (u *BranchContractUpsert) UpdateSheets() *BranchContractUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *BranchContractUpsertOne) UpdateNewValues() *BranchContractUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -929,9 +932,10 @@ func (u *BranchContractUpsertOne) UpdateNewValues() *BranchContractUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//	client.BranchContract.Create().
-//	    OnConflict(sql.ResolveWithIgnore()).
-//	    Exec(ctx)
+//  client.BranchContract.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
 func (u *BranchContractUpsertOne) Ignore() *BranchContractUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -1444,6 +1448,7 @@ func (bccb *BranchContractCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (bccb *BranchContractCreateBulk) OnConflict(opts ...sql.ConflictOption) *BranchContractUpsertBulk {
 	bccb.conflict = opts
 	return &BranchContractUpsertBulk{
@@ -1457,6 +1462,7 @@ func (bccb *BranchContractCreateBulk) OnConflict(opts ...sql.ConflictOption) *Br
 //	client.BranchContract.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (bccb *BranchContractCreateBulk) OnConflictColumns(columns ...string) *BranchContractUpsertBulk {
 	bccb.conflict = append(bccb.conflict, sql.ConflictColumns(columns...))
 	return &BranchContractUpsertBulk{
@@ -1478,6 +1484,7 @@ type BranchContractUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *BranchContractUpsertBulk) UpdateNewValues() *BranchContractUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1499,6 +1506,7 @@ func (u *BranchContractUpsertBulk) UpdateNewValues() *BranchContractUpsertBulk {
 //	client.BranchContract.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
+//
 func (u *BranchContractUpsertBulk) Ignore() *BranchContractUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

@@ -299,6 +299,7 @@ func (orq *OrderRefundQuery) WithOrder(opts ...func(*OrderQuery)) *OrderRefundQu
 //		GroupBy(orderrefund.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
+//
 func (orq *OrderRefundQuery) GroupBy(field string, fields ...string) *OrderRefundGroupBy {
 	grbuild := &OrderRefundGroupBy{config: orq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -325,6 +326,7 @@ func (orq *OrderRefundQuery) GroupBy(field string, fields ...string) *OrderRefun
 //	client.OrderRefund.Query().
 //		Select(orderrefund.FieldCreatedAt).
 //		Scan(ctx, &v)
+//
 func (orq *OrderRefundQuery) Select(fields ...string) *OrderRefundSelect {
 	orq.fields = append(orq.fields, fields...)
 	selbuild := &OrderRefundSelect{OrderRefundQuery: orq}

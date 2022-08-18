@@ -462,6 +462,7 @@ func (ssc *SubscribeSuspendCreate) createSpec() (*SubscribeSuspend, *sqlgraph.Cr
 //			SetCreator(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (ssc *SubscribeSuspendCreate) OnConflict(opts ...sql.ConflictOption) *SubscribeSuspendUpsertOne {
 	ssc.conflict = opts
 	return &SubscribeSuspendUpsertOne{
@@ -475,6 +476,7 @@ func (ssc *SubscribeSuspendCreate) OnConflict(opts ...sql.ConflictOption) *Subsc
 //	client.SubscribeSuspend.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (ssc *SubscribeSuspendCreate) OnConflictColumns(columns ...string) *SubscribeSuspendUpsertOne {
 	ssc.conflict = append(ssc.conflict, sql.ConflictColumns(columns...))
 	return &SubscribeSuspendUpsertOne{
@@ -695,6 +697,7 @@ func (u *SubscribeSuspendUpsert) ClearEndModifier() *SubscribeSuspendUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *SubscribeSuspendUpsertOne) UpdateNewValues() *SubscribeSuspendUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -708,9 +711,10 @@ func (u *SubscribeSuspendUpsertOne) UpdateNewValues() *SubscribeSuspendUpsertOne
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//	client.SubscribeSuspend.Create().
-//	    OnConflict(sql.ResolveWithIgnore()).
-//	    Exec(ctx)
+//  client.SubscribeSuspend.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
 func (u *SubscribeSuspendUpsertOne) Ignore() *SubscribeSuspendUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -1090,6 +1094,7 @@ func (sscb *SubscribeSuspendCreateBulk) ExecX(ctx context.Context) {
 //			SetCreator(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (sscb *SubscribeSuspendCreateBulk) OnConflict(opts ...sql.ConflictOption) *SubscribeSuspendUpsertBulk {
 	sscb.conflict = opts
 	return &SubscribeSuspendUpsertBulk{
@@ -1103,6 +1108,7 @@ func (sscb *SubscribeSuspendCreateBulk) OnConflict(opts ...sql.ConflictOption) *
 //	client.SubscribeSuspend.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (sscb *SubscribeSuspendCreateBulk) OnConflictColumns(columns ...string) *SubscribeSuspendUpsertBulk {
 	sscb.conflict = append(sscb.conflict, sql.ConflictColumns(columns...))
 	return &SubscribeSuspendUpsertBulk{
@@ -1124,6 +1130,7 @@ type SubscribeSuspendUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *SubscribeSuspendUpsertBulk) UpdateNewValues() *SubscribeSuspendUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1142,6 +1149,7 @@ func (u *SubscribeSuspendUpsertBulk) UpdateNewValues() *SubscribeSuspendUpsertBu
 //	client.SubscribeSuspend.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
+//
 func (u *SubscribeSuspendUpsertBulk) Ignore() *SubscribeSuspendUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u

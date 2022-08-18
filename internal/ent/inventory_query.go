@@ -262,6 +262,7 @@ func (iq *InventoryQuery) Clone() *InventoryQuery {
 //		GroupBy(inventory.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
+//
 func (iq *InventoryQuery) GroupBy(field string, fields ...string) *InventoryGroupBy {
 	grbuild := &InventoryGroupBy{config: iq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -288,6 +289,7 @@ func (iq *InventoryQuery) GroupBy(field string, fields ...string) *InventoryGrou
 //	client.Inventory.Query().
 //		Select(inventory.FieldCreatedAt).
 //		Scan(ctx, &v)
+//
 func (iq *InventoryQuery) Select(fields ...string) *InventorySelect {
 	iq.fields = append(iq.fields, fields...)
 	selbuild := &InventorySelect{InventoryQuery: iq}

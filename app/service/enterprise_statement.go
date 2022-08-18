@@ -344,7 +344,7 @@ func (s *enterpriseStatementService) DetailExport(req *model.StatementBillDetail
         sheet := fmt.Sprintf("%s-%s", es.Start.Format(carbon.ShortDateLayout), es.End.Format(carbon.ShortDateLayout))
         ex := tools.NewExcel(path, sheet)
         // 设置数据
-        var rows [][]any
+        var rows tools.ExcelItems
         rows = append(rows, []any{"姓名", "电话", "城市", "站点", "开始日期", "结束日期", "使用天数", "电池型号", "日单价", "费用"})
         for _, x := range items {
             so := ""
@@ -451,7 +451,7 @@ func (s *enterpriseStatementService) UsageExport(req *model.StatementUsageExport
 
         items, _ := q.All(s.ctx)
 
-        var rows [][]any
+        var rows tools.ExcelItems
         rows = append(rows, []any{"城市", "姓名", "电话", "站点", "型号", "状态", "删除时间", "开始日期", "结束日期", "使用天数", "日单价", "费用"})
         for _, item := range items {
             detail := s.usageDetail(item, start, end, prices)
@@ -468,7 +468,7 @@ func (s *enterpriseStatementService) UsageExport(req *model.StatementUsageExport
                 detail.Status,
                 detail.DeletedAt,
             }
-            var sub []any
+            var sub tools.ExcelItems
             for _, ui := range detail.Items {
                 sub = append(sub, []any{
                     ui.Start,

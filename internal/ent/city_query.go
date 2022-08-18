@@ -370,6 +370,7 @@ func (cq *CityQuery) WithChildren(opts ...func(*CityQuery)) *CityQuery {
 //		GroupBy(city.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
+//
 func (cq *CityQuery) GroupBy(field string, fields ...string) *CityGroupBy {
 	grbuild := &CityGroupBy{config: cq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -396,6 +397,7 @@ func (cq *CityQuery) GroupBy(field string, fields ...string) *CityGroupBy {
 //	client.City.Query().
 //		Select(city.FieldCreatedAt).
 //		Scan(ctx, &v)
+//
 func (cq *CityQuery) Select(fields ...string) *CitySelect {
 	cq.fields = append(cq.fields, fields...)
 	selbuild := &CitySelect{CityQuery: cq}

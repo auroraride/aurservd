@@ -39,6 +39,8 @@ type CommissionMutation struct {
 	clearedsubscribe bool
 	plan             *uint64
 	clearedplan      bool
+	rider            *uint64
+	clearedrider     bool
 	_order           *uint64
 	cleared_order    bool
 	employee         *uint64
@@ -561,6 +563,55 @@ func (m *CommissionMutation) ResetPlanID() {
 	delete(m.clearedFields, commission.FieldPlanID)
 }
 
+// SetRiderID sets the "rider_id" field.
+func (m *CommissionMutation) SetRiderID(u uint64) {
+	m.rider = &u
+}
+
+// RiderID returns the value of the "rider_id" field in the mutation.
+func (m *CommissionMutation) RiderID() (r uint64, exists bool) {
+	v := m.rider
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRiderID returns the old "rider_id" field's value of the Commission entity.
+// If the Commission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CommissionMutation) OldRiderID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRiderID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRiderID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRiderID: %w", err)
+	}
+	return oldValue.RiderID, nil
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (m *CommissionMutation) ClearRiderID() {
+	m.rider = nil
+	m.clearedFields[commission.FieldRiderID] = struct{}{}
+}
+
+// RiderIDCleared returns if the "rider_id" field was cleared in this mutation.
+func (m *CommissionMutation) RiderIDCleared() bool {
+	_, ok := m.clearedFields[commission.FieldRiderID]
+	return ok
+}
+
+// ResetRiderID resets all changes to the "rider_id" field.
+func (m *CommissionMutation) ResetRiderID() {
+	m.rider = nil
+	delete(m.clearedFields, commission.FieldRiderID)
+}
+
 // SetOrderID sets the "order_id" field.
 func (m *CommissionMutation) SetOrderID(u uint64) {
 	m._order = &u
@@ -836,6 +887,32 @@ func (m *CommissionMutation) ResetPlan() {
 	m.clearedplan = false
 }
 
+// ClearRider clears the "rider" edge to the Rider entity.
+func (m *CommissionMutation) ClearRider() {
+	m.clearedrider = true
+}
+
+// RiderCleared reports if the "rider" edge to the Rider entity was cleared.
+func (m *CommissionMutation) RiderCleared() bool {
+	return m.RiderIDCleared() || m.clearedrider
+}
+
+// RiderIDs returns the "rider" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// RiderID instead. It exists only for internal usage by the builders.
+func (m *CommissionMutation) RiderIDs() (ids []uint64) {
+	if id := m.rider; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetRider resets all changes to the "rider" edge.
+func (m *CommissionMutation) ResetRider() {
+	m.rider = nil
+	m.clearedrider = false
+}
+
 // ClearOrder clears the "order" edge to the Order entity.
 func (m *CommissionMutation) ClearOrder() {
 	m.cleared_order = true
@@ -907,7 +984,7 @@ func (m *CommissionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CommissionMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 14)
 	if m.created_at != nil {
 		fields = append(fields, commission.FieldCreatedAt)
 	}
@@ -934,6 +1011,9 @@ func (m *CommissionMutation) Fields() []string {
 	}
 	if m.plan != nil {
 		fields = append(fields, commission.FieldPlanID)
+	}
+	if m.rider != nil {
+		fields = append(fields, commission.FieldRiderID)
 	}
 	if m._order != nil {
 		fields = append(fields, commission.FieldOrderID)
@@ -973,6 +1053,8 @@ func (m *CommissionMutation) Field(name string) (ent.Value, bool) {
 		return m.SubscribeID()
 	case commission.FieldPlanID:
 		return m.PlanID()
+	case commission.FieldRiderID:
+		return m.RiderID()
 	case commission.FieldOrderID:
 		return m.OrderID()
 	case commission.FieldAmount:
@@ -1008,6 +1090,8 @@ func (m *CommissionMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldSubscribeID(ctx)
 	case commission.FieldPlanID:
 		return m.OldPlanID(ctx)
+	case commission.FieldRiderID:
+		return m.OldRiderID(ctx)
 	case commission.FieldOrderID:
 		return m.OldOrderID(ctx)
 	case commission.FieldAmount:
@@ -1087,6 +1171,13 @@ func (m *CommissionMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPlanID(v)
+		return nil
+	case commission.FieldRiderID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRiderID(v)
 		return nil
 	case commission.FieldOrderID:
 		v, ok := value.(uint64)
@@ -1194,6 +1285,9 @@ func (m *CommissionMutation) ClearedFields() []string {
 	if m.FieldCleared(commission.FieldPlanID) {
 		fields = append(fields, commission.FieldPlanID)
 	}
+	if m.FieldCleared(commission.FieldRiderID) {
+		fields = append(fields, commission.FieldRiderID)
+	}
 	if m.FieldCleared(commission.FieldEmployeeID) {
 		fields = append(fields, commission.FieldEmployeeID)
 	}
@@ -1231,6 +1325,9 @@ func (m *CommissionMutation) ClearField(name string) error {
 		return nil
 	case commission.FieldPlanID:
 		m.ClearPlanID()
+		return nil
+	case commission.FieldRiderID:
+		m.ClearRiderID()
 		return nil
 	case commission.FieldEmployeeID:
 		m.ClearEmployeeID()
@@ -1270,6 +1367,9 @@ func (m *CommissionMutation) ResetField(name string) error {
 	case commission.FieldPlanID:
 		m.ResetPlanID()
 		return nil
+	case commission.FieldRiderID:
+		m.ResetRiderID()
+		return nil
 	case commission.FieldOrderID:
 		m.ResetOrderID()
 		return nil
@@ -1288,7 +1388,7 @@ func (m *CommissionMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CommissionMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.business != nil {
 		edges = append(edges, commission.EdgeBusiness)
 	}
@@ -1297,6 +1397,9 @@ func (m *CommissionMutation) AddedEdges() []string {
 	}
 	if m.plan != nil {
 		edges = append(edges, commission.EdgePlan)
+	}
+	if m.rider != nil {
+		edges = append(edges, commission.EdgeRider)
 	}
 	if m._order != nil {
 		edges = append(edges, commission.EdgeOrder)
@@ -1323,6 +1426,10 @@ func (m *CommissionMutation) AddedIDs(name string) []ent.Value {
 		if id := m.plan; id != nil {
 			return []ent.Value{*id}
 		}
+	case commission.EdgeRider:
+		if id := m.rider; id != nil {
+			return []ent.Value{*id}
+		}
 	case commission.EdgeOrder:
 		if id := m._order; id != nil {
 			return []ent.Value{*id}
@@ -1337,7 +1444,7 @@ func (m *CommissionMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CommissionMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	return edges
 }
 
@@ -1351,7 +1458,7 @@ func (m *CommissionMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CommissionMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.clearedbusiness {
 		edges = append(edges, commission.EdgeBusiness)
 	}
@@ -1360,6 +1467,9 @@ func (m *CommissionMutation) ClearedEdges() []string {
 	}
 	if m.clearedplan {
 		edges = append(edges, commission.EdgePlan)
+	}
+	if m.clearedrider {
+		edges = append(edges, commission.EdgeRider)
 	}
 	if m.cleared_order {
 		edges = append(edges, commission.EdgeOrder)
@@ -1380,6 +1490,8 @@ func (m *CommissionMutation) EdgeCleared(name string) bool {
 		return m.clearedsubscribe
 	case commission.EdgePlan:
 		return m.clearedplan
+	case commission.EdgeRider:
+		return m.clearedrider
 	case commission.EdgeOrder:
 		return m.cleared_order
 	case commission.EdgeEmployee:
@@ -1400,6 +1512,9 @@ func (m *CommissionMutation) ClearEdge(name string) error {
 		return nil
 	case commission.EdgePlan:
 		m.ClearPlan()
+		return nil
+	case commission.EdgeRider:
+		m.ClearRider()
 		return nil
 	case commission.EdgeOrder:
 		m.ClearOrder()
@@ -1423,6 +1538,9 @@ func (m *CommissionMutation) ResetEdge(name string) error {
 		return nil
 	case commission.EdgePlan:
 		m.ResetPlan()
+		return nil
+	case commission.EdgeRider:
+		m.ResetRider()
 		return nil
 	case commission.EdgeOrder:
 		m.ResetOrder()

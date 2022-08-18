@@ -407,6 +407,7 @@ func (ssq *SubscribeSuspendQuery) WithPause(opts ...func(*SubscribePauseQuery)) 
 //		GroupBy(subscribesuspend.FieldCreator).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
+//
 func (ssq *SubscribeSuspendQuery) GroupBy(field string, fields ...string) *SubscribeSuspendGroupBy {
 	grbuild := &SubscribeSuspendGroupBy{config: ssq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -433,6 +434,7 @@ func (ssq *SubscribeSuspendQuery) GroupBy(field string, fields ...string) *Subsc
 //	client.SubscribeSuspend.Query().
 //		Select(subscribesuspend.FieldCreator).
 //		Scan(ctx, &v)
+//
 func (ssq *SubscribeSuspendQuery) Select(fields ...string) *SubscribeSuspendSelect {
 	ssq.fields = append(ssq.fields, fields...)
 	selbuild := &SubscribeSuspendSelect{SubscribeSuspendQuery: ssq}

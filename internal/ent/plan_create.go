@@ -596,6 +596,7 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (pc *PlanCreate) OnConflict(opts ...sql.ConflictOption) *PlanUpsertOne {
 	pc.conflict = opts
 	return &PlanUpsertOne{
@@ -609,6 +610,7 @@ func (pc *PlanCreate) OnConflict(opts ...sql.ConflictOption) *PlanUpsertOne {
 //	client.Plan.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (pc *PlanCreate) OnConflictColumns(columns ...string) *PlanUpsertOne {
 	pc.conflict = append(pc.conflict, sql.ConflictColumns(columns...))
 	return &PlanUpsertOne{
@@ -895,6 +897,7 @@ func (u *PlanUpsert) ClearParentID() *PlanUpsert {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *PlanUpsertOne) UpdateNewValues() *PlanUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -911,9 +914,10 @@ func (u *PlanUpsertOne) UpdateNewValues() *PlanUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//	client.Plan.Create().
-//	    OnConflict(sql.ResolveWithIgnore()).
-//	    Exec(ctx)
+//  client.Plan.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
 func (u *PlanUpsertOne) Ignore() *PlanUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
@@ -1370,6 +1374,7 @@ func (pcb *PlanCreateBulk) ExecX(ctx context.Context) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
+//
 func (pcb *PlanCreateBulk) OnConflict(opts ...sql.ConflictOption) *PlanUpsertBulk {
 	pcb.conflict = opts
 	return &PlanUpsertBulk{
@@ -1383,6 +1388,7 @@ func (pcb *PlanCreateBulk) OnConflict(opts ...sql.ConflictOption) *PlanUpsertBul
 //	client.Plan.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
+//
 func (pcb *PlanCreateBulk) OnConflictColumns(columns ...string) *PlanUpsertBulk {
 	pcb.conflict = append(pcb.conflict, sql.ConflictColumns(columns...))
 	return &PlanUpsertBulk{
@@ -1404,6 +1410,7 @@ type PlanUpsertBulk struct {
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
+//
 func (u *PlanUpsertBulk) UpdateNewValues() *PlanUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
@@ -1425,6 +1432,7 @@ func (u *PlanUpsertBulk) UpdateNewValues() *PlanUpsertBulk {
 //	client.Plan.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
+//
 func (u *PlanUpsertBulk) Ignore() *PlanUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
