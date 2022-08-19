@@ -31,6 +31,8 @@ func (SubscribeReminder) Fields() []ent.Field {
         field.Int("days").Comment("剩余天数"),
         field.String("plan_name").Comment("套餐名称"),
         field.String("date").Comment("发送日期"),
+        field.Float("fee").Default(0).Comment("逾期费用"),
+        field.String("fee_formula").Optional().Comment("逾期费用计算公式"),
     }
 }
 
@@ -43,6 +45,7 @@ func (SubscribeReminder) Mixin() []ent.Mixin {
     return []ent.Mixin{
         internal.TimeMixin{DoNotIndexCreatedAt: true},
         SubscribeMixin{},
+        PlanMixin{},
     }
 }
 

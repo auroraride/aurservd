@@ -141,6 +141,11 @@ type config struct {
                 Template *string // tts 模板ID
                 Tel      *string // 独立号码为空的时候使用公共号码进行发送
             }
+            // 逾期通知
+            Overdue struct {
+                Template *string
+                Tel      *string
+            }
         }
         Sms struct {
             AccessKeyId     string
@@ -152,6 +157,8 @@ type config struct {
                 General string
                 // 短信催费
                 Reminder string
+                // 逾期通知
+                Overdue string
             }
         }
         Sls struct {

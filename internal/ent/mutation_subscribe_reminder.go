@@ -31,9 +31,14 @@ type SubscribeReminderMutation struct {
 	adddays          *int
 	plan_name        *string
 	date             *string
+	fee              *float64
+	addfee           *float64
+	fee_formula      *string
 	clearedFields    map[string]struct{}
 	subscribe        *uint64
 	clearedsubscribe bool
+	plan             *uint64
+	clearedplan      bool
 	done             bool
 	oldValue         func(context.Context) (*SubscribeReminder, error)
 	predicates       []predicate.SubscribeReminder
@@ -243,6 +248,42 @@ func (m *SubscribeReminderMutation) OldSubscribeID(ctx context.Context) (v uint6
 // ResetSubscribeID resets all changes to the "subscribe_id" field.
 func (m *SubscribeReminderMutation) ResetSubscribeID() {
 	m.subscribe = nil
+}
+
+// SetPlanID sets the "plan_id" field.
+func (m *SubscribeReminderMutation) SetPlanID(u uint64) {
+	m.plan = &u
+}
+
+// PlanID returns the value of the "plan_id" field in the mutation.
+func (m *SubscribeReminderMutation) PlanID() (r uint64, exists bool) {
+	v := m.plan
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlanID returns the old "plan_id" field's value of the SubscribeReminder entity.
+// If the SubscribeReminder object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeReminderMutation) OldPlanID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlanID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlanID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlanID: %w", err)
+	}
+	return oldValue.PlanID, nil
+}
+
+// ResetPlanID resets all changes to the "plan_id" field.
+func (m *SubscribeReminderMutation) ResetPlanID() {
+	m.plan = nil
 }
 
 // SetType sets the "type" field.
@@ -517,6 +558,111 @@ func (m *SubscribeReminderMutation) ResetDate() {
 	m.date = nil
 }
 
+// SetFee sets the "fee" field.
+func (m *SubscribeReminderMutation) SetFee(f float64) {
+	m.fee = &f
+	m.addfee = nil
+}
+
+// Fee returns the value of the "fee" field in the mutation.
+func (m *SubscribeReminderMutation) Fee() (r float64, exists bool) {
+	v := m.fee
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFee returns the old "fee" field's value of the SubscribeReminder entity.
+// If the SubscribeReminder object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeReminderMutation) OldFee(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFee is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFee requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFee: %w", err)
+	}
+	return oldValue.Fee, nil
+}
+
+// AddFee adds f to the "fee" field.
+func (m *SubscribeReminderMutation) AddFee(f float64) {
+	if m.addfee != nil {
+		*m.addfee += f
+	} else {
+		m.addfee = &f
+	}
+}
+
+// AddedFee returns the value that was added to the "fee" field in this mutation.
+func (m *SubscribeReminderMutation) AddedFee() (r float64, exists bool) {
+	v := m.addfee
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetFee resets all changes to the "fee" field.
+func (m *SubscribeReminderMutation) ResetFee() {
+	m.fee = nil
+	m.addfee = nil
+}
+
+// SetFeeFormula sets the "fee_formula" field.
+func (m *SubscribeReminderMutation) SetFeeFormula(s string) {
+	m.fee_formula = &s
+}
+
+// FeeFormula returns the value of the "fee_formula" field in the mutation.
+func (m *SubscribeReminderMutation) FeeFormula() (r string, exists bool) {
+	v := m.fee_formula
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFeeFormula returns the old "fee_formula" field's value of the SubscribeReminder entity.
+// If the SubscribeReminder object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeReminderMutation) OldFeeFormula(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFeeFormula is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFeeFormula requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFeeFormula: %w", err)
+	}
+	return oldValue.FeeFormula, nil
+}
+
+// ClearFeeFormula clears the value of the "fee_formula" field.
+func (m *SubscribeReminderMutation) ClearFeeFormula() {
+	m.fee_formula = nil
+	m.clearedFields[subscribereminder.FieldFeeFormula] = struct{}{}
+}
+
+// FeeFormulaCleared returns if the "fee_formula" field was cleared in this mutation.
+func (m *SubscribeReminderMutation) FeeFormulaCleared() bool {
+	_, ok := m.clearedFields[subscribereminder.FieldFeeFormula]
+	return ok
+}
+
+// ResetFeeFormula resets all changes to the "fee_formula" field.
+func (m *SubscribeReminderMutation) ResetFeeFormula() {
+	m.fee_formula = nil
+	delete(m.clearedFields, subscribereminder.FieldFeeFormula)
+}
+
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *SubscribeReminderMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
@@ -543,6 +689,32 @@ func (m *SubscribeReminderMutation) ResetSubscribe() {
 	m.clearedsubscribe = false
 }
 
+// ClearPlan clears the "plan" edge to the Plan entity.
+func (m *SubscribeReminderMutation) ClearPlan() {
+	m.clearedplan = true
+}
+
+// PlanCleared reports if the "plan" edge to the Plan entity was cleared.
+func (m *SubscribeReminderMutation) PlanCleared() bool {
+	return m.clearedplan
+}
+
+// PlanIDs returns the "plan" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// PlanID instead. It exists only for internal usage by the builders.
+func (m *SubscribeReminderMutation) PlanIDs() (ids []uint64) {
+	if id := m.plan; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPlan resets all changes to the "plan" edge.
+func (m *SubscribeReminderMutation) ResetPlan() {
+	m.plan = nil
+	m.clearedplan = false
+}
+
 // Where appends a list predicates to the SubscribeReminderMutation builder.
 func (m *SubscribeReminderMutation) Where(ps ...predicate.SubscribeReminder) {
 	m.predicates = append(m.predicates, ps...)
@@ -562,7 +734,7 @@ func (m *SubscribeReminderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscribeReminderMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 13)
 	if m.created_at != nil {
 		fields = append(fields, subscribereminder.FieldCreatedAt)
 	}
@@ -571,6 +743,9 @@ func (m *SubscribeReminderMutation) Fields() []string {
 	}
 	if m.subscribe != nil {
 		fields = append(fields, subscribereminder.FieldSubscribeID)
+	}
+	if m.plan != nil {
+		fields = append(fields, subscribereminder.FieldPlanID)
 	}
 	if m._type != nil {
 		fields = append(fields, subscribereminder.FieldType)
@@ -593,6 +768,12 @@ func (m *SubscribeReminderMutation) Fields() []string {
 	if m.date != nil {
 		fields = append(fields, subscribereminder.FieldDate)
 	}
+	if m.fee != nil {
+		fields = append(fields, subscribereminder.FieldFee)
+	}
+	if m.fee_formula != nil {
+		fields = append(fields, subscribereminder.FieldFeeFormula)
+	}
 	return fields
 }
 
@@ -607,6 +788,8 @@ func (m *SubscribeReminderMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case subscribereminder.FieldSubscribeID:
 		return m.SubscribeID()
+	case subscribereminder.FieldPlanID:
+		return m.PlanID()
 	case subscribereminder.FieldType:
 		return m.GetType()
 	case subscribereminder.FieldPhone:
@@ -621,6 +804,10 @@ func (m *SubscribeReminderMutation) Field(name string) (ent.Value, bool) {
 		return m.PlanName()
 	case subscribereminder.FieldDate:
 		return m.Date()
+	case subscribereminder.FieldFee:
+		return m.Fee()
+	case subscribereminder.FieldFeeFormula:
+		return m.FeeFormula()
 	}
 	return nil, false
 }
@@ -636,6 +823,8 @@ func (m *SubscribeReminderMutation) OldField(ctx context.Context, name string) (
 		return m.OldUpdatedAt(ctx)
 	case subscribereminder.FieldSubscribeID:
 		return m.OldSubscribeID(ctx)
+	case subscribereminder.FieldPlanID:
+		return m.OldPlanID(ctx)
 	case subscribereminder.FieldType:
 		return m.OldType(ctx)
 	case subscribereminder.FieldPhone:
@@ -650,6 +839,10 @@ func (m *SubscribeReminderMutation) OldField(ctx context.Context, name string) (
 		return m.OldPlanName(ctx)
 	case subscribereminder.FieldDate:
 		return m.OldDate(ctx)
+	case subscribereminder.FieldFee:
+		return m.OldFee(ctx)
+	case subscribereminder.FieldFeeFormula:
+		return m.OldFeeFormula(ctx)
 	}
 	return nil, fmt.Errorf("unknown SubscribeReminder field %s", name)
 }
@@ -679,6 +872,13 @@ func (m *SubscribeReminderMutation) SetField(name string, value ent.Value) error
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSubscribeID(v)
+		return nil
+	case subscribereminder.FieldPlanID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlanID(v)
 		return nil
 	case subscribereminder.FieldType:
 		v, ok := value.(subscribereminder.Type)
@@ -729,6 +929,20 @@ func (m *SubscribeReminderMutation) SetField(name string, value ent.Value) error
 		}
 		m.SetDate(v)
 		return nil
+	case subscribereminder.FieldFee:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFee(v)
+		return nil
+	case subscribereminder.FieldFeeFormula:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFeeFormula(v)
+		return nil
 	}
 	return fmt.Errorf("unknown SubscribeReminder field %s", name)
 }
@@ -740,6 +954,9 @@ func (m *SubscribeReminderMutation) AddedFields() []string {
 	if m.adddays != nil {
 		fields = append(fields, subscribereminder.FieldDays)
 	}
+	if m.addfee != nil {
+		fields = append(fields, subscribereminder.FieldFee)
+	}
 	return fields
 }
 
@@ -750,6 +967,8 @@ func (m *SubscribeReminderMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case subscribereminder.FieldDays:
 		return m.AddedDays()
+	case subscribereminder.FieldFee:
+		return m.AddedFee()
 	}
 	return nil, false
 }
@@ -766,6 +985,13 @@ func (m *SubscribeReminderMutation) AddField(name string, value ent.Value) error
 		}
 		m.AddDays(v)
 		return nil
+	case subscribereminder.FieldFee:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddFee(v)
+		return nil
 	}
 	return fmt.Errorf("unknown SubscribeReminder numeric field %s", name)
 }
@@ -773,7 +999,11 @@ func (m *SubscribeReminderMutation) AddField(name string, value ent.Value) error
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *SubscribeReminderMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(subscribereminder.FieldFeeFormula) {
+		fields = append(fields, subscribereminder.FieldFeeFormula)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -786,6 +1016,11 @@ func (m *SubscribeReminderMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *SubscribeReminderMutation) ClearField(name string) error {
+	switch name {
+	case subscribereminder.FieldFeeFormula:
+		m.ClearFeeFormula()
+		return nil
+	}
 	return fmt.Errorf("unknown SubscribeReminder nullable field %s", name)
 }
 
@@ -801,6 +1036,9 @@ func (m *SubscribeReminderMutation) ResetField(name string) error {
 		return nil
 	case subscribereminder.FieldSubscribeID:
 		m.ResetSubscribeID()
+		return nil
+	case subscribereminder.FieldPlanID:
+		m.ResetPlanID()
 		return nil
 	case subscribereminder.FieldType:
 		m.ResetType()
@@ -823,15 +1061,24 @@ func (m *SubscribeReminderMutation) ResetField(name string) error {
 	case subscribereminder.FieldDate:
 		m.ResetDate()
 		return nil
+	case subscribereminder.FieldFee:
+		m.ResetFee()
+		return nil
+	case subscribereminder.FieldFeeFormula:
+		m.ResetFeeFormula()
+		return nil
 	}
 	return fmt.Errorf("unknown SubscribeReminder field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *SubscribeReminderMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.subscribe != nil {
 		edges = append(edges, subscribereminder.EdgeSubscribe)
+	}
+	if m.plan != nil {
+		edges = append(edges, subscribereminder.EdgePlan)
 	}
 	return edges
 }
@@ -844,13 +1091,17 @@ func (m *SubscribeReminderMutation) AddedIDs(name string) []ent.Value {
 		if id := m.subscribe; id != nil {
 			return []ent.Value{*id}
 		}
+	case subscribereminder.EdgePlan:
+		if id := m.plan; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *SubscribeReminderMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	return edges
 }
 
@@ -864,9 +1115,12 @@ func (m *SubscribeReminderMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *SubscribeReminderMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedsubscribe {
 		edges = append(edges, subscribereminder.EdgeSubscribe)
+	}
+	if m.clearedplan {
+		edges = append(edges, subscribereminder.EdgePlan)
 	}
 	return edges
 }
@@ -877,6 +1131,8 @@ func (m *SubscribeReminderMutation) EdgeCleared(name string) bool {
 	switch name {
 	case subscribereminder.EdgeSubscribe:
 		return m.clearedsubscribe
+	case subscribereminder.EdgePlan:
+		return m.clearedplan
 	}
 	return false
 }
@@ -888,6 +1144,9 @@ func (m *SubscribeReminderMutation) ClearEdge(name string) error {
 	case subscribereminder.EdgeSubscribe:
 		m.ClearSubscribe()
 		return nil
+	case subscribereminder.EdgePlan:
+		m.ClearPlan()
+		return nil
 	}
 	return fmt.Errorf("unknown SubscribeReminder unique edge %s", name)
 }
@@ -898,6 +1157,9 @@ func (m *SubscribeReminderMutation) ResetEdge(name string) error {
 	switch name {
 	case subscribereminder.EdgeSubscribe:
 		m.ResetSubscribe()
+		return nil
+	case subscribereminder.EdgePlan:
+		m.ResetPlan()
 		return nil
 	}
 	return fmt.Errorf("unknown SubscribeReminder edge %s", name)
