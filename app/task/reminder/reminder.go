@@ -18,22 +18,36 @@ import (
     "github.com/golang-module/carbon/v2"
     jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
-    "strconv"
     "sync"
     "time"
 )
 
 var tasks sync.Map
 
+type Task struct {
+    Name        string
+    Phone       string
+    Days        int
+    SubscribeID uint64
+    PlanName    string
+    PlanID      uint64
+    PlanDays    uint
+    Success     bool
+    vms         *vmsconfig
+    sms         string
+}
+
+type vmsconfig struct {
+    tel  *string
+    tmpl *string
+}
+
 type reminderTask struct {
-    ctx      context.Context
-    ticker   *time.Ticker
-    vmstel   *string
-    vmstempl *string
-    vmsdays  int
-    smstempl string
-    smsdays  int
-    running  bool
+    ctx     context.Context
+    ticker  *time.Ticker
+    vms     map[int]*vmsconfig
+    sms     map[int]string
+    running bool
 }
 
 var runner *reminderTask
@@ -44,24 +58,41 @@ func Run() {
 }
 
 func newReminder() {
-    vmscfg := ar.Config.Aliyun.Vms.Reminder
+    vmscfg := ar.Config.Aliyun.Vms
+    smscfg := ar.Config.Aliyun.Sms.Template
     runner = &reminderTask{
-        ctx:      context.Background(),
-        ticker:   time.NewTicker(1 * time.Minute),
-        vmstempl: vmscfg.Template,
-        vmstel:   vmscfg.Tel,
-        smstempl: ar.Config.Aliyun.Sms.Template.Reminder,
+        ctx:    context.Background(),
+        ticker: time.NewTicker(1 * time.Minute),
+        vms:    make(map[int]*vmsconfig),
+        sms:    make(map[int]string),
     }
 
-    notice := new(model.SettingOverdueNotice)
-    sm, _ := ent.Database.Setting.Query().Where(setting.Key(model.SettingOverdue)).First(context.Background())
+    notice := new(model.SettingReminderNotice)
+    sm, _ := ent.Database.Setting.Query().Where(setting.Key(model.SettingReminder)).First(context.Background())
     if sm != nil {
         err := jsoniter.Unmarshal([]byte(sm.Content), notice)
         if err == nil {
-            var smserr, vmserr error
-            runner.smsdays, smserr = strconv.Atoi(notice.Sms)
-            runner.vmsdays, vmserr = strconv.Atoi(notice.Call)
-            runner.running = smserr == nil && vmserr == nil && ar.Config.Task.Reminder
+            for _, d := range notice.Sms {
+                if d >= 0 {
+                    runner.sms[d] = smscfg.Reminder
+                } else {
+                    runner.sms[d] = smscfg.Overdue
+                }
+            }
+            for _, d := range notice.Vms {
+                if d >= 0 {
+                    runner.vms[d] = &vmsconfig{
+                        tel:  vmscfg.Reminder.Tel,
+                        tmpl: vmscfg.Reminder.Template,
+                    }
+                } else {
+                    runner.vms[d] = &vmsconfig{
+                        tel:  vmscfg.Overdue.Tel,
+                        tmpl: vmscfg.Overdue.Template,
+                    }
+                }
+            }
+            runner.running = ar.Config.Task.Reminder
         }
     }
 
@@ -89,16 +120,19 @@ func Subscribe(sub *ent.Subscribe) {
         Days:        sub.Remaining,
         SubscribeID: sub.ID,
         PlanName:    pl.Name,
+        PlanDays:    pl.Days,
+        PlanID:      pl.ID,
     }
 
-    switch true {
-    case runner.vmsdays == sub.Remaining:
-        task.Type = subscribereminder.TypeVms
-        break
-    case runner.smsdays == sub.Remaining:
-        task.Type = subscribereminder.TypeSms
-        break
-    default:
+    if cfg, ok := runner.vms[sub.Remaining]; ok {
+        task.vms = cfg
+    }
+
+    if tmpl, ok := runner.sms[sub.Remaining]; ok {
+        task.sms = tmpl
+    }
+
+    if task.sms == "" && task.vms == nil {
         return
     }
 
@@ -119,15 +153,13 @@ func (r *reminderTask) run() {
                 duplicateRemove()
 
                 tasks.Range(func(_, v any) bool {
-                    switch i := v.(type) {
+                    switch t := v.(type) {
                     case *Task:
-                        switch i.Type {
-                        case subscribereminder.TypeVms:
-                            r.sendvms(i)
-                            break
-                        case subscribereminder.TypeSms:
-                            r.sendsms(i)
-                            break
+                        if t.sms != "" {
+                            r.sendsms(t)
+                        }
+                        if t.vms != nil {
+                            r.sendvms(t)
                         }
                         break
                     }
@@ -148,25 +180,19 @@ func duplicateRemove() {
         if item.Success {
             // 如果任务完成, 直接删除
             tasks.Delete(item.Phone)
-        } else {
-            // 如果未完成, 携带以便更新
-            v, ok := tasks.Load(item.Phone)
-            if ok {
-                v.(*Task).SubscribeReminder = item
-                tasks.Store(item.Phone, v)
-            }
         }
     }
 }
 
 func (r *reminderTask) sendvms(task *Task) {
+    vms := task.vms
     task.Success = ali.NewVms().SendVoiceMessageByTts(
         tools.NewPointerInterface(task.Phone),
         tools.NewPointerInterface(fmt.Sprintf(`{"name":"%s","product": "%s"}`, task.Name, task.PlanName)),
-        r.vmstel,
-        r.vmstempl,
+        vms.tel,
+        vms.tmpl,
     )
-    r.updateOrSave(task)
+    r.updateOrSave(task, subscribereminder.TypeVms)
 }
 
 func (r *reminderTask) sendsms(task *Task) {
@@ -174,7 +200,7 @@ func (r *reminderTask) sendsms(task *Task) {
     if err != nil {
         log.Error(err)
     }
-    id, _ := client.SetTemplate(r.smstempl).
+    id, _ := client.SetTemplate(task.sms).
         SetParam(map[string]string{
             "name":    task.Name,
             "product": task.PlanName,
@@ -182,23 +208,20 @@ func (r *reminderTask) sendsms(task *Task) {
         SendCode(task.Phone)
     task.Success = id != ""
 
-    r.updateOrSave(task)
+    r.updateOrSave(task, subscribereminder.TypeVms)
 }
 
-func (r *reminderTask) updateOrSave(task *Task) {
-    if task.SubscribeReminder != nil {
-        _, _ = task.SubscribeReminder.Update().SetSuccess(task.Success).Save(r.ctx)
-    } else {
-        _, _ = ent.Database.SubscribeReminder.Create().
-            SetPhone(task.Phone).
-            SetSubscribeID(task.SubscribeID).
-            SetPlanName(task.PlanName).
-            SetName(task.Name).
-            SetType(task.Type).
-            SetDays(task.Days).
-            SetSuccess(task.Success).
-            SetDate(time.Now().Format(carbon.DateLayout)).
-            Save(r.ctx)
-    }
+func (r *reminderTask) updateOrSave(task *Task, typ subscribereminder.Type) {
+    _, _ = ent.Database.SubscribeReminder.Create().
+        SetPhone(task.Phone).
+        SetSubscribeID(task.SubscribeID).
+        SetPlanName(fmt.Sprintf("%s - %d天", task.PlanName, task.PlanDays)).
+        SetName(task.Name).
+        SetType(typ).
+        SetDays(task.Days).
+        SetPlanID(task.PlanID).
+        SetSuccess(task.Success).
+        SetDate(time.Now().Format(carbon.DateLayout)).
+        Save(r.ctx)
     tasks.Delete(task.Phone)
 }

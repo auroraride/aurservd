@@ -11,7 +11,7 @@ const (
     SettingCabinetFault     = "CABINET_FAULT"        // 电柜故障
     SettingRescueReason     = "RESCUE_REASON"        // 救援原因
     SettingRescueFee        = "RESCUE_FEE"           // 救援费用
-    SettingOverdue          = "OVERDUE"              // 逾期通知
+    SettingReminder         = "REMINDER"             // 催费通知
     SettingBatteryFull      = "BATTERY_FULL"         // 满电电量
     SettingException        = "EXCEPTION"            // 物资异常
     SettingPauseMaxDays     = "PAUSE_MAX_DAYS"       // 最大寄存时间
@@ -27,10 +27,10 @@ type SettingItem struct {
     Default any    // 默认值
 }
 
-type SettingOverdueNotice struct {
-    App  string `json:"app"`  // APP提醒
-    Sms  string `json:"sms"`  // 短信通知
-    Call string `json:"call"` // 电话通知
+type SettingReminderNotice struct {
+    App []int `json:"app"` // APP提醒
+    Sms []int `json:"sms"` // 短信通知
+    Vms []int `json:"vms"` // 电话通知
 }
 
 type SettingReq struct {
@@ -69,12 +69,12 @@ var Settings = map[string]SettingItem{
         Desc:    "救援费用(元/公里)",
         Default: "0",
     },
-    SettingOverdue: {
-        Desc: "逾期通知",
-        Default: SettingOverdueNotice{
-            App:  "3",
-            Sms:  "1",
-            Call: "0",
+    SettingReminder: {
+        Desc: "催费通知",
+        Default: SettingReminderNotice{
+            App: []int{5},
+            Sms: []int{3},
+            Vms: []int{1, -3},
         },
     },
     SettingBatteryFull: {
