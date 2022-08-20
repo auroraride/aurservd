@@ -74,11 +74,6 @@ func (s *importRiderService) BatchFile(path string) (err error) {
         return
     }
 
-    err = xlsx.SetCellStyle("Sheet1", "H2", "H412", 0)
-    if err != nil {
-        return
-    }
-
     var rows [][]string
 
     // 获取 Sheet1 上所有单元格
@@ -86,6 +81,13 @@ func (s *importRiderService) BatchFile(path string) (err error) {
     if err != nil {
         return
     }
+
+    err = xlsx.SetCellStyle("Sheet1", "H2", fmt.Sprintf("H%d", len(rows)), 0)
+    if err != nil {
+        return
+    }
+
+    rows, _ = xlsx.GetRows("Sheet1")
 
     for i, record := range rows {
         if i == 0 {
