@@ -48,7 +48,10 @@ func (s *businessLogService) SetEmployee(e *ent.Employee) *businessLogService {
     if e != nil {
         s.ctx = context.WithValue(s.ctx, "employee", e)
         s.employee = e
-        s.creator.SetEmployee(e).SetStoreID(e.Edges.Store.ID)
+        s.creator.SetEmployee(e)
+        if e.Edges.Store != nil {
+            s.creator.SetStoreID(e.Edges.Store.ID)
+        }
     }
     return s
 }

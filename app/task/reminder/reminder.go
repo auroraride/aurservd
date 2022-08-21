@@ -33,8 +33,11 @@ type Task struct {
     PlanID      uint64
     PlanDays    uint
     Success     bool
-    vms         *vmsconfig
-    sms         string
+    Fee         *float64
+    FeeFormula  *string
+
+    vms *vmsconfig
+    sms string
 }
 
 type vmsconfig struct {
@@ -136,6 +139,12 @@ func Subscribe(sub *ent.Subscribe) {
         return
     }
 
+    if sub.Remaining < 0 {
+        f, fl := pl.OverdueFee(sub.Remaining)
+        task.FeeFormula = tools.NewPointerInterface(fl)
+        task.Fee = tools.NewPointerInterface(f)
+    }
+
     tasks.Store(task.Phone, task)
 }
 
@@ -185,13 +194,32 @@ func duplicateRemove() {
 }
 
 func (r *reminderTask) sendvms(task *Task) {
+
+    type template struct {
+        Name    string   `json:"name"`
+        Product string   `json:"product"`
+        Days    *int     `json:"days,omitempty"`
+        Fee     *float64 `json:"fee,omitempty"`
+    }
+
+    data := template{
+        Name:    task.Name,
+        Product: task.PlanName,
+        Fee:     task.Fee,
+    }
+    if task.Days < 0 {
+        data.Days = tools.NewPointerInterface(task.Days)
+    }
+    s, _ := jsoniter.MarshalToString(data)
+
     vms := task.vms
     task.Success = ali.NewVms().SendVoiceMessageByTts(
         tools.NewPointerInterface(task.Phone),
-        tools.NewPointerInterface(fmt.Sprintf(`{"name":"%s","product": "%s"}`, task.Name, task.PlanName)),
+        tools.NewPointerInterface(s),
         vms.tel,
         vms.tmpl,
     )
+
     r.updateOrSave(task, subscribereminder.TypeVms)
 }
 
@@ -200,11 +228,16 @@ func (r *reminderTask) sendsms(task *Task) {
     if err != nil {
         log.Error(err)
     }
+    data := map[string]string{
+        "name":    task.Name,
+        "product": task.PlanName,
+    }
+    if task.Days < 0 {
+        data["days"] = fmt.Sprintf("%d", task.Days)
+        data["fee"] = fmt.Sprintf("%.2f", *task.Fee)
+    }
     id, _ := client.SetTemplate(task.sms).
-        SetParam(map[string]string{
-            "name":    task.Name,
-            "product": task.PlanName,
-        }).
+        SetParam(data).
         SendCode(task.Phone)
     task.Success = id != ""
 
@@ -222,6 +255,8 @@ func (r *reminderTask) updateOrSave(task *Task, typ subscribereminder.Type) {
         SetPlanID(task.PlanID).
         SetSuccess(task.Success).
         SetDate(time.Now().Format(carbon.DateLayout)).
+        SetNillableFeeFormula(task.FeeFormula).
+        SetNillableFee(task.Fee).
         Save(r.ctx)
     tasks.Delete(task.Phone)
 }

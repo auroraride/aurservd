@@ -456,7 +456,7 @@ func (s *subscribeService) OverdueFee(riderID uint64, sub *ent.Subscribe) (fee f
         snag.Panic("上次购买骑士卡获取失败")
     }
 
-    fee, formula = s.OverdueFeeFormula(p.Price, p.Days, remaining)
+    fee, formula = p.OverdueFee(remaining)
     return
 }
 

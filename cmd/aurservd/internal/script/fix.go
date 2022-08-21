@@ -16,7 +16,10 @@ func fixCommand() *cobra.Command {
         Short: "修复指令",
     }
 
-    cmd.AddCommand(fix.Commission())
+    cmd.AddCommand(
+        fix.Commission(),
+        fix.Reminder(),
+    )
 
     return cmd
 }
