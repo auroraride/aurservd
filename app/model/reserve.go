@@ -78,3 +78,10 @@ type ReserveListRes struct {
     CabinetName string `json:"cabinetName"` // 电柜名称
     Serial      string `json:"serial"`      // 电柜编号
 }
+
+type ReserveCabinetItem struct {
+    Name     string `json:"name"`                                               // 姓名
+    Phone    string `json:"phone"`                                              // 电话
+    Business string `json:"business" enums:"active,pause,continue,unsubscribe"` // 业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+    Time     string `json:"time"`                                               // 预约时间
+}

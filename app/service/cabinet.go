@@ -356,8 +356,20 @@ func (s *cabinetService) Detail(item *ent.Cabinet) *model.CabinetDetailRes {
     for _, bm := range bms {
         res.Models = append(res.Models, bm.Model)
     }
+    res.Reserves = make([]model.ReserveCabinetItem, 0)
 
     res.StockNum = NewStock().CurrentBattery(item.ID, stock.FieldCabinetID)
+
+    // 获取生效中的预约
+    revs := NewReserve().CabinetUnfinished(item.ID)
+    for _, rev := range revs {
+        res.Reserves = append(res.Reserves, model.ReserveCabinetItem{
+            Name:     rev.Edges.Rider.Edges.Person.Name,
+            Phone:    rev.Edges.Rider.Phone,
+            Business: rev.Type,
+            Time:     rev.CreatedAt.Format(carbon.TimeLayout),
+        })
+    }
 
     return res
 }

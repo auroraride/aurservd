@@ -12657,6 +12657,13 @@ const docTemplate = `{
                     "description": "备注 ",
                     "type": "string"
                 },
+                "reserves": {
+                    "description": "当前预约",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ReserveCabinetItem"
+                    }
+                },
                 "serial": {
                     "description": "电柜编码 ",
                     "type": "string"
@@ -14910,6 +14917,33 @@ const docTemplate = `{
             "properties": {
                 "outRefundNo": {
                     "description": "退款单号",
+                    "type": "string"
+                }
+            }
+        },
+        "model.ReserveCabinetItem": {
+            "type": "object",
+            "properties": {
+                "business": {
+                    "description": "业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                    "type": "string",
+                    "enum": [
+                        "active",
+                        "pause",
+                        "continue",
+                        "unsubscribe"
+                    ]
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                },
+                "time": {
+                    "description": "预约时间",
                     "type": "string"
                 }
             }

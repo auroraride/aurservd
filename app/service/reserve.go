@@ -77,6 +77,23 @@ func (s *reserveService) RiderUnfinished(riderID uint64) *ent.Reserve {
     return rev
 }
 
+func (s *reserveService) CabinetUnfinished(cabinetID uint64) []*ent.Reserve {
+    items, _ := s.orm.QueryNotDeleted().
+        WithRider(func(query *ent.RiderQuery) {
+            query.WithPerson()
+        }).
+        Where(
+            reserve.StatusIn(model.ReserveStatusPending.Value(), model.ReserveStatusProcessing.Value()),
+            reserve.CreatedAtGTE(time.Now().Add(-s.max*time.Minute)),
+            reserve.CabinetID(cabinetID),
+        ).
+        All(s.ctx)
+    if items == nil {
+        items = make([]*ent.Reserve, 0)
+    }
+    return items
+}
+
 func (s *reserveService) RiderUnfinishedDetail(riderID uint64) *model.ReserveUnfinishedRes {
     rev := s.RiderUnfinished(riderID)
     if rev == nil {

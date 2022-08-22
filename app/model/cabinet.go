@@ -209,8 +209,9 @@ type CabinetSnParamReq struct {
 // CabinetDetailRes 电柜详细信息返回
 type CabinetDetailRes struct {
     CabinetItem
-    Bin      []CabinetBin `json:"bins"`     // 仓位信息
-    StockNum int          `json:"stockNum"` // 库存电池
+    Bin      []CabinetBin         `json:"bins"`     // 仓位信息
+    StockNum int                  `json:"stockNum"` // 库存电池
+    Reserves []ReserveCabinetItem `json:"reserves"` // 当前预约
 }
 
 // CanUse 仓位是否可以换电
