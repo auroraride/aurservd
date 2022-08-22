@@ -19,6 +19,7 @@ func fixCommand() *cobra.Command {
     cmd.AddCommand(
         fix.Commission(),
         fix.Reminder(),
+        fix.Assistance(),
     )
 
     return cmd

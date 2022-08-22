@@ -158,6 +158,7 @@ func (s *employeeService) List(req *model.EmployeeListReq) *model.PaginationRes 
 }
 
 func (s *employeeService) activityListFilter(req model.EmployeeActivityListFilter, export bool) (q *ent.EmployeeQuery, info ar.Map) {
+    info = make(ar.Map)
     var start, end time.Time
     if req.Start != "" {
         info["开始日期"] = req.Start

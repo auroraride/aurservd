@@ -177,7 +177,7 @@ func (s *riderService) SetNewDevice(u *ent.Rider, device *model.Device) {
 
 // GetFaceAuthUrl 获取实名验证URL
 func (s *riderService) GetFaceAuthUrl(c *app.RiderContext) string {
-    uri, token := baidu.New().GetAuthenticatorUrl()
+    uri, token := baidu.NewFace().GetAuthenticatorUrl()
     cache.Set(context.Background(), token, s.GeneratePrivacy(c), 30*time.Minute)
     return uri
 }
@@ -185,7 +185,7 @@ func (s *riderService) GetFaceAuthUrl(c *app.RiderContext) string {
 // GetFaceUrl 获取人脸校验URL
 func (s *riderService) GetFaceUrl(c *app.RiderContext) string {
     p := c.Rider.Edges.Person
-    uri, token := baidu.New().GetFaceUrl(p.Name, p.IDCardNumber)
+    uri, token := baidu.NewFace().GetFaceUrl(p.Name, p.IDCardNumber)
     cache.Set(context.Background(), token, s.GeneratePrivacy(c), 30*time.Minute)
     return uri
 }
@@ -196,7 +196,7 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
         snag.Panic("验证失败")
     }
     u := c.Rider
-    data, err := baidu.New().AuthenticatorResult(token)
+    data, err := baidu.NewFace().AuthenticatorResult(token)
     if err != nil {
         return
     }
@@ -284,7 +284,7 @@ func (s *riderService) FaceResult(c *app.RiderContext, token string) (success bo
         snag.Panic("验证失败")
     }
     u := c.Rider
-    res, err := baidu.New().FaceResult(token)
+    res, err := baidu.NewFace().FaceResult(token)
     if err != nil {
         snag.Panic(err)
         return

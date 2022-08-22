@@ -9,7 +9,7 @@ import (
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/service"
-    "github.com/auroraride/aurservd/internal/amap"
+    "github.com/auroraride/aurservd/internal/baidu"
     "github.com/labstack/echo/v4"
     "math"
 )
@@ -45,7 +45,7 @@ func (*branch) List(c echo.Context) (err error) {
 // @Success      200  {object}  model.BranchRidingRes  "请求成功"
 func (*branch) Riding(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.BranchRidingReq](c)
-    seconds, _, _ := amap.New().DirectionRidingPlan(req.Origin, req.Destination)
+    seconds, _, _ := baidu.NewMap().RidingPlanX(req.Origin, req.Destination)
     return ctx.SendResponse(model.BranchRidingRes{Minutes: math.Round(float64(seconds) / 60.0)})
 }
 

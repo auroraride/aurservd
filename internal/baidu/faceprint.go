@@ -98,7 +98,7 @@ type faceprintSubmitResp struct {
 }
 
 // getFaceprintUrl 获取人脸核验URL
-func (b *baiduClient) getFaceprintUrl(typ string) (url string, token string) {
+func (b *faceClient) getFaceprintUrl(typ string) (url string, token string) {
     var err error
     var planId string
     cfg := ar.Config.Baidu.Face
@@ -135,7 +135,7 @@ func (b *baiduClient) getFaceprintUrl(typ string) (url string, token string) {
 }
 
 // GetFaceUrl 获取人脸校验URL
-func (b *baiduClient) GetFaceUrl(name, icNum string) (uri string, token string) {
+func (b *faceClient) GetFaceUrl(name, icNum string) (uri string, token string) {
     uri, token = b.getFaceprintUrl(TypeFace)
     res := new(faceprintSubmitResp)
     r, err := resty.New().R().
@@ -155,12 +155,12 @@ func (b *baiduClient) GetFaceUrl(name, icNum string) (uri string, token string) 
 }
 
 // GetAuthenticatorUrl 实名认证
-func (b *baiduClient) GetAuthenticatorUrl() (string, string) {
+func (b *faceClient) GetAuthenticatorUrl() (string, string) {
     return b.getFaceprintUrl(TypeAuth)
 }
 
 // FaceResult 获取人脸照片
-func (b *baiduClient) FaceResult(token string) (res *faceprintFaceResp, err error) {
+func (b *faceClient) FaceResult(token string) (res *faceprintFaceResp, err error) {
     res = new(faceprintFaceResp)
     var r *resty.Response
     r, err = resty.New().R().
@@ -175,7 +175,7 @@ func (b *baiduClient) FaceResult(token string) (res *faceprintFaceResp, err erro
 }
 
 // AuthenticatorResult 获取实名认证结果
-func (b *baiduClient) AuthenticatorResult(token string) (res *faceprintDetailResp, err error) {
+func (b *faceClient) AuthenticatorResult(token string) (res *faceprintDetailResp, err error) {
     simple := new(faceprintFaceResp)
     simple, err = b.FaceResult(token)
     if err != nil {

@@ -46,7 +46,7 @@ require (
 	github.com/spf13/cobra v1.5.0
 	github.com/spf13/viper v1.11.0
 	github.com/swaggo/echo-swagger v1.3.2
-	github.com/swaggo/swag v1.8.2
+	github.com/swaggo/swag v1.8.4
 	github.com/wechatpay-apiv3/wechatpay-go v0.2.13
 	github.com/xuri/excelize/v2 v2.6.0
 	go.mongodb.org/mongo-driver v1.10.0

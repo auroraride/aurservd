@@ -14,6 +14,7 @@ import (
     "github.com/auroraride/aurservd/app/workwx"
     "github.com/auroraride/aurservd/internal/amap"
     "github.com/auroraride/aurservd/internal/ar"
+    "github.com/auroraride/aurservd/internal/baidu"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/assistance"
     "github.com/auroraride/aurservd/internal/ent/employee"
@@ -417,10 +418,10 @@ func (s *assistanceService) Allocate(req *model.AssistanceAllocateReq) {
 
     var err error
 
-    duration, distance, polylines := amap.New().DirectionRidingPlan(fmt.Sprintf("%f,%f", st.Lng, st.Lat), fmt.Sprintf("%f,%f", item.Lng, item.Lat))
+    duration, distance, polylines := baidu.NewMap().RidingPlanX(fmt.Sprintf("%f,%f", st.Lat, st.Lng), fmt.Sprintf("%f,%f", item.Lat, item.Lng))
 
     item, err = item.Update().
-        SetDistance(distance).
+        SetDistance(float64(distance)).
         SetNaviDuration(duration).
         SetNaviPolylines(polylines).
         SetStoreID(st.ID).

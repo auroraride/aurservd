@@ -96,7 +96,7 @@ func {{ $opt }}(id {{ $n.ID.Type }}) {{ $mutationOption }} {
 		m.oldValue = func(ctx context.Context) (*{{ $n.Name }}, error) {
 			once.Do(func() {
 				if m.done {
-					err = errors.New("querying old values post mutation is not allowed")
+					err = errors.NewFace("querying old values post mutation is not allowed")
 				} else {
 					value, err = m.Client().{{ $n.Name }}.Get(ctx, id)
 				}
@@ -130,7 +130,7 @@ func (m {{ $mutation }}) Client() *Client {
 // it returns an error otherwise.
 func (m {{ $mutation }}) Tx() (*Tx, error) {
 	if 	_, ok := m.driver.(*txDriver); !ok {
-		return nil, errors.New("{{ $pkg }}: mutation is not running in a transaction")
+		return nil, errors.NewFace("{{ $pkg }}: mutation is not running in a transaction")
 	}
 	tx := &Tx{config: m.config}
 	tx.init()
@@ -201,10 +201,10 @@ func (m *{{ $mutation }}) IDs(ctx context.Context) ([]{{ $n.ID.Type }}, error) {
 	// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
 	func (m *{{ $mutation }}) {{ $f.MutationGetOld }}(ctx context.Context) (v {{ if $f.NillableValue }}*{{ end }}{{ $f.Type }}, err error) {
 		if !m.op.Is(OpUpdateOne) {
-			return v, errors.New("{{ $f.MutationGetOld }} is only allowed on UpdateOne operations")
+			return v, errors.NewFace("{{ $f.MutationGetOld }} is only allowed on UpdateOne operations")
 		}
 		if m.{{ $n.ID.BuilderField }} == nil || m.oldValue == nil {
-			return v, errors.New("{{ $f.MutationGetOld }} requires an ID field in the mutation")
+			return v, errors.NewFace("{{ $f.MutationGetOld }} requires an ID field in the mutation")
 		}
 		oldValue, err := m.oldValue(ctx)
 		if err != nil {

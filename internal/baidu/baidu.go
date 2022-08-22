@@ -22,7 +22,7 @@ const (
     accessTokenUrl = `https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=%s&client_secret=%s`
 )
 
-type baiduClient struct {
+type faceClient struct {
     apiKey      string
     secretKey   string
     accessToken string
@@ -41,10 +41,10 @@ type accessTokenResp struct {
     SessionSecret    string `json:"session_secret,omitempty"`
 }
 
-// New 初始化百度客户端
-func New() *baiduClient {
+// NewFace 初始化百度客户端
+func NewFace() *faceClient {
     cfg := ar.Config.Baidu.Face
-    b := &baiduClient{
+    b := &faceClient{
         apiKey:    cfg.ApiKey,
         secretKey: cfg.SecretKey,
     }
@@ -53,7 +53,7 @@ func New() *baiduClient {
 }
 
 // requestAccessToken 从服务器请求百度 access_token
-func (b *baiduClient) requestAccessToken() string {
+func (b *faceClient) requestAccessToken() string {
     var err error
     res := new(accessTokenResp)
     url := fmt.Sprintf(accessTokenUrl, b.apiKey, b.secretKey)
@@ -71,7 +71,7 @@ func (b *baiduClient) requestAccessToken() string {
 }
 
 // getAccessToken 获取 access_token
-func (b *baiduClient) getAccessToken() string {
+func (b *faceClient) getAccessToken() string {
     t := cache.Get(context.Background(), accessTokenKey).Val()
     if t == "" {
         t = b.requestAccessToken()

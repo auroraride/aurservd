@@ -182,6 +182,11 @@ type config struct {
             AuthPlanId string
             FacePlanId string
         }
+        Map struct {
+            ApiKey string
+            Ak     string
+            Sk     string
+        }
     }
     Esign struct {
         Target  string
