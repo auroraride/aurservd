@@ -1,6 +1,6 @@
 module github.com/auroraride/aurservd
 
-go 1.18
+go 1.19
 
 require (
 	entgo.io/ent v0.11.3-0.20220819064130-b02de28afc96
@@ -167,6 +167,6 @@ require (
 
 //replace github.com/swaggo/swag => /Users/liasica/Downloads/swag
 
-replace github.com/swaggo/swag => github.com/liasica/swag v1.8.2-0.20220602075652-74753c2fe45c
+replace github.com/swaggo/swag => github.com/liasica/swag v1.8.5-0.20220818031911-525ec8e096a2
 
 //replace entgo.io/ent => github.com/CharlesGe129/ent v0.10.2-0.20220520130033-5886b54e4875
