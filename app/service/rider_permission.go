@@ -13,8 +13,9 @@ import (
 )
 
 type riderPermissionService struct {
-    ctx   context.Context
-    rider *ent.Rider
+    ctx      context.Context
+    rider    *ent.Rider
+    modifier *model.Modifier
 }
 
 func NewRiderPermission() *riderPermissionService {
@@ -23,8 +24,15 @@ func NewRiderPermission() *riderPermissionService {
     }
 }
 
-func NewRiderPermissionWithRider(r *ent.Rider) *riderPermissionService {
+func NewRiderPermissionWithRider(r *ent.Rider, params ...any) *riderPermissionService {
     s := NewRiderPermission()
+    for _, param := range params {
+        switch param.(type) {
+        case *model.Modifier:
+            s.modifier = param.(*model.Modifier)
+            break
+        }
+    }
     s.ctx = context.WithValue(s.ctx, "rider", r)
     s.rider = r
     return s
@@ -51,9 +59,12 @@ func (s *riderPermissionService) Business() (err error) {
 }
 
 func (s *riderPermissionService) BusinessX() *riderPermissionService {
-    err := s.Business()
-    if err != nil {
-        snag.Panic(err)
+    // 如果非管理员请求, 需要校验骑手实名状态
+    if s.modifier == nil {
+        err := s.Business()
+        if err != nil {
+            snag.Panic(err)
+        }
     }
     return s
 }

@@ -221,7 +221,7 @@ func (s *businessRiderService) preprocess(typ business.Type, sub *ent.Subscribe)
     }
 
     // 检查用户是否可以办理业务
-    NewRiderPermissionWithRider(r).BusinessX().SubscribeX(model.RiderPermissionTypeBusiness, sub)
+    NewRiderPermissionWithRider(r, s.modifier).BusinessX().SubscribeX(model.RiderPermissionTypeBusiness, sub)
 
     s.rider = r
 
