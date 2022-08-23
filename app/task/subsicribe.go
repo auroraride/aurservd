@@ -7,6 +7,7 @@ package task
 
 import (
     "github.com/auroraride/aurservd/app/service"
+    "github.com/auroraride/aurservd/app/task/reminder"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/robfig/cron/v3"
     log "github.com/sirupsen/logrus"
@@ -41,6 +42,8 @@ func (t *subscribeTask) Start() {
 
 // Do 检查逾期状态
 func (*subscribeTask) Do() {
+    // 重置催费任务
+    reminder.Reset()
     srv := service.NewSubscribe()
     // 获取当前所有生效的订阅
     items := srv.QueryAllRidersEffective()

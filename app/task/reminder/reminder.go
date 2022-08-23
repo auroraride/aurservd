@@ -60,6 +60,13 @@ func Run() {
     runner.run()
 }
 
+func Reset() {
+    tasks.Range(func(key, _ any) bool {
+        tasks.Delete(key)
+        return true
+    })
+}
+
 func newReminder() {
     vmscfg := ar.Config.Aliyun.Vms
     smscfg := ar.Config.Aliyun.Sms.Template
