@@ -199,7 +199,8 @@ func (s *exchangeService) listBasicQuery(req model.ExchangeListReq) *ent.Exchang
         WithRider(func(rq *ent.RiderQuery) {
             rq.WithPerson()
         }).
-        WithEnterprise()
+        WithEnterprise().
+        Order(ent.Desc(exchange.FieldCreatedAt))
 
     if req.Start != nil {
         q.Where(exchange.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
@@ -279,8 +280,7 @@ func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.Paginat
     q := s.listBasicQuery(req.ExchangeListReq).
         WithCity().
         WithStore().
-        WithCabinet().
-        Order(ent.Desc(exchange.FieldCreatedAt))
+        WithCabinet()
 
     switch req.Target {
     case 1:
