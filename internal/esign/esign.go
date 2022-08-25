@@ -22,6 +22,7 @@ const (
     resExists  = 53000000
     methodPost = "POST"
     methodGet  = "GET"
+    methodPut  = "PUT"
 )
 
 const (
@@ -56,6 +57,9 @@ const (
 
     // documentUrl 流程文档下载
     documentUrl = `/v1/signflows/%s/documents`
+
+    // 修改个人签署账号
+    modifyAccountUrl = `/v1/accounts/%s`
 )
 
 type Esign struct {
@@ -153,8 +157,13 @@ func (e *Esign) request(api, method string, body interface{}, data interface{}) 
     switch method {
     case methodPost:
         r, err = req.SetBody(body).Post(e.Config.BaseUrl + api)
+        break
+    case methodPut:
+        r, err = req.SetBody(body).Put(e.Config.BaseUrl + api)
+        break
     case methodGet:
         r, err = req.Get(e.Config.BaseUrl + api)
+        break
     }
     if err != nil {
         snag.Panic(err)

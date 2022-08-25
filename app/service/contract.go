@@ -199,7 +199,7 @@ func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) mode
 
     // 创建 / 获取 签约个人账号
     if accountId == "" {
-        accountId = s.esign.CreatePersonAccount(esign.CreatePersonAccountReq{
+        accountId = s.esign.CreatePersonAccount(esign.PersonAccountReq{
             ThirdPartyUserId: u.Phone,
             Name:             p.Name,
             IdType:           "CRED_PSN_CH_IDCARD",

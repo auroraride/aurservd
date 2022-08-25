@@ -20,6 +20,7 @@ func Execute() {
         serverCommand(),
         customerCommand(),
         fixCommand(),
+        personCommand(),
     )
     _ = rootCmd.Execute()
 }
