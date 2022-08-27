@@ -172,6 +172,7 @@ func (p *kaixin) FetchStatus(serial string) (online bool, bins model.CabinetBins
         return
     }
 
+    // regexp.MustCompile(`(?m)({.*})(.*)`)
     err = jsoniter.Unmarshal(r.Body(), res)
     if err != nil {
         p.logger.Write(fmt.Sprintf("凯信状态解析失败, serial: %s, body: %s\n", serial, r.Body()))

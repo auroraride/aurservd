@@ -15,7 +15,6 @@ import (
     "github.com/labstack/echo/v4"
     log "github.com/sirupsen/logrus"
     "io"
-    "io/ioutil"
     "net"
     "net/http"
     "os"
@@ -64,9 +63,9 @@ func dump(handler bodyDumpHandler) echo.MiddlewareFunc {
             // Request
             var reqBody []byte
             if c.Request().Body != nil { // Read
-                reqBody, _ = ioutil.ReadAll(c.Request().Body)
+                reqBody, _ = io.ReadAll(c.Request().Body)
             }
-            c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(reqBody)) // Reset
+            c.Request().Body = io.NopCloser(bytes.NewBuffer(reqBody)) // Reset
 
             // Response
             resBody := new(bytes.Buffer)
