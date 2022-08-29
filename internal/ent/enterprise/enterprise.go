@@ -51,6 +51,12 @@ const (
 	FieldPrepaymentTotal = "prepayment_total"
 	// FieldSuspensedAt holds the string denoting the suspensed_at field in the database.
 	FieldSuspensedAt = "suspensed_at"
+	// FieldAgent holds the string denoting the agent field in the database.
+	FieldAgent = "agent"
+	// FieldUseStore holds the string denoting the use_store field in the database.
+	FieldUseStore = "use_store"
+	// FieldDays holds the string denoting the days field in the database.
+	FieldDays = "days"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeRiders holds the string denoting the riders edge name in mutations.
@@ -149,6 +155,9 @@ var Columns = []string{
 	FieldBalance,
 	FieldPrepaymentTotal,
 	FieldSuspensedAt,
+	FieldAgent,
+	FieldUseStore,
+	FieldDays,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -180,4 +189,6 @@ var (
 	DefaultBalance float64
 	// DefaultPrepaymentTotal holds the default value on creation for the "prepayment_total" field.
 	DefaultPrepaymentTotal float64
+	// DefaultAgent holds the default value on creation for the "agent" field.
+	DefaultAgent bool
 )

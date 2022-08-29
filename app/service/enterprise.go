@@ -66,6 +66,11 @@ func (s *enterpriseService) QueryX(id uint64) *ent.Enterprise {
 
 // Create 创建企业
 func (s *enterpriseService) Create(req *model.EnterpriseDetail) uint64 {
+    // 判断是否代理商并且非预付费
+    if req.Agent != nil && *req.Agent && *req.Payment != model.EnterprisePaymentPrepay {
+        snag.Panic("代理商模式付费方式错误")
+    }
+
     var err error
     e := &ent.Enterprise{}
     e, err = ent.EntitySetAttributes(s.orm.Create(), e, req).Save(s.ctx)
@@ -146,6 +151,9 @@ func (s *enterpriseService) List(req *model.EnterpriseListReq) *model.Pagination
     }
     if req.End != nil {
         q.Where(enterprise.HasContractsWith(enterprisecontract.EndGTE(tt.ParseDateStringX(*req.End))))
+    }
+    if req.Agent != nil {
+        q.Where(enterprise.Agent(*req.Agent))
     }
     return model.ParsePaginationResponse(
         q, req.PaginationReq,

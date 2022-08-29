@@ -458,6 +458,20 @@ func (sc *SubscribeCreate) SetNillablePauseOverdue(b *bool) *SubscribeCreate {
 	return sc
 }
 
+// SetAgentEndAt sets the "agent_end_at" field.
+func (sc *SubscribeCreate) SetAgentEndAt(t time.Time) *SubscribeCreate {
+	sc.mutation.SetAgentEndAt(t)
+	return sc
+}
+
+// SetNillableAgentEndAt sets the "agent_end_at" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableAgentEndAt(t *time.Time) *SubscribeCreate {
+	if t != nil {
+		sc.SetAgentEndAt(*t)
+	}
+	return sc
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (sc *SubscribeCreate) SetPlan(p *Plan) *SubscribeCreate {
 	return sc.SetPlanID(p.ID)
@@ -979,6 +993,14 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 			Column: subscribe.FieldPauseOverdue,
 		})
 		_node.PauseOverdue = value
+	}
+	if value, ok := sc.mutation.AgentEndAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: subscribe.FieldAgentEndAt,
+		})
+		_node.AgentEndAt = &value
 	}
 	if nodes := sc.mutation.PlanIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1871,6 +1893,24 @@ func (u *SubscribeUpsert) UpdatePauseOverdue() *SubscribeUpsert {
 	return u
 }
 
+// SetAgentEndAt sets the "agent_end_at" field.
+func (u *SubscribeUpsert) SetAgentEndAt(v time.Time) *SubscribeUpsert {
+	u.Set(subscribe.FieldAgentEndAt, v)
+	return u
+}
+
+// UpdateAgentEndAt sets the "agent_end_at" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateAgentEndAt() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldAgentEndAt)
+	return u
+}
+
+// ClearAgentEndAt clears the value of the "agent_end_at" field.
+func (u *SubscribeUpsert) ClearAgentEndAt() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldAgentEndAt)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -2577,6 +2617,27 @@ func (u *SubscribeUpsertOne) SetPauseOverdue(v bool) *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) UpdatePauseOverdue() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.UpdatePauseOverdue()
+	})
+}
+
+// SetAgentEndAt sets the "agent_end_at" field.
+func (u *SubscribeUpsertOne) SetAgentEndAt(v time.Time) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetAgentEndAt(v)
+	})
+}
+
+// UpdateAgentEndAt sets the "agent_end_at" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateAgentEndAt() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateAgentEndAt()
+	})
+}
+
+// ClearAgentEndAt clears the value of the "agent_end_at" field.
+func (u *SubscribeUpsertOne) ClearAgentEndAt() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearAgentEndAt()
 	})
 }
 
@@ -3448,6 +3509,27 @@ func (u *SubscribeUpsertBulk) SetPauseOverdue(v bool) *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) UpdatePauseOverdue() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.UpdatePauseOverdue()
+	})
+}
+
+// SetAgentEndAt sets the "agent_end_at" field.
+func (u *SubscribeUpsertBulk) SetAgentEndAt(v time.Time) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetAgentEndAt(v)
+	})
+}
+
+// UpdateAgentEndAt sets the "agent_end_at" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateAgentEndAt() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateAgentEndAt()
+	})
+}
+
+// ClearAgentEndAt clears the value of the "agent_end_at" field.
+func (u *SubscribeUpsertBulk) ClearAgentEndAt() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearAgentEndAt()
 	})
 }
 

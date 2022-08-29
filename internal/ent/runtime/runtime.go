@@ -393,6 +393,10 @@ func init() {
 	enterpriseDescPrepaymentTotal := enterpriseFields[10].Descriptor()
 	// enterprise.DefaultPrepaymentTotal holds the default value on creation for the prepayment_total field.
 	enterprise.DefaultPrepaymentTotal = enterpriseDescPrepaymentTotal.Default.(float64)
+	// enterpriseDescAgent is the schema descriptor for agent field.
+	enterpriseDescAgent := enterpriseFields[12].Descriptor()
+	// enterprise.DefaultAgent holds the default value on creation for the agent field.
+	enterprise.DefaultAgent = enterpriseDescAgent.Default.(bool)
 	enterprisebillMixin := schema.EnterpriseBill{}.Mixin()
 	enterprisebillMixinHooks2 := enterprisebillMixin[2].Hooks()
 	enterprisebill.Hooks[0] = enterprisebillMixinHooks2[0]

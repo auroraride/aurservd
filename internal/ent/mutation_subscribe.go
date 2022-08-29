@@ -55,6 +55,7 @@ type SubscribeMutation struct {
 	unsubscribe_reason   *string
 	last_bill_date       *time.Time
 	pause_overdue        *bool
+	agent_end_at         *time.Time
 	clearedFields        map[string]struct{}
 	plan                 *uint64
 	clearedplan          bool
@@ -1808,6 +1809,55 @@ func (m *SubscribeMutation) ResetPauseOverdue() {
 	m.pause_overdue = nil
 }
 
+// SetAgentEndAt sets the "agent_end_at" field.
+func (m *SubscribeMutation) SetAgentEndAt(t time.Time) {
+	m.agent_end_at = &t
+}
+
+// AgentEndAt returns the value of the "agent_end_at" field in the mutation.
+func (m *SubscribeMutation) AgentEndAt() (r time.Time, exists bool) {
+	v := m.agent_end_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAgentEndAt returns the old "agent_end_at" field's value of the Subscribe entity.
+// If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeMutation) OldAgentEndAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAgentEndAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAgentEndAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAgentEndAt: %w", err)
+	}
+	return oldValue.AgentEndAt, nil
+}
+
+// ClearAgentEndAt clears the value of the "agent_end_at" field.
+func (m *SubscribeMutation) ClearAgentEndAt() {
+	m.agent_end_at = nil
+	m.clearedFields[subscribe.FieldAgentEndAt] = struct{}{}
+}
+
+// AgentEndAtCleared returns if the "agent_end_at" field was cleared in this mutation.
+func (m *SubscribeMutation) AgentEndAtCleared() bool {
+	_, ok := m.clearedFields[subscribe.FieldAgentEndAt]
+	return ok
+}
+
+// ResetAgentEndAt resets all changes to the "agent_end_at" field.
+func (m *SubscribeMutation) ResetAgentEndAt() {
+	m.agent_end_at = nil
+	delete(m.clearedFields, subscribe.FieldAgentEndAt)
+}
+
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *SubscribeMutation) ClearPlan() {
 	m.clearedplan = true
@@ -2331,7 +2381,7 @@ func (m *SubscribeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscribeMutation) Fields() []string {
-	fields := make([]string, 0, 33)
+	fields := make([]string, 0, 34)
 	if m.created_at != nil {
 		fields = append(fields, subscribe.FieldCreatedAt)
 	}
@@ -2431,6 +2481,9 @@ func (m *SubscribeMutation) Fields() []string {
 	if m.pause_overdue != nil {
 		fields = append(fields, subscribe.FieldPauseOverdue)
 	}
+	if m.agent_end_at != nil {
+		fields = append(fields, subscribe.FieldAgentEndAt)
+	}
 	return fields
 }
 
@@ -2505,6 +2558,8 @@ func (m *SubscribeMutation) Field(name string) (ent.Value, bool) {
 		return m.LastBillDate()
 	case subscribe.FieldPauseOverdue:
 		return m.PauseOverdue()
+	case subscribe.FieldAgentEndAt:
+		return m.AgentEndAt()
 	}
 	return nil, false
 }
@@ -2580,6 +2635,8 @@ func (m *SubscribeMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldLastBillDate(ctx)
 	case subscribe.FieldPauseOverdue:
 		return m.OldPauseOverdue(ctx)
+	case subscribe.FieldAgentEndAt:
+		return m.OldAgentEndAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown Subscribe field %s", name)
 }
@@ -2820,6 +2877,13 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPauseOverdue(v)
 		return nil
+	case subscribe.FieldAgentEndAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAgentEndAt(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Subscribe field %s", name)
 }
@@ -3018,6 +3082,9 @@ func (m *SubscribeMutation) ClearedFields() []string {
 	if m.FieldCleared(subscribe.FieldLastBillDate) {
 		fields = append(fields, subscribe.FieldLastBillDate)
 	}
+	if m.FieldCleared(subscribe.FieldAgentEndAt) {
+		fields = append(fields, subscribe.FieldAgentEndAt)
+	}
 	return fields
 }
 
@@ -3088,6 +3155,9 @@ func (m *SubscribeMutation) ClearField(name string) error {
 		return nil
 	case subscribe.FieldLastBillDate:
 		m.ClearLastBillDate()
+		return nil
+	case subscribe.FieldAgentEndAt:
+		m.ClearAgentEndAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe nullable field %s", name)
@@ -3195,6 +3265,9 @@ func (m *SubscribeMutation) ResetField(name string) error {
 		return nil
 	case subscribe.FieldPauseOverdue:
 		m.ResetPauseOverdue()
+		return nil
+	case subscribe.FieldAgentEndAt:
+		m.ResetAgentEndAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe field %s", name)

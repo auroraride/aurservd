@@ -636,7 +636,7 @@ func (s *cabinetService) Transfer(req *model.CabinetTransferReq) {
         InboundID:     cab.ID,
         InboundTarget: model.StockTargetCabinet,
         Force:         true,
-        Remark:        tools.NewPointerInterface("电柜初始化"),
+        Remark:        tools.PointerInterface("电柜初始化"),
     })
     _, _ = cab.Update().SetTransferred(true).Save(s.ctx)
     return

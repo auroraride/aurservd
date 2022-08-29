@@ -10,6 +10,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/pkg/snag"
+    "time"
 )
 
 type riderPermissionService struct {
@@ -52,6 +53,7 @@ func (s *riderPermissionService) Business() (err error) {
             e = NewEnterprise().QueryX(*s.rider.EnterpriseID)
         }
 
+        // 检查企业用户是否可以办理业务
         err = NewEnterprise().Business(e)
     }
 
@@ -74,6 +76,10 @@ func (s *riderPermissionService) BusinessX() *riderPermissionService {
 func (s *riderPermissionService) SubscribeX(typ model.RiderPermissionType, sub *ent.Subscribe) {
     if sub == nil {
         snag.Panic("未找到有效骑士卡")
+    }
+    // 判断代理是否到期
+    if sub.AgentEndAt != nil && sub.AgentEndAt.Before(time.Now()) {
+        snag.Panic("骑士卡已到期")
     }
     // 当骑士卡暂停时无法办理任何业务
     if sub.SuspendAt != nil {

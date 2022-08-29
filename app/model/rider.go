@@ -58,6 +58,7 @@ type RiderSigninRes struct {
     OrderNotActived *bool            `json:"orderNotActived,omitempty"` // 是否存在未激活订单
     Subscribe       *Subscribe       `json:"subscribe,omitempty"`       // 骑士卡
     Enterprise      *EnterpriseBasic `json:"enterprise,omitempty"`      // 所属企业
+    Agent           *bool            `json:"agent,omitempty"`           // 是否代理商骑手
 }
 
 // RiderContact 紧急联系人

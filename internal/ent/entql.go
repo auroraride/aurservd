@@ -441,6 +441,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			enterprise.FieldBalance:         {Type: field.TypeFloat64, Column: enterprise.FieldBalance},
 			enterprise.FieldPrepaymentTotal: {Type: field.TypeFloat64, Column: enterprise.FieldPrepaymentTotal},
 			enterprise.FieldSuspensedAt:     {Type: field.TypeTime, Column: enterprise.FieldSuspensedAt},
+			enterprise.FieldAgent:           {Type: field.TypeBool, Column: enterprise.FieldAgent},
+			enterprise.FieldUseStore:        {Type: field.TypeBool, Column: enterprise.FieldUseStore},
+			enterprise.FieldDays:            {Type: field.TypeJSON, Column: enterprise.FieldDays},
 		},
 	}
 	graph.Nodes[13] = &sqlgraph.Node{
@@ -1068,6 +1071,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldUnsubscribeReason: {Type: field.TypeString, Column: subscribe.FieldUnsubscribeReason},
 			subscribe.FieldLastBillDate:      {Type: field.TypeTime, Column: subscribe.FieldLastBillDate},
 			subscribe.FieldPauseOverdue:      {Type: field.TypeBool, Column: subscribe.FieldPauseOverdue},
+			subscribe.FieldAgentEndAt:        {Type: field.TypeTime, Column: subscribe.FieldAgentEndAt},
 		},
 	}
 	graph.Nodes[36] = &sqlgraph.Node{
@@ -5504,6 +5508,21 @@ func (f *EnterpriseFilter) WhereSuspensedAt(p entql.TimeP) {
 	f.Where(p.Field(enterprise.FieldSuspensedAt))
 }
 
+// WhereAgent applies the entql bool predicate on the agent field.
+func (f *EnterpriseFilter) WhereAgent(p entql.BoolP) {
+	f.Where(p.Field(enterprise.FieldAgent))
+}
+
+// WhereUseStore applies the entql bool predicate on the use_store field.
+func (f *EnterpriseFilter) WhereUseStore(p entql.BoolP) {
+	f.Where(p.Field(enterprise.FieldUseStore))
+}
+
+// WhereDays applies the entql json.RawMessage predicate on the days field.
+func (f *EnterpriseFilter) WhereDays(p entql.BytesP) {
+	f.Where(p.Field(enterprise.FieldDays))
+}
+
 // WhereHasCity applies a predicate to check if query has an edge city.
 func (f *EnterpriseFilter) WhereHasCity() {
 	f.Where(entql.HasEdge("city"))
@@ -9168,6 +9187,11 @@ func (f *SubscribeFilter) WhereLastBillDate(p entql.TimeP) {
 // WherePauseOverdue applies the entql bool predicate on the pause_overdue field.
 func (f *SubscribeFilter) WherePauseOverdue(p entql.BoolP) {
 	f.Where(p.Field(subscribe.FieldPauseOverdue))
+}
+
+// WhereAgentEndAt applies the entql time.Time predicate on the agent_end_at field.
+func (f *SubscribeFilter) WhereAgentEndAt(p entql.TimeP) {
+	f.Where(p.Field(subscribe.FieldAgentEndAt))
 }
 
 // WhereHasPlan applies a predicate to check if query has an edge plan.

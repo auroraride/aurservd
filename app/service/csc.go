@@ -76,7 +76,7 @@ func (*cscService) BatchReminder(source *multipart.FileHeader) []*model.Shiguang
                 Phone:   row[1],
                 Product: row[2],
             }
-            item.Status = ali.NewVms().SendVoiceMessageByTts(tools.NewPointerInterface(item.Phone), tools.NewPointerInterface(fmt.Sprintf(`{"name":"%s","product": "%s"}`, item.Name, item.Product)), cfg.Tel, cfg.Template)
+            item.Status = ali.NewVms().SendVoiceMessageByTts(tools.PointerInterface(item.Phone), tools.PointerInterface(fmt.Sprintf(`{"name":"%s","product": "%s"}`, item.Name, item.Product)), cfg.Tel, cfg.Template)
             items[i-1] = item
         }
     }

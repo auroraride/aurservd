@@ -81,7 +81,7 @@ func (s *selectionService) Plan(req *model.PlanSelectionReq) (items []model.Casc
                         Value: c.ID,
                         Label: c.Name,
                     },
-                    Children: tools.NewPointerInterface(make([]model.CascaderOptionLevel2, 0)),
+                    Children: tools.PointerInterface(make([]model.CascaderOptionLevel2, 0)),
                 }
             }
 
@@ -233,7 +233,7 @@ func cascaderParser[T any](res []T, cb cascaderX[T]) (items []*model.CascaderOpt
             ol = &model.CascaderOption{
                 Value:    p.Value,
                 Label:    p.Label,
-                Children: tools.NewPointerInterface(make([]*model.CascaderOption, 0)),
+                Children: tools.PointerInterface(make([]*model.CascaderOption, 0)),
             }
             smap[p.Value] = ol
         }
@@ -391,7 +391,7 @@ func (s *selectionService) CabinetModelX() (items []model.CascaderOption) {
             cmap[c.ID] = model.CascaderOption{
                 Value:    c.ID,
                 Label:    c.Name,
-                Children: tools.NewPointerInterface(make([]*model.CascaderOption, 0)),
+                Children: tools.PointerInterface(make([]*model.CascaderOption, 0)),
             }
         }
 

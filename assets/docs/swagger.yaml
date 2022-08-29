@@ -2230,6 +2230,9 @@ definitions:
       address:
         description: '企业地址 '
         type: string
+      agent:
+        description: 代理商 `true`是 `false`否
+        type: boolean
       cityId:
         description: '所在城市 '
         type: integer
@@ -2242,6 +2245,11 @@ definitions:
       contactPhone:
         description: '联系电话 '
         type: string
+      days:
+        description: 代理商时间选项
+        items:
+          type: integer
+        type: array
       deposit:
         description: '押金 '
         type: number
@@ -2268,6 +2276,9 @@ definitions:
         maximum: 2
         minimum: 0
         type: integer
+      useStore:
+        description: 可使用门店 `true`允许 `false`不允许 (仅代理商模式生效), 骑手是否可以使用门店进行激活和退租
+        type: boolean
     required:
     - address
     - cityId
@@ -2285,6 +2296,9 @@ definitions:
       address:
         description: '企业地址 '
         type: string
+      agent:
+        description: 代理商 `true`是 `false`否
+        type: boolean
       cityId:
         description: '所在城市 '
         type: integer
@@ -2297,6 +2311,11 @@ definitions:
       contactPhone:
         description: '联系电话 '
         type: string
+      days:
+        description: 代理商时间选项
+        items:
+          type: integer
+        type: array
       deposit:
         description: '押金 '
         type: number
@@ -2323,6 +2342,9 @@ definitions:
         maximum: 2
         minimum: 0
         type: integer
+      useStore:
+        description: 可使用门店 `true`允许 `false`不允许 (仅代理商模式生效), 骑手是否可以使用门店进行激活和退租
+        type: boolean
     required:
     - address
     - cityId
@@ -2391,6 +2413,9 @@ definitions:
       address:
         description: 企业地址
         type: string
+      agent:
+        description: 代理商 `true`是 `false`否
+        type: boolean
       balance:
         description: 可用余额
         type: number
@@ -2411,6 +2436,11 @@ definitions:
         description: 合同
         items:
           $ref: '#/definitions/model.EnterpriseContract'
+        type: array
+      days:
+        description: 代理商时间选项
+        items:
+          type: integer
         type: array
       deposit:
         description: 押金
@@ -2448,6 +2478,9 @@ definitions:
       unsettlement:
         description: 未结算天数, 预付费企业此字段强制为0
         type: integer
+      useStore:
+        description: 可使用门店 `true`允许 `false`不允许
+        type: boolean
     type: object
   model.EnterpriseRider:
     properties:
@@ -3840,6 +3873,9 @@ definitions:
     type: object
   model.RiderSigninRes:
     properties:
+      agent:
+        description: 是否代理商骑手
+        type: boolean
       contact:
         allOf:
         - $ref: '#/definitions/model.RiderContact'
@@ -7654,6 +7690,12 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
+      - description: |-
+          StatementStart *string `json:"statementStart" query:"statementStart"` // 计费时间早于
+          StatementEnd   *string `json:"statementEnd" query:"statementEnd"`     // 计费时间晚于
+        in: query
+        name: agent
+        type: boolean
       - description: 城市ID
         in: query
         name: cityId

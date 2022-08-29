@@ -652,7 +652,7 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
                     // 有电池
                     if bin.Battery {
                         c.Bins[bi] = model.BranchFacilityCabinetBin{
-                            Electricity: tools.NewPointerInterface(bin.Electricity),
+                            Electricity: tools.PointerInterface(bin.Electricity),
                         }
                         if bin.Electricity.IsBatteryFull() {
                             // 满电

@@ -143,6 +143,12 @@ func (s *subscribeService) Detail(sub *ent.Subscribe) *model.Subscribe {
         return nil
     }
 
+    // 代理商模式计算剩余时间
+    remaining := sub.Remaining
+    if sub.AgentEndAt != nil {
+        remaining = tools.NewTime().LastDays(*sub.AgentEndAt, time.Now())
+    }
+
     res := &model.Subscribe{
         ID:          sub.ID,
         RiderID:     sub.RiderID,
@@ -152,7 +158,7 @@ func (s *subscribeService) Detail(sub *ent.Subscribe) *model.Subscribe {
         PauseDays:   sub.PauseDays,
         AlterDays:   sub.AlterDays,
         InitialDays: sub.InitialDays,
-        Remaining:   sub.Remaining,
+        Remaining:   remaining,
         OverdueDays: sub.OverdueDays,
         Business:    model.SubscribeBusinessable(sub.Status),
         Suspend:     sub.SuspendAt != nil,

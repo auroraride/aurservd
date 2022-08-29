@@ -298,6 +298,13 @@ func PauseOverdue(v bool) predicate.Subscribe {
 	})
 }
 
+// AgentEndAt applies equality check predicate on the "agent_end_at" field. It's identical to AgentEndAtEQ.
+func AgentEndAt(v time.Time) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAgentEndAt), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
@@ -2348,6 +2355,84 @@ func PauseOverdueEQ(v bool) predicate.Subscribe {
 func PauseOverdueNEQ(v bool) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldPauseOverdue), v))
+	})
+}
+
+// AgentEndAtEQ applies the EQ predicate on the "agent_end_at" field.
+func AgentEndAtEQ(v time.Time) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAgentEndAt), v))
+	})
+}
+
+// AgentEndAtNEQ applies the NEQ predicate on the "agent_end_at" field.
+func AgentEndAtNEQ(v time.Time) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAgentEndAt), v))
+	})
+}
+
+// AgentEndAtIn applies the In predicate on the "agent_end_at" field.
+func AgentEndAtIn(vs ...time.Time) predicate.Subscribe {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldAgentEndAt), v...))
+	})
+}
+
+// AgentEndAtNotIn applies the NotIn predicate on the "agent_end_at" field.
+func AgentEndAtNotIn(vs ...time.Time) predicate.Subscribe {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldAgentEndAt), v...))
+	})
+}
+
+// AgentEndAtGT applies the GT predicate on the "agent_end_at" field.
+func AgentEndAtGT(v time.Time) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldAgentEndAt), v))
+	})
+}
+
+// AgentEndAtGTE applies the GTE predicate on the "agent_end_at" field.
+func AgentEndAtGTE(v time.Time) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldAgentEndAt), v))
+	})
+}
+
+// AgentEndAtLT applies the LT predicate on the "agent_end_at" field.
+func AgentEndAtLT(v time.Time) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldAgentEndAt), v))
+	})
+}
+
+// AgentEndAtLTE applies the LTE predicate on the "agent_end_at" field.
+func AgentEndAtLTE(v time.Time) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldAgentEndAt), v))
+	})
+}
+
+// AgentEndAtIsNil applies the IsNil predicate on the "agent_end_at" field.
+func AgentEndAtIsNil() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAgentEndAt)))
+	})
+}
+
+// AgentEndAtNotNil applies the NotNil predicate on the "agent_end_at" field.
+func AgentEndAtNotNil() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAgentEndAt)))
 	})
 }
 

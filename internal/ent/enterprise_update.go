@@ -261,6 +261,52 @@ func (eu *EnterpriseUpdate) ClearSuspensedAt() *EnterpriseUpdate {
 	return eu
 }
 
+// SetAgent sets the "agent" field.
+func (eu *EnterpriseUpdate) SetAgent(b bool) *EnterpriseUpdate {
+	eu.mutation.SetAgent(b)
+	return eu
+}
+
+// SetNillableAgent sets the "agent" field if the given value is not nil.
+func (eu *EnterpriseUpdate) SetNillableAgent(b *bool) *EnterpriseUpdate {
+	if b != nil {
+		eu.SetAgent(*b)
+	}
+	return eu
+}
+
+// SetUseStore sets the "use_store" field.
+func (eu *EnterpriseUpdate) SetUseStore(b bool) *EnterpriseUpdate {
+	eu.mutation.SetUseStore(b)
+	return eu
+}
+
+// SetNillableUseStore sets the "use_store" field if the given value is not nil.
+func (eu *EnterpriseUpdate) SetNillableUseStore(b *bool) *EnterpriseUpdate {
+	if b != nil {
+		eu.SetUseStore(*b)
+	}
+	return eu
+}
+
+// ClearUseStore clears the value of the "use_store" field.
+func (eu *EnterpriseUpdate) ClearUseStore() *EnterpriseUpdate {
+	eu.mutation.ClearUseStore()
+	return eu
+}
+
+// SetDays sets the "days" field.
+func (eu *EnterpriseUpdate) SetDays(i []int) *EnterpriseUpdate {
+	eu.mutation.SetDays(i)
+	return eu
+}
+
+// ClearDays clears the value of the "days" field.
+func (eu *EnterpriseUpdate) ClearDays() *EnterpriseUpdate {
+	eu.mutation.ClearDays()
+	return eu
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (eu *EnterpriseUpdate) SetCity(c *City) *EnterpriseUpdate {
 	return eu.SetCityID(c.ID)
@@ -817,6 +863,39 @@ func (eu *EnterpriseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: enterprise.FieldSuspensedAt,
+		})
+	}
+	if value, ok := eu.mutation.Agent(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: enterprise.FieldAgent,
+		})
+	}
+	if value, ok := eu.mutation.UseStore(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: enterprise.FieldUseStore,
+		})
+	}
+	if eu.mutation.UseStoreCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Column: enterprise.FieldUseStore,
+		})
+	}
+	if value, ok := eu.mutation.Days(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: enterprise.FieldDays,
+		})
+	}
+	if eu.mutation.DaysCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: enterprise.FieldDays,
 		})
 	}
 	if eu.mutation.CityCleared() {
@@ -1476,6 +1555,52 @@ func (euo *EnterpriseUpdateOne) ClearSuspensedAt() *EnterpriseUpdateOne {
 	return euo
 }
 
+// SetAgent sets the "agent" field.
+func (euo *EnterpriseUpdateOne) SetAgent(b bool) *EnterpriseUpdateOne {
+	euo.mutation.SetAgent(b)
+	return euo
+}
+
+// SetNillableAgent sets the "agent" field if the given value is not nil.
+func (euo *EnterpriseUpdateOne) SetNillableAgent(b *bool) *EnterpriseUpdateOne {
+	if b != nil {
+		euo.SetAgent(*b)
+	}
+	return euo
+}
+
+// SetUseStore sets the "use_store" field.
+func (euo *EnterpriseUpdateOne) SetUseStore(b bool) *EnterpriseUpdateOne {
+	euo.mutation.SetUseStore(b)
+	return euo
+}
+
+// SetNillableUseStore sets the "use_store" field if the given value is not nil.
+func (euo *EnterpriseUpdateOne) SetNillableUseStore(b *bool) *EnterpriseUpdateOne {
+	if b != nil {
+		euo.SetUseStore(*b)
+	}
+	return euo
+}
+
+// ClearUseStore clears the value of the "use_store" field.
+func (euo *EnterpriseUpdateOne) ClearUseStore() *EnterpriseUpdateOne {
+	euo.mutation.ClearUseStore()
+	return euo
+}
+
+// SetDays sets the "days" field.
+func (euo *EnterpriseUpdateOne) SetDays(i []int) *EnterpriseUpdateOne {
+	euo.mutation.SetDays(i)
+	return euo
+}
+
+// ClearDays clears the value of the "days" field.
+func (euo *EnterpriseUpdateOne) ClearDays() *EnterpriseUpdateOne {
+	euo.mutation.ClearDays()
+	return euo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (euo *EnterpriseUpdateOne) SetCity(c *City) *EnterpriseUpdateOne {
 	return euo.SetCityID(c.ID)
@@ -2062,6 +2187,39 @@ func (euo *EnterpriseUpdateOne) sqlSave(ctx context.Context) (_node *Enterprise,
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: enterprise.FieldSuspensedAt,
+		})
+	}
+	if value, ok := euo.mutation.Agent(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: enterprise.FieldAgent,
+		})
+	}
+	if value, ok := euo.mutation.UseStore(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: enterprise.FieldUseStore,
+		})
+	}
+	if euo.mutation.UseStoreCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Column: enterprise.FieldUseStore,
+		})
+	}
+	if value, ok := euo.mutation.Days(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: enterprise.FieldDays,
+		})
+	}
+	if euo.mutation.DaysCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: enterprise.FieldDays,
 		})
 	}
 	if euo.mutation.CityCleared() {

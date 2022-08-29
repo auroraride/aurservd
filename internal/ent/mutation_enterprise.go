@@ -45,6 +45,9 @@ type EnterpriseMutation struct {
 	prepayment_total    *float64
 	addprepayment_total *float64
 	suspensed_at        *time.Time
+	agent               *bool
+	use_store           *bool
+	days                *[]int
 	clearedFields       map[string]struct{}
 	city                *uint64
 	clearedcity         bool
@@ -1034,6 +1037,140 @@ func (m *EnterpriseMutation) ResetSuspensedAt() {
 	delete(m.clearedFields, enterprise.FieldSuspensedAt)
 }
 
+// SetAgent sets the "agent" field.
+func (m *EnterpriseMutation) SetAgent(b bool) {
+	m.agent = &b
+}
+
+// Agent returns the value of the "agent" field in the mutation.
+func (m *EnterpriseMutation) Agent() (r bool, exists bool) {
+	v := m.agent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAgent returns the old "agent" field's value of the Enterprise entity.
+// If the Enterprise object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseMutation) OldAgent(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAgent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAgent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAgent: %w", err)
+	}
+	return oldValue.Agent, nil
+}
+
+// ResetAgent resets all changes to the "agent" field.
+func (m *EnterpriseMutation) ResetAgent() {
+	m.agent = nil
+}
+
+// SetUseStore sets the "use_store" field.
+func (m *EnterpriseMutation) SetUseStore(b bool) {
+	m.use_store = &b
+}
+
+// UseStore returns the value of the "use_store" field in the mutation.
+func (m *EnterpriseMutation) UseStore() (r bool, exists bool) {
+	v := m.use_store
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUseStore returns the old "use_store" field's value of the Enterprise entity.
+// If the Enterprise object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseMutation) OldUseStore(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUseStore is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUseStore requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUseStore: %w", err)
+	}
+	return oldValue.UseStore, nil
+}
+
+// ClearUseStore clears the value of the "use_store" field.
+func (m *EnterpriseMutation) ClearUseStore() {
+	m.use_store = nil
+	m.clearedFields[enterprise.FieldUseStore] = struct{}{}
+}
+
+// UseStoreCleared returns if the "use_store" field was cleared in this mutation.
+func (m *EnterpriseMutation) UseStoreCleared() bool {
+	_, ok := m.clearedFields[enterprise.FieldUseStore]
+	return ok
+}
+
+// ResetUseStore resets all changes to the "use_store" field.
+func (m *EnterpriseMutation) ResetUseStore() {
+	m.use_store = nil
+	delete(m.clearedFields, enterprise.FieldUseStore)
+}
+
+// SetDays sets the "days" field.
+func (m *EnterpriseMutation) SetDays(i []int) {
+	m.days = &i
+}
+
+// Days returns the value of the "days" field in the mutation.
+func (m *EnterpriseMutation) Days() (r []int, exists bool) {
+	v := m.days
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDays returns the old "days" field's value of the Enterprise entity.
+// If the Enterprise object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseMutation) OldDays(ctx context.Context) (v []int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDays is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDays requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDays: %w", err)
+	}
+	return oldValue.Days, nil
+}
+
+// ClearDays clears the value of the "days" field.
+func (m *EnterpriseMutation) ClearDays() {
+	m.days = nil
+	m.clearedFields[enterprise.FieldDays] = struct{}{}
+}
+
+// DaysCleared returns if the "days" field was cleared in this mutation.
+func (m *EnterpriseMutation) DaysCleared() bool {
+	_, ok := m.clearedFields[enterprise.FieldDays]
+	return ok
+}
+
+// ResetDays resets all changes to the "days" field.
+func (m *EnterpriseMutation) ResetDays() {
+	m.days = nil
+	delete(m.clearedFields, enterprise.FieldDays)
+}
+
 // ClearCity clears the "city" edge to the City entity.
 func (m *EnterpriseMutation) ClearCity() {
 	m.clearedcity = true
@@ -1457,7 +1594,7 @@ func (m *EnterpriseMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EnterpriseMutation) Fields() []string {
-	fields := make([]string, 0, 19)
+	fields := make([]string, 0, 22)
 	if m.created_at != nil {
 		fields = append(fields, enterprise.FieldCreatedAt)
 	}
@@ -1515,6 +1652,15 @@ func (m *EnterpriseMutation) Fields() []string {
 	if m.suspensed_at != nil {
 		fields = append(fields, enterprise.FieldSuspensedAt)
 	}
+	if m.agent != nil {
+		fields = append(fields, enterprise.FieldAgent)
+	}
+	if m.use_store != nil {
+		fields = append(fields, enterprise.FieldUseStore)
+	}
+	if m.days != nil {
+		fields = append(fields, enterprise.FieldDays)
+	}
 	return fields
 }
 
@@ -1561,6 +1707,12 @@ func (m *EnterpriseMutation) Field(name string) (ent.Value, bool) {
 		return m.PrepaymentTotal()
 	case enterprise.FieldSuspensedAt:
 		return m.SuspensedAt()
+	case enterprise.FieldAgent:
+		return m.Agent()
+	case enterprise.FieldUseStore:
+		return m.UseStore()
+	case enterprise.FieldDays:
+		return m.Days()
 	}
 	return nil, false
 }
@@ -1608,6 +1760,12 @@ func (m *EnterpriseMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldPrepaymentTotal(ctx)
 	case enterprise.FieldSuspensedAt:
 		return m.OldSuspensedAt(ctx)
+	case enterprise.FieldAgent:
+		return m.OldAgent(ctx)
+	case enterprise.FieldUseStore:
+		return m.OldUseStore(ctx)
+	case enterprise.FieldDays:
+		return m.OldDays(ctx)
 	}
 	return nil, fmt.Errorf("unknown Enterprise field %s", name)
 }
@@ -1750,6 +1908,27 @@ func (m *EnterpriseMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetSuspensedAt(v)
 		return nil
+	case enterprise.FieldAgent:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAgent(v)
+		return nil
+	case enterprise.FieldUseStore:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUseStore(v)
+		return nil
+	case enterprise.FieldDays:
+		v, ok := value.([]int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDays(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Enterprise field %s", name)
 }
@@ -1861,6 +2040,12 @@ func (m *EnterpriseMutation) ClearedFields() []string {
 	if m.FieldCleared(enterprise.FieldSuspensedAt) {
 		fields = append(fields, enterprise.FieldSuspensedAt)
 	}
+	if m.FieldCleared(enterprise.FieldUseStore) {
+		fields = append(fields, enterprise.FieldUseStore)
+	}
+	if m.FieldCleared(enterprise.FieldDays) {
+		fields = append(fields, enterprise.FieldDays)
+	}
 	return fields
 }
 
@@ -1892,6 +2077,12 @@ func (m *EnterpriseMutation) ClearField(name string) error {
 		return nil
 	case enterprise.FieldSuspensedAt:
 		m.ClearSuspensedAt()
+		return nil
+	case enterprise.FieldUseStore:
+		m.ClearUseStore()
+		return nil
+	case enterprise.FieldDays:
+		m.ClearDays()
 		return nil
 	}
 	return fmt.Errorf("unknown Enterprise nullable field %s", name)
@@ -1957,6 +2148,15 @@ func (m *EnterpriseMutation) ResetField(name string) error {
 		return nil
 	case enterprise.FieldSuspensedAt:
 		m.ResetSuspensedAt()
+		return nil
+	case enterprise.FieldAgent:
+		m.ResetAgent()
+		return nil
+	case enterprise.FieldUseStore:
+		m.ResetUseStore()
+		return nil
+	case enterprise.FieldDays:
+		m.ResetDays()
 		return nil
 	}
 	return fmt.Errorf("unknown Enterprise field %s", name)

@@ -587,6 +587,26 @@ func (su *SubscribeUpdate) SetNillablePauseOverdue(b *bool) *SubscribeUpdate {
 	return su
 }
 
+// SetAgentEndAt sets the "agent_end_at" field.
+func (su *SubscribeUpdate) SetAgentEndAt(t time.Time) *SubscribeUpdate {
+	su.mutation.SetAgentEndAt(t)
+	return su
+}
+
+// SetNillableAgentEndAt sets the "agent_end_at" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableAgentEndAt(t *time.Time) *SubscribeUpdate {
+	if t != nil {
+		su.SetAgentEndAt(*t)
+	}
+	return su
+}
+
+// ClearAgentEndAt clears the value of the "agent_end_at" field.
+func (su *SubscribeUpdate) ClearAgentEndAt() *SubscribeUpdate {
+	su.mutation.ClearAgentEndAt()
+	return su
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (su *SubscribeUpdate) SetPlan(p *Plan) *SubscribeUpdate {
 	return su.SetPlanID(p.ID)
@@ -1254,6 +1274,19 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: subscribe.FieldPauseOverdue,
+		})
+	}
+	if value, ok := su.mutation.AgentEndAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: subscribe.FieldAgentEndAt,
+		})
+	}
+	if su.mutation.AgentEndAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: subscribe.FieldAgentEndAt,
 		})
 	}
 	if su.mutation.PlanCleared() {
@@ -2406,6 +2439,26 @@ func (suo *SubscribeUpdateOne) SetNillablePauseOverdue(b *bool) *SubscribeUpdate
 	return suo
 }
 
+// SetAgentEndAt sets the "agent_end_at" field.
+func (suo *SubscribeUpdateOne) SetAgentEndAt(t time.Time) *SubscribeUpdateOne {
+	suo.mutation.SetAgentEndAt(t)
+	return suo
+}
+
+// SetNillableAgentEndAt sets the "agent_end_at" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableAgentEndAt(t *time.Time) *SubscribeUpdateOne {
+	if t != nil {
+		suo.SetAgentEndAt(*t)
+	}
+	return suo
+}
+
+// ClearAgentEndAt clears the value of the "agent_end_at" field.
+func (suo *SubscribeUpdateOne) ClearAgentEndAt() *SubscribeUpdateOne {
+	suo.mutation.ClearAgentEndAt()
+	return suo
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (suo *SubscribeUpdateOne) SetPlan(p *Plan) *SubscribeUpdateOne {
 	return suo.SetPlanID(p.ID)
@@ -3103,6 +3156,19 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: subscribe.FieldPauseOverdue,
+		})
+	}
+	if value, ok := suo.mutation.AgentEndAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: subscribe.FieldAgentEndAt,
+		})
+	}
+	if suo.mutation.AgentEndAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: subscribe.FieldAgentEndAt,
 		})
 	}
 	if suo.mutation.PlanCleared() {

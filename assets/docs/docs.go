@@ -4071,6 +4071,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "boolean",
+                        "description": "StatementStart *string ` + "`" + `json:\"statementStart\" query:\"statementStart\"` + "`" + ` // 计费时间早于\nStatementEnd   *string ` + "`" + `json:\"statementEnd\" query:\"statementEnd\"` + "`" + `     // 计费时间晚于",
+                        "name": "agent",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "城市ID",
                         "name": "cityId",
@@ -13443,6 +13449,10 @@ const docTemplate = `{
                     "description": "企业地址 ",
                     "type": "string"
                 },
+                "agent": {
+                    "description": "代理商 ` + "`" + `true` + "`" + `是 ` + "`" + `false` + "`" + `否",
+                    "type": "boolean"
+                },
                 "cityId": {
                     "description": "所在城市 ",
                     "type": "integer"
@@ -13458,6 +13468,13 @@ const docTemplate = `{
                 "contactPhone": {
                     "description": "联系电话 ",
                     "type": "string"
+                },
+                "days": {
+                    "description": "代理商时间选项",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "deposit": {
                     "description": "押金 ",
@@ -13491,6 +13508,10 @@ const docTemplate = `{
                         1,
                         2
                     ]
+                },
+                "useStore": {
+                    "description": "可使用门店 ` + "`" + `true` + "`" + `允许 ` + "`" + `false` + "`" + `不允许 (仅代理商模式生效), 骑手是否可以使用门店进行激活和退租",
+                    "type": "boolean"
                 }
             }
         },
@@ -13513,6 +13534,10 @@ const docTemplate = `{
                     "description": "企业地址 ",
                     "type": "string"
                 },
+                "agent": {
+                    "description": "代理商 ` + "`" + `true` + "`" + `是 ` + "`" + `false` + "`" + `否",
+                    "type": "boolean"
+                },
                 "cityId": {
                     "description": "所在城市 ",
                     "type": "integer"
@@ -13528,6 +13553,13 @@ const docTemplate = `{
                 "contactPhone": {
                     "description": "联系电话 ",
                     "type": "string"
+                },
+                "days": {
+                    "description": "代理商时间选项",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "deposit": {
                     "description": "押金 ",
@@ -13561,6 +13593,10 @@ const docTemplate = `{
                         1,
                         2
                     ]
+                },
+                "useStore": {
+                    "description": "可使用门店 ` + "`" + `true` + "`" + `允许 ` + "`" + `false` + "`" + `不允许 (仅代理商模式生效), 骑手是否可以使用门店进行激活和退租",
+                    "type": "boolean"
                 }
             }
         },
@@ -13644,6 +13680,10 @@ const docTemplate = `{
                     "description": "企业地址",
                     "type": "string"
                 },
+                "agent": {
+                    "description": "代理商 ` + "`" + `true` + "`" + `是 ` + "`" + `false` + "`" + `否",
+                    "type": "boolean"
+                },
                 "balance": {
                     "description": "可用余额",
                     "type": "number"
@@ -13673,6 +13713,13 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.EnterpriseContract"
+                    }
+                },
+                "days": {
+                    "description": "代理商时间选项",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
                     }
                 },
                 "deposit": {
@@ -13722,6 +13769,10 @@ const docTemplate = `{
                 "unsettlement": {
                     "description": "未结算天数, 预付费企业此字段强制为0",
                     "type": "integer"
+                },
+                "useStore": {
+                    "description": "可使用门店 ` + "`" + `true` + "`" + `允许 ` + "`" + `false` + "`" + `不允许",
+                    "type": "boolean"
                 }
             }
         },
@@ -15730,6 +15781,10 @@ const docTemplate = `{
         "model.RiderSigninRes": {
             "type": "object",
             "properties": {
+                "agent": {
+                    "description": "是否代理商骑手",
+                    "type": "boolean"
+                },
                 "contact": {
                     "description": "联系人",
                     "allOf": [

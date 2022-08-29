@@ -828,11 +828,13 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device, token string)
     if u.Edges.Person != nil {
         profile.Name = u.Edges.Person.Name
     }
-    if u.Edges.Enterprise != nil {
+    en := u.Edges.Enterprise
+    if en != nil {
         profile.Enterprise = &model.EnterpriseBasic{
-            ID:   u.Edges.Enterprise.ID,
-            Name: u.Edges.Enterprise.Name,
+            ID:   en.ID,
+            Name: en.Name,
         }
+        profile.Agent = tools.PointerInterface(en.Agent)
     } else {
         profile.Subscribe = subd
         profile.OrderNotActived = tools.NewPointer().Bool(subd != nil && subd.Status == model.SubscribeStatusInactive)

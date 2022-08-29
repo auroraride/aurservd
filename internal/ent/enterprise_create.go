@@ -217,6 +217,40 @@ func (ec *EnterpriseCreate) SetNillableSuspensedAt(t *time.Time) *EnterpriseCrea
 	return ec
 }
 
+// SetAgent sets the "agent" field.
+func (ec *EnterpriseCreate) SetAgent(b bool) *EnterpriseCreate {
+	ec.mutation.SetAgent(b)
+	return ec
+}
+
+// SetNillableAgent sets the "agent" field if the given value is not nil.
+func (ec *EnterpriseCreate) SetNillableAgent(b *bool) *EnterpriseCreate {
+	if b != nil {
+		ec.SetAgent(*b)
+	}
+	return ec
+}
+
+// SetUseStore sets the "use_store" field.
+func (ec *EnterpriseCreate) SetUseStore(b bool) *EnterpriseCreate {
+	ec.mutation.SetUseStore(b)
+	return ec
+}
+
+// SetNillableUseStore sets the "use_store" field if the given value is not nil.
+func (ec *EnterpriseCreate) SetNillableUseStore(b *bool) *EnterpriseCreate {
+	if b != nil {
+		ec.SetUseStore(*b)
+	}
+	return ec
+}
+
+// SetDays sets the "days" field.
+func (ec *EnterpriseCreate) SetDays(i []int) *EnterpriseCreate {
+	ec.mutation.SetDays(i)
+	return ec
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (ec *EnterpriseCreate) SetCity(c *City) *EnterpriseCreate {
 	return ec.SetCityID(c.ID)
@@ -432,6 +466,10 @@ func (ec *EnterpriseCreate) defaults() error {
 		v := enterprise.DefaultPrepaymentTotal
 		ec.mutation.SetPrepaymentTotal(v)
 	}
+	if _, ok := ec.mutation.Agent(); !ok {
+		v := enterprise.DefaultAgent
+		ec.mutation.SetAgent(v)
+	}
 	return nil
 }
 
@@ -475,6 +513,9 @@ func (ec *EnterpriseCreate) check() error {
 	}
 	if _, ok := ec.mutation.PrepaymentTotal(); !ok {
 		return &ValidationError{Name: "prepayment_total", err: errors.New(`ent: missing required field "Enterprise.prepayment_total"`)}
+	}
+	if _, ok := ec.mutation.Agent(); !ok {
+		return &ValidationError{Name: "agent", err: errors.New(`ent: missing required field "Enterprise.agent"`)}
 	}
 	if _, ok := ec.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Enterprise.city"`)}
@@ -650,6 +691,30 @@ func (ec *EnterpriseCreate) createSpec() (*Enterprise, *sqlgraph.CreateSpec) {
 			Column: enterprise.FieldSuspensedAt,
 		})
 		_node.SuspensedAt = &value
+	}
+	if value, ok := ec.mutation.Agent(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: enterprise.FieldAgent,
+		})
+		_node.Agent = value
+	}
+	if value, ok := ec.mutation.UseStore(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: enterprise.FieldUseStore,
+		})
+		_node.UseStore = value
+	}
+	if value, ok := ec.mutation.Days(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: enterprise.FieldDays,
+		})
+		_node.Days = value
 	}
 	if nodes := ec.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1150,6 +1215,54 @@ func (u *EnterpriseUpsert) ClearSuspensedAt() *EnterpriseUpsert {
 	return u
 }
 
+// SetAgent sets the "agent" field.
+func (u *EnterpriseUpsert) SetAgent(v bool) *EnterpriseUpsert {
+	u.Set(enterprise.FieldAgent, v)
+	return u
+}
+
+// UpdateAgent sets the "agent" field to the value that was provided on create.
+func (u *EnterpriseUpsert) UpdateAgent() *EnterpriseUpsert {
+	u.SetExcluded(enterprise.FieldAgent)
+	return u
+}
+
+// SetUseStore sets the "use_store" field.
+func (u *EnterpriseUpsert) SetUseStore(v bool) *EnterpriseUpsert {
+	u.Set(enterprise.FieldUseStore, v)
+	return u
+}
+
+// UpdateUseStore sets the "use_store" field to the value that was provided on create.
+func (u *EnterpriseUpsert) UpdateUseStore() *EnterpriseUpsert {
+	u.SetExcluded(enterprise.FieldUseStore)
+	return u
+}
+
+// ClearUseStore clears the value of the "use_store" field.
+func (u *EnterpriseUpsert) ClearUseStore() *EnterpriseUpsert {
+	u.SetNull(enterprise.FieldUseStore)
+	return u
+}
+
+// SetDays sets the "days" field.
+func (u *EnterpriseUpsert) SetDays(v []int) *EnterpriseUpsert {
+	u.Set(enterprise.FieldDays, v)
+	return u
+}
+
+// UpdateDays sets the "days" field to the value that was provided on create.
+func (u *EnterpriseUpsert) UpdateDays() *EnterpriseUpsert {
+	u.SetExcluded(enterprise.FieldDays)
+	return u
+}
+
+// ClearDays clears the value of the "days" field.
+func (u *EnterpriseUpsert) ClearDays() *EnterpriseUpsert {
+	u.SetNull(enterprise.FieldDays)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1538,6 +1651,62 @@ func (u *EnterpriseUpsertOne) UpdateSuspensedAt() *EnterpriseUpsertOne {
 func (u *EnterpriseUpsertOne) ClearSuspensedAt() *EnterpriseUpsertOne {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.ClearSuspensedAt()
+	})
+}
+
+// SetAgent sets the "agent" field.
+func (u *EnterpriseUpsertOne) SetAgent(v bool) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetAgent(v)
+	})
+}
+
+// UpdateAgent sets the "agent" field to the value that was provided on create.
+func (u *EnterpriseUpsertOne) UpdateAgent() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateAgent()
+	})
+}
+
+// SetUseStore sets the "use_store" field.
+func (u *EnterpriseUpsertOne) SetUseStore(v bool) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetUseStore(v)
+	})
+}
+
+// UpdateUseStore sets the "use_store" field to the value that was provided on create.
+func (u *EnterpriseUpsertOne) UpdateUseStore() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateUseStore()
+	})
+}
+
+// ClearUseStore clears the value of the "use_store" field.
+func (u *EnterpriseUpsertOne) ClearUseStore() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.ClearUseStore()
+	})
+}
+
+// SetDays sets the "days" field.
+func (u *EnterpriseUpsertOne) SetDays(v []int) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetDays(v)
+	})
+}
+
+// UpdateDays sets the "days" field to the value that was provided on create.
+func (u *EnterpriseUpsertOne) UpdateDays() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateDays()
+	})
+}
+
+// ClearDays clears the value of the "days" field.
+func (u *EnterpriseUpsertOne) ClearDays() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.ClearDays()
 	})
 }
 
@@ -2091,6 +2260,62 @@ func (u *EnterpriseUpsertBulk) UpdateSuspensedAt() *EnterpriseUpsertBulk {
 func (u *EnterpriseUpsertBulk) ClearSuspensedAt() *EnterpriseUpsertBulk {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.ClearSuspensedAt()
+	})
+}
+
+// SetAgent sets the "agent" field.
+func (u *EnterpriseUpsertBulk) SetAgent(v bool) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetAgent(v)
+	})
+}
+
+// UpdateAgent sets the "agent" field to the value that was provided on create.
+func (u *EnterpriseUpsertBulk) UpdateAgent() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateAgent()
+	})
+}
+
+// SetUseStore sets the "use_store" field.
+func (u *EnterpriseUpsertBulk) SetUseStore(v bool) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetUseStore(v)
+	})
+}
+
+// UpdateUseStore sets the "use_store" field to the value that was provided on create.
+func (u *EnterpriseUpsertBulk) UpdateUseStore() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateUseStore()
+	})
+}
+
+// ClearUseStore clears the value of the "use_store" field.
+func (u *EnterpriseUpsertBulk) ClearUseStore() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.ClearUseStore()
+	})
+}
+
+// SetDays sets the "days" field.
+func (u *EnterpriseUpsertBulk) SetDays(v []int) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetDays(v)
+	})
+}
+
+// UpdateDays sets the "days" field to the value that was provided on create.
+func (u *EnterpriseUpsertBulk) UpdateDays() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateDays()
+	})
+}
+
+// ClearDays clears the value of the "days" field.
+func (u *EnterpriseUpsertBulk) ClearDays() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.ClearDays()
 	})
 }
 

@@ -148,8 +148,8 @@ func Subscribe(sub *ent.Subscribe) {
 
     if sub.Remaining < 0 {
         f, fl := pl.OverdueFee(sub.Remaining)
-        task.FeeFormula = tools.NewPointerInterface(fl)
-        task.Fee = tools.NewPointerInterface(f)
+        task.FeeFormula = tools.PointerInterface(fl)
+        task.Fee = tools.PointerInterface(f)
     }
 
     tasks.Store(task.Phone, task)
@@ -215,14 +215,14 @@ func (r *reminderTask) sendvms(task *Task) {
         Fee:     task.Fee,
     }
     if task.Days < 0 {
-        data.Days = tools.NewPointerInterface(task.Days)
+        data.Days = tools.PointerInterface(task.Days)
     }
     s, _ := jsoniter.MarshalToString(data)
 
     vms := task.vms
     task.Success = ali.NewVms().SendVoiceMessageByTts(
-        tools.NewPointerInterface(task.Phone),
-        tools.NewPointerInterface(s),
+        tools.PointerInterface(task.Phone),
+        tools.PointerInterface(s),
         vms.tel,
         vms.tmpl,
     )

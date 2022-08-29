@@ -71,7 +71,7 @@ func (s *suspendService) Suspend(req *model.SuspendReq) {
             if beginning.After(pause.StartAt) {
                 now = beginning
             }
-            pauseID = tools.NewPointerInterface(pause.ID)
+            pauseID = tools.PointerInterface(pause.ID)
         }
         _, err = tx.SubscribeSuspend.Create().SetStartAt(time.Now()).SetRemark(req.Remark).SetStartAt(now).SetSubscribeID(sub.ID).SetCityID(sub.CityID).SetRiderID(sub.RiderID).SetNillablePauseID(pauseID).Save(s.ctx)
         if err != nil {

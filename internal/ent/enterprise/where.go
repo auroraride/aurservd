@@ -200,6 +200,20 @@ func SuspensedAt(v time.Time) predicate.Enterprise {
 	})
 }
 
+// Agent applies equality check predicate on the "agent" field. It's identical to AgentEQ.
+func Agent(v bool) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAgent), v))
+	})
+}
+
+// UseStore applies equality check predicate on the "use_store" field. It's identical to UseStoreEQ.
+func UseStore(v bool) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldUseStore), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {
@@ -1586,6 +1600,62 @@ func SuspensedAtIsNil() predicate.Enterprise {
 func SuspensedAtNotNil() predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldSuspensedAt)))
+	})
+}
+
+// AgentEQ applies the EQ predicate on the "agent" field.
+func AgentEQ(v bool) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAgent), v))
+	})
+}
+
+// AgentNEQ applies the NEQ predicate on the "agent" field.
+func AgentNEQ(v bool) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAgent), v))
+	})
+}
+
+// UseStoreEQ applies the EQ predicate on the "use_store" field.
+func UseStoreEQ(v bool) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldUseStore), v))
+	})
+}
+
+// UseStoreNEQ applies the NEQ predicate on the "use_store" field.
+func UseStoreNEQ(v bool) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldUseStore), v))
+	})
+}
+
+// UseStoreIsNil applies the IsNil predicate on the "use_store" field.
+func UseStoreIsNil() predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldUseStore)))
+	})
+}
+
+// UseStoreNotNil applies the NotNil predicate on the "use_store" field.
+func UseStoreNotNil() predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldUseStore)))
+	})
+}
+
+// DaysIsNil applies the IsNil predicate on the "days" field.
+func DaysIsNil() predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldDays)))
+	})
+}
+
+// DaysNotNil applies the NotNil predicate on the "days" field.
+func DaysNotNil() predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldDays)))
 	})
 }
 

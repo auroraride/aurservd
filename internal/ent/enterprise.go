@@ -57,6 +57,12 @@ type Enterprise struct {
 	PrepaymentTotal float64 `json:"prepayment_total,omitempty"`
 	// 暂停合作时间
 	SuspensedAt *time.Time `json:"suspensed_at,omitempty"`
+	// 代理商模式
+	Agent bool `json:"agent,omitempty"`
+	// 是否可以使用门店, 只有代理商模式生效
+	UseStore bool `json:"use_store,omitempty"`
+	// 代理商时间选项
+	Days []int `json:"days,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterpriseQuery when eager-loading is set.
 	Edges EnterpriseEdges `json:"edges"`
@@ -166,8 +172,10 @@ func (*Enterprise) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case enterprise.FieldCreator, enterprise.FieldLastModifier:
+		case enterprise.FieldCreator, enterprise.FieldLastModifier, enterprise.FieldDays:
 			values[i] = new([]byte)
+		case enterprise.FieldAgent, enterprise.FieldUseStore:
+			values[i] = new(sql.NullBool)
 		case enterprise.FieldDeposit, enterprise.FieldBalance, enterprise.FieldPrepaymentTotal:
 			values[i] = new(sql.NullFloat64)
 		case enterprise.FieldID, enterprise.FieldCityID, enterprise.FieldStatus, enterprise.FieldPayment:
@@ -317,6 +325,26 @@ func (e *Enterprise) assignValues(columns []string, values []interface{}) error 
 				e.SuspensedAt = new(time.Time)
 				*e.SuspensedAt = value.Time
 			}
+		case enterprise.FieldAgent:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field agent", values[i])
+			} else if value.Valid {
+				e.Agent = value.Bool
+			}
+		case enterprise.FieldUseStore:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field use_store", values[i])
+			} else if value.Valid {
+				e.UseStore = value.Bool
+			}
+		case enterprise.FieldDays:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field days", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &e.Days); err != nil {
+					return fmt.Errorf("unmarshal field days: %w", err)
+				}
+			}
 		}
 	}
 	return nil
@@ -445,6 +473,15 @@ func (e *Enterprise) String() string {
 		builder.WriteString("suspensed_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
+	builder.WriteString(", ")
+	builder.WriteString("agent=")
+	builder.WriteString(fmt.Sprintf("%v", e.Agent))
+	builder.WriteString(", ")
+	builder.WriteString("use_store=")
+	builder.WriteString(fmt.Sprintf("%v", e.UseStore))
+	builder.WriteString(", ")
+	builder.WriteString("days=")
+	builder.WriteString(fmt.Sprintf("%v", e.Days))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -159,7 +159,7 @@ func (s *riderBusinessService) open(bin *ec.BinInfo, remark string) (status bool
 
     status, err = NewCabinet().DoorOperate(&model.CabinetDoorOperateReq{
         ID:        tools.NewPointer().UInt64(s.cabinet.ID),
-        Index:     tools.NewPointerInterface(bin.Index),
+        Index:     tools.PointerInterface(bin.Index),
         Remark:    fmt.Sprintf("%s - %s", s.task.Job.Label(), remark),
         Operation: &operation,
     }, model.CabinetDoorOperator{

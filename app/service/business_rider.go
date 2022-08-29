@@ -204,7 +204,7 @@ func (s *businessRiderService) Inactive(id uint64) (*model.SubscribeActiveInfo, 
 // preprocess 预处理数据
 func (s *businessRiderService) preprocess(typ business.Type, sub *ent.Subscribe) {
     s.subscribe = sub
-    s.subscribeID = tools.NewPointerInterface(sub.ID)
+    s.subscribeID = tools.PointerInterface(sub.ID)
 
     r := sub.Edges.Rider
     if r == nil {
@@ -226,11 +226,11 @@ func (s *businessRiderService) preprocess(typ business.Type, sub *ent.Subscribe)
     s.rider = r
 
     if s.store != nil {
-        s.storeID = tools.NewPointerInterface(s.store.ID)
+        s.storeID = tools.PointerInterface(s.store.ID)
     }
 
     if s.cabinet != nil {
-        s.cabinetID = tools.NewPointerInterface(s.cabinet.ID)
+        s.cabinetID = tools.PointerInterface(s.cabinet.ID)
     }
 
     if s.store == nil && s.cabinet == nil {
@@ -238,7 +238,7 @@ func (s *businessRiderService) preprocess(typ business.Type, sub *ent.Subscribe)
     }
 
     if s.employee != nil {
-        s.employeeID = tools.NewPointerInterface(s.employee.ID)
+        s.employeeID = tools.PointerInterface(s.employee.ID)
     }
 
     if s.employee == nil && s.modifier == nil && s.cabinet == nil {
@@ -362,7 +362,7 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
     revStatus := model.ReserveStatusFail
     if b != nil {
         revStatus = model.ReserveStatusSuccess
-        bussinessID = tools.NewPointerInterface(b.ID)
+        bussinessID = tools.PointerInterface(b.ID)
     }
 
     // 更新预约

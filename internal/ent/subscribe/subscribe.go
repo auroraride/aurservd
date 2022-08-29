@@ -79,6 +79,8 @@ const (
 	FieldLastBillDate = "last_bill_date"
 	// FieldPauseOverdue holds the string denoting the pause_overdue field in the database.
 	FieldPauseOverdue = "pause_overdue"
+	// FieldAgentEndAt holds the string denoting the agent_end_at field in the database.
+	FieldAgentEndAt = "agent_end_at"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
@@ -245,6 +247,7 @@ var Columns = []string{
 	FieldUnsubscribeReason,
 	FieldLastBillDate,
 	FieldPauseOverdue,
+	FieldAgentEndAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

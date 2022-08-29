@@ -93,6 +93,8 @@ type Subscribe struct {
 	LastBillDate *time.Time `json:"last_bill_date,omitempty"`
 	// 是否超期退租
 	PauseOverdue bool `json:"pause_overdue,omitempty"`
+	// 代理商处到期日期
+	AgentEndAt *time.Time `json:"agent_end_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribeQuery when eager-loading is set.
 	Edges SubscribeEdges `json:"edges"`
@@ -308,7 +310,7 @@ func (*Subscribe) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case subscribe.FieldRemark, subscribe.FieldModel, subscribe.FieldUnsubscribeReason:
 			values[i] = new(sql.NullString)
-		case subscribe.FieldCreatedAt, subscribe.FieldUpdatedAt, subscribe.FieldDeletedAt, subscribe.FieldPausedAt, subscribe.FieldSuspendAt, subscribe.FieldStartAt, subscribe.FieldEndAt, subscribe.FieldRefundAt, subscribe.FieldLastBillDate:
+		case subscribe.FieldCreatedAt, subscribe.FieldUpdatedAt, subscribe.FieldDeletedAt, subscribe.FieldPausedAt, subscribe.FieldSuspendAt, subscribe.FieldStartAt, subscribe.FieldEndAt, subscribe.FieldRefundAt, subscribe.FieldLastBillDate, subscribe.FieldAgentEndAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Subscribe", columns[i])
@@ -546,6 +548,13 @@ func (s *Subscribe) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				s.PauseOverdue = value.Bool
 			}
+		case subscribe.FieldAgentEndAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field agent_end_at", values[i])
+			} else if value.Valid {
+				s.AgentEndAt = new(time.Time)
+				*s.AgentEndAt = value.Time
+			}
 		}
 	}
 	return nil
@@ -768,6 +777,11 @@ func (s *Subscribe) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("pause_overdue=")
 	builder.WriteString(fmt.Sprintf("%v", s.PauseOverdue))
+	builder.WriteString(", ")
+	if v := s.AgentEndAt; v != nil {
+		builder.WriteString("agent_end_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -100,6 +100,6 @@ func (s *assistanceSocketService) SendRider(riderID uint64, ass *ent.Assistance)
 func (s *assistanceSocketService) SenderEmployee(employeeID uint64, ass *ent.Assistance) {
     socket.GetClientID(NewEmployeeSocket(), employeeID).SendMessage(&model.EmployeeSocketMessage{
         Speech:       "您有一条救援任务",
-        AssistanceID: tools.NewPointerInterface(ass.ID),
+        AssistanceID: tools.PointerInterface(ass.ID),
     })
 }
