@@ -77,6 +77,7 @@ type config struct {
         Subscribe  bool // 个签订阅日期计算
         Reserve    bool // 预约到期计算
         Reminder   bool // 个签到期提醒
+        Cabinet    bool // 电柜任务失效
     }
     Cabinet struct {
         Debug    bool

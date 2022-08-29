@@ -19,7 +19,7 @@ import (
 )
 
 const (
-    maxTime = 10.0
+    MaxTime = 10.0
 )
 
 type Updater func(task *Task)
@@ -69,13 +69,16 @@ func (j Job) Label() string {
 type TaskStatus uint8
 
 const (
-    TaskStatusProcessing TaskStatus = iota + 1 // 处理中
-    TaskStatusSuccess                          // 成功
-    TaskStatusFail                             // 失败
+    TaskStatusNotStart   TaskStatus = iota // 未开始
+    TaskStatusProcessing                   // 处理中
+    TaskStatusSuccess                      // 成功
+    TaskStatusFail                         // 失败
 )
 
 func (ts TaskStatus) String() string {
     switch ts {
+    case TaskStatusNotStart:
+        return "未开始"
     case TaskStatusSuccess:
         return "成功"
     case TaskStatusFail:
@@ -182,8 +185,9 @@ func (t *Task) Start(cb ...Updater) {
         "_id": bson.M{
             operator.Ne: t.ID,
         },
-        "status": 0,
-        "serial": t.Serial,
+        "status":    0,
+        "serial":    t.Serial,
+        "deactived": false,
     }, bson.M{
         operator.Set: bson.M{"deactivated": true},
     })
@@ -214,6 +218,15 @@ func (t *Task) Deactive() {
     _ = mgo.CabinetTask.UpdateId(context.Background(), t.ID, bson.M{"deactivated": true})
 }
 
+// IsDeactived 是否失效
+func (t *Task) IsDeactived() bool {
+    if t.StartAt == nil && time.Now().Sub(t.UpdateAt).Seconds() > MaxTime {
+        t.Deactive()
+        return true
+    }
+    return t.Deactivated
+}
+
 // QueryID 查询任务
 func QueryID(id primitive.ObjectID) (t *Task) {
     t = new(Task)
@@ -241,8 +254,7 @@ func Obtain(req ObtainReq) (t *Task) {
         return
     }
     // 任务未开始且超过10秒设置为超时
-    if t.StartAt == nil && time.Now().Sub(t.UpdateAt).Seconds() > maxTime {
-        t.Deactive()
+    if t.IsDeactived() {
         return nil
     }
     return t
@@ -268,8 +280,7 @@ func BusyFromID(id uint64) bool {
 }
 
 func BusyFromIDX(id uint64) {
-    task := Obtain(ObtainReq{CabinetID: id})
-    if task != nil {
+    if BusyFromID(id) {
         snag.Panic("电柜忙")
     }
 }

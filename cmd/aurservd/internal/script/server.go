@@ -41,14 +41,17 @@ func serverCommand() *cobra.Command {
             // 启动 enterprise task
             go task.NewEnterprise().Start()
 
-            // 启动 cabinet task
-            go task.NewCabinetTask().Start()
+            // 启动 sim task
+            go task.NewSimTask().Start()
 
             // 启动 branch task
             go task.NewBranchTask().Start()
 
             // 启动 reserve task
             go task.NewReserve().Start()
+
+            // 启动 cabinet task
+            go task.NewCabinetTask().Start()
 
             // 启动 任务补偿
             compensate()

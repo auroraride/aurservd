@@ -158,8 +158,8 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     // 查找任务
     task := ec.QueryID(req.UUID)
 
-    // TODO 存储骑手信息并比对骑手信息是否相符
-    if task == nil || task.Status > 0 || task.StartAt != nil || task.Job != ec.JobExchange || task.Exchange == nil {
+    // 判断任务是否存在, 并且比对存储骑手信息是否相符
+    if task == nil || task.Status > 0 || task.StartAt != nil || task.Job != ec.JobExchange || task.Exchange == nil || task.IsDeactived() || task.Rider == nil || task.Rider.ID != s.rider.ID {
         snag.Panic("未找到信息, 请重新扫码")
     }
 

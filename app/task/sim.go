@@ -20,7 +20,7 @@ import (
 type simTask struct {
 }
 
-func NewCabinetTask() *simTask {
+func NewSimTask() *simTask {
     return &simTask{}
 }
 
