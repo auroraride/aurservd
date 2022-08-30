@@ -57,6 +57,21 @@ func NewEnterpriseRiderWithEmployee(e *ent.Employee) *enterpriseRiderService {
 
 // Create 新增骑手
 func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) model.EnterpriseRider {
+    // 查询团签
+    e := NewEnterprise().QueryX(req.EnterpriseID)
+
+    // 判定代理商字段
+    var ep *ent.EnterprisePrice
+    if e.Agent {
+        if req.Days == 0 || req.PriceID == 0 {
+            snag.Panic("代理商必选骑士卡信息")
+        }
+        ep, _ = ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(e.ID), enterpriseprice.ID(req.PriceID)).First(s.ctx)
+        if ep == nil {
+            snag.Panic("未找到价格信息")
+        }
+    }
+
     // 查询是否存在
     if ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).ExistX(s.ctx) {
         snag.Panic("此手机号已存在")
@@ -65,16 +80,34 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
     stat := NewEnterpriseStation().Query(req.StationID)
     var r *ent.Rider
 
-    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) error {
+    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+        var per *ent.Person
         // 创建person
-        p, err := tx.Person.Create().SetName(req.Name).Save(s.ctx)
+        per, err = tx.Person.Create().SetName(req.Name).Save(s.ctx)
         if err != nil {
-            return err
+            return
         }
 
         // 创建rider
-        r, err = tx.Rider.Create().SetPhone(req.Phone).SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).SetPerson(p).Save(s.ctx)
-        return err
+        r, err = tx.Rider.Create().SetPhone(req.Phone).SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).SetPerson(per).Save(s.ctx)
+        if err != nil {
+            return
+        }
+
+        // 如果是代理, 创建待激活骑士卡
+        // TODO 骑手激活的时候判定是否新签
+        if e.Agent {
+            _, err = tx.Subscribe.Create().
+                SetType(model.OrderTypeNewly).
+                SetRiderID(r.ID).
+                SetModel(ep.Model).
+                SetRemaining(req.Days).
+                SetInitialDays(req.Days).
+                SetStatus(model.SubscribeStatusInactive).
+                SetCityID(ep.CityID).
+                Save(s.ctx)
+        }
+        return
     })
 
     return model.EnterpriseRider{

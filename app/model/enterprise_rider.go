@@ -11,6 +11,9 @@ type EnterpriseRiderCreateReq struct {
     StationID    uint64 `json:"stationId" validate:"required" trans:"站点ID"`
     Name         string `json:"name" validate:"required" trans:"姓名"`
     Phone        string `json:"phone" validate:"required,phone" trans:"电话号"`
+
+    Days    int    `json:"days,omitempty"`    // 天数, 仅代理商需要
+    PriceID uint64 `json:"priceId,omitempty"` // 价格ID, 仅代理商需要
 }
 
 type EnterpriseRider struct {
