@@ -61,6 +61,7 @@ func (t *timeTool) UsedDaysToNowString(before string) int {
     return int(carbon.Parse(before).StartOfDay().DiffInDays(carbon.Now().StartOfDay().AddDay()))
 }
 
+// WillEnd 计算到期时间
 func (t *timeTool) WillEnd(before time.Time, days int) time.Time {
     return before.AddDate(0, 0, days-1)
 }

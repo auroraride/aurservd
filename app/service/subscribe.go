@@ -221,9 +221,10 @@ func (s *subscribeService) Detail(sub *ent.Subscribe) *model.Subscribe {
 
     e := sub.Edges.Enterprise
     if e != nil {
-        res.Enterprise = &model.EnterpriseBasic{
-            ID:   e.ID,
-            Name: e.Name,
+        res.Enterprise = &model.Enterprise{
+            ID:    e.ID,
+            Name:  e.Name,
+            Agent: e.Agent,
         }
         res.Business = e.Status == model.EnterpriseStatusCollaborated
     }

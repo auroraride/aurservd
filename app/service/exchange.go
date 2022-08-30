@@ -265,9 +265,10 @@ func (s *exchangeService) EmployeeList(req *model.ExchangeListReq) *model.Pagina
 
             e := item.Edges.Enterprise
             if e != nil {
-                res.Enterprise = &model.EnterpriseBasic{
-                    ID:   e.ID,
-                    Name: e.Name,
+                res.Enterprise = &model.Enterprise{
+                    ID:    e.ID,
+                    Name:  e.Name,
+                    Agent: e.Agent,
                 }
             }
 
@@ -356,9 +357,10 @@ func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.Paginat
 
         e := item.Edges.Enterprise
         if e != nil {
-            res.Enterprise = &model.EnterpriseBasic{
-                ID:   e.ID,
-                Name: e.Name,
+            res.Enterprise = &model.Enterprise{
+                ID:    e.ID,
+                Name:  e.Name,
+                Agent: e.Agent,
             }
         }
 

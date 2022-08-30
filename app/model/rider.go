@@ -45,20 +45,19 @@ type RiderSignupReq struct {
 
 // RiderSigninRes 骑手登录数据返回
 type RiderSigninRes struct {
-    ID              uint64           `json:"id"`
-    Phone           string           `json:"phone"`                     // 电话
-    Name            string           `json:"name"`                      // 姓名, 实名认证后才会有
-    Token           string           `json:"token,omitempty"`           // 认证token
-    IsNewDevice     bool             `json:"isNewDevice"`               // 是否新设备
-    IsAuthed        bool             `json:"isAuthed"`                  // 是否已认证
-    IsContactFilled bool             `json:"isContactFilled"`           // 联系人是否添加
-    Contact         *RiderContact    `json:"contact,omitempty"`         // 联系人
-    Qrcode          string           `json:"qrcode"`                    // 二维码
-    Deposit         float64          `json:"deposit"`                   // 需缴押金
-    OrderNotActived *bool            `json:"orderNotActived,omitempty"` // 是否存在未激活订单
-    Subscribe       *Subscribe       `json:"subscribe,omitempty"`       // 骑士卡
-    Enterprise      *EnterpriseBasic `json:"enterprise,omitempty"`      // 所属企业
-    Agent           *bool            `json:"agent,omitempty"`           // 是否代理商骑手
+    ID              uint64        `json:"id"`
+    Phone           string        `json:"phone"`                     // 电话
+    Name            string        `json:"name"`                      // 姓名, 实名认证后才会有
+    Token           string        `json:"token,omitempty"`           // 认证token
+    IsNewDevice     bool          `json:"isNewDevice"`               // 是否新设备
+    IsAuthed        bool          `json:"isAuthed"`                  // 是否已认证
+    IsContactFilled bool          `json:"isContactFilled"`           // 联系人是否添加
+    Contact         *RiderContact `json:"contact,omitempty"`         // 联系人
+    Qrcode          string        `json:"qrcode"`                    // 二维码
+    Deposit         float64       `json:"deposit"`                   // 需缴押金
+    OrderNotActived *bool         `json:"orderNotActived,omitempty"` // 是否存在未激活订单
+    Subscribe       *Subscribe    `json:"subscribe,omitempty"`       // 骑士卡
+    Enterprise      *Enterprise   `json:"enterprise,omitempty"`      // 所属企业
 }
 
 // RiderContact 紧急联系人
@@ -129,7 +128,7 @@ type RiderItem struct {
     Remark     string           `json:"remark"`             // 账户备注
     Contract   string           `json:"contract,omitempty"` // 合同(有可能不存在)
     // 团签企业信息, 若无此字段则为个签用户
-    Enterprise *EnterpriseBasic `json:"enterprise,omitempty"`
+    Enterprise *Enterprise `json:"enterprise,omitempty"`
     // 当前有效订阅信息, 若无此字段则代表当前无有效订阅 (订阅 = 骑手骑士卡)
     Subscribe *RiderItemSubscribe `json:"subscribe,omitempty"`
     // 认证信息, 有可能不存在, 内部字段也有可能不存在

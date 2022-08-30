@@ -193,9 +193,11 @@ func (s *businessRiderService) Inactive(id uint64) (*model.SubscribeActiveInfo, 
             res.CommissionID = &c.ID
         }
     } else {
-        res.Enterprise = &model.EnterpriseBasic{
-            ID:   sub.Edges.Enterprise.ID,
-            Name: sub.Edges.Enterprise.Name,
+        en := sub.Edges.Enterprise
+        res.Enterprise = &model.Enterprise{
+            ID:    en.ID,
+            Name:  en.Name,
+            Agent: en.Agent,
         }
     }
     return res, sub
@@ -398,6 +400,12 @@ func (s *businessRiderService) Active(info *model.SubscribeActiveInfo, sub *ent.
     s.preprocess(business.TypeActive, sub)
 
     s.do(business.TypeActive, func(tx *ent.Tx) {
+        var aend *time.Time
+        // 如果是代理商, 计算骑士卡代理商结束时间
+        if info.Enterprise != nil && info.Enterprise.Agent {
+            aend = tools.PointerInterface(tools.NewTime().WillEnd(time.Now(), sub.InitialDays))
+        }
+
         // 激活
         var err error
         s.subscribe, err = tx.Subscribe.UpdateOneID(info.ID).
@@ -406,14 +414,9 @@ func (s *businessRiderService) Active(info *model.SubscribeActiveInfo, sub *ent.
             SetNillableEmployeeID(s.employeeID).
             SetNillableStoreID(s.storeID).
             SetNillableCabinetID(s.cabinetID).
+            SetNillableAgentEndAt(aend).
             Save(s.ctx)
         snag.PanicIfError(err)
-
-        // // 提成
-        // if info.CommissionID != nil && s.employeeID != nil {
-        //     _, err = tx.Commission.UpdateOneID(*info.CommissionID).SetEmployeeID(*s.employeeID).Save(s.ctx)
-        //     snag.PanicIfError(err)
-        // }
     })
 
     if info.EnterpriseID != nil {

@@ -187,9 +187,10 @@ func (s *businessService) basicDetail(item *ent.Business) (res model.BusinessEmp
 
     e := item.Edges.Enterprise
     if e != nil {
-        res.Enterprise = &model.EnterpriseBasic{
-            ID:   e.ID,
-            Name: e.Name,
+        res.Enterprise = &model.Enterprise{
+            ID:    e.ID,
+            Name:  e.Name,
+            Agent: e.Agent,
         }
     }
 

@@ -67,7 +67,7 @@ type Subscribe struct {
     Models     []BatteryModel      `json:"models,omitempty"`     // 可用电池型号
     Plan       *Plan               `json:"plan,omitempty"`       // 骑士卡信息
     Order      *SubscribeOrderInfo `json:"order,omitempty"`      // 订单信息
-    Enterprise *EnterpriseBasic    `json:"enterprise,omitempty"` // 企业信息
+    Enterprise *Enterprise         `json:"enterprise,omitempty"` // 企业信息
 }
 
 // SubscribeAlter 订阅天数调整请求
@@ -85,7 +85,7 @@ type SubscribeActiveInfo struct {
     City         City                `json:"city"`                   // 所在城市
     Plan         *Plan               `json:"plan,omitempty"`         // 套餐详情, 团签骑手此字段不存在
     Order        *SubscribeOrderInfo `json:"order,omitempty"`        // 订单详情, 团签骑手此字段不存在
-    Enterprise   *EnterpriseBasic    `json:"enterprise,omitempty"`   // 企业详情, 个签用户此字段不存在
+    Enterprise   *Enterprise         `json:"enterprise,omitempty"`   // 企业详情, 个签用户此字段不存在
 
     CommissionID *uint64 `json:"-" swaggerignore:"true"`
 }

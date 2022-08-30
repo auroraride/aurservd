@@ -572,9 +572,10 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
     }
     e := item.Edges.Enterprise
     if e != nil {
-        ri.Enterprise = &model.EnterpriseBasic{
-            ID:   e.ID,
-            Name: e.Name,
+        ri.Enterprise = &model.Enterprise{
+            ID:    e.ID,
+            Name:  e.Name,
+            Agent: e.Agent,
         }
     }
 
@@ -830,11 +831,11 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device, token string)
     }
     en := u.Edges.Enterprise
     if en != nil {
-        profile.Enterprise = &model.EnterpriseBasic{
-            ID:   en.ID,
-            Name: en.Name,
+        profile.Enterprise = &model.Enterprise{
+            ID:    en.ID,
+            Name:  en.Name,
+            Agent: en.Agent,
         }
-        profile.Agent = tools.PointerInterface(en.Agent)
     } else {
         profile.Subscribe = subd
         profile.OrderNotActived = tools.NewPointer().Bool(subd != nil && subd.Status == model.SubscribeStatusInactive)

@@ -12124,7 +12124,7 @@ const docTemplate = `{
                     "description": "团签企业, 个签无此字段",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.EnterpriseBasic"
+                            "$ref": "#/definitions/model.Enterprise"
                         }
                     ]
                 },
@@ -12180,7 +12180,7 @@ const docTemplate = `{
                     "description": "团签企业, 个签无此字段",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.EnterpriseBasic"
+                            "$ref": "#/definitions/model.Enterprise"
                         }
                     ]
                 },
@@ -13360,9 +13360,13 @@ const docTemplate = `{
                 }
             }
         },
-        "model.EnterpriseBasic": {
+        "model.Enterprise": {
             "type": "object",
             "properties": {
+                "agent": {
+                    "description": "是否代理商模式",
+                    "type": "boolean"
+                },
                 "id": {
                     "description": "企业ID",
                     "type": "integer"
@@ -13985,7 +13989,7 @@ const docTemplate = `{
                     "description": "团签企业, 个签无此字段",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.EnterpriseBasic"
+                            "$ref": "#/definitions/model.Enterprise"
                         }
                     ]
                 },
@@ -14062,7 +14066,7 @@ const docTemplate = `{
                     "description": "团签企业, 个签无此字段",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.EnterpriseBasic"
+                            "$ref": "#/definitions/model.Enterprise"
                         }
                     ]
                 },
@@ -15158,7 +15162,7 @@ const docTemplate = `{
                     "description": "团签企业, 团签骑手判定依据(非空是团签), 个签无此字段",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.EnterpriseBasic"
+                            "$ref": "#/definitions/model.Enterprise"
                         }
                     ]
                 },
@@ -15397,7 +15401,7 @@ const docTemplate = `{
                     "description": "团签企业信息, 若无此字段则为个签用户",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.EnterpriseBasic"
+                            "$ref": "#/definitions/model.Enterprise"
                         }
                     ]
                 },
@@ -15789,10 +15793,6 @@ const docTemplate = `{
         "model.RiderSigninRes": {
             "type": "object",
             "properties": {
-                "agent": {
-                    "description": "是否代理商骑手",
-                    "type": "boolean"
-                },
                 "contact": {
                     "description": "联系人",
                     "allOf": [
@@ -15809,7 +15809,7 @@ const docTemplate = `{
                     "description": "所属企业",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.EnterpriseBasic"
+                            "$ref": "#/definitions/model.Enterprise"
                         }
                     ]
                 },
@@ -16981,7 +16981,7 @@ const docTemplate = `{
                     "description": "企业信息",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.EnterpriseBasic"
+                            "$ref": "#/definitions/model.Enterprise"
                         }
                     ]
                 },
@@ -17073,7 +17073,7 @@ const docTemplate = `{
                     "description": "企业详情, 个签用户此字段不存在",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.EnterpriseBasic"
+                            "$ref": "#/definitions/model.Enterprise"
                         }
                     ]
                 },

@@ -47,10 +47,11 @@ type EnterprisePriceWithCity struct {
     City  City    `json:"city"`  // 城市
 }
 
-// EnterpriseBasic 企业基础字段
-type EnterpriseBasic struct {
-    ID   uint64 `json:"id"`   // 企业ID
-    Name string `json:"name"` // 企业名称
+// Enterprise 企业基础字段
+type Enterprise struct {
+    ID    uint64 `json:"id"`    // 企业ID
+    Name  string `json:"name"`  // 企业名称
+    Agent bool   `json:"agent"` // 是否代理商模式
 }
 
 // EnterpriseDetail 企业详细字段

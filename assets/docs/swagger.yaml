@@ -1305,7 +1305,7 @@ definitions:
     properties:
       enterprise:
         allOf:
-        - $ref: '#/definitions/model.EnterpriseBasic'
+        - $ref: '#/definitions/model.Enterprise'
         description: 团签企业, 个签无此字段
       id:
         type: integer
@@ -1338,7 +1338,7 @@ definitions:
         description: 店员, 可能为空
       enterprise:
         allOf:
-        - $ref: '#/definitions/model.EnterpriseBasic'
+        - $ref: '#/definitions/model.Enterprise'
         description: 团签企业, 个签无此字段
       id:
         type: integer
@@ -2174,8 +2174,11 @@ definitions:
     - smsCode
     - smsId
     type: object
-  model.EnterpriseBasic:
+  model.Enterprise:
     properties:
+      agent:
+        description: 是否代理商模式
+        type: boolean
       id:
         description: 企业ID
         type: integer
@@ -2629,7 +2632,7 @@ definitions:
     properties:
       enterprise:
         allOf:
-        - $ref: '#/definitions/model.EnterpriseBasic'
+        - $ref: '#/definitions/model.Enterprise'
         description: 团签企业, 个签无此字段
       id:
         type: integer
@@ -2677,7 +2680,7 @@ definitions:
         type: string
       enterprise:
         allOf:
-        - $ref: '#/definitions/model.EnterpriseBasic'
+        - $ref: '#/definitions/model.Enterprise'
         description: 团签企业, 个签无此字段
       error:
         description: 换电失败原因
@@ -3453,7 +3456,7 @@ definitions:
         type: integer
       enterprise:
         allOf:
-        - $ref: '#/definitions/model.EnterpriseBasic'
+        - $ref: '#/definitions/model.Enterprise'
         description: 团签企业, 团签骑手判定依据(非空是团签), 个签无此字段
       id:
         type: integer
@@ -3609,7 +3612,7 @@ definitions:
         type: number
       enterprise:
         allOf:
-        - $ref: '#/definitions/model.EnterpriseBasic'
+        - $ref: '#/definitions/model.Enterprise'
         description: 团签企业信息, 若无此字段则为个签用户
       id:
         type: integer
@@ -3879,9 +3882,6 @@ definitions:
     type: object
   model.RiderSigninRes:
     properties:
-      agent:
-        description: 是否代理商骑手
-        type: boolean
       contact:
         allOf:
         - $ref: '#/definitions/model.RiderContact'
@@ -3891,7 +3891,7 @@ definitions:
         type: number
       enterprise:
         allOf:
-        - $ref: '#/definitions/model.EnterpriseBasic'
+        - $ref: '#/definitions/model.Enterprise'
         description: 所属企业
       id:
         type: integer
@@ -4698,7 +4698,7 @@ definitions:
         type: string
       enterprise:
         allOf:
-        - $ref: '#/definitions/model.EnterpriseBasic'
+        - $ref: '#/definitions/model.Enterprise'
         description: 企业信息
       id:
         description: 订阅ID
@@ -4759,7 +4759,7 @@ definitions:
         description: 所在城市
       enterprise:
         allOf:
-        - $ref: '#/definitions/model.EnterpriseBasic'
+        - $ref: '#/definitions/model.Enterprise'
         description: 企业详情, 个签用户此字段不存在
       enterpriseId:
         description: 企业ID, 团签用户判定依据, 非团签用户此字段不存在

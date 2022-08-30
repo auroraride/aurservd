@@ -55,13 +55,13 @@ type ExchangeListReq struct {
 }
 
 type ExchangeEmployeeListRes struct {
-    ID         uint64           `json:"id"`
-    Name       string           `json:"name"`                 // 骑手姓名
-    Phone      string           `json:"phone"`                // 骑手电话
-    Time       string           `json:"time"`                 // 换电时间
-    Model      string           `json:"model"`                // 电池型号
-    Enterprise *EnterpriseBasic `json:"enterprise,omitempty"` // 团签企业, 个签无此字段
-    Plan       *Plan            `json:"plan,omitempty"`       // 骑士卡, 团签无此字段
+    ID         uint64      `json:"id"`
+    Name       string      `json:"name"`                 // 骑手姓名
+    Phone      string      `json:"phone"`                // 骑手电话
+    Time       string      `json:"time"`                 // 换电时间
+    Model      string      `json:"model"`                // 电池型号
+    Enterprise *Enterprise `json:"enterprise,omitempty"` // 团签企业, 个签无此字段
+    Plan       *Plan       `json:"plan,omitempty"`       // 骑士卡, 团签无此字段
 }
 
 type ExchangeManagerListReq struct {
@@ -84,7 +84,7 @@ type ExchangeManagerListRes struct {
     Time        string            `json:"time"`                 // 换电时间
     Model       string            `json:"model"`                // 电池型号
     Alternative bool              `json:"alternative"`          // 换电方案 `true`非满电 `false`满电, 只有`true`的时候才显示为`非满电`
-    Enterprise  *EnterpriseBasic  `json:"enterprise,omitempty"` // 团签企业, 个签无此字段
+    Enterprise  *Enterprise       `json:"enterprise,omitempty"` // 团签企业, 个签无此字段
     Store       *Store            `json:"store,omitempty"`      // 门店, 电柜换电无此字段
     Cabinet     *CabinetBasicInfo `json:"cabinet,omitempty"`    // 电柜, 门店换电无此字段
     City        City              `json:"city"`                 // 城市

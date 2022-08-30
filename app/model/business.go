@@ -38,13 +38,13 @@ type BusinessListReq struct {
 }
 
 type BusinessEmployeeListRes struct {
-    ID         uint64           `json:"id"`
-    Name       string           `json:"name"`                 // 骑手姓名
-    Phone      string           `json:"phone"`                // 骑手电话
-    Type       string           `json:"type"`                 // 业务类别
-    Time       string           `json:"time"`                 // 业务时间
-    Plan       *Plan            `json:"plan,omitempty"`       // 骑士卡, 团签无此字段
-    Enterprise *EnterpriseBasic `json:"enterprise,omitempty"` // 团签企业, 个签无此字段
+    ID         uint64      `json:"id"`
+    Name       string      `json:"name"`                 // 骑手姓名
+    Phone      string      `json:"phone"`                // 骑手电话
+    Type       string      `json:"type"`                 // 业务类别
+    Time       string      `json:"time"`                 // 业务时间
+    Plan       *Plan       `json:"plan,omitempty"`       // 骑士卡, 团签无此字段
+    Enterprise *Enterprise `json:"enterprise,omitempty"` // 团签企业, 个签无此字段
 }
 
 type BusinessListRes struct {
