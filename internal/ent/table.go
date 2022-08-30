@@ -2,6 +2,16 @@
 
 package ent
 
+// GetTableName returns table name for Agent.
+func (a *Agent) GetTableName() string {
+	return "agent"
+}
+
+// GetID returns id for Agent.
+func (a *Agent) GetID() uint64 {
+	return a.ID
+}
+
 // GetTableName returns table name for Assistance.
 func (a *Assistance) GetTableName() string {
 	return "assistance"

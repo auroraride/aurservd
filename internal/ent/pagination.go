@@ -8,6 +8,28 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 )
 
+// Pagination returns pagination query builder for AgentQuery.
+func (aq *AgentQuery) Pagination(req model.PaginationReq) *AgentQuery {
+	aq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return aq
+}
+
+// PaginationItems returns pagination query builder for AgentQuery.
+func (aq *AgentQuery) PaginationItemsX(req model.PaginationReq) any {
+	return aq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for AgentQuery.
+func (aq *AgentQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := aq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for AssistanceQuery.
 func (aq *AssistanceQuery) Pagination(req model.PaginationReq) *AssistanceQuery {
 	aq.Offset(req.GetOffset()).Limit(req.GetLimit())

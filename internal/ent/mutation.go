@@ -15,6 +15,7 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
+	TypeAgent                = "Agent"
 	TypeAssistance           = "Assistance"
 	TypeAttendance           = "Attendance"
 	TypeBatteryModel         = "BatteryModel"

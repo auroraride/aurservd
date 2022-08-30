@@ -6,6 +6,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
@@ -43,6 +44,46 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 )
+
+// SoftDelete returns an soft delete builder for Agent.
+func (c *AgentClient) SoftDelete() *AgentUpdate {
+	mutation := newAgentMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &AgentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *AgentClient) SoftDeleteOne(a *Agent) *AgentUpdateOne {
+	mutation := newAgentMutation(c.config, OpUpdateOne, withAgent(a))
+	mutation.SetDeletedAt(time.Now())
+	return &AgentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *AgentClient) SoftDeleteOneID(id uint64) *AgentUpdateOne {
+	mutation := newAgentMutation(c.config, OpUpdateOne, withAgentID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &AgentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for Agent.
+func (c *AgentClient) QueryNotDeleted() *AgentQuery {
+	return c.Query().Where(agent.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a Agent not deleted entity by its id.
+func (c *AgentClient) GetNotDeleted(ctx context.Context, id uint64) (*Agent, error) {
+	return c.Query().Where(agent.ID(id), agent.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *AgentClient) GetNotDeletedX(ctx context.Context, id uint64) *Agent {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
 
 // SoftDelete returns an soft delete builder for Assistance.
 func (c *AssistanceClient) SoftDelete() *AssistanceUpdate {

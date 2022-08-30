@@ -9,6 +9,44 @@ import (
 )
 
 var (
+	// AgentColumns holds the columns for the "agent" table.
+	AgentColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true},
+		{Name: "remark", Type: field.TypeString, Nullable: true},
+		{Name: "phone", Type: field.TypeString, Unique: true},
+		{Name: "enterprise_id", Type: field.TypeUint64},
+	}
+	// AgentTable holds the schema information for the "agent" table.
+	AgentTable = &schema.Table{
+		Name:       "agent",
+		Columns:    AgentColumns,
+		PrimaryKey: []*schema.Column{AgentColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "agent_enterprise_enterprise",
+				Columns:    []*schema.Column{AgentColumns[8]},
+				RefColumns: []*schema.Column{EnterpriseColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "agent_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{AgentColumns[1]},
+			},
+			{
+				Name:    "agent_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{AgentColumns[3]},
+			},
+		},
+	}
 	// AssistanceColumns holds the columns for the "assistance" table.
 	AssistanceColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -2777,6 +2815,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		AgentTable,
 		AssistanceTable,
 		AttendanceTable,
 		BatteryModelTable,
@@ -2824,6 +2863,10 @@ var (
 )
 
 func init() {
+	AgentTable.ForeignKeys[0].RefTable = EnterpriseTable
+	AgentTable.Annotation = &entsql.Annotation{
+		Table: "agent",
+	}
 	AssistanceTable.ForeignKeys[0].RefTable = StoreTable
 	AssistanceTable.ForeignKeys[1].RefTable = RiderTable
 	AssistanceTable.ForeignKeys[2].RefTable = SubscribeTable

@@ -5,6 +5,7 @@ package runtime
 import (
 	"time"
 
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
@@ -52,6 +53,23 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	agentMixin := schema.Agent{}.Mixin()
+	agentMixinHooks2 := agentMixin[2].Hooks()
+	agent.Hooks[0] = agentMixinHooks2[0]
+	agentMixinFields0 := agentMixin[0].Fields()
+	_ = agentMixinFields0
+	agentFields := schema.Agent{}.Fields()
+	_ = agentFields
+	// agentDescCreatedAt is the schema descriptor for created_at field.
+	agentDescCreatedAt := agentMixinFields0[0].Descriptor()
+	// agent.DefaultCreatedAt holds the default value on creation for the created_at field.
+	agent.DefaultCreatedAt = agentDescCreatedAt.Default.(func() time.Time)
+	// agentDescUpdatedAt is the schema descriptor for updated_at field.
+	agentDescUpdatedAt := agentMixinFields0[1].Descriptor()
+	// agent.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	agent.DefaultUpdatedAt = agentDescUpdatedAt.Default.(func() time.Time)
+	// agent.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	agent.UpdateDefaultUpdatedAt = agentDescUpdatedAt.UpdateDefault.(func() time.Time)
 	assistanceMixin := schema.Assistance{}.Mixin()
 	assistanceMixinHooks2 := assistanceMixin[2].Hooks()
 	assistance.Hooks[0] = assistanceMixinHooks2[0]

@@ -9,6 +9,19 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 )
 
+// The AgentFunc type is an adapter to allow the use of ordinary
+// function as Agent mutator.
+type AgentFunc func(context.Context, *ent.AgentMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AgentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.AgentMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AgentMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The AssistanceFunc type is an adapter to allow the use of ordinary
 // function as Assistance mutator.
 type AssistanceFunc func(context.Context, *ent.AssistanceMutation) (ent.Value, error)

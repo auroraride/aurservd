@@ -63,7 +63,7 @@ type Subscribe struct {
 	Type uint `json:"type,omitempty"`
 	// 电池型号
 	Model string `json:"model,omitempty"`
-	// 初始骑士卡天数
+	// 初始骑士卡天数, 个签和代理模式团签有此字段
 	InitialDays int `json:"initial_days,omitempty"`
 	// 改动天数
 	AlterDays int `json:"alter_days,omitempty"`

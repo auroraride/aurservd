@@ -24,4 +24,6 @@ const (
     HeaderManagerToken = "X-Manager-Token"
     // HeaderEmployeeToken 店员token
     HeaderEmployeeToken = "X-Employee-Token"
+    // HeaderAgentToken 代理商token
+    HeaderAgentToken = "X-Agent-Token"
 )
