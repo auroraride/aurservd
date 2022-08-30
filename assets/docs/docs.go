@@ -13833,6 +13833,10 @@ const docTemplate = `{
                 "stationId"
             ],
             "properties": {
+                "days": {
+                    "description": "天数, 仅代理商需要",
+                    "type": "integer"
+                },
                 "enterpriseId": {
                     "description": "企业ID ",
                     "type": "integer"
@@ -13844,6 +13848,10 @@ const docTemplate = `{
                 "phone": {
                     "description": "电话号 ",
                     "type": "string"
+                },
+                "priceId": {
+                    "description": "价格ID, 仅代理商需要",
+                    "type": "integer"
                 },
                 "stationId": {
                     "description": "站点ID ",
