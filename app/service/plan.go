@@ -317,13 +317,13 @@ func (s *planService) List(req *model.PlanListReq) *model.PaginationRes {
 
 func (s *planService) CityList(req *model.PlanListRiderReq) map[string]*[]model.RiderPlanItem {
     rmap := make(map[string]*[]model.RiderPlanItem)
-    now := time.Now()
+    today := carbon.Now().StartOfDay().Carbon2Time()
 
     items := s.orm.QueryNotDeleted().
         Where(
             plan.Enable(true),
-            plan.StartLTE(now),
-            plan.EndGTE(now),
+            plan.StartLTE(today),
+            plan.EndGTE(today),
             plan.DaysGTE(req.Min),
             plan.HasCitiesWith(
                 city.ID(req.CityID),
