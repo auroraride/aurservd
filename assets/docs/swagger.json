@@ -8,6 +8,70 @@
     },
     "basePath": "/",
     "paths": {
+        "/agent/v1/profile": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A1002 代理资料",
+                "operationId": "AgentAgentMeta",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.AgentMeta"
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/signin": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A1001 登录",
+                "operationId": "AgentSignin",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理账号校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.AgentSigninRes"
+                        }
+                    }
+                }
+            }
+        },
         "/commom/sms": {
             "post": {
                 "description": "上传文件必须，单次获取有效时间为1个小时",
@@ -4186,6 +4250,174 @@
                         "description": "请求成功",
                         "schema": {
                             "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/enterprise/agent": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9020 代理账号列表",
+                "operationId": "ManagerEnterpriseAgentList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "团签ID",
+                        "name": "enterpriseId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.AgentListRes"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9021 创建代理账号",
+                "operationId": "ManagerEnterpriseAgentCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "账号属性",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AgentCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/enterprise/agent/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9022 修改代理账号",
+                "operationId": "ManagerEnterpriseAgentModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "账号ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "账号属性",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AgentModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/enterprise/agent{id}": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9023 删除代理账号",
+                "operationId": "ManagerEnterpriseAgentDelete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "账号ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -10638,6 +10870,139 @@
                 "phone": {
                     "description": "电话",
                     "type": "string"
+                }
+            }
+        },
+        "model.AgentCreateReq": {
+            "type": "object",
+            "required": [
+                "enterpriseId",
+                "name",
+                "password",
+                "phone"
+            ],
+            "properties": {
+                "enterpriseId": {
+                    "description": "团签ID ",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "姓名 ",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密码 ",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话 ",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AgentListRes": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.AgentMeta": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "description": "可用余额",
+                    "type": "number"
+                },
+                "contract": {
+                    "description": "合同URL, 可能为空",
+                    "type": "string"
+                },
+                "enterprise": {
+                    "description": "企业",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Enterprise"
+                        }
+                    ]
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "riders": {
+                    "description": "骑手数量",
+                    "type": "integer"
+                },
+                "yesterday": {
+                    "description": "昨日使用",
+                    "type": "number"
+                }
+            }
+        },
+        "model.AgentModifyReq": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密码",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AgentSigninRes": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "description": "可用余额",
+                    "type": "number"
+                },
+                "contract": {
+                    "description": "合同URL, 可能为空",
+                    "type": "string"
+                },
+                "enterprise": {
+                    "description": "企业",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Enterprise"
+                        }
+                    ]
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "riders": {
+                    "description": "骑手数量",
+                    "type": "integer"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "yesterday": {
+                    "description": "昨日使用",
+                    "type": "number"
                 }
             }
         },

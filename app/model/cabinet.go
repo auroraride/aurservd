@@ -117,7 +117,7 @@ type CabinetQueryReq struct {
 
     Serial *string `json:"serial" query:"serial"` // 电柜编号
     Name   *string `json:"name" query:"name"`     // 电柜名称
-    CityId *uint64 `json:"cityId" query:"cityId"` // 城市ID
+    CityID *uint64 `json:"cityId" query:"cityId"` // 城市ID
     Brand  *string `json:"brand" query:"brand"`   // 电柜型号
     Status *uint8  `json:"status" query:"status"` // 电柜状态
     Model  *string `json:"model" query:"model"`   // 电池型号

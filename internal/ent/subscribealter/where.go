@@ -123,6 +123,20 @@ func ManagerID(v uint64) predicate.SubscribeAlter {
 	})
 }
 
+// EnterpriseID applies equality check predicate on the "enterprise_id" field. It's identical to EnterpriseIDEQ.
+func EnterpriseID(v uint64) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEnterpriseID), v))
+	})
+}
+
+// AgentID applies equality check predicate on the "agent_id" field. It's identical to AgentIDEQ.
+func AgentID(v uint64) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAgentID), v))
+	})
+}
+
 // SubscribeID applies equality check predicate on the "subscribe_id" field. It's identical to SubscribeIDEQ.
 func SubscribeID(v uint64) predicate.SubscribeAlter {
 	return predicate.SubscribeAlter(func(s *sql.Selector) {
@@ -556,6 +570,106 @@ func ManagerIDNotIn(vs ...uint64) predicate.SubscribeAlter {
 	})
 }
 
+// EnterpriseIDEQ applies the EQ predicate on the "enterprise_id" field.
+func EnterpriseIDEQ(v uint64) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEnterpriseID), v))
+	})
+}
+
+// EnterpriseIDNEQ applies the NEQ predicate on the "enterprise_id" field.
+func EnterpriseIDNEQ(v uint64) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldEnterpriseID), v))
+	})
+}
+
+// EnterpriseIDIn applies the In predicate on the "enterprise_id" field.
+func EnterpriseIDIn(vs ...uint64) predicate.SubscribeAlter {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribeAlter(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldEnterpriseID), v...))
+	})
+}
+
+// EnterpriseIDNotIn applies the NotIn predicate on the "enterprise_id" field.
+func EnterpriseIDNotIn(vs ...uint64) predicate.SubscribeAlter {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribeAlter(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldEnterpriseID), v...))
+	})
+}
+
+// EnterpriseIDIsNil applies the IsNil predicate on the "enterprise_id" field.
+func EnterpriseIDIsNil() predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldEnterpriseID)))
+	})
+}
+
+// EnterpriseIDNotNil applies the NotNil predicate on the "enterprise_id" field.
+func EnterpriseIDNotNil() predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldEnterpriseID)))
+	})
+}
+
+// AgentIDEQ applies the EQ predicate on the "agent_id" field.
+func AgentIDEQ(v uint64) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAgentID), v))
+	})
+}
+
+// AgentIDNEQ applies the NEQ predicate on the "agent_id" field.
+func AgentIDNEQ(v uint64) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAgentID), v))
+	})
+}
+
+// AgentIDIn applies the In predicate on the "agent_id" field.
+func AgentIDIn(vs ...uint64) predicate.SubscribeAlter {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribeAlter(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldAgentID), v...))
+	})
+}
+
+// AgentIDNotIn applies the NotIn predicate on the "agent_id" field.
+func AgentIDNotIn(vs ...uint64) predicate.SubscribeAlter {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribeAlter(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldAgentID), v...))
+	})
+}
+
+// AgentIDIsNil applies the IsNil predicate on the "agent_id" field.
+func AgentIDIsNil() predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAgentID)))
+	})
+}
+
+// AgentIDNotNil applies the NotNil predicate on the "agent_id" field.
+func AgentIDNotNil() predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAgentID)))
+	})
+}
+
 // SubscribeIDEQ applies the EQ predicate on the "subscribe_id" field.
 func SubscribeIDEQ(v uint64) predicate.SubscribeAlter {
 	return predicate.SubscribeAlter(func(s *sql.Selector) {
@@ -703,6 +817,62 @@ func HasManagerWith(preds ...predicate.Manager) predicate.SubscribeAlter {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(ManagerInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, ManagerTable, ManagerColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasEnterprise applies the HasEdge predicate on the "enterprise" edge.
+func HasEnterprise() predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EnterpriseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, EnterpriseTable, EnterpriseColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEnterpriseWith applies the HasEdge predicate on the "enterprise" edge with a given conditions (other predicates).
+func HasEnterpriseWith(preds ...predicate.Enterprise) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EnterpriseInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, EnterpriseTable, EnterpriseColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasAgent applies the HasEdge predicate on the "agent" edge.
+func HasAgent() predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(AgentTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, AgentTable, AgentColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAgentWith applies the HasEdge predicate on the "agent" edge with a given conditions (other predicates).
+func HasAgentWith(preds ...predicate.Agent) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(AgentInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, AgentTable, AgentColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

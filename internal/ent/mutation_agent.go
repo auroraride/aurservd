@@ -28,7 +28,9 @@ type AgentMutation struct {
 	creator           **model.Modifier
 	last_modifier     **model.Modifier
 	remark            *string
+	name              *string
 	phone             *string
+	password          *string
 	clearedFields     map[string]struct{}
 	enterprise        *uint64
 	clearedenterprise bool
@@ -439,6 +441,42 @@ func (m *AgentMutation) ResetEnterpriseID() {
 	m.enterprise = nil
 }
 
+// SetName sets the "name" field.
+func (m *AgentMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *AgentMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the Agent entity.
+// If the Agent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AgentMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *AgentMutation) ResetName() {
+	m.name = nil
+}
+
 // SetPhone sets the "phone" field.
 func (m *AgentMutation) SetPhone(s string) {
 	m.phone = &s
@@ -473,6 +511,42 @@ func (m *AgentMutation) OldPhone(ctx context.Context) (v string, err error) {
 // ResetPhone resets all changes to the "phone" field.
 func (m *AgentMutation) ResetPhone() {
 	m.phone = nil
+}
+
+// SetPassword sets the "password" field.
+func (m *AgentMutation) SetPassword(s string) {
+	m.password = &s
+}
+
+// Password returns the value of the "password" field in the mutation.
+func (m *AgentMutation) Password() (r string, exists bool) {
+	v := m.password
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPassword returns the old "password" field's value of the Agent entity.
+// If the Agent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AgentMutation) OldPassword(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPassword is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPassword requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPassword: %w", err)
+	}
+	return oldValue.Password, nil
+}
+
+// ResetPassword resets all changes to the "password" field.
+func (m *AgentMutation) ResetPassword() {
+	m.password = nil
 }
 
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
@@ -520,7 +594,7 @@ func (m *AgentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AgentMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 10)
 	if m.created_at != nil {
 		fields = append(fields, agent.FieldCreatedAt)
 	}
@@ -542,8 +616,14 @@ func (m *AgentMutation) Fields() []string {
 	if m.enterprise != nil {
 		fields = append(fields, agent.FieldEnterpriseID)
 	}
+	if m.name != nil {
+		fields = append(fields, agent.FieldName)
+	}
 	if m.phone != nil {
 		fields = append(fields, agent.FieldPhone)
+	}
+	if m.password != nil {
+		fields = append(fields, agent.FieldPassword)
 	}
 	return fields
 }
@@ -567,8 +647,12 @@ func (m *AgentMutation) Field(name string) (ent.Value, bool) {
 		return m.Remark()
 	case agent.FieldEnterpriseID:
 		return m.EnterpriseID()
+	case agent.FieldName:
+		return m.Name()
 	case agent.FieldPhone:
 		return m.Phone()
+	case agent.FieldPassword:
+		return m.Password()
 	}
 	return nil, false
 }
@@ -592,8 +676,12 @@ func (m *AgentMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldRemark(ctx)
 	case agent.FieldEnterpriseID:
 		return m.OldEnterpriseID(ctx)
+	case agent.FieldName:
+		return m.OldName(ctx)
 	case agent.FieldPhone:
 		return m.OldPhone(ctx)
+	case agent.FieldPassword:
+		return m.OldPassword(ctx)
 	}
 	return nil, fmt.Errorf("unknown Agent field %s", name)
 }
@@ -652,12 +740,26 @@ func (m *AgentMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetEnterpriseID(v)
 		return nil
+	case agent.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
 	case agent.FieldPhone:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPhone(v)
+		return nil
+	case agent.FieldPassword:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPassword(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Agent field %s", name)
@@ -759,8 +861,14 @@ func (m *AgentMutation) ResetField(name string) error {
 	case agent.FieldEnterpriseID:
 		m.ResetEnterpriseID()
 		return nil
+	case agent.FieldName:
+		m.ResetName()
+		return nil
 	case agent.FieldPhone:
 		m.ResetPhone()
+		return nil
+	case agent.FieldPassword:
+		m.ResetPassword()
 		return nil
 	}
 	return fmt.Errorf("unknown Agent field %s", name)

@@ -237,3 +237,67 @@ func (*enterprise) DeleteContract(c echo.Context) (err error) {
     service.NewEnterpriseWithModifier(ctx.Modifier).DeleteContract(req)
     return ctx.SendResponse()
 }
+
+// AgentList
+// @ID           ManagerEnterpriseAgentList
+// @Router       /manager/v1/enterprise/agent [GET]
+// @Summary      M9020 代理账号列表
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        enterpriseId  query  uint64  true  "团签ID"
+// @Success      200  {object}  []model.AgentListRes  "请求成功"
+func (*enterprise) AgentList(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.AgentListReq](c)
+    return ctx.SendResponse(service.NewAgent().List(req))
+}
+
+// AgentCreate
+// @ID           ManagerEnterpriseAgentCreate
+// @Router       /manager/v1/enterprise/agent [POST]
+// @Summary      M9021 创建代理账号
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body     model.AgentCreateReq  true  "账号属性"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*enterprise) AgentCreate(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.AgentCreateReq](c)
+    service.NewAgentWithModifier(ctx.Modifier).Create(req)
+    return ctx.SendResponse()
+}
+
+// AgentModify
+// @ID           ManagerEnterpriseAgentModify
+// @Router       /manager/v1/enterprise/agent/{id} [PUT]
+// @Summary      M9022 修改代理账号
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        id  path       uint64  true  "账号ID"
+// @Param        body  body     model.AgentModifyReq  true  "账号属性"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*enterprise) AgentModify(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.AgentModifyReq](c)
+    service.NewAgentWithModifier(ctx.Modifier).Modify(req)
+    return ctx.SendResponse()
+}
+
+// AgentDelete
+// @ID           ManagerEnterpriseAgentDelete
+// @Router       /manager/v1/enterprise/agent{id} [DELETE]
+// @Summary      M9023 删除代理账号
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        id  path       uint64  true  "账号ID"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*enterprise) AgentDelete(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+    service.NewAgentWithModifier(ctx.Modifier).Delete(req)
+    return ctx.SendResponse()
+}

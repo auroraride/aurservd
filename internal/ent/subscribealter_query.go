@@ -10,6 +10,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -20,16 +22,18 @@ import (
 // SubscribeAlterQuery is the builder for querying SubscribeAlter entities.
 type SubscribeAlterQuery struct {
 	config
-	limit         *int
-	offset        *int
-	unique        *bool
-	order         []OrderFunc
-	fields        []string
-	predicates    []predicate.SubscribeAlter
-	withRider     *RiderQuery
-	withManager   *ManagerQuery
-	withSubscribe *SubscribeQuery
-	modifiers     []func(*sql.Selector)
+	limit          *int
+	offset         *int
+	unique         *bool
+	order          []OrderFunc
+	fields         []string
+	predicates     []predicate.SubscribeAlter
+	withRider      *RiderQuery
+	withManager    *ManagerQuery
+	withEnterprise *EnterpriseQuery
+	withAgent      *AgentQuery
+	withSubscribe  *SubscribeQuery
+	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -103,6 +107,50 @@ func (saq *SubscribeAlterQuery) QueryManager() *ManagerQuery {
 			sqlgraph.From(subscribealter.Table, subscribealter.FieldID, selector),
 			sqlgraph.To(manager.Table, manager.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, subscribealter.ManagerTable, subscribealter.ManagerColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(saq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEnterprise chains the current query on the "enterprise" edge.
+func (saq *SubscribeAlterQuery) QueryEnterprise() *EnterpriseQuery {
+	query := &EnterpriseQuery{config: saq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := saq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := saq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribealter.Table, subscribealter.FieldID, selector),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribealter.EnterpriseTable, subscribealter.EnterpriseColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(saq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAgent chains the current query on the "agent" edge.
+func (saq *SubscribeAlterQuery) QueryAgent() *AgentQuery {
+	query := &AgentQuery{config: saq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := saq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := saq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribealter.Table, subscribealter.FieldID, selector),
+			sqlgraph.To(agent.Table, agent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribealter.AgentTable, subscribealter.AgentColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(saq.driver.Dialect(), step)
 		return fromU, nil
@@ -308,14 +356,16 @@ func (saq *SubscribeAlterQuery) Clone() *SubscribeAlterQuery {
 		return nil
 	}
 	return &SubscribeAlterQuery{
-		config:        saq.config,
-		limit:         saq.limit,
-		offset:        saq.offset,
-		order:         append([]OrderFunc{}, saq.order...),
-		predicates:    append([]predicate.SubscribeAlter{}, saq.predicates...),
-		withRider:     saq.withRider.Clone(),
-		withManager:   saq.withManager.Clone(),
-		withSubscribe: saq.withSubscribe.Clone(),
+		config:         saq.config,
+		limit:          saq.limit,
+		offset:         saq.offset,
+		order:          append([]OrderFunc{}, saq.order...),
+		predicates:     append([]predicate.SubscribeAlter{}, saq.predicates...),
+		withRider:      saq.withRider.Clone(),
+		withManager:    saq.withManager.Clone(),
+		withEnterprise: saq.withEnterprise.Clone(),
+		withAgent:      saq.withAgent.Clone(),
+		withSubscribe:  saq.withSubscribe.Clone(),
 		// clone intermediate query.
 		sql:    saq.sql.Clone(),
 		path:   saq.path,
@@ -342,6 +392,28 @@ func (saq *SubscribeAlterQuery) WithManager(opts ...func(*ManagerQuery)) *Subscr
 		opt(query)
 	}
 	saq.withManager = query
+	return saq
+}
+
+// WithEnterprise tells the query-builder to eager-load the nodes that are connected to
+// the "enterprise" edge. The optional arguments are used to configure the query builder of the edge.
+func (saq *SubscribeAlterQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *SubscribeAlterQuery {
+	query := &EnterpriseQuery{config: saq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	saq.withEnterprise = query
+	return saq
+}
+
+// WithAgent tells the query-builder to eager-load the nodes that are connected to
+// the "agent" edge. The optional arguments are used to configure the query builder of the edge.
+func (saq *SubscribeAlterQuery) WithAgent(opts ...func(*AgentQuery)) *SubscribeAlterQuery {
+	query := &AgentQuery{config: saq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	saq.withAgent = query
 	return saq
 }
 
@@ -424,9 +496,11 @@ func (saq *SubscribeAlterQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 	var (
 		nodes       = []*SubscribeAlter{}
 		_spec       = saq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [5]bool{
 			saq.withRider != nil,
 			saq.withManager != nil,
+			saq.withEnterprise != nil,
+			saq.withAgent != nil,
 			saq.withSubscribe != nil,
 		}
 	)
@@ -460,6 +534,18 @@ func (saq *SubscribeAlterQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 	if query := saq.withManager; query != nil {
 		if err := saq.loadManager(ctx, query, nodes, nil,
 			func(n *SubscribeAlter, e *Manager) { n.Edges.Manager = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := saq.withEnterprise; query != nil {
+		if err := saq.loadEnterprise(ctx, query, nodes, nil,
+			func(n *SubscribeAlter, e *Enterprise) { n.Edges.Enterprise = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := saq.withAgent; query != nil {
+		if err := saq.loadAgent(ctx, query, nodes, nil,
+			func(n *SubscribeAlter, e *Agent) { n.Edges.Agent = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -517,6 +603,64 @@ func (saq *SubscribeAlterQuery) loadManager(ctx context.Context, query *ManagerQ
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "manager_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (saq *SubscribeAlterQuery) loadEnterprise(ctx context.Context, query *EnterpriseQuery, nodes []*SubscribeAlter, init func(*SubscribeAlter), assign func(*SubscribeAlter, *Enterprise)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*SubscribeAlter)
+	for i := range nodes {
+		if nodes[i].EnterpriseID == nil {
+			continue
+		}
+		fk := *nodes[i].EnterpriseID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(enterprise.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "enterprise_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (saq *SubscribeAlterQuery) loadAgent(ctx context.Context, query *AgentQuery, nodes []*SubscribeAlter, init func(*SubscribeAlter), assign func(*SubscribeAlter, *Agent)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*SubscribeAlter)
+	for i := range nodes {
+		if nodes[i].AgentID == nil {
+			continue
+		}
+		fk := *nodes[i].AgentID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(agent.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "agent_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

@@ -73,7 +73,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			agent.FieldLastModifier: {Type: field.TypeJSON, Column: agent.FieldLastModifier},
 			agent.FieldRemark:       {Type: field.TypeString, Column: agent.FieldRemark},
 			agent.FieldEnterpriseID: {Type: field.TypeUint64, Column: agent.FieldEnterpriseID},
+			agent.FieldName:         {Type: field.TypeString, Column: agent.FieldName},
 			agent.FieldPhone:        {Type: field.TypeString, Column: agent.FieldPhone},
+			agent.FieldPassword:     {Type: field.TypeString, Column: agent.FieldPassword},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -1115,6 +1117,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribealter.FieldRemark:       {Type: field.TypeString, Column: subscribealter.FieldRemark},
 			subscribealter.FieldRiderID:      {Type: field.TypeUint64, Column: subscribealter.FieldRiderID},
 			subscribealter.FieldManagerID:    {Type: field.TypeUint64, Column: subscribealter.FieldManagerID},
+			subscribealter.FieldEnterpriseID: {Type: field.TypeUint64, Column: subscribealter.FieldEnterpriseID},
+			subscribealter.FieldAgentID:      {Type: field.TypeUint64, Column: subscribealter.FieldAgentID},
 			subscribealter.FieldSubscribeID:  {Type: field.TypeUint64, Column: subscribealter.FieldSubscribeID},
 			subscribealter.FieldDays:         {Type: field.TypeInt, Column: subscribealter.FieldDays},
 		},
@@ -2982,6 +2986,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Manager",
 	)
 	graph.MustAddE(
+		"enterprise",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribealter.EnterpriseTable,
+			Columns: []string{subscribealter.EnterpriseColumn},
+			Bidi:    false,
+		},
+		"SubscribeAlter",
+		"Enterprise",
+	)
+	graph.MustAddE(
+		"agent",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribealter.AgentTable,
+			Columns: []string{subscribealter.AgentColumn},
+			Bidi:    false,
+		},
+		"SubscribeAlter",
+		"Agent",
+	)
+	graph.MustAddE(
 		"subscribe",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -3269,9 +3297,19 @@ func (f *AgentFilter) WhereEnterpriseID(p entql.Uint64P) {
 	f.Where(p.Field(agent.FieldEnterpriseID))
 }
 
+// WhereName applies the entql string predicate on the name field.
+func (f *AgentFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(agent.FieldName))
+}
+
 // WherePhone applies the entql string predicate on the phone field.
 func (f *AgentFilter) WherePhone(p entql.StringP) {
 	f.Where(p.Field(agent.FieldPhone))
+}
+
+// WherePassword applies the entql string predicate on the password field.
+func (f *AgentFilter) WherePassword(p entql.StringP) {
+	f.Where(p.Field(agent.FieldPassword))
 }
 
 // WhereHasEnterprise applies a predicate to check if query has an edge enterprise.
@@ -9598,6 +9636,16 @@ func (f *SubscribeAlterFilter) WhereManagerID(p entql.Uint64P) {
 	f.Where(p.Field(subscribealter.FieldManagerID))
 }
 
+// WhereEnterpriseID applies the entql uint64 predicate on the enterprise_id field.
+func (f *SubscribeAlterFilter) WhereEnterpriseID(p entql.Uint64P) {
+	f.Where(p.Field(subscribealter.FieldEnterpriseID))
+}
+
+// WhereAgentID applies the entql uint64 predicate on the agent_id field.
+func (f *SubscribeAlterFilter) WhereAgentID(p entql.Uint64P) {
+	f.Where(p.Field(subscribealter.FieldAgentID))
+}
+
 // WhereSubscribeID applies the entql uint64 predicate on the subscribe_id field.
 func (f *SubscribeAlterFilter) WhereSubscribeID(p entql.Uint64P) {
 	f.Where(p.Field(subscribealter.FieldSubscribeID))
@@ -9630,6 +9678,34 @@ func (f *SubscribeAlterFilter) WhereHasManager() {
 // WhereHasManagerWith applies a predicate to check if query has an edge manager with a given conditions (other predicates).
 func (f *SubscribeAlterFilter) WhereHasManagerWith(preds ...predicate.Manager) {
 	f.Where(entql.HasEdgeWith("manager", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasEnterprise applies a predicate to check if query has an edge enterprise.
+func (f *SubscribeAlterFilter) WhereHasEnterprise() {
+	f.Where(entql.HasEdge("enterprise"))
+}
+
+// WhereHasEnterpriseWith applies a predicate to check if query has an edge enterprise with a given conditions (other predicates).
+func (f *SubscribeAlterFilter) WhereHasEnterpriseWith(preds ...predicate.Enterprise) {
+	f.Where(entql.HasEdgeWith("enterprise", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasAgent applies a predicate to check if query has an edge agent.
+func (f *SubscribeAlterFilter) WhereHasAgent() {
+	f.Where(entql.HasEdge("agent"))
+}
+
+// WhereHasAgentWith applies a predicate to check if query has an edge agent with a given conditions (other predicates).
+func (f *SubscribeAlterFilter) WhereHasAgentWith(preds ...predicate.Agent) {
+	f.Where(entql.HasEdgeWith("agent", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

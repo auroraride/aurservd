@@ -12,6 +12,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -103,6 +105,46 @@ func (sau *SubscribeAlterUpdate) SetManagerID(u uint64) *SubscribeAlterUpdate {
 	return sau
 }
 
+// SetEnterpriseID sets the "enterprise_id" field.
+func (sau *SubscribeAlterUpdate) SetEnterpriseID(u uint64) *SubscribeAlterUpdate {
+	sau.mutation.SetEnterpriseID(u)
+	return sau
+}
+
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (sau *SubscribeAlterUpdate) SetNillableEnterpriseID(u *uint64) *SubscribeAlterUpdate {
+	if u != nil {
+		sau.SetEnterpriseID(*u)
+	}
+	return sau
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (sau *SubscribeAlterUpdate) ClearEnterpriseID() *SubscribeAlterUpdate {
+	sau.mutation.ClearEnterpriseID()
+	return sau
+}
+
+// SetAgentID sets the "agent_id" field.
+func (sau *SubscribeAlterUpdate) SetAgentID(u uint64) *SubscribeAlterUpdate {
+	sau.mutation.SetAgentID(u)
+	return sau
+}
+
+// SetNillableAgentID sets the "agent_id" field if the given value is not nil.
+func (sau *SubscribeAlterUpdate) SetNillableAgentID(u *uint64) *SubscribeAlterUpdate {
+	if u != nil {
+		sau.SetAgentID(*u)
+	}
+	return sau
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (sau *SubscribeAlterUpdate) ClearAgentID() *SubscribeAlterUpdate {
+	sau.mutation.ClearAgentID()
+	return sau
+}
+
 // SetSubscribeID sets the "subscribe_id" field.
 func (sau *SubscribeAlterUpdate) SetSubscribeID(u uint64) *SubscribeAlterUpdate {
 	sau.mutation.SetSubscribeID(u)
@@ -132,6 +174,16 @@ func (sau *SubscribeAlterUpdate) SetManager(m *Manager) *SubscribeAlterUpdate {
 	return sau.SetManagerID(m.ID)
 }
 
+// SetEnterprise sets the "enterprise" edge to the Enterprise entity.
+func (sau *SubscribeAlterUpdate) SetEnterprise(e *Enterprise) *SubscribeAlterUpdate {
+	return sau.SetEnterpriseID(e.ID)
+}
+
+// SetAgent sets the "agent" edge to the Agent entity.
+func (sau *SubscribeAlterUpdate) SetAgent(a *Agent) *SubscribeAlterUpdate {
+	return sau.SetAgentID(a.ID)
+}
+
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (sau *SubscribeAlterUpdate) SetSubscribe(s *Subscribe) *SubscribeAlterUpdate {
 	return sau.SetSubscribeID(s.ID)
@@ -151,6 +203,18 @@ func (sau *SubscribeAlterUpdate) ClearRider() *SubscribeAlterUpdate {
 // ClearManager clears the "manager" edge to the Manager entity.
 func (sau *SubscribeAlterUpdate) ClearManager() *SubscribeAlterUpdate {
 	sau.mutation.ClearManager()
+	return sau
+}
+
+// ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
+func (sau *SubscribeAlterUpdate) ClearEnterprise() *SubscribeAlterUpdate {
+	sau.mutation.ClearEnterprise()
+	return sau
+}
+
+// ClearAgent clears the "agent" edge to the Agent entity.
+func (sau *SubscribeAlterUpdate) ClearAgent() *SubscribeAlterUpdate {
+	sau.mutation.ClearAgent()
 	return sau
 }
 
@@ -409,6 +473,76 @@ func (sau *SubscribeAlterUpdate) sqlSave(ctx context.Context) (n int, err error)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if sau.mutation.EnterpriseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribealter.EnterpriseTable,
+			Columns: []string{subscribealter.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprise.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := sau.mutation.EnterpriseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribealter.EnterpriseTable,
+			Columns: []string{subscribealter.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprise.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if sau.mutation.AgentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribealter.AgentTable,
+			Columns: []string{subscribealter.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: agent.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := sau.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribealter.AgentTable,
+			Columns: []string{subscribealter.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: agent.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if sau.mutation.SubscribeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -535,6 +669,46 @@ func (sauo *SubscribeAlterUpdateOne) SetManagerID(u uint64) *SubscribeAlterUpdat
 	return sauo
 }
 
+// SetEnterpriseID sets the "enterprise_id" field.
+func (sauo *SubscribeAlterUpdateOne) SetEnterpriseID(u uint64) *SubscribeAlterUpdateOne {
+	sauo.mutation.SetEnterpriseID(u)
+	return sauo
+}
+
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (sauo *SubscribeAlterUpdateOne) SetNillableEnterpriseID(u *uint64) *SubscribeAlterUpdateOne {
+	if u != nil {
+		sauo.SetEnterpriseID(*u)
+	}
+	return sauo
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (sauo *SubscribeAlterUpdateOne) ClearEnterpriseID() *SubscribeAlterUpdateOne {
+	sauo.mutation.ClearEnterpriseID()
+	return sauo
+}
+
+// SetAgentID sets the "agent_id" field.
+func (sauo *SubscribeAlterUpdateOne) SetAgentID(u uint64) *SubscribeAlterUpdateOne {
+	sauo.mutation.SetAgentID(u)
+	return sauo
+}
+
+// SetNillableAgentID sets the "agent_id" field if the given value is not nil.
+func (sauo *SubscribeAlterUpdateOne) SetNillableAgentID(u *uint64) *SubscribeAlterUpdateOne {
+	if u != nil {
+		sauo.SetAgentID(*u)
+	}
+	return sauo
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (sauo *SubscribeAlterUpdateOne) ClearAgentID() *SubscribeAlterUpdateOne {
+	sauo.mutation.ClearAgentID()
+	return sauo
+}
+
 // SetSubscribeID sets the "subscribe_id" field.
 func (sauo *SubscribeAlterUpdateOne) SetSubscribeID(u uint64) *SubscribeAlterUpdateOne {
 	sauo.mutation.SetSubscribeID(u)
@@ -564,6 +738,16 @@ func (sauo *SubscribeAlterUpdateOne) SetManager(m *Manager) *SubscribeAlterUpdat
 	return sauo.SetManagerID(m.ID)
 }
 
+// SetEnterprise sets the "enterprise" edge to the Enterprise entity.
+func (sauo *SubscribeAlterUpdateOne) SetEnterprise(e *Enterprise) *SubscribeAlterUpdateOne {
+	return sauo.SetEnterpriseID(e.ID)
+}
+
+// SetAgent sets the "agent" edge to the Agent entity.
+func (sauo *SubscribeAlterUpdateOne) SetAgent(a *Agent) *SubscribeAlterUpdateOne {
+	return sauo.SetAgentID(a.ID)
+}
+
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (sauo *SubscribeAlterUpdateOne) SetSubscribe(s *Subscribe) *SubscribeAlterUpdateOne {
 	return sauo.SetSubscribeID(s.ID)
@@ -583,6 +767,18 @@ func (sauo *SubscribeAlterUpdateOne) ClearRider() *SubscribeAlterUpdateOne {
 // ClearManager clears the "manager" edge to the Manager entity.
 func (sauo *SubscribeAlterUpdateOne) ClearManager() *SubscribeAlterUpdateOne {
 	sauo.mutation.ClearManager()
+	return sauo
+}
+
+// ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
+func (sauo *SubscribeAlterUpdateOne) ClearEnterprise() *SubscribeAlterUpdateOne {
+	sauo.mutation.ClearEnterprise()
+	return sauo
+}
+
+// ClearAgent clears the "agent" edge to the Agent entity.
+func (sauo *SubscribeAlterUpdateOne) ClearAgent() *SubscribeAlterUpdateOne {
+	sauo.mutation.ClearAgent()
 	return sauo
 }
 
@@ -863,6 +1059,76 @@ func (sauo *SubscribeAlterUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: manager.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if sauo.mutation.EnterpriseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribealter.EnterpriseTable,
+			Columns: []string{subscribealter.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprise.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := sauo.mutation.EnterpriseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribealter.EnterpriseTable,
+			Columns: []string{subscribealter.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprise.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if sauo.mutation.AgentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribealter.AgentTable,
+			Columns: []string{subscribealter.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: agent.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := sauo.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribealter.AgentTable,
+			Columns: []string{subscribealter.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: agent.FieldID,
 				},
 			},
 		}

@@ -12,6 +12,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -106,6 +108,34 @@ func (sac *SubscribeAlterCreate) SetManagerID(u uint64) *SubscribeAlterCreate {
 	return sac
 }
 
+// SetEnterpriseID sets the "enterprise_id" field.
+func (sac *SubscribeAlterCreate) SetEnterpriseID(u uint64) *SubscribeAlterCreate {
+	sac.mutation.SetEnterpriseID(u)
+	return sac
+}
+
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (sac *SubscribeAlterCreate) SetNillableEnterpriseID(u *uint64) *SubscribeAlterCreate {
+	if u != nil {
+		sac.SetEnterpriseID(*u)
+	}
+	return sac
+}
+
+// SetAgentID sets the "agent_id" field.
+func (sac *SubscribeAlterCreate) SetAgentID(u uint64) *SubscribeAlterCreate {
+	sac.mutation.SetAgentID(u)
+	return sac
+}
+
+// SetNillableAgentID sets the "agent_id" field if the given value is not nil.
+func (sac *SubscribeAlterCreate) SetNillableAgentID(u *uint64) *SubscribeAlterCreate {
+	if u != nil {
+		sac.SetAgentID(*u)
+	}
+	return sac
+}
+
 // SetSubscribeID sets the "subscribe_id" field.
 func (sac *SubscribeAlterCreate) SetSubscribeID(u uint64) *SubscribeAlterCreate {
 	sac.mutation.SetSubscribeID(u)
@@ -126,6 +156,16 @@ func (sac *SubscribeAlterCreate) SetRider(r *Rider) *SubscribeAlterCreate {
 // SetManager sets the "manager" edge to the Manager entity.
 func (sac *SubscribeAlterCreate) SetManager(m *Manager) *SubscribeAlterCreate {
 	return sac.SetManagerID(m.ID)
+}
+
+// SetEnterprise sets the "enterprise" edge to the Enterprise entity.
+func (sac *SubscribeAlterCreate) SetEnterprise(e *Enterprise) *SubscribeAlterCreate {
+	return sac.SetEnterpriseID(e.ID)
+}
+
+// SetAgent sets the "agent" edge to the Agent entity.
+func (sac *SubscribeAlterCreate) SetAgent(a *Agent) *SubscribeAlterCreate {
+	return sac.SetAgentID(a.ID)
 }
 
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
@@ -382,6 +422,46 @@ func (sac *SubscribeAlterCreate) createSpec() (*SubscribeAlter, *sqlgraph.Create
 		_node.ManagerID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := sac.mutation.EnterpriseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribealter.EnterpriseTable,
+			Columns: []string{subscribealter.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprise.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.EnterpriseID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sac.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribealter.AgentTable,
+			Columns: []string{subscribealter.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: agent.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.AgentID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := sac.mutation.SubscribeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -571,6 +651,42 @@ func (u *SubscribeAlterUpsert) SetManagerID(v uint64) *SubscribeAlterUpsert {
 // UpdateManagerID sets the "manager_id" field to the value that was provided on create.
 func (u *SubscribeAlterUpsert) UpdateManagerID() *SubscribeAlterUpsert {
 	u.SetExcluded(subscribealter.FieldManagerID)
+	return u
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (u *SubscribeAlterUpsert) SetEnterpriseID(v uint64) *SubscribeAlterUpsert {
+	u.Set(subscribealter.FieldEnterpriseID, v)
+	return u
+}
+
+// UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
+func (u *SubscribeAlterUpsert) UpdateEnterpriseID() *SubscribeAlterUpsert {
+	u.SetExcluded(subscribealter.FieldEnterpriseID)
+	return u
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (u *SubscribeAlterUpsert) ClearEnterpriseID() *SubscribeAlterUpsert {
+	u.SetNull(subscribealter.FieldEnterpriseID)
+	return u
+}
+
+// SetAgentID sets the "agent_id" field.
+func (u *SubscribeAlterUpsert) SetAgentID(v uint64) *SubscribeAlterUpsert {
+	u.Set(subscribealter.FieldAgentID, v)
+	return u
+}
+
+// UpdateAgentID sets the "agent_id" field to the value that was provided on create.
+func (u *SubscribeAlterUpsert) UpdateAgentID() *SubscribeAlterUpsert {
+	u.SetExcluded(subscribealter.FieldAgentID)
+	return u
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (u *SubscribeAlterUpsert) ClearAgentID() *SubscribeAlterUpsert {
+	u.SetNull(subscribealter.FieldAgentID)
 	return u
 }
 
@@ -789,6 +905,48 @@ func (u *SubscribeAlterUpsertOne) SetManagerID(v uint64) *SubscribeAlterUpsertOn
 func (u *SubscribeAlterUpsertOne) UpdateManagerID() *SubscribeAlterUpsertOne {
 	return u.Update(func(s *SubscribeAlterUpsert) {
 		s.UpdateManagerID()
+	})
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (u *SubscribeAlterUpsertOne) SetEnterpriseID(v uint64) *SubscribeAlterUpsertOne {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.SetEnterpriseID(v)
+	})
+}
+
+// UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
+func (u *SubscribeAlterUpsertOne) UpdateEnterpriseID() *SubscribeAlterUpsertOne {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.UpdateEnterpriseID()
+	})
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (u *SubscribeAlterUpsertOne) ClearEnterpriseID() *SubscribeAlterUpsertOne {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.ClearEnterpriseID()
+	})
+}
+
+// SetAgentID sets the "agent_id" field.
+func (u *SubscribeAlterUpsertOne) SetAgentID(v uint64) *SubscribeAlterUpsertOne {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.SetAgentID(v)
+	})
+}
+
+// UpdateAgentID sets the "agent_id" field to the value that was provided on create.
+func (u *SubscribeAlterUpsertOne) UpdateAgentID() *SubscribeAlterUpsertOne {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.UpdateAgentID()
+	})
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (u *SubscribeAlterUpsertOne) ClearAgentID() *SubscribeAlterUpsertOne {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.ClearAgentID()
 	})
 }
 
@@ -1174,6 +1332,48 @@ func (u *SubscribeAlterUpsertBulk) SetManagerID(v uint64) *SubscribeAlterUpsertB
 func (u *SubscribeAlterUpsertBulk) UpdateManagerID() *SubscribeAlterUpsertBulk {
 	return u.Update(func(s *SubscribeAlterUpsert) {
 		s.UpdateManagerID()
+	})
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (u *SubscribeAlterUpsertBulk) SetEnterpriseID(v uint64) *SubscribeAlterUpsertBulk {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.SetEnterpriseID(v)
+	})
+}
+
+// UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
+func (u *SubscribeAlterUpsertBulk) UpdateEnterpriseID() *SubscribeAlterUpsertBulk {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.UpdateEnterpriseID()
+	})
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (u *SubscribeAlterUpsertBulk) ClearEnterpriseID() *SubscribeAlterUpsertBulk {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.ClearEnterpriseID()
+	})
+}
+
+// SetAgentID sets the "agent_id" field.
+func (u *SubscribeAlterUpsertBulk) SetAgentID(v uint64) *SubscribeAlterUpsertBulk {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.SetAgentID(v)
+	})
+}
+
+// UpdateAgentID sets the "agent_id" field to the value that was provided on create.
+func (u *SubscribeAlterUpsertBulk) UpdateAgentID() *SubscribeAlterUpsertBulk {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.UpdateAgentID()
+	})
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (u *SubscribeAlterUpsertBulk) ClearAgentID() *SubscribeAlterUpsertBulk {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.ClearAgentID()
 	})
 }
 

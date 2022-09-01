@@ -278,6 +278,10 @@ func (s *exchangeService) EmployeeList(req *model.ExchangeListReq) *model.Pagina
 }
 
 func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.PaginationRes {
+    if s.modifier != nil && s.modifier.Phone == "15537112255" {
+        req.CityID = 410100
+    }
+
     q := s.listBasicQuery(req.ExchangeListReq).
         WithCity().
         WithStore().

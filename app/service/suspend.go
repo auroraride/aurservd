@@ -156,7 +156,7 @@ func (s *suspendService) List(req *model.SuspendListReq) *model.PaginationRes {
     q, _ := s.listFilter(req.SuspendListFilter)
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.SubscribeSuspend) (res model.SuspendListRes) {
         status := "暂停中"
-        if item.EndAt.IsZero() {
+        if !item.EndAt.IsZero() {
             status = "已结束"
         }
         sub := item.Edges.Subscribe

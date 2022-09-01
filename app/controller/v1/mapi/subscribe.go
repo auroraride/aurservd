@@ -28,7 +28,7 @@ var Subscribe = new(subscribe)
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*subscribe) Alter(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.SubscribeAlter](c)
-    return ctx.SendResponse(service.NewSubscribeWithModifier(ctx.Modifier).AlterDays(req))
+    return ctx.SendResponse(service.NewSubscribeWithModifier(ctx.Modifier).AlterDays(req, nil))
 }
 
 // Pause

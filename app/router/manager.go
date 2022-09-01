@@ -124,6 +124,10 @@ func loadManagerRoutes() {
     g.DELETE("/enterprise/price/:id", mapi.Enterprise.DeletePrice)
     g.POST("/enterprise/contract", mapi.Enterprise.ModifyContract)
     g.DELETE("/enterprise/contract/:id", mapi.Enterprise.DeleteContract)
+    g.GET("/enterprise/agent", mapi.Enterprise.AgentList)
+    g.POST("/enterprise/agent", mapi.Enterprise.AgentCreate)
+    g.PUT("/enterprise/agent/:id", mapi.Enterprise.AgentModify)
+    g.DELETE("/enterprise/agent/:id", mapi.Enterprise.AgentDelete)
 
     // 店员
     g.POST("/employee", mapi.Employee.Create)

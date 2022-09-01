@@ -10,6 +10,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ali"
     "github.com/auroraride/aurservd/internal/ar"
+    "github.com/auroraride/aurservd/internal/ent"
     "github.com/lithammer/shortuuid/v4"
     "time"
 )
@@ -84,6 +85,16 @@ func (o *OperateLog) SetModifier(m *model.Modifier) *OperateLog {
         o.OperatorPhone = m.Phone
         o.OperatorName = m.Name
         o.OperatorType = model.OperatorTypeManager
+    }
+    return o
+}
+
+func (o *OperateLog) SetAgent(ag *ent.Agent) *OperateLog {
+    if ag != nil {
+        o.OperatorID = ag.ID
+        o.OperatorPhone = ag.Phone
+        o.OperatorName = ag.Name
+        o.OperatorType = model.OperatorTypeAgent
     }
     return o
 }

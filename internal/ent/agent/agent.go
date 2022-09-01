@@ -27,8 +27,12 @@ const (
 	FieldRemark = "remark"
 	// FieldEnterpriseID holds the string denoting the enterprise_id field in the database.
 	FieldEnterpriseID = "enterprise_id"
+	// FieldName holds the string denoting the name field in the database.
+	FieldName = "name"
 	// FieldPhone holds the string denoting the phone field in the database.
 	FieldPhone = "phone"
+	// FieldPassword holds the string denoting the password field in the database.
+	FieldPassword = "password"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
 	EdgeEnterprise = "enterprise"
 	// Table holds the table name of the agent in the database.
@@ -52,7 +56,9 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldEnterpriseID,
+	FieldName,
 	FieldPhone,
+	FieldPassword,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

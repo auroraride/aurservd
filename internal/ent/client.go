@@ -6221,6 +6221,38 @@ func (c *SubscribeAlterClient) QueryManager(sa *SubscribeAlter) *ManagerQuery {
 	return query
 }
 
+// QueryEnterprise queries the enterprise edge of a SubscribeAlter.
+func (c *SubscribeAlterClient) QueryEnterprise(sa *SubscribeAlter) *EnterpriseQuery {
+	query := &EnterpriseQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := sa.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribealter.Table, subscribealter.FieldID, id),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribealter.EnterpriseTable, subscribealter.EnterpriseColumn),
+		)
+		fromV = sqlgraph.Neighbors(sa.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAgent queries the agent edge of a SubscribeAlter.
+func (c *SubscribeAlterClient) QueryAgent(sa *SubscribeAlter) *AgentQuery {
+	query := &AgentQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := sa.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribealter.Table, subscribealter.FieldID, id),
+			sqlgraph.To(agent.Table, agent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribealter.AgentTable, subscribealter.AgentColumn),
+		)
+		fromV = sqlgraph.Neighbors(sa.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QuerySubscribe queries the subscribe edge of a SubscribeAlter.
 func (c *SubscribeAlterClient) QuerySubscribe(sa *SubscribeAlter) *SubscribeQuery {
 	query := &SubscribeQuery{config: c.config}

@@ -128,14 +128,19 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
 // List 查询电柜
 func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.PaginationRes) {
     q := s.orm.QueryNotDeleted().WithCity().WithBms()
+
+    if s.modifier != nil && s.modifier.Phone == "15537112255" {
+        req.CityID = tools.NewPointer().UInt64(410100)
+    }
+
     if req.Serial != nil {
         q.Where(cabinet.SerialContainsFold(*req.Serial))
     }
     if req.Name != nil {
         q.Where(cabinet.NameContainsFold(*req.Name))
     }
-    if req.CityId != nil {
-        q.Where(cabinet.CityID(*req.CityId))
+    if req.CityID != nil {
+        q.Where(cabinet.CityID(*req.CityID))
     }
     if req.Brand != nil {
         q.Where(cabinet.Brand(*req.Brand))
@@ -412,7 +417,9 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
     state = prov.DoorOperate(operator.Name+"-"+opId, item.Serial, op, *req.Index)
     // 如果成功, 重新获取状态更新数据
     if state {
-        log.Infof("%s操作成功[%s %s]", item.Serial, req.Operation.String(), req.Remark)
+        // 更新一次电柜状态
+        err = provider.NewUpdater(item).DoUpdate()
+        log.Infof("%s操作成功[%s %s], Update: %v", item.Serial, req.Operation.String(), req.Remark, err)
         // 如果是锁仓, 需要更新仓位备注
         if *req.Operation == model.CabinetDoorOperateLock {
             item.Bin[*req.Index].Remark = req.Remark
@@ -421,9 +428,9 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
         if *req.Operation == model.CabinetDoorOperateUnlock {
             item.Bin[*req.Index].Remark = ""
         }
-        _ = provider.NewUpdater(item).DoUpdate()
+        _, _ = item.Update().SetBin(item.Bin).Save(s.ctx)
     } else {
-        err = errors.New("柜门开启失败")
+        err = errors.New("柜门操作失败")
     }
     go func() {
         // 上传日志

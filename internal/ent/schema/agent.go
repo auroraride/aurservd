@@ -6,6 +6,7 @@ import (
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
+    "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
@@ -46,6 +47,7 @@ func (Agent) Annotations() []schema.Annotation {
 // Fields of the Agent.
 func (Agent) Fields() []ent.Field {
     return []ent.Field{
+        field.String("name"),
         field.String("phone").Unique(),
         field.String("password"),
     }
@@ -66,5 +68,7 @@ func (Agent) Mixin() []ent.Mixin {
 }
 
 func (Agent) Indexes() []ent.Index {
-    return []ent.Index{}
+    return []ent.Index{
+        index.Fields("phone"),
+    }
 }

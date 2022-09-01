@@ -29,6 +29,10 @@ const (
 	FieldRiderID = "rider_id"
 	// FieldManagerID holds the string denoting the manager_id field in the database.
 	FieldManagerID = "manager_id"
+	// FieldEnterpriseID holds the string denoting the enterprise_id field in the database.
+	FieldEnterpriseID = "enterprise_id"
+	// FieldAgentID holds the string denoting the agent_id field in the database.
+	FieldAgentID = "agent_id"
 	// FieldSubscribeID holds the string denoting the subscribe_id field in the database.
 	FieldSubscribeID = "subscribe_id"
 	// FieldDays holds the string denoting the days field in the database.
@@ -37,6 +41,10 @@ const (
 	EdgeRider = "rider"
 	// EdgeManager holds the string denoting the manager edge name in mutations.
 	EdgeManager = "manager"
+	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
+	EdgeEnterprise = "enterprise"
+	// EdgeAgent holds the string denoting the agent edge name in mutations.
+	EdgeAgent = "agent"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
 	EdgeSubscribe = "subscribe"
 	// Table holds the table name of the subscribealter in the database.
@@ -55,6 +63,20 @@ const (
 	ManagerInverseTable = "manager"
 	// ManagerColumn is the table column denoting the manager relation/edge.
 	ManagerColumn = "manager_id"
+	// EnterpriseTable is the table that holds the enterprise relation/edge.
+	EnterpriseTable = "subscribe_alter"
+	// EnterpriseInverseTable is the table name for the Enterprise entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprise" package.
+	EnterpriseInverseTable = "enterprise"
+	// EnterpriseColumn is the table column denoting the enterprise relation/edge.
+	EnterpriseColumn = "enterprise_id"
+	// AgentTable is the table that holds the agent relation/edge.
+	AgentTable = "subscribe_alter"
+	// AgentInverseTable is the table name for the Agent entity.
+	// It exists in this package in order to avoid circular dependency with the "agent" package.
+	AgentInverseTable = "agent"
+	// AgentColumn is the table column denoting the agent relation/edge.
+	AgentColumn = "agent_id"
 	// SubscribeTable is the table that holds the subscribe relation/edge.
 	SubscribeTable = "subscribe_alter"
 	// SubscribeInverseTable is the table name for the Subscribe entity.
@@ -75,6 +97,8 @@ var Columns = []string{
 	FieldRemark,
 	FieldRiderID,
 	FieldManagerID,
+	FieldEnterpriseID,
+	FieldAgentID,
 	FieldSubscribeID,
 	FieldDays,
 }

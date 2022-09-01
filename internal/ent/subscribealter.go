@@ -10,6 +10,8 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -37,6 +39,10 @@ type SubscribeAlter struct {
 	RiderID uint64 `json:"rider_id,omitempty"`
 	// 管理人ID
 	ManagerID uint64 `json:"manager_id,omitempty"`
+	// 企业ID
+	EnterpriseID *uint64 `json:"enterprise_id,omitempty"`
+	// AgentID holds the value of the "agent_id" field.
+	AgentID *uint64 `json:"agent_id,omitempty"`
 	// 订阅ID
 	SubscribeID uint64 `json:"subscribe_id,omitempty"`
 	// 更改天数
@@ -52,11 +58,15 @@ type SubscribeAlterEdges struct {
 	Rider *Rider `json:"rider,omitempty"`
 	// Manager holds the value of the manager edge.
 	Manager *Manager `json:"manager,omitempty"`
+	// Enterprise holds the value of the enterprise edge.
+	Enterprise *Enterprise `json:"enterprise,omitempty"`
+	// Agent holds the value of the agent edge.
+	Agent *Agent `json:"agent,omitempty"`
 	// 订阅
 	Subscribe *Subscribe `json:"subscribe,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [5]bool
 }
 
 // RiderOrErr returns the Rider value or an error if the edge
@@ -85,10 +95,36 @@ func (e SubscribeAlterEdges) ManagerOrErr() (*Manager, error) {
 	return nil, &NotLoadedError{edge: "manager"}
 }
 
+// EnterpriseOrErr returns the Enterprise value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e SubscribeAlterEdges) EnterpriseOrErr() (*Enterprise, error) {
+	if e.loadedTypes[2] {
+		if e.Enterprise == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: enterprise.Label}
+		}
+		return e.Enterprise, nil
+	}
+	return nil, &NotLoadedError{edge: "enterprise"}
+}
+
+// AgentOrErr returns the Agent value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e SubscribeAlterEdges) AgentOrErr() (*Agent, error) {
+	if e.loadedTypes[3] {
+		if e.Agent == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: agent.Label}
+		}
+		return e.Agent, nil
+	}
+	return nil, &NotLoadedError{edge: "agent"}
+}
+
 // SubscribeOrErr returns the Subscribe value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e SubscribeAlterEdges) SubscribeOrErr() (*Subscribe, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[4] {
 		if e.Subscribe == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: subscribe.Label}
@@ -105,7 +141,7 @@ func (*SubscribeAlter) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case subscribealter.FieldCreator, subscribealter.FieldLastModifier:
 			values[i] = new([]byte)
-		case subscribealter.FieldID, subscribealter.FieldRiderID, subscribealter.FieldManagerID, subscribealter.FieldSubscribeID, subscribealter.FieldDays:
+		case subscribealter.FieldID, subscribealter.FieldRiderID, subscribealter.FieldManagerID, subscribealter.FieldEnterpriseID, subscribealter.FieldAgentID, subscribealter.FieldSubscribeID, subscribealter.FieldDays:
 			values[i] = new(sql.NullInt64)
 		case subscribealter.FieldRemark:
 			values[i] = new(sql.NullString)
@@ -185,6 +221,20 @@ func (sa *SubscribeAlter) assignValues(columns []string, values []interface{}) e
 			} else if value.Valid {
 				sa.ManagerID = uint64(value.Int64)
 			}
+		case subscribealter.FieldEnterpriseID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field enterprise_id", values[i])
+			} else if value.Valid {
+				sa.EnterpriseID = new(uint64)
+				*sa.EnterpriseID = uint64(value.Int64)
+			}
+		case subscribealter.FieldAgentID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field agent_id", values[i])
+			} else if value.Valid {
+				sa.AgentID = new(uint64)
+				*sa.AgentID = uint64(value.Int64)
+			}
 		case subscribealter.FieldSubscribeID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field subscribe_id", values[i])
@@ -210,6 +260,16 @@ func (sa *SubscribeAlter) QueryRider() *RiderQuery {
 // QueryManager queries the "manager" edge of the SubscribeAlter entity.
 func (sa *SubscribeAlter) QueryManager() *ManagerQuery {
 	return (&SubscribeAlterClient{config: sa.config}).QueryManager(sa)
+}
+
+// QueryEnterprise queries the "enterprise" edge of the SubscribeAlter entity.
+func (sa *SubscribeAlter) QueryEnterprise() *EnterpriseQuery {
+	return (&SubscribeAlterClient{config: sa.config}).QueryEnterprise(sa)
+}
+
+// QueryAgent queries the "agent" edge of the SubscribeAlter entity.
+func (sa *SubscribeAlter) QueryAgent() *AgentQuery {
+	return (&SubscribeAlterClient{config: sa.config}).QueryAgent(sa)
 }
 
 // QuerySubscribe queries the "subscribe" edge of the SubscribeAlter entity.
@@ -265,6 +325,16 @@ func (sa *SubscribeAlter) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("manager_id=")
 	builder.WriteString(fmt.Sprintf("%v", sa.ManagerID))
+	builder.WriteString(", ")
+	if v := sa.EnterpriseID; v != nil {
+		builder.WriteString("enterprise_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := sa.AgentID; v != nil {
+		builder.WriteString("agent_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("subscribe_id=")
 	builder.WriteString(fmt.Sprintf("%v", sa.SubscribeID))

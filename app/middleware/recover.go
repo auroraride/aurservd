@@ -19,7 +19,7 @@ func Recover() echo.MiddlewareFunc {
         return func(c echo.Context) error {
             defer func() {
                 if r := recover(); r != nil {
-                    stack := string(debug.Stack())
+                    stack := fmt.Sprintf("%v\n%s", r, debug.Stack())
                     switch r.(type) {
                     case *snag.Error:
                         c.Error(r.(*snag.Error))

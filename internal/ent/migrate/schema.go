@@ -18,7 +18,9 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true},
 		{Name: "remark", Type: field.TypeString, Nullable: true},
+		{Name: "name", Type: field.TypeString},
 		{Name: "phone", Type: field.TypeString, Unique: true},
+		{Name: "password", Type: field.TypeString},
 		{Name: "enterprise_id", Type: field.TypeUint64},
 	}
 	// AgentTable holds the schema information for the "agent" table.
@@ -29,7 +31,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "agent_enterprise_enterprise",
-				Columns:    []*schema.Column{AgentColumns[8]},
+				Columns:    []*schema.Column{AgentColumns[10]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -44,6 +46,11 @@ var (
 				Name:    "agent_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{AgentColumns[3]},
+			},
+			{
+				Name:    "agent_phone",
+				Unique:  false,
+				Columns: []*schema.Column{AgentColumns[8]},
 			},
 		},
 	}
@@ -2482,6 +2489,8 @@ var (
 		{Name: "subscribe_id", Type: field.TypeUint64},
 		{Name: "rider_id", Type: field.TypeUint64},
 		{Name: "manager_id", Type: field.TypeUint64},
+		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "agent_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// SubscribeAlterTable holds the schema information for the "subscribe_alter" table.
 	SubscribeAlterTable = &schema.Table{
@@ -2506,6 +2515,18 @@ var (
 				Columns:    []*schema.Column{SubscribeAlterColumns[10]},
 				RefColumns: []*schema.Column{ManagerColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "subscribe_alter_enterprise_enterprise",
+				Columns:    []*schema.Column{SubscribeAlterColumns[11]},
+				RefColumns: []*schema.Column{EnterpriseColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "subscribe_alter_agent_agent",
+				Columns:    []*schema.Column{SubscribeAlterColumns[12]},
+				RefColumns: []*schema.Column{AgentColumns[0]},
+				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
@@ -3073,6 +3094,8 @@ func init() {
 	SubscribeAlterTable.ForeignKeys[0].RefTable = SubscribeTable
 	SubscribeAlterTable.ForeignKeys[1].RefTable = RiderTable
 	SubscribeAlterTable.ForeignKeys[2].RefTable = ManagerTable
+	SubscribeAlterTable.ForeignKeys[3].RefTable = EnterpriseTable
+	SubscribeAlterTable.ForeignKeys[4].RefTable = AgentTable
 	SubscribeAlterTable.Annotation = &entsql.Annotation{
 		Table: "subscribe_alter",
 	}

@@ -12,6 +12,10 @@ func (a *Agent) GetID() uint64 {
 	return a.ID
 }
 
+func (a *Agent) GetName() string {
+	return a.Name
+}
+
 // GetTableName returns table name for Assistance.
 func (a *Assistance) GetTableName() string {
 	return "assistance"

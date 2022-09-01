@@ -13,10 +13,11 @@ const (
     OperatorTypeManager  OperatorType = iota // 管理员
     OperatorTypeEmployee                     // 店员
     OperatorTypeCabinet                      // 电柜
+    OperatorTypeAgent                        // 代理
 )
 
 func (ot OperatorType) String() string {
-    return []string{"管理员", "店员", "电柜"}[int(ot)]
+    return []string{"管理员", "店员", "电柜", "代理"}[int(ot)]
 }
 
 const (

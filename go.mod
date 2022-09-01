@@ -9,11 +9,11 @@ require (
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.18
 	github.com/alibabacloud-go/dyvmsapi-20170525/v2 v2.1.4
 	github.com/alibabacloud-go/tea v1.1.19
-	github.com/aliyun/alibaba-cloud-sdk-go v1.61.1742
+	github.com/aliyun/alibaba-cloud-sdk-go v1.61.1749
 	github.com/aliyun/aliyun-log-go-sdk v0.1.37
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.5+incompatible
 	github.com/fsnotify/fsnotify v1.5.4
-	github.com/getkin/kin-openapi v0.98.0
+	github.com/getkin/kin-openapi v0.100.0
 	github.com/go-playground/locales v0.14.0
 	github.com/go-playground/universal-translator v0.18.0
 	github.com/go-playground/validator/v10 v10.11.0
@@ -24,7 +24,7 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/h2non/filetype v1.1.3
 	github.com/iancoleman/strcase v0.2.0
-	github.com/jackc/pgx/v4 v4.17.0
+	github.com/jackc/pgx/v4 v4.17.1
 	github.com/jinzhu/copier v0.3.5
 	github.com/json-iterator/go v1.1.12
 	github.com/labstack/echo/v4 v4.8.0
@@ -33,7 +33,7 @@ require (
 	github.com/mattn/go-colorable v0.1.13
 	github.com/mojocn/base64Captcha v1.3.5
 	github.com/povsister/scp v0.0.0-20210427074412-33febfd9f13e
-	github.com/qiniu/qmgo v1.1.1
+	github.com/qiniu/qmgo v1.1.2
 	github.com/r3labs/diff/v3 v3.0.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/xid v1.4.0
@@ -50,8 +50,8 @@ require (
 	github.com/wechatpay-apiv3/wechatpay-go v0.2.14
 	github.com/xuri/excelize/v2 v2.6.1
 	go.mongodb.org/mongo-driver v1.10.1
-	golang.org/x/crypto v0.0.0-20220826181053-bd7e27e6170d
-	golang.org/x/exp v0.0.0-20220826205824-bd9bcdd0b820
+	golang.org/x/crypto v0.0.0-20220829220503-c86fa9a7ed90
+	golang.org/x/exp v0.0.0-20220827204233-334a2380cb91
 	golang.org/x/time v0.0.0-20220722155302-e5dcc9cfc0b9
 	golang.org/x/tools v0.1.13-0.20220804200503-81c7dc4e4efa
 	gopkg.in/yaml.v3 v3.0.1
@@ -70,12 +70,10 @@ require (
 	github.com/aliyun/credentials-go v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
-	github.com/baiyubin/aliyun-sts-go-sdk v0.0.0-20180326062324-cfa1a18b161f // indirect
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/clbanning/mxj/v2 v2.5.6 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
-	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-kit/kit v0.10.0 // indirect
 	github.com/go-logfmt/logfmt v0.5.0 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect

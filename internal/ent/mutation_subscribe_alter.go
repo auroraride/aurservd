@@ -19,27 +19,31 @@ import (
 // SubscribeAlterMutation represents an operation that mutates the SubscribeAlter nodes in the graph.
 type SubscribeAlterMutation struct {
 	config
-	op               Op
-	typ              string
-	id               *uint64
-	created_at       *time.Time
-	updated_at       *time.Time
-	deleted_at       *time.Time
-	creator          **model.Modifier
-	last_modifier    **model.Modifier
-	remark           *string
-	days             *int
-	adddays          *int
-	clearedFields    map[string]struct{}
-	rider            *uint64
-	clearedrider     bool
-	manager          *uint64
-	clearedmanager   bool
-	subscribe        *uint64
-	clearedsubscribe bool
-	done             bool
-	oldValue         func(context.Context) (*SubscribeAlter, error)
-	predicates       []predicate.SubscribeAlter
+	op                Op
+	typ               string
+	id                *uint64
+	created_at        *time.Time
+	updated_at        *time.Time
+	deleted_at        *time.Time
+	creator           **model.Modifier
+	last_modifier     **model.Modifier
+	remark            *string
+	days              *int
+	adddays           *int
+	clearedFields     map[string]struct{}
+	rider             *uint64
+	clearedrider      bool
+	manager           *uint64
+	clearedmanager    bool
+	enterprise        *uint64
+	clearedenterprise bool
+	agent             *uint64
+	clearedagent      bool
+	subscribe         *uint64
+	clearedsubscribe  bool
+	done              bool
+	oldValue          func(context.Context) (*SubscribeAlter, error)
+	predicates        []predicate.SubscribeAlter
 }
 
 var _ ent.Mutation = (*SubscribeAlterMutation)(nil)
@@ -480,6 +484,104 @@ func (m *SubscribeAlterMutation) ResetManagerID() {
 	m.manager = nil
 }
 
+// SetEnterpriseID sets the "enterprise_id" field.
+func (m *SubscribeAlterMutation) SetEnterpriseID(u uint64) {
+	m.enterprise = &u
+}
+
+// EnterpriseID returns the value of the "enterprise_id" field in the mutation.
+func (m *SubscribeAlterMutation) EnterpriseID() (r uint64, exists bool) {
+	v := m.enterprise
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEnterpriseID returns the old "enterprise_id" field's value of the SubscribeAlter entity.
+// If the SubscribeAlter object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeAlterMutation) OldEnterpriseID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEnterpriseID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEnterpriseID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEnterpriseID: %w", err)
+	}
+	return oldValue.EnterpriseID, nil
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (m *SubscribeAlterMutation) ClearEnterpriseID() {
+	m.enterprise = nil
+	m.clearedFields[subscribealter.FieldEnterpriseID] = struct{}{}
+}
+
+// EnterpriseIDCleared returns if the "enterprise_id" field was cleared in this mutation.
+func (m *SubscribeAlterMutation) EnterpriseIDCleared() bool {
+	_, ok := m.clearedFields[subscribealter.FieldEnterpriseID]
+	return ok
+}
+
+// ResetEnterpriseID resets all changes to the "enterprise_id" field.
+func (m *SubscribeAlterMutation) ResetEnterpriseID() {
+	m.enterprise = nil
+	delete(m.clearedFields, subscribealter.FieldEnterpriseID)
+}
+
+// SetAgentID sets the "agent_id" field.
+func (m *SubscribeAlterMutation) SetAgentID(u uint64) {
+	m.agent = &u
+}
+
+// AgentID returns the value of the "agent_id" field in the mutation.
+func (m *SubscribeAlterMutation) AgentID() (r uint64, exists bool) {
+	v := m.agent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAgentID returns the old "agent_id" field's value of the SubscribeAlter entity.
+// If the SubscribeAlter object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeAlterMutation) OldAgentID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAgentID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAgentID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAgentID: %w", err)
+	}
+	return oldValue.AgentID, nil
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (m *SubscribeAlterMutation) ClearAgentID() {
+	m.agent = nil
+	m.clearedFields[subscribealter.FieldAgentID] = struct{}{}
+}
+
+// AgentIDCleared returns if the "agent_id" field was cleared in this mutation.
+func (m *SubscribeAlterMutation) AgentIDCleared() bool {
+	_, ok := m.clearedFields[subscribealter.FieldAgentID]
+	return ok
+}
+
+// ResetAgentID resets all changes to the "agent_id" field.
+func (m *SubscribeAlterMutation) ResetAgentID() {
+	m.agent = nil
+	delete(m.clearedFields, subscribealter.FieldAgentID)
+}
+
 // SetSubscribeID sets the "subscribe_id" field.
 func (m *SubscribeAlterMutation) SetSubscribeID(u uint64) {
 	m.subscribe = &u
@@ -624,6 +726,58 @@ func (m *SubscribeAlterMutation) ResetManager() {
 	m.clearedmanager = false
 }
 
+// ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
+func (m *SubscribeAlterMutation) ClearEnterprise() {
+	m.clearedenterprise = true
+}
+
+// EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
+func (m *SubscribeAlterMutation) EnterpriseCleared() bool {
+	return m.EnterpriseIDCleared() || m.clearedenterprise
+}
+
+// EnterpriseIDs returns the "enterprise" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EnterpriseID instead. It exists only for internal usage by the builders.
+func (m *SubscribeAlterMutation) EnterpriseIDs() (ids []uint64) {
+	if id := m.enterprise; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEnterprise resets all changes to the "enterprise" edge.
+func (m *SubscribeAlterMutation) ResetEnterprise() {
+	m.enterprise = nil
+	m.clearedenterprise = false
+}
+
+// ClearAgent clears the "agent" edge to the Agent entity.
+func (m *SubscribeAlterMutation) ClearAgent() {
+	m.clearedagent = true
+}
+
+// AgentCleared reports if the "agent" edge to the Agent entity was cleared.
+func (m *SubscribeAlterMutation) AgentCleared() bool {
+	return m.AgentIDCleared() || m.clearedagent
+}
+
+// AgentIDs returns the "agent" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// AgentID instead. It exists only for internal usage by the builders.
+func (m *SubscribeAlterMutation) AgentIDs() (ids []uint64) {
+	if id := m.agent; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetAgent resets all changes to the "agent" edge.
+func (m *SubscribeAlterMutation) ResetAgent() {
+	m.agent = nil
+	m.clearedagent = false
+}
+
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *SubscribeAlterMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
@@ -669,7 +823,7 @@ func (m *SubscribeAlterMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscribeAlterMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 12)
 	if m.created_at != nil {
 		fields = append(fields, subscribealter.FieldCreatedAt)
 	}
@@ -693,6 +847,12 @@ func (m *SubscribeAlterMutation) Fields() []string {
 	}
 	if m.manager != nil {
 		fields = append(fields, subscribealter.FieldManagerID)
+	}
+	if m.enterprise != nil {
+		fields = append(fields, subscribealter.FieldEnterpriseID)
+	}
+	if m.agent != nil {
+		fields = append(fields, subscribealter.FieldAgentID)
 	}
 	if m.subscribe != nil {
 		fields = append(fields, subscribealter.FieldSubscribeID)
@@ -724,6 +884,10 @@ func (m *SubscribeAlterMutation) Field(name string) (ent.Value, bool) {
 		return m.RiderID()
 	case subscribealter.FieldManagerID:
 		return m.ManagerID()
+	case subscribealter.FieldEnterpriseID:
+		return m.EnterpriseID()
+	case subscribealter.FieldAgentID:
+		return m.AgentID()
 	case subscribealter.FieldSubscribeID:
 		return m.SubscribeID()
 	case subscribealter.FieldDays:
@@ -753,6 +917,10 @@ func (m *SubscribeAlterMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldRiderID(ctx)
 	case subscribealter.FieldManagerID:
 		return m.OldManagerID(ctx)
+	case subscribealter.FieldEnterpriseID:
+		return m.OldEnterpriseID(ctx)
+	case subscribealter.FieldAgentID:
+		return m.OldAgentID(ctx)
 	case subscribealter.FieldSubscribeID:
 		return m.OldSubscribeID(ctx)
 	case subscribealter.FieldDays:
@@ -821,6 +989,20 @@ func (m *SubscribeAlterMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetManagerID(v)
+		return nil
+	case subscribealter.FieldEnterpriseID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEnterpriseID(v)
+		return nil
+	case subscribealter.FieldAgentID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAgentID(v)
 		return nil
 	case subscribealter.FieldSubscribeID:
 		v, ok := value.(uint64)
@@ -893,6 +1075,12 @@ func (m *SubscribeAlterMutation) ClearedFields() []string {
 	if m.FieldCleared(subscribealter.FieldRemark) {
 		fields = append(fields, subscribealter.FieldRemark)
 	}
+	if m.FieldCleared(subscribealter.FieldEnterpriseID) {
+		fields = append(fields, subscribealter.FieldEnterpriseID)
+	}
+	if m.FieldCleared(subscribealter.FieldAgentID) {
+		fields = append(fields, subscribealter.FieldAgentID)
+	}
 	return fields
 }
 
@@ -918,6 +1106,12 @@ func (m *SubscribeAlterMutation) ClearField(name string) error {
 		return nil
 	case subscribealter.FieldRemark:
 		m.ClearRemark()
+		return nil
+	case subscribealter.FieldEnterpriseID:
+		m.ClearEnterpriseID()
+		return nil
+	case subscribealter.FieldAgentID:
+		m.ClearAgentID()
 		return nil
 	}
 	return fmt.Errorf("unknown SubscribeAlter nullable field %s", name)
@@ -951,6 +1145,12 @@ func (m *SubscribeAlterMutation) ResetField(name string) error {
 	case subscribealter.FieldManagerID:
 		m.ResetManagerID()
 		return nil
+	case subscribealter.FieldEnterpriseID:
+		m.ResetEnterpriseID()
+		return nil
+	case subscribealter.FieldAgentID:
+		m.ResetAgentID()
+		return nil
 	case subscribealter.FieldSubscribeID:
 		m.ResetSubscribeID()
 		return nil
@@ -963,12 +1163,18 @@ func (m *SubscribeAlterMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *SubscribeAlterMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 5)
 	if m.rider != nil {
 		edges = append(edges, subscribealter.EdgeRider)
 	}
 	if m.manager != nil {
 		edges = append(edges, subscribealter.EdgeManager)
+	}
+	if m.enterprise != nil {
+		edges = append(edges, subscribealter.EdgeEnterprise)
+	}
+	if m.agent != nil {
+		edges = append(edges, subscribealter.EdgeAgent)
 	}
 	if m.subscribe != nil {
 		edges = append(edges, subscribealter.EdgeSubscribe)
@@ -988,6 +1194,14 @@ func (m *SubscribeAlterMutation) AddedIDs(name string) []ent.Value {
 		if id := m.manager; id != nil {
 			return []ent.Value{*id}
 		}
+	case subscribealter.EdgeEnterprise:
+		if id := m.enterprise; id != nil {
+			return []ent.Value{*id}
+		}
+	case subscribealter.EdgeAgent:
+		if id := m.agent; id != nil {
+			return []ent.Value{*id}
+		}
 	case subscribealter.EdgeSubscribe:
 		if id := m.subscribe; id != nil {
 			return []ent.Value{*id}
@@ -998,7 +1212,7 @@ func (m *SubscribeAlterMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *SubscribeAlterMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 5)
 	return edges
 }
 
@@ -1012,12 +1226,18 @@ func (m *SubscribeAlterMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *SubscribeAlterMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 5)
 	if m.clearedrider {
 		edges = append(edges, subscribealter.EdgeRider)
 	}
 	if m.clearedmanager {
 		edges = append(edges, subscribealter.EdgeManager)
+	}
+	if m.clearedenterprise {
+		edges = append(edges, subscribealter.EdgeEnterprise)
+	}
+	if m.clearedagent {
+		edges = append(edges, subscribealter.EdgeAgent)
 	}
 	if m.clearedsubscribe {
 		edges = append(edges, subscribealter.EdgeSubscribe)
@@ -1033,6 +1253,10 @@ func (m *SubscribeAlterMutation) EdgeCleared(name string) bool {
 		return m.clearedrider
 	case subscribealter.EdgeManager:
 		return m.clearedmanager
+	case subscribealter.EdgeEnterprise:
+		return m.clearedenterprise
+	case subscribealter.EdgeAgent:
+		return m.clearedagent
 	case subscribealter.EdgeSubscribe:
 		return m.clearedsubscribe
 	}
@@ -1048,6 +1272,12 @@ func (m *SubscribeAlterMutation) ClearEdge(name string) error {
 		return nil
 	case subscribealter.EdgeManager:
 		m.ClearManager()
+		return nil
+	case subscribealter.EdgeEnterprise:
+		m.ClearEnterprise()
+		return nil
+	case subscribealter.EdgeAgent:
+		m.ClearAgent()
 		return nil
 	case subscribealter.EdgeSubscribe:
 		m.ClearSubscribe()
@@ -1065,6 +1295,12 @@ func (m *SubscribeAlterMutation) ResetEdge(name string) error {
 		return nil
 	case subscribealter.EdgeManager:
 		m.ResetManager()
+		return nil
+	case subscribealter.EdgeEnterprise:
+		m.ResetEnterprise()
+		return nil
+	case subscribealter.EdgeAgent:
+		m.ResetAgent()
 		return nil
 	case subscribealter.EdgeSubscribe:
 		m.ResetSubscribe()

@@ -285,6 +285,97 @@ definitions:
         description: 电话
         type: string
     type: object
+  model.AgentCreateReq:
+    properties:
+      enterpriseId:
+        description: '团签ID '
+        type: integer
+      name:
+        description: '姓名 '
+        type: string
+      password:
+        description: '密码 '
+        type: string
+      phone:
+        description: '电话 '
+        type: string
+    required:
+    - enterpriseId
+    - name
+    - password
+    - phone
+    type: object
+  model.AgentListRes:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
+  model.AgentMeta:
+    properties:
+      balance:
+        description: 可用余额
+        type: number
+      contract:
+        description: 合同URL, 可能为空
+        type: string
+      enterprise:
+        allOf:
+        - $ref: '#/definitions/model.Enterprise'
+        description: 企业
+      id:
+        type: integer
+      name:
+        description: 姓名
+        type: string
+      riders:
+        description: 骑手数量
+        type: integer
+      yesterday:
+        description: 昨日使用
+        type: number
+    type: object
+  model.AgentModifyReq:
+    properties:
+      name:
+        description: 姓名
+        type: string
+      password:
+        description: 密码
+        type: string
+      phone:
+        description: 电话
+        type: string
+    type: object
+  model.AgentSigninRes:
+    properties:
+      balance:
+        description: 可用余额
+        type: number
+      contract:
+        description: 合同URL, 可能为空
+        type: string
+      enterprise:
+        allOf:
+        - $ref: '#/definitions/model.Enterprise'
+        description: 企业
+      id:
+        type: integer
+      name:
+        description: 姓名
+        type: string
+      riders:
+        description: 骑手数量
+        type: integer
+      token:
+        type: string
+      yesterday:
+        description: 昨日使用
+        type: number
+    type: object
   model.AliyunOssStsRes:
     properties:
       accessKeyId:
@@ -5037,6 +5128,48 @@ info:
   title: 极光出行API
   version: "1.0"
 paths:
+  /agent/v1/profile:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentAgentMeta
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.AgentMeta'
+      summary: A1002 代理资料
+      tags:
+      - '[A]代理接口'
+  /agent/v1/signin:
+    post:
+      consumes:
+      - application/json
+      operationId: AgentSignin
+      parameters:
+      - description: 代理账号校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.AgentSigninRes'
+      summary: A1001 登录
+      tags:
+      - '[A]代理接口'
   /commom/sms:
     post:
       consumes:
@@ -7861,6 +7994,118 @@ paths:
           schema:
             type: number
       summary: M9005 企业预付费
+      tags:
+      - '[M]管理接口'
+  /manager/v1/enterprise/agent:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseAgentList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 团签ID
+        in: query
+        name: enterpriseId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.AgentListRes'
+            type: array
+      summary: M9020 代理账号列表
+      tags:
+      - '[M]管理接口'
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseAgentCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 账号属性
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AgentCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M9021 创建代理账号
+      tags:
+      - '[M]管理接口'
+  /manager/v1/enterprise/agent/{id}:
+    put:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseAgentModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 账号ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 账号属性
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AgentModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M9022 修改代理账号
+      tags:
+      - '[M]管理接口'
+  /manager/v1/enterprise/agent{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseAgentDelete
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 账号ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M9023 删除代理账号
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise/bill:

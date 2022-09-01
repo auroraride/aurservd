@@ -95,9 +95,21 @@ func (au *AgentUpdate) SetEnterpriseID(u uint64) *AgentUpdate {
 	return au
 }
 
+// SetName sets the "name" field.
+func (au *AgentUpdate) SetName(s string) *AgentUpdate {
+	au.mutation.SetName(s)
+	return au
+}
+
 // SetPhone sets the "phone" field.
 func (au *AgentUpdate) SetPhone(s string) *AgentUpdate {
 	au.mutation.SetPhone(s)
+	return au
+}
+
+// SetPassword sets the "password" field.
+func (au *AgentUpdate) SetPassword(s string) *AgentUpdate {
+	au.mutation.SetPassword(s)
 	return au
 }
 
@@ -276,11 +288,25 @@ func (au *AgentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: agent.FieldRemark,
 		})
 	}
+	if value, ok := au.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: agent.FieldName,
+		})
+	}
 	if value, ok := au.mutation.Phone(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
 			Column: agent.FieldPhone,
+		})
+	}
+	if value, ok := au.mutation.Password(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: agent.FieldPassword,
 		})
 	}
 	if au.mutation.EnterpriseCleared() {
@@ -403,9 +429,21 @@ func (auo *AgentUpdateOne) SetEnterpriseID(u uint64) *AgentUpdateOne {
 	return auo
 }
 
+// SetName sets the "name" field.
+func (auo *AgentUpdateOne) SetName(s string) *AgentUpdateOne {
+	auo.mutation.SetName(s)
+	return auo
+}
+
 // SetPhone sets the "phone" field.
 func (auo *AgentUpdateOne) SetPhone(s string) *AgentUpdateOne {
 	auo.mutation.SetPhone(s)
+	return auo
+}
+
+// SetPassword sets the "password" field.
+func (auo *AgentUpdateOne) SetPassword(s string) *AgentUpdateOne {
+	auo.mutation.SetPassword(s)
 	return auo
 }
 
@@ -614,11 +652,25 @@ func (auo *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error
 			Column: agent.FieldRemark,
 		})
 	}
+	if value, ok := auo.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: agent.FieldName,
+		})
+	}
 	if value, ok := auo.mutation.Phone(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
 			Column: agent.FieldPhone,
+		})
+	}
+	if value, ok := auo.mutation.Password(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: agent.FieldPassword,
 		})
 	}
 	if auo.mutation.EnterpriseCleared() {

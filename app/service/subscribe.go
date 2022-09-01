@@ -372,7 +372,7 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe, notice bool) error 
 }
 
 // AlterDays 修改骑手时间
-func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.RiderItemSubscribe) {
+func (s *subscribeService) AlterDays(req *model.SubscribeAlter, ag *ent.Agent) (res model.RiderItemSubscribe) {
     sub, _ := s.orm.QueryNotDeleted().Where(subscribe.ID(req.ID)).WithRider().Only(s.ctx)
     // 团签用户禁止修改
     if sub.EnterpriseID != nil {
@@ -394,13 +394,17 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
 
     ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
         // 插入时间修改
-        _, err = tx.SubscribeAlter.
+        sa := tx.SubscribeAlter.
             Create().
             SetRiderID(sub.RiderID).
             SetManagerID(s.modifier.ID).
             SetSubscribeID(sub.ID).
             SetDays(req.Days).
-            SetRemark(req.Reason).
+            SetRemark(req.Reason)
+        if ag != nil {
+            sa.SetAgentID(ag.ID).SetEnterpriseID(ag.EnterpriseID)
+        }
+        _, err = sa.
             Save(s.ctx)
         if err != nil {
             log.Error(err)
@@ -432,6 +436,7 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
     go logging.NewOperateLog().
         SetRef(u).
         SetModifier(s.modifier).
+        SetAgent(ag).
         SetOperate(model.OperateSubscribeAlter).
         SetDiff(fmt.Sprintf("剩余%d天", before), fmt.Sprintf("剩余%d天", sub.Remaining)).
         SetRemark(req.Reason).
