@@ -42,7 +42,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.AgentMeta"
+                            "$ref": "#/definitions/model.AgentProfile"
                         }
                     }
                 }
@@ -10922,42 +10922,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.AgentMeta": {
-            "type": "object",
-            "properties": {
-                "balance": {
-                    "description": "可用余额",
-                    "type": "number"
-                },
-                "contract": {
-                    "description": "合同URL, 可能为空",
-                    "type": "string"
-                },
-                "enterprise": {
-                    "description": "企业",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.Enterprise"
-                        }
-                    ]
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "description": "姓名",
-                    "type": "string"
-                },
-                "riders": {
-                    "description": "骑手数量",
-                    "type": "integer"
-                },
-                "yesterday": {
-                    "description": "昨日使用",
-                    "type": "number"
-                }
-            }
-        },
         "model.AgentModifyReq": {
             "type": "object",
             "properties": {
@@ -10975,12 +10939,16 @@ const docTemplate = `{
                 }
             }
         },
-        "model.AgentSigninRes": {
+        "model.AgentProfile": {
             "type": "object",
             "properties": {
                 "balance": {
                     "description": "可用余额",
                     "type": "number"
+                },
+                "billing": {
+                    "description": "计费中骑手数",
+                    "type": "integer"
                 },
                 "contract": {
                     "description": "合同URL, 可能为空",
@@ -11005,12 +10973,24 @@ const docTemplate = `{
                     "description": "骑手数量",
                     "type": "integer"
                 },
-                "token": {
-                    "type": "string"
-                },
                 "yesterday": {
                     "description": "昨日使用",
                     "type": "number"
+                }
+            }
+        },
+        "model.AgentSigninRes": {
+            "type": "object",
+            "properties": {
+                "profile": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AgentProfile"
+                        }
+                    ]
+                },
+                "token": {
+                    "type": "string"
                 }
             }
         },

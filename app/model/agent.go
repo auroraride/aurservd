@@ -35,17 +35,18 @@ type AgentSigninReq struct {
     Password string `json:"password" validate:"required" trans:"密码"`
 }
 
-type AgentMeta struct {
+type AgentProfile struct {
     ID         uint64     `json:"id"`
     Name       string     `json:"name"`               // 姓名
     Contract   string     `json:"contract,omitempty"` // 合同URL, 可能为空
     Enterprise Enterprise `json:"enterprise"`         // 企业
     Balance    float64    `json:"balance"`            // 可用余额
     Riders     int        `json:"riders"`             // 骑手数量
+    Billing    int        `json:"billing"`            // 计费中骑手数
     Yesterday  float64    `json:"yesterday"`          // 昨日使用
 }
 
 type AgentSigninRes struct {
-    AgentMeta
-    Token string `json:"token"`
+    Profile AgentProfile `json:"profile"`
+    Token   string       `json:"token"`
 }

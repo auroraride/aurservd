@@ -155,8 +155,8 @@ func (s *agentService) Signin(req *model.AgentSigninReq) model.AgentSigninRes {
     s.ExtendTokenTime(ag.ID, token)
 
     return model.AgentSigninRes{
-        AgentMeta: s.Meta(ag, en),
-        Token:     token,
+        Profile: s.Profile(ag, en),
+        Token:   token,
     }
 }
 
@@ -167,7 +167,7 @@ func (s *agentService) ExtendTokenTime(id uint64, token string) {
     cache.Set(ctx, token, id, 7*24*time.Hour)
 }
 
-func (s *agentService) Meta(ag *ent.Agent, en *ent.Enterprise) model.AgentMeta {
+func (s *agentService) Profile(ag *ent.Agent, en *ent.Enterprise) model.AgentProfile {
 
     // 查询合同
     today := carbon.Now().StartOfDay().Carbon2Time()
@@ -185,6 +185,14 @@ func (s *agentService) Meta(ag *ent.Agent, en *ent.Enterprise) model.AgentMeta {
     }
 
     riders, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.EnterpriseID(en.ID)).Count(s.ctx)
+    billing, _ := ent.Database.Subscribe.QueryNotDeleted().Where(
+        subscribe.EnterpriseID(en.ID),
+        subscribe.StartAtNotNil(),
+        subscribe.Or(
+            subscribe.EndAtIsNil(),
+            subscribe.EndAtGTE(carbon.Now().StartOfDay().Carbon2Time()),
+        ),
+    ).Count(s.ctx)
 
     yt := carbon.Yesterday().StartOfDay().Carbon2Time()
     td := carbon.Now().StartOfDay().Carbon2Time()
@@ -206,7 +214,7 @@ func (s *agentService) Meta(ag *ent.Agent, en *ent.Enterprise) model.AgentMeta {
         cost = tools.NewDecimal().Sum(prices[srv.PriceKey(sub.CityID, sub.Model)].Price, cost)
     }
 
-    return model.AgentMeta{
+    return model.AgentProfile{
         Enterprise: model.Enterprise{
             ID:    en.ID,
             Name:  en.Name,
@@ -218,5 +226,6 @@ func (s *agentService) Meta(ag *ent.Agent, en *ent.Enterprise) model.AgentMeta {
         Balance:   en.Balance,
         Riders:    riders,
         Yesterday: cost,
+        Billing:   billing,
     }
 }

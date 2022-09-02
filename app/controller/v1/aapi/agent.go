@@ -30,7 +30,7 @@ func (*agent) Signin(c echo.Context) (err error) {
     return ctx.SendResponse(service.NewAgent().Signin(req))
 }
 
-// Meta
+// Profile
 // @ID           AgentAgentMeta
 // @Router       /agent/v1/profile [GET]
 // @Summary      A1002 代理资料
@@ -38,8 +38,8 @@ func (*agent) Signin(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Agent-Token  header  string  true  "代理校验token"
-// @Success      200  {object}  model.AgentMeta  "请求成功"
-func (*agent) Meta(c echo.Context) (err error) {
+// @Success      200  {object}  model.AgentProfile  "请求成功"
+func (*agent) Profile(c echo.Context) (err error) {
     ctx := app.ContextX[app.AgentContext](c)
-    return ctx.SendResponse(service.NewAgent().Meta(ctx.Agent, ctx.Enterprise))
+    return ctx.SendResponse(service.NewAgent().Profile(ctx.Agent, ctx.Enterprise))
 }

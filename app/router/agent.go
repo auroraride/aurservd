@@ -15,5 +15,5 @@ func loadAgentRoutes() {
     g.Use(middleware.AgentMiddleware())
 
     g.POST("/signin", aapi.Agent.Signin)
-    g.GET("/profile", aapi.Agent.Meta)
+    g.GET("/profile", aapi.Agent.Profile)
 }
