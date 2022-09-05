@@ -2488,7 +2488,7 @@ var (
 		{Name: "days", Type: field.TypeInt},
 		{Name: "subscribe_id", Type: field.TypeUint64},
 		{Name: "rider_id", Type: field.TypeUint64},
-		{Name: "manager_id", Type: field.TypeUint64},
+		{Name: "manager_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "agent_id", Type: field.TypeUint64, Nullable: true},
 	}
@@ -2514,7 +2514,7 @@ var (
 				Symbol:     "subscribe_alter_manager_manager",
 				Columns:    []*schema.Column{SubscribeAlterColumns[10]},
 				RefColumns: []*schema.Column{ManagerColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_alter_enterprise_enterprise",

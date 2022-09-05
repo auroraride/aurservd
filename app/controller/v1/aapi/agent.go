@@ -41,5 +41,5 @@ func (*agent) Signin(c echo.Context) (err error) {
 // @Success      200  {object}  model.AgentProfile  "请求成功"
 func (*agent) Profile(c echo.Context) (err error) {
     ctx := app.ContextX[app.AgentContext](c)
-    return ctx.SendResponse(service.NewAgent().Profile(ctx.Agent, ctx.Enterprise))
+    return ctx.SendResponse(service.NewAgentWithAgent(ctx.Agent, ctx.Enterprise).Profile(ctx.Agent, ctx.Enterprise))
 }

@@ -39,12 +39,12 @@ func (t *timeTool) LastDays(after, before time.Time) int {
     return int(carbon.Time2Carbon(before).StartOfDay().DiffInDays(carbon.Time2Carbon(after).StartOfDay()))
 }
 
-func (t *timeTool) LastDaysToNow(before time.Time) int {
-    return int(carbon.Time2Carbon(before).StartOfDay().DiffInDays(carbon.Now().StartOfDay()))
+func (t *timeTool) LastDaysToNow(after time.Time) int {
+    return int(carbon.Now().StartOfDay().DiffInDays(carbon.Time2Carbon(after).StartOfDay()))
 }
 
-func (t *timeTool) LastDaysToNowString(before string) int {
-    return int(carbon.Parse(before).StartOfDay().DiffInDays(carbon.Now().StartOfDay()))
+func (t *timeTool) LastDaysToNowString(after string) int {
+    return int(carbon.Now().StartOfDay().DiffInDays(carbon.Parse(after).StartOfDay()))
 }
 
 // UsedDays 获取两个日期相差天数(a - b), b 00:00:00 -> a+1 00:00:00
@@ -62,8 +62,15 @@ func (t *timeTool) UsedDaysToNowString(before string) int {
 }
 
 // WillEnd 计算到期时间
-func (t *timeTool) WillEnd(before time.Time, days int) time.Time {
-    return before.AddDate(0, 0, days-1)
+// 从今日算起, 天数应该减一
+// 若从明日算起, 天数不应减一
+// params: 0 是否从明日算起, 默认从今天算
+func (t *timeTool) WillEnd(before time.Time, days int, params ...bool) time.Time {
+    // 是否从明日开始
+    if len(params) == 0 || !params[0] {
+        days -= 1
+    }
+    return before.AddDate(0, 0, days)
 }
 
 // ParseDateString 格式化日期字符串

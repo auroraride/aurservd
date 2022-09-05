@@ -14,6 +14,10 @@ const (
     SubscribeStatusCanceled                  // 已取消, 已退款
 )
 
+func SubscribeNotUnSubscribed() []uint8 {
+    return []uint8{SubscribeStatusInactive, SubscribeStatusUsing, SubscribeStatusPaused, SubscribeStatusOverdue}
+}
+
 func SubscribeBusinessable(status uint8) bool {
     return status == SubscribeStatusUsing || status == SubscribeStatusPaused
 }

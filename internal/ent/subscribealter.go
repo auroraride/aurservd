@@ -38,7 +38,7 @@ type SubscribeAlter struct {
 	// 骑手ID
 	RiderID uint64 `json:"rider_id,omitempty"`
 	// 管理人ID
-	ManagerID uint64 `json:"manager_id,omitempty"`
+	ManagerID *uint64 `json:"manager_id,omitempty"`
 	// 企业ID
 	EnterpriseID *uint64 `json:"enterprise_id,omitempty"`
 	// AgentID holds the value of the "agent_id" field.
@@ -219,7 +219,8 @@ func (sa *SubscribeAlter) assignValues(columns []string, values []interface{}) e
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field manager_id", values[i])
 			} else if value.Valid {
-				sa.ManagerID = uint64(value.Int64)
+				sa.ManagerID = new(uint64)
+				*sa.ManagerID = uint64(value.Int64)
 			}
 		case subscribealter.FieldEnterpriseID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -323,8 +324,10 @@ func (sa *SubscribeAlter) String() string {
 	builder.WriteString("rider_id=")
 	builder.WriteString(fmt.Sprintf("%v", sa.RiderID))
 	builder.WriteString(", ")
-	builder.WriteString("manager_id=")
-	builder.WriteString(fmt.Sprintf("%v", sa.ManagerID))
+	if v := sa.ManagerID; v != nil {
+		builder.WriteString("manager_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	if v := sa.EnterpriseID; v != nil {
 		builder.WriteString("enterprise_id=")

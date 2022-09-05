@@ -108,11 +108,12 @@ type RiderListFilter struct {
 
 // RiderItemSubscribe 骑手骑士卡简单信息
 type RiderItemSubscribe struct {
-    ID        uint64 `json:"id"`        // 订阅ID
-    Status    uint8  `json:"status"`    // 订阅状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期(计算状态) 当 status = 1 且 remaining <= 3 的时候是即将到期
-    Remaining int    `json:"remaining"` // 剩余天数
-    Model     string `json:"model"`     // 骑士卡可用电池型号
-    Suspend   bool   `json:"suspend"`   // 是否暂停中
+    ID         uint64 `json:"id"`         // 订阅ID
+    Status     uint8  `json:"status"`     // 订阅状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期(计算状态) 当 status = 1 且 remaining <= 3 的时候是即将到期
+    Remaining  int    `json:"remaining"`  // 剩余天数
+    Model      string `json:"model"`      // 骑士卡可用电池型号
+    Suspend    bool   `json:"suspend"`    // 是否暂停中
+    AgentEndAt string `json:"agentEndAt"` // 代理商处到期日期
 }
 
 // RiderItem 骑手信息
@@ -240,5 +241,5 @@ type RiderAgentList struct {
     Keyword string `json:"keyword"` // 筛选关键词
     Status  uint8  `json:"status"`  // 状态 0:全部 1:未激活 2:计费中 3:已超期 4:已退租
     CityID  uint64 `json:"cityId"`  // 城市筛选
-    
+
 }

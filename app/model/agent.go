@@ -36,14 +36,18 @@ type AgentSigninReq struct {
 }
 
 type AgentProfile struct {
-    ID         uint64     `json:"id"`
-    Name       string     `json:"name"`               // 姓名
-    Contract   string     `json:"contract,omitempty"` // 合同URL, 可能为空
-    Enterprise Enterprise `json:"enterprise"`         // 企业
-    Balance    float64    `json:"balance"`            // 可用余额
-    Riders     int        `json:"riders"`             // 骑手数量
-    Billing    int        `json:"billing"`            // 计费中骑手数
-    Yesterday  float64    `json:"yesterday"`          // 昨日使用
+    ID         uint64              `json:"id"`
+    Phone      string              `json:"phone"`              // 手机号
+    Name       string              `json:"name"`               // 姓名
+    Contract   string              `json:"contract,omitempty"` // 合同URL, 可能为空
+    Enterprise Enterprise          `json:"enterprise"`         // 企业
+    Balance    float64             `json:"balance"`            // 可用余额
+    Riders     int                 `json:"riders"`             // 骑手数量
+    Using      int                 `json:"using"`              // 计费中骑手数
+    Yesterday  float64             `json:"yesterday"`          // 昨日使用
+    Stations   []EnterpriseStation `json:"stations"`           // 站点列表
+    Prices     []EnterprisePrice   `json:"prices"`             // 价格列表
+    Days       []int               `json:"days"`               // 日期选项
 }
 
 type AgentSigninRes struct {

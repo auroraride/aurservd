@@ -470,6 +470,16 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
         case 99:
             q.Where(rider.Not(rider.HasSubscribes()))
             break
+        case model.SubscribeStatusUnSubscribed:
+            q.Where(
+                rider.And(
+                    rider.HasSubscribesWith(
+                        subscribe.EndAtNotNil(),
+                        subscribe.Status(model.SubscribeStatusUnSubscribed),
+                    ),
+                    rider.Not(rider.HasSubscribesWith(subscribe.StatusIn(model.SubscribeNotUnSubscribed()...))),
+                ),
+            )
         default:
             q.Where(rider.HasSubscribesWith(subscribe.Status(rss)))
             break
@@ -486,7 +496,6 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
         }[*req.SubscribeStatus]
     }
     if req.PlanID != nil {
-        // ent.NewExportInfo(*req.CityID, rider.Table)
         info["骑士卡"] = ent.NewExportInfo(*req.PlanID, plan.Table)
         q.Where(rider.HasSubscribesWith(subscribe.PlanID(*req.PlanID)))
     }
@@ -616,6 +625,9 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
             Remaining: sub.Remaining,
             Model:     sub.Model,
             Suspend:   sub.SuspendAt != nil,
+        }
+        if sub.AgentEndAt != nil {
+            ri.Subscribe.AgentEndAt = sub.AgentEndAt.Format(carbon.DateLayout)
         }
         ri.City = &model.City{
             ID: sub.CityID,

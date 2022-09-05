@@ -454,7 +454,7 @@ func (s *riderExchangeService) ProcessOpenBin() *riderExchangeService {
 
     operation := model.CabinetDoorOperateOpen
     id := s.cabinet.ID
-    index := tools.PointerInterface(bin.Index)
+    index := tools.Pointer(bin.Index)
 
     status, err := NewCabinet().DoorOperate(&model.CabinetDoorOperateReq{
         ID:        &id,
@@ -490,7 +490,7 @@ func (s *riderExchangeService) ProcessOpenBin() *riderExchangeService {
             ID:        &id,
             Index:     index,
             Remark:    fmt.Sprintf("换电仓门处理失败自动锁仓 - %s", s.rider.Phone),
-            Operation: tools.PointerInterface(model.CabinetDoorOperateLock),
+            Operation: tools.Pointer(model.CabinetDoorOperateLock),
         }, operator)
     })
 

@@ -43,7 +43,7 @@ func (s *employeeSocketService) Connect(hub *socket.WebsocketHub, token string) 
     if ass != nil {
         hub.SendMessage(&model.EmployeeSocketMessage{
             Speech:       "您有一条救援任务正在进行中",
-            AssistanceID: tools.PointerInterface(ass.ID),
+            AssistanceID: tools.Pointer(ass.ID),
         })
     }
 

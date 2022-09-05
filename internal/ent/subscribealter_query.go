@@ -588,7 +588,10 @@ func (saq *SubscribeAlterQuery) loadManager(ctx context.Context, query *ManagerQ
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*SubscribeAlter)
 	for i := range nodes {
-		fk := nodes[i].ManagerID
+		if nodes[i].ManagerID == nil {
+			continue
+		}
+		fk := *nodes[i].ManagerID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}

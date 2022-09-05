@@ -570,6 +570,20 @@ func ManagerIDNotIn(vs ...uint64) predicate.SubscribeAlter {
 	})
 }
 
+// ManagerIDIsNil applies the IsNil predicate on the "manager_id" field.
+func ManagerIDIsNil() predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldManagerID)))
+	})
+}
+
+// ManagerIDNotNil applies the NotNil predicate on the "manager_id" field.
+func ManagerIDNotNil() predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldManagerID)))
+	})
+}
+
 // EnterpriseIDEQ applies the EQ predicate on the "enterprise_id" field.
 func EnterpriseIDEQ(v uint64) predicate.SubscribeAlter {
 	return predicate.SubscribeAlter(func(s *sql.Selector) {

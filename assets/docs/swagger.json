@@ -8,6 +8,180 @@
     },
     "basePath": "/",
     "paths": {
+        "/agent/v1/bill/usage": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A4001 使用明细",
+                "operationId": "AgentBillUsage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "企业ID",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "型号",
+                        "name": "model",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点ID",
+                        "name": "stationId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.Pagination"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.StatementUsageRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/prepayment": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A3002 充值记录",
+                "operationId": "AgentPrepaymentList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.PrepaymentListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/prepayment/overview": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A3001 充值概览",
+                "operationId": "AgentPrepaymentOverview",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.PrepaymentOverview"
+                        }
+                    }
+                }
+            }
+        },
         "/agent/v1/profile": {
             "get": {
                 "consumes": [
@@ -35,6 +209,214 @@
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.AgentProfile"
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/rider": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A2001 骑手列表",
+                "operationId": "AgentRiderList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键词",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点ID",
+                        "name": "stationId",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "inactive",
+                            "using",
+                            "overdue",
+                            "unsubscribed"
+                        ],
+                        "type": "string",
+                        "description": "inactive:未激活 using:计费中 overdue:已超期 unsubscribed:已退租",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.AgentRider"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A2002 添加骑手",
+                "operationId": "AgentRiderCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "骑手信息",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EnterpriseRiderCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.EnterpriseRider"
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/rider/alter": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A2003 延长天数",
+                "operationId": "AgentRiderAlter",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求详情",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.SubscribeAlter"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderItemSubscribe"
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/rider/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A2004 骑手详情",
+                "operationId": "AgentRider",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "骑手ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.AgentRiderDetail"
                         }
                     }
                 }
@@ -4636,22 +5018,33 @@
                     },
                     {
                         "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "结束时间 ",
+                        "description": "结束时间",
                         "name": "end",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "企业ID ",
+                        "description": "企业ID",
                         "name": "id",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "型号",
+                        "name": "model",
+                        "in": "query"
                     },
                     {
                         "type": "integer",
@@ -4661,8 +5054,14 @@
                     },
                     {
                         "type": "string",
-                        "description": "开始时间 ",
+                        "description": "开始时间",
                         "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点ID",
+                        "name": "stationId",
                         "in": "query"
                     }
                 ],
@@ -10938,13 +11337,16 @@
                     "description": "可用余额",
                     "type": "number"
                 },
-                "billing": {
-                    "description": "计费中骑手数",
-                    "type": "integer"
-                },
                 "contract": {
                     "description": "合同URL, 可能为空",
                     "type": "string"
+                },
+                "days": {
+                    "description": "日期选项",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "enterprise": {
                     "description": "企业",
@@ -10961,13 +11363,186 @@
                     "description": "姓名",
                     "type": "string"
                 },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "prices": {
+                    "description": "价格列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EnterprisePrice"
+                    }
+                },
                 "riders": {
                     "description": "骑手数量",
+                    "type": "integer"
+                },
+                "stations": {
+                    "description": "站点列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EnterpriseStation"
+                    }
+                },
+                "using": {
+                    "description": "计费中骑手数",
                     "type": "integer"
                 },
                 "yesterday": {
                     "description": "昨日使用",
                     "type": "number"
+                }
+            }
+        },
+        "model.AgentRider": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "date": {
+                    "description": "创建日期",
+                    "type": "string"
+                },
+                "endAt": {
+                    "description": "退租日期",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                },
+                "remaining": {
+                    "description": "剩余天数",
+                    "type": "integer"
+                },
+                "startAt": {
+                    "description": "开始日期",
+                    "type": "string"
+                },
+                "station": {
+                    "description": "站点",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态",
+                    "type": "string"
+                },
+                "stopAt": {
+                    "description": "到期日期",
+                    "type": "string"
+                },
+                "subscribeId": {
+                    "description": "订阅ID",
+                    "type": "integer"
+                },
+                "used": {
+                    "description": "使用天数",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.AgentRiderDetail": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "date": {
+                    "description": "创建日期",
+                    "type": "string"
+                },
+                "endAt": {
+                    "description": "退租日期",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "logs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AgentRiderLog"
+                    }
+                },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                },
+                "remaining": {
+                    "description": "剩余天数",
+                    "type": "integer"
+                },
+                "startAt": {
+                    "description": "开始日期",
+                    "type": "string"
+                },
+                "station": {
+                    "description": "站点",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态",
+                    "type": "string"
+                },
+                "stopAt": {
+                    "description": "到期日期",
+                    "type": "string"
+                },
+                "subscribeId": {
+                    "description": "订阅ID",
+                    "type": "integer"
+                },
+                "used": {
+                    "description": "使用天数",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.AgentRiderLog": {
+            "type": "object",
+            "properties": {
+                "days": {
+                    "description": "延长天数",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "操作人",
+                    "type": "string"
+                },
+                "time": {
+                    "description": "操作时间",
+                    "type": "string"
                 }
             }
         },
@@ -13958,6 +14533,26 @@
                 }
             }
         },
+        "model.EnterprisePrice": {
+            "type": "object",
+            "properties": {
+                "cityId": {
+                    "type": "integer"
+                },
+                "cityName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                }
+            }
+        },
         "model.EnterprisePriceModifyReq": {
             "type": "object",
             "required": [
@@ -15213,6 +15808,48 @@
                 }
             }
         },
+        "model.PrepaymentListRes": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "金额",
+                    "type": "number"
+                },
+                "name": {
+                    "description": "操作人",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注信息",
+                    "type": "string"
+                },
+                "time": {
+                    "description": "时间",
+                    "type": "string"
+                }
+            }
+        },
+        "model.PrepaymentOverview": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "总充值金额",
+                    "type": "number"
+                },
+                "balance": {
+                    "description": "当前余额",
+                    "type": "number"
+                },
+                "cost": {
+                    "description": "已使用金额",
+                    "type": "number"
+                },
+                "times": {
+                    "description": "充值次数",
+                    "type": "integer"
+                }
+            }
+        },
         "model.QRPostReq": {
             "type": "object",
             "required": [
@@ -15782,6 +16419,10 @@
         "model.RiderItemSubscribe": {
             "type": "object",
             "properties": {
+                "agentEndAt": {
+                    "description": "代理商处到期日期",
+                    "type": "string"
+                },
                 "id": {
                     "description": "订阅ID",
                     "type": "integer"

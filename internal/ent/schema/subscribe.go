@@ -66,7 +66,7 @@ func (Subscribe) Fields() []ent.Field {
         field.Int("suspend_days").Default(0).Comment("暂停天数"),
         field.Int("renewal_days").Default(0).Comment("续期天数"),
         field.Int("overdue_days").Default(0).Comment("已缴纳逾期滞纳金天数"),
-        field.Int("remaining").Default(0).Comment("剩余天数, 负数为逾期"),
+        field.Int("remaining").Default(0).Comment("剩余天数, 负数为逾期, 代理商骑手剩余时间根据agent_end_at计算"),
         field.Time("paused_at").Optional().Nillable().Comment("当前寄存时间"),
         field.Time("suspend_at").Optional().Nillable().Comment("当前暂停时间"),
         field.Time("start_at").Optional().Nillable().Comment("激活时间"),

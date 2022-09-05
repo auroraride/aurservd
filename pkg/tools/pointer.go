@@ -59,6 +59,6 @@ func (*pointer) Int32(i int32) *int32 {
     return &i
 }
 
-func PointerInterface[T any](i T) *T {
+func Pointer[T any](i T) *T {
     return &i
 }

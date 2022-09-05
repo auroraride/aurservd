@@ -331,12 +331,14 @@ definitions:
       balance:
         description: 可用余额
         type: number
-      billing:
-        description: 计费中骑手数
-        type: integer
       contract:
         description: 合同URL, 可能为空
         type: string
+      days:
+        description: 日期选项
+        items:
+          type: integer
+        type: array
       enterprise:
         allOf:
         - $ref: '#/definitions/model.Enterprise'
@@ -346,12 +348,134 @@ definitions:
       name:
         description: 姓名
         type: string
+      phone:
+        description: 手机号
+        type: string
+      prices:
+        description: 价格列表
+        items:
+          $ref: '#/definitions/model.EnterprisePrice'
+        type: array
       riders:
         description: 骑手数量
+        type: integer
+      stations:
+        description: 站点列表
+        items:
+          $ref: '#/definitions/model.EnterpriseStation'
+        type: array
+      using:
+        description: 计费中骑手数
         type: integer
       yesterday:
         description: 昨日使用
         type: number
+    type: object
+  model.AgentRider:
+    properties:
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      date:
+        description: 创建日期
+        type: string
+      endAt:
+        description: 退租日期
+        type: string
+      id:
+        type: integer
+      model:
+        description: 电池型号
+        type: string
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 电话
+        type: string
+      remaining:
+        description: 剩余天数
+        type: integer
+      startAt:
+        description: 开始日期
+        type: string
+      station:
+        description: 站点
+        type: string
+      status:
+        description: 状态
+        type: string
+      stopAt:
+        description: 到期日期
+        type: string
+      subscribeId:
+        description: 订阅ID
+        type: integer
+      used:
+        description: 使用天数
+        type: integer
+    type: object
+  model.AgentRiderDetail:
+    properties:
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      date:
+        description: 创建日期
+        type: string
+      endAt:
+        description: 退租日期
+        type: string
+      id:
+        type: integer
+      logs:
+        items:
+          $ref: '#/definitions/model.AgentRiderLog'
+        type: array
+      model:
+        description: 电池型号
+        type: string
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 电话
+        type: string
+      remaining:
+        description: 剩余天数
+        type: integer
+      startAt:
+        description: 开始日期
+        type: string
+      station:
+        description: 站点
+        type: string
+      status:
+        description: 状态
+        type: string
+      stopAt:
+        description: 到期日期
+        type: string
+      subscribeId:
+        description: 订阅ID
+        type: integer
+      used:
+        description: 使用天数
+        type: integer
+    type: object
+  model.AgentRiderLog:
+    properties:
+      days:
+        description: 延长天数
+        type: integer
+      name:
+        description: 操作人
+        type: string
+      time:
+        description: 操作时间
+        type: string
     type: object
   model.AgentSigninRes:
     properties:
@@ -2448,6 +2572,19 @@ definitions:
     - amount
     - remark
     type: object
+  model.EnterprisePrice:
+    properties:
+      cityId:
+        type: integer
+      cityName:
+        type: string
+      id:
+        type: integer
+      model:
+        type: string
+      price:
+        type: number
+    type: object
   model.EnterprisePriceModifyReq:
     properties:
       cityId:
@@ -3329,6 +3466,36 @@ definitions:
         description: 开始日期
         type: string
     type: object
+  model.PrepaymentListRes:
+    properties:
+      amount:
+        description: 金额
+        type: number
+      name:
+        description: 操作人
+        type: string
+      remark:
+        description: 备注信息
+        type: string
+      time:
+        description: 时间
+        type: string
+    type: object
+  model.PrepaymentOverview:
+    properties:
+      amount:
+        description: 总充值金额
+        type: number
+      balance:
+        description: 当前余额
+        type: number
+      cost:
+        description: 已使用金额
+        type: number
+      times:
+        description: 充值次数
+        type: integer
+    type: object
   model.QRPostReq:
     properties:
       qrcode:
@@ -3715,6 +3882,9 @@ definitions:
     type: object
   model.RiderItemSubscribe:
     properties:
+      agentEndAt:
+        description: 代理商处到期日期
+        type: string
       id:
         description: 订阅ID
         type: integer
@@ -5113,6 +5283,115 @@ info:
   title: 极光出行API
   version: "1.0"
 paths:
+  /agent/v1/bill/usage:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentBillUsage
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end
+        type: string
+      - description: 企业ID
+        in: query
+        name: id
+        type: integer
+      - description: 型号
+        in: query
+        name: model
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 开始时间
+        in: query
+        name: start
+        type: string
+      - description: 站点ID
+        in: query
+        name: stationId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.Pagination'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.StatementUsageRes'
+                  type: array
+              type: object
+      summary: A4001 使用明细
+      tags:
+      - '[A]代理接口'
+  /agent/v1/prepayment:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentPrepaymentList
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.PrepaymentListRes'
+                  type: array
+              type: object
+      summary: A3002 充值记录
+      tags:
+      - '[A]代理接口'
+  /agent/v1/prepayment/overview:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentPrepaymentOverview
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.PrepaymentOverview'
+      summary: A3001 充值概览
+      tags:
+      - '[A]代理接口'
   /agent/v1/profile:
     get:
       consumes:
@@ -5132,6 +5411,142 @@ paths:
           schema:
             $ref: '#/definitions/model.AgentProfile'
       summary: A1002 代理资料
+      tags:
+      - '[A]代理接口'
+  /agent/v1/rider:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentRiderList
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 城市
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 关键词
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 站点ID
+        in: query
+        name: stationId
+        type: integer
+      - description: inactive:未激活 using:计费中 overdue:已超期 unsubscribed:已退租
+        enum:
+        - inactive
+        - using
+        - overdue
+        - unsubscribed
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.AgentRider'
+                  type: array
+              type: object
+      summary: A2001 骑手列表
+      tags:
+      - '[A]代理接口'
+    post:
+      consumes:
+      - application/json
+      operationId: AgentRiderCreate
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 骑手信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.EnterpriseRiderCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.EnterpriseRider'
+      summary: A2002 添加骑手
+      tags:
+      - '[A]代理接口'
+  /agent/v1/rider/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentRider
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 骑手ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.AgentRiderDetail'
+      summary: A2004 骑手详情
+      tags:
+      - '[A]代理接口'
+  /agent/v1/rider/alter:
+    post:
+      consumes:
+      - application/json
+      operationId: AgentRiderAlter
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 请求详情
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.SubscribeAlter'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.RiderItemSubscribe'
+      summary: A2003 延长天数
       tags:
       - '[A]代理接口'
   /agent/v1/signin:
@@ -8228,27 +8643,38 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
         type: integer
-      - description: '结束时间 '
+      - description: 结束时间
         in: query
         name: end
         type: string
-      - description: '企业ID '
+      - description: 企业ID
         in: query
         name: id
-        required: true
         type: integer
+      - description: 型号
+        in: query
+        name: model
+        type: string
       - description: 每页数据, 默认20
         in: query
         name: pageSize
         type: integer
-      - description: '开始时间 '
+      - description: 开始时间
         in: query
         name: start
         type: string
+      - description: 站点ID
+        in: query
+        name: stationId
+        type: integer
       produces:
       - application/json
       responses:

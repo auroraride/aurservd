@@ -104,9 +104,12 @@ type StatementDetail struct {
 }
 
 type StatementUsageFilter struct {
-    ID    uint64 `json:"id" query:"id" validate:"required" trans:"企业ID"`
-    Start string `json:"start" query:"start" trans:"开始时间"`
-    End   string `json:"end" query:"end" trans:"结束时间"`
+    ID        uint64 `json:"id" query:"id"`               // 企业ID
+    Start     string `json:"start" query:"start"`         // 开始时间
+    End       string `json:"end" query:"end"`             // 结束时间
+    CityID    uint64 `json:"cityId" query:"cityId"`       // 城市ID
+    StationID uint64 `json:"stationId" query:"stationId"` // 站点ID
+    Model     string `json:"model" query:"model"`         // 型号
 }
 
 type StatementUsageReq struct {
@@ -130,11 +133,11 @@ type StatementUsageItem struct {
 }
 
 type StatementUsageRes struct {
-    Model     string                `json:"model"`             // 电池型号
-    Rider     RiderBasic            `json:"rider"`             // 骑手信息
-    City      City                  `json:"city"`              // 城市
-    Station   *EnterpriseStation    `json:"station,omitempty"` // 站点, 可能为空
-    Status    string                `json:"status"`            // 骑手状态 计费中,已退租
-    DeletedAt string                `json:"deletedAt"`         // 删除时间
-    Items     []*StatementUsageItem `json:"items"`             // 使用详情
+    Model     string                `json:"model"`               // 电池型号
+    Rider     RiderBasic            `json:"rider"`               // 骑手信息
+    City      City                  `json:"city"`                // 城市
+    Station   *EnterpriseStation    `json:"station,omitempty"`   // 站点, 可能为空
+    Status    string                `json:"status"`              // 骑手状态 计费中,已退租
+    DeletedAt string                `json:"deletedAt,omitempty"` // 删除时间
+    Items     []*StatementUsageItem `json:"items"`               // 使用详情
 }

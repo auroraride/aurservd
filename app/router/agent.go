@@ -16,4 +16,14 @@ func loadAgentRoutes() {
 
     g.POST("/signin", aapi.Agent.Signin)
     g.GET("/profile", aapi.Agent.Profile)
+
+    g.GET("/rider", aapi.Rider.List)
+    g.POST("/rider", aapi.Rider.Create)
+    g.POST("/rider/alter", aapi.Rider.Alter)
+    g.GET("/rider/:id", aapi.Rider.Detail)
+
+    g.GET("/prepayment/overview", aapi.Prepayment.Overview)
+    g.GET("/prepayment", aapi.Prepayment.List)
+
+    g.GET("/bill/usage", aapi.Bill.Usage)
 }

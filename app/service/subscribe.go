@@ -29,10 +29,12 @@ import (
 )
 
 type subscribeService struct {
-    ctx      context.Context
-    modifier *model.Modifier
-    rider    *ent.Rider
-    orm      *ent.SubscribeClient
+    ctx        context.Context
+    modifier   *model.Modifier
+    rider      *ent.Rider
+    orm        *ent.SubscribeClient
+    agent      *ent.Agent
+    enterprise *ent.Enterprise
 }
 
 func NewSubscribe() *subscribeService {
@@ -53,6 +55,12 @@ func NewSubscribeWithModifier(m *model.Modifier) *subscribeService {
     s := NewSubscribe()
     s.ctx = context.WithValue(s.ctx, "modifier", m)
     s.modifier = m
+    return s
+}
+func NewSubscribeWithAgent(ag *ent.Agent, en *ent.Enterprise) *subscribeService {
+    s := NewSubscribe()
+    s.agent = ag
+    s.enterprise = en
     return s
 }
 
@@ -372,40 +380,59 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe, notice bool) error 
 }
 
 // AlterDays 修改骑手时间
-func (s *subscribeService) AlterDays(req *model.SubscribeAlter, ag *ent.Agent) (res model.RiderItemSubscribe) {
-    sub, _ := s.orm.QueryNotDeleted().Where(subscribe.ID(req.ID)).WithRider().Only(s.ctx)
-    // 团签用户禁止修改
-    if sub.EnterpriseID != nil {
-        snag.Panic("团签用户无法修改")
+func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.RiderItemSubscribe) {
+    sq := s.orm.QueryNotDeleted().WithEnterprise().WithRider().Where(subscribe.ID(req.ID))
+    if s.agent != nil && s.enterprise != nil {
+        sq.Where(subscribe.EnterpriseID(s.enterprise.ID))
     }
 
-    u := sub.Edges.Rider
+    sub, _ := sq.First(s.ctx)
+
     if sub == nil {
         snag.Panic("订阅不存在")
     }
+
+    u := sub.Edges.Rider
+
+    se := sub.Edges.Enterprise
+    // 团签用户禁止修改 (只允许个签和代理用户修改)
+    if sub.EnterpriseID != nil && (se != nil && !se.Agent) {
+        snag.Panic("团签用户无法修改")
+    }
+
+    // 剩余天数
+    before := sub.Remaining
+
+    if se != nil && se.Agent {
+        if sub.AgentEndAt == nil {
+            snag.Panic("骑手订阅异常")
+        }
+        // 计算剩余天数
+        before = tools.NewTime().LastDaysToNow(*sub.AgentEndAt)
+    }
+    after := before + req.Days
+    status := sub.Status
+
     // 2022-07-07 和博文沟通后把时间限制又给取消了
     // if req.Days+sub.Remaining < 0 {
     //     snag.Panic("不能将剩余时间调整为负值")
     // }
 
-    before := sub.Remaining
-    after := sub.Remaining + req.Days
-    status := sub.Status
-
     ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
         // 插入时间修改
-        sa := tx.SubscribeAlter.
+        tsa := tx.SubscribeAlter.
             Create().
             SetRiderID(sub.RiderID).
-            SetManagerID(s.modifier.ID).
             SetSubscribeID(sub.ID).
             SetDays(req.Days).
             SetRemark(req.Reason)
-        if ag != nil {
-            sa.SetAgentID(ag.ID).SetEnterpriseID(ag.EnterpriseID)
+        if s.agent != nil {
+            tsa.SetAgentID(s.agent.ID).SetEnterpriseID(s.agent.EnterpriseID)
         }
-        _, err = sa.
-            Save(s.ctx)
+        if s.modifier != nil {
+            tsa.SetManagerID(s.modifier.ID)
+        }
+        _, err = tsa.Save(s.ctx)
         if err != nil {
             log.Error(err)
             snag.Panic("时间修改失败")
@@ -419,12 +446,17 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter, ag *ent.Agent) (
             status = model.SubscribeStatusOverdue
         }
 
-        sub, err = tx.Subscribe.
+        ts := tx.Subscribe.
             UpdateOneID(sub.ID).
             AddAlterDays(req.Days).
-            AddRemaining(req.Days).
-            SetStatus(status).
-            Save(s.ctx)
+            SetStatus(status)
+        // 计算代理商处到期日期
+        if se != nil && se.Agent {
+            ts.SetAgentEndAt(tools.NewTime().WillEnd(*sub.AgentEndAt, req.Days, true))
+        } else {
+            ts.AddRemaining(req.Days)
+        }
+        sub, err = ts.Save(s.ctx)
         if err != nil {
             log.Error(err)
             snag.Panic("时间修改失败")
@@ -436,18 +468,24 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter, ag *ent.Agent) (
     go logging.NewOperateLog().
         SetRef(u).
         SetModifier(s.modifier).
-        SetAgent(ag).
+        SetAgent(s.agent).
         SetOperate(model.OperateSubscribeAlter).
-        SetDiff(fmt.Sprintf("剩余%d天", before), fmt.Sprintf("剩余%d天", sub.Remaining)).
+        SetDiff(fmt.Sprintf("剩余%d天", before), fmt.Sprintf("剩余%d天", after)).
         SetRemark(req.Reason).
         Send()
 
-    return model.RiderItemSubscribe{
+    out := model.RiderItemSubscribe{
         ID:        sub.ID,
         Status:    sub.Status,
-        Remaining: sub.Remaining,
+        Remaining: after,
         Model:     sub.Model,
+        Suspend:   sub.SuspendAt != nil,
     }
+
+    if sub.AgentEndAt != nil {
+        out.AgentEndAt = sub.AgentEndAt.Format(carbon.DateLayout)
+    }
+    return out
 }
 
 // OverdueFee 计算逾期费用

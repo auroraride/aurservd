@@ -24,10 +24,11 @@ type EnterpriseContract struct {
 }
 
 type EnterprisePrice struct {
-    ID     uint64  `json:"id,omitempty"` // 价格ID, 请求`M9016 编辑价格`时携带此字段为编辑, 不携带为新增
-    CityID uint64  `json:"cityId" validate:"required" trans:"城市"`
-    Model  string  `json:"model" validate:"required" trans:"电池型号"`
-    Price  float64 `json:"price" validate:"required" trans:"单价(元/天)"`
+    ID       uint64  `json:"id"`
+    Model    string  `json:"model"`
+    Price    float64 `json:"price"`
+    CityID   uint64  `json:"cityId"`
+    CityName string  `json:"cityName"`
 }
 
 type EnterpriseContractModifyReq struct {
@@ -36,8 +37,11 @@ type EnterpriseContractModifyReq struct {
 }
 
 type EnterprisePriceModifyReq struct {
-    EnterprisePrice
-    EnterpriseID uint64 `json:"enterpriseId" validate:"required" trans:"企业ID"`
+    ID           uint64  `json:"id,omitempty"` // 价格ID, 请求`M9016 编辑价格`时携带此字段为编辑, 不携带为新增
+    CityID       uint64  `json:"cityId" validate:"required" trans:"城市"`
+    Model        string  `json:"model" validate:"required" trans:"电池型号"`
+    Price        float64 `json:"price" validate:"required" trans:"单价(元/天)"`
+    EnterpriseID uint64  `json:"enterpriseId" validate:"required" trans:"企业ID"`
 }
 
 type EnterprisePriceWithCity struct {

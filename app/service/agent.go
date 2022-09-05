@@ -12,6 +12,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/agent"
     "github.com/auroraride/aurservd/internal/ent/enterprisecontract"
+    "github.com/auroraride/aurservd/internal/ent/enterprisestation"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/pkg/cache"
@@ -134,6 +135,9 @@ func (s *agentService) tokenKey(id uint64) string {
 
 func (s *agentService) Signin(req *model.AgentSigninReq) model.AgentSigninRes {
     ag, _ := s.orm.QueryNotDeleted().Where(agent.Phone(req.Phone)).WithEnterprise().First(s.ctx)
+    if ag.Edges.Enterprise == nil {
+        snag.Panic("登录失败")
+    }
     en := ag.Edges.Enterprise
     if !en.Agent {
         snag.Panic("非代理商")
@@ -185,7 +189,7 @@ func (s *agentService) Profile(ag *ent.Agent, en *ent.Enterprise) model.AgentPro
     }
 
     riders, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.EnterpriseID(en.ID)).Count(s.ctx)
-    billing, _ := ent.Database.Subscribe.QueryNotDeleted().Where(
+    using, _ := ent.Database.Subscribe.QueryNotDeleted().Where(
         subscribe.EnterpriseID(en.ID),
         subscribe.StartAtNotNil(),
         subscribe.Or(
@@ -208,10 +212,25 @@ func (s *agentService) Profile(ag *ent.Agent, en *ent.Enterprise) model.AgentPro
     ).All(s.ctx)
 
     srv := NewEnterprise()
-    prices := srv.GetPrices(en)
+    pm := srv.GetPrices(en)
     var cost float64
     for _, sub := range subs {
-        cost = tools.NewDecimal().Sum(prices[srv.PriceKey(sub.CityID, sub.Model)].Price, cost)
+        cost = tools.NewDecimal().Sum(pm[srv.PriceKey(sub.CityID, sub.Model)].Price, cost)
+    }
+
+    prices := make([]model.EnterprisePrice, 0)
+    for _, price := range pm {
+        prices = append(prices, price)
+    }
+
+    // stations
+    stations := make([]model.EnterpriseStation, 0)
+    sitems, _ := ent.Database.EnterpriseStation.QueryNotDeleted().Where(enterprisestation.EnterpriseID(en.ID)).All(s.ctx)
+    for _, sitem := range sitems {
+        stations = append(stations, model.EnterpriseStation{
+            ID:   sitem.ID,
+            Name: sitem.Name,
+        })
     }
 
     return model.AgentProfile{
@@ -221,11 +240,15 @@ func (s *agentService) Profile(ag *ent.Agent, en *ent.Enterprise) model.AgentPro
             Agent: true,
         },
         ID:        ag.ID,
+        Phone:     ag.Phone,
         Name:      ag.Name,
         Contract:  cf,
         Balance:   en.Balance,
         Riders:    riders,
         Yesterday: cost,
-        Billing:   billing,
+        Using:     using,
+        Stations:  stations,
+        Prices:    prices,
+        Days:      en.Days,
     }
 }

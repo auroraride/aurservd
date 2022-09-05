@@ -389,6 +389,8 @@ func (s *enterpriseStatementService) usageFilter(e *ent.Enterprise, req model.St
         start = tools.NewTime().ParseDateStringX(req.Start)
     }
 
+    today := carbon.Now().StartOfDay().Carbon2Time()
+
     q.Where(
         subscribe.Or(
             subscribe.EndAtIsNil(),
@@ -403,6 +405,10 @@ func (s *enterpriseStatementService) usageFilter(e *ent.Enterprise, req model.St
         end = tools.NewTime().ParseDateStringX(req.End)
     }
 
+    if end.After(today) {
+        end = today
+    }
+
     next := end.AddDate(0, 0, 1)
 
     // 开始时间早于结束时间
@@ -415,6 +421,18 @@ func (s *enterpriseStatementService) usageFilter(e *ent.Enterprise, req model.St
         }
         bq.Order(ent.Asc(enterprisebill.FieldEnd))
     })
+
+    if req.CityID != 0 {
+        q.Where(subscribe.CityID(req.CityID))
+    }
+
+    if req.StationID != 0 {
+        q.Where(subscribe.StationID(req.StationID))
+    }
+
+    if req.Model != "" {
+        q.Where(subscribe.Model(req.Model))
+    }
     return
 }
 
@@ -424,7 +442,7 @@ func (s *enterpriseStatementService) Usage(req *model.StatementUsageReq) *model.
     prices := NewEnterprise().GetPriceValues(e)
     q, start, end := s.usageFilter(e, req.StatementUsageFilter)
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Subscribe) model.StatementUsageRes {
-        return s.usageDetail(item, start, end, prices)
+        return s.usageDetail(e, item, start, end, prices)
     })
 }
 
@@ -454,7 +472,7 @@ func (s *enterpriseStatementService) UsageExport(req *model.StatementUsageExport
         var rows tools.ExcelItems
         rows = append(rows, []any{"城市", "姓名", "电话", "站点", "型号", "状态", "删除时间", "开始日期", "结束日期", "使用天数", "日单价", "费用"})
         for _, item := range items {
-            detail := s.usageDetail(item, start, end, prices)
+            detail := s.usageDetail(e, item, start, end, prices)
             sta := ""
             if detail.Station != nil {
                 sta = detail.Station.Name
@@ -487,13 +505,18 @@ func (s *enterpriseStatementService) UsageExport(req *model.StatementUsageExport
     })
 }
 
-func (s *enterpriseStatementService) usageDetail(item *ent.Subscribe, start, end time.Time, prices map[string]float64) model.StatementUsageRes {
+func (s *enterpriseStatementService) usageDetail(en *ent.Enterprise, item *ent.Subscribe, start, end time.Time, prices map[string]float64) model.StatementUsageRes {
     r := item.Edges.Rider
     c := item.Edges.City
     p := r.Edges.Person
     del := ""
     if r.DeletedAt != nil {
         del = r.DeletedAt.Format(carbon.DateTimeLayout)
+    }
+    status := model.SubscribeStatusText(item.Status)
+    today := carbon.Now().StartOfDay().Carbon2Time()
+    if en.Agent && item.AgentEndAt != nil && item.AgentEndAt.Before(today) {
+        status = "已超期"
     }
     res := model.StatementUsageRes{
         Model: item.Model,
@@ -506,7 +529,7 @@ func (s *enterpriseStatementService) usageDetail(item *ent.Subscribe, start, end
             Phone: r.Phone,
             Name:  p.Name,
         },
-        Status:    model.SubscribeStatusText(item.Status),
+        Status:    status,
         DeletedAt: del,
         Items:     s.usageItems(item, start, end, prices),
     }

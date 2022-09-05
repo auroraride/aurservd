@@ -108,6 +108,14 @@ func (sac *SubscribeAlterCreate) SetManagerID(u uint64) *SubscribeAlterCreate {
 	return sac
 }
 
+// SetNillableManagerID sets the "manager_id" field if the given value is not nil.
+func (sac *SubscribeAlterCreate) SetNillableManagerID(u *uint64) *SubscribeAlterCreate {
+	if u != nil {
+		sac.SetManagerID(*u)
+	}
+	return sac
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (sac *SubscribeAlterCreate) SetEnterpriseID(u uint64) *SubscribeAlterCreate {
 	sac.mutation.SetEnterpriseID(u)
@@ -280,9 +288,6 @@ func (sac *SubscribeAlterCreate) check() error {
 	if _, ok := sac.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider_id", err: errors.New(`ent: missing required field "SubscribeAlter.rider_id"`)}
 	}
-	if _, ok := sac.mutation.ManagerID(); !ok {
-		return &ValidationError{Name: "manager_id", err: errors.New(`ent: missing required field "SubscribeAlter.manager_id"`)}
-	}
 	if _, ok := sac.mutation.SubscribeID(); !ok {
 		return &ValidationError{Name: "subscribe_id", err: errors.New(`ent: missing required field "SubscribeAlter.subscribe_id"`)}
 	}
@@ -291,9 +296,6 @@ func (sac *SubscribeAlterCreate) check() error {
 	}
 	if _, ok := sac.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "SubscribeAlter.rider"`)}
-	}
-	if _, ok := sac.mutation.ManagerID(); !ok {
-		return &ValidationError{Name: "manager", err: errors.New(`ent: missing required edge "SubscribeAlter.manager"`)}
 	}
 	if _, ok := sac.mutation.SubscribeID(); !ok {
 		return &ValidationError{Name: "subscribe", err: errors.New(`ent: missing required edge "SubscribeAlter.subscribe"`)}
@@ -419,7 +421,7 @@ func (sac *SubscribeAlterCreate) createSpec() (*SubscribeAlter, *sqlgraph.Create
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ManagerID = nodes[0]
+		_node.ManagerID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := sac.mutation.EnterpriseIDs(); len(nodes) > 0 {
@@ -651,6 +653,12 @@ func (u *SubscribeAlterUpsert) SetManagerID(v uint64) *SubscribeAlterUpsert {
 // UpdateManagerID sets the "manager_id" field to the value that was provided on create.
 func (u *SubscribeAlterUpsert) UpdateManagerID() *SubscribeAlterUpsert {
 	u.SetExcluded(subscribealter.FieldManagerID)
+	return u
+}
+
+// ClearManagerID clears the value of the "manager_id" field.
+func (u *SubscribeAlterUpsert) ClearManagerID() *SubscribeAlterUpsert {
+	u.SetNull(subscribealter.FieldManagerID)
 	return u
 }
 
@@ -905,6 +913,13 @@ func (u *SubscribeAlterUpsertOne) SetManagerID(v uint64) *SubscribeAlterUpsertOn
 func (u *SubscribeAlterUpsertOne) UpdateManagerID() *SubscribeAlterUpsertOne {
 	return u.Update(func(s *SubscribeAlterUpsert) {
 		s.UpdateManagerID()
+	})
+}
+
+// ClearManagerID clears the value of the "manager_id" field.
+func (u *SubscribeAlterUpsertOne) ClearManagerID() *SubscribeAlterUpsertOne {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.ClearManagerID()
 	})
 }
 
@@ -1332,6 +1347,13 @@ func (u *SubscribeAlterUpsertBulk) SetManagerID(v uint64) *SubscribeAlterUpsertB
 func (u *SubscribeAlterUpsertBulk) UpdateManagerID() *SubscribeAlterUpsertBulk {
 	return u.Update(func(s *SubscribeAlterUpsert) {
 		s.UpdateManagerID()
+	})
+}
+
+// ClearManagerID clears the value of the "manager_id" field.
+func (u *SubscribeAlterUpsertBulk) ClearManagerID() *SubscribeAlterUpsertBulk {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.ClearManagerID()
 	})
 }
 

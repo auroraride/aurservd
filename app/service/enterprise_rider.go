@@ -8,6 +8,7 @@ package service
 import (
     "context"
     "fmt"
+    "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/enterpriseprice"
@@ -22,10 +23,12 @@ import (
 )
 
 type enterpriseRiderService struct {
-    ctx      context.Context
-    modifier *model.Modifier
-    rider    *ent.Rider
-    employee *ent.Employee
+    ctx        context.Context
+    modifier   *model.Modifier
+    rider      *ent.Rider
+    employee   *ent.Employee
+    agent      *ent.Agent
+    enterprise *ent.Enterprise
 }
 
 func NewEnterpriseRider() *enterpriseRiderService {
@@ -55,8 +58,19 @@ func NewEnterpriseRiderWithEmployee(e *ent.Employee) *enterpriseRiderService {
     return s
 }
 
+func NewEnterpriseRiderWithAgent(ag *ent.Agent, en *ent.Enterprise) *enterpriseRiderService {
+    s := NewEnterpriseRider()
+    s.agent = ag
+    s.enterprise = en
+    return s
+}
+
 // Create 新增骑手
 func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) model.EnterpriseRider {
+    if s.agent != nil && (req.EnterpriseID == 0 || req.StationID == 0) {
+        snag.Panic("缺失团签信息")
+    }
+
     // 查询团签
     e := NewEnterprise().QueryX(req.EnterpriseID)
 
@@ -95,20 +109,30 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
         }
 
         // 如果是代理, 创建待激活骑士卡
-        // TODO 骑手激活的时候判定是否新签
+        // 代理商添加骑手订阅强制为新签
         if e.Agent {
             _, err = tx.Subscribe.Create().
                 SetType(model.OrderTypeNewly).
                 SetRiderID(r.ID).
                 SetModel(ep.Model).
-                SetRemaining(req.Days).
+                SetRemaining(0).
                 SetInitialDays(req.Days).
                 SetStatus(model.SubscribeStatusInactive).
                 SetCityID(ep.CityID).
+                SetEnterpriseID(req.EnterpriseID).
+                SetStationID(req.StationID).
                 Save(s.ctx)
         }
         return
     })
+
+    // 记录日志
+    go logging.NewOperateLog().
+        SetRef(r).
+        SetModifier(s.modifier).
+        SetAgent(s.agent).
+        SetOperate(model.OperateRiderCreate).
+        Send()
 
     return model.EnterpriseRider{
         ID:        r.ID,

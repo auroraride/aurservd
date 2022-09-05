@@ -36,7 +36,9 @@ func AgentMiddleware() echo.MiddlewareFunc {
                 if id, err := cache.Get(context.Background(), token).Uint64(); err == nil && id > 0 {
                     // 获取代理和图签
                     ag, _ = service.NewAgent().Query(id)
-                    en = ag.Edges.Enterprise
+                    if ag != nil {
+                        en = ag.Edges.Enterprise
+                    }
                 }
             }
 

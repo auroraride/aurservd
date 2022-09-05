@@ -465,7 +465,7 @@ func (m *SubscribeAlterMutation) ManagerID() (r uint64, exists bool) {
 // OldManagerID returns the old "manager_id" field's value of the SubscribeAlter entity.
 // If the SubscribeAlter object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SubscribeAlterMutation) OldManagerID(ctx context.Context) (v uint64, err error) {
+func (m *SubscribeAlterMutation) OldManagerID(ctx context.Context) (v *uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldManagerID is only allowed on UpdateOne operations")
 	}
@@ -479,9 +479,22 @@ func (m *SubscribeAlterMutation) OldManagerID(ctx context.Context) (v uint64, er
 	return oldValue.ManagerID, nil
 }
 
+// ClearManagerID clears the value of the "manager_id" field.
+func (m *SubscribeAlterMutation) ClearManagerID() {
+	m.manager = nil
+	m.clearedFields[subscribealter.FieldManagerID] = struct{}{}
+}
+
+// ManagerIDCleared returns if the "manager_id" field was cleared in this mutation.
+func (m *SubscribeAlterMutation) ManagerIDCleared() bool {
+	_, ok := m.clearedFields[subscribealter.FieldManagerID]
+	return ok
+}
+
 // ResetManagerID resets all changes to the "manager_id" field.
 func (m *SubscribeAlterMutation) ResetManagerID() {
 	m.manager = nil
+	delete(m.clearedFields, subscribealter.FieldManagerID)
 }
 
 // SetEnterpriseID sets the "enterprise_id" field.
@@ -707,7 +720,7 @@ func (m *SubscribeAlterMutation) ClearManager() {
 
 // ManagerCleared reports if the "manager" edge to the Manager entity was cleared.
 func (m *SubscribeAlterMutation) ManagerCleared() bool {
-	return m.clearedmanager
+	return m.ManagerIDCleared() || m.clearedmanager
 }
 
 // ManagerIDs returns the "manager" edge IDs in the mutation.
@@ -1075,6 +1088,9 @@ func (m *SubscribeAlterMutation) ClearedFields() []string {
 	if m.FieldCleared(subscribealter.FieldRemark) {
 		fields = append(fields, subscribealter.FieldRemark)
 	}
+	if m.FieldCleared(subscribealter.FieldManagerID) {
+		fields = append(fields, subscribealter.FieldManagerID)
+	}
 	if m.FieldCleared(subscribealter.FieldEnterpriseID) {
 		fields = append(fields, subscribealter.FieldEnterpriseID)
 	}
@@ -1106,6 +1122,9 @@ func (m *SubscribeAlterMutation) ClearField(name string) error {
 		return nil
 	case subscribealter.FieldRemark:
 		m.ClearRemark()
+		return nil
+	case subscribealter.FieldManagerID:
+		m.ClearManagerID()
 		return nil
 	case subscribealter.FieldEnterpriseID:
 		m.ClearEnterpriseID()

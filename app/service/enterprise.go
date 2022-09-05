@@ -15,7 +15,6 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/enterprise"
     "github.com/auroraride/aurservd/internal/ent/enterprisecontract"
-    "github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
     "github.com/auroraride/aurservd/internal/ent/enterpriseprice"
     "github.com/auroraride/aurservd/internal/ent/enterprisestatement"
     "github.com/auroraride/aurservd/internal/ent/rider"
@@ -32,10 +31,12 @@ import (
 )
 
 type enterpriseService struct {
-    ctx      context.Context
-    modifier *model.Modifier
-    rider    *ent.Rider
-    orm      *ent.EnterpriseClient
+    ctx        context.Context
+    modifier   *model.Modifier
+    rider      *ent.Rider
+    orm        *ent.EnterpriseClient
+    agent      *ent.Agent
+    enterprise *ent.Enterprise
 }
 
 func NewEnterprise() *enterpriseService {
@@ -49,6 +50,13 @@ func NewEnterpriseWithModifier(m *model.Modifier) *enterpriseService {
     s := NewEnterprise()
     s.ctx = context.WithValue(s.ctx, "modifier", m)
     s.modifier = m
+    return s
+}
+
+func NewEnterpriseWithAgent(ag *ent.Agent, en *ent.Enterprise) *enterpriseService {
+    s := NewEnterprise()
+    s.agent = ag
+    s.enterprise = en
     return s
 }
 
@@ -314,16 +322,24 @@ func (s *enterpriseService) DiffPrices(item *ent.Enterprise, data []model.Enterp
 func (s *enterpriseService) GetPrices(item *ent.Enterprise) map[string]model.EnterprisePrice {
     var items []*ent.EnterprisePrice
     if item.Edges.Prices == nil {
-        items, _ = ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(item.ID)).All(s.ctx)
+        items, _ = ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(item.ID)).WithCity().All(s.ctx)
     } else {
         items = item.Edges.Prices
     }
     res := make(map[string]model.EnterprisePrice)
     for _, price := range items {
+        ci := price.Edges.City
+        cid := item.CityID
+        cname := ""
+        if ci != nil {
+            cname = ci.Name
+        }
         res[s.PriceKey(price.CityID, price.Model)] = model.EnterprisePrice{
-            CityID: price.CityID,
-            Model:  price.Model,
-            Price:  price.Price,
+            CityID:   cid,
+            CityName: cname,
+            Model:    price.Model,
+            Price:    price.Price,
+            ID:       price.ID,
         }
     }
     return res
@@ -412,23 +428,6 @@ func (s *enterpriseService) UpdateStatementByID(id uint64) {
     if e != nil {
         s.UpdateStatement(e)
     }
-}
-
-func (s *enterpriseService) Balance(id uint64) float64 {
-    var result []struct {
-        Sum          float64 `json:"sum"`
-        EnterpriseID uint64  `json:"enterprise_id"`
-    }
-    _ = ent.Database.EnterprisePrepayment.
-        QueryNotDeleted().
-        Where(enterpriseprepayment.EnterpriseID(id)).
-        GroupBy(enterpriseprepayment.FieldEnterpriseID).
-        Aggregate(ent.Sum(enterpriseprepayment.FieldAmount)).
-        Scan(s.ctx, &result)
-    if len(result) == 0 {
-        return 0
-    }
-    return result[0].Sum
 }
 
 // UpdateStatement 更新企业账单
@@ -520,6 +519,7 @@ func (s *enterpriseService) Prepayment(req *model.EnterprisePrepaymentReq) float
     go logging.NewOperateLog().
         SetRef(e).
         SetModifier(s.modifier).
+        SetAgent(s.agent).
         SetOperate(model.OperateEnterprisePrepayment).
         SetDiff(fmt.Sprintf("余额%.2f元", before), fmt.Sprintf("余额%.2f元", balance)).
         SetRemark(req.Remark).

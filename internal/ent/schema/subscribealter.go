@@ -42,7 +42,7 @@ func (SubscribeAlter) Mixin() []ent.Mixin {
         internal.DeleteMixin{},
         internal.Modifier{},
         RiderMixin{},
-        ManagerMixin{},
+        ManagerMixin{Optional: true},
         EnterpriseMixin{Optional: true},
         AgentMixin{Optional: true},
     }

@@ -105,6 +105,20 @@ func (sau *SubscribeAlterUpdate) SetManagerID(u uint64) *SubscribeAlterUpdate {
 	return sau
 }
 
+// SetNillableManagerID sets the "manager_id" field if the given value is not nil.
+func (sau *SubscribeAlterUpdate) SetNillableManagerID(u *uint64) *SubscribeAlterUpdate {
+	if u != nil {
+		sau.SetManagerID(*u)
+	}
+	return sau
+}
+
+// ClearManagerID clears the value of the "manager_id" field.
+func (sau *SubscribeAlterUpdate) ClearManagerID() *SubscribeAlterUpdate {
+	sau.mutation.ClearManagerID()
+	return sau
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (sau *SubscribeAlterUpdate) SetEnterpriseID(u uint64) *SubscribeAlterUpdate {
 	sau.mutation.SetEnterpriseID(u)
@@ -303,9 +317,6 @@ func (sau *SubscribeAlterUpdate) defaults() error {
 func (sau *SubscribeAlterUpdate) check() error {
 	if _, ok := sau.mutation.RiderID(); sau.mutation.RiderCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "SubscribeAlter.rider"`)
-	}
-	if _, ok := sau.mutation.ManagerID(); sau.mutation.ManagerCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "SubscribeAlter.manager"`)
 	}
 	if _, ok := sau.mutation.SubscribeID(); sau.mutation.SubscribeCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "SubscribeAlter.subscribe"`)
@@ -669,6 +680,20 @@ func (sauo *SubscribeAlterUpdateOne) SetManagerID(u uint64) *SubscribeAlterUpdat
 	return sauo
 }
 
+// SetNillableManagerID sets the "manager_id" field if the given value is not nil.
+func (sauo *SubscribeAlterUpdateOne) SetNillableManagerID(u *uint64) *SubscribeAlterUpdateOne {
+	if u != nil {
+		sauo.SetManagerID(*u)
+	}
+	return sauo
+}
+
+// ClearManagerID clears the value of the "manager_id" field.
+func (sauo *SubscribeAlterUpdateOne) ClearManagerID() *SubscribeAlterUpdateOne {
+	sauo.mutation.ClearManagerID()
+	return sauo
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (sauo *SubscribeAlterUpdateOne) SetEnterpriseID(u uint64) *SubscribeAlterUpdateOne {
 	sauo.mutation.SetEnterpriseID(u)
@@ -880,9 +905,6 @@ func (sauo *SubscribeAlterUpdateOne) defaults() error {
 func (sauo *SubscribeAlterUpdateOne) check() error {
 	if _, ok := sauo.mutation.RiderID(); sauo.mutation.RiderCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "SubscribeAlter.rider"`)
-	}
-	if _, ok := sauo.mutation.ManagerID(); sauo.mutation.ManagerCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "SubscribeAlter.manager"`)
 	}
 	if _, ok := sauo.mutation.SubscribeID(); sauo.mutation.SubscribeCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "SubscribeAlter.subscribe"`)
