@@ -148,3 +148,18 @@ func (*rider) Deposit(c echo.Context) (err error) {
     ctx := app.ContextX[app.RiderContext](c)
     return ctx.SendResponse(service.NewRider().DepositPaid(ctx.Rider.ID))
 }
+
+// Deregister
+// @ID           RiderRiderDeregister
+// @Router       /rider/v1/deregister [DELETE]
+// @Summary      R1008 注销账户
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Success      200 {object}  model.StatusResponse  "请求成功"
+func (*rider) Deregister(c echo.Context) (err error) {
+    ctx := app.ContextX[app.RiderContext](c)
+    service.NewRiderWithRider(ctx.Rider).Delete(&model.IDParamReq{ID: ctx.Rider.ID})
+    return ctx.SendResponse()
+}

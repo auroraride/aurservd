@@ -894,6 +894,7 @@ func (s *riderService) GetLogs(req *model.RiderLogReq) *model.PaginationRes {
     }
 }
 
+// Delete 删除账户
 func (s *riderService) Delete(req *model.IDParamReq) {
     u := s.Query(req.ID)
     sub, _ := ent.Database.Subscribe.QueryNotDeleted().Where(
