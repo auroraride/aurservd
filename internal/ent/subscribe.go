@@ -75,7 +75,7 @@ type Subscribe struct {
 	RenewalDays int `json:"renewal_days,omitempty"`
 	// 已缴纳逾期滞纳金天数
 	OverdueDays int `json:"overdue_days,omitempty"`
-	// 剩余天数, 负数为逾期
+	// 剩余天数, 负数为逾期, 代理商骑手剩余时间根据agent_end_at计算
 	Remaining int `json:"remaining,omitempty"`
 	// 当前寄存时间
 	PausedAt *time.Time `json:"paused_at,omitempty"`
