@@ -104,7 +104,7 @@ func (s *suspendService) UnSuspend(req *model.SuspendReq) {
 
     ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
         now := time.Now()
-        days, _, _ := sus.GetAdditionalDays()
+        days, _, _, _ := sus.GetAdditionalDays()
         err = tx.SubscribeSuspend.UpdateOne(sus).SetDays(days).SetEndAt(now).SetEndModifier(s.modifier).SetEndReason(req.Remark).Exec(s.ctx)
         if err != nil {
             snag.Panic("继续计费操作失败")

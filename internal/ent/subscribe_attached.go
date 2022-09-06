@@ -11,6 +11,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
     "github.com/auroraride/aurservd/internal/ent/subscribesuspend"
     "github.com/auroraride/aurservd/pkg/cache"
+    "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     "time"
 )
@@ -19,6 +20,8 @@ import (
 // 用于计算寄存和暂停
 type SubscribeAdditional interface {
     *SubscribePause | *SubscribeSuspend
+
+    GetRiderID() uint64
 
     // GetStartAt 获取开始日期
     GetStartAt() time.Time
@@ -34,10 +37,7 @@ type SubscribeAdditional interface {
     // days 当前额外时间
     // overdue 超期时间
     // isCurrent 是否生效中
-    GetAdditionalDays() (days int, overdue int, isCurrent bool)
-
-    // GetDuplicateDays 获取重复天数
-    GetDuplicateDays() int
+    GetAdditionalDays() (days, overdue, duplicate int, isCurrent bool)
 }
 
 type SubscribeAdditionalResult[T SubscribeAdditional] struct {
@@ -46,6 +46,10 @@ type SubscribeAdditionalResult[T SubscribeAdditional] struct {
     CurrentDays          int // 当前实际天数
     CurrentOverdue       int // 当前超期天数
     CurrentDuplicateDays int // 当前重复天数
+}
+
+func (ss *SubscribeSuspend) GetRiderID() uint64 {
+    return ss.RiderID
 }
 
 func (ss *SubscribeSuspend) GetStartAt() time.Time {
@@ -60,12 +64,13 @@ func (ss *SubscribeSuspend) GetMaxDays() int {
     return 0
 }
 
-func (ss *SubscribeSuspend) GetDuplicateDays() int {
-    return 0
+func (ss *SubscribeSuspend) GetAdditionalDays() (days, overdue, duplicate int, current bool) {
+    days, overdue, current = subscribeAdditionalDays[*SubscribeSuspend](ss)
+    return
 }
 
-func (ss *SubscribeSuspend) GetAdditionalDays() (days int, overdue int, current bool) {
-    return subscribeAdditionalDays[*SubscribeSuspend](ss)
+func (sp *SubscribePause) GetRiderID() uint64 {
+    return sp.RiderID
 }
 
 func (sp *SubscribePause) GetStartAt() time.Time {
@@ -80,25 +85,41 @@ func (sp *SubscribePause) GetMaxDays() int {
     return cache.Int(model.SettingPauseMaxDays)
 }
 
-func (sp *SubscribePause) GetAdditionalDays() (days int, overdue int, current bool) {
+func (sp *SubscribePause) GetAdditionalDays() (days, overdue, duplicate int, current bool) {
     days, overdue, current = subscribeAdditionalDays[*SubscribePause](sp)
-    // 实际天数应该减去重复天数, 减去重复天数为实际发生天数
-    days -= sp.GetDuplicateDays()
-    return
-}
 
-// GetDuplicateDays 获取重复计算天数
-func (sp *SubscribePause) GetDuplicateDays() int {
-    if !sp.EndAt.IsZero() {
-        return sp.SuspendDays
+    var overdueDate time.Time
+    if overdue > 0 {
+        // 寄存开始计算日期
+        // 寄存本应超期日期
+        overdueDate = carbon.Now().StartOfDay().SubDays(overdue).Carbon2Time()
     }
-    days := 0
-    items, _ := sp.QuerySuspends().All(context.Background())
+
+    items, _ := sp.QuerySuspends().Order(Desc(subscribesuspend.FieldStartAt)).All(context.Background())
     for _, item := range items {
-        d, _, _ := item.GetAdditionalDays()
-        days += d
+        // 计算实际超期寄存天数
+        if !overdueDate.IsZero() {
+            sat := tools.NewTime().PauseBeginning(item.StartAt)
+            if overdueDate.Before(sat) {
+                // 如果超期日期是在暂停之前, 此时 实际超期天数 = 暂停开始日期 - 超期日期
+                dd := int((sat.Unix() - overdueDate.Unix()) / 86400)
+                overdue -= dd
+                days += dd
+            } else {
+                // 若超期日期在暂停日期之后, 此时 无超期天数
+                days += overdue
+                overdue = 0
+            }
+        }
+        // 累积重复天数
+        d, _, _, _ := item.GetAdditionalDays()
+        duplicate += d
     }
-    return days
+
+    // 实际天数应该减去重复天数, 减去重复天数为实际发生天数
+    days -= duplicate
+
+    return
 }
 
 func (s *Subscribe) AdditionalItems() (SubscribePauses, SubscribeSuspends) {
@@ -120,8 +141,7 @@ func (s *Subscribe) AdditionalItems() (SubscribePauses, SubscribeSuspends) {
 func SubscribeAdditionalCalculate[T SubscribeAdditional](items []T) (data SubscribeAdditionalResult[T]) {
     data = SubscribeAdditionalResult[T]{}
     for _, item := range items {
-        days, overdue, isCurrent := item.GetAdditionalDays()
-        duplicate := item.GetDuplicateDays()
+        days, overdue, duplicate, isCurrent := item.GetAdditionalDays()
 
         if isCurrent {
             data.Current = item
@@ -162,6 +182,7 @@ func subscribeAdditionalDays[T SubscribeAdditional](item T) (days int, overdue i
 
     // 判定寄存时间是否超限, 寄存时间超限后会继续计费
     max := item.GetMaxDays()
+
     if max > 0 && days > max {
         overdue = days - max
         days = max

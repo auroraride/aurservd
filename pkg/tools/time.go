@@ -108,3 +108,14 @@ func (t *timeTool) ParseNextDateStringX(str string) time.Time {
     }
     return res
 }
+
+// PauseBeginning 暂停或寄存开始日期计算
+// start 暂停或寄存开始时间
+func (t *timeTool) PauseBeginning(start time.Time) time.Time {
+    startDay := carbon.Time2Carbon(start).StartOfDay().Carbon2Time()
+    // 判定开始时间是否0点
+    if startDay.Equal(start) {
+        return startDay
+    }
+    return carbon.Time2Carbon(startDay).Tomorrow().Carbon2Time()
+}

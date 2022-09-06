@@ -525,6 +525,13 @@ func (s *businessRiderService) Pause(subscribeID uint64) {
 func (s *businessRiderService) Continue(subscribeID uint64) {
     s.preprocess(business.TypeContinue, s.QuerySubscribeWithRider(subscribeID))
 
+    // 更新订阅信息
+    err := NewSubscribe().UpdateStatus(s.subscribe, false)
+    if err != nil {
+        log.Error(err)
+        snag.Panic("骑士卡更新失败")
+    }
+
     sp, _ := ent.Database.SubscribePause.QueryNotDeleted().
         Where(subscribepause.SubscribeID(s.subscribe.ID), subscribepause.EndAtIsNil()).
         Order(ent.Desc(subscribepause.FieldCreatedAt)).
@@ -538,10 +545,10 @@ func (s *businessRiderService) Continue(subscribeID uint64) {
     now := time.Now()
 
     // 已寄存天数
-    days, overdue, _ := sp.GetAdditionalDays()
+    days, overdue, duplicate, _ := sp.GetAdditionalDays()
 
     s.do(business.TypeContinue, func(tx *ent.Tx) {
-        _, err := tx.SubscribePause.
+        _, err = tx.SubscribePause.
             UpdateOne(sp).
             SetDays(days).
             SetEndAt(now).
@@ -550,7 +557,7 @@ func (s *businessRiderService) Continue(subscribeID uint64) {
             SetOverdueDays(overdue).
             SetNillableEndStoreID(s.storeID).
             SetNillableEndCabinetID(s.cabinetID).
-            SetSuspendDays(sp.GetDuplicateDays()).
+            SetSuspendDays(duplicate).
             Save(s.ctx)
         snag.PanicIfError(err)
 

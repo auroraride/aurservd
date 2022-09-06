@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 
-ssh root@39.106.77.239 "export PGPASSWORD='$PASSWORD'; pg_dump -U postgres -d auroraride -f /root/auroraride.sql"
-scp root@39.106.77.239:/root/auroraride.sql ~/Downloads/_sql/
+ssh root@39.106.77.239 "export PGPASSWORD='$PASSWORD'; pg_dump -U postgres -d auroraride -f /root/auroraride.sql; rm -rf auroraride.sql.zip; zip auroraride.sql.zip auroraride.sql"
+scp root@39.106.77.239:/root/auroraride.sql.zip ~/Downloads/_sql/
+cd ~/Downloads/_sql/
+rm -rf auroraride.sql
+unzip auroraride.sql.zip
+rm -rf auroraride.sql.zip
 dropdb -U liasica auroraride
 createdb auroraride
 psql -d auroraride -U liasica -c "SET timezone = 'Asia/Shanghai'; CREATE EXTENSION postgis; CREATE EXTENSION pg_trgm; CREATE EXTENSION btree_gin;"
-psql -d auroraride -U liasica -f ~/Downloads/_sql/auroraride.sql
+psql -d auroraride -U liasica -f auroraride.sql
 #rm -rf ~/Downloads/_sql/auroraride.sql
