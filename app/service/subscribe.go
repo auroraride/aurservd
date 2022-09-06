@@ -316,13 +316,24 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe, notice bool) error 
 
     // 剩余天数
     remaining := item.InitialDays + item.AlterDays + item.OverdueDays + item.RenewalDays + pause.TotalDays + suspend.TotalDays - pastDays
+    formula := fmt.Sprintf(
+        "剩余时间(%d) = 初始天数(%d) + 调整天数(%d) + 已缴滞纳金天数(%d) + 续费天数(%d) + 寄存天数(%d) + 暂停天数(%d) - 已过天数(%d)",
+        remaining,
+        item.InitialDays,
+        item.AlterDays,
+        item.OverdueDays,
+        item.RenewalDays,
+        pause.TotalDays,
+        suspend.TotalDays,
+        pastDays,
+    )
 
     if remaining < 0 {
         status = model.SubscribeStatusOverdue
     }
 
     return ent.WithTx(s.ctx, func(tx *ent.Tx) error {
-        up := tx.Subscribe.UpdateOne(item).SetPauseDays(pause.TotalDays).SetSuspendDays(suspend.TotalDays).SetRemaining(remaining)
+        up := tx.Subscribe.UpdateOne(item).SetPauseDays(pause.TotalDays).SetSuspendDays(suspend.TotalDays).SetRemaining(remaining).SetFormula(formula)
 
         // 寄存中的如果欠费则自动退租: 超过寄存设置的最大时间继续计费, 直到欠费自动退租
         var unsub bool

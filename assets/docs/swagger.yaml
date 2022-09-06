@@ -3894,6 +3894,9 @@ definitions:
       agentEndAt:
         description: 代理商处到期日期
         type: string
+      formula:
+        description: 订阅天数计算公式
+        type: string
       id:
         description: 订阅ID
         type: integer
@@ -5147,6 +5150,9 @@ definitions:
       plan:
         description: 骑士卡
         type: string
+      reason:
+        description: 暂停原因
+        type: string
       start:
         description: 开始时间
         type: string
@@ -5922,6 +5928,10 @@ paths:
         in: query
         name: aimed
         type: integer
+      - description: 筛选电柜
+        in: query
+        name: cabinetId
+        type: integer
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
@@ -5950,6 +5960,10 @@ paths:
         in: query
         name: start
         type: string
+      - description: 筛选门店
+        in: query
+        name: storeId
+        type: integer
       - description: 筛选业务类别 active:激活 pause:寄存 continue:结束寄存 unsubscribe:退订
         enum:
         - active
@@ -7145,6 +7159,10 @@ paths:
         in: query
         name: aimed
         type: integer
+      - description: 筛选电柜
+        in: query
+        name: cabinetId
+        type: integer
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
@@ -7173,6 +7191,10 @@ paths:
         in: query
         name: start
         type: string
+      - description: 筛选门店
+        in: query
+        name: storeId
+        type: integer
       - description: 筛选业务类别 active:激活 pause:寄存 continue:结束寄存 unsubscribe:退订
         enum:
         - active

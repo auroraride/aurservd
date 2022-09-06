@@ -1096,6 +1096,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldLastBillDate:      {Type: field.TypeTime, Column: subscribe.FieldLastBillDate},
 			subscribe.FieldPauseOverdue:      {Type: field.TypeBool, Column: subscribe.FieldPauseOverdue},
 			subscribe.FieldAgentEndAt:        {Type: field.TypeTime, Column: subscribe.FieldAgentEndAt},
+			subscribe.FieldFormula:           {Type: field.TypeString, Column: subscribe.FieldFormula},
 		},
 	}
 	graph.Nodes[37] = &sqlgraph.Node{
@@ -9358,6 +9359,11 @@ func (f *SubscribeFilter) WherePauseOverdue(p entql.BoolP) {
 // WhereAgentEndAt applies the entql time.Time predicate on the agent_end_at field.
 func (f *SubscribeFilter) WhereAgentEndAt(p entql.TimeP) {
 	f.Where(p.Field(subscribe.FieldAgentEndAt))
+}
+
+// WhereFormula applies the entql string predicate on the formula field.
+func (f *SubscribeFilter) WhereFormula(p entql.StringP) {
+	f.Where(p.Field(subscribe.FieldFormula))
 }
 
 // WhereHasPlan applies a predicate to check if query has an edge plan.

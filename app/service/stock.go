@@ -772,18 +772,21 @@ func (s *stockService) Detail(req *model.StockDetailReq) *model.PaginationRes {
         req.Materials = strings.ReplaceAll(req.Materials, " ", "")
     }
     materials := strings.Split(req.Materials, ",")
-    var predicates []predicate.Stock
-    for _, material := range materials {
-        switch stock.Material(material) {
-        case stock.MaterialBattery:
-            predicates = append(predicates, stock.ModelNotNil())
-            break
-        case stock.MaterialOthers:
-            predicates = append(predicates, stock.ModelIsNil())
-            break
+
+    if len(materials) > 0 {
+        var predicates []predicate.Stock
+        for _, material := range materials {
+            switch stock.Material(material) {
+            case stock.MaterialBattery:
+                predicates = append(predicates, stock.ModelNotNil())
+                break
+            case stock.MaterialOthers:
+                predicates = append(predicates, stock.ModelIsNil())
+                break
+            }
         }
+        q.Where(stock.Or(predicates...))
     }
-    q.Where(stock.Or(predicates...))
 
     q.Modify(func(sel *sql.Selector) {
         sel.Select("ON (sn) *")

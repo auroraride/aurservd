@@ -472,6 +472,20 @@ func (sc *SubscribeCreate) SetNillableAgentEndAt(t *time.Time) *SubscribeCreate 
 	return sc
 }
 
+// SetFormula sets the "formula" field.
+func (sc *SubscribeCreate) SetFormula(s string) *SubscribeCreate {
+	sc.mutation.SetFormula(s)
+	return sc
+}
+
+// SetNillableFormula sets the "formula" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableFormula(s *string) *SubscribeCreate {
+	if s != nil {
+		sc.SetFormula(*s)
+	}
+	return sc
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (sc *SubscribeCreate) SetPlan(p *Plan) *SubscribeCreate {
 	return sc.SetPlanID(p.ID)
@@ -1001,6 +1015,14 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 			Column: subscribe.FieldAgentEndAt,
 		})
 		_node.AgentEndAt = &value
+	}
+	if value, ok := sc.mutation.Formula(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: subscribe.FieldFormula,
+		})
+		_node.Formula = &value
 	}
 	if nodes := sc.mutation.PlanIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1911,6 +1933,24 @@ func (u *SubscribeUpsert) ClearAgentEndAt() *SubscribeUpsert {
 	return u
 }
 
+// SetFormula sets the "formula" field.
+func (u *SubscribeUpsert) SetFormula(v string) *SubscribeUpsert {
+	u.Set(subscribe.FieldFormula, v)
+	return u
+}
+
+// UpdateFormula sets the "formula" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateFormula() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldFormula)
+	return u
+}
+
+// ClearFormula clears the value of the "formula" field.
+func (u *SubscribeUpsert) ClearFormula() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldFormula)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -2638,6 +2678,27 @@ func (u *SubscribeUpsertOne) UpdateAgentEndAt() *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) ClearAgentEndAt() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearAgentEndAt()
+	})
+}
+
+// SetFormula sets the "formula" field.
+func (u *SubscribeUpsertOne) SetFormula(v string) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetFormula(v)
+	})
+}
+
+// UpdateFormula sets the "formula" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateFormula() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateFormula()
+	})
+}
+
+// ClearFormula clears the value of the "formula" field.
+func (u *SubscribeUpsertOne) ClearFormula() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearFormula()
 	})
 }
 
@@ -3530,6 +3591,27 @@ func (u *SubscribeUpsertBulk) UpdateAgentEndAt() *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) ClearAgentEndAt() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearAgentEndAt()
+	})
+}
+
+// SetFormula sets the "formula" field.
+func (u *SubscribeUpsertBulk) SetFormula(v string) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetFormula(v)
+	})
+}
+
+// UpdateFormula sets the "formula" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateFormula() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateFormula()
+	})
+}
+
+// ClearFormula clears the value of the "formula" field.
+func (u *SubscribeUpsertBulk) ClearFormula() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearFormula()
 	})
 }
 

@@ -28,6 +28,7 @@ import (
     "github.com/golang-module/carbon/v2"
     "github.com/shopspring/decimal"
     log "github.com/sirupsen/logrus"
+    "strings"
     "time"
 )
 
@@ -146,12 +147,18 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
     var subID, orderID *uint64
     otype := req.OrderType
     switch otype {
-    case model.OrderTypeNewly:
-    case model.OrderTypeAgain:
+    case model.OrderTypeNewly, model.OrderTypeAgain:
         // 新签/重签判定
-        if req.Model == "" || req.CityID == 0 {
+        var m string
+        for _, pm := range op.Edges.Pms {
+            if strings.ToUpper(req.Model) == strings.ToUpper(pm.Model) {
+                m = pm.Model
+            }
+        }
+        if m == "" || req.CityID == 0 {
             snag.Panic("请求参数错误")
         }
+        req.Model = m
         otype, past = s.PreconditionNewly(sub)
         break
     case model.OrderTypeRenewal:

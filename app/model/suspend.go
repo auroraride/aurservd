@@ -35,4 +35,5 @@ type SuspendListRes struct {
     StartBy         string `json:"startBy"`         // 开始操作人
     End             string `json:"end"`             // 结束时间
     EndBy           string `json:"endBy"`           // 结束操作人
+    Reason          string `json:"reason"`          // 暂停原因
 }

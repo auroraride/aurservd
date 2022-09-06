@@ -305,6 +305,13 @@ func AgentEndAt(v time.Time) predicate.Subscribe {
 	})
 }
 
+// Formula applies equality check predicate on the "formula" field. It's identical to FormulaEQ.
+func Formula(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldFormula), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
@@ -2433,6 +2440,119 @@ func AgentEndAtIsNil() predicate.Subscribe {
 func AgentEndAtNotNil() predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldAgentEndAt)))
+	})
+}
+
+// FormulaEQ applies the EQ predicate on the "formula" field.
+func FormulaEQ(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldFormula), v))
+	})
+}
+
+// FormulaNEQ applies the NEQ predicate on the "formula" field.
+func FormulaNEQ(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldFormula), v))
+	})
+}
+
+// FormulaIn applies the In predicate on the "formula" field.
+func FormulaIn(vs ...string) predicate.Subscribe {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldFormula), v...))
+	})
+}
+
+// FormulaNotIn applies the NotIn predicate on the "formula" field.
+func FormulaNotIn(vs ...string) predicate.Subscribe {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldFormula), v...))
+	})
+}
+
+// FormulaGT applies the GT predicate on the "formula" field.
+func FormulaGT(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldFormula), v))
+	})
+}
+
+// FormulaGTE applies the GTE predicate on the "formula" field.
+func FormulaGTE(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldFormula), v))
+	})
+}
+
+// FormulaLT applies the LT predicate on the "formula" field.
+func FormulaLT(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldFormula), v))
+	})
+}
+
+// FormulaLTE applies the LTE predicate on the "formula" field.
+func FormulaLTE(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldFormula), v))
+	})
+}
+
+// FormulaContains applies the Contains predicate on the "formula" field.
+func FormulaContains(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldFormula), v))
+	})
+}
+
+// FormulaHasPrefix applies the HasPrefix predicate on the "formula" field.
+func FormulaHasPrefix(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldFormula), v))
+	})
+}
+
+// FormulaHasSuffix applies the HasSuffix predicate on the "formula" field.
+func FormulaHasSuffix(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldFormula), v))
+	})
+}
+
+// FormulaIsNil applies the IsNil predicate on the "formula" field.
+func FormulaIsNil() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldFormula)))
+	})
+}
+
+// FormulaNotNil applies the NotNil predicate on the "formula" field.
+func FormulaNotNil() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldFormula)))
+	})
+}
+
+// FormulaEqualFold applies the EqualFold predicate on the "formula" field.
+func FormulaEqualFold(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldFormula), v))
+	})
+}
+
+// FormulaContainsFold applies the ContainsFold predicate on the "formula" field.
+func FormulaContainsFold(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldFormula), v))
 	})
 }
 

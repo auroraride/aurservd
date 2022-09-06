@@ -981,6 +981,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "筛选电柜",
+                        "name": "cabinetId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
                         "in": "query"
@@ -1019,6 +1025,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
                         "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "筛选门店",
+                        "name": "storeId",
                         "in": "query"
                     },
                     {
@@ -2823,6 +2835,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "筛选电柜",
+                        "name": "cabinetId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
                         "in": "query"
@@ -2861,6 +2879,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
                         "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "筛选门店",
+                        "name": "storeId",
                         "in": "query"
                     },
                     {
@@ -16476,6 +16500,10 @@ const docTemplate = `{
                     "description": "代理商处到期日期",
                     "type": "string"
                 },
+                "formula": {
+                    "description": "订阅天数计算公式",
+                    "type": "string"
+                },
                 "id": {
                     "description": "订阅ID",
                     "type": "integer"
@@ -18294,6 +18322,10 @@ const docTemplate = `{
                 },
                 "plan": {
                     "description": "骑士卡",
+                    "type": "string"
+                },
+                "reason": {
+                    "description": "暂停原因",
                     "type": "string"
                 },
                 "start": {

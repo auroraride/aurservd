@@ -95,6 +95,8 @@ type Subscribe struct {
 	PauseOverdue bool `json:"pause_overdue,omitempty"`
 	// 代理商处到期日期
 	AgentEndAt *time.Time `json:"agent_end_at,omitempty"`
+	// 计算公式
+	Formula *string `json:"formula,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribeQuery when eager-loading is set.
 	Edges SubscribeEdges `json:"edges"`
@@ -308,7 +310,7 @@ func (*Subscribe) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldStationID, subscribe.FieldStoreID, subscribe.FieldCabinetID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldEnterpriseID, subscribe.FieldStatus, subscribe.FieldType, subscribe.FieldInitialDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays, subscribe.FieldSuspendDays, subscribe.FieldRenewalDays, subscribe.FieldOverdueDays, subscribe.FieldRemaining:
 			values[i] = new(sql.NullInt64)
-		case subscribe.FieldRemark, subscribe.FieldModel, subscribe.FieldUnsubscribeReason:
+		case subscribe.FieldRemark, subscribe.FieldModel, subscribe.FieldUnsubscribeReason, subscribe.FieldFormula:
 			values[i] = new(sql.NullString)
 		case subscribe.FieldCreatedAt, subscribe.FieldUpdatedAt, subscribe.FieldDeletedAt, subscribe.FieldPausedAt, subscribe.FieldSuspendAt, subscribe.FieldStartAt, subscribe.FieldEndAt, subscribe.FieldRefundAt, subscribe.FieldLastBillDate, subscribe.FieldAgentEndAt:
 			values[i] = new(sql.NullTime)
@@ -555,6 +557,13 @@ func (s *Subscribe) assignValues(columns []string, values []interface{}) error {
 				s.AgentEndAt = new(time.Time)
 				*s.AgentEndAt = value.Time
 			}
+		case subscribe.FieldFormula:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field formula", values[i])
+			} else if value.Valid {
+				s.Formula = new(string)
+				*s.Formula = value.String
+			}
 		}
 	}
 	return nil
@@ -781,6 +790,11 @@ func (s *Subscribe) String() string {
 	if v := s.AgentEndAt; v != nil {
 		builder.WriteString("agent_end_at=")
 		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := s.Formula; v != nil {
+		builder.WriteString("formula=")
+		builder.WriteString(*v)
 	}
 	builder.WriteByte(')')
 	return builder.String()

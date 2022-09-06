@@ -170,6 +170,7 @@ func (s *suspendService) List(req *model.SuspendListReq) *model.PaginationRes {
             SubscribeStatus: model.SubscribeStatusText(sub.Status),
             Days:            item.Days,
             Start:           item.StartAt.Format(carbon.DateTimeLayout),
+            Reason:          item.Remark,
         }
         if item.Creator != nil {
             res.StartBy = item.Creator.Name

@@ -156,6 +156,14 @@ func (s *businessService) listBasicQuery(req *model.BusinessListReq) *ent.Busine
         ))
     }
 
+    if req.StoreID != 0 {
+        q.Where(business.StoreID(req.StoreID))
+    }
+
+    if req.CabinetID != 0 {
+        q.Where(business.CabinetID(req.CabinetID))
+    }
+
     switch req.Aimed {
     case model.BusinessAimedPersonal:
         q.Where(business.EnterpriseIDIsNil())

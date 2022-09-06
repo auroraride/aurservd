@@ -625,6 +625,7 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
             Remaining: sub.Remaining,
             Model:     sub.Model,
             Suspend:   sub.SuspendAt != nil,
+            Formula:   sub.Formula,
         }
         if sub.AgentEndAt != nil {
             ri.Subscribe.AgentEndAt = sub.AgentEndAt.Format(carbon.DateLayout)

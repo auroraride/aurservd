@@ -607,6 +607,26 @@ func (su *SubscribeUpdate) ClearAgentEndAt() *SubscribeUpdate {
 	return su
 }
 
+// SetFormula sets the "formula" field.
+func (su *SubscribeUpdate) SetFormula(s string) *SubscribeUpdate {
+	su.mutation.SetFormula(s)
+	return su
+}
+
+// SetNillableFormula sets the "formula" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableFormula(s *string) *SubscribeUpdate {
+	if s != nil {
+		su.SetFormula(*s)
+	}
+	return su
+}
+
+// ClearFormula clears the value of the "formula" field.
+func (su *SubscribeUpdate) ClearFormula() *SubscribeUpdate {
+	su.mutation.ClearFormula()
+	return su
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (su *SubscribeUpdate) SetPlan(p *Plan) *SubscribeUpdate {
 	return su.SetPlanID(p.ID)
@@ -1287,6 +1307,19 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: subscribe.FieldAgentEndAt,
+		})
+	}
+	if value, ok := su.mutation.Formula(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: subscribe.FieldFormula,
+		})
+	}
+	if su.mutation.FormulaCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: subscribe.FieldFormula,
 		})
 	}
 	if su.mutation.PlanCleared() {
@@ -2459,6 +2492,26 @@ func (suo *SubscribeUpdateOne) ClearAgentEndAt() *SubscribeUpdateOne {
 	return suo
 }
 
+// SetFormula sets the "formula" field.
+func (suo *SubscribeUpdateOne) SetFormula(s string) *SubscribeUpdateOne {
+	suo.mutation.SetFormula(s)
+	return suo
+}
+
+// SetNillableFormula sets the "formula" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableFormula(s *string) *SubscribeUpdateOne {
+	if s != nil {
+		suo.SetFormula(*s)
+	}
+	return suo
+}
+
+// ClearFormula clears the value of the "formula" field.
+func (suo *SubscribeUpdateOne) ClearFormula() *SubscribeUpdateOne {
+	suo.mutation.ClearFormula()
+	return suo
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (suo *SubscribeUpdateOne) SetPlan(p *Plan) *SubscribeUpdateOne {
 	return suo.SetPlanID(p.ID)
@@ -3169,6 +3222,19 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: subscribe.FieldAgentEndAt,
+		})
+	}
+	if value, ok := suo.mutation.Formula(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: subscribe.FieldFormula,
+		})
+	}
+	if suo.mutation.FormulaCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: subscribe.FieldFormula,
 		})
 	}
 	if suo.mutation.PlanCleared() {

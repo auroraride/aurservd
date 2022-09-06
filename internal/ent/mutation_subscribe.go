@@ -56,6 +56,7 @@ type SubscribeMutation struct {
 	last_bill_date       *time.Time
 	pause_overdue        *bool
 	agent_end_at         *time.Time
+	formula              *string
 	clearedFields        map[string]struct{}
 	plan                 *uint64
 	clearedplan          bool
@@ -1858,6 +1859,55 @@ func (m *SubscribeMutation) ResetAgentEndAt() {
 	delete(m.clearedFields, subscribe.FieldAgentEndAt)
 }
 
+// SetFormula sets the "formula" field.
+func (m *SubscribeMutation) SetFormula(s string) {
+	m.formula = &s
+}
+
+// Formula returns the value of the "formula" field in the mutation.
+func (m *SubscribeMutation) Formula() (r string, exists bool) {
+	v := m.formula
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFormula returns the old "formula" field's value of the Subscribe entity.
+// If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeMutation) OldFormula(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFormula is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFormula requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFormula: %w", err)
+	}
+	return oldValue.Formula, nil
+}
+
+// ClearFormula clears the value of the "formula" field.
+func (m *SubscribeMutation) ClearFormula() {
+	m.formula = nil
+	m.clearedFields[subscribe.FieldFormula] = struct{}{}
+}
+
+// FormulaCleared returns if the "formula" field was cleared in this mutation.
+func (m *SubscribeMutation) FormulaCleared() bool {
+	_, ok := m.clearedFields[subscribe.FieldFormula]
+	return ok
+}
+
+// ResetFormula resets all changes to the "formula" field.
+func (m *SubscribeMutation) ResetFormula() {
+	m.formula = nil
+	delete(m.clearedFields, subscribe.FieldFormula)
+}
+
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *SubscribeMutation) ClearPlan() {
 	m.clearedplan = true
@@ -2381,7 +2431,7 @@ func (m *SubscribeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscribeMutation) Fields() []string {
-	fields := make([]string, 0, 34)
+	fields := make([]string, 0, 35)
 	if m.created_at != nil {
 		fields = append(fields, subscribe.FieldCreatedAt)
 	}
@@ -2484,6 +2534,9 @@ func (m *SubscribeMutation) Fields() []string {
 	if m.agent_end_at != nil {
 		fields = append(fields, subscribe.FieldAgentEndAt)
 	}
+	if m.formula != nil {
+		fields = append(fields, subscribe.FieldFormula)
+	}
 	return fields
 }
 
@@ -2560,6 +2613,8 @@ func (m *SubscribeMutation) Field(name string) (ent.Value, bool) {
 		return m.PauseOverdue()
 	case subscribe.FieldAgentEndAt:
 		return m.AgentEndAt()
+	case subscribe.FieldFormula:
+		return m.Formula()
 	}
 	return nil, false
 }
@@ -2637,6 +2692,8 @@ func (m *SubscribeMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldPauseOverdue(ctx)
 	case subscribe.FieldAgentEndAt:
 		return m.OldAgentEndAt(ctx)
+	case subscribe.FieldFormula:
+		return m.OldFormula(ctx)
 	}
 	return nil, fmt.Errorf("unknown Subscribe field %s", name)
 }
@@ -2884,6 +2941,13 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetAgentEndAt(v)
 		return nil
+	case subscribe.FieldFormula:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFormula(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Subscribe field %s", name)
 }
@@ -3085,6 +3149,9 @@ func (m *SubscribeMutation) ClearedFields() []string {
 	if m.FieldCleared(subscribe.FieldAgentEndAt) {
 		fields = append(fields, subscribe.FieldAgentEndAt)
 	}
+	if m.FieldCleared(subscribe.FieldFormula) {
+		fields = append(fields, subscribe.FieldFormula)
+	}
 	return fields
 }
 
@@ -3158,6 +3225,9 @@ func (m *SubscribeMutation) ClearField(name string) error {
 		return nil
 	case subscribe.FieldAgentEndAt:
 		m.ClearAgentEndAt()
+		return nil
+	case subscribe.FieldFormula:
+		m.ClearFormula()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe nullable field %s", name)
@@ -3268,6 +3338,9 @@ func (m *SubscribeMutation) ResetField(name string) error {
 		return nil
 	case subscribe.FieldAgentEndAt:
 		m.ResetAgentEndAt()
+		return nil
+	case subscribe.FieldFormula:
+		m.ResetFormula()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe field %s", name)
