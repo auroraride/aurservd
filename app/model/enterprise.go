@@ -58,6 +58,11 @@ type Enterprise struct {
     Agent bool   `json:"agent"` // 是否代理商模式
 }
 
+type EnterpriseContact struct {
+    Name  string `json:"name"`  // 联系姓名
+    Phone string `json:"phone"` // 联系电话
+}
+
 // EnterpriseDetail 企业详细字段
 type EnterpriseDetail struct {
     Name         *string  `json:"name" validate:"required" trans:"团签名称"`

@@ -848,10 +848,18 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device, token string)
             Name:  en.Name,
             Agent: en.Agent,
         }
+        profile.UseStore = !en.Agent || en.UseStore
+        if en.Agent {
+            profile.EnterpriseContact = &model.EnterpriseContact{
+                Name:  en.ContactName,
+                Phone: en.ContactPhone,
+            }
+        }
     } else {
         profile.Subscribe = subd
         profile.OrderNotActived = tools.NewPointer().Bool(subd != nil && subd.Status == model.SubscribeStatusInactive)
         profile.Deposit = s.Deposit(u.ID)
+        profile.UseStore = true
     }
     return profile
 }

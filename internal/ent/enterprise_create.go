@@ -470,6 +470,10 @@ func (ec *EnterpriseCreate) defaults() error {
 		v := enterprise.DefaultAgent
 		ec.mutation.SetAgent(v)
 	}
+	if _, ok := ec.mutation.UseStore(); !ok {
+		v := enterprise.DefaultUseStore
+		ec.mutation.SetUseStore(v)
+	}
 	return nil
 }
 

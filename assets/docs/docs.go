@@ -14329,6 +14329,19 @@ const docTemplate = `{
                 }
             }
         },
+        "model.EnterpriseContact": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "联系姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "联系电话",
+                    "type": "string"
+                }
+            }
+        },
         "model.EnterpriseContract": {
             "type": "object",
             "required": [
@@ -16831,6 +16844,14 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "enterpriseContact": {
+                    "description": "团签联系方式",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseContact"
+                        }
+                    ]
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -16873,6 +16894,10 @@ const docTemplate = `{
                 "token": {
                     "description": "认证token",
                     "type": "string"
+                },
+                "useStore": {
+                    "description": "是否可使用门店办理业务",
+                    "type": "boolean"
                 }
             }
         },

@@ -155,6 +155,7 @@ func (s *subscribeService) Detail(sub *ent.Subscribe) *model.Subscribe {
     remaining := sub.Remaining
     if sub.AgentEndAt != nil {
         remaining = tools.NewTime().LastDays(*sub.AgentEndAt, time.Now())
+        sub.EndAt = sub.AgentEndAt
     }
 
     res := &model.Subscribe{

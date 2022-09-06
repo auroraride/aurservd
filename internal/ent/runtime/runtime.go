@@ -415,6 +415,10 @@ func init() {
 	enterpriseDescAgent := enterpriseFields[12].Descriptor()
 	// enterprise.DefaultAgent holds the default value on creation for the agent field.
 	enterprise.DefaultAgent = enterpriseDescAgent.Default.(bool)
+	// enterpriseDescUseStore is the schema descriptor for use_store field.
+	enterpriseDescUseStore := enterpriseFields[13].Descriptor()
+	// enterprise.DefaultUseStore holds the default value on creation for the use_store field.
+	enterprise.DefaultUseStore = enterpriseDescUseStore.Default.(bool)
 	enterprisebillMixin := schema.EnterpriseBill{}.Mixin()
 	enterprisebillMixinHooks2 := enterprisebillMixin[2].Hooks()
 	enterprisebill.Hooks[0] = enterprisebillMixinHooks2[0]

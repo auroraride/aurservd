@@ -111,7 +111,7 @@ func NewBusinessRiderWithEmployee(e *ent.Employee) *businessRiderService {
 
 // QuerySubscribeWithRider 查询订阅信息
 func (s *businessRiderService) QuerySubscribeWithRider(subscribeID uint64) *ent.Subscribe {
-    item, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.ID(subscribeID)).WithRider().Only(s.ctx)
+    item, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.ID(subscribeID)).WithEnterprise().WithRider().Only(s.ctx)
     if item == nil {
         snag.Panic("未找到对应订阅")
     }
@@ -206,6 +206,22 @@ func (s *businessRiderService) Inactive(id uint64) (*model.SubscribeActiveInfo, 
 // preprocess 预处理数据
 func (s *businessRiderService) preprocess(typ business.Type, sub *ent.Subscribe) {
     s.subscribe = sub
+
+    if sub.EnterpriseID != nil {
+        en := sub.Edges.Enterprise
+        if en == nil {
+            snag.Panic("未找到团签信息")
+        }
+        // 判定是否寄存或取消寄存业务
+        if typ == business.TypePause || typ == business.TypeContinue {
+            snag.Panic("团签用户无法办理")
+        }
+        // 判定代理是否可使用门店
+        if en.Agent && !en.UseStore && s.employee != nil {
+            snag.Panic("代理无法在门店办理业务")
+        }
+    }
+
     s.subscribeID = tools.Pointer(sub.ID)
 
     r := sub.Edges.Rider
@@ -485,10 +501,6 @@ func (s *businessRiderService) UnSubscribe(subscribeID uint64) {
 // Pause 寄存
 func (s *businessRiderService) Pause(subscribeID uint64) {
     s.preprocess(business.TypePause, s.QuerySubscribeWithRider(subscribeID))
-
-    if s.subscribe.EnterpriseID != nil {
-        snag.Panic("团签用户无法办理")
-    }
 
     s.do(business.TypePause, func(tx *ent.Tx) {
         _, err := tx.SubscribePause.Create().

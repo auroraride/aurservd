@@ -45,19 +45,21 @@ type RiderSignupReq struct {
 
 // RiderSigninRes 骑手登录数据返回
 type RiderSigninRes struct {
-    ID              uint64        `json:"id"`
-    Phone           string        `json:"phone"`                     // 电话
-    Name            string        `json:"name"`                      // 姓名, 实名认证后才会有
-    Token           string        `json:"token,omitempty"`           // 认证token
-    IsNewDevice     bool          `json:"isNewDevice"`               // 是否新设备
-    IsAuthed        bool          `json:"isAuthed"`                  // 是否已认证
-    IsContactFilled bool          `json:"isContactFilled"`           // 联系人是否添加
-    Contact         *RiderContact `json:"contact,omitempty"`         // 联系人
-    Qrcode          string        `json:"qrcode"`                    // 二维码
-    Deposit         float64       `json:"deposit"`                   // 需缴押金
-    OrderNotActived *bool         `json:"orderNotActived,omitempty"` // 是否存在未激活订单
-    Subscribe       *Subscribe    `json:"subscribe,omitempty"`       // 骑士卡
-    Enterprise      *Enterprise   `json:"enterprise,omitempty"`      // 所属企业
+    ID                uint64             `json:"id"`
+    Phone             string             `json:"phone"`                       // 电话
+    Name              string             `json:"name"`                        // 姓名, 实名认证后才会有
+    Token             string             `json:"token,omitempty"`             // 认证token
+    IsNewDevice       bool               `json:"isNewDevice"`                 // 是否新设备
+    IsAuthed          bool               `json:"isAuthed"`                    // 是否已认证
+    IsContactFilled   bool               `json:"isContactFilled"`             // 联系人是否添加
+    Contact           *RiderContact      `json:"contact,omitempty"`           // 联系人
+    Qrcode            string             `json:"qrcode"`                      // 二维码
+    Deposit           float64            `json:"deposit"`                     // 需缴押金
+    OrderNotActived   *bool              `json:"orderNotActived,omitempty"`   // 是否存在未激活订单
+    Subscribe         *Subscribe         `json:"subscribe,omitempty"`         // 骑士卡
+    Enterprise        *Enterprise        `json:"enterprise,omitempty"`        // 所属企业
+    UseStore          bool               `json:"useStore"`                    // 是否可使用门店办理业务
+    EnterpriseContact *EnterpriseContact `json:"enterpriseContact,omitempty"` // 团签联系方式
 }
 
 // RiderContact 紧急联系人

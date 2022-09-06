@@ -61,7 +61,7 @@ func (Enterprise) Fields() []ent.Field {
         field.Float("prepayment_total").Default(0).Comment("总储值金额 = 总金额 - 轧账金额(修改价格后自动轧账)"),
         field.Time("suspensed_at").Nillable().Optional().Comment("暂停合作时间"),
         field.Bool("agent").Default(false).Comment("代理商模式"),
-        field.Bool("use_store").Optional().Comment("是否可以使用门店, 只有代理商模式生效"),
+        field.Bool("use_store").Default(true).Optional().Comment("是否可以使用门店, 只有代理商模式生效"),
         field.Ints("days").Optional().Comment("代理商时间选项"),
     }
 }

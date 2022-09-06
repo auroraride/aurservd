@@ -191,4 +191,6 @@ var (
 	DefaultPrepaymentTotal float64
 	// DefaultAgent holds the default value on creation for the "agent" field.
 	DefaultAgent bool
+	// DefaultUseStore holds the default value on creation for the "use_store" field.
+	DefaultUseStore bool
 )

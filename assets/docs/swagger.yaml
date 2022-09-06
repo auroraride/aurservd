@@ -2386,6 +2386,15 @@ definitions:
         description: 企业名称
         type: string
     type: object
+  model.EnterpriseContact:
+    properties:
+      name:
+        description: 联系姓名
+        type: string
+      phone:
+        description: 联系电话
+        type: string
+    type: object
   model.EnterpriseContract:
     properties:
       end:
@@ -4139,6 +4148,10 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.Enterprise'
         description: 所属企业
+      enterpriseContact:
+        allOf:
+        - $ref: '#/definitions/model.EnterpriseContact'
+        description: 团签联系方式
       id:
         type: integer
       isAuthed:
@@ -4169,6 +4182,9 @@ definitions:
       token:
         description: 认证token
         type: string
+      useStore:
+        description: 是否可使用门店办理业务
+        type: boolean
     type: object
   model.RiderSignupReq:
     properties:

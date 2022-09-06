@@ -912,7 +912,7 @@ var (
 		{Name: "prepayment_total", Type: field.TypeFloat64, Default: 0},
 		{Name: "suspensed_at", Type: field.TypeTime, Nullable: true},
 		{Name: "agent", Type: field.TypeBool, Default: false},
-		{Name: "use_store", Type: field.TypeBool, Nullable: true},
+		{Name: "use_store", Type: field.TypeBool, Nullable: true, Default: true},
 		{Name: "days", Type: field.TypeJSON, Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64},
 	}
