@@ -94,10 +94,10 @@ func (s *orderService) PreconditionNewly(sub *ent.Subscribe) (state uint, past *
     // 距离上次订阅过去的时间(从退订的第二天0点开始计算,不满一天算0天)
     if sub.EndAt != nil {
         past = tools.NewPointer().Int(int(carbon.Time2Carbon(*sub.EndAt).AddDay().DiffInDays(carbon.Now())))
-    }
-    // 判定退订时间是否超出设置天数
-    if model.NewRecentSubscribePastDays(*past).Commission() {
-        state = model.OrderTypeNewly
+        // 判定退订时间是否超出设置天数
+        if model.NewRecentSubscribePastDays(*past).Commission() {
+            state = model.OrderTypeNewly
+        }
     }
     return
 }
