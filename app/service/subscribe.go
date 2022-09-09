@@ -339,13 +339,14 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe, notice bool) error 
         var unsub bool
         if pause.Current != nil {
             pup := tx.SubscribePause.UpdateOne(pause.Current).SetDays(pause.CurrentDays).SetOverdueDays(pause.CurrentOverdue).SetSuspendDays(pause.CurrentDuplicateDays)
-            if remaining < 0 {
+            // 查询当前寄存是否超期
+            if remaining < 0 && pause.CurrentOverdue > 0 {
                 status = model.SubscribeStatusUnSubscribed
                 unsub = true
                 reason := "寄存超期自动退租"
 
                 pup.SetEndAt(time.Now()).SetRemark(reason).SetPauseOverdue(true)
-                up.SetPauseOverdue(true).ClearPausedAt().SetUnsubscribeReason(reason)
+                up.SetPauseOverdue(true).ClearPausedAt().SetUnsubscribeReason(reason).SetEndAt(time.Now())
                 log.Infof("[SUBSCRIBE TASK PAUSE] %d 寄存超期自动退租", item.ID)
             }
             _, err := pup.Save(s.ctx)
@@ -364,9 +365,7 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe, notice bool) error 
         }
 
         // 更新
-        sub, err := up.
-            SetStatus(status).
-            Save(context.Background())
+        sub, err := up.SetStatus(status).Save(context.Background())
         if err != nil {
             log.Errorf("[SUBSCRIBE TASK] %d 更新失败: %v", item.ID, err)
             return err
@@ -393,7 +392,7 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe, notice bool) error 
 
 // AlterDays 修改骑手时间
 func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.RiderItemSubscribe) {
-    sq := s.orm.QueryNotDeleted().WithEnterprise().WithRider().Where(subscribe.ID(req.ID))
+    sq := s.orm.QueryNotDeleted().WithEnterprise().WithRider().Where(subscribe.ID(req.ID), subscribe.StatusIn(model.SubscribeNotUnSubscribed()...))
     if s.agent != nil && s.enterprise != nil {
         sq.Where(subscribe.EnterpriseID(s.enterprise.ID))
     }
@@ -496,6 +495,12 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
 
     if sub.AgentEndAt != nil {
         out.AgentEndAt = sub.AgentEndAt.Format(carbon.DateLayout)
+    }
+
+    if sub.EnterpriseID == nil {
+        go func() {
+            _ = s.UpdateStatus(sub, false)
+        }()
     }
     return out
 }

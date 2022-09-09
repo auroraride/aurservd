@@ -172,6 +172,13 @@ func CabinetID(v uint64) predicate.Business {
 	})
 }
 
+// StockSn applies equality check predicate on the "stock_sn" field. It's identical to StockSnEQ.
+func StockSn(v string) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStockSn), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Business {
 	return predicate.Business(func(s *sql.Selector) {
@@ -974,6 +981,119 @@ func BinInfoIsNil() predicate.Business {
 func BinInfoNotNil() predicate.Business {
 	return predicate.Business(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldBinInfo)))
+	})
+}
+
+// StockSnEQ applies the EQ predicate on the "stock_sn" field.
+func StockSnEQ(v string) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStockSn), v))
+	})
+}
+
+// StockSnNEQ applies the NEQ predicate on the "stock_sn" field.
+func StockSnNEQ(v string) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldStockSn), v))
+	})
+}
+
+// StockSnIn applies the In predicate on the "stock_sn" field.
+func StockSnIn(vs ...string) predicate.Business {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Business(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldStockSn), v...))
+	})
+}
+
+// StockSnNotIn applies the NotIn predicate on the "stock_sn" field.
+func StockSnNotIn(vs ...string) predicate.Business {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Business(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldStockSn), v...))
+	})
+}
+
+// StockSnGT applies the GT predicate on the "stock_sn" field.
+func StockSnGT(v string) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldStockSn), v))
+	})
+}
+
+// StockSnGTE applies the GTE predicate on the "stock_sn" field.
+func StockSnGTE(v string) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldStockSn), v))
+	})
+}
+
+// StockSnLT applies the LT predicate on the "stock_sn" field.
+func StockSnLT(v string) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldStockSn), v))
+	})
+}
+
+// StockSnLTE applies the LTE predicate on the "stock_sn" field.
+func StockSnLTE(v string) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldStockSn), v))
+	})
+}
+
+// StockSnContains applies the Contains predicate on the "stock_sn" field.
+func StockSnContains(v string) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldStockSn), v))
+	})
+}
+
+// StockSnHasPrefix applies the HasPrefix predicate on the "stock_sn" field.
+func StockSnHasPrefix(v string) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldStockSn), v))
+	})
+}
+
+// StockSnHasSuffix applies the HasSuffix predicate on the "stock_sn" field.
+func StockSnHasSuffix(v string) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldStockSn), v))
+	})
+}
+
+// StockSnIsNil applies the IsNil predicate on the "stock_sn" field.
+func StockSnIsNil() predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldStockSn)))
+	})
+}
+
+// StockSnNotNil applies the NotNil predicate on the "stock_sn" field.
+func StockSnNotNil() predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldStockSn)))
+	})
+}
+
+// StockSnEqualFold applies the EqualFold predicate on the "stock_sn" field.
+func StockSnEqualFold(v string) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldStockSn), v))
+	})
+}
+
+// StockSnContainsFold applies the ContainsFold predicate on the "stock_sn" field.
+func StockSnContainsFold(v string) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldStockSn), v))
 	})
 }
 

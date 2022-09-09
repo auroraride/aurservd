@@ -120,3 +120,33 @@ func (*export) Commission(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.EmployeeActivityExportReq](c)
     return ctx.SendResponse(service.NewEmployeeWithModifier(ctx.Modifier).ActivityExport(req))
 }
+
+// Business
+// @ID           ManagerExportBusiness
+// @Router       /manager/v1/export/business [POST]
+// @Summary      MF008 导出业务记录
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body     model.BusinessExportReq  true  "筛选条件"
+// @Success      200  {object}  model.ExportRes  "请求成功"
+func (*export) Business(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.BusinessExportReq](c)
+    return ctx.SendResponse(service.NewBusinessWithModifier(ctx.Modifier).Export(req))
+}
+
+// StockDetail
+// @ID           ManagerExportStockDetail
+// @Router       /manager/v1/export/stock-detail [POST]
+// @Summary      MF009 导出出入库明细
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body     model.StockDetailExportReq  true  "筛选条件"
+// @Success      200  {object}  model.ExportRes  "请求成功"
+func (*export) StockDetail(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.StockDetailExportReq](c)
+    return ctx.SendResponse(service.NewStockWithModifier(ctx.Modifier).Export(req))
+}

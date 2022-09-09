@@ -296,7 +296,7 @@ func (s *businessRiderService) doTask() (bin *ec.BinInfo, err error) {
 // do 处理业务
 func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
     sts := map[business.Type]uint8{
-        business.TypeActive:      model.StockTypeRiderObtain,
+        business.TypeActive:      model.StockTypeRiderActive,
         business.TypeUnsubscribe: model.StockTypeRiderUnSubscribe,
         business.TypePause:       model.StockTypeRiderPause,
         business.TypeContinue:    model.StockTypeRiderContinue,
@@ -316,13 +316,6 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
         business.TypeContinue:    "寄存中",
     }
 
-    afs := map[business.Type]string{
-        business.TypeActive:      "已激活",
-        business.TypeUnsubscribe: "已退租",
-        business.TypePause:       "已寄存",
-        business.TypeContinue:    "计费中",
-    }
-
     var bin *ec.BinInfo
     var err error
 
@@ -340,10 +333,12 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
         co, _ = ent.Database.Commission.QueryNotDeleted().Where(commission.SubscribeID(s.subscribe.ID)).First(s.ctx)
     }
 
+    var sk *ent.Stock
+
     ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
         cb(tx)
 
-        return NewStockWithModifier(s.modifier).BatteryWithRider(
+        sk, err = NewStockWithModifier(s.modifier).BatteryWithRider(
             tx.Stock.Create(),
             &model.StockBusinessReq{
                 RiderID:   s.subscribe.RiderID,
@@ -357,6 +352,8 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
                 SubscribeID: s.subscribeID,
             },
         )
+
+        return err
     })
 
     // 取出电池优后执行
@@ -375,6 +372,7 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
         SetCabinet(s.cabinet).
         SetStore(s.store).
         SetBinInfo(bin).
+        SetStock(sk).
         Save(bt)
     var bussinessID *uint64
     revStatus := model.ReserveStatusFail
@@ -403,7 +401,7 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
         SetEmployee(s.employeeInfo).
         SetModifier(s.modifier).
         SetCabinet(s.cabinetInfo).
-        SetDiff(bfs[bt], afs[bt]).
+        SetDiff(bfs[bt], NewBusiness().Text(bt)).
         Send()
 
     if err != nil {
@@ -501,6 +499,10 @@ func (s *businessRiderService) UnSubscribe(subscribeID uint64) {
 // Pause 寄存
 func (s *businessRiderService) Pause(subscribeID uint64) {
     s.preprocess(business.TypePause, s.QuerySubscribeWithRider(subscribeID))
+
+    if s.subscribe.Remaining < 1 {
+        snag.Panic("当前剩余时间不足, 无法寄存")
+    }
 
     s.do(business.TypePause, func(tx *ent.Tx) {
         _, err := tx.SubscribePause.Create().

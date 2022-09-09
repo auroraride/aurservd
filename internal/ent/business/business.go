@@ -48,6 +48,8 @@ const (
 	FieldType = "type"
 	// FieldBinInfo holds the string denoting the bin_info field in the database.
 	FieldBinInfo = "bin_info"
+	// FieldStockSn holds the string denoting the stock_sn field in the database.
+	FieldStockSn = "stock_sn"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeCity holds the string denoting the city edge name in mutations.
@@ -153,6 +155,7 @@ var Columns = []string{
 	FieldCabinetID,
 	FieldType,
 	FieldBinInfo,
+	FieldStockSn,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

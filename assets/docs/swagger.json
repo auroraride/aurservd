@@ -979,6 +979,12 @@
                     },
                     {
                         "type": "integer",
+                        "description": "筛选城市",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
                         "in": "query"
@@ -999,6 +1005,17 @@
                         "type": "integer",
                         "description": "企业ID",
                         "name": "enterpriseId",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "查询目标, 0:不筛选 1:门店 2:电柜",
+                        "name": "goal",
                         "in": "query"
                     },
                     {
@@ -2833,6 +2850,12 @@
                     },
                     {
                         "type": "integer",
+                        "description": "筛选城市",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
                         "in": "query"
@@ -2853,6 +2876,17 @@
                         "type": "integer",
                         "description": "企业ID",
                         "name": "enterpriseId",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "查询目标, 0:不筛选 1:门店 2:电柜",
+                        "name": "goal",
                         "in": "query"
                     },
                     {
@@ -5750,6 +5784,12 @@
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "电池型号",
+                        "name": "model",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
@@ -5876,6 +5916,47 @@
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/export/business": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MF008 导出业务记录",
+                "operationId": "ManagerExportBusiness",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "筛选条件",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BusinessExportReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ExportRes"
                         }
                     }
                 }
@@ -6111,6 +6192,47 @@
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/model.StatementUsageExport"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ExportRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/export/stock-detail": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MF009 导出出入库明细",
+                "operationId": "ManagerExportStockDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "筛选条件",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.StockDetailExportReq"
                         }
                     }
                 ],
@@ -7611,6 +7733,41 @@
                 }
             }
         },
+        "/manager/v1/selection/model": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MB013 筛选电池型号",
+                "operationId": "ManagerSelectionModel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "电池型号列表",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/selection/plan": {
             "get": {
                 "consumes": [
@@ -8027,7 +8184,7 @@
                             2
                         ],
                         "type": "integer",
-                        "description": "查询目标, 0:不筛选 1:门店(默认) 2:电柜",
+                        "description": "查询目标, 0:不筛选 1:门店 2:电柜",
                         "name": "goal",
                         "in": "query"
                     },
@@ -8192,10 +8349,11 @@
                         "enum": [
                             0,
                             1,
-                            2
+                            2,
+                            3
                         ],
                         "type": "integer",
-                        "description": "查询目标, 0:不筛选 1:门店(默认) 2:电柜",
+                        "description": "查询目标, 0:不筛选 1:门店 2:电柜",
                         "name": "goal",
                         "in": "query"
                     },
@@ -8233,6 +8391,19 @@
                         "type": "integer",
                         "description": "门店ID",
                         "name": "storeId",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3,
+                            4
+                        ],
+                        "type": "integer",
+                        "description": "调拨类型, 0:调拨 1:激活 2:寄存 3:结束寄存 4:退租",
+                        "name": "type",
                         "in": "query"
                     }
                 ],
@@ -13088,6 +13259,10 @@
         "model.BusinessEmployeeListRes": {
             "type": "object",
             "properties": {
+                "city": {
+                    "description": "城市",
+                    "type": "string"
+                },
                 "enterprise": {
                     "description": "团签企业, 个签无此字段",
                     "allOf": [
@@ -13125,6 +13300,73 @@
                 }
             }
         },
+        "model.BusinessExportReq": {
+            "type": "object",
+            "required": [
+                "remark"
+            ],
+            "properties": {
+                "aimed": {
+                    "description": "筛选业务对象 0:全部 1:个签 2:团签",
+                    "type": "integer"
+                },
+                "cabinetId": {
+                    "description": "筛选电柜",
+                    "type": "integer"
+                },
+                "cityId": {
+                    "description": "筛选城市",
+                    "type": "integer"
+                },
+                "employeeId": {
+                    "description": "店员ID, 店员端请求忽略此参数",
+                    "type": "integer"
+                },
+                "end": {
+                    "description": "筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
+                    "type": "string"
+                },
+                "enterpriseId": {
+                    "description": "企业ID",
+                    "type": "integer"
+                },
+                "goal": {
+                    "description": "查询目标, 0:不筛选 1:门店 2:电柜",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                "keyword": {
+                    "description": "筛选骑手姓名或电话",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注 ",
+                    "type": "string"
+                },
+                "start": {
+                    "description": "筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
+                    "type": "string"
+                },
+                "storeId": {
+                    "description": "筛选门店",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "筛选业务类别 active:激活 pause:寄存 continue:结束寄存 unsubscribe:退订",
+                    "type": "string",
+                    "enum": [
+                        "active",
+                        "pause",
+                        "continue",
+                        "unsubscribe"
+                    ]
+                }
+            }
+        },
         "model.BusinessListRes": {
             "type": "object",
             "properties": {
@@ -13135,6 +13377,10 @@
                             "$ref": "#/definitions/model.CabinetBasicInfo"
                         }
                     ]
+                },
+                "city": {
+                    "description": "城市",
+                    "type": "string"
                 },
                 "employee": {
                     "description": "店员, 可能为空",
@@ -17555,6 +17801,71 @@
                 "serial": {
                     "description": "电柜编号",
                     "type": "string"
+                }
+            }
+        },
+        "model.StockDetailExportReq": {
+            "type": "object",
+            "required": [
+                "remark"
+            ],
+            "properties": {
+                "cabinetId": {
+                    "description": "电柜ID",
+                    "type": "integer"
+                },
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
+                "end": {
+                    "description": "结束时间",
+                    "type": "string"
+                },
+                "goal": {
+                    "description": "查询目标, 0:不筛选 1:门店 2:电柜",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                "materials": {
+                    "description": "查询物资类别, 默认为电池, 逗号分隔 battery:电池 frame:车架 others:其他物资",
+                    "type": "string"
+                },
+                "positive": {
+                    "description": "是否正序(默认倒序)",
+                    "type": "boolean"
+                },
+                "remark": {
+                    "description": "备注 ",
+                    "type": "string"
+                },
+                "serial": {
+                    "description": "电柜编号",
+                    "type": "string"
+                },
+                "start": {
+                    "description": "开始时间",
+                    "type": "string"
+                },
+                "storeId": {
+                    "description": "门店ID",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "调拨类型, 0:调拨 1:激活 2:寄存 3:结束寄存 4:退租",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4
+                    ]
                 }
             }
         },

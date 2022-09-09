@@ -420,3 +420,7 @@ func (s *selectionService) CabinetModelX() (items []model.CascaderOption) {
 
     return
 }
+
+func (s *selectionService) Models() []string {
+    return NewBattery().Models()
+}

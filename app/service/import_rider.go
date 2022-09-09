@@ -264,6 +264,26 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
             return
         }
 
+        // 创建 stock
+        sn := tools.NewUnique().NewSN()
+        _, err = tx.Stock.Create().
+            SetRemark("导入数据").
+            SetStoreID(req.StoreID).
+            SetEmployeeID(req.EmployeeID).
+            SetName(req.Model).
+            SetRiderID(sub.RiderID).
+            SetType(model.StockTypeRiderActive).
+            SetModel(req.Model).
+            SetNum(-1).
+            SetCityID(req.CityID).
+            SetSubscribeID(sub.ID).
+            SetMaterial(stock.MaterialBattery).
+            SetSn(sn).
+            Save(s.ctx)
+        if err != nil {
+            return
+        }
+
         // 创建 business
         _, err = tx.Business.Create().
             SetRemark("导入数据").
@@ -276,25 +296,7 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
             SetNillableStationID(sub.StationID).
             SetNillablePlanID(sub.PlanID).
             SetType(business.TypeActive).
-            Save(s.ctx)
-        if err != nil {
-            return
-        }
-
-        // 创建 stock
-        _, err = tx.Stock.Create().
-            SetRemark("导入数据").
-            SetStoreID(req.StoreID).
-            SetEmployeeID(req.EmployeeID).
-            SetName(req.Model).
-            SetRiderID(sub.RiderID).
-            SetType(model.StockTypeRiderObtain).
-            SetModel(req.Model).
-            SetNum(-1).
-            SetCityID(req.CityID).
-            SetSubscribeID(sub.ID).
-            SetMaterial(stock.MaterialBattery).
-            SetSn(tools.NewUnique().NewSN()).
+            SetStockSn(sn).
             Save(s.ctx)
         return
     })

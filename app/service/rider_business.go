@@ -342,14 +342,16 @@ func (s *riderBusinessService) Pause(req *model.BusinessCabinetReq) model.Busine
     }
 
     go func() {
-        err := snag.WithPanic(func() {
-            NewBusinessRider(s.rider).
-                SetTask(func() *ec.BinInfo {
-                    return s.putin()
-                }).
-                SetCabinet(s.cabinet).
-                Pause(req.ID)
-        })
+        err := snag.WithPanic(
+            func() {
+                NewBusinessRider(s.rider).
+                    SetTask(func() *ec.BinInfo {
+                        return s.putin()
+                    }).
+                    SetCabinet(s.cabinet).
+                    Pause(req.ID)
+            },
+        )
         if err != nil {
             log.Error(err)
         }

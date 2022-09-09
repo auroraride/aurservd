@@ -188,3 +188,17 @@ func (*selection) CabinetModel(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.SelectionCabinetModelReq](c)
     return ctx.SendResponse(service.NewSelection().CabinetModel(req))
 }
+
+// Model
+// @ID           ManagerSelectionModel
+// @Router       /manager/v1/selection/model [GET]
+// @Summary      MB013 筛选电池型号
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Success      200  {object}  []string  "电池型号列表"
+func (*selection) Model(c echo.Context) (err error) {
+    ctx := app.ContextX[app.ManagerContext](c)
+    return ctx.SendResponse(service.NewSelection().Models())
+}

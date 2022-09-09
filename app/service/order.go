@@ -373,6 +373,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
     j, _ := json.MarshalIndent(trade, "", "  ")
     log.Infof("[ORDER PAID %s] %s", trade.OutTradeNo, j)
 
+    var sub *ent.Subscribe
     ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
         var o *ent.Order
         // 创建订单
@@ -420,7 +421,6 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 
         // 创建或更新subscribe
         // 新签或重签
-        var sub *ent.Subscribe
         if trade.OrderType == model.OrderTypeNewly || trade.OrderType == model.OrderTypeAgain {
             // 创建subscribe
             sq := tx.Subscribe.Create().
@@ -446,10 +446,17 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 
         // 续签
         if trade.OrderType == model.OrderTypeRenewal {
-            _, err = tx.Subscribe.UpdateOneID(*trade.SubscribeID).
+            status := model.SubscribeStatusUsing
+            // 查询状态
+            sub, _ = NewSubscribe().Query(*trade.SubscribeID)
+            if sub.Status == model.SubscribeStatusPaused {
+                status = model.SubscribeStatusPaused
+            }
+
+            sub, err = tx.Subscribe.UpdateOneID(*trade.SubscribeID).
                 AddRenewalDays(int(trade.Days)).
                 AddRemaining(int(trade.Days)).
-                SetStatus(model.SubscribeStatusUsing).
+                SetStatus(status).
                 Save(s.ctx)
             if err != nil {
                 log.Errorf("[ORDER PAID %s SUBSCRIBE(%d) ERROR]: %s", trade.OutTradeNo, o.ID, err.Error())
@@ -471,6 +478,12 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 
     // 删除缓存
     cache.Del(context.Background(), trade.OutTradeNo)
+
+    if sub != nil && trade.OrderType == model.OrderTypeRenewal {
+        go func() {
+            _ = NewSubscribe().UpdateStatus(sub, false)
+        }()
+    }
 }
 
 // RefundSuccess 成功退款

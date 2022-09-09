@@ -215,6 +215,20 @@ func (bc *BusinessCreate) SetBinInfo(ei *ec.BinInfo) *BusinessCreate {
 	return bc
 }
 
+// SetStockSn sets the "stock_sn" field.
+func (bc *BusinessCreate) SetStockSn(s string) *BusinessCreate {
+	bc.mutation.SetStockSn(s)
+	return bc
+}
+
+// SetNillableStockSn sets the "stock_sn" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillableStockSn(s *string) *BusinessCreate {
+	if s != nil {
+		bc.SetStockSn(*s)
+	}
+	return bc
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (bc *BusinessCreate) SetRider(r *Rider) *BusinessCreate {
 	return bc.SetRiderID(r.ID)
@@ -481,6 +495,14 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 			Column: business.FieldBinInfo,
 		})
 		_node.BinInfo = value
+	}
+	if value, ok := bc.mutation.StockSn(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: business.FieldStockSn,
+		})
+		_node.StockSn = value
 	}
 	if nodes := bc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -984,6 +1006,24 @@ func (u *BusinessUpsert) ClearBinInfo() *BusinessUpsert {
 	return u
 }
 
+// SetStockSn sets the "stock_sn" field.
+func (u *BusinessUpsert) SetStockSn(v string) *BusinessUpsert {
+	u.Set(business.FieldStockSn, v)
+	return u
+}
+
+// UpdateStockSn sets the "stock_sn" field to the value that was provided on create.
+func (u *BusinessUpsert) UpdateStockSn() *BusinessUpsert {
+	u.SetExcluded(business.FieldStockSn)
+	return u
+}
+
+// ClearStockSn clears the value of the "stock_sn" field.
+func (u *BusinessUpsert) ClearStockSn() *BusinessUpsert {
+	u.SetNull(business.FieldStockSn)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1344,6 +1384,27 @@ func (u *BusinessUpsertOne) UpdateBinInfo() *BusinessUpsertOne {
 func (u *BusinessUpsertOne) ClearBinInfo() *BusinessUpsertOne {
 	return u.Update(func(s *BusinessUpsert) {
 		s.ClearBinInfo()
+	})
+}
+
+// SetStockSn sets the "stock_sn" field.
+func (u *BusinessUpsertOne) SetStockSn(v string) *BusinessUpsertOne {
+	return u.Update(func(s *BusinessUpsert) {
+		s.SetStockSn(v)
+	})
+}
+
+// UpdateStockSn sets the "stock_sn" field to the value that was provided on create.
+func (u *BusinessUpsertOne) UpdateStockSn() *BusinessUpsertOne {
+	return u.Update(func(s *BusinessUpsert) {
+		s.UpdateStockSn()
+	})
+}
+
+// ClearStockSn clears the value of the "stock_sn" field.
+func (u *BusinessUpsertOne) ClearStockSn() *BusinessUpsertOne {
+	return u.Update(func(s *BusinessUpsert) {
+		s.ClearStockSn()
 	})
 }
 
@@ -1869,6 +1930,27 @@ func (u *BusinessUpsertBulk) UpdateBinInfo() *BusinessUpsertBulk {
 func (u *BusinessUpsertBulk) ClearBinInfo() *BusinessUpsertBulk {
 	return u.Update(func(s *BusinessUpsert) {
 		s.ClearBinInfo()
+	})
+}
+
+// SetStockSn sets the "stock_sn" field.
+func (u *BusinessUpsertBulk) SetStockSn(v string) *BusinessUpsertBulk {
+	return u.Update(func(s *BusinessUpsert) {
+		s.SetStockSn(v)
+	})
+}
+
+// UpdateStockSn sets the "stock_sn" field to the value that was provided on create.
+func (u *BusinessUpsertBulk) UpdateStockSn() *BusinessUpsertBulk {
+	return u.Update(func(s *BusinessUpsert) {
+		s.UpdateStockSn()
+	})
+}
+
+// ClearStockSn clears the value of the "stock_sn" field.
+func (u *BusinessUpsertBulk) ClearStockSn() *BusinessUpsertBulk {
+	return u.Update(func(s *BusinessUpsert) {
+		s.ClearStockSn()
 	})
 }
 

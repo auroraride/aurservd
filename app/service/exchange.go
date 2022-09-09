@@ -113,6 +113,8 @@ func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStor
         SetNillableEnterpriseID(sub.EnterpriseID).
         SetNillableStationID(sub.StationID).
         SetSubscribeID(sub.ID).
+        SetFinishAt(time.Now()).
+        SetDuration(0).
         SaveX(s.ctx)
 
     message := sub.Model
@@ -337,6 +339,10 @@ func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.Paginat
 
     if req.StoreID != 0 {
         q.Where(exchange.StoreID(req.StoreID))
+    }
+
+    if req.Model != "" {
+        q.Where(exchange.Model(req.Model))
     }
 
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Exchange) model.ExchangeManagerListRes {

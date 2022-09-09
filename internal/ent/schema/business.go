@@ -50,6 +50,7 @@ func (Business) Fields() []ent.Field {
     return []ent.Field{
         field.Enum("type").Values("active", "pause", "continue", "unsubscribe").Comment("业务类型"),
         field.JSON("bin_info", &ec.BinInfo{}).Optional().Comment("仓位信息"),
+        field.String("stock_sn").Optional().Comment("出入库编码"),
     }
 }
 
@@ -80,5 +81,6 @@ func (Business) Mixin() []ent.Mixin {
 func (Business) Indexes() []ent.Index {
     return []ent.Index{
         index.Fields("type"),
+        index.Fields("stock_sn"),
     }
 }

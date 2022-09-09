@@ -11,10 +11,13 @@ import (
     "entgo.io/ent/dialect/sql/sqljson"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/business"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
+    "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/employee"
+    "github.com/auroraride/aurservd/internal/ent/enterprise"
     "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/store"
@@ -29,13 +32,32 @@ import (
 type businessService struct {
     ctx      context.Context
     employee *ent.Employee
-    modifer  *model.Modifier
+    modifier *model.Modifier
 }
 
 func NewBusiness() *businessService {
     return &businessService{
         ctx: context.Background(),
     }
+}
+
+func (s *businessService) Text(str interface{}) string {
+    var t business.Type
+    switch x := str.(type) {
+    case business.Type:
+        t = x
+    case string:
+        t = business.Type(x)
+    case *string:
+        t = business.Type(*x)
+    }
+    m := map[business.Type]string{
+        business.TypeActive:      "已激活",
+        business.TypeUnsubscribe: "已退租",
+        business.TypePause:       "已寄存",
+        business.TypeContinue:    "计费中",
+    }
+    return m[t]
 }
 
 func NewBusinessWithEmployee(e *ent.Employee) *businessService {
@@ -49,7 +71,7 @@ func NewBusinessWithModifier(m *model.Modifier) *businessService {
     s := NewBusiness()
     if m != nil {
         s.ctx = context.WithValue(s.ctx, "modifier", m)
-        s.modifer = m
+        s.modifier = m
     }
     return s
 }
@@ -114,40 +136,58 @@ func (s *businessService) Plans(subscribeID uint64) {
     // 获取全部的电压列表
 }
 
-// listBasicQuery 列表基础查询语句
-func (s *businessService) listBasicQuery(req *model.BusinessListReq) *ent.BusinessQuery {
+// listFilter 列表基础查询语句
+func (s *businessService) listFilter(req model.BusinessFilter) (q *ent.BusinessQuery, info ar.Map) {
+    info = make(ar.Map)
     tt := tools.NewTime()
 
-    q := ent.Database.Business.
+    q = ent.Database.Business.
         QueryNotDeleted().
         WithRider(func(rq *ent.RiderQuery) {
             rq.WithPerson()
         }).
         WithEnterprise().
         WithPlan().
+        WithCity().
         Order(ent.Desc(business.FieldCreatedAt))
 
     if req.Type != nil {
+        info["业务类型"] = s.Text(req.Type)
         q.Where(business.TypeEQ(business.Type(*req.Type)))
     }
 
     if req.Start != nil {
+        info["开始时间"] = *req.Start
         q.Where(business.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
     }
 
     if req.End != nil {
+        info["结束时间"] = *req.End
         q.Where(business.CreatedAtLT(tt.ParseNextDateStringX(*req.End)))
     }
 
     if req.EmployeeID != 0 {
+        info["店员"] = ent.NewExportInfo(req.EmployeeID, employee.Table)
         q.Where(business.EmployeeID(req.EmployeeID))
     }
 
     if req.EnterpriseID != 0 {
+        info["团签"] = ent.NewExportInfo(req.EnterpriseID, enterprise.Table)
         q.Where(business.EnterpriseID(req.EnterpriseID))
     }
 
+    if req.Goal != model.StockGoalAll {
+        info["查询目标"] = req.Goal.String()
+        switch req.Goal {
+        case model.StockGoalStore:
+            q.Where(business.StoreIDNotNil())
+        case model.StockGoalCabinet:
+            q.Where(business.CabinetIDNotNil())
+        }
+    }
+
     if req.Keyword != nil {
+        info["关键词"] = *req.Keyword
         q.Where(business.HasRiderWith(
             rider.Or(
                 rider.PhoneContainsFold(*req.Keyword),
@@ -157,23 +197,31 @@ func (s *businessService) listBasicQuery(req *model.BusinessListReq) *ent.Busine
     }
 
     if req.StoreID != 0 {
+        info["门店"] = ent.NewExportInfo(req.StoreID, store.Table)
         q.Where(business.StoreID(req.StoreID))
     }
 
     if req.CabinetID != 0 {
+        info["电柜"] = ent.NewExportInfo(req.CabinetID, cabinet.Table)
         q.Where(business.CabinetID(req.CabinetID))
     }
 
     switch req.Aimed {
     case model.BusinessAimedPersonal:
+        info["业务对象"] = "个签"
         q.Where(business.EnterpriseIDIsNil())
         break
     case model.BusinessAimedEnterprise:
+        info["业务对象"] = "团签"
         q.Where(business.EnterpriseIDNotNil())
         break
     }
 
-    return q
+    if req.CityID != 0 {
+        info["城市"] = ent.NewExportInfo(req.CityID, city.Table)
+        q.Where(business.CityID(req.CityID))
+    }
+    return
 }
 
 func (s *businessService) basicDetail(item *ent.Business) (res model.BusinessEmployeeListRes) {
@@ -184,6 +232,12 @@ func (s *businessService) basicDetail(item *ent.Business) (res model.BusinessEmp
         Type:  item.Type.String(),
         Time:  item.CreatedAt.Format(carbon.DateTimeLayout),
     }
+
+    cit := item.Edges.City
+    if cit != nil {
+        res.City = cit.Name
+    }
+
     p := item.Edges.Plan
     if p != nil {
         res.Plan = &model.Plan{
@@ -208,7 +262,7 @@ func (s *businessService) basicDetail(item *ent.Business) (res model.BusinessEmp
 // ListEmployee 业务列表 - 门店
 func (s *businessService) ListEmployee(req *model.BusinessListReq) *model.PaginationRes {
     req.EmployeeID = s.employee.ID
-    q := s.listBasicQuery(req)
+    q, _ := s.listFilter(req.BusinessFilter)
 
     return model.ParsePaginationResponse(
         q,
@@ -219,45 +273,50 @@ func (s *businessService) ListEmployee(req *model.BusinessListReq) *model.Pagina
     )
 }
 
+func (s *businessService) detailInfo(item *ent.Business) model.BusinessListRes {
+    res := model.BusinessListRes{
+        BusinessEmployeeListRes: s.basicDetail(item),
+        Employee:                nil,
+    }
+    emp := item.Edges.Employee
+    if emp != nil {
+        res.Employee = &model.Employee{
+            ID:    emp.ID,
+            Name:  emp.Name,
+            Phone: emp.Phone,
+        }
+    }
+
+    st := item.Edges.Store
+    if st != nil {
+        res.Store = &model.Store{
+            ID:   st.ID,
+            Name: st.Name,
+        }
+    }
+
+    cab := item.Edges.Cabinet
+    if cab != nil {
+        res.Cabinet = &model.CabinetBasicInfo{
+            ID:     cab.ID,
+            Brand:  model.CabinetBrand(cab.Brand),
+            Serial: cab.Serial,
+            Name:   cab.Name,
+        }
+    }
+    return res
+}
+
 // ListManager 业务列表 - 后台
 func (s *businessService) ListManager(req *model.BusinessListReq) *model.PaginationRes {
-    q := s.listBasicQuery(req).WithEmployee().WithCabinet().WithStore()
+    q, _ := s.listFilter(req.BusinessFilter)
+    q.WithEmployee().WithCabinet().WithStore()
 
     return model.ParsePaginationResponse(
         q,
         req.PaginationReq,
         func(item *ent.Business) (res model.BusinessListRes) {
-            res = model.BusinessListRes{
-                BusinessEmployeeListRes: s.basicDetail(item),
-                Employee:                nil,
-            }
-            emp := item.Edges.Employee
-            if emp != nil {
-                res.Employee = &model.Employee{
-                    ID:    emp.ID,
-                    Name:  emp.Name,
-                    Phone: emp.Phone,
-                }
-            }
-
-            st := item.Edges.Store
-            if st != nil {
-                res.Store = &model.Store{
-                    ID:   st.ID,
-                    Name: st.Name,
-                }
-            }
-
-            cab := item.Edges.Cabinet
-            if cab != nil {
-                res.Cabinet = &model.CabinetBasicInfo{
-                    ID:     cab.ID,
-                    Brand:  model.CabinetBrand(cab.Brand),
-                    Serial: cab.Serial,
-                    Name:   cab.Name,
-                }
-            }
-            return
+            return s.detailInfo(item)
         },
     )
 }
@@ -466,4 +525,58 @@ func (s *businessService) pauseBy(m *model.Modifier, e *ent.Employee, cab *ent.C
         return m.Name
     }
     return ""
+}
+
+func (s *businessService) Export(req *model.BusinessExportReq) model.ExportRes {
+    q, info := s.listFilter(req.BusinessFilter)
+    return NewExportWithModifier(s.modifier).Start("业务记录", req.BusinessFilter, info, req.Remark, func(path string) {
+        items, _ := q.All(s.ctx)
+        var rows tools.ExcelItems
+        title := []any{
+            "类型",
+            "城市",
+            "电柜",
+            "门店",
+            "店员",
+            "骑手",
+            "电话",
+            "骑士卡",
+            "骑士卡天数",
+            "团签",
+            "时间",
+        }
+        rows = append(rows, title)
+        for _, item := range items {
+            detail := s.detailInfo(item)
+            var cab, sto, emp, pla, en string
+            var days uint
+            if detail.Cabinet != nil {
+                cab = detail.Cabinet.Serial
+            }
+            if detail.Store != nil {
+                sto = detail.Store.Name
+            }
+            if detail.Plan != nil {
+                pla = detail.Plan.Name
+                days = detail.Plan.Days
+            }
+            if detail.Enterprise != nil {
+                en = detail.Enterprise.Name
+            }
+            rows = append(rows, []any{
+                s.Text(item.Type),
+                detail.City,
+                cab,
+                sto,
+                emp,
+                detail.Name,
+                detail.Phone,
+                pla,
+                days,
+                en,
+                detail.Time,
+            })
+        }
+        tools.NewExcel(path).AddValues(rows).Done()
+    })
 }

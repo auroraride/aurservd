@@ -13,9 +13,11 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/assets"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
+    "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/exception"
     "github.com/auroraride/aurservd/internal/ent/predicate"
     "github.com/auroraride/aurservd/internal/ent/stock"
@@ -451,25 +453,28 @@ func (s *stockService) BatteryOverview(req *model.StockOverviewReq) (items []mod
 }
 
 // BatteryWithRider 和骑手交互电池出入库
-func (s *stockService) BatteryWithRider(cr *ent.StockCreate, req *model.StockBusinessReq) error {
+func (s *stockService) BatteryWithRider(cr *ent.StockCreate, req *model.StockBusinessReq) (sk *ent.Stock, err error) {
     num := model.StockNumberOfRiderBusiness(req.StockType)
 
     if req.StoreID == nil && req.CabinetID == nil {
-        return errors.New("参数校验错误")
+        err = errors.New("参数校验错误")
+        return
     }
 
     // TODO 平台管理员可操作性时处理出入库逻辑
     if req.StoreID != nil {
         cr.SetStoreID(*req.StoreID)
         if num < 0 && s.Fetch(model.StockTargetStore, *req.StoreID, req.Model) < int(math.Abs(float64(num))) {
-            return errors.New("电池库存不足")
+            err = errors.New("电池库存不足")
+            return
         }
     }
 
     if req.CabinetID != nil {
         cr.SetCabinetID(*req.CabinetID)
         if num < 0 && s.Fetch(model.StockTargetCabinet, *req.CabinetID, req.Model) < int(math.Abs(float64(num))) {
-            return errors.New("电池库存不足")
+            err = errors.New("电池库存不足")
+            return
         }
     }
 
@@ -484,12 +489,13 @@ func (s *stockService) BatteryWithRider(cr *ent.StockCreate, req *model.StockBus
         SetMaterial(stock.MaterialBattery).
         SetSn(tools.NewUnique().NewSN())
 
-    _, err := cr.Save(s.ctx)
+    sk, err = cr.Save(s.ctx)
 
     if err != nil {
         log.Error(err)
     }
-    return err
+
+    return
 }
 
 // EmployeeOverview 店员物资概览
@@ -699,9 +705,10 @@ func (s *stockService) CabinetList(req *model.StockCabinetListReq) *model.Pagina
     })
 }
 
-// Detail 出入库明细
-func (s *stockService) Detail(req *model.StockDetailReq) *model.PaginationRes {
-    q := s.orm.QueryNotDeleted().WithCabinet().WithStore().WithSpouse(func(sq *ent.StockQuery) {
+func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuery, info ar.Map) {
+    info = make(ar.Map)
+
+    q = s.orm.QueryNotDeleted().WithCabinet().WithStore().WithSpouse(func(sq *ent.StockQuery) {
         sq.WithStore().WithCabinet().WithRider(func(rq *ent.RiderQuery) {
             rq.WithPerson()
         })
@@ -716,46 +723,45 @@ func (s *stockService) Detail(req *model.StockDetailReq) *model.PaginationRes {
     }
 
     if req.Start != "" {
+        info["开始时间"] = req.Start
         q.Where(stock.CreatedAtGTE(tools.NewTime().ParseDateStringX(req.Start)))
     }
 
     if req.End != "" {
+        info["结束时间"] = req.Start
         q.Where(stock.CreatedAtLT(tools.NewTime().ParseNextDateStringX(req.End)))
     }
 
     if req.CityID != 0 {
+        info["城市"] = ent.NewExportInfo(req.CityID, city.Table)
         q.Where(stock.CityID(req.CityID))
     }
 
     if req.Serial != "" {
+        info["电柜编号"] = req.Serial
         q.Where(stock.HasCabinetWith(cabinet.Serial(req.Serial)))
     }
 
     switch req.Goal {
     case model.StockGoalStore:
         // 门店物资
-        if req.StoreID != 0 {
-            q.Where(stock.StoreID(req.StoreID))
-        } else {
-            q.Where(
-                stock.StoreIDNotNil(),
-                stock.CabinetIDIsNil(),
-            )
-        }
+        info["查询目标"] = "门店"
+        q.Where(
+            stock.StoreIDNotNil(),
+            stock.CabinetIDIsNil(),
+        )
         break
     case model.StockGoalCabinet:
         // 电柜物资
-        if req.CabinetID != 0 {
-            q.Where(stock.CabinetID(req.CabinetID))
-        } else {
-            q.Where(
-                stock.StoreIDIsNil(),
-                stock.CabinetIDNotNil(),
-            )
-        }
+        info["查询目标"] = "电柜"
+        q.Where(
+            stock.StoreIDIsNil(),
+            stock.CabinetIDNotNil(),
+        )
         break
     default:
         // 门店或电柜物资
+        info["查询目标"] = "电柜或门店"
         q.Where(
             stock.Or(
                 stock.StoreIDNotNil(),
@@ -767,6 +773,7 @@ func (s *stockService) Detail(req *model.StockDetailReq) *model.PaginationRes {
 
     // 筛选物资类别
     if req.Materials == "" {
+        info["物资"] = "电池"
         req.Materials = string(stock.MaterialBattery)
     } else {
         req.Materials = strings.ReplaceAll(req.Materials, " ", "")
@@ -774,13 +781,16 @@ func (s *stockService) Detail(req *model.StockDetailReq) *model.PaginationRes {
     materials := strings.Split(req.Materials, ",")
 
     if len(materials) > 0 {
+        var mtext []string
         var predicates []predicate.Stock
         for _, material := range materials {
             switch stock.Material(material) {
             case stock.MaterialBattery:
+                mtext = append(mtext, "电池")
                 predicates = append(predicates, stock.ModelNotNil())
                 break
             case stock.MaterialOthers:
+                mtext = append(mtext, "其他")
                 predicates = append(predicates, stock.ModelIsNil())
                 break
             }
@@ -788,13 +798,26 @@ func (s *stockService) Detail(req *model.StockDetailReq) *model.PaginationRes {
         q.Where(stock.Or(predicates...))
     }
 
+    if req.Type != 0 {
+        info["类型"] = model.StockTypesText[req.Type]
+        q.Where(stock.Type(req.Type))
+    }
+
+    if req.StoreID != 0 {
+        info["门店"] = ent.NewExportInfo(req.StoreID, store.Table)
+        q.Where(stock.StoreID(req.StoreID))
+    }
+
+    if req.CabinetID != 0 {
+        info["电柜"] = ent.NewExportInfo(req.CabinetID, cabinet.Table)
+        q.Where(stock.CabinetID(req.CabinetID))
+    }
+
     q.Modify(func(sel *sql.Selector) {
         sel.Select("ON (sn) *")
     })
 
-    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Stock) model.StockDetailRes {
-        return s.detailInfo(item)
-    })
+    return
 }
 
 // detailInfo 库存出入明细信息
@@ -852,7 +875,7 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
         }
 
         tm := map[uint8]string{
-            model.StockTypeRiderObtain:      "新签",
+            model.StockTypeRiderActive:      "新签",
             model.StockTypeRiderPause:       "寄存",
             model.StockTypeRiderContinue:    "取消寄存",
             model.StockTypeRiderUnSubscribe: "退租",
@@ -877,7 +900,7 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
         // 出入库对象
         target := fmt.Sprintf("[骑手] %s - %s", er.Phone, er.Edges.Person.Name)
         switch item.Type {
-        case model.StockTypeRiderObtain, model.StockTypeRiderContinue:
+        case model.StockTypeRiderActive, model.StockTypeRiderContinue:
             res.Inbound = target
             res.Outbound = s.target(es, ec)
             break
@@ -901,6 +924,15 @@ func (s *stockService) target(es *ent.Store, ec *ent.Cabinet) (target string) {
         target = fmt.Sprintf("[电柜] %s - %s", ec.Name, ec.Serial)
     }
     return
+}
+
+// Detail 出入库明细
+func (s *stockService) Detail(req *model.StockDetailReq) *model.PaginationRes {
+    q, _ := s.listFilter(req.StockDetailFilter)
+
+    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Stock) model.StockDetailRes {
+        return s.detailInfo(item)
+    })
 }
 
 // StoreCurrent 列出当前门店所有库存物资
@@ -1020,4 +1052,47 @@ func (s *stockService) InventoryMap(req *model.StockInventoryReq) (data model.St
         data[id][item.Material][item.Name] = item
     }
     return
+}
+
+// Export 出入库明细导出
+func (s *stockService) Export(req *model.StockDetailExportReq) model.ExportRes {
+    q, info := s.listFilter(req.StockDetailFilter)
+
+    return NewExportWithModifier(s.modifier).Start("出入库明细", req.StockDetailFilter, info, req.Remark, func(path string) {
+        items, _ := q.All(s.ctx)
+        var rows tools.ExcelItems
+        title := []any{
+            "编号",
+            "城市",
+            "调出",
+            "调入",
+            "物资",
+            "数量",
+            "类型",
+            "操作人",
+            "骑手",
+            "备注",
+            "操作时间",
+        }
+        rows = append(rows, title)
+
+        for _, item := range items {
+            detail := s.detailInfo(item)
+            rows = append(rows, []any{
+                detail.Sn,
+                detail.City,
+                detail.Outbound,
+                detail.Inbound,
+                detail.Name,
+                detail.Num,
+                detail.Type,
+                detail.Operator,
+                detail.Rider,
+                detail.Remark,
+                detail.Time,
+            })
+        }
+
+        tools.NewExcel(path).AddValues(rows).Done()
+    })
 }

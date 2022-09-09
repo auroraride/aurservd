@@ -1503,6 +1503,9 @@ definitions:
     type: object
   model.BusinessEmployeeListRes:
     properties:
+      city:
+        description: 城市
+        type: string
       enterprise:
         allOf:
         - $ref: '#/definitions/model.Enterprise'
@@ -1526,12 +1529,65 @@ definitions:
         description: 业务类别
         type: string
     type: object
+  model.BusinessExportReq:
+    properties:
+      aimed:
+        description: 筛选业务对象 0:全部 1:个签 2:团签
+        type: integer
+      cabinetId:
+        description: 筛选电柜
+        type: integer
+      cityId:
+        description: 筛选城市
+        type: integer
+      employeeId:
+        description: 店员ID, 店员端请求忽略此参数
+        type: integer
+      end:
+        description: '筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01'
+        type: string
+      enterpriseId:
+        description: 企业ID
+        type: integer
+      goal:
+        description: 查询目标, 0:不筛选 1:门店 2:电柜
+        enum:
+        - 0
+        - 1
+        - 2
+        type: integer
+      keyword:
+        description: 筛选骑手姓名或电话
+        type: string
+      remark:
+        description: '备注 '
+        type: string
+      start:
+        description: '筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01'
+        type: string
+      storeId:
+        description: 筛选门店
+        type: integer
+      type:
+        description: 筛选业务类别 active:激活 pause:寄存 continue:结束寄存 unsubscribe:退订
+        enum:
+        - active
+        - pause
+        - continue
+        - unsubscribe
+        type: string
+    required:
+    - remark
+    type: object
   model.BusinessListRes:
     properties:
       cabinet:
         allOf:
         - $ref: '#/definitions/model.CabinetBasicInfo'
         description: 电柜, 可能为空
+      city:
+        description: 城市
+        type: string
       employee:
         allOf:
         - $ref: '#/definitions/model.Employee'
@@ -4626,6 +4682,55 @@ definitions:
         description: 电柜编号
         type: string
     type: object
+  model.StockDetailExportReq:
+    properties:
+      cabinetId:
+        description: 电柜ID
+        type: integer
+      cityId:
+        description: 城市ID
+        type: integer
+      end:
+        description: 结束时间
+        type: string
+      goal:
+        description: 查询目标, 0:不筛选 1:门店 2:电柜
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        type: integer
+      materials:
+        description: 查询物资类别, 默认为电池, 逗号分隔 battery:电池 frame:车架 others:其他物资
+        type: string
+      positive:
+        description: 是否正序(默认倒序)
+        type: boolean
+      remark:
+        description: '备注 '
+        type: string
+      serial:
+        description: 电柜编号
+        type: string
+      start:
+        description: 开始时间
+        type: string
+      storeId:
+        description: 门店ID
+        type: integer
+      type:
+        description: 调拨类型, 0:调拨 1:激活 2:寄存 3:结束寄存 4:退租
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        type: integer
+    required:
+    - remark
+    type: object
   model.StockDetailRes:
     properties:
       city:
@@ -5932,6 +6037,10 @@ paths:
         in: query
         name: cabinetId
         type: integer
+      - description: 筛选城市
+        in: query
+        name: cityId
+        type: integer
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
@@ -5947,6 +6056,14 @@ paths:
       - description: 企业ID
         in: query
         name: enterpriseId
+        type: integer
+      - description: 查询目标, 0:不筛选 1:门店 2:电柜
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: goal
         type: integer
       - description: 筛选骑手姓名或电话
         in: query
@@ -7163,6 +7280,10 @@ paths:
         in: query
         name: cabinetId
         type: integer
+      - description: 筛选城市
+        in: query
+        name: cityId
+        type: integer
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
@@ -7178,6 +7299,14 @@ paths:
       - description: 企业ID
         in: query
         name: enterpriseId
+        type: integer
+      - description: 查询目标, 0:不筛选 1:门店 2:电柜
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: goal
         type: integer
       - description: 筛选骑手姓名或电话
         in: query
@@ -9070,6 +9199,10 @@ paths:
         in: query
         name: keyword
         type: string
+      - description: 电池型号
+        in: query
+        name: model
+        type: string
       - description: 每页数据, 默认20
         in: query
         name: pageSize
@@ -9153,6 +9286,33 @@ paths:
                   type: array
               type: object
       summary: MF001 导出列表
+      tags:
+      - '[M]管理接口'
+  /manager/v1/export/business:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerExportBusiness
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 筛选条件
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BusinessExportReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.ExportRes'
+      summary: MF008 导出业务记录
       tags:
       - '[M]管理接口'
   /manager/v1/export/commission:
@@ -9313,6 +9473,33 @@ paths:
           schema:
             $ref: '#/definitions/model.ExportRes'
       summary: MF005 导出企业使用明细
+      tags:
+      - '[M]管理接口'
+  /manager/v1/export/stock-detail:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerExportStockDetail
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 筛选条件
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.StockDetailExportReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.ExportRes'
+      summary: MF009 导出出入库明细
       tags:
       - '[M]管理接口'
   /manager/v1/import/rider:
@@ -10293,6 +10480,29 @@ paths:
       summary: MB007 筛选企业
       tags:
       - '[M]管理接口'
+  /manager/v1/selection/model:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSelectionModel
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 电池型号列表
+          schema:
+            items:
+              type: string
+            type: array
+      summary: MB013 筛选电池型号
+      tags:
+      - '[M]管理接口'
   /manager/v1/selection/plan:
     get:
       consumes:
@@ -10562,7 +10772,7 @@ paths:
         in: query
         name: end
         type: string
-      - description: 查询目标, 0:不筛选 1:门店(默认) 2:电柜
+      - description: 查询目标, 0:不筛选 1:门店 2:电柜
         enum:
         - 0
         - 1
@@ -10671,11 +10881,12 @@ paths:
         in: query
         name: end
         type: string
-      - description: 查询目标, 0:不筛选 1:门店(默认) 2:电柜
+      - description: 查询目标, 0:不筛选 1:门店 2:电柜
         enum:
         - 0
         - 1
         - 2
+        - 3
         in: query
         name: goal
         type: integer
@@ -10702,6 +10913,16 @@ paths:
       - description: 门店ID
         in: query
         name: storeId
+        type: integer
+      - description: 调拨类型, 0:调拨 1:激活 2:寄存 3:结束寄存 4:退租
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        in: query
+        name: type
         type: integer
       produces:
       - application/json

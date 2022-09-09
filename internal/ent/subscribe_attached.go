@@ -124,16 +124,8 @@ func (sp *SubscribePause) GetAdditionalDays() (days, overdue, duplicate int, cur
 
 func (s *Subscribe) AdditionalItems() (SubscribePauses, SubscribeSuspends) {
     ctx := context.Background()
-    pauses := s.Edges.Pauses
-    if pauses == nil {
-        pauses, _ = s.QueryPauses().Order(Desc(subscribepause.FieldStartAt)).All(ctx)
-    }
-
-    suspends := s.Edges.Suspends
-    if suspends == nil {
-        suspends, _ = s.QuerySuspends().Order(Desc(subscribesuspend.FieldStartAt)).All(ctx)
-    }
-
+    pauses, _ := Database.SubscribePause.QueryNotDeleted().Where(subscribepause.SubscribeID(s.ID)).Order(Desc(subscribepause.FieldStartAt)).All(ctx)
+    suspends, _ := Database.SubscribeSuspend.Query().Where(subscribesuspend.SubscribeID(s.ID)).Order(Desc(subscribesuspend.FieldStartAt)).All(ctx)
     return pauses, suspends
 }
 

@@ -24,19 +24,29 @@ type BusinessSubscribeID struct {
     SubscribeID uint64 `json:"subscribeId" validate:"required" trans:"订阅ID"`
 }
 
-type BusinessListReq struct {
-    PaginationReq
-
-    EmployeeID   uint64  `json:"employeeId" query:"employeeId"`     // 店员ID, 店员端请求忽略此参数
-    EnterpriseID uint64  `json:"enterpriseId" query:"enterpriseId"` // 企业ID
-    Aimed        uint8   `json:"aimed" query:"aimed"`               // 筛选业务对象 0:全部 1:个签 2:团签
-    Start        *string `json:"start" query:"start"`               // 筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01
-    End          *string `json:"end" query:"end"`                   // 筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01
-    Keyword      *string `json:"keyword" query:"keyword"`           // 筛选骑手姓名或电话
-    StoreID      uint64  `json:"storeId" query:"storeId"`           // 筛选门店
-    CabinetID    uint64  `json:"cabinetId" query:"cabinetId"`       // 筛选电柜
+type BusinessFilter struct {
+    Goal         StoreCabiletGoal `json:"goal" query:"goal" enums:"0,1,2"`   // 查询目标, 0:不筛选 1:门店 2:电柜
+    EmployeeID   uint64           `json:"employeeId" query:"employeeId"`     // 店员ID, 店员端请求忽略此参数
+    EnterpriseID uint64           `json:"enterpriseId" query:"enterpriseId"` // 企业ID
+    Aimed        uint8            `json:"aimed" query:"aimed"`               // 筛选业务对象 0:全部 1:个签 2:团签
+    Start        *string          `json:"start" query:"start"`               // 筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01
+    End          *string          `json:"end" query:"end"`                   // 筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01
+    Keyword      *string          `json:"keyword" query:"keyword"`           // 筛选骑手姓名或电话
+    StoreID      uint64           `json:"storeId" query:"storeId"`           // 筛选门店
+    CabinetID    uint64           `json:"cabinetId" query:"cabinetId"`       // 筛选电柜
+    CityID       uint64           `json:"cityId" query:"cityId"`             // 筛选城市
     // 筛选业务类别 active:激活 pause:寄存 continue:结束寄存 unsubscribe:退订
     Type *string `json:"type" enums:"active,pause,continue,unsubscribe" query:"type"`
+}
+
+type BusinessListReq struct {
+    PaginationReq
+    BusinessFilter
+}
+
+type BusinessExportReq struct {
+    BusinessFilter
+    Remark string `json:"remark" validate:"required" trans:"备注"`
 }
 
 type BusinessEmployeeListRes struct {
@@ -45,6 +55,7 @@ type BusinessEmployeeListRes struct {
     Phone      string      `json:"phone"`                // 骑手电话
     Type       string      `json:"type"`                 // 业务类别
     Time       string      `json:"time"`                 // 业务时间
+    City       string      `json:"city"`                 // 城市
     Plan       *Plan       `json:"plan,omitempty"`       // 骑士卡, 团签无此字段
     Enterprise *Enterprise `json:"enterprise,omitempty"` // 团签企业, 个签无此字段
 }

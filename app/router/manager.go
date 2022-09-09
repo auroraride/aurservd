@@ -158,6 +158,7 @@ func loadManagerRoutes() {
     g.GET("/selection/wxemployees", mapi.Selection.WxEmployee)
     g.GET("/selection/planmodel", mapi.Selection.PlanModel)
     g.GET("/selection/cabinetmodel", mapi.Selection.CabinetModel)
+    g.GET("/selection/model", mapi.Selection.Model)
 
     // 救援
     g.GET("/assistance", mapi.Assistance.List)
@@ -186,4 +187,6 @@ func loadManagerRoutes() {
     export.POST("/statement/usage", mapi.Export.StatementUsage)
     export.POST("/order", mapi.Export.Order)
     export.POST("/commission", mapi.Export.Commission)
+    export.POST("/business", mapi.Export.Business)
+    export.POST("/stock-detail", mapi.Export.StockDetail)
 }

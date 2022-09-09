@@ -254,6 +254,26 @@ func (bu *BusinessUpdate) ClearBinInfo() *BusinessUpdate {
 	return bu
 }
 
+// SetStockSn sets the "stock_sn" field.
+func (bu *BusinessUpdate) SetStockSn(s string) *BusinessUpdate {
+	bu.mutation.SetStockSn(s)
+	return bu
+}
+
+// SetNillableStockSn sets the "stock_sn" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableStockSn(s *string) *BusinessUpdate {
+	if s != nil {
+		bu.SetStockSn(*s)
+	}
+	return bu
+}
+
+// ClearStockSn clears the value of the "stock_sn" field.
+func (bu *BusinessUpdate) ClearStockSn() *BusinessUpdate {
+	bu.mutation.ClearStockSn()
+	return bu
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (bu *BusinessUpdate) SetRider(r *Rider) *BusinessUpdate {
 	return bu.SetRiderID(r.ID)
@@ -546,6 +566,19 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Column: business.FieldBinInfo,
+		})
+	}
+	if value, ok := bu.mutation.StockSn(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: business.FieldStockSn,
+		})
+	}
+	if bu.mutation.StockSnCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: business.FieldStockSn,
 		})
 	}
 	if bu.mutation.RiderCleared() {
@@ -1098,6 +1131,26 @@ func (buo *BusinessUpdateOne) ClearBinInfo() *BusinessUpdateOne {
 	return buo
 }
 
+// SetStockSn sets the "stock_sn" field.
+func (buo *BusinessUpdateOne) SetStockSn(s string) *BusinessUpdateOne {
+	buo.mutation.SetStockSn(s)
+	return buo
+}
+
+// SetNillableStockSn sets the "stock_sn" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableStockSn(s *string) *BusinessUpdateOne {
+	if s != nil {
+		buo.SetStockSn(*s)
+	}
+	return buo
+}
+
+// ClearStockSn clears the value of the "stock_sn" field.
+func (buo *BusinessUpdateOne) ClearStockSn() *BusinessUpdateOne {
+	buo.mutation.ClearStockSn()
+	return buo
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (buo *BusinessUpdateOne) SetRider(r *Rider) *BusinessUpdateOne {
 	return buo.SetRiderID(r.ID)
@@ -1420,6 +1473,19 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Column: business.FieldBinInfo,
+		})
+	}
+	if value, ok := buo.mutation.StockSn(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: business.FieldStockSn,
+		})
+	}
+	if buo.mutation.StockSnCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: business.FieldStockSn,
 		})
 	}
 	if buo.mutation.RiderCleared() {

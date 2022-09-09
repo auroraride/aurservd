@@ -75,6 +75,7 @@ type ExchangeManagerListReq struct {
     Serial      string `json:"serial" query:"serial"`                         // 电柜编号
     Status      uint8  `json:"status" query:"status" enums:"0,1,2"`           // 换电状态 0:全部 1:成功 2:失败
     Brand       string `json:"brand" query:"brand" enums:"KAIXIN,YUNDONG"`    // 电柜类型, KAIXIN(凯信) YUNDONG(云动)
+    Model       string `json:"model" query:"model"`                           // 电池型号
 }
 
 type ExchangeManagerListRes struct {

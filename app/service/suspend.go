@@ -102,14 +102,20 @@ func (s *suspendService) UnSuspend(req *model.SuspendReq) {
         snag.Panic("未处于暂停中")
     }
 
+    suspends, err := s.orm.Query().Where(subscribesuspend.SubscribeID(sub.ID)).All(s.ctx)
+    if err != nil {
+        snag.Panic("用户暂停记录未找到")
+    }
+
+    suspend := ent.SubscribeAdditionalCalculate[*ent.SubscribeSuspend](suspends)
+
     ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
         now := time.Now()
-        days, _, _, _ := sus.GetAdditionalDays()
-        err = tx.SubscribeSuspend.UpdateOne(sus).SetDays(days).SetEndAt(now).SetEndModifier(s.modifier).SetEndReason(req.Remark).Exec(s.ctx)
+        err = tx.SubscribeSuspend.UpdateOne(sus).SetDays(suspend.CurrentDays).SetEndAt(now).SetEndModifier(s.modifier).SetEndReason(req.Remark).Exec(s.ctx)
         if err != nil {
             snag.Panic("继续计费操作失败")
         }
-        return tx.Subscribe.UpdateOne(sub).ClearSuspendAt().AddSuspendDays(days).Exec(s.ctx)
+        return tx.Subscribe.UpdateOne(sub).ClearSuspendAt().SetSuspendDays(suspend.TotalDays).Exec(s.ctx)
     })
 
     // 记录日志

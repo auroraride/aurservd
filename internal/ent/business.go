@@ -62,6 +62,8 @@ type Business struct {
 	Type business.Type `json:"type,omitempty"`
 	// 仓位信息
 	BinInfo *ec.BinInfo `json:"bin_info,omitempty"`
+	// 出入库编码
+	StockSn string `json:"stock_sn,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the BusinessQuery when eager-loading is set.
 	Edges BusinessEdges `json:"edges"`
@@ -218,7 +220,7 @@ func (*Business) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case business.FieldID, business.FieldRiderID, business.FieldCityID, business.FieldSubscribeID, business.FieldEmployeeID, business.FieldStoreID, business.FieldPlanID, business.FieldEnterpriseID, business.FieldStationID, business.FieldCabinetID:
 			values[i] = new(sql.NullInt64)
-		case business.FieldRemark, business.FieldType:
+		case business.FieldRemark, business.FieldType, business.FieldStockSn:
 			values[i] = new(sql.NullString)
 		case business.FieldCreatedAt, business.FieldUpdatedAt, business.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -358,6 +360,12 @@ func (b *Business) assignValues(columns []string, values []interface{}) error {
 					return fmt.Errorf("unmarshal field bin_info: %w", err)
 				}
 			}
+		case business.FieldStockSn:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field stock_sn", values[i])
+			} else if value.Valid {
+				b.StockSn = value.String
+			}
 		}
 	}
 	return nil
@@ -495,6 +503,9 @@ func (b *Business) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("bin_info=")
 	builder.WriteString(fmt.Sprintf("%v", b.BinInfo))
+	builder.WriteString(", ")
+	builder.WriteString("stock_sn=")
+	builder.WriteString(b.StockSn)
 	builder.WriteByte(')')
 	return builder.String()
 }

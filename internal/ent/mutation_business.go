@@ -31,6 +31,7 @@ type BusinessMutation struct {
 	remark            *string
 	_type             *business.Type
 	bin_info          **ec.BinInfo
+	stock_sn          *string
 	clearedFields     map[string]struct{}
 	rider             *uint64
 	clearedrider      bool
@@ -908,6 +909,55 @@ func (m *BusinessMutation) ResetBinInfo() {
 	delete(m.clearedFields, business.FieldBinInfo)
 }
 
+// SetStockSn sets the "stock_sn" field.
+func (m *BusinessMutation) SetStockSn(s string) {
+	m.stock_sn = &s
+}
+
+// StockSn returns the value of the "stock_sn" field in the mutation.
+func (m *BusinessMutation) StockSn() (r string, exists bool) {
+	v := m.stock_sn
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStockSn returns the old "stock_sn" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldStockSn(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStockSn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStockSn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStockSn: %w", err)
+	}
+	return oldValue.StockSn, nil
+}
+
+// ClearStockSn clears the value of the "stock_sn" field.
+func (m *BusinessMutation) ClearStockSn() {
+	m.stock_sn = nil
+	m.clearedFields[business.FieldStockSn] = struct{}{}
+}
+
+// StockSnCleared returns if the "stock_sn" field was cleared in this mutation.
+func (m *BusinessMutation) StockSnCleared() bool {
+	_, ok := m.clearedFields[business.FieldStockSn]
+	return ok
+}
+
+// ResetStockSn resets all changes to the "stock_sn" field.
+func (m *BusinessMutation) ResetStockSn() {
+	m.stock_sn = nil
+	delete(m.clearedFields, business.FieldStockSn)
+}
+
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *BusinessMutation) ClearRider() {
 	m.clearedrider = true
@@ -1161,7 +1211,7 @@ func (m *BusinessMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *BusinessMutation) Fields() []string {
-	fields := make([]string, 0, 17)
+	fields := make([]string, 0, 18)
 	if m.created_at != nil {
 		fields = append(fields, business.FieldCreatedAt)
 	}
@@ -1213,6 +1263,9 @@ func (m *BusinessMutation) Fields() []string {
 	if m.bin_info != nil {
 		fields = append(fields, business.FieldBinInfo)
 	}
+	if m.stock_sn != nil {
+		fields = append(fields, business.FieldStockSn)
+	}
 	return fields
 }
 
@@ -1255,6 +1308,8 @@ func (m *BusinessMutation) Field(name string) (ent.Value, bool) {
 		return m.GetType()
 	case business.FieldBinInfo:
 		return m.BinInfo()
+	case business.FieldStockSn:
+		return m.StockSn()
 	}
 	return nil, false
 }
@@ -1298,6 +1353,8 @@ func (m *BusinessMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldType(ctx)
 	case business.FieldBinInfo:
 		return m.OldBinInfo(ctx)
+	case business.FieldStockSn:
+		return m.OldStockSn(ctx)
 	}
 	return nil, fmt.Errorf("unknown Business field %s", name)
 }
@@ -1426,6 +1483,13 @@ func (m *BusinessMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetBinInfo(v)
 		return nil
+	case business.FieldStockSn:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStockSn(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Business field %s", name)
 }
@@ -1492,6 +1556,9 @@ func (m *BusinessMutation) ClearedFields() []string {
 	if m.FieldCleared(business.FieldBinInfo) {
 		fields = append(fields, business.FieldBinInfo)
 	}
+	if m.FieldCleared(business.FieldStockSn) {
+		fields = append(fields, business.FieldStockSn)
+	}
 	return fields
 }
 
@@ -1538,6 +1605,9 @@ func (m *BusinessMutation) ClearField(name string) error {
 		return nil
 	case business.FieldBinInfo:
 		m.ClearBinInfo()
+		return nil
+	case business.FieldStockSn:
+		m.ClearStockSn()
 		return nil
 	}
 	return fmt.Errorf("unknown Business nullable field %s", name)
@@ -1597,6 +1667,9 @@ func (m *BusinessMutation) ResetField(name string) error {
 		return nil
 	case business.FieldBinInfo:
 		m.ResetBinInfo()
+		return nil
+	case business.FieldStockSn:
+		m.ResetStockSn()
 		return nil
 	}
 	return fmt.Errorf("unknown Business field %s", name)
