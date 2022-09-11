@@ -24,6 +24,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/internal/ent/stock"
+    "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
@@ -482,6 +483,11 @@ func (s *cabinetService) ModelInclude(item *ent.Cabinet, model string) bool {
 // Usable 获取换电可用仓位信息
 func (s *cabinetService) Usable(cab *ent.Cabinet) (op model.RiderCabinetOperateProcess) {
     max, empty := cab.Bin.MaxEmpty()
+
+    min := cache.Float64(model.SettingExchangeMinBattery)
+    if max.Electricity.Value() < min {
+        snag.Panic("当前无可用电池")
+    }
 
     if max == nil || empty == nil {
         snag.Panic("电柜异常, 无法换电")

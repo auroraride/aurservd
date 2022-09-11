@@ -5,7 +5,9 @@
 
 package model
 
-import "sort"
+import (
+    "sort"
+)
 
 const (
     CabinetBinBatteryFault = "有电池无电压"
