@@ -52,10 +52,10 @@ func (s *businessService) Text(str interface{}) string {
         t = business.Type(*x)
     }
     m := map[business.Type]string{
-        business.TypeActive:      "已激活",
-        business.TypeUnsubscribe: "已退租",
-        business.TypePause:       "已寄存",
-        business.TypeContinue:    "计费中",
+        business.TypeActive:      "激活",
+        business.TypeUnsubscribe: "退租",
+        business.TypePause:       "寄存",
+        business.TypeContinue:    "结束寄存",
     }
     return m[t]
 }
@@ -229,7 +229,7 @@ func (s *businessService) basicDetail(item *ent.Business) (res model.BusinessEmp
         ID:    item.ID,
         Name:  item.Edges.Rider.Edges.Person.Name,
         Phone: item.Edges.Rider.Phone,
-        Type:  item.Type.String(),
+        Type:  s.Text(item.Type),
         Time:  item.CreatedAt.Format(carbon.DateTimeLayout),
     }
 
@@ -564,7 +564,7 @@ func (s *businessService) Export(req *model.BusinessExportReq) model.ExportRes {
                 en = detail.Enterprise.Name
             }
             rows = append(rows, []any{
-                s.Text(item.Type),
+                detail.Type,
                 detail.City,
                 cab,
                 sto,

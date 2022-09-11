@@ -316,6 +316,13 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
         business.TypeContinue:    "寄存中",
     }
 
+    afs := map[business.Type]string{
+        business.TypeActive:      "已激活",
+        business.TypeUnsubscribe: "已退租",
+        business.TypePause:       "已寄存",
+        business.TypeContinue:    "计费中",
+    }
+
     var bin *ec.BinInfo
     var err error
 
@@ -401,7 +408,7 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
         SetEmployee(s.employeeInfo).
         SetModifier(s.modifier).
         SetCabinet(s.cabinetInfo).
-        SetDiff(bfs[bt], NewBusiness().Text(bt)).
+        SetDiff(bfs[bt], afs[bt]).
         Send()
 
     if err != nil {
