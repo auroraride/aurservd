@@ -274,13 +274,13 @@ func (s *businessService) ListEmployee(req *model.BusinessListReq) *model.Pagina
 }
 
 func (s *businessService) detailInfo(item *ent.Business) model.BusinessListRes {
-    res := model.BusinessListRes{
+    detail := model.BusinessListRes{
         BusinessEmployeeListRes: s.basicDetail(item),
         Employee:                nil,
     }
     emp := item.Edges.Employee
     if emp != nil {
-        res.Employee = &model.Employee{
+        detail.Employee = &model.Employee{
             ID:    emp.ID,
             Name:  emp.Name,
             Phone: emp.Phone,
@@ -289,7 +289,7 @@ func (s *businessService) detailInfo(item *ent.Business) model.BusinessListRes {
 
     st := item.Edges.Store
     if st != nil {
-        res.Store = &model.Store{
+        detail.Store = &model.Store{
             ID:   st.ID,
             Name: st.Name,
         }
@@ -297,14 +297,14 @@ func (s *businessService) detailInfo(item *ent.Business) model.BusinessListRes {
 
     cab := item.Edges.Cabinet
     if cab != nil {
-        res.Cabinet = &model.CabinetBasicInfo{
+        detail.Cabinet = &model.CabinetBasicInfo{
             ID:     cab.ID,
             Brand:  model.CabinetBrand(cab.Brand),
             Serial: cab.Serial,
             Name:   cab.Name,
         }
     }
-    return res
+    return detail
 }
 
 // ListManager 业务列表 - 后台
@@ -529,6 +529,7 @@ func (s *businessService) pauseBy(m *model.Modifier, e *ent.Employee, cab *ent.C
 
 func (s *businessService) Export(req *model.BusinessExportReq) model.ExportRes {
     q, info := s.listFilter(req.BusinessFilter)
+    q.WithEmployee().WithCabinet().WithStore()
     return NewExportWithModifier(s.modifier).Start("业务记录", req.BusinessFilter, info, req.Remark, func(path string) {
         items, _ := q.All(s.ctx)
         var rows tools.ExcelItems
@@ -562,6 +563,9 @@ func (s *businessService) Export(req *model.BusinessExportReq) model.ExportRes {
             }
             if detail.Enterprise != nil {
                 en = detail.Enterprise.Name
+            }
+            if detail.Employee != nil {
+                emp = detail.Employee.Name
             }
             rows = append(rows, []any{
                 detail.Type,
