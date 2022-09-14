@@ -617,12 +617,19 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
     if item.Edges.Orders != nil && len(item.Edges.Orders) > 0 {
         ri.Deposit = item.Edges.Orders[0].Amount
     }
+
     if item.Edges.Subscribes != nil && len(item.Edges.Subscribes) > 0 {
         sub := item.Edges.Subscribes[0]
+
+        remaining := sub.Remaining
+        if sub.AgentEndAt != nil {
+            remaining = tools.NewTime().LastDaysToNow(*sub.AgentEndAt)
+        }
+
         ri.Subscribe = &model.RiderItemSubscribe{
             ID:        sub.ID,
             Status:    sub.Status,
-            Remaining: sub.Remaining,
+            Remaining: remaining,
             Model:     sub.Model,
             Suspend:   sub.SuspendAt != nil,
             Formula:   sub.Formula,
