@@ -533,7 +533,7 @@ func (s *cabinetService) BusinessableX(cab *ent.Cabinet) {
 }
 
 func (s *cabinetService) Data(req *model.CabinetDataReq) *model.PaginationRes {
-    q := s.orm.QueryNotDeleted().WithBms()
+    q := s.orm.QueryNotDeleted().WithBms().Order(ent.Desc(cabinet.FieldCreatedAt))
     switch req.Status {
     case 1:
         q.Where(cabinet.Health(model.CabinetHealthStatusOnline))
