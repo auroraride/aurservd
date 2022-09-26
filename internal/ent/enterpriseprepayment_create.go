@@ -378,18 +378,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *EnterprisePrepaymentUpsert) SetCreatedAt(v time.Time) *EnterprisePrepaymentUpsert {
-	u.Set(enterpriseprepayment.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *EnterprisePrepaymentUpsert) UpdateCreatedAt() *EnterprisePrepaymentUpsert {
-	u.SetExcluded(enterpriseprepayment.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *EnterprisePrepaymentUpsert) SetUpdatedAt(v time.Time) *EnterprisePrepaymentUpsert {
 	u.Set(enterpriseprepayment.FieldUpdatedAt, v)
@@ -417,24 +405,6 @@ func (u *EnterprisePrepaymentUpsert) UpdateDeletedAt() *EnterprisePrepaymentUpse
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *EnterprisePrepaymentUpsert) ClearDeletedAt() *EnterprisePrepaymentUpsert {
 	u.SetNull(enterpriseprepayment.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *EnterprisePrepaymentUpsert) SetCreator(v *model.Modifier) *EnterprisePrepaymentUpsert {
-	u.Set(enterpriseprepayment.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *EnterprisePrepaymentUpsert) UpdateCreator() *EnterprisePrepaymentUpsert {
-	u.SetExcluded(enterpriseprepayment.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *EnterprisePrepaymentUpsert) ClearCreator() *EnterprisePrepaymentUpsert {
-	u.SetNull(enterpriseprepayment.FieldCreator)
 	return u
 }
 
@@ -483,24 +453,6 @@ func (u *EnterprisePrepaymentUpsert) SetEnterpriseID(v uint64) *EnterprisePrepay
 // UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
 func (u *EnterprisePrepaymentUpsert) UpdateEnterpriseID() *EnterprisePrepaymentUpsert {
 	u.SetExcluded(enterpriseprepayment.FieldEnterpriseID)
-	return u
-}
-
-// SetAmount sets the "amount" field.
-func (u *EnterprisePrepaymentUpsert) SetAmount(v float64) *EnterprisePrepaymentUpsert {
-	u.Set(enterpriseprepayment.FieldAmount, v)
-	return u
-}
-
-// UpdateAmount sets the "amount" field to the value that was provided on create.
-func (u *EnterprisePrepaymentUpsert) UpdateAmount() *EnterprisePrepaymentUpsert {
-	u.SetExcluded(enterpriseprepayment.FieldAmount)
-	return u
-}
-
-// AddAmount adds v to the "amount" field.
-func (u *EnterprisePrepaymentUpsert) AddAmount(v float64) *EnterprisePrepaymentUpsert {
-	u.Add(enterpriseprepayment.FieldAmount, v)
 	return u
 }
 
@@ -555,20 +507,6 @@ func (u *EnterprisePrepaymentUpsertOne) Update(set func(*EnterprisePrepaymentUps
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *EnterprisePrepaymentUpsertOne) SetCreatedAt(v time.Time) *EnterprisePrepaymentUpsertOne {
-	return u.Update(func(s *EnterprisePrepaymentUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *EnterprisePrepaymentUpsertOne) UpdateCreatedAt() *EnterprisePrepaymentUpsertOne {
-	return u.Update(func(s *EnterprisePrepaymentUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *EnterprisePrepaymentUpsertOne) SetUpdatedAt(v time.Time) *EnterprisePrepaymentUpsertOne {
 	return u.Update(func(s *EnterprisePrepaymentUpsert) {
@@ -601,27 +539,6 @@ func (u *EnterprisePrepaymentUpsertOne) UpdateDeletedAt() *EnterprisePrepaymentU
 func (u *EnterprisePrepaymentUpsertOne) ClearDeletedAt() *EnterprisePrepaymentUpsertOne {
 	return u.Update(func(s *EnterprisePrepaymentUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *EnterprisePrepaymentUpsertOne) SetCreator(v *model.Modifier) *EnterprisePrepaymentUpsertOne {
-	return u.Update(func(s *EnterprisePrepaymentUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *EnterprisePrepaymentUpsertOne) UpdateCreator() *EnterprisePrepaymentUpsertOne {
-	return u.Update(func(s *EnterprisePrepaymentUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *EnterprisePrepaymentUpsertOne) ClearCreator() *EnterprisePrepaymentUpsertOne {
-	return u.Update(func(s *EnterprisePrepaymentUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -678,27 +595,6 @@ func (u *EnterprisePrepaymentUpsertOne) SetEnterpriseID(v uint64) *EnterprisePre
 func (u *EnterprisePrepaymentUpsertOne) UpdateEnterpriseID() *EnterprisePrepaymentUpsertOne {
 	return u.Update(func(s *EnterprisePrepaymentUpsert) {
 		s.UpdateEnterpriseID()
-	})
-}
-
-// SetAmount sets the "amount" field.
-func (u *EnterprisePrepaymentUpsertOne) SetAmount(v float64) *EnterprisePrepaymentUpsertOne {
-	return u.Update(func(s *EnterprisePrepaymentUpsert) {
-		s.SetAmount(v)
-	})
-}
-
-// AddAmount adds v to the "amount" field.
-func (u *EnterprisePrepaymentUpsertOne) AddAmount(v float64) *EnterprisePrepaymentUpsertOne {
-	return u.Update(func(s *EnterprisePrepaymentUpsert) {
-		s.AddAmount(v)
-	})
-}
-
-// UpdateAmount sets the "amount" field to the value that was provided on create.
-func (u *EnterprisePrepaymentUpsertOne) UpdateAmount() *EnterprisePrepaymentUpsertOne {
-	return u.Update(func(s *EnterprisePrepaymentUpsert) {
-		s.UpdateAmount()
 	})
 }
 
@@ -915,20 +811,6 @@ func (u *EnterprisePrepaymentUpsertBulk) Update(set func(*EnterprisePrepaymentUp
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *EnterprisePrepaymentUpsertBulk) SetCreatedAt(v time.Time) *EnterprisePrepaymentUpsertBulk {
-	return u.Update(func(s *EnterprisePrepaymentUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *EnterprisePrepaymentUpsertBulk) UpdateCreatedAt() *EnterprisePrepaymentUpsertBulk {
-	return u.Update(func(s *EnterprisePrepaymentUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *EnterprisePrepaymentUpsertBulk) SetUpdatedAt(v time.Time) *EnterprisePrepaymentUpsertBulk {
 	return u.Update(func(s *EnterprisePrepaymentUpsert) {
@@ -961,27 +843,6 @@ func (u *EnterprisePrepaymentUpsertBulk) UpdateDeletedAt() *EnterprisePrepayment
 func (u *EnterprisePrepaymentUpsertBulk) ClearDeletedAt() *EnterprisePrepaymentUpsertBulk {
 	return u.Update(func(s *EnterprisePrepaymentUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *EnterprisePrepaymentUpsertBulk) SetCreator(v *model.Modifier) *EnterprisePrepaymentUpsertBulk {
-	return u.Update(func(s *EnterprisePrepaymentUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *EnterprisePrepaymentUpsertBulk) UpdateCreator() *EnterprisePrepaymentUpsertBulk {
-	return u.Update(func(s *EnterprisePrepaymentUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *EnterprisePrepaymentUpsertBulk) ClearCreator() *EnterprisePrepaymentUpsertBulk {
-	return u.Update(func(s *EnterprisePrepaymentUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1038,27 +899,6 @@ func (u *EnterprisePrepaymentUpsertBulk) SetEnterpriseID(v uint64) *EnterprisePr
 func (u *EnterprisePrepaymentUpsertBulk) UpdateEnterpriseID() *EnterprisePrepaymentUpsertBulk {
 	return u.Update(func(s *EnterprisePrepaymentUpsert) {
 		s.UpdateEnterpriseID()
-	})
-}
-
-// SetAmount sets the "amount" field.
-func (u *EnterprisePrepaymentUpsertBulk) SetAmount(v float64) *EnterprisePrepaymentUpsertBulk {
-	return u.Update(func(s *EnterprisePrepaymentUpsert) {
-		s.SetAmount(v)
-	})
-}
-
-// AddAmount adds v to the "amount" field.
-func (u *EnterprisePrepaymentUpsertBulk) AddAmount(v float64) *EnterprisePrepaymentUpsertBulk {
-	return u.Update(func(s *EnterprisePrepaymentUpsert) {
-		s.AddAmount(v)
-	})
-}
-
-// UpdateAmount sets the "amount" field to the value that was provided on create.
-func (u *EnterprisePrepaymentUpsertBulk) UpdateAmount() *EnterprisePrepaymentUpsertBulk {
-	return u.Update(func(s *EnterprisePrepaymentUpsert) {
-		s.UpdateAmount()
 	})
 }
 

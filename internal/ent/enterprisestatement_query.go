@@ -394,10 +394,10 @@ func (esq *EnterpriseStatementQuery) sqlAll(ctx context.Context, hooks ...queryH
 			esq.withBills != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*EnterpriseStatement).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &EnterpriseStatement{config: esq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -498,11 +498,14 @@ func (esq *EnterpriseStatementQuery) sqlCount(ctx context.Context) (int, error) 
 }
 
 func (esq *EnterpriseStatementQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := esq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := esq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (esq *EnterpriseStatementQuery) querySpec() *sqlgraph.QuerySpec {
@@ -612,7 +615,7 @@ func (esgb *EnterpriseStatementGroupBy) Aggregate(fns ...AggregateFunc) *Enterpr
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (esgb *EnterpriseStatementGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (esgb *EnterpriseStatementGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := esgb.path(ctx)
 	if err != nil {
 		return err
@@ -621,7 +624,7 @@ func (esgb *EnterpriseStatementGroupBy) Scan(ctx context.Context, v interface{})
 	return esgb.sqlScan(ctx, v)
 }
 
-func (esgb *EnterpriseStatementGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (esgb *EnterpriseStatementGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range esgb.fields {
 		if !enterprisestatement.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -668,7 +671,7 @@ type EnterpriseStatementSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ess *EnterpriseStatementSelect) Scan(ctx context.Context, v interface{}) error {
+func (ess *EnterpriseStatementSelect) Scan(ctx context.Context, v any) error {
 	if err := ess.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -676,7 +679,7 @@ func (ess *EnterpriseStatementSelect) Scan(ctx context.Context, v interface{}) e
 	return ess.sqlScan(ctx, v)
 }
 
-func (ess *EnterpriseStatementSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (ess *EnterpriseStatementSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := ess.sql.Query()
 	if err := ess.driver.Query(ctx, query, args, rows); err != nil {

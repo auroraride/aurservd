@@ -662,18 +662,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *PersonUpsert) SetCreatedAt(v time.Time) *PersonUpsert {
-	u.Set(person.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *PersonUpsert) UpdateCreatedAt() *PersonUpsert {
-	u.SetExcluded(person.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *PersonUpsert) SetUpdatedAt(v time.Time) *PersonUpsert {
 	u.Set(person.FieldUpdatedAt, v)
@@ -701,24 +689,6 @@ func (u *PersonUpsert) UpdateDeletedAt() *PersonUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *PersonUpsert) ClearDeletedAt() *PersonUpsert {
 	u.SetNull(person.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *PersonUpsert) SetCreator(v *model.Modifier) *PersonUpsert {
-	u.Set(person.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *PersonUpsert) UpdateCreator() *PersonUpsert {
-	u.SetExcluded(person.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *PersonUpsert) ClearCreator() *PersonUpsert {
-	u.SetNull(person.FieldCreator)
 	return u
 }
 
@@ -1028,20 +998,6 @@ func (u *PersonUpsertOne) Update(set func(*PersonUpsert)) *PersonUpsertOne {
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *PersonUpsertOne) SetCreatedAt(v time.Time) *PersonUpsertOne {
-	return u.Update(func(s *PersonUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *PersonUpsertOne) UpdateCreatedAt() *PersonUpsertOne {
-	return u.Update(func(s *PersonUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *PersonUpsertOne) SetUpdatedAt(v time.Time) *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
@@ -1074,27 +1030,6 @@ func (u *PersonUpsertOne) UpdateDeletedAt() *PersonUpsertOne {
 func (u *PersonUpsertOne) ClearDeletedAt() *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *PersonUpsertOne) SetCreator(v *model.Modifier) *PersonUpsertOne {
-	return u.Update(func(s *PersonUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *PersonUpsertOne) UpdateCreator() *PersonUpsertOne {
-	return u.Update(func(s *PersonUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *PersonUpsertOne) ClearCreator() *PersonUpsertOne {
-	return u.Update(func(s *PersonUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1609,20 +1544,6 @@ func (u *PersonUpsertBulk) Update(set func(*PersonUpsert)) *PersonUpsertBulk {
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *PersonUpsertBulk) SetCreatedAt(v time.Time) *PersonUpsertBulk {
-	return u.Update(func(s *PersonUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *PersonUpsertBulk) UpdateCreatedAt() *PersonUpsertBulk {
-	return u.Update(func(s *PersonUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *PersonUpsertBulk) SetUpdatedAt(v time.Time) *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
@@ -1655,27 +1576,6 @@ func (u *PersonUpsertBulk) UpdateDeletedAt() *PersonUpsertBulk {
 func (u *PersonUpsertBulk) ClearDeletedAt() *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *PersonUpsertBulk) SetCreator(v *model.Modifier) *PersonUpsertBulk {
-	return u.Update(func(s *PersonUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *PersonUpsertBulk) UpdateCreator() *PersonUpsertBulk {
-	return u.Update(func(s *PersonUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *PersonUpsertBulk) ClearCreator() *PersonUpsertBulk {
-	return u.Update(func(s *PersonUpsert) {
-		s.ClearCreator()
 	})
 }
 

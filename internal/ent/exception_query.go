@@ -430,10 +430,10 @@ func (eq *ExceptionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ex
 			eq.withStore != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Exception).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &Exception{config: eq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -564,11 +564,14 @@ func (eq *ExceptionQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (eq *ExceptionQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := eq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := eq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (eq *ExceptionQuery) querySpec() *sqlgraph.QuerySpec {
@@ -678,7 +681,7 @@ func (egb *ExceptionGroupBy) Aggregate(fns ...AggregateFunc) *ExceptionGroupBy {
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (egb *ExceptionGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (egb *ExceptionGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := egb.path(ctx)
 	if err != nil {
 		return err
@@ -687,7 +690,7 @@ func (egb *ExceptionGroupBy) Scan(ctx context.Context, v interface{}) error {
 	return egb.sqlScan(ctx, v)
 }
 
-func (egb *ExceptionGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (egb *ExceptionGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range egb.fields {
 		if !exception.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -734,7 +737,7 @@ type ExceptionSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (es *ExceptionSelect) Scan(ctx context.Context, v interface{}) error {
+func (es *ExceptionSelect) Scan(ctx context.Context, v any) error {
 	if err := es.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -742,7 +745,7 @@ func (es *ExceptionSelect) Scan(ctx context.Context, v interface{}) error {
 	return es.sqlScan(ctx, v)
 }
 
-func (es *ExceptionSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (es *ExceptionSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := es.sql.Query()
 	if err := es.driver.Query(ctx, query, args, rows); err != nil {

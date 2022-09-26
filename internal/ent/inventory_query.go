@@ -317,10 +317,10 @@ func (iq *InventoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*In
 		nodes = []*Inventory{}
 		_spec = iq.querySpec()
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Inventory).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &Inventory{config: iq.config}
 		nodes = append(nodes, node)
 		return node.assignValues(columns, values)
@@ -353,11 +353,14 @@ func (iq *InventoryQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (iq *InventoryQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := iq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := iq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (iq *InventoryQuery) querySpec() *sqlgraph.QuerySpec {
@@ -467,7 +470,7 @@ func (igb *InventoryGroupBy) Aggregate(fns ...AggregateFunc) *InventoryGroupBy {
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (igb *InventoryGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (igb *InventoryGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := igb.path(ctx)
 	if err != nil {
 		return err
@@ -476,7 +479,7 @@ func (igb *InventoryGroupBy) Scan(ctx context.Context, v interface{}) error {
 	return igb.sqlScan(ctx, v)
 }
 
-func (igb *InventoryGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (igb *InventoryGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range igb.fields {
 		if !inventory.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -523,7 +526,7 @@ type InventorySelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (is *InventorySelect) Scan(ctx context.Context, v interface{}) error {
+func (is *InventorySelect) Scan(ctx context.Context, v any) error {
 	if err := is.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -531,7 +534,7 @@ func (is *InventorySelect) Scan(ctx context.Context, v interface{}) error {
 	return is.sqlScan(ctx, v)
 }
 
-func (is *InventorySelect) sqlScan(ctx context.Context, v interface{}) error {
+func (is *InventorySelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := is.sql.Query()
 	if err := is.driver.Query(ctx, query, args, rows); err != nil {

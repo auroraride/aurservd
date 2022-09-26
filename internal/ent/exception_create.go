@@ -575,18 +575,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *ExceptionUpsert) SetCreatedAt(v time.Time) *ExceptionUpsert {
-	u.Set(exception.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *ExceptionUpsert) UpdateCreatedAt() *ExceptionUpsert {
-	u.SetExcluded(exception.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *ExceptionUpsert) SetUpdatedAt(v time.Time) *ExceptionUpsert {
 	u.Set(exception.FieldUpdatedAt, v)
@@ -614,24 +602,6 @@ func (u *ExceptionUpsert) UpdateDeletedAt() *ExceptionUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *ExceptionUpsert) ClearDeletedAt() *ExceptionUpsert {
 	u.SetNull(exception.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *ExceptionUpsert) SetCreator(v *model.Modifier) *ExceptionUpsert {
-	u.Set(exception.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *ExceptionUpsert) UpdateCreator() *ExceptionUpsert {
-	u.SetExcluded(exception.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *ExceptionUpsert) ClearCreator() *ExceptionUpsert {
-	u.SetNull(exception.FieldCreator)
 	return u
 }
 
@@ -755,24 +725,6 @@ func (u *ExceptionUpsert) ClearModel() *ExceptionUpsert {
 	return u
 }
 
-// SetNum sets the "num" field.
-func (u *ExceptionUpsert) SetNum(v int) *ExceptionUpsert {
-	u.Set(exception.FieldNum, v)
-	return u
-}
-
-// UpdateNum sets the "num" field to the value that was provided on create.
-func (u *ExceptionUpsert) UpdateNum() *ExceptionUpsert {
-	u.SetExcluded(exception.FieldNum)
-	return u
-}
-
-// AddNum adds v to the "num" field.
-func (u *ExceptionUpsert) AddNum(v int) *ExceptionUpsert {
-	u.Add(exception.FieldNum, v)
-	return u
-}
-
 // SetReason sets the "reason" field.
 func (u *ExceptionUpsert) SetReason(v string) *ExceptionUpsert {
 	u.Set(exception.FieldReason, v)
@@ -872,20 +824,6 @@ func (u *ExceptionUpsertOne) Update(set func(*ExceptionUpsert)) *ExceptionUpsert
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *ExceptionUpsertOne) SetCreatedAt(v time.Time) *ExceptionUpsertOne {
-	return u.Update(func(s *ExceptionUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *ExceptionUpsertOne) UpdateCreatedAt() *ExceptionUpsertOne {
-	return u.Update(func(s *ExceptionUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *ExceptionUpsertOne) SetUpdatedAt(v time.Time) *ExceptionUpsertOne {
 	return u.Update(func(s *ExceptionUpsert) {
@@ -918,27 +856,6 @@ func (u *ExceptionUpsertOne) UpdateDeletedAt() *ExceptionUpsertOne {
 func (u *ExceptionUpsertOne) ClearDeletedAt() *ExceptionUpsertOne {
 	return u.Update(func(s *ExceptionUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *ExceptionUpsertOne) SetCreator(v *model.Modifier) *ExceptionUpsertOne {
-	return u.Update(func(s *ExceptionUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *ExceptionUpsertOne) UpdateCreator() *ExceptionUpsertOne {
-	return u.Update(func(s *ExceptionUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *ExceptionUpsertOne) ClearCreator() *ExceptionUpsertOne {
-	return u.Update(func(s *ExceptionUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1079,27 +996,6 @@ func (u *ExceptionUpsertOne) UpdateModel() *ExceptionUpsertOne {
 func (u *ExceptionUpsertOne) ClearModel() *ExceptionUpsertOne {
 	return u.Update(func(s *ExceptionUpsert) {
 		s.ClearModel()
-	})
-}
-
-// SetNum sets the "num" field.
-func (u *ExceptionUpsertOne) SetNum(v int) *ExceptionUpsertOne {
-	return u.Update(func(s *ExceptionUpsert) {
-		s.SetNum(v)
-	})
-}
-
-// AddNum adds v to the "num" field.
-func (u *ExceptionUpsertOne) AddNum(v int) *ExceptionUpsertOne {
-	return u.Update(func(s *ExceptionUpsert) {
-		s.AddNum(v)
-	})
-}
-
-// UpdateNum sets the "num" field to the value that was provided on create.
-func (u *ExceptionUpsertOne) UpdateNum() *ExceptionUpsertOne {
-	return u.Update(func(s *ExceptionUpsert) {
-		s.UpdateNum()
 	})
 }
 
@@ -1372,20 +1268,6 @@ func (u *ExceptionUpsertBulk) Update(set func(*ExceptionUpsert)) *ExceptionUpser
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *ExceptionUpsertBulk) SetCreatedAt(v time.Time) *ExceptionUpsertBulk {
-	return u.Update(func(s *ExceptionUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *ExceptionUpsertBulk) UpdateCreatedAt() *ExceptionUpsertBulk {
-	return u.Update(func(s *ExceptionUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *ExceptionUpsertBulk) SetUpdatedAt(v time.Time) *ExceptionUpsertBulk {
 	return u.Update(func(s *ExceptionUpsert) {
@@ -1418,27 +1300,6 @@ func (u *ExceptionUpsertBulk) UpdateDeletedAt() *ExceptionUpsertBulk {
 func (u *ExceptionUpsertBulk) ClearDeletedAt() *ExceptionUpsertBulk {
 	return u.Update(func(s *ExceptionUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *ExceptionUpsertBulk) SetCreator(v *model.Modifier) *ExceptionUpsertBulk {
-	return u.Update(func(s *ExceptionUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *ExceptionUpsertBulk) UpdateCreator() *ExceptionUpsertBulk {
-	return u.Update(func(s *ExceptionUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *ExceptionUpsertBulk) ClearCreator() *ExceptionUpsertBulk {
-	return u.Update(func(s *ExceptionUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1579,27 +1440,6 @@ func (u *ExceptionUpsertBulk) UpdateModel() *ExceptionUpsertBulk {
 func (u *ExceptionUpsertBulk) ClearModel() *ExceptionUpsertBulk {
 	return u.Update(func(s *ExceptionUpsert) {
 		s.ClearModel()
-	})
-}
-
-// SetNum sets the "num" field.
-func (u *ExceptionUpsertBulk) SetNum(v int) *ExceptionUpsertBulk {
-	return u.Update(func(s *ExceptionUpsert) {
-		s.SetNum(v)
-	})
-}
-
-// AddNum adds v to the "num" field.
-func (u *ExceptionUpsertBulk) AddNum(v int) *ExceptionUpsertBulk {
-	return u.Update(func(s *ExceptionUpsert) {
-		s.AddNum(v)
-	})
-}
-
-// UpdateNum sets the "num" field to the value that was provided on create.
-func (u *ExceptionUpsertBulk) UpdateNum() *ExceptionUpsertBulk {
-	return u.Update(func(s *ExceptionUpsert) {
-		s.UpdateNum()
 	})
 }
 

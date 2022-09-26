@@ -603,18 +603,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *BranchUpsert) SetCreatedAt(v time.Time) *BranchUpsert {
-	u.Set(branch.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *BranchUpsert) UpdateCreatedAt() *BranchUpsert {
-	u.SetExcluded(branch.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *BranchUpsert) SetUpdatedAt(v time.Time) *BranchUpsert {
 	u.Set(branch.FieldUpdatedAt, v)
@@ -642,24 +630,6 @@ func (u *BranchUpsert) UpdateDeletedAt() *BranchUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *BranchUpsert) ClearDeletedAt() *BranchUpsert {
 	u.SetNull(branch.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *BranchUpsert) SetCreator(v *model.Modifier) *BranchUpsert {
-	u.Set(branch.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *BranchUpsert) UpdateCreator() *BranchUpsert {
-	u.SetExcluded(branch.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *BranchUpsert) ClearCreator() *BranchUpsert {
-	u.SetNull(branch.FieldCreator)
 	return u
 }
 
@@ -843,20 +813,6 @@ func (u *BranchUpsertOne) Update(set func(*BranchUpsert)) *BranchUpsertOne {
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *BranchUpsertOne) SetCreatedAt(v time.Time) *BranchUpsertOne {
-	return u.Update(func(s *BranchUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *BranchUpsertOne) UpdateCreatedAt() *BranchUpsertOne {
-	return u.Update(func(s *BranchUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *BranchUpsertOne) SetUpdatedAt(v time.Time) *BranchUpsertOne {
 	return u.Update(func(s *BranchUpsert) {
@@ -889,27 +845,6 @@ func (u *BranchUpsertOne) UpdateDeletedAt() *BranchUpsertOne {
 func (u *BranchUpsertOne) ClearDeletedAt() *BranchUpsertOne {
 	return u.Update(func(s *BranchUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *BranchUpsertOne) SetCreator(v *model.Modifier) *BranchUpsertOne {
-	return u.Update(func(s *BranchUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *BranchUpsertOne) UpdateCreator() *BranchUpsertOne {
-	return u.Update(func(s *BranchUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *BranchUpsertOne) ClearCreator() *BranchUpsertOne {
-	return u.Update(func(s *BranchUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1277,20 +1212,6 @@ func (u *BranchUpsertBulk) Update(set func(*BranchUpsert)) *BranchUpsertBulk {
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *BranchUpsertBulk) SetCreatedAt(v time.Time) *BranchUpsertBulk {
-	return u.Update(func(s *BranchUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *BranchUpsertBulk) UpdateCreatedAt() *BranchUpsertBulk {
-	return u.Update(func(s *BranchUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *BranchUpsertBulk) SetUpdatedAt(v time.Time) *BranchUpsertBulk {
 	return u.Update(func(s *BranchUpsert) {
@@ -1323,27 +1244,6 @@ func (u *BranchUpsertBulk) UpdateDeletedAt() *BranchUpsertBulk {
 func (u *BranchUpsertBulk) ClearDeletedAt() *BranchUpsertBulk {
 	return u.Update(func(s *BranchUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *BranchUpsertBulk) SetCreator(v *model.Modifier) *BranchUpsertBulk {
-	return u.Update(func(s *BranchUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *BranchUpsertBulk) UpdateCreator() *BranchUpsertBulk {
-	return u.Update(func(s *BranchUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *BranchUpsertBulk) ClearCreator() *BranchUpsertBulk {
-	return u.Update(func(s *BranchUpsert) {
-		s.ClearCreator()
 	})
 }
 

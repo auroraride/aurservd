@@ -60,8 +60,10 @@ func (City) Fields() []ent.Field {
 // Edges of the City.
 func (City) Edges() []ent.Edge {
     return []ent.Edge{
-        edge.From("plans", Plan.Type).Ref("cities"),
         edge.To("children", City.Type).From("parent").Field("parent_id").Unique(),
+
+        edge.From("plans", Plan.Type).Ref("cities"),
+        edge.From("coupons", Coupon.Type).Ref("cities"),
     }
 }
 

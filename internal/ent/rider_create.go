@@ -928,18 +928,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *RiderUpsert) SetCreatedAt(v time.Time) *RiderUpsert {
-	u.Set(rider.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *RiderUpsert) UpdateCreatedAt() *RiderUpsert {
-	u.SetExcluded(rider.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *RiderUpsert) SetUpdatedAt(v time.Time) *RiderUpsert {
 	u.Set(rider.FieldUpdatedAt, v)
@@ -967,24 +955,6 @@ func (u *RiderUpsert) UpdateDeletedAt() *RiderUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *RiderUpsert) ClearDeletedAt() *RiderUpsert {
 	u.SetNull(rider.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *RiderUpsert) SetCreator(v *model.Modifier) *RiderUpsert {
-	u.Set(rider.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *RiderUpsert) UpdateCreator() *RiderUpsert {
-	u.SetExcluded(rider.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *RiderUpsert) ClearCreator() *RiderUpsert {
-	u.SetNull(rider.FieldCreator)
 	return u
 }
 
@@ -1294,20 +1264,6 @@ func (u *RiderUpsertOne) Update(set func(*RiderUpsert)) *RiderUpsertOne {
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *RiderUpsertOne) SetCreatedAt(v time.Time) *RiderUpsertOne {
-	return u.Update(func(s *RiderUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *RiderUpsertOne) UpdateCreatedAt() *RiderUpsertOne {
-	return u.Update(func(s *RiderUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *RiderUpsertOne) SetUpdatedAt(v time.Time) *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
@@ -1340,27 +1296,6 @@ func (u *RiderUpsertOne) UpdateDeletedAt() *RiderUpsertOne {
 func (u *RiderUpsertOne) ClearDeletedAt() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *RiderUpsertOne) SetCreator(v *model.Modifier) *RiderUpsertOne {
-	return u.Update(func(s *RiderUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *RiderUpsertOne) UpdateCreator() *RiderUpsertOne {
-	return u.Update(func(s *RiderUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *RiderUpsertOne) ClearCreator() *RiderUpsertOne {
-	return u.Update(func(s *RiderUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1875,20 +1810,6 @@ func (u *RiderUpsertBulk) Update(set func(*RiderUpsert)) *RiderUpsertBulk {
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *RiderUpsertBulk) SetCreatedAt(v time.Time) *RiderUpsertBulk {
-	return u.Update(func(s *RiderUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *RiderUpsertBulk) UpdateCreatedAt() *RiderUpsertBulk {
-	return u.Update(func(s *RiderUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *RiderUpsertBulk) SetUpdatedAt(v time.Time) *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
@@ -1921,27 +1842,6 @@ func (u *RiderUpsertBulk) UpdateDeletedAt() *RiderUpsertBulk {
 func (u *RiderUpsertBulk) ClearDeletedAt() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *RiderUpsertBulk) SetCreator(v *model.Modifier) *RiderUpsertBulk {
-	return u.Update(func(s *RiderUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *RiderUpsertBulk) UpdateCreator() *RiderUpsertBulk {
-	return u.Update(func(s *RiderUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *RiderUpsertBulk) ClearCreator() *RiderUpsertBulk {
-	return u.Update(func(s *RiderUpsert) {
-		s.ClearCreator()
 	})
 }
 

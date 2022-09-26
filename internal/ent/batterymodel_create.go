@@ -439,18 +439,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *BatteryModelUpsert) SetCreatedAt(v time.Time) *BatteryModelUpsert {
-	u.Set(batterymodel.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *BatteryModelUpsert) UpdateCreatedAt() *BatteryModelUpsert {
-	u.SetExcluded(batterymodel.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *BatteryModelUpsert) SetUpdatedAt(v time.Time) *BatteryModelUpsert {
 	u.Set(batterymodel.FieldUpdatedAt, v)
@@ -478,24 +466,6 @@ func (u *BatteryModelUpsert) UpdateDeletedAt() *BatteryModelUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *BatteryModelUpsert) ClearDeletedAt() *BatteryModelUpsert {
 	u.SetNull(batterymodel.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *BatteryModelUpsert) SetCreator(v *model.Modifier) *BatteryModelUpsert {
-	u.Set(batterymodel.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *BatteryModelUpsert) UpdateCreator() *BatteryModelUpsert {
-	u.SetExcluded(batterymodel.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *BatteryModelUpsert) ClearCreator() *BatteryModelUpsert {
-	u.SetNull(batterymodel.FieldCreator)
 	return u
 }
 
@@ -607,20 +577,6 @@ func (u *BatteryModelUpsertOne) Update(set func(*BatteryModelUpsert)) *BatteryMo
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *BatteryModelUpsertOne) SetCreatedAt(v time.Time) *BatteryModelUpsertOne {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *BatteryModelUpsertOne) UpdateCreatedAt() *BatteryModelUpsertOne {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *BatteryModelUpsertOne) SetUpdatedAt(v time.Time) *BatteryModelUpsertOne {
 	return u.Update(func(s *BatteryModelUpsert) {
@@ -653,27 +609,6 @@ func (u *BatteryModelUpsertOne) UpdateDeletedAt() *BatteryModelUpsertOne {
 func (u *BatteryModelUpsertOne) ClearDeletedAt() *BatteryModelUpsertOne {
 	return u.Update(func(s *BatteryModelUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *BatteryModelUpsertOne) SetCreator(v *model.Modifier) *BatteryModelUpsertOne {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *BatteryModelUpsertOne) UpdateCreator() *BatteryModelUpsertOne {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *BatteryModelUpsertOne) ClearCreator() *BatteryModelUpsertOne {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -957,20 +892,6 @@ func (u *BatteryModelUpsertBulk) Update(set func(*BatteryModelUpsert)) *BatteryM
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *BatteryModelUpsertBulk) SetCreatedAt(v time.Time) *BatteryModelUpsertBulk {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *BatteryModelUpsertBulk) UpdateCreatedAt() *BatteryModelUpsertBulk {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *BatteryModelUpsertBulk) SetUpdatedAt(v time.Time) *BatteryModelUpsertBulk {
 	return u.Update(func(s *BatteryModelUpsert) {
@@ -1003,27 +924,6 @@ func (u *BatteryModelUpsertBulk) UpdateDeletedAt() *BatteryModelUpsertBulk {
 func (u *BatteryModelUpsertBulk) ClearDeletedAt() *BatteryModelUpsertBulk {
 	return u.Update(func(s *BatteryModelUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *BatteryModelUpsertBulk) SetCreator(v *model.Modifier) *BatteryModelUpsertBulk {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *BatteryModelUpsertBulk) UpdateCreator() *BatteryModelUpsertBulk {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *BatteryModelUpsertBulk) ClearCreator() *BatteryModelUpsertBulk {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.ClearCreator()
 	})
 }
 

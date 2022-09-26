@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 )
 
@@ -225,6 +226,21 @@ func (pc *PlanCreate) AddComplexes(p ...*Plan) *PlanCreate {
 		ids[i] = p[i].ID
 	}
 	return pc.AddComplexIDs(ids...)
+}
+
+// AddCouponIDs adds the "coupons" edge to the Coupon entity by IDs.
+func (pc *PlanCreate) AddCouponIDs(ids ...uint64) *PlanCreate {
+	pc.mutation.AddCouponIDs(ids...)
+	return pc
+}
+
+// AddCoupons adds the "coupons" edges to the Coupon entity.
+func (pc *PlanCreate) AddCoupons(c ...*Coupon) *PlanCreate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return pc.AddCouponIDs(ids...)
 }
 
 // Mutation returns the PlanMutation object of the builder.
@@ -577,6 +593,25 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := pc.mutation.CouponsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   plan.CouponsTable,
+			Columns: plan.CouponsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupon.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -629,18 +664,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *PlanUpsert) SetCreatedAt(v time.Time) *PlanUpsert {
-	u.Set(plan.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *PlanUpsert) UpdateCreatedAt() *PlanUpsert {
-	u.SetExcluded(plan.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *PlanUpsert) SetUpdatedAt(v time.Time) *PlanUpsert {
 	u.Set(plan.FieldUpdatedAt, v)
@@ -668,24 +691,6 @@ func (u *PlanUpsert) UpdateDeletedAt() *PlanUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *PlanUpsert) ClearDeletedAt() *PlanUpsert {
 	u.SetNull(plan.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *PlanUpsert) SetCreator(v *model.Modifier) *PlanUpsert {
-	u.Set(plan.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *PlanUpsert) UpdateCreator() *PlanUpsert {
-	u.SetExcluded(plan.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *PlanUpsert) ClearCreator() *PlanUpsert {
-	u.SetNull(plan.FieldCreator)
 	return u
 }
 
@@ -935,20 +940,6 @@ func (u *PlanUpsertOne) Update(set func(*PlanUpsert)) *PlanUpsertOne {
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *PlanUpsertOne) SetCreatedAt(v time.Time) *PlanUpsertOne {
-	return u.Update(func(s *PlanUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *PlanUpsertOne) UpdateCreatedAt() *PlanUpsertOne {
-	return u.Update(func(s *PlanUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *PlanUpsertOne) SetUpdatedAt(v time.Time) *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
@@ -981,27 +972,6 @@ func (u *PlanUpsertOne) UpdateDeletedAt() *PlanUpsertOne {
 func (u *PlanUpsertOne) ClearDeletedAt() *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *PlanUpsertOne) SetCreator(v *model.Modifier) *PlanUpsertOne {
-	return u.Update(func(s *PlanUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *PlanUpsertOne) UpdateCreator() *PlanUpsertOne {
-	return u.Update(func(s *PlanUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *PlanUpsertOne) ClearCreator() *PlanUpsertOne {
-	return u.Update(func(s *PlanUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1446,20 +1416,6 @@ func (u *PlanUpsertBulk) Update(set func(*PlanUpsert)) *PlanUpsertBulk {
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *PlanUpsertBulk) SetCreatedAt(v time.Time) *PlanUpsertBulk {
-	return u.Update(func(s *PlanUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *PlanUpsertBulk) UpdateCreatedAt() *PlanUpsertBulk {
-	return u.Update(func(s *PlanUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *PlanUpsertBulk) SetUpdatedAt(v time.Time) *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
@@ -1492,27 +1448,6 @@ func (u *PlanUpsertBulk) UpdateDeletedAt() *PlanUpsertBulk {
 func (u *PlanUpsertBulk) ClearDeletedAt() *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *PlanUpsertBulk) SetCreator(v *model.Modifier) *PlanUpsertBulk {
-	return u.Update(func(s *PlanUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *PlanUpsertBulk) UpdateCreator() *PlanUpsertBulk {
-	return u.Update(func(s *PlanUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *PlanUpsertBulk) ClearCreator() *PlanUpsertBulk {
-	return u.Update(func(s *PlanUpsert) {
-		s.ClearCreator()
 	})
 }
 

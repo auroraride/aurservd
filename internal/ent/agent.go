@@ -67,8 +67,8 @@ func (e AgentEdges) EnterpriseOrErr() (*Enterprise, error) {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Agent) scanValues(columns []string) ([]interface{}, error) {
-	values := make([]interface{}, len(columns))
+func (*Agent) scanValues(columns []string) ([]any, error) {
+	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
 		case agent.FieldCreator, agent.FieldLastModifier:
@@ -88,7 +88,7 @@ func (*Agent) scanValues(columns []string) ([]interface{}, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Agent fields.
-func (a *Agent) assignValues(columns []string, values []interface{}) error {
+func (a *Agent) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}

@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -30,6 +31,7 @@ type PlanQuery struct {
 	withCities    *CityQuery
 	withParent    *PlanQuery
 	withComplexes *PlanQuery
+	withCoupons   *CouponQuery
 	modifiers     []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -148,6 +150,28 @@ func (pq *PlanQuery) QueryComplexes() *PlanQuery {
 			sqlgraph.From(plan.Table, plan.FieldID, selector),
 			sqlgraph.To(plan.Table, plan.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, plan.ComplexesTable, plan.ComplexesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCoupons chains the current query on the "coupons" edge.
+func (pq *PlanQuery) QueryCoupons() *CouponQuery {
+	query := &CouponQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plan.Table, plan.FieldID, selector),
+			sqlgraph.To(coupon.Table, coupon.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, plan.CouponsTable, plan.CouponsPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -340,6 +364,7 @@ func (pq *PlanQuery) Clone() *PlanQuery {
 		withCities:    pq.withCities.Clone(),
 		withParent:    pq.withParent.Clone(),
 		withComplexes: pq.withComplexes.Clone(),
+		withCoupons:   pq.withCoupons.Clone(),
 		// clone intermediate query.
 		sql:    pq.sql.Clone(),
 		path:   pq.path,
@@ -388,6 +413,17 @@ func (pq *PlanQuery) WithComplexes(opts ...func(*PlanQuery)) *PlanQuery {
 		opt(query)
 	}
 	pq.withComplexes = query
+	return pq
+}
+
+// WithCoupons tells the query-builder to eager-load the nodes that are connected to
+// the "coupons" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PlanQuery) WithCoupons(opts ...func(*CouponQuery)) *PlanQuery {
+	query := &CouponQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withCoupons = query
 	return pq
 }
 
@@ -459,17 +495,18 @@ func (pq *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 	var (
 		nodes       = []*Plan{}
 		_spec       = pq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [5]bool{
 			pq.withPms != nil,
 			pq.withCities != nil,
 			pq.withParent != nil,
 			pq.withComplexes != nil,
+			pq.withCoupons != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Plan).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &Plan{config: pq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -514,6 +551,13 @@ func (pq *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 			return nil, err
 		}
 	}
+	if query := pq.withCoupons; query != nil {
+		if err := pq.loadCoupons(ctx, query, nodes,
+			func(n *Plan) { n.Edges.Coupons = []*Coupon{} },
+			func(n *Plan, e *Coupon) { n.Edges.Coupons = append(n.Edges.Coupons, e) }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
 }
 
@@ -543,14 +587,14 @@ func (pq *PlanQuery) loadPms(ctx context.Context, query *BatteryModelQuery, node
 	neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
 		assign := spec.Assign
 		values := spec.ScanValues
-		spec.ScanValues = func(columns []string) ([]interface{}, error) {
+		spec.ScanValues = func(columns []string) ([]any, error) {
 			values, err := values(columns[1:])
 			if err != nil {
 				return nil, err
 			}
-			return append([]interface{}{new(sql.NullInt64)}, values...), nil
+			return append([]any{new(sql.NullInt64)}, values...), nil
 		}
-		spec.Assign = func(columns []string, values []interface{}) error {
+		spec.Assign = func(columns []string, values []any) error {
 			outValue := uint64(values[0].(*sql.NullInt64).Int64)
 			inValue := uint64(values[1].(*sql.NullInt64).Int64)
 			if nids[inValue] == nil {
@@ -601,14 +645,14 @@ func (pq *PlanQuery) loadCities(ctx context.Context, query *CityQuery, nodes []*
 	neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
 		assign := spec.Assign
 		values := spec.ScanValues
-		spec.ScanValues = func(columns []string) ([]interface{}, error) {
+		spec.ScanValues = func(columns []string) ([]any, error) {
 			values, err := values(columns[1:])
 			if err != nil {
 				return nil, err
 			}
-			return append([]interface{}{new(sql.NullInt64)}, values...), nil
+			return append([]any{new(sql.NullInt64)}, values...), nil
 		}
-		spec.Assign = func(columns []string, values []interface{}) error {
+		spec.Assign = func(columns []string, values []any) error {
 			outValue := uint64(values[0].(*sql.NullInt64).Int64)
 			inValue := uint64(values[1].(*sql.NullInt64).Int64)
 			if nids[inValue] == nil {
@@ -692,6 +736,64 @@ func (pq *PlanQuery) loadComplexes(ctx context.Context, query *PlanQuery, nodes 
 	}
 	return nil
 }
+func (pq *PlanQuery) loadCoupons(ctx context.Context, query *CouponQuery, nodes []*Plan, init func(*Plan), assign func(*Plan, *Coupon)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[uint64]*Plan)
+	nids := make(map[uint64]map[*Plan]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(plan.CouponsTable)
+		s.Join(joinT).On(s.C(coupon.FieldID), joinT.C(plan.CouponsPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(plan.CouponsPrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(plan.CouponsPrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+		assign := spec.Assign
+		values := spec.ScanValues
+		spec.ScanValues = func(columns []string) ([]any, error) {
+			values, err := values(columns[1:])
+			if err != nil {
+				return nil, err
+			}
+			return append([]any{new(sql.NullInt64)}, values...), nil
+		}
+		spec.Assign = func(columns []string, values []any) error {
+			outValue := uint64(values[0].(*sql.NullInt64).Int64)
+			inValue := uint64(values[1].(*sql.NullInt64).Int64)
+			if nids[inValue] == nil {
+				nids[inValue] = map[*Plan]struct{}{byID[outValue]: struct{}{}}
+				return assign(columns[1:], values[1:])
+			}
+			nids[inValue][byID[outValue]] = struct{}{}
+			return nil
+		}
+	})
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "coupons" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
 
 func (pq *PlanQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := pq.querySpec()
@@ -706,11 +808,14 @@ func (pq *PlanQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (pq *PlanQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := pq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := pq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (pq *PlanQuery) querySpec() *sqlgraph.QuerySpec {
@@ -820,7 +925,7 @@ func (pgb *PlanGroupBy) Aggregate(fns ...AggregateFunc) *PlanGroupBy {
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (pgb *PlanGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (pgb *PlanGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := pgb.path(ctx)
 	if err != nil {
 		return err
@@ -829,7 +934,7 @@ func (pgb *PlanGroupBy) Scan(ctx context.Context, v interface{}) error {
 	return pgb.sqlScan(ctx, v)
 }
 
-func (pgb *PlanGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (pgb *PlanGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range pgb.fields {
 		if !plan.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -876,7 +981,7 @@ type PlanSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ps *PlanSelect) Scan(ctx context.Context, v interface{}) error {
+func (ps *PlanSelect) Scan(ctx context.Context, v any) error {
 	if err := ps.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -884,7 +989,7 @@ func (ps *PlanSelect) Scan(ctx context.Context, v interface{}) error {
 	return ps.sqlScan(ctx, v)
 }
 
-func (ps *PlanSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (ps *PlanSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := ps.sql.Query()
 	if err := ps.driver.Query(ctx, query, args, rows); err != nil {

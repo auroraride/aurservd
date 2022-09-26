@@ -837,10 +837,10 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 			sq.withBills != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Subscribe).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &Subscribe{config: sq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -1351,11 +1351,14 @@ func (sq *SubscribeQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (sq *SubscribeQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := sq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := sq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (sq *SubscribeQuery) querySpec() *sqlgraph.QuerySpec {
@@ -1465,7 +1468,7 @@ func (sgb *SubscribeGroupBy) Aggregate(fns ...AggregateFunc) *SubscribeGroupBy {
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (sgb *SubscribeGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (sgb *SubscribeGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := sgb.path(ctx)
 	if err != nil {
 		return err
@@ -1474,7 +1477,7 @@ func (sgb *SubscribeGroupBy) Scan(ctx context.Context, v interface{}) error {
 	return sgb.sqlScan(ctx, v)
 }
 
-func (sgb *SubscribeGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (sgb *SubscribeGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range sgb.fields {
 		if !subscribe.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -1521,7 +1524,7 @@ type SubscribeSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ss *SubscribeSelect) Scan(ctx context.Context, v interface{}) error {
+func (ss *SubscribeSelect) Scan(ctx context.Context, v any) error {
 	if err := ss.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1529,7 +1532,7 @@ func (ss *SubscribeSelect) Scan(ctx context.Context, v interface{}) error {
 	return ss.sqlScan(ctx, v)
 }
 
-func (ss *SubscribeSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (ss *SubscribeSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := ss.sql.Query()
 	if err := ss.driver.Query(ctx, query, args, rows); err != nil {

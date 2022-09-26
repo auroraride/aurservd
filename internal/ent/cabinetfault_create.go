@@ -562,18 +562,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *CabinetFaultUpsert) SetCreatedAt(v time.Time) *CabinetFaultUpsert {
-	u.Set(cabinetfault.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *CabinetFaultUpsert) UpdateCreatedAt() *CabinetFaultUpsert {
-	u.SetExcluded(cabinetfault.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *CabinetFaultUpsert) SetUpdatedAt(v time.Time) *CabinetFaultUpsert {
 	u.Set(cabinetfault.FieldUpdatedAt, v)
@@ -601,24 +589,6 @@ func (u *CabinetFaultUpsert) UpdateDeletedAt() *CabinetFaultUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *CabinetFaultUpsert) ClearDeletedAt() *CabinetFaultUpsert {
 	u.SetNull(cabinetfault.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *CabinetFaultUpsert) SetCreator(v *model.Modifier) *CabinetFaultUpsert {
-	u.Set(cabinetfault.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *CabinetFaultUpsert) UpdateCreator() *CabinetFaultUpsert {
-	u.SetExcluded(cabinetfault.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *CabinetFaultUpsert) ClearCreator() *CabinetFaultUpsert {
-	u.SetNull(cabinetfault.FieldCreator)
 	return u
 }
 
@@ -826,20 +796,6 @@ func (u *CabinetFaultUpsertOne) Update(set func(*CabinetFaultUpsert)) *CabinetFa
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *CabinetFaultUpsertOne) SetCreatedAt(v time.Time) *CabinetFaultUpsertOne {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *CabinetFaultUpsertOne) UpdateCreatedAt() *CabinetFaultUpsertOne {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *CabinetFaultUpsertOne) SetUpdatedAt(v time.Time) *CabinetFaultUpsertOne {
 	return u.Update(func(s *CabinetFaultUpsert) {
@@ -872,27 +828,6 @@ func (u *CabinetFaultUpsertOne) UpdateDeletedAt() *CabinetFaultUpsertOne {
 func (u *CabinetFaultUpsertOne) ClearDeletedAt() *CabinetFaultUpsertOne {
 	return u.Update(func(s *CabinetFaultUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *CabinetFaultUpsertOne) SetCreator(v *model.Modifier) *CabinetFaultUpsertOne {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *CabinetFaultUpsertOne) UpdateCreator() *CabinetFaultUpsertOne {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *CabinetFaultUpsertOne) ClearCreator() *CabinetFaultUpsertOne {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1288,20 +1223,6 @@ func (u *CabinetFaultUpsertBulk) Update(set func(*CabinetFaultUpsert)) *CabinetF
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *CabinetFaultUpsertBulk) SetCreatedAt(v time.Time) *CabinetFaultUpsertBulk {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *CabinetFaultUpsertBulk) UpdateCreatedAt() *CabinetFaultUpsertBulk {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *CabinetFaultUpsertBulk) SetUpdatedAt(v time.Time) *CabinetFaultUpsertBulk {
 	return u.Update(func(s *CabinetFaultUpsert) {
@@ -1334,27 +1255,6 @@ func (u *CabinetFaultUpsertBulk) UpdateDeletedAt() *CabinetFaultUpsertBulk {
 func (u *CabinetFaultUpsertBulk) ClearDeletedAt() *CabinetFaultUpsertBulk {
 	return u.Update(func(s *CabinetFaultUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *CabinetFaultUpsertBulk) SetCreator(v *model.Modifier) *CabinetFaultUpsertBulk {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *CabinetFaultUpsertBulk) UpdateCreator() *CabinetFaultUpsertBulk {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *CabinetFaultUpsertBulk) ClearCreator() *CabinetFaultUpsertBulk {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.ClearCreator()
 	})
 }
 

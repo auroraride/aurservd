@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 )
 
@@ -166,21 +167,6 @@ func (cc *CityCreate) SetID(u uint64) *CityCreate {
 	return cc
 }
 
-// AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
-func (cc *CityCreate) AddPlanIDs(ids ...uint64) *CityCreate {
-	cc.mutation.AddPlanIDs(ids...)
-	return cc
-}
-
-// AddPlans adds the "plans" edges to the Plan entity.
-func (cc *CityCreate) AddPlans(p ...*Plan) *CityCreate {
-	ids := make([]uint64, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return cc.AddPlanIDs(ids...)
-}
-
 // SetParent sets the "parent" edge to the City entity.
 func (cc *CityCreate) SetParent(c *City) *CityCreate {
 	return cc.SetParentID(c.ID)
@@ -199,6 +185,36 @@ func (cc *CityCreate) AddChildren(c ...*City) *CityCreate {
 		ids[i] = c[i].ID
 	}
 	return cc.AddChildIDs(ids...)
+}
+
+// AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
+func (cc *CityCreate) AddPlanIDs(ids ...uint64) *CityCreate {
+	cc.mutation.AddPlanIDs(ids...)
+	return cc
+}
+
+// AddPlans adds the "plans" edges to the Plan entity.
+func (cc *CityCreate) AddPlans(p ...*Plan) *CityCreate {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return cc.AddPlanIDs(ids...)
+}
+
+// AddCouponIDs adds the "coupons" edge to the Coupon entity by IDs.
+func (cc *CityCreate) AddCouponIDs(ids ...uint64) *CityCreate {
+	cc.mutation.AddCouponIDs(ids...)
+	return cc
+}
+
+// AddCoupons adds the "coupons" edges to the Coupon entity.
+func (cc *CityCreate) AddCoupons(c ...*Coupon) *CityCreate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return cc.AddCouponIDs(ids...)
 }
 
 // Mutation returns the CityMutation object of the builder.
@@ -443,25 +459,6 @@ func (cc *CityCreate) createSpec() (*City, *sqlgraph.CreateSpec) {
 		})
 		_node.Lat = value
 	}
-	if nodes := cc.mutation.PlansIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   city.PlansTable,
-			Columns: city.PlansPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: plan.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := cc.mutation.ParentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -493,6 +490,44 @@ func (cc *CityCreate) createSpec() (*City, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.PlansIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   city.PlansTable,
+			Columns: city.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.CouponsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   city.CouponsTable,
+			Columns: city.CouponsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupon.FieldID,
 				},
 			},
 		}
@@ -553,18 +588,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *CityUpsert) SetCreatedAt(v time.Time) *CityUpsert {
-	u.Set(city.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *CityUpsert) UpdateCreatedAt() *CityUpsert {
-	u.SetExcluded(city.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *CityUpsert) SetUpdatedAt(v time.Time) *CityUpsert {
 	u.Set(city.FieldUpdatedAt, v)
@@ -592,24 +615,6 @@ func (u *CityUpsert) UpdateDeletedAt() *CityUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *CityUpsert) ClearDeletedAt() *CityUpsert {
 	u.SetNull(city.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *CityUpsert) SetCreator(v *model.Modifier) *CityUpsert {
-	u.Set(city.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *CityUpsert) UpdateCreator() *CityUpsert {
-	u.SetExcluded(city.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *CityUpsert) ClearCreator() *CityUpsert {
-	u.SetNull(city.FieldCreator)
 	return u
 }
 
@@ -811,20 +816,6 @@ func (u *CityUpsertOne) Update(set func(*CityUpsert)) *CityUpsertOne {
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *CityUpsertOne) SetCreatedAt(v time.Time) *CityUpsertOne {
-	return u.Update(func(s *CityUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *CityUpsertOne) UpdateCreatedAt() *CityUpsertOne {
-	return u.Update(func(s *CityUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *CityUpsertOne) SetUpdatedAt(v time.Time) *CityUpsertOne {
 	return u.Update(func(s *CityUpsert) {
@@ -857,27 +848,6 @@ func (u *CityUpsertOne) UpdateDeletedAt() *CityUpsertOne {
 func (u *CityUpsertOne) ClearDeletedAt() *CityUpsertOne {
 	return u.Update(func(s *CityUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *CityUpsertOne) SetCreator(v *model.Modifier) *CityUpsertOne {
-	return u.Update(func(s *CityUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *CityUpsertOne) UpdateCreator() *CityUpsertOne {
-	return u.Update(func(s *CityUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *CityUpsertOne) ClearCreator() *CityUpsertOne {
-	return u.Update(func(s *CityUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1265,20 +1235,6 @@ func (u *CityUpsertBulk) Update(set func(*CityUpsert)) *CityUpsertBulk {
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *CityUpsertBulk) SetCreatedAt(v time.Time) *CityUpsertBulk {
-	return u.Update(func(s *CityUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *CityUpsertBulk) UpdateCreatedAt() *CityUpsertBulk {
-	return u.Update(func(s *CityUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *CityUpsertBulk) SetUpdatedAt(v time.Time) *CityUpsertBulk {
 	return u.Update(func(s *CityUpsert) {
@@ -1311,27 +1267,6 @@ func (u *CityUpsertBulk) UpdateDeletedAt() *CityUpsertBulk {
 func (u *CityUpsertBulk) ClearDeletedAt() *CityUpsertBulk {
 	return u.Update(func(s *CityUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *CityUpsertBulk) SetCreator(v *model.Modifier) *CityUpsertBulk {
-	return u.Update(func(s *CityUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *CityUpsertBulk) UpdateCreator() *CityUpsertBulk {
-	return u.Update(func(s *CityUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *CityUpsertBulk) ClearCreator() *CityUpsertBulk {
-	return u.Update(func(s *CityUpsert) {
-		s.ClearCreator()
 	})
 }
 

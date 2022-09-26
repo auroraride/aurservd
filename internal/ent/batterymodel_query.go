@@ -394,10 +394,10 @@ func (bmq *BatteryModelQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 			bmq.withPlans != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*BatteryModel).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &BatteryModel{config: bmq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -458,14 +458,14 @@ func (bmq *BatteryModelQuery) loadCabinets(ctx context.Context, query *CabinetQu
 	neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
 		assign := spec.Assign
 		values := spec.ScanValues
-		spec.ScanValues = func(columns []string) ([]interface{}, error) {
+		spec.ScanValues = func(columns []string) ([]any, error) {
 			values, err := values(columns[1:])
 			if err != nil {
 				return nil, err
 			}
-			return append([]interface{}{new(sql.NullInt64)}, values...), nil
+			return append([]any{new(sql.NullInt64)}, values...), nil
 		}
-		spec.Assign = func(columns []string, values []interface{}) error {
+		spec.Assign = func(columns []string, values []any) error {
 			outValue := uint64(values[0].(*sql.NullInt64).Int64)
 			inValue := uint64(values[1].(*sql.NullInt64).Int64)
 			if nids[inValue] == nil {
@@ -516,14 +516,14 @@ func (bmq *BatteryModelQuery) loadPlans(ctx context.Context, query *PlanQuery, n
 	neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
 		assign := spec.Assign
 		values := spec.ScanValues
-		spec.ScanValues = func(columns []string) ([]interface{}, error) {
+		spec.ScanValues = func(columns []string) ([]any, error) {
 			values, err := values(columns[1:])
 			if err != nil {
 				return nil, err
 			}
-			return append([]interface{}{new(sql.NullInt64)}, values...), nil
+			return append([]any{new(sql.NullInt64)}, values...), nil
 		}
-		spec.Assign = func(columns []string, values []interface{}) error {
+		spec.Assign = func(columns []string, values []any) error {
 			outValue := uint64(values[0].(*sql.NullInt64).Int64)
 			inValue := uint64(values[1].(*sql.NullInt64).Int64)
 			if nids[inValue] == nil {
@@ -562,11 +562,14 @@ func (bmq *BatteryModelQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (bmq *BatteryModelQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := bmq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := bmq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (bmq *BatteryModelQuery) querySpec() *sqlgraph.QuerySpec {
@@ -676,7 +679,7 @@ func (bmgb *BatteryModelGroupBy) Aggregate(fns ...AggregateFunc) *BatteryModelGr
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (bmgb *BatteryModelGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (bmgb *BatteryModelGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := bmgb.path(ctx)
 	if err != nil {
 		return err
@@ -685,7 +688,7 @@ func (bmgb *BatteryModelGroupBy) Scan(ctx context.Context, v interface{}) error 
 	return bmgb.sqlScan(ctx, v)
 }
 
-func (bmgb *BatteryModelGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (bmgb *BatteryModelGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range bmgb.fields {
 		if !batterymodel.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -732,7 +735,7 @@ type BatteryModelSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (bms *BatteryModelSelect) Scan(ctx context.Context, v interface{}) error {
+func (bms *BatteryModelSelect) Scan(ctx context.Context, v any) error {
 	if err := bms.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -740,7 +743,7 @@ func (bms *BatteryModelSelect) Scan(ctx context.Context, v interface{}) error {
 	return bms.sqlScan(ctx, v)
 }
 
-func (bms *BatteryModelSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (bms *BatteryModelSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := bms.sql.Query()
 	if err := bms.driver.Query(ctx, query, args, rows); err != nil {

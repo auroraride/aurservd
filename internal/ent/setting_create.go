@@ -357,18 +357,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *SettingUpsert) SetCreatedAt(v time.Time) *SettingUpsert {
-	u.Set(setting.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *SettingUpsert) UpdateCreatedAt() *SettingUpsert {
-	u.SetExcluded(setting.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *SettingUpsert) SetUpdatedAt(v time.Time) *SettingUpsert {
 	u.Set(setting.FieldUpdatedAt, v)
@@ -378,24 +366,6 @@ func (u *SettingUpsert) SetUpdatedAt(v time.Time) *SettingUpsert {
 // UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
 func (u *SettingUpsert) UpdateUpdatedAt() *SettingUpsert {
 	u.SetExcluded(setting.FieldUpdatedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *SettingUpsert) SetCreator(v *model.Modifier) *SettingUpsert {
-	u.Set(setting.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *SettingUpsert) UpdateCreator() *SettingUpsert {
-	u.SetExcluded(setting.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *SettingUpsert) ClearCreator() *SettingUpsert {
-	u.SetNull(setting.FieldCreator)
 	return u
 }
 
@@ -519,20 +489,6 @@ func (u *SettingUpsertOne) Update(set func(*SettingUpsert)) *SettingUpsertOne {
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *SettingUpsertOne) SetCreatedAt(v time.Time) *SettingUpsertOne {
-	return u.Update(func(s *SettingUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *SettingUpsertOne) UpdateCreatedAt() *SettingUpsertOne {
-	return u.Update(func(s *SettingUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *SettingUpsertOne) SetUpdatedAt(v time.Time) *SettingUpsertOne {
 	return u.Update(func(s *SettingUpsert) {
@@ -544,27 +500,6 @@ func (u *SettingUpsertOne) SetUpdatedAt(v time.Time) *SettingUpsertOne {
 func (u *SettingUpsertOne) UpdateUpdatedAt() *SettingUpsertOne {
 	return u.Update(func(s *SettingUpsert) {
 		s.UpdateUpdatedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *SettingUpsertOne) SetCreator(v *model.Modifier) *SettingUpsertOne {
-	return u.Update(func(s *SettingUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *SettingUpsertOne) UpdateCreator() *SettingUpsertOne {
-	return u.Update(func(s *SettingUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *SettingUpsertOne) ClearCreator() *SettingUpsertOne {
-	return u.Update(func(s *SettingUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -862,20 +797,6 @@ func (u *SettingUpsertBulk) Update(set func(*SettingUpsert)) *SettingUpsertBulk 
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *SettingUpsertBulk) SetCreatedAt(v time.Time) *SettingUpsertBulk {
-	return u.Update(func(s *SettingUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *SettingUpsertBulk) UpdateCreatedAt() *SettingUpsertBulk {
-	return u.Update(func(s *SettingUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *SettingUpsertBulk) SetUpdatedAt(v time.Time) *SettingUpsertBulk {
 	return u.Update(func(s *SettingUpsert) {
@@ -887,27 +808,6 @@ func (u *SettingUpsertBulk) SetUpdatedAt(v time.Time) *SettingUpsertBulk {
 func (u *SettingUpsertBulk) UpdateUpdatedAt() *SettingUpsertBulk {
 	return u.Update(func(s *SettingUpsert) {
 		s.UpdateUpdatedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *SettingUpsertBulk) SetCreator(v *model.Modifier) *SettingUpsertBulk {
-	return u.Update(func(s *SettingUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *SettingUpsertBulk) UpdateCreator() *SettingUpsertBulk {
-	return u.Update(func(s *SettingUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *SettingUpsertBulk) ClearCreator() *SettingUpsertBulk {
-	return u.Update(func(s *SettingUpsert) {
-		s.ClearCreator()
 	})
 }
 

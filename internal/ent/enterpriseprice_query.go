@@ -393,10 +393,10 @@ func (epq *EnterprisePriceQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 			epq.withEnterprise != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*EnterprisePrice).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &EnterprisePrice{config: epq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -495,11 +495,14 @@ func (epq *EnterprisePriceQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (epq *EnterprisePriceQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := epq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := epq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (epq *EnterprisePriceQuery) querySpec() *sqlgraph.QuerySpec {
@@ -609,7 +612,7 @@ func (epgb *EnterprisePriceGroupBy) Aggregate(fns ...AggregateFunc) *EnterpriseP
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (epgb *EnterprisePriceGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (epgb *EnterprisePriceGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := epgb.path(ctx)
 	if err != nil {
 		return err
@@ -618,7 +621,7 @@ func (epgb *EnterprisePriceGroupBy) Scan(ctx context.Context, v interface{}) err
 	return epgb.sqlScan(ctx, v)
 }
 
-func (epgb *EnterprisePriceGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (epgb *EnterprisePriceGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range epgb.fields {
 		if !enterpriseprice.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -665,7 +668,7 @@ type EnterprisePriceSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (eps *EnterprisePriceSelect) Scan(ctx context.Context, v interface{}) error {
+func (eps *EnterprisePriceSelect) Scan(ctx context.Context, v any) error {
 	if err := eps.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -673,7 +676,7 @@ func (eps *EnterprisePriceSelect) Scan(ctx context.Context, v interface{}) error
 	return eps.sqlScan(ctx, v)
 }
 
-func (eps *EnterprisePriceSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (eps *EnterprisePriceSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := eps.sql.Query()
 	if err := eps.driver.Query(ctx, query, args, rows); err != nil {

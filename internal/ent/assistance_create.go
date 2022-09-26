@@ -1070,18 +1070,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *AssistanceUpsert) SetCreatedAt(v time.Time) *AssistanceUpsert {
-	u.Set(assistance.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *AssistanceUpsert) UpdateCreatedAt() *AssistanceUpsert {
-	u.SetExcluded(assistance.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *AssistanceUpsert) SetUpdatedAt(v time.Time) *AssistanceUpsert {
 	u.Set(assistance.FieldUpdatedAt, v)
@@ -1109,24 +1097,6 @@ func (u *AssistanceUpsert) UpdateDeletedAt() *AssistanceUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *AssistanceUpsert) ClearDeletedAt() *AssistanceUpsert {
 	u.SetNull(assistance.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *AssistanceUpsert) SetCreator(v *model.Modifier) *AssistanceUpsert {
-	u.Set(assistance.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *AssistanceUpsert) UpdateCreator() *AssistanceUpsert {
-	u.SetExcluded(assistance.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *AssistanceUpsert) ClearCreator() *AssistanceUpsert {
-	u.SetNull(assistance.FieldCreator)
 	return u
 }
 
@@ -1742,20 +1712,6 @@ func (u *AssistanceUpsertOne) Update(set func(*AssistanceUpsert)) *AssistanceUps
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *AssistanceUpsertOne) SetCreatedAt(v time.Time) *AssistanceUpsertOne {
-	return u.Update(func(s *AssistanceUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *AssistanceUpsertOne) UpdateCreatedAt() *AssistanceUpsertOne {
-	return u.Update(func(s *AssistanceUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *AssistanceUpsertOne) SetUpdatedAt(v time.Time) *AssistanceUpsertOne {
 	return u.Update(func(s *AssistanceUpsert) {
@@ -1788,27 +1744,6 @@ func (u *AssistanceUpsertOne) UpdateDeletedAt() *AssistanceUpsertOne {
 func (u *AssistanceUpsertOne) ClearDeletedAt() *AssistanceUpsertOne {
 	return u.Update(func(s *AssistanceUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *AssistanceUpsertOne) SetCreator(v *model.Modifier) *AssistanceUpsertOne {
-	return u.Update(func(s *AssistanceUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *AssistanceUpsertOne) UpdateCreator() *AssistanceUpsertOne {
-	return u.Update(func(s *AssistanceUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *AssistanceUpsertOne) ClearCreator() *AssistanceUpsertOne {
-	return u.Update(func(s *AssistanceUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -2680,20 +2615,6 @@ func (u *AssistanceUpsertBulk) Update(set func(*AssistanceUpsert)) *AssistanceUp
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *AssistanceUpsertBulk) SetCreatedAt(v time.Time) *AssistanceUpsertBulk {
-	return u.Update(func(s *AssistanceUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *AssistanceUpsertBulk) UpdateCreatedAt() *AssistanceUpsertBulk {
-	return u.Update(func(s *AssistanceUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *AssistanceUpsertBulk) SetUpdatedAt(v time.Time) *AssistanceUpsertBulk {
 	return u.Update(func(s *AssistanceUpsert) {
@@ -2726,27 +2647,6 @@ func (u *AssistanceUpsertBulk) UpdateDeletedAt() *AssistanceUpsertBulk {
 func (u *AssistanceUpsertBulk) ClearDeletedAt() *AssistanceUpsertBulk {
 	return u.Update(func(s *AssistanceUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *AssistanceUpsertBulk) SetCreator(v *model.Modifier) *AssistanceUpsertBulk {
-	return u.Update(func(s *AssistanceUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *AssistanceUpsertBulk) UpdateCreator() *AssistanceUpsertBulk {
-	return u.Update(func(s *AssistanceUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *AssistanceUpsertBulk) ClearCreator() *AssistanceUpsertBulk {
-	return u.Update(func(s *AssistanceUpsert) {
-		s.ClearCreator()
 	})
 }
 

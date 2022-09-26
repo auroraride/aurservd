@@ -467,10 +467,10 @@ func (rq *ReserveQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rese
 			rq.withBusiness != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Reserve).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &Reserve{config: rq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -636,11 +636,14 @@ func (rq *ReserveQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (rq *ReserveQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := rq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := rq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (rq *ReserveQuery) querySpec() *sqlgraph.QuerySpec {
@@ -750,7 +753,7 @@ func (rgb *ReserveGroupBy) Aggregate(fns ...AggregateFunc) *ReserveGroupBy {
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (rgb *ReserveGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (rgb *ReserveGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := rgb.path(ctx)
 	if err != nil {
 		return err
@@ -759,7 +762,7 @@ func (rgb *ReserveGroupBy) Scan(ctx context.Context, v interface{}) error {
 	return rgb.sqlScan(ctx, v)
 }
 
-func (rgb *ReserveGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (rgb *ReserveGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range rgb.fields {
 		if !reserve.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -806,7 +809,7 @@ type ReserveSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (rs *ReserveSelect) Scan(ctx context.Context, v interface{}) error {
+func (rs *ReserveSelect) Scan(ctx context.Context, v any) error {
 	if err := rs.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -814,7 +817,7 @@ func (rs *ReserveSelect) Scan(ctx context.Context, v interface{}) error {
 	return rs.sqlScan(ctx, v)
 }
 
-func (rs *ReserveSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (rs *ReserveSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := rs.sql.Query()
 	if err := rs.driver.Query(ctx, query, args, rows); err != nil {

@@ -477,18 +477,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *ContractUpsert) SetCreatedAt(v time.Time) *ContractUpsert {
-	u.Set(contract.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *ContractUpsert) UpdateCreatedAt() *ContractUpsert {
-	u.SetExcluded(contract.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *ContractUpsert) SetUpdatedAt(v time.Time) *ContractUpsert {
 	u.Set(contract.FieldUpdatedAt, v)
@@ -516,24 +504,6 @@ func (u *ContractUpsert) UpdateDeletedAt() *ContractUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *ContractUpsert) ClearDeletedAt() *ContractUpsert {
 	u.SetNull(contract.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *ContractUpsert) SetCreator(v *model.Modifier) *ContractUpsert {
-	u.Set(contract.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *ContractUpsert) UpdateCreator() *ContractUpsert {
-	u.SetExcluded(contract.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *ContractUpsert) ClearCreator() *ContractUpsert {
-	u.SetNull(contract.FieldCreator)
 	return u
 }
 
@@ -705,20 +675,6 @@ func (u *ContractUpsertOne) Update(set func(*ContractUpsert)) *ContractUpsertOne
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *ContractUpsertOne) SetCreatedAt(v time.Time) *ContractUpsertOne {
-	return u.Update(func(s *ContractUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *ContractUpsertOne) UpdateCreatedAt() *ContractUpsertOne {
-	return u.Update(func(s *ContractUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *ContractUpsertOne) SetUpdatedAt(v time.Time) *ContractUpsertOne {
 	return u.Update(func(s *ContractUpsert) {
@@ -751,27 +707,6 @@ func (u *ContractUpsertOne) UpdateDeletedAt() *ContractUpsertOne {
 func (u *ContractUpsertOne) ClearDeletedAt() *ContractUpsertOne {
 	return u.Update(func(s *ContractUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *ContractUpsertOne) SetCreator(v *model.Modifier) *ContractUpsertOne {
-	return u.Update(func(s *ContractUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *ContractUpsertOne) UpdateCreator() *ContractUpsertOne {
-	return u.Update(func(s *ContractUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *ContractUpsertOne) ClearCreator() *ContractUpsertOne {
-	return u.Update(func(s *ContractUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1125,20 +1060,6 @@ func (u *ContractUpsertBulk) Update(set func(*ContractUpsert)) *ContractUpsertBu
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *ContractUpsertBulk) SetCreatedAt(v time.Time) *ContractUpsertBulk {
-	return u.Update(func(s *ContractUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *ContractUpsertBulk) UpdateCreatedAt() *ContractUpsertBulk {
-	return u.Update(func(s *ContractUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *ContractUpsertBulk) SetUpdatedAt(v time.Time) *ContractUpsertBulk {
 	return u.Update(func(s *ContractUpsert) {
@@ -1171,27 +1092,6 @@ func (u *ContractUpsertBulk) UpdateDeletedAt() *ContractUpsertBulk {
 func (u *ContractUpsertBulk) ClearDeletedAt() *ContractUpsertBulk {
 	return u.Update(func(s *ContractUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *ContractUpsertBulk) SetCreator(v *model.Modifier) *ContractUpsertBulk {
-	return u.Update(func(s *ContractUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *ContractUpsertBulk) UpdateCreator() *ContractUpsertBulk {
-	return u.Update(func(s *ContractUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *ContractUpsertBulk) ClearCreator() *ContractUpsertBulk {
-	return u.Update(func(s *ContractUpsert) {
-		s.ClearCreator()
 	})
 }
 

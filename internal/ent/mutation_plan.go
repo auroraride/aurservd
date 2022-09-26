@@ -53,6 +53,9 @@ type PlanMutation struct {
 	complexes        map[uint64]struct{}
 	removedcomplexes map[uint64]struct{}
 	clearedcomplexes bool
+	coupons          map[uint64]struct{}
+	removedcoupons   map[uint64]struct{}
+	clearedcoupons   bool
 	done             bool
 	oldValue         func(context.Context) (*Plan, error)
 	predicates       []predicate.Plan
@@ -1092,6 +1095,60 @@ func (m *PlanMutation) ResetComplexes() {
 	m.removedcomplexes = nil
 }
 
+// AddCouponIDs adds the "coupons" edge to the Coupon entity by ids.
+func (m *PlanMutation) AddCouponIDs(ids ...uint64) {
+	if m.coupons == nil {
+		m.coupons = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.coupons[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCoupons clears the "coupons" edge to the Coupon entity.
+func (m *PlanMutation) ClearCoupons() {
+	m.clearedcoupons = true
+}
+
+// CouponsCleared reports if the "coupons" edge to the Coupon entity was cleared.
+func (m *PlanMutation) CouponsCleared() bool {
+	return m.clearedcoupons
+}
+
+// RemoveCouponIDs removes the "coupons" edge to the Coupon entity by IDs.
+func (m *PlanMutation) RemoveCouponIDs(ids ...uint64) {
+	if m.removedcoupons == nil {
+		m.removedcoupons = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.coupons, ids[i])
+		m.removedcoupons[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCoupons returns the removed IDs of the "coupons" edge to the Coupon entity.
+func (m *PlanMutation) RemovedCouponsIDs() (ids []uint64) {
+	for id := range m.removedcoupons {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CouponsIDs returns the "coupons" edge IDs in the mutation.
+func (m *PlanMutation) CouponsIDs() (ids []uint64) {
+	for id := range m.coupons {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCoupons resets all changes to the "coupons" edge.
+func (m *PlanMutation) ResetCoupons() {
+	m.coupons = nil
+	m.clearedcoupons = false
+	m.removedcoupons = nil
+}
+
 // Where appends a list predicates to the PlanMutation builder.
 func (m *PlanMutation) Where(ps ...predicate.Plan) {
 	m.predicates = append(m.predicates, ps...)
@@ -1561,7 +1618,7 @@ func (m *PlanMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlanMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.pms != nil {
 		edges = append(edges, plan.EdgePms)
 	}
@@ -1573,6 +1630,9 @@ func (m *PlanMutation) AddedEdges() []string {
 	}
 	if m.complexes != nil {
 		edges = append(edges, plan.EdgeComplexes)
+	}
+	if m.coupons != nil {
+		edges = append(edges, plan.EdgeCoupons)
 	}
 	return edges
 }
@@ -1603,13 +1663,19 @@ func (m *PlanMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case plan.EdgeCoupons:
+		ids := make([]ent.Value, 0, len(m.coupons))
+		for id := range m.coupons {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlanMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.removedpms != nil {
 		edges = append(edges, plan.EdgePms)
 	}
@@ -1618,6 +1684,9 @@ func (m *PlanMutation) RemovedEdges() []string {
 	}
 	if m.removedcomplexes != nil {
 		edges = append(edges, plan.EdgeComplexes)
+	}
+	if m.removedcoupons != nil {
+		edges = append(edges, plan.EdgeCoupons)
 	}
 	return edges
 }
@@ -1644,13 +1713,19 @@ func (m *PlanMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case plan.EdgeCoupons:
+		ids := make([]ent.Value, 0, len(m.removedcoupons))
+		for id := range m.removedcoupons {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlanMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.clearedpms {
 		edges = append(edges, plan.EdgePms)
 	}
@@ -1662,6 +1737,9 @@ func (m *PlanMutation) ClearedEdges() []string {
 	}
 	if m.clearedcomplexes {
 		edges = append(edges, plan.EdgeComplexes)
+	}
+	if m.clearedcoupons {
+		edges = append(edges, plan.EdgeCoupons)
 	}
 	return edges
 }
@@ -1678,6 +1756,8 @@ func (m *PlanMutation) EdgeCleared(name string) bool {
 		return m.clearedparent
 	case plan.EdgeComplexes:
 		return m.clearedcomplexes
+	case plan.EdgeCoupons:
+		return m.clearedcoupons
 	}
 	return false
 }
@@ -1708,6 +1788,9 @@ func (m *PlanMutation) ResetEdge(name string) error {
 		return nil
 	case plan.EdgeComplexes:
 		m.ResetComplexes()
+		return nil
+	case plan.EdgeCoupons:
+		m.ResetCoupons()
 		return nil
 	}
 	return fmt.Errorf("unknown Plan edge %s", name)

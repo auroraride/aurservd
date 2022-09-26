@@ -495,24 +495,6 @@ type (
 	}
 )
 
-// SetCreator sets the "creator" field.
-func (u *SubscribeSuspendUpsert) SetCreator(v *model.Modifier) *SubscribeSuspendUpsert {
-	u.Set(subscribesuspend.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *SubscribeSuspendUpsert) UpdateCreator() *SubscribeSuspendUpsert {
-	u.SetExcluded(subscribesuspend.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *SubscribeSuspendUpsert) ClearCreator() *SubscribeSuspendUpsert {
-	u.SetNull(subscribesuspend.FieldCreator)
-	return u
-}
-
 // SetLastModifier sets the "last_modifier" field.
 func (u *SubscribeSuspendUpsert) SetLastModifier(v *model.Modifier) *SubscribeSuspendUpsert {
 	u.Set(subscribesuspend.FieldLastModifier, v)
@@ -730,27 +712,6 @@ func (u *SubscribeSuspendUpsertOne) Update(set func(*SubscribeSuspendUpsert)) *S
 		set(&SubscribeSuspendUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *SubscribeSuspendUpsertOne) SetCreator(v *model.Modifier) *SubscribeSuspendUpsertOne {
-	return u.Update(func(s *SubscribeSuspendUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *SubscribeSuspendUpsertOne) UpdateCreator() *SubscribeSuspendUpsertOne {
-	return u.Update(func(s *SubscribeSuspendUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *SubscribeSuspendUpsertOne) ClearCreator() *SubscribeSuspendUpsertOne {
-	return u.Update(func(s *SubscribeSuspendUpsert) {
-		s.ClearCreator()
-	})
 }
 
 // SetLastModifier sets the "last_modifier" field.
@@ -1161,27 +1122,6 @@ func (u *SubscribeSuspendUpsertBulk) Update(set func(*SubscribeSuspendUpsert)) *
 		set(&SubscribeSuspendUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *SubscribeSuspendUpsertBulk) SetCreator(v *model.Modifier) *SubscribeSuspendUpsertBulk {
-	return u.Update(func(s *SubscribeSuspendUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *SubscribeSuspendUpsertBulk) UpdateCreator() *SubscribeSuspendUpsertBulk {
-	return u.Update(func(s *SubscribeSuspendUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *SubscribeSuspendUpsertBulk) ClearCreator() *SubscribeSuspendUpsertBulk {
-	return u.Update(func(s *SubscribeSuspendUpsert) {
-		s.ClearCreator()
-	})
 }
 
 // SetLastModifier sets the "last_modifier" field.

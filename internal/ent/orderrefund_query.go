@@ -356,10 +356,10 @@ func (orq *OrderRefundQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]
 			orq.withOrder != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*OrderRefund).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &OrderRefund{config: orq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -426,11 +426,14 @@ func (orq *OrderRefundQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (orq *OrderRefundQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := orq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := orq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (orq *OrderRefundQuery) querySpec() *sqlgraph.QuerySpec {
@@ -540,7 +543,7 @@ func (orgb *OrderRefundGroupBy) Aggregate(fns ...AggregateFunc) *OrderRefundGrou
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (orgb *OrderRefundGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (orgb *OrderRefundGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := orgb.path(ctx)
 	if err != nil {
 		return err
@@ -549,7 +552,7 @@ func (orgb *OrderRefundGroupBy) Scan(ctx context.Context, v interface{}) error {
 	return orgb.sqlScan(ctx, v)
 }
 
-func (orgb *OrderRefundGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (orgb *OrderRefundGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range orgb.fields {
 		if !orderrefund.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -596,7 +599,7 @@ type OrderRefundSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ors *OrderRefundSelect) Scan(ctx context.Context, v interface{}) error {
+func (ors *OrderRefundSelect) Scan(ctx context.Context, v any) error {
 	if err := ors.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -604,7 +607,7 @@ func (ors *OrderRefundSelect) Scan(ctx context.Context, v interface{}) error {
 	return ors.sqlScan(ctx, v)
 }
 
-func (ors *OrderRefundSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (ors *OrderRefundSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := ors.sql.Query()
 	if err := ors.driver.Query(ctx, query, args, rows); err != nil {

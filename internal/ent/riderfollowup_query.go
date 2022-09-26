@@ -393,10 +393,10 @@ func (rfuq *RiderFollowUpQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 			rfuq.withRider != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*RiderFollowUp).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &RiderFollowUp{config: rfuq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -495,11 +495,14 @@ func (rfuq *RiderFollowUpQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (rfuq *RiderFollowUpQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := rfuq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := rfuq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (rfuq *RiderFollowUpQuery) querySpec() *sqlgraph.QuerySpec {
@@ -609,7 +612,7 @@ func (rfugb *RiderFollowUpGroupBy) Aggregate(fns ...AggregateFunc) *RiderFollowU
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (rfugb *RiderFollowUpGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (rfugb *RiderFollowUpGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := rfugb.path(ctx)
 	if err != nil {
 		return err
@@ -618,7 +621,7 @@ func (rfugb *RiderFollowUpGroupBy) Scan(ctx context.Context, v interface{}) erro
 	return rfugb.sqlScan(ctx, v)
 }
 
-func (rfugb *RiderFollowUpGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (rfugb *RiderFollowUpGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range rfugb.fields {
 		if !riderfollowup.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -665,7 +668,7 @@ type RiderFollowUpSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (rfus *RiderFollowUpSelect) Scan(ctx context.Context, v interface{}) error {
+func (rfus *RiderFollowUpSelect) Scan(ctx context.Context, v any) error {
 	if err := rfus.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -673,7 +676,7 @@ func (rfus *RiderFollowUpSelect) Scan(ctx context.Context, v interface{}) error 
 	return rfus.sqlScan(ctx, v)
 }
 
-func (rfus *RiderFollowUpSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (rfus *RiderFollowUpSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := rfus.sql.Query()
 	if err := rfus.driver.Query(ctx, query, args, rows); err != nil {

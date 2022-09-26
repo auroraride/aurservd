@@ -467,10 +467,10 @@ func (ssq *SubscribeSuspendQuery) sqlAll(ctx context.Context, hooks ...queryHook
 			ssq.withPause != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*SubscribeSuspend).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &SubscribeSuspend{config: ssq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -633,11 +633,14 @@ func (ssq *SubscribeSuspendQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (ssq *SubscribeSuspendQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := ssq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := ssq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (ssq *SubscribeSuspendQuery) querySpec() *sqlgraph.QuerySpec {
@@ -747,7 +750,7 @@ func (ssgb *SubscribeSuspendGroupBy) Aggregate(fns ...AggregateFunc) *SubscribeS
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (ssgb *SubscribeSuspendGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (ssgb *SubscribeSuspendGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := ssgb.path(ctx)
 	if err != nil {
 		return err
@@ -756,7 +759,7 @@ func (ssgb *SubscribeSuspendGroupBy) Scan(ctx context.Context, v interface{}) er
 	return ssgb.sqlScan(ctx, v)
 }
 
-func (ssgb *SubscribeSuspendGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (ssgb *SubscribeSuspendGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range ssgb.fields {
 		if !subscribesuspend.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -803,7 +806,7 @@ type SubscribeSuspendSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (sss *SubscribeSuspendSelect) Scan(ctx context.Context, v interface{}) error {
+func (sss *SubscribeSuspendSelect) Scan(ctx context.Context, v any) error {
 	if err := sss.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -811,7 +814,7 @@ func (sss *SubscribeSuspendSelect) Scan(ctx context.Context, v interface{}) erro
 	return sss.sqlScan(ctx, v)
 }
 
-func (sss *SubscribeSuspendSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (sss *SubscribeSuspendSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := sss.sql.Query()
 	if err := sss.driver.Query(ctx, query, args, rows); err != nil {

@@ -35,7 +35,7 @@ func IDNEQ(id uint64) predicate.Branch {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -46,7 +46,7 @@ func IDIn(ids ...uint64) predicate.Branch {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -168,7 +168,7 @@ func CreatedAtNEQ(v time.Time) predicate.Branch {
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.Branch {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -179,7 +179,7 @@ func CreatedAtIn(vs ...time.Time) predicate.Branch {
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.Branch {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -232,7 +232,7 @@ func UpdatedAtNEQ(v time.Time) predicate.Branch {
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.Branch {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -243,7 +243,7 @@ func UpdatedAtIn(vs ...time.Time) predicate.Branch {
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.Branch {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -296,7 +296,7 @@ func DeletedAtNEQ(v time.Time) predicate.Branch {
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.Branch {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -307,7 +307,7 @@ func DeletedAtIn(vs ...time.Time) predicate.Branch {
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.Branch {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -402,7 +402,7 @@ func RemarkNEQ(v string) predicate.Branch {
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.Branch {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -413,7 +413,7 @@ func RemarkIn(vs ...string) predicate.Branch {
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.Branch {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -515,7 +515,7 @@ func CityIDNEQ(v uint64) predicate.Branch {
 
 // CityIDIn applies the In predicate on the "city_id" field.
 func CityIDIn(vs ...uint64) predicate.Branch {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -526,7 +526,7 @@ func CityIDIn(vs ...uint64) predicate.Branch {
 
 // CityIDNotIn applies the NotIn predicate on the "city_id" field.
 func CityIDNotIn(vs ...uint64) predicate.Branch {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -551,7 +551,7 @@ func NameNEQ(v string) predicate.Branch {
 
 // NameIn applies the In predicate on the "name" field.
 func NameIn(vs ...string) predicate.Branch {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -562,7 +562,7 @@ func NameIn(vs ...string) predicate.Branch {
 
 // NameNotIn applies the NotIn predicate on the "name" field.
 func NameNotIn(vs ...string) predicate.Branch {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -650,7 +650,7 @@ func LngNEQ(v float64) predicate.Branch {
 
 // LngIn applies the In predicate on the "lng" field.
 func LngIn(vs ...float64) predicate.Branch {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -661,7 +661,7 @@ func LngIn(vs ...float64) predicate.Branch {
 
 // LngNotIn applies the NotIn predicate on the "lng" field.
 func LngNotIn(vs ...float64) predicate.Branch {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -714,7 +714,7 @@ func LatNEQ(v float64) predicate.Branch {
 
 // LatIn applies the In predicate on the "lat" field.
 func LatIn(vs ...float64) predicate.Branch {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -725,7 +725,7 @@ func LatIn(vs ...float64) predicate.Branch {
 
 // LatNotIn applies the NotIn predicate on the "lat" field.
 func LatNotIn(vs ...float64) predicate.Branch {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -778,7 +778,7 @@ func AddressNEQ(v string) predicate.Branch {
 
 // AddressIn applies the In predicate on the "address" field.
 func AddressIn(vs ...string) predicate.Branch {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -789,7 +789,7 @@ func AddressIn(vs ...string) predicate.Branch {
 
 // AddressNotIn applies the NotIn predicate on the "address" field.
 func AddressNotIn(vs ...string) predicate.Branch {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -877,7 +877,7 @@ func GeomNEQ(v *model.Geometry) predicate.Branch {
 
 // GeomIn applies the In predicate on the "geom" field.
 func GeomIn(vs ...*model.Geometry) predicate.Branch {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -888,7 +888,7 @@ func GeomIn(vs ...*model.Geometry) predicate.Branch {
 
 // GeomNotIn applies the NotIn predicate on the "geom" field.
 func GeomNotIn(vs ...*model.Geometry) predicate.Branch {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}

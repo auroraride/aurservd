@@ -34,7 +34,7 @@ func IDNEQ(id uint64) predicate.Attendance {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.Attendance {
 	return predicate.Attendance(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -45,7 +45,7 @@ func IDIn(ids ...uint64) predicate.Attendance {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.Attendance {
 	return predicate.Attendance(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -188,7 +188,7 @@ func CreatedAtNEQ(v time.Time) predicate.Attendance {
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -199,7 +199,7 @@ func CreatedAtIn(vs ...time.Time) predicate.Attendance {
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -252,7 +252,7 @@ func UpdatedAtNEQ(v time.Time) predicate.Attendance {
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -263,7 +263,7 @@ func UpdatedAtIn(vs ...time.Time) predicate.Attendance {
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -316,7 +316,7 @@ func DeletedAtNEQ(v time.Time) predicate.Attendance {
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -327,7 +327,7 @@ func DeletedAtIn(vs ...time.Time) predicate.Attendance {
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -422,7 +422,7 @@ func RemarkNEQ(v string) predicate.Attendance {
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -433,7 +433,7 @@ func RemarkIn(vs ...string) predicate.Attendance {
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -535,7 +535,7 @@ func StoreIDNEQ(v uint64) predicate.Attendance {
 
 // StoreIDIn applies the In predicate on the "store_id" field.
 func StoreIDIn(vs ...uint64) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -546,7 +546,7 @@ func StoreIDIn(vs ...uint64) predicate.Attendance {
 
 // StoreIDNotIn applies the NotIn predicate on the "store_id" field.
 func StoreIDNotIn(vs ...uint64) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -571,7 +571,7 @@ func EmployeeIDNEQ(v uint64) predicate.Attendance {
 
 // EmployeeIDIn applies the In predicate on the "employee_id" field.
 func EmployeeIDIn(vs ...uint64) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -582,7 +582,7 @@ func EmployeeIDIn(vs ...uint64) predicate.Attendance {
 
 // EmployeeIDNotIn applies the NotIn predicate on the "employee_id" field.
 func EmployeeIDNotIn(vs ...uint64) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -621,7 +621,7 @@ func PhotoNEQ(v string) predicate.Attendance {
 
 // PhotoIn applies the In predicate on the "photo" field.
 func PhotoIn(vs ...string) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -632,7 +632,7 @@ func PhotoIn(vs ...string) predicate.Attendance {
 
 // PhotoNotIn applies the NotIn predicate on the "photo" field.
 func PhotoNotIn(vs ...string) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -748,7 +748,7 @@ func DateNEQ(v time.Time) predicate.Attendance {
 
 // DateIn applies the In predicate on the "date" field.
 func DateIn(vs ...time.Time) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -759,7 +759,7 @@ func DateIn(vs ...time.Time) predicate.Attendance {
 
 // DateNotIn applies the NotIn predicate on the "date" field.
 func DateNotIn(vs ...time.Time) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -812,7 +812,7 @@ func LngNEQ(v float64) predicate.Attendance {
 
 // LngIn applies the In predicate on the "lng" field.
 func LngIn(vs ...float64) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -823,7 +823,7 @@ func LngIn(vs ...float64) predicate.Attendance {
 
 // LngNotIn applies the NotIn predicate on the "lng" field.
 func LngNotIn(vs ...float64) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -890,7 +890,7 @@ func LatNEQ(v float64) predicate.Attendance {
 
 // LatIn applies the In predicate on the "lat" field.
 func LatIn(vs ...float64) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -901,7 +901,7 @@ func LatIn(vs ...float64) predicate.Attendance {
 
 // LatNotIn applies the NotIn predicate on the "lat" field.
 func LatNotIn(vs ...float64) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -968,7 +968,7 @@ func AddressNEQ(v string) predicate.Attendance {
 
 // AddressIn applies the In predicate on the "address" field.
 func AddressIn(vs ...string) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -979,7 +979,7 @@ func AddressIn(vs ...string) predicate.Attendance {
 
 // AddressNotIn applies the NotIn predicate on the "address" field.
 func AddressNotIn(vs ...string) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1081,7 +1081,7 @@ func DistanceNEQ(v float64) predicate.Attendance {
 
 // DistanceIn applies the In predicate on the "distance" field.
 func DistanceIn(vs ...float64) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1092,7 +1092,7 @@ func DistanceIn(vs ...float64) predicate.Attendance {
 
 // DistanceNotIn applies the NotIn predicate on the "distance" field.
 func DistanceNotIn(vs ...float64) predicate.Attendance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}

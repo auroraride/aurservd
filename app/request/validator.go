@@ -56,6 +56,9 @@ func NewGlobalValidator() *GlobalValidator {
         return utils.NewRegex().MatchPhone(fl.Field().String())
     })
 
+    // 校验枚举
+    customValidation("enum")(validateEnum)
+
     // 从字段tag中获取字段翻译
     validate.RegisterTagNameFunc(func(field reflect.StructField) string {
         t := field.Tag.Get("trans")

@@ -34,7 +34,7 @@ func IDNEQ(id uint64) predicate.Exception {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.Exception {
 	return predicate.Exception(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -45,7 +45,7 @@ func IDIn(ids ...uint64) predicate.Exception {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.Exception {
 	return predicate.Exception(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -188,7 +188,7 @@ func CreatedAtNEQ(v time.Time) predicate.Exception {
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -199,7 +199,7 @@ func CreatedAtIn(vs ...time.Time) predicate.Exception {
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -252,7 +252,7 @@ func UpdatedAtNEQ(v time.Time) predicate.Exception {
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -263,7 +263,7 @@ func UpdatedAtIn(vs ...time.Time) predicate.Exception {
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -316,7 +316,7 @@ func DeletedAtNEQ(v time.Time) predicate.Exception {
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -327,7 +327,7 @@ func DeletedAtIn(vs ...time.Time) predicate.Exception {
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -422,7 +422,7 @@ func RemarkNEQ(v string) predicate.Exception {
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -433,7 +433,7 @@ func RemarkIn(vs ...string) predicate.Exception {
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -535,7 +535,7 @@ func CityIDNEQ(v uint64) predicate.Exception {
 
 // CityIDIn applies the In predicate on the "city_id" field.
 func CityIDIn(vs ...uint64) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -546,7 +546,7 @@ func CityIDIn(vs ...uint64) predicate.Exception {
 
 // CityIDNotIn applies the NotIn predicate on the "city_id" field.
 func CityIDNotIn(vs ...uint64) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -571,7 +571,7 @@ func EmployeeIDNEQ(v uint64) predicate.Exception {
 
 // EmployeeIDIn applies the In predicate on the "employee_id" field.
 func EmployeeIDIn(vs ...uint64) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -582,7 +582,7 @@ func EmployeeIDIn(vs ...uint64) predicate.Exception {
 
 // EmployeeIDNotIn applies the NotIn predicate on the "employee_id" field.
 func EmployeeIDNotIn(vs ...uint64) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -607,7 +607,7 @@ func StatusNEQ(v uint8) predicate.Exception {
 
 // StatusIn applies the In predicate on the "status" field.
 func StatusIn(vs ...uint8) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -618,7 +618,7 @@ func StatusIn(vs ...uint8) predicate.Exception {
 
 // StatusNotIn applies the NotIn predicate on the "status" field.
 func StatusNotIn(vs ...uint8) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -671,7 +671,7 @@ func StoreIDNEQ(v uint64) predicate.Exception {
 
 // StoreIDIn applies the In predicate on the "store_id" field.
 func StoreIDIn(vs ...uint64) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -682,7 +682,7 @@ func StoreIDIn(vs ...uint64) predicate.Exception {
 
 // StoreIDNotIn applies the NotIn predicate on the "store_id" field.
 func StoreIDNotIn(vs ...uint64) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -707,7 +707,7 @@ func NameNEQ(v string) predicate.Exception {
 
 // NameIn applies the In predicate on the "name" field.
 func NameIn(vs ...string) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -718,7 +718,7 @@ func NameIn(vs ...string) predicate.Exception {
 
 // NameNotIn applies the NotIn predicate on the "name" field.
 func NameNotIn(vs ...string) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -806,7 +806,7 @@ func ModelNEQ(v string) predicate.Exception {
 
 // ModelIn applies the In predicate on the "model" field.
 func ModelIn(vs ...string) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -817,7 +817,7 @@ func ModelIn(vs ...string) predicate.Exception {
 
 // ModelNotIn applies the NotIn predicate on the "model" field.
 func ModelNotIn(vs ...string) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -919,7 +919,7 @@ func NumNEQ(v int) predicate.Exception {
 
 // NumIn applies the In predicate on the "num" field.
 func NumIn(vs ...int) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -930,7 +930,7 @@ func NumIn(vs ...int) predicate.Exception {
 
 // NumNotIn applies the NotIn predicate on the "num" field.
 func NumNotIn(vs ...int) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -983,7 +983,7 @@ func ReasonNEQ(v string) predicate.Exception {
 
 // ReasonIn applies the In predicate on the "reason" field.
 func ReasonIn(vs ...string) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -994,7 +994,7 @@ func ReasonIn(vs ...string) predicate.Exception {
 
 // ReasonNotIn applies the NotIn predicate on the "reason" field.
 func ReasonNotIn(vs ...string) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1082,7 +1082,7 @@ func DescriptionNEQ(v string) predicate.Exception {
 
 // DescriptionIn applies the In predicate on the "description" field.
 func DescriptionIn(vs ...string) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1093,7 +1093,7 @@ func DescriptionIn(vs ...string) predicate.Exception {
 
 // DescriptionNotIn applies the NotIn predicate on the "description" field.
 func DescriptionNotIn(vs ...string) predicate.Exception {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}

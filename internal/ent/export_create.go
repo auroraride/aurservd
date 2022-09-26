@@ -501,18 +501,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *ExportUpsert) SetCreatedAt(v time.Time) *ExportUpsert {
-	u.Set(export.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *ExportUpsert) UpdateCreatedAt() *ExportUpsert {
-	u.SetExcluded(export.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *ExportUpsert) SetUpdatedAt(v time.Time) *ExportUpsert {
 	u.Set(export.FieldUpdatedAt, v)
@@ -760,20 +748,6 @@ func (u *ExportUpsertOne) Update(set func(*ExportUpsert)) *ExportUpsertOne {
 		set(&ExportUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (u *ExportUpsertOne) SetCreatedAt(v time.Time) *ExportUpsertOne {
-	return u.Update(func(s *ExportUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *ExportUpsertOne) UpdateCreatedAt() *ExportUpsertOne {
-	return u.Update(func(s *ExportUpsert) {
-		s.UpdateCreatedAt()
-	})
 }
 
 // SetUpdatedAt sets the "updated_at" field.
@@ -1219,20 +1193,6 @@ func (u *ExportUpsertBulk) Update(set func(*ExportUpsert)) *ExportUpsertBulk {
 		set(&ExportUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (u *ExportUpsertBulk) SetCreatedAt(v time.Time) *ExportUpsertBulk {
-	return u.Update(func(s *ExportUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *ExportUpsertBulk) UpdateCreatedAt() *ExportUpsertBulk {
-	return u.Update(func(s *ExportUpsert) {
-		s.UpdateCreatedAt()
-	})
 }
 
 // SetUpdatedAt sets the "updated_at" field.

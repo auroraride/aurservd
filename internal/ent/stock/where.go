@@ -34,7 +34,7 @@ func IDNEQ(id uint64) predicate.Stock {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -45,7 +45,7 @@ func IDIn(ids ...uint64) predicate.Stock {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -202,7 +202,7 @@ func CreatedAtNEQ(v time.Time) predicate.Stock {
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -213,7 +213,7 @@ func CreatedAtIn(vs ...time.Time) predicate.Stock {
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -266,7 +266,7 @@ func UpdatedAtNEQ(v time.Time) predicate.Stock {
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -277,7 +277,7 @@ func UpdatedAtIn(vs ...time.Time) predicate.Stock {
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -330,7 +330,7 @@ func DeletedAtNEQ(v time.Time) predicate.Stock {
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -341,7 +341,7 @@ func DeletedAtIn(vs ...time.Time) predicate.Stock {
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -436,7 +436,7 @@ func RemarkNEQ(v string) predicate.Stock {
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -447,7 +447,7 @@ func RemarkIn(vs ...string) predicate.Stock {
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -549,7 +549,7 @@ func CityIDNEQ(v uint64) predicate.Stock {
 
 // CityIDIn applies the In predicate on the "city_id" field.
 func CityIDIn(vs ...uint64) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -560,7 +560,7 @@ func CityIDIn(vs ...uint64) predicate.Stock {
 
 // CityIDNotIn applies the NotIn predicate on the "city_id" field.
 func CityIDNotIn(vs ...uint64) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -599,7 +599,7 @@ func SubscribeIDNEQ(v uint64) predicate.Stock {
 
 // SubscribeIDIn applies the In predicate on the "subscribe_id" field.
 func SubscribeIDIn(vs ...uint64) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -610,7 +610,7 @@ func SubscribeIDIn(vs ...uint64) predicate.Stock {
 
 // SubscribeIDNotIn applies the NotIn predicate on the "subscribe_id" field.
 func SubscribeIDNotIn(vs ...uint64) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -649,7 +649,7 @@ func SnNEQ(v string) predicate.Stock {
 
 // SnIn applies the In predicate on the "sn" field.
 func SnIn(vs ...string) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -660,7 +660,7 @@ func SnIn(vs ...string) predicate.Stock {
 
 // SnNotIn applies the NotIn predicate on the "sn" field.
 func SnNotIn(vs ...string) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -748,7 +748,7 @@ func TypeNEQ(v uint8) predicate.Stock {
 
 // TypeIn applies the In predicate on the "type" field.
 func TypeIn(vs ...uint8) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -759,7 +759,7 @@ func TypeIn(vs ...uint8) predicate.Stock {
 
 // TypeNotIn applies the NotIn predicate on the "type" field.
 func TypeNotIn(vs ...uint8) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -812,7 +812,7 @@ func StoreIDNEQ(v uint64) predicate.Stock {
 
 // StoreIDIn applies the In predicate on the "store_id" field.
 func StoreIDIn(vs ...uint64) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -823,7 +823,7 @@ func StoreIDIn(vs ...uint64) predicate.Stock {
 
 // StoreIDNotIn applies the NotIn predicate on the "store_id" field.
 func StoreIDNotIn(vs ...uint64) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -862,7 +862,7 @@ func CabinetIDNEQ(v uint64) predicate.Stock {
 
 // CabinetIDIn applies the In predicate on the "cabinet_id" field.
 func CabinetIDIn(vs ...uint64) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -873,7 +873,7 @@ func CabinetIDIn(vs ...uint64) predicate.Stock {
 
 // CabinetIDNotIn applies the NotIn predicate on the "cabinet_id" field.
 func CabinetIDNotIn(vs ...uint64) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -912,7 +912,7 @@ func RiderIDNEQ(v uint64) predicate.Stock {
 
 // RiderIDIn applies the In predicate on the "rider_id" field.
 func RiderIDIn(vs ...uint64) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -923,7 +923,7 @@ func RiderIDIn(vs ...uint64) predicate.Stock {
 
 // RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
 func RiderIDNotIn(vs ...uint64) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -962,7 +962,7 @@ func EmployeeIDNEQ(v uint64) predicate.Stock {
 
 // EmployeeIDIn applies the In predicate on the "employee_id" field.
 func EmployeeIDIn(vs ...uint64) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -973,7 +973,7 @@ func EmployeeIDIn(vs ...uint64) predicate.Stock {
 
 // EmployeeIDNotIn applies the NotIn predicate on the "employee_id" field.
 func EmployeeIDNotIn(vs ...uint64) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1012,7 +1012,7 @@ func NameNEQ(v string) predicate.Stock {
 
 // NameIn applies the In predicate on the "name" field.
 func NameIn(vs ...string) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1023,7 +1023,7 @@ func NameIn(vs ...string) predicate.Stock {
 
 // NameNotIn applies the NotIn predicate on the "name" field.
 func NameNotIn(vs ...string) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1111,7 +1111,7 @@ func ModelNEQ(v string) predicate.Stock {
 
 // ModelIn applies the In predicate on the "model" field.
 func ModelIn(vs ...string) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1122,7 +1122,7 @@ func ModelIn(vs ...string) predicate.Stock {
 
 // ModelNotIn applies the NotIn predicate on the "model" field.
 func ModelNotIn(vs ...string) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1224,7 +1224,7 @@ func NumNEQ(v int) predicate.Stock {
 
 // NumIn applies the In predicate on the "num" field.
 func NumIn(vs ...int) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1235,7 +1235,7 @@ func NumIn(vs ...int) predicate.Stock {
 
 // NumNotIn applies the NotIn predicate on the "num" field.
 func NumNotIn(vs ...int) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1288,7 +1288,7 @@ func MaterialNEQ(v Material) predicate.Stock {
 
 // MaterialIn applies the In predicate on the "material" field.
 func MaterialIn(vs ...Material) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1299,7 +1299,7 @@ func MaterialIn(vs ...Material) predicate.Stock {
 
 // MaterialNotIn applies the NotIn predicate on the "material" field.
 func MaterialNotIn(vs ...Material) predicate.Stock {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}

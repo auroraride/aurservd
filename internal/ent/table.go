@@ -138,6 +138,44 @@ func (c *Contract) GetID() uint64 {
 	return c.ID
 }
 
+// GetTableName returns table name for Coupon.
+func (c *Coupon) GetTableName() string {
+	return "coupon"
+}
+
+// GetID returns id for Coupon.
+func (c *Coupon) GetID() uint64 {
+	return c.ID
+}
+
+func (c *Coupon) GetName() string {
+	return c.Name
+}
+
+// GetTableName returns table name for CouponLog.
+func (cl *CouponLog) GetTableName() string {
+	return "coupon_log"
+}
+
+// GetID returns id for CouponLog.
+func (cl *CouponLog) GetID() uint64 {
+	return cl.ID
+}
+
+// GetTableName returns table name for CouponTemplate.
+func (ct *CouponTemplate) GetTableName() string {
+	return "coupon_template"
+}
+
+// GetID returns id for CouponTemplate.
+func (ct *CouponTemplate) GetID() uint64 {
+	return ct.ID
+}
+
+func (ct *CouponTemplate) GetName() string {
+	return ct.Name
+}
+
 // GetTableName returns table name for Employee.
 func (e *Employee) GetTableName() string {
 	return "employee"

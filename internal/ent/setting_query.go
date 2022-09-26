@@ -317,10 +317,10 @@ func (sq *SettingQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Sett
 		nodes = []*Setting{}
 		_spec = sq.querySpec()
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Setting).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &Setting{config: sq.config}
 		nodes = append(nodes, node)
 		return node.assignValues(columns, values)
@@ -353,11 +353,14 @@ func (sq *SettingQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (sq *SettingQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := sq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := sq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (sq *SettingQuery) querySpec() *sqlgraph.QuerySpec {
@@ -467,7 +470,7 @@ func (sgb *SettingGroupBy) Aggregate(fns ...AggregateFunc) *SettingGroupBy {
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (sgb *SettingGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (sgb *SettingGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := sgb.path(ctx)
 	if err != nil {
 		return err
@@ -476,7 +479,7 @@ func (sgb *SettingGroupBy) Scan(ctx context.Context, v interface{}) error {
 	return sgb.sqlScan(ctx, v)
 }
 
-func (sgb *SettingGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (sgb *SettingGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range sgb.fields {
 		if !setting.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -523,7 +526,7 @@ type SettingSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ss *SettingSelect) Scan(ctx context.Context, v interface{}) error {
+func (ss *SettingSelect) Scan(ctx context.Context, v any) error {
 	if err := ss.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -531,7 +534,7 @@ func (ss *SettingSelect) Scan(ctx context.Context, v interface{}) error {
 	return ss.sqlScan(ctx, v)
 }
 
-func (ss *SettingSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (ss *SettingSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := ss.sql.Query()
 	if err := ss.driver.Query(ctx, query, args, rows); err != nil {

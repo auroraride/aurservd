@@ -34,7 +34,7 @@ func IDNEQ(id uint64) predicate.OrderRefund {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.OrderRefund {
 	return predicate.OrderRefund(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -45,7 +45,7 @@ func IDIn(ids ...uint64) predicate.OrderRefund {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.OrderRefund {
 	return predicate.OrderRefund(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -167,7 +167,7 @@ func CreatedAtNEQ(v time.Time) predicate.OrderRefund {
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.OrderRefund {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -178,7 +178,7 @@ func CreatedAtIn(vs ...time.Time) predicate.OrderRefund {
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.OrderRefund {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -231,7 +231,7 @@ func UpdatedAtNEQ(v time.Time) predicate.OrderRefund {
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.OrderRefund {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -242,7 +242,7 @@ func UpdatedAtIn(vs ...time.Time) predicate.OrderRefund {
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.OrderRefund {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -295,7 +295,7 @@ func DeletedAtNEQ(v time.Time) predicate.OrderRefund {
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.OrderRefund {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -306,7 +306,7 @@ func DeletedAtIn(vs ...time.Time) predicate.OrderRefund {
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.OrderRefund {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -401,7 +401,7 @@ func RemarkNEQ(v string) predicate.OrderRefund {
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.OrderRefund {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -412,7 +412,7 @@ func RemarkIn(vs ...string) predicate.OrderRefund {
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.OrderRefund {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -514,7 +514,7 @@ func OrderIDNEQ(v uint64) predicate.OrderRefund {
 
 // OrderIDIn applies the In predicate on the "order_id" field.
 func OrderIDIn(vs ...uint64) predicate.OrderRefund {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -525,7 +525,7 @@ func OrderIDIn(vs ...uint64) predicate.OrderRefund {
 
 // OrderIDNotIn applies the NotIn predicate on the "order_id" field.
 func OrderIDNotIn(vs ...uint64) predicate.OrderRefund {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -550,7 +550,7 @@ func StatusNEQ(v uint8) predicate.OrderRefund {
 
 // StatusIn applies the In predicate on the "status" field.
 func StatusIn(vs ...uint8) predicate.OrderRefund {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -561,7 +561,7 @@ func StatusIn(vs ...uint8) predicate.OrderRefund {
 
 // StatusNotIn applies the NotIn predicate on the "status" field.
 func StatusNotIn(vs ...uint8) predicate.OrderRefund {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -614,7 +614,7 @@ func AmountNEQ(v float64) predicate.OrderRefund {
 
 // AmountIn applies the In predicate on the "amount" field.
 func AmountIn(vs ...float64) predicate.OrderRefund {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -625,7 +625,7 @@ func AmountIn(vs ...float64) predicate.OrderRefund {
 
 // AmountNotIn applies the NotIn predicate on the "amount" field.
 func AmountNotIn(vs ...float64) predicate.OrderRefund {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -678,7 +678,7 @@ func OutRefundNoNEQ(v string) predicate.OrderRefund {
 
 // OutRefundNoIn applies the In predicate on the "out_refund_no" field.
 func OutRefundNoIn(vs ...string) predicate.OrderRefund {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -689,7 +689,7 @@ func OutRefundNoIn(vs ...string) predicate.OrderRefund {
 
 // OutRefundNoNotIn applies the NotIn predicate on the "out_refund_no" field.
 func OutRefundNoNotIn(vs ...string) predicate.OrderRefund {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -777,7 +777,7 @@ func ReasonNEQ(v string) predicate.OrderRefund {
 
 // ReasonIn applies the In predicate on the "reason" field.
 func ReasonIn(vs ...string) predicate.OrderRefund {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -788,7 +788,7 @@ func ReasonIn(vs ...string) predicate.OrderRefund {
 
 // ReasonNotIn applies the NotIn predicate on the "reason" field.
 func ReasonNotIn(vs ...string) predicate.OrderRefund {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -876,7 +876,7 @@ func RefundAtNEQ(v time.Time) predicate.OrderRefund {
 
 // RefundAtIn applies the In predicate on the "refund_at" field.
 func RefundAtIn(vs ...time.Time) predicate.OrderRefund {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -887,7 +887,7 @@ func RefundAtIn(vs ...time.Time) predicate.OrderRefund {
 
 // RefundAtNotIn applies the NotIn predicate on the "refund_at" field.
 func RefundAtNotIn(vs ...time.Time) predicate.OrderRefund {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}

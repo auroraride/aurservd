@@ -27,17 +27,17 @@ var (
 )
 
 // Allowf returns an formatted wrapped Allow decision.
-func Allowf(format string, a ...interface{}) error {
+func Allowf(format string, a ...any) error {
 	return fmt.Errorf(format+": %w", append(a, Allow)...)
 }
 
 // Denyf returns an formatted wrapped Deny decision.
-func Denyf(format string, a ...interface{}) error {
+func Denyf(format string, a ...any) error {
 	return fmt.Errorf(format+": %w", append(a, Deny)...)
 }
 
 // Skipf returns an formatted wrapped Skip decision.
-func Skipf(format string, a ...interface{}) error {
+func Skipf(format string, a ...any) error {
 	return fmt.Errorf(format+": %w", append(a, Skip)...)
 }
 
@@ -436,6 +436,78 @@ func (f ContractMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutati
 		return f(ctx, m)
 	}
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.ContractMutation", m)
+}
+
+// The CouponQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type CouponQueryRuleFunc func(context.Context, *ent.CouponQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f CouponQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.CouponQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.CouponQuery", q)
+}
+
+// The CouponMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type CouponMutationRuleFunc func(context.Context, *ent.CouponMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f CouponMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.CouponMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.CouponMutation", m)
+}
+
+// The CouponLogQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type CouponLogQueryRuleFunc func(context.Context, *ent.CouponLogQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f CouponLogQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.CouponLogQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.CouponLogQuery", q)
+}
+
+// The CouponLogMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type CouponLogMutationRuleFunc func(context.Context, *ent.CouponLogMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f CouponLogMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.CouponLogMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.CouponLogMutation", m)
+}
+
+// The CouponTemplateQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type CouponTemplateQueryRuleFunc func(context.Context, *ent.CouponTemplateQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f CouponTemplateQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.CouponTemplateQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.CouponTemplateQuery", q)
+}
+
+// The CouponTemplateMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type CouponTemplateMutationRuleFunc func(context.Context, *ent.CouponTemplateMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f CouponTemplateMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.CouponTemplateMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.CouponTemplateMutation", m)
 }
 
 // The EmployeeQueryRuleFunc type is an adapter to allow the use of ordinary
@@ -1193,6 +1265,12 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.ContractQuery:
 		return q.Filter(), nil
+	case *ent.CouponQuery:
+		return q.Filter(), nil
+	case *ent.CouponLogQuery:
+		return q.Filter(), nil
+	case *ent.CouponTemplateQuery:
+		return q.Filter(), nil
 	case *ent.EmployeeQuery:
 		return q.Filter(), nil
 	case *ent.EnterpriseQuery:
@@ -1281,6 +1359,12 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.CommissionMutation:
 		return m.Filter(), nil
 	case *ent.ContractMutation:
+		return m.Filter(), nil
+	case *ent.CouponMutation:
+		return m.Filter(), nil
+	case *ent.CouponLogMutation:
+		return m.Filter(), nil
+	case *ent.CouponTemplateMutation:
 		return m.Filter(), nil
 	case *ent.EmployeeMutation:
 		return m.Filter(), nil

@@ -34,7 +34,7 @@ func IDNEQ(id uint64) predicate.Assistance {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -45,7 +45,7 @@ func IDIn(ids ...uint64) predicate.Assistance {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -321,7 +321,7 @@ func CreatedAtNEQ(v time.Time) predicate.Assistance {
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -332,7 +332,7 @@ func CreatedAtIn(vs ...time.Time) predicate.Assistance {
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -385,7 +385,7 @@ func UpdatedAtNEQ(v time.Time) predicate.Assistance {
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -396,7 +396,7 @@ func UpdatedAtIn(vs ...time.Time) predicate.Assistance {
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -449,7 +449,7 @@ func DeletedAtNEQ(v time.Time) predicate.Assistance {
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -460,7 +460,7 @@ func DeletedAtIn(vs ...time.Time) predicate.Assistance {
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -555,7 +555,7 @@ func RemarkNEQ(v string) predicate.Assistance {
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -566,7 +566,7 @@ func RemarkIn(vs ...string) predicate.Assistance {
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -668,7 +668,7 @@ func StoreIDNEQ(v uint64) predicate.Assistance {
 
 // StoreIDIn applies the In predicate on the "store_id" field.
 func StoreIDIn(vs ...uint64) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -679,7 +679,7 @@ func StoreIDIn(vs ...uint64) predicate.Assistance {
 
 // StoreIDNotIn applies the NotIn predicate on the "store_id" field.
 func StoreIDNotIn(vs ...uint64) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -718,7 +718,7 @@ func RiderIDNEQ(v uint64) predicate.Assistance {
 
 // RiderIDIn applies the In predicate on the "rider_id" field.
 func RiderIDIn(vs ...uint64) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -729,7 +729,7 @@ func RiderIDIn(vs ...uint64) predicate.Assistance {
 
 // RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
 func RiderIDNotIn(vs ...uint64) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -754,7 +754,7 @@ func SubscribeIDNEQ(v uint64) predicate.Assistance {
 
 // SubscribeIDIn applies the In predicate on the "subscribe_id" field.
 func SubscribeIDIn(vs ...uint64) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -765,7 +765,7 @@ func SubscribeIDIn(vs ...uint64) predicate.Assistance {
 
 // SubscribeIDNotIn applies the NotIn predicate on the "subscribe_id" field.
 func SubscribeIDNotIn(vs ...uint64) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -790,7 +790,7 @@ func CityIDNEQ(v uint64) predicate.Assistance {
 
 // CityIDIn applies the In predicate on the "city_id" field.
 func CityIDIn(vs ...uint64) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -801,7 +801,7 @@ func CityIDIn(vs ...uint64) predicate.Assistance {
 
 // CityIDNotIn applies the NotIn predicate on the "city_id" field.
 func CityIDNotIn(vs ...uint64) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -826,7 +826,7 @@ func EmployeeIDNEQ(v uint64) predicate.Assistance {
 
 // EmployeeIDIn applies the In predicate on the "employee_id" field.
 func EmployeeIDIn(vs ...uint64) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -837,7 +837,7 @@ func EmployeeIDIn(vs ...uint64) predicate.Assistance {
 
 // EmployeeIDNotIn applies the NotIn predicate on the "employee_id" field.
 func EmployeeIDNotIn(vs ...uint64) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -876,7 +876,7 @@ func OrderIDNEQ(v uint64) predicate.Assistance {
 
 // OrderIDIn applies the In predicate on the "order_id" field.
 func OrderIDIn(vs ...uint64) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -887,7 +887,7 @@ func OrderIDIn(vs ...uint64) predicate.Assistance {
 
 // OrderIDNotIn applies the NotIn predicate on the "order_id" field.
 func OrderIDNotIn(vs ...uint64) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -926,7 +926,7 @@ func StatusNEQ(v uint8) predicate.Assistance {
 
 // StatusIn applies the In predicate on the "status" field.
 func StatusIn(vs ...uint8) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -937,7 +937,7 @@ func StatusIn(vs ...uint8) predicate.Assistance {
 
 // StatusNotIn applies the NotIn predicate on the "status" field.
 func StatusNotIn(vs ...uint8) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -990,7 +990,7 @@ func LngNEQ(v float64) predicate.Assistance {
 
 // LngIn applies the In predicate on the "lng" field.
 func LngIn(vs ...float64) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1001,7 +1001,7 @@ func LngIn(vs ...float64) predicate.Assistance {
 
 // LngNotIn applies the NotIn predicate on the "lng" field.
 func LngNotIn(vs ...float64) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1054,7 +1054,7 @@ func LatNEQ(v float64) predicate.Assistance {
 
 // LatIn applies the In predicate on the "lat" field.
 func LatIn(vs ...float64) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1065,7 +1065,7 @@ func LatIn(vs ...float64) predicate.Assistance {
 
 // LatNotIn applies the NotIn predicate on the "lat" field.
 func LatNotIn(vs ...float64) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1118,7 +1118,7 @@ func AddressNEQ(v string) predicate.Assistance {
 
 // AddressIn applies the In predicate on the "address" field.
 func AddressIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1129,7 +1129,7 @@ func AddressIn(vs ...string) predicate.Assistance {
 
 // AddressNotIn applies the NotIn predicate on the "address" field.
 func AddressNotIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1217,7 +1217,7 @@ func BreakdownNEQ(v string) predicate.Assistance {
 
 // BreakdownIn applies the In predicate on the "breakdown" field.
 func BreakdownIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1228,7 +1228,7 @@ func BreakdownIn(vs ...string) predicate.Assistance {
 
 // BreakdownNotIn applies the NotIn predicate on the "breakdown" field.
 func BreakdownNotIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1316,7 +1316,7 @@ func BreakdownDescNEQ(v string) predicate.Assistance {
 
 // BreakdownDescIn applies the In predicate on the "breakdown_desc" field.
 func BreakdownDescIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1327,7 +1327,7 @@ func BreakdownDescIn(vs ...string) predicate.Assistance {
 
 // BreakdownDescNotIn applies the NotIn predicate on the "breakdown_desc" field.
 func BreakdownDescNotIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1429,7 +1429,7 @@ func CancelReasonNEQ(v string) predicate.Assistance {
 
 // CancelReasonIn applies the In predicate on the "cancel_reason" field.
 func CancelReasonIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1440,7 +1440,7 @@ func CancelReasonIn(vs ...string) predicate.Assistance {
 
 // CancelReasonNotIn applies the NotIn predicate on the "cancel_reason" field.
 func CancelReasonNotIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1542,7 +1542,7 @@ func CancelReasonDescNEQ(v string) predicate.Assistance {
 
 // CancelReasonDescIn applies the In predicate on the "cancel_reason_desc" field.
 func CancelReasonDescIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1553,7 +1553,7 @@ func CancelReasonDescIn(vs ...string) predicate.Assistance {
 
 // CancelReasonDescNotIn applies the NotIn predicate on the "cancel_reason_desc" field.
 func CancelReasonDescNotIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1655,7 +1655,7 @@ func DistanceNEQ(v float64) predicate.Assistance {
 
 // DistanceIn applies the In predicate on the "distance" field.
 func DistanceIn(vs ...float64) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1666,7 +1666,7 @@ func DistanceIn(vs ...float64) predicate.Assistance {
 
 // DistanceNotIn applies the NotIn predicate on the "distance" field.
 func DistanceNotIn(vs ...float64) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1733,7 +1733,7 @@ func ReasonNEQ(v string) predicate.Assistance {
 
 // ReasonIn applies the In predicate on the "reason" field.
 func ReasonIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1744,7 +1744,7 @@ func ReasonIn(vs ...string) predicate.Assistance {
 
 // ReasonNotIn applies the NotIn predicate on the "reason" field.
 func ReasonNotIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1846,7 +1846,7 @@ func DetectPhotoNEQ(v string) predicate.Assistance {
 
 // DetectPhotoIn applies the In predicate on the "detect_photo" field.
 func DetectPhotoIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1857,7 +1857,7 @@ func DetectPhotoIn(vs ...string) predicate.Assistance {
 
 // DetectPhotoNotIn applies the NotIn predicate on the "detect_photo" field.
 func DetectPhotoNotIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1959,7 +1959,7 @@ func JointPhotoNEQ(v string) predicate.Assistance {
 
 // JointPhotoIn applies the In predicate on the "joint_photo" field.
 func JointPhotoIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1970,7 +1970,7 @@ func JointPhotoIn(vs ...string) predicate.Assistance {
 
 // JointPhotoNotIn applies the NotIn predicate on the "joint_photo" field.
 func JointPhotoNotIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -2072,7 +2072,7 @@ func CostNEQ(v float64) predicate.Assistance {
 
 // CostIn applies the In predicate on the "cost" field.
 func CostIn(vs ...float64) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -2083,7 +2083,7 @@ func CostIn(vs ...float64) predicate.Assistance {
 
 // CostNotIn applies the NotIn predicate on the "cost" field.
 func CostNotIn(vs ...float64) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -2150,7 +2150,7 @@ func RefusedDescNEQ(v string) predicate.Assistance {
 
 // RefusedDescIn applies the In predicate on the "refused_desc" field.
 func RefusedDescIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -2161,7 +2161,7 @@ func RefusedDescIn(vs ...string) predicate.Assistance {
 
 // RefusedDescNotIn applies the NotIn predicate on the "refused_desc" field.
 func RefusedDescNotIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -2263,7 +2263,7 @@ func PayAtNEQ(v time.Time) predicate.Assistance {
 
 // PayAtIn applies the In predicate on the "pay_at" field.
 func PayAtIn(vs ...time.Time) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -2274,7 +2274,7 @@ func PayAtIn(vs ...time.Time) predicate.Assistance {
 
 // PayAtNotIn applies the NotIn predicate on the "pay_at" field.
 func PayAtNotIn(vs ...time.Time) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -2341,7 +2341,7 @@ func AllocateAtNEQ(v time.Time) predicate.Assistance {
 
 // AllocateAtIn applies the In predicate on the "allocate_at" field.
 func AllocateAtIn(vs ...time.Time) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -2352,7 +2352,7 @@ func AllocateAtIn(vs ...time.Time) predicate.Assistance {
 
 // AllocateAtNotIn applies the NotIn predicate on the "allocate_at" field.
 func AllocateAtNotIn(vs ...time.Time) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -2419,7 +2419,7 @@ func WaitNEQ(v int) predicate.Assistance {
 
 // WaitIn applies the In predicate on the "wait" field.
 func WaitIn(vs ...int) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -2430,7 +2430,7 @@ func WaitIn(vs ...int) predicate.Assistance {
 
 // WaitNotIn applies the NotIn predicate on the "wait" field.
 func WaitNotIn(vs ...int) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -2483,7 +2483,7 @@ func FreeReasonNEQ(v string) predicate.Assistance {
 
 // FreeReasonIn applies the In predicate on the "free_reason" field.
 func FreeReasonIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -2494,7 +2494,7 @@ func FreeReasonIn(vs ...string) predicate.Assistance {
 
 // FreeReasonNotIn applies the NotIn predicate on the "free_reason" field.
 func FreeReasonNotIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -2596,7 +2596,7 @@ func FailReasonNEQ(v string) predicate.Assistance {
 
 // FailReasonIn applies the In predicate on the "fail_reason" field.
 func FailReasonIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -2607,7 +2607,7 @@ func FailReasonIn(vs ...string) predicate.Assistance {
 
 // FailReasonNotIn applies the NotIn predicate on the "fail_reason" field.
 func FailReasonNotIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -2709,7 +2709,7 @@ func ProcessAtNEQ(v time.Time) predicate.Assistance {
 
 // ProcessAtIn applies the In predicate on the "process_at" field.
 func ProcessAtIn(vs ...time.Time) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -2720,7 +2720,7 @@ func ProcessAtIn(vs ...time.Time) predicate.Assistance {
 
 // ProcessAtNotIn applies the NotIn predicate on the "process_at" field.
 func ProcessAtNotIn(vs ...time.Time) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -2787,7 +2787,7 @@ func PriceNEQ(v float64) predicate.Assistance {
 
 // PriceIn applies the In predicate on the "price" field.
 func PriceIn(vs ...float64) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -2798,7 +2798,7 @@ func PriceIn(vs ...float64) predicate.Assistance {
 
 // PriceNotIn applies the NotIn predicate on the "price" field.
 func PriceNotIn(vs ...float64) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -2865,7 +2865,7 @@ func NaviDurationNEQ(v int) predicate.Assistance {
 
 // NaviDurationIn applies the In predicate on the "navi_duration" field.
 func NaviDurationIn(vs ...int) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -2876,7 +2876,7 @@ func NaviDurationIn(vs ...int) predicate.Assistance {
 
 // NaviDurationNotIn applies the NotIn predicate on the "navi_duration" field.
 func NaviDurationNotIn(vs ...int) predicate.Assistance {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}

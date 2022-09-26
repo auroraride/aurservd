@@ -390,18 +390,6 @@ func (u *RoleUpsert) UpdateSuper() *RoleUpsert {
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *RoleUpsert) SetCreatedAt(v time.Time) *RoleUpsert {
-	u.Set(role.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *RoleUpsert) UpdateCreatedAt() *RoleUpsert {
-	u.SetExcluded(role.FieldCreatedAt)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -507,20 +495,6 @@ func (u *RoleUpsertOne) SetSuper(v bool) *RoleUpsertOne {
 func (u *RoleUpsertOne) UpdateSuper() *RoleUpsertOne {
 	return u.Update(func(s *RoleUpsert) {
 		s.UpdateSuper()
-	})
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (u *RoleUpsertOne) SetCreatedAt(v time.Time) *RoleUpsertOne {
-	return u.Update(func(s *RoleUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *RoleUpsertOne) UpdateCreatedAt() *RoleUpsertOne {
-	return u.Update(func(s *RoleUpsert) {
-		s.UpdateCreatedAt()
 	})
 }
 
@@ -791,20 +765,6 @@ func (u *RoleUpsertBulk) SetSuper(v bool) *RoleUpsertBulk {
 func (u *RoleUpsertBulk) UpdateSuper() *RoleUpsertBulk {
 	return u.Update(func(s *RoleUpsert) {
 		s.UpdateSuper()
-	})
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (u *RoleUpsertBulk) SetCreatedAt(v time.Time) *RoleUpsertBulk {
-	return u.Update(func(s *RoleUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *RoleUpsertBulk) UpdateCreatedAt() *RoleUpsertBulk {
-	return u.Update(func(s *RoleUpsert) {
-		s.UpdateCreatedAt()
 	})
 }
 

@@ -652,10 +652,10 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 			bq.withCabinet != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Business).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &Business{config: bq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -996,11 +996,14 @@ func (bq *BusinessQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (bq *BusinessQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := bq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := bq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (bq *BusinessQuery) querySpec() *sqlgraph.QuerySpec {
@@ -1110,7 +1113,7 @@ func (bgb *BusinessGroupBy) Aggregate(fns ...AggregateFunc) *BusinessGroupBy {
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (bgb *BusinessGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (bgb *BusinessGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := bgb.path(ctx)
 	if err != nil {
 		return err
@@ -1119,7 +1122,7 @@ func (bgb *BusinessGroupBy) Scan(ctx context.Context, v interface{}) error {
 	return bgb.sqlScan(ctx, v)
 }
 
-func (bgb *BusinessGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (bgb *BusinessGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range bgb.fields {
 		if !business.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -1166,7 +1169,7 @@ type BusinessSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (bs *BusinessSelect) Scan(ctx context.Context, v interface{}) error {
+func (bs *BusinessSelect) Scan(ctx context.Context, v any) error {
 	if err := bs.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1174,7 +1177,7 @@ func (bs *BusinessSelect) Scan(ctx context.Context, v interface{}) error {
 	return bs.sqlScan(ctx, v)
 }
 
-func (bs *BusinessSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (bs *BusinessSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := bs.sql.Query()
 	if err := bs.driver.Query(ctx, query, args, rows); err != nil {

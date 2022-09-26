@@ -65,9 +65,11 @@ type PlanEdges struct {
 	Parent *Plan `json:"parent,omitempty"`
 	// Complexes holds the value of the complexes edge.
 	Complexes []*Plan `json:"complexes,omitempty"`
+	// Coupons holds the value of the coupons edge.
+	Coupons []*Coupon `json:"coupons,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [5]bool
 }
 
 // PmsOrErr returns the Pms value or an error if the edge
@@ -110,9 +112,18 @@ func (e PlanEdges) ComplexesOrErr() ([]*Plan, error) {
 	return nil, &NotLoadedError{edge: "complexes"}
 }
 
+// CouponsOrErr returns the Coupons value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlanEdges) CouponsOrErr() ([]*Coupon, error) {
+	if e.loadedTypes[4] {
+		return e.Coupons, nil
+	}
+	return nil, &NotLoadedError{edge: "coupons"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Plan) scanValues(columns []string) ([]interface{}, error) {
-	values := make([]interface{}, len(columns))
+func (*Plan) scanValues(columns []string) ([]any, error) {
+	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
 		case plan.FieldCreator, plan.FieldLastModifier:
@@ -136,7 +147,7 @@ func (*Plan) scanValues(columns []string) ([]interface{}, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Plan fields.
-func (pl *Plan) assignValues(columns []string, values []interface{}) error {
+func (pl *Plan) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -273,6 +284,11 @@ func (pl *Plan) QueryParent() *PlanQuery {
 // QueryComplexes queries the "complexes" edge of the Plan entity.
 func (pl *Plan) QueryComplexes() *PlanQuery {
 	return (&PlanClient{config: pl.config}).QueryComplexes(pl)
+}
+
+// QueryCoupons queries the "coupons" edge of the Plan entity.
+func (pl *Plan) QueryCoupons() *CouponQuery {
+	return (&PlanClient{config: pl.config}).QueryCoupons(pl)
 }
 
 // Update returns a builder for updating this Plan.

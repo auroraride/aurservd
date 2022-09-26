@@ -451,18 +451,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *OrderRefundUpsert) SetCreatedAt(v time.Time) *OrderRefundUpsert {
-	u.Set(orderrefund.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *OrderRefundUpsert) UpdateCreatedAt() *OrderRefundUpsert {
-	u.SetExcluded(orderrefund.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *OrderRefundUpsert) SetUpdatedAt(v time.Time) *OrderRefundUpsert {
 	u.Set(orderrefund.FieldUpdatedAt, v)
@@ -490,24 +478,6 @@ func (u *OrderRefundUpsert) UpdateDeletedAt() *OrderRefundUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *OrderRefundUpsert) ClearDeletedAt() *OrderRefundUpsert {
 	u.SetNull(orderrefund.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *OrderRefundUpsert) SetCreator(v *model.Modifier) *OrderRefundUpsert {
-	u.Set(orderrefund.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *OrderRefundUpsert) UpdateCreator() *OrderRefundUpsert {
-	u.SetExcluded(orderrefund.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *OrderRefundUpsert) ClearCreator() *OrderRefundUpsert {
-	u.SetNull(orderrefund.FieldCreator)
 	return u
 }
 
@@ -685,20 +655,6 @@ func (u *OrderRefundUpsertOne) Update(set func(*OrderRefundUpsert)) *OrderRefund
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *OrderRefundUpsertOne) SetCreatedAt(v time.Time) *OrderRefundUpsertOne {
-	return u.Update(func(s *OrderRefundUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *OrderRefundUpsertOne) UpdateCreatedAt() *OrderRefundUpsertOne {
-	return u.Update(func(s *OrderRefundUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *OrderRefundUpsertOne) SetUpdatedAt(v time.Time) *OrderRefundUpsertOne {
 	return u.Update(func(s *OrderRefundUpsert) {
@@ -731,27 +687,6 @@ func (u *OrderRefundUpsertOne) UpdateDeletedAt() *OrderRefundUpsertOne {
 func (u *OrderRefundUpsertOne) ClearDeletedAt() *OrderRefundUpsertOne {
 	return u.Update(func(s *OrderRefundUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *OrderRefundUpsertOne) SetCreator(v *model.Modifier) *OrderRefundUpsertOne {
-	return u.Update(func(s *OrderRefundUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *OrderRefundUpsertOne) UpdateCreator() *OrderRefundUpsertOne {
-	return u.Update(func(s *OrderRefundUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *OrderRefundUpsertOne) ClearCreator() *OrderRefundUpsertOne {
-	return u.Update(func(s *OrderRefundUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1112,20 +1047,6 @@ func (u *OrderRefundUpsertBulk) Update(set func(*OrderRefundUpsert)) *OrderRefun
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *OrderRefundUpsertBulk) SetCreatedAt(v time.Time) *OrderRefundUpsertBulk {
-	return u.Update(func(s *OrderRefundUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *OrderRefundUpsertBulk) UpdateCreatedAt() *OrderRefundUpsertBulk {
-	return u.Update(func(s *OrderRefundUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *OrderRefundUpsertBulk) SetUpdatedAt(v time.Time) *OrderRefundUpsertBulk {
 	return u.Update(func(s *OrderRefundUpsert) {
@@ -1158,27 +1079,6 @@ func (u *OrderRefundUpsertBulk) UpdateDeletedAt() *OrderRefundUpsertBulk {
 func (u *OrderRefundUpsertBulk) ClearDeletedAt() *OrderRefundUpsertBulk {
 	return u.Update(func(s *OrderRefundUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *OrderRefundUpsertBulk) SetCreator(v *model.Modifier) *OrderRefundUpsertBulk {
-	return u.Update(func(s *OrderRefundUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *OrderRefundUpsertBulk) UpdateCreator() *OrderRefundUpsertBulk {
-	return u.Update(func(s *OrderRefundUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *OrderRefundUpsertBulk) ClearCreator() *OrderRefundUpsertBulk {
-	return u.Update(func(s *OrderRefundUpsert) {
-		s.ClearCreator()
 	})
 }
 

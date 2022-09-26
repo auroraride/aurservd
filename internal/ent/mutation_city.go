@@ -36,14 +36,17 @@ type CityMutation struct {
 	lat             *float64
 	addlat          *float64
 	clearedFields   map[string]struct{}
-	plans           map[uint64]struct{}
-	removedplans    map[uint64]struct{}
-	clearedplans    bool
 	parent          *uint64
 	clearedparent   bool
 	children        map[uint64]struct{}
 	removedchildren map[uint64]struct{}
 	clearedchildren bool
+	plans           map[uint64]struct{}
+	removedplans    map[uint64]struct{}
+	clearedplans    bool
+	coupons         map[uint64]struct{}
+	removedcoupons  map[uint64]struct{}
+	clearedcoupons  bool
 	done            bool
 	oldValue        func(context.Context) (*City, error)
 	predicates      []predicate.City
@@ -731,60 +734,6 @@ func (m *CityMutation) ResetLat() {
 	delete(m.clearedFields, city.FieldLat)
 }
 
-// AddPlanIDs adds the "plans" edge to the Plan entity by ids.
-func (m *CityMutation) AddPlanIDs(ids ...uint64) {
-	if m.plans == nil {
-		m.plans = make(map[uint64]struct{})
-	}
-	for i := range ids {
-		m.plans[ids[i]] = struct{}{}
-	}
-}
-
-// ClearPlans clears the "plans" edge to the Plan entity.
-func (m *CityMutation) ClearPlans() {
-	m.clearedplans = true
-}
-
-// PlansCleared reports if the "plans" edge to the Plan entity was cleared.
-func (m *CityMutation) PlansCleared() bool {
-	return m.clearedplans
-}
-
-// RemovePlanIDs removes the "plans" edge to the Plan entity by IDs.
-func (m *CityMutation) RemovePlanIDs(ids ...uint64) {
-	if m.removedplans == nil {
-		m.removedplans = make(map[uint64]struct{})
-	}
-	for i := range ids {
-		delete(m.plans, ids[i])
-		m.removedplans[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedPlans returns the removed IDs of the "plans" edge to the Plan entity.
-func (m *CityMutation) RemovedPlansIDs() (ids []uint64) {
-	for id := range m.removedplans {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// PlansIDs returns the "plans" edge IDs in the mutation.
-func (m *CityMutation) PlansIDs() (ids []uint64) {
-	for id := range m.plans {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetPlans resets all changes to the "plans" edge.
-func (m *CityMutation) ResetPlans() {
-	m.plans = nil
-	m.clearedplans = false
-	m.removedplans = nil
-}
-
 // ClearParent clears the "parent" edge to the City entity.
 func (m *CityMutation) ClearParent() {
 	m.clearedparent = true
@@ -863,6 +812,114 @@ func (m *CityMutation) ResetChildren() {
 	m.children = nil
 	m.clearedchildren = false
 	m.removedchildren = nil
+}
+
+// AddPlanIDs adds the "plans" edge to the Plan entity by ids.
+func (m *CityMutation) AddPlanIDs(ids ...uint64) {
+	if m.plans == nil {
+		m.plans = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.plans[ids[i]] = struct{}{}
+	}
+}
+
+// ClearPlans clears the "plans" edge to the Plan entity.
+func (m *CityMutation) ClearPlans() {
+	m.clearedplans = true
+}
+
+// PlansCleared reports if the "plans" edge to the Plan entity was cleared.
+func (m *CityMutation) PlansCleared() bool {
+	return m.clearedplans
+}
+
+// RemovePlanIDs removes the "plans" edge to the Plan entity by IDs.
+func (m *CityMutation) RemovePlanIDs(ids ...uint64) {
+	if m.removedplans == nil {
+		m.removedplans = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.plans, ids[i])
+		m.removedplans[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedPlans returns the removed IDs of the "plans" edge to the Plan entity.
+func (m *CityMutation) RemovedPlansIDs() (ids []uint64) {
+	for id := range m.removedplans {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// PlansIDs returns the "plans" edge IDs in the mutation.
+func (m *CityMutation) PlansIDs() (ids []uint64) {
+	for id := range m.plans {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetPlans resets all changes to the "plans" edge.
+func (m *CityMutation) ResetPlans() {
+	m.plans = nil
+	m.clearedplans = false
+	m.removedplans = nil
+}
+
+// AddCouponIDs adds the "coupons" edge to the Coupon entity by ids.
+func (m *CityMutation) AddCouponIDs(ids ...uint64) {
+	if m.coupons == nil {
+		m.coupons = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.coupons[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCoupons clears the "coupons" edge to the Coupon entity.
+func (m *CityMutation) ClearCoupons() {
+	m.clearedcoupons = true
+}
+
+// CouponsCleared reports if the "coupons" edge to the Coupon entity was cleared.
+func (m *CityMutation) CouponsCleared() bool {
+	return m.clearedcoupons
+}
+
+// RemoveCouponIDs removes the "coupons" edge to the Coupon entity by IDs.
+func (m *CityMutation) RemoveCouponIDs(ids ...uint64) {
+	if m.removedcoupons == nil {
+		m.removedcoupons = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.coupons, ids[i])
+		m.removedcoupons[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCoupons returns the removed IDs of the "coupons" edge to the Coupon entity.
+func (m *CityMutation) RemovedCouponsIDs() (ids []uint64) {
+	for id := range m.removedcoupons {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CouponsIDs returns the "coupons" edge IDs in the mutation.
+func (m *CityMutation) CouponsIDs() (ids []uint64) {
+	for id := range m.coupons {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCoupons resets all changes to the "coupons" edge.
+func (m *CityMutation) ResetCoupons() {
+	m.coupons = nil
+	m.clearedcoupons = false
+	m.removedcoupons = nil
 }
 
 // Where appends a list predicates to the CityMutation builder.
@@ -1248,15 +1305,18 @@ func (m *CityMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CityMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
-	if m.plans != nil {
-		edges = append(edges, city.EdgePlans)
-	}
+	edges := make([]string, 0, 4)
 	if m.parent != nil {
 		edges = append(edges, city.EdgeParent)
 	}
 	if m.children != nil {
 		edges = append(edges, city.EdgeChildren)
+	}
+	if m.plans != nil {
+		edges = append(edges, city.EdgePlans)
+	}
+	if m.coupons != nil {
+		edges = append(edges, city.EdgeCoupons)
 	}
 	return edges
 }
@@ -1265,12 +1325,6 @@ func (m *CityMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *CityMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case city.EdgePlans:
-		ids := make([]ent.Value, 0, len(m.plans))
-		for id := range m.plans {
-			ids = append(ids, id)
-		}
-		return ids
 	case city.EdgeParent:
 		if id := m.parent; id != nil {
 			return []ent.Value{*id}
@@ -1281,18 +1335,33 @@ func (m *CityMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case city.EdgePlans:
+		ids := make([]ent.Value, 0, len(m.plans))
+		for id := range m.plans {
+			ids = append(ids, id)
+		}
+		return ids
+	case city.EdgeCoupons:
+		ids := make([]ent.Value, 0, len(m.coupons))
+		for id := range m.coupons {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CityMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
+	if m.removedchildren != nil {
+		edges = append(edges, city.EdgeChildren)
+	}
 	if m.removedplans != nil {
 		edges = append(edges, city.EdgePlans)
 	}
-	if m.removedchildren != nil {
-		edges = append(edges, city.EdgeChildren)
+	if m.removedcoupons != nil {
+		edges = append(edges, city.EdgeCoupons)
 	}
 	return edges
 }
@@ -1301,15 +1370,21 @@ func (m *CityMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *CityMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
+	case city.EdgeChildren:
+		ids := make([]ent.Value, 0, len(m.removedchildren))
+		for id := range m.removedchildren {
+			ids = append(ids, id)
+		}
+		return ids
 	case city.EdgePlans:
 		ids := make([]ent.Value, 0, len(m.removedplans))
 		for id := range m.removedplans {
 			ids = append(ids, id)
 		}
 		return ids
-	case city.EdgeChildren:
-		ids := make([]ent.Value, 0, len(m.removedchildren))
-		for id := range m.removedchildren {
+	case city.EdgeCoupons:
+		ids := make([]ent.Value, 0, len(m.removedcoupons))
+		for id := range m.removedcoupons {
 			ids = append(ids, id)
 		}
 		return ids
@@ -1319,15 +1394,18 @@ func (m *CityMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CityMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
-	if m.clearedplans {
-		edges = append(edges, city.EdgePlans)
-	}
+	edges := make([]string, 0, 4)
 	if m.clearedparent {
 		edges = append(edges, city.EdgeParent)
 	}
 	if m.clearedchildren {
 		edges = append(edges, city.EdgeChildren)
+	}
+	if m.clearedplans {
+		edges = append(edges, city.EdgePlans)
+	}
+	if m.clearedcoupons {
+		edges = append(edges, city.EdgeCoupons)
 	}
 	return edges
 }
@@ -1336,12 +1414,14 @@ func (m *CityMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *CityMutation) EdgeCleared(name string) bool {
 	switch name {
-	case city.EdgePlans:
-		return m.clearedplans
 	case city.EdgeParent:
 		return m.clearedparent
 	case city.EdgeChildren:
 		return m.clearedchildren
+	case city.EdgePlans:
+		return m.clearedplans
+	case city.EdgeCoupons:
+		return m.clearedcoupons
 	}
 	return false
 }
@@ -1361,14 +1441,17 @@ func (m *CityMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *CityMutation) ResetEdge(name string) error {
 	switch name {
-	case city.EdgePlans:
-		m.ResetPlans()
-		return nil
 	case city.EdgeParent:
 		m.ResetParent()
 		return nil
 	case city.EdgeChildren:
 		m.ResetChildren()
+		return nil
+	case city.EdgePlans:
+		m.ResetPlans()
+		return nil
+	case city.EdgeCoupons:
+		m.ResetCoupons()
 		return nil
 	}
 	return fmt.Errorf("unknown City edge %s", name)

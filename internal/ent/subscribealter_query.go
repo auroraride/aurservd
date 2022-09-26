@@ -504,10 +504,10 @@ func (saq *SubscribeAlterQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 			saq.withSubscribe != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*SubscribeAlter).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &SubscribeAlter{config: saq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -711,11 +711,14 @@ func (saq *SubscribeAlterQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (saq *SubscribeAlterQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := saq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := saq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (saq *SubscribeAlterQuery) querySpec() *sqlgraph.QuerySpec {
@@ -825,7 +828,7 @@ func (sagb *SubscribeAlterGroupBy) Aggregate(fns ...AggregateFunc) *SubscribeAlt
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (sagb *SubscribeAlterGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (sagb *SubscribeAlterGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := sagb.path(ctx)
 	if err != nil {
 		return err
@@ -834,7 +837,7 @@ func (sagb *SubscribeAlterGroupBy) Scan(ctx context.Context, v interface{}) erro
 	return sagb.sqlScan(ctx, v)
 }
 
-func (sagb *SubscribeAlterGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (sagb *SubscribeAlterGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range sagb.fields {
 		if !subscribealter.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -881,7 +884,7 @@ type SubscribeAlterSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (sas *SubscribeAlterSelect) Scan(ctx context.Context, v interface{}) error {
+func (sas *SubscribeAlterSelect) Scan(ctx context.Context, v any) error {
 	if err := sas.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -889,7 +892,7 @@ func (sas *SubscribeAlterSelect) Scan(ctx context.Context, v interface{}) error 
 	return sas.sqlScan(ctx, v)
 }
 
-func (sas *SubscribeAlterSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (sas *SubscribeAlterSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := sas.sql.Query()
 	if err := sas.driver.Query(ctx, query, args, rows); err != nil {

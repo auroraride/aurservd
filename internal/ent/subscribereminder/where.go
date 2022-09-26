@@ -34,7 +34,7 @@ func IDNEQ(id uint64) predicate.SubscribeReminder {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.SubscribeReminder {
 	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -45,7 +45,7 @@ func IDIn(ids ...uint64) predicate.SubscribeReminder {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.SubscribeReminder {
 	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -181,7 +181,7 @@ func CreatedAtNEQ(v time.Time) predicate.SubscribeReminder {
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -192,7 +192,7 @@ func CreatedAtIn(vs ...time.Time) predicate.SubscribeReminder {
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -245,7 +245,7 @@ func UpdatedAtNEQ(v time.Time) predicate.SubscribeReminder {
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -256,7 +256,7 @@ func UpdatedAtIn(vs ...time.Time) predicate.SubscribeReminder {
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -309,7 +309,7 @@ func SubscribeIDNEQ(v uint64) predicate.SubscribeReminder {
 
 // SubscribeIDIn applies the In predicate on the "subscribe_id" field.
 func SubscribeIDIn(vs ...uint64) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -320,7 +320,7 @@ func SubscribeIDIn(vs ...uint64) predicate.SubscribeReminder {
 
 // SubscribeIDNotIn applies the NotIn predicate on the "subscribe_id" field.
 func SubscribeIDNotIn(vs ...uint64) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -345,7 +345,7 @@ func PlanIDNEQ(v uint64) predicate.SubscribeReminder {
 
 // PlanIDIn applies the In predicate on the "plan_id" field.
 func PlanIDIn(vs ...uint64) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -356,7 +356,7 @@ func PlanIDIn(vs ...uint64) predicate.SubscribeReminder {
 
 // PlanIDNotIn applies the NotIn predicate on the "plan_id" field.
 func PlanIDNotIn(vs ...uint64) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -381,7 +381,7 @@ func TypeNEQ(v Type) predicate.SubscribeReminder {
 
 // TypeIn applies the In predicate on the "type" field.
 func TypeIn(vs ...Type) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -392,7 +392,7 @@ func TypeIn(vs ...Type) predicate.SubscribeReminder {
 
 // TypeNotIn applies the NotIn predicate on the "type" field.
 func TypeNotIn(vs ...Type) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -417,7 +417,7 @@ func PhoneNEQ(v string) predicate.SubscribeReminder {
 
 // PhoneIn applies the In predicate on the "phone" field.
 func PhoneIn(vs ...string) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -428,7 +428,7 @@ func PhoneIn(vs ...string) predicate.SubscribeReminder {
 
 // PhoneNotIn applies the NotIn predicate on the "phone" field.
 func PhoneNotIn(vs ...string) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -516,7 +516,7 @@ func NameNEQ(v string) predicate.SubscribeReminder {
 
 // NameIn applies the In predicate on the "name" field.
 func NameIn(vs ...string) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -527,7 +527,7 @@ func NameIn(vs ...string) predicate.SubscribeReminder {
 
 // NameNotIn applies the NotIn predicate on the "name" field.
 func NameNotIn(vs ...string) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -629,7 +629,7 @@ func DaysNEQ(v int) predicate.SubscribeReminder {
 
 // DaysIn applies the In predicate on the "days" field.
 func DaysIn(vs ...int) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -640,7 +640,7 @@ func DaysIn(vs ...int) predicate.SubscribeReminder {
 
 // DaysNotIn applies the NotIn predicate on the "days" field.
 func DaysNotIn(vs ...int) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -693,7 +693,7 @@ func PlanNameNEQ(v string) predicate.SubscribeReminder {
 
 // PlanNameIn applies the In predicate on the "plan_name" field.
 func PlanNameIn(vs ...string) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -704,7 +704,7 @@ func PlanNameIn(vs ...string) predicate.SubscribeReminder {
 
 // PlanNameNotIn applies the NotIn predicate on the "plan_name" field.
 func PlanNameNotIn(vs ...string) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -792,7 +792,7 @@ func DateNEQ(v string) predicate.SubscribeReminder {
 
 // DateIn applies the In predicate on the "date" field.
 func DateIn(vs ...string) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -803,7 +803,7 @@ func DateIn(vs ...string) predicate.SubscribeReminder {
 
 // DateNotIn applies the NotIn predicate on the "date" field.
 func DateNotIn(vs ...string) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -891,7 +891,7 @@ func FeeNEQ(v float64) predicate.SubscribeReminder {
 
 // FeeIn applies the In predicate on the "fee" field.
 func FeeIn(vs ...float64) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -902,7 +902,7 @@ func FeeIn(vs ...float64) predicate.SubscribeReminder {
 
 // FeeNotIn applies the NotIn predicate on the "fee" field.
 func FeeNotIn(vs ...float64) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -955,7 +955,7 @@ func FeeFormulaNEQ(v string) predicate.SubscribeReminder {
 
 // FeeFormulaIn applies the In predicate on the "fee_formula" field.
 func FeeFormulaIn(vs ...string) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -966,7 +966,7 @@ func FeeFormulaIn(vs ...string) predicate.SubscribeReminder {
 
 // FeeFormulaNotIn applies the NotIn predicate on the "fee_formula" field.
 func FeeFormulaNotIn(vs ...string) predicate.SubscribeReminder {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}

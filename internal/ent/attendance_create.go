@@ -557,18 +557,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *AttendanceUpsert) SetCreatedAt(v time.Time) *AttendanceUpsert {
-	u.Set(attendance.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *AttendanceUpsert) UpdateCreatedAt() *AttendanceUpsert {
-	u.SetExcluded(attendance.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *AttendanceUpsert) SetUpdatedAt(v time.Time) *AttendanceUpsert {
 	u.Set(attendance.FieldUpdatedAt, v)
@@ -596,24 +584,6 @@ func (u *AttendanceUpsert) UpdateDeletedAt() *AttendanceUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *AttendanceUpsert) ClearDeletedAt() *AttendanceUpsert {
 	u.SetNull(attendance.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *AttendanceUpsert) SetCreator(v *model.Modifier) *AttendanceUpsert {
-	u.Set(attendance.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *AttendanceUpsert) UpdateCreator() *AttendanceUpsert {
-	u.SetExcluded(attendance.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *AttendanceUpsert) ClearCreator() *AttendanceUpsert {
-	u.SetNull(attendance.FieldCreator)
 	return u
 }
 
@@ -875,20 +845,6 @@ func (u *AttendanceUpsertOne) Update(set func(*AttendanceUpsert)) *AttendanceUps
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *AttendanceUpsertOne) SetCreatedAt(v time.Time) *AttendanceUpsertOne {
-	return u.Update(func(s *AttendanceUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *AttendanceUpsertOne) UpdateCreatedAt() *AttendanceUpsertOne {
-	return u.Update(func(s *AttendanceUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *AttendanceUpsertOne) SetUpdatedAt(v time.Time) *AttendanceUpsertOne {
 	return u.Update(func(s *AttendanceUpsert) {
@@ -921,27 +877,6 @@ func (u *AttendanceUpsertOne) UpdateDeletedAt() *AttendanceUpsertOne {
 func (u *AttendanceUpsertOne) ClearDeletedAt() *AttendanceUpsertOne {
 	return u.Update(func(s *AttendanceUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *AttendanceUpsertOne) SetCreator(v *model.Modifier) *AttendanceUpsertOne {
-	return u.Update(func(s *AttendanceUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *AttendanceUpsertOne) UpdateCreator() *AttendanceUpsertOne {
-	return u.Update(func(s *AttendanceUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *AttendanceUpsertOne) ClearCreator() *AttendanceUpsertOne {
-	return u.Update(func(s *AttendanceUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1400,20 +1335,6 @@ func (u *AttendanceUpsertBulk) Update(set func(*AttendanceUpsert)) *AttendanceUp
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *AttendanceUpsertBulk) SetCreatedAt(v time.Time) *AttendanceUpsertBulk {
-	return u.Update(func(s *AttendanceUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *AttendanceUpsertBulk) UpdateCreatedAt() *AttendanceUpsertBulk {
-	return u.Update(func(s *AttendanceUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *AttendanceUpsertBulk) SetUpdatedAt(v time.Time) *AttendanceUpsertBulk {
 	return u.Update(func(s *AttendanceUpsert) {
@@ -1446,27 +1367,6 @@ func (u *AttendanceUpsertBulk) UpdateDeletedAt() *AttendanceUpsertBulk {
 func (u *AttendanceUpsertBulk) ClearDeletedAt() *AttendanceUpsertBulk {
 	return u.Update(func(s *AttendanceUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *AttendanceUpsertBulk) SetCreator(v *model.Modifier) *AttendanceUpsertBulk {
-	return u.Update(func(s *AttendanceUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *AttendanceUpsertBulk) UpdateCreator() *AttendanceUpsertBulk {
-	return u.Update(func(s *AttendanceUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *AttendanceUpsertBulk) ClearCreator() *AttendanceUpsertBulk {
-	return u.Update(func(s *AttendanceUpsert) {
-		s.ClearCreator()
 	})
 }
 

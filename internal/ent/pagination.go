@@ -272,6 +272,72 @@ func (cq *ContractQuery) PaginationResult(req model.PaginationReq) model.Paginat
 	}
 }
 
+// Pagination returns pagination query builder for CouponQuery.
+func (cq *CouponQuery) Pagination(req model.PaginationReq) *CouponQuery {
+	cq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return cq
+}
+
+// PaginationItems returns pagination query builder for CouponQuery.
+func (cq *CouponQuery) PaginationItemsX(req model.PaginationReq) any {
+	return cq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for CouponQuery.
+func (cq *CouponQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := cq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for CouponLogQuery.
+func (clq *CouponLogQuery) Pagination(req model.PaginationReq) *CouponLogQuery {
+	clq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return clq
+}
+
+// PaginationItems returns pagination query builder for CouponLogQuery.
+func (clq *CouponLogQuery) PaginationItemsX(req model.PaginationReq) any {
+	return clq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for CouponLogQuery.
+func (clq *CouponLogQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := clq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for CouponTemplateQuery.
+func (ctq *CouponTemplateQuery) Pagination(req model.PaginationReq) *CouponTemplateQuery {
+	ctq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return ctq
+}
+
+// PaginationItems returns pagination query builder for CouponTemplateQuery.
+func (ctq *CouponTemplateQuery) PaginationItemsX(req model.PaginationReq) any {
+	return ctq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for CouponTemplateQuery.
+func (ctq *CouponTemplateQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := ctq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for EmployeeQuery.
 func (eq *EmployeeQuery) Pagination(req model.PaginationReq) *EmployeeQuery {
 	eq.Offset(req.GetOffset()).Limit(req.GetLimit())

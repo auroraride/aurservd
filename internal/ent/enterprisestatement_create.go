@@ -566,18 +566,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *EnterpriseStatementUpsert) SetCreatedAt(v time.Time) *EnterpriseStatementUpsert {
-	u.Set(enterprisestatement.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *EnterpriseStatementUpsert) UpdateCreatedAt() *EnterpriseStatementUpsert {
-	u.SetExcluded(enterprisestatement.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *EnterpriseStatementUpsert) SetUpdatedAt(v time.Time) *EnterpriseStatementUpsert {
 	u.Set(enterprisestatement.FieldUpdatedAt, v)
@@ -605,24 +593,6 @@ func (u *EnterpriseStatementUpsert) UpdateDeletedAt() *EnterpriseStatementUpsert
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *EnterpriseStatementUpsert) ClearDeletedAt() *EnterpriseStatementUpsert {
 	u.SetNull(enterprisestatement.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *EnterpriseStatementUpsert) SetCreator(v *model.Modifier) *EnterpriseStatementUpsert {
-	u.Set(enterprisestatement.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *EnterpriseStatementUpsert) UpdateCreator() *EnterpriseStatementUpsert {
-	u.SetExcluded(enterprisestatement.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *EnterpriseStatementUpsert) ClearCreator() *EnterpriseStatementUpsert {
-	u.SetNull(enterprisestatement.FieldCreator)
 	return u
 }
 
@@ -842,20 +812,6 @@ func (u *EnterpriseStatementUpsertOne) Update(set func(*EnterpriseStatementUpser
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *EnterpriseStatementUpsertOne) SetCreatedAt(v time.Time) *EnterpriseStatementUpsertOne {
-	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *EnterpriseStatementUpsertOne) UpdateCreatedAt() *EnterpriseStatementUpsertOne {
-	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *EnterpriseStatementUpsertOne) SetUpdatedAt(v time.Time) *EnterpriseStatementUpsertOne {
 	return u.Update(func(s *EnterpriseStatementUpsert) {
@@ -888,27 +844,6 @@ func (u *EnterpriseStatementUpsertOne) UpdateDeletedAt() *EnterpriseStatementUps
 func (u *EnterpriseStatementUpsertOne) ClearDeletedAt() *EnterpriseStatementUpsertOne {
 	return u.Update(func(s *EnterpriseStatementUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *EnterpriseStatementUpsertOne) SetCreator(v *model.Modifier) *EnterpriseStatementUpsertOne {
-	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *EnterpriseStatementUpsertOne) UpdateCreator() *EnterpriseStatementUpsertOne {
-	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *EnterpriseStatementUpsertOne) ClearCreator() *EnterpriseStatementUpsertOne {
-	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1318,20 +1253,6 @@ func (u *EnterpriseStatementUpsertBulk) Update(set func(*EnterpriseStatementUpse
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *EnterpriseStatementUpsertBulk) SetCreatedAt(v time.Time) *EnterpriseStatementUpsertBulk {
-	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *EnterpriseStatementUpsertBulk) UpdateCreatedAt() *EnterpriseStatementUpsertBulk {
-	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *EnterpriseStatementUpsertBulk) SetUpdatedAt(v time.Time) *EnterpriseStatementUpsertBulk {
 	return u.Update(func(s *EnterpriseStatementUpsert) {
@@ -1364,27 +1285,6 @@ func (u *EnterpriseStatementUpsertBulk) UpdateDeletedAt() *EnterpriseStatementUp
 func (u *EnterpriseStatementUpsertBulk) ClearDeletedAt() *EnterpriseStatementUpsertBulk {
 	return u.Update(func(s *EnterpriseStatementUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *EnterpriseStatementUpsertBulk) SetCreator(v *model.Modifier) *EnterpriseStatementUpsertBulk {
-	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *EnterpriseStatementUpsertBulk) UpdateCreator() *EnterpriseStatementUpsertBulk {
-	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *EnterpriseStatementUpsertBulk) ClearCreator() *EnterpriseStatementUpsertBulk {
-	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.ClearCreator()
 	})
 }
 

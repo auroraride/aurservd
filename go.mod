@@ -58,7 +58,7 @@ require (
 )
 
 require (
-	ariga.io/atlas v0.6.0 // indirect
+	ariga.io/atlas v0.6.5-0.20220907173155-3332f3c1b8c9 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.4 // indirect
@@ -165,7 +165,7 @@ require (
 )
 
 //replace github.com/swaggo/swag => /Users/liasica/Downloads/swag
-
 replace github.com/swaggo/swag => github.com/liasica/swag v1.8.5-0.20220818031911-525ec8e096a2
 
 //replace entgo.io/ent => github.com/CharlesGe129/ent v0.10.2-0.20220520130033-5886b54e4875
+replace entgo.io/ent => github.com/liasica/ent v0.11.3-0.20220926082554-08715525d2cf

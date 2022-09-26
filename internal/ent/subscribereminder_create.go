@@ -492,18 +492,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *SubscribeReminderUpsert) SetCreatedAt(v time.Time) *SubscribeReminderUpsert {
-	u.Set(subscribereminder.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *SubscribeReminderUpsert) UpdateCreatedAt() *SubscribeReminderUpsert {
-	u.SetExcluded(subscribereminder.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *SubscribeReminderUpsert) SetUpdatedAt(v time.Time) *SubscribeReminderUpsert {
 	u.Set(subscribereminder.FieldUpdatedAt, v)
@@ -709,20 +697,6 @@ func (u *SubscribeReminderUpsertOne) Update(set func(*SubscribeReminderUpsert)) 
 		set(&SubscribeReminderUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (u *SubscribeReminderUpsertOne) SetCreatedAt(v time.Time) *SubscribeReminderUpsertOne {
-	return u.Update(func(s *SubscribeReminderUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *SubscribeReminderUpsertOne) UpdateCreatedAt() *SubscribeReminderUpsertOne {
-	return u.Update(func(s *SubscribeReminderUpsert) {
-		s.UpdateCreatedAt()
-	})
 }
 
 // SetUpdatedAt sets the "updated_at" field.
@@ -1119,20 +1093,6 @@ func (u *SubscribeReminderUpsertBulk) Update(set func(*SubscribeReminderUpsert))
 		set(&SubscribeReminderUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (u *SubscribeReminderUpsertBulk) SetCreatedAt(v time.Time) *SubscribeReminderUpsertBulk {
-	return u.Update(func(s *SubscribeReminderUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *SubscribeReminderUpsertBulk) UpdateCreatedAt() *SubscribeReminderUpsertBulk {
-	return u.Update(func(s *SubscribeReminderUpsert) {
-		s.UpdateCreatedAt()
-	})
 }
 
 // SetUpdatedAt sets the "updated_at" field.

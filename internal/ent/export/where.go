@@ -34,7 +34,7 @@ func IDNEQ(id uint64) predicate.Export {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.Export {
 	return predicate.Export(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -45,7 +45,7 @@ func IDIn(ids ...uint64) predicate.Export {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.Export {
 	return predicate.Export(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -181,7 +181,7 @@ func CreatedAtNEQ(v time.Time) predicate.Export {
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -192,7 +192,7 @@ func CreatedAtIn(vs ...time.Time) predicate.Export {
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -245,7 +245,7 @@ func UpdatedAtNEQ(v time.Time) predicate.Export {
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -256,7 +256,7 @@ func UpdatedAtIn(vs ...time.Time) predicate.Export {
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -309,7 +309,7 @@ func DeletedAtNEQ(v time.Time) predicate.Export {
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -320,7 +320,7 @@ func DeletedAtIn(vs ...time.Time) predicate.Export {
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -387,7 +387,7 @@ func ManagerIDNEQ(v uint64) predicate.Export {
 
 // ManagerIDIn applies the In predicate on the "manager_id" field.
 func ManagerIDIn(vs ...uint64) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -398,7 +398,7 @@ func ManagerIDIn(vs ...uint64) predicate.Export {
 
 // ManagerIDNotIn applies the NotIn predicate on the "manager_id" field.
 func ManagerIDNotIn(vs ...uint64) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -423,7 +423,7 @@ func TaxonomyNEQ(v string) predicate.Export {
 
 // TaxonomyIn applies the In predicate on the "taxonomy" field.
 func TaxonomyIn(vs ...string) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -434,7 +434,7 @@ func TaxonomyIn(vs ...string) predicate.Export {
 
 // TaxonomyNotIn applies the NotIn predicate on the "taxonomy" field.
 func TaxonomyNotIn(vs ...string) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -522,7 +522,7 @@ func SnNEQ(v string) predicate.Export {
 
 // SnIn applies the In predicate on the "sn" field.
 func SnIn(vs ...string) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -533,7 +533,7 @@ func SnIn(vs ...string) predicate.Export {
 
 // SnNotIn applies the NotIn predicate on the "sn" field.
 func SnNotIn(vs ...string) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -621,7 +621,7 @@ func StatusNEQ(v uint8) predicate.Export {
 
 // StatusIn applies the In predicate on the "status" field.
 func StatusIn(vs ...uint8) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -632,7 +632,7 @@ func StatusIn(vs ...uint8) predicate.Export {
 
 // StatusNotIn applies the NotIn predicate on the "status" field.
 func StatusNotIn(vs ...uint8) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -685,7 +685,7 @@ func PathNEQ(v string) predicate.Export {
 
 // PathIn applies the In predicate on the "path" field.
 func PathIn(vs ...string) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -696,7 +696,7 @@ func PathIn(vs ...string) predicate.Export {
 
 // PathNotIn applies the NotIn predicate on the "path" field.
 func PathNotIn(vs ...string) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -798,7 +798,7 @@ func MessageNEQ(v string) predicate.Export {
 
 // MessageIn applies the In predicate on the "message" field.
 func MessageIn(vs ...string) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -809,7 +809,7 @@ func MessageIn(vs ...string) predicate.Export {
 
 // MessageNotIn applies the NotIn predicate on the "message" field.
 func MessageNotIn(vs ...string) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -911,7 +911,7 @@ func FinishAtNEQ(v time.Time) predicate.Export {
 
 // FinishAtIn applies the In predicate on the "finish_at" field.
 func FinishAtIn(vs ...time.Time) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -922,7 +922,7 @@ func FinishAtIn(vs ...time.Time) predicate.Export {
 
 // FinishAtNotIn applies the NotIn predicate on the "finish_at" field.
 func FinishAtNotIn(vs ...time.Time) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -989,7 +989,7 @@ func DurationNEQ(v int64) predicate.Export {
 
 // DurationIn applies the In predicate on the "duration" field.
 func DurationIn(vs ...int64) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1000,7 +1000,7 @@ func DurationIn(vs ...int64) predicate.Export {
 
 // DurationNotIn applies the NotIn predicate on the "duration" field.
 func DurationNotIn(vs ...int64) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1081,7 +1081,7 @@ func RemarkNEQ(v string) predicate.Export {
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1092,7 +1092,7 @@ func RemarkIn(vs ...string) predicate.Export {
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.Export {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}

@@ -687,10 +687,10 @@ func (spq *SubscribePauseQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 			spq.withSuspends != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*SubscribePause).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &SubscribePause{config: spq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -1068,11 +1068,14 @@ func (spq *SubscribePauseQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (spq *SubscribePauseQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := spq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := spq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (spq *SubscribePauseQuery) querySpec() *sqlgraph.QuerySpec {
@@ -1182,7 +1185,7 @@ func (spgb *SubscribePauseGroupBy) Aggregate(fns ...AggregateFunc) *SubscribePau
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (spgb *SubscribePauseGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (spgb *SubscribePauseGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := spgb.path(ctx)
 	if err != nil {
 		return err
@@ -1191,7 +1194,7 @@ func (spgb *SubscribePauseGroupBy) Scan(ctx context.Context, v interface{}) erro
 	return spgb.sqlScan(ctx, v)
 }
 
-func (spgb *SubscribePauseGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (spgb *SubscribePauseGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range spgb.fields {
 		if !subscribepause.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -1238,7 +1241,7 @@ type SubscribePauseSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (sps *SubscribePauseSelect) Scan(ctx context.Context, v interface{}) error {
+func (sps *SubscribePauseSelect) Scan(ctx context.Context, v any) error {
 	if err := sps.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1246,7 +1249,7 @@ func (sps *SubscribePauseSelect) Scan(ctx context.Context, v interface{}) error 
 	return sps.sqlScan(ctx, v)
 }
 
-func (sps *SubscribePauseSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (sps *SubscribePauseSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := sps.sql.Query()
 	if err := sps.driver.Query(ctx, query, args, rows); err != nil {

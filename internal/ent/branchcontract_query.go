@@ -356,10 +356,10 @@ func (bcq *BranchContractQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 			bcq.withBranch != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*BranchContract).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &BranchContract{config: bcq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -426,11 +426,14 @@ func (bcq *BranchContractQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (bcq *BranchContractQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := bcq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := bcq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (bcq *BranchContractQuery) querySpec() *sqlgraph.QuerySpec {
@@ -540,7 +543,7 @@ func (bcgb *BranchContractGroupBy) Aggregate(fns ...AggregateFunc) *BranchContra
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (bcgb *BranchContractGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (bcgb *BranchContractGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := bcgb.path(ctx)
 	if err != nil {
 		return err
@@ -549,7 +552,7 @@ func (bcgb *BranchContractGroupBy) Scan(ctx context.Context, v interface{}) erro
 	return bcgb.sqlScan(ctx, v)
 }
 
-func (bcgb *BranchContractGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (bcgb *BranchContractGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range bcgb.fields {
 		if !branchcontract.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -596,7 +599,7 @@ type BranchContractSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (bcs *BranchContractSelect) Scan(ctx context.Context, v interface{}) error {
+func (bcs *BranchContractSelect) Scan(ctx context.Context, v any) error {
 	if err := bcs.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -604,7 +607,7 @@ func (bcs *BranchContractSelect) Scan(ctx context.Context, v interface{}) error 
 	return bcs.sqlScan(ctx, v)
 }
 
-func (bcs *BranchContractSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (bcs *BranchContractSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := bcs.sql.Query()
 	if err := bcs.driver.Query(ctx, query, args, rows); err != nil {

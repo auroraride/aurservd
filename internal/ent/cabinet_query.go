@@ -542,10 +542,10 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 			cq.withStocks != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Cabinet).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &Cabinet{config: cq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -690,14 +690,14 @@ func (cq *CabinetQuery) loadBms(ctx context.Context, query *BatteryModelQuery, n
 	neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
 		assign := spec.Assign
 		values := spec.ScanValues
-		spec.ScanValues = func(columns []string) ([]interface{}, error) {
+		spec.ScanValues = func(columns []string) ([]any, error) {
 			values, err := values(columns[1:])
 			if err != nil {
 				return nil, err
 			}
-			return append([]interface{}{new(sql.NullInt64)}, values...), nil
+			return append([]any{new(sql.NullInt64)}, values...), nil
 		}
-		spec.Assign = func(columns []string, values []interface{}) error {
+		spec.Assign = func(columns []string, values []any) error {
 			outValue := uint64(values[0].(*sql.NullInt64).Int64)
 			inValue := uint64(values[1].(*sql.NullInt64).Int64)
 			if nids[inValue] == nil {
@@ -821,11 +821,14 @@ func (cq *CabinetQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (cq *CabinetQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := cq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := cq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (cq *CabinetQuery) querySpec() *sqlgraph.QuerySpec {
@@ -935,7 +938,7 @@ func (cgb *CabinetGroupBy) Aggregate(fns ...AggregateFunc) *CabinetGroupBy {
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (cgb *CabinetGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (cgb *CabinetGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := cgb.path(ctx)
 	if err != nil {
 		return err
@@ -944,7 +947,7 @@ func (cgb *CabinetGroupBy) Scan(ctx context.Context, v interface{}) error {
 	return cgb.sqlScan(ctx, v)
 }
 
-func (cgb *CabinetGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (cgb *CabinetGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range cgb.fields {
 		if !cabinet.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -991,7 +994,7 @@ type CabinetSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (cs *CabinetSelect) Scan(ctx context.Context, v interface{}) error {
+func (cs *CabinetSelect) Scan(ctx context.Context, v any) error {
 	if err := cs.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -999,7 +1002,7 @@ func (cs *CabinetSelect) Scan(ctx context.Context, v interface{}) error {
 	return cs.sqlScan(ctx, v)
 }
 
-func (cs *CabinetSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (cs *CabinetSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := cs.sql.Query()
 	if err := cs.driver.Query(ctx, query, args, rows); err != nil {

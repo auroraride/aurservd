@@ -34,7 +34,7 @@ func IDNEQ(id uint64) predicate.Cabinet {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -45,7 +45,7 @@ func IDIn(ids ...uint64) predicate.Cabinet {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -265,7 +265,7 @@ func CreatedAtNEQ(v time.Time) predicate.Cabinet {
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -276,7 +276,7 @@ func CreatedAtIn(vs ...time.Time) predicate.Cabinet {
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -329,7 +329,7 @@ func UpdatedAtNEQ(v time.Time) predicate.Cabinet {
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -340,7 +340,7 @@ func UpdatedAtIn(vs ...time.Time) predicate.Cabinet {
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -393,7 +393,7 @@ func DeletedAtNEQ(v time.Time) predicate.Cabinet {
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -404,7 +404,7 @@ func DeletedAtIn(vs ...time.Time) predicate.Cabinet {
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -499,7 +499,7 @@ func RemarkNEQ(v string) predicate.Cabinet {
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -510,7 +510,7 @@ func RemarkIn(vs ...string) predicate.Cabinet {
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -612,7 +612,7 @@ func CityIDNEQ(v uint64) predicate.Cabinet {
 
 // CityIDIn applies the In predicate on the "city_id" field.
 func CityIDIn(vs ...uint64) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -623,7 +623,7 @@ func CityIDIn(vs ...uint64) predicate.Cabinet {
 
 // CityIDNotIn applies the NotIn predicate on the "city_id" field.
 func CityIDNotIn(vs ...uint64) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -662,7 +662,7 @@ func BranchIDNEQ(v uint64) predicate.Cabinet {
 
 // BranchIDIn applies the In predicate on the "branch_id" field.
 func BranchIDIn(vs ...uint64) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -673,7 +673,7 @@ func BranchIDIn(vs ...uint64) predicate.Cabinet {
 
 // BranchIDNotIn applies the NotIn predicate on the "branch_id" field.
 func BranchIDNotIn(vs ...uint64) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -712,7 +712,7 @@ func SnNEQ(v string) predicate.Cabinet {
 
 // SnIn applies the In predicate on the "sn" field.
 func SnIn(vs ...string) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -723,7 +723,7 @@ func SnIn(vs ...string) predicate.Cabinet {
 
 // SnNotIn applies the NotIn predicate on the "sn" field.
 func SnNotIn(vs ...string) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -811,7 +811,7 @@ func BrandNEQ(v string) predicate.Cabinet {
 
 // BrandIn applies the In predicate on the "brand" field.
 func BrandIn(vs ...string) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -822,7 +822,7 @@ func BrandIn(vs ...string) predicate.Cabinet {
 
 // BrandNotIn applies the NotIn predicate on the "brand" field.
 func BrandNotIn(vs ...string) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -910,7 +910,7 @@ func SerialNEQ(v string) predicate.Cabinet {
 
 // SerialIn applies the In predicate on the "serial" field.
 func SerialIn(vs ...string) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -921,7 +921,7 @@ func SerialIn(vs ...string) predicate.Cabinet {
 
 // SerialNotIn applies the NotIn predicate on the "serial" field.
 func SerialNotIn(vs ...string) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1009,7 +1009,7 @@ func NameNEQ(v string) predicate.Cabinet {
 
 // NameIn applies the In predicate on the "name" field.
 func NameIn(vs ...string) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1020,7 +1020,7 @@ func NameIn(vs ...string) predicate.Cabinet {
 
 // NameNotIn applies the NotIn predicate on the "name" field.
 func NameNotIn(vs ...string) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1108,7 +1108,7 @@ func DoorsNEQ(v int) predicate.Cabinet {
 
 // DoorsIn applies the In predicate on the "doors" field.
 func DoorsIn(vs ...int) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1119,7 +1119,7 @@ func DoorsIn(vs ...int) predicate.Cabinet {
 
 // DoorsNotIn applies the NotIn predicate on the "doors" field.
 func DoorsNotIn(vs ...int) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1172,7 +1172,7 @@ func StatusNEQ(v uint8) predicate.Cabinet {
 
 // StatusIn applies the In predicate on the "status" field.
 func StatusIn(vs ...uint8) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1183,7 +1183,7 @@ func StatusIn(vs ...uint8) predicate.Cabinet {
 
 // StatusNotIn applies the NotIn predicate on the "status" field.
 func StatusNotIn(vs ...uint8) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1236,7 +1236,7 @@ func HealthNEQ(v uint8) predicate.Cabinet {
 
 // HealthIn applies the In predicate on the "health" field.
 func HealthIn(vs ...uint8) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1247,7 +1247,7 @@ func HealthIn(vs ...uint8) predicate.Cabinet {
 
 // HealthNotIn applies the NotIn predicate on the "health" field.
 func HealthNotIn(vs ...uint8) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1314,7 +1314,7 @@ func LngNEQ(v float64) predicate.Cabinet {
 
 // LngIn applies the In predicate on the "lng" field.
 func LngIn(vs ...float64) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1325,7 +1325,7 @@ func LngIn(vs ...float64) predicate.Cabinet {
 
 // LngNotIn applies the NotIn predicate on the "lng" field.
 func LngNotIn(vs ...float64) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1392,7 +1392,7 @@ func LatNEQ(v float64) predicate.Cabinet {
 
 // LatIn applies the In predicate on the "lat" field.
 func LatIn(vs ...float64) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1403,7 +1403,7 @@ func LatIn(vs ...float64) predicate.Cabinet {
 
 // LatNotIn applies the NotIn predicate on the "lat" field.
 func LatNotIn(vs ...float64) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1470,7 +1470,7 @@ func AddressNEQ(v string) predicate.Cabinet {
 
 // AddressIn applies the In predicate on the "address" field.
 func AddressIn(vs ...string) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1481,7 +1481,7 @@ func AddressIn(vs ...string) predicate.Cabinet {
 
 // AddressNotIn applies the NotIn predicate on the "address" field.
 func AddressNotIn(vs ...string) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1583,7 +1583,7 @@ func SimSnNEQ(v string) predicate.Cabinet {
 
 // SimSnIn applies the In predicate on the "sim_sn" field.
 func SimSnIn(vs ...string) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1594,7 +1594,7 @@ func SimSnIn(vs ...string) predicate.Cabinet {
 
 // SimSnNotIn applies the NotIn predicate on the "sim_sn" field.
 func SimSnNotIn(vs ...string) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1696,7 +1696,7 @@ func SimDateNEQ(v time.Time) predicate.Cabinet {
 
 // SimDateIn applies the In predicate on the "sim_date" field.
 func SimDateIn(vs ...time.Time) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1707,7 +1707,7 @@ func SimDateIn(vs ...time.Time) predicate.Cabinet {
 
 // SimDateNotIn applies the NotIn predicate on the "sim_date" field.
 func SimDateNotIn(vs ...time.Time) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1788,7 +1788,7 @@ func BatteryNumNEQ(v int) predicate.Cabinet {
 
 // BatteryNumIn applies the In predicate on the "battery_num" field.
 func BatteryNumIn(vs ...int) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1799,7 +1799,7 @@ func BatteryNumIn(vs ...int) predicate.Cabinet {
 
 // BatteryNumNotIn applies the NotIn predicate on the "battery_num" field.
 func BatteryNumNotIn(vs ...int) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1852,7 +1852,7 @@ func BatteryFullNumNEQ(v int) predicate.Cabinet {
 
 // BatteryFullNumIn applies the In predicate on the "battery_full_num" field.
 func BatteryFullNumIn(vs ...int) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1863,7 +1863,7 @@ func BatteryFullNumIn(vs ...int) predicate.Cabinet {
 
 // BatteryFullNumNotIn applies the NotIn predicate on the "battery_full_num" field.
 func BatteryFullNumNotIn(vs ...int) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1916,7 +1916,7 @@ func BatteryChargingNumNEQ(v int) predicate.Cabinet {
 
 // BatteryChargingNumIn applies the In predicate on the "battery_charging_num" field.
 func BatteryChargingNumIn(vs ...int) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1927,7 +1927,7 @@ func BatteryChargingNumIn(vs ...int) predicate.Cabinet {
 
 // BatteryChargingNumNotIn applies the NotIn predicate on the "battery_charging_num" field.
 func BatteryChargingNumNotIn(vs ...int) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1980,7 +1980,7 @@ func EmptyBinNumNEQ(v int) predicate.Cabinet {
 
 // EmptyBinNumIn applies the In predicate on the "empty_bin_num" field.
 func EmptyBinNumIn(vs ...int) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1991,7 +1991,7 @@ func EmptyBinNumIn(vs ...int) predicate.Cabinet {
 
 // EmptyBinNumNotIn applies the NotIn predicate on the "empty_bin_num" field.
 func EmptyBinNumNotIn(vs ...int) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -2044,7 +2044,7 @@ func LockedBinNumNEQ(v int) predicate.Cabinet {
 
 // LockedBinNumIn applies the In predicate on the "locked_bin_num" field.
 func LockedBinNumIn(vs ...int) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -2055,7 +2055,7 @@ func LockedBinNumIn(vs ...int) predicate.Cabinet {
 
 // LockedBinNumNotIn applies the NotIn predicate on the "locked_bin_num" field.
 func LockedBinNumNotIn(vs ...int) predicate.Cabinet {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}

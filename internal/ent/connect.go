@@ -10,7 +10,6 @@ import (
     "database/sql"
     "entgo.io/ent/dialect"
     entsql "entgo.io/ent/dialect/sql"
-    "entgo.io/ent/dialect/sql/schema"
     "fmt"
     "github.com/auroraride/aurservd/internal/ent/migrate"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -44,7 +43,6 @@ func autoMigrate(c *Client) {
     ctx := context.Background()
     if err := c.Schema.Create(
         ctx,
-        schema.WithAtlas(true),
         migrate.WithDropIndex(true),
         migrate.WithDropColumn(true),
         migrate.WithGlobalUniqueID(true),

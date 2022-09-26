@@ -37,19 +37,16 @@ const (
 	FieldLng = "lng"
 	// FieldLat holds the string denoting the lat field in the database.
 	FieldLat = "lat"
-	// EdgePlans holds the string denoting the plans edge name in mutations.
-	EdgePlans = "plans"
 	// EdgeParent holds the string denoting the parent edge name in mutations.
 	EdgeParent = "parent"
 	// EdgeChildren holds the string denoting the children edge name in mutations.
 	EdgeChildren = "children"
+	// EdgePlans holds the string denoting the plans edge name in mutations.
+	EdgePlans = "plans"
+	// EdgeCoupons holds the string denoting the coupons edge name in mutations.
+	EdgeCoupons = "coupons"
 	// Table holds the table name of the city in the database.
 	Table = "city"
-	// PlansTable is the table that holds the plans relation/edge. The primary key declared below.
-	PlansTable = "plan_cities"
-	// PlansInverseTable is the table name for the Plan entity.
-	// It exists in this package in order to avoid circular dependency with the "plan" package.
-	PlansInverseTable = "plan"
 	// ParentTable is the table that holds the parent relation/edge.
 	ParentTable = "city"
 	// ParentColumn is the table column denoting the parent relation/edge.
@@ -58,6 +55,16 @@ const (
 	ChildrenTable = "city"
 	// ChildrenColumn is the table column denoting the children relation/edge.
 	ChildrenColumn = "parent_id"
+	// PlansTable is the table that holds the plans relation/edge. The primary key declared below.
+	PlansTable = "plan_cities"
+	// PlansInverseTable is the table name for the Plan entity.
+	// It exists in this package in order to avoid circular dependency with the "plan" package.
+	PlansInverseTable = "plan"
+	// CouponsTable is the table that holds the coupons relation/edge. The primary key declared below.
+	CouponsTable = "coupon_cities"
+	// CouponsInverseTable is the table name for the Coupon entity.
+	// It exists in this package in order to avoid circular dependency with the "coupon" package.
+	CouponsInverseTable = "coupon"
 )
 
 // Columns holds all SQL columns for city fields.
@@ -81,6 +88,9 @@ var (
 	// PlansPrimaryKey and PlansColumn2 are the table columns denoting the
 	// primary key for the plans relation (M2M).
 	PlansPrimaryKey = []string{"plan_id", "city_id"}
+	// CouponsPrimaryKey and CouponsColumn2 are the table columns denoting the
+	// primary key for the coupons relation (M2M).
+	CouponsPrimaryKey = []string{"coupon_id", "city_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).

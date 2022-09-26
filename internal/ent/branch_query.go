@@ -505,10 +505,10 @@ func (bq *BranchQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Branc
 			bq.withStores != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Branch).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &Branch{config: bq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -714,11 +714,14 @@ func (bq *BranchQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (bq *BranchQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := bq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := bq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (bq *BranchQuery) querySpec() *sqlgraph.QuerySpec {
@@ -828,7 +831,7 @@ func (bgb *BranchGroupBy) Aggregate(fns ...AggregateFunc) *BranchGroupBy {
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (bgb *BranchGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (bgb *BranchGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := bgb.path(ctx)
 	if err != nil {
 		return err
@@ -837,7 +840,7 @@ func (bgb *BranchGroupBy) Scan(ctx context.Context, v interface{}) error {
 	return bgb.sqlScan(ctx, v)
 }
 
-func (bgb *BranchGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (bgb *BranchGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range bgb.fields {
 		if !branch.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -884,7 +887,7 @@ type BranchSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (bs *BranchSelect) Scan(ctx context.Context, v interface{}) error {
+func (bs *BranchSelect) Scan(ctx context.Context, v any) error {
 	if err := bs.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -892,7 +895,7 @@ func (bs *BranchSelect) Scan(ctx context.Context, v interface{}) error {
 	return bs.sqlScan(ctx, v)
 }
 
-func (bs *BranchSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (bs *BranchSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := bs.sql.Query()
 	if err := bs.driver.Query(ctx, query, args, rows); err != nil {

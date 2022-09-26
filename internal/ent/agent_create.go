@@ -412,18 +412,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *AgentUpsert) SetCreatedAt(v time.Time) *AgentUpsert {
-	u.Set(agent.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *AgentUpsert) UpdateCreatedAt() *AgentUpsert {
-	u.SetExcluded(agent.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *AgentUpsert) SetUpdatedAt(v time.Time) *AgentUpsert {
 	u.Set(agent.FieldUpdatedAt, v)
@@ -451,24 +439,6 @@ func (u *AgentUpsert) UpdateDeletedAt() *AgentUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *AgentUpsert) ClearDeletedAt() *AgentUpsert {
 	u.SetNull(agent.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *AgentUpsert) SetCreator(v *model.Modifier) *AgentUpsert {
-	u.Set(agent.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *AgentUpsert) UpdateCreator() *AgentUpsert {
-	u.SetExcluded(agent.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *AgentUpsert) ClearCreator() *AgentUpsert {
-	u.SetNull(agent.FieldCreator)
 	return u
 }
 
@@ -604,20 +574,6 @@ func (u *AgentUpsertOne) Update(set func(*AgentUpsert)) *AgentUpsertOne {
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *AgentUpsertOne) SetCreatedAt(v time.Time) *AgentUpsertOne {
-	return u.Update(func(s *AgentUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *AgentUpsertOne) UpdateCreatedAt() *AgentUpsertOne {
-	return u.Update(func(s *AgentUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *AgentUpsertOne) SetUpdatedAt(v time.Time) *AgentUpsertOne {
 	return u.Update(func(s *AgentUpsert) {
@@ -650,27 +606,6 @@ func (u *AgentUpsertOne) UpdateDeletedAt() *AgentUpsertOne {
 func (u *AgentUpsertOne) ClearDeletedAt() *AgentUpsertOne {
 	return u.Update(func(s *AgentUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *AgentUpsertOne) SetCreator(v *model.Modifier) *AgentUpsertOne {
-	return u.Update(func(s *AgentUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *AgentUpsertOne) UpdateCreator() *AgentUpsertOne {
-	return u.Update(func(s *AgentUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *AgentUpsertOne) ClearCreator() *AgentUpsertOne {
-	return u.Update(func(s *AgentUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -982,20 +917,6 @@ func (u *AgentUpsertBulk) Update(set func(*AgentUpsert)) *AgentUpsertBulk {
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *AgentUpsertBulk) SetCreatedAt(v time.Time) *AgentUpsertBulk {
-	return u.Update(func(s *AgentUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *AgentUpsertBulk) UpdateCreatedAt() *AgentUpsertBulk {
-	return u.Update(func(s *AgentUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *AgentUpsertBulk) SetUpdatedAt(v time.Time) *AgentUpsertBulk {
 	return u.Update(func(s *AgentUpsert) {
@@ -1028,27 +949,6 @@ func (u *AgentUpsertBulk) UpdateDeletedAt() *AgentUpsertBulk {
 func (u *AgentUpsertBulk) ClearDeletedAt() *AgentUpsertBulk {
 	return u.Update(func(s *AgentUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *AgentUpsertBulk) SetCreator(v *model.Modifier) *AgentUpsertBulk {
-	return u.Update(func(s *AgentUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *AgentUpsertBulk) UpdateCreator() *AgentUpsertBulk {
-	return u.Update(func(s *AgentUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *AgentUpsertBulk) ClearCreator() *AgentUpsertBulk {
-	return u.Update(func(s *AgentUpsert) {
-		s.ClearCreator()
 	})
 }
 

@@ -726,18 +726,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *StockUpsert) SetCreatedAt(v time.Time) *StockUpsert {
-	u.Set(stock.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *StockUpsert) UpdateCreatedAt() *StockUpsert {
-	u.SetExcluded(stock.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *StockUpsert) SetUpdatedAt(v time.Time) *StockUpsert {
 	u.Set(stock.FieldUpdatedAt, v)
@@ -765,24 +753,6 @@ func (u *StockUpsert) UpdateDeletedAt() *StockUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *StockUpsert) ClearDeletedAt() *StockUpsert {
 	u.SetNull(stock.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *StockUpsert) SetCreator(v *model.Modifier) *StockUpsert {
-	u.Set(stock.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *StockUpsert) UpdateCreator() *StockUpsert {
-	u.SetExcluded(stock.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *StockUpsert) ClearCreator() *StockUpsert {
-	u.SetNull(stock.FieldCreator)
 	return u
 }
 
@@ -990,24 +960,6 @@ func (u *StockUpsert) ClearModel() *StockUpsert {
 	return u
 }
 
-// SetNum sets the "num" field.
-func (u *StockUpsert) SetNum(v int) *StockUpsert {
-	u.Set(stock.FieldNum, v)
-	return u
-}
-
-// UpdateNum sets the "num" field to the value that was provided on create.
-func (u *StockUpsert) UpdateNum() *StockUpsert {
-	u.SetExcluded(stock.FieldNum)
-	return u
-}
-
-// AddNum adds v to the "num" field.
-func (u *StockUpsert) AddNum(v int) *StockUpsert {
-	u.Add(stock.FieldNum, v)
-	return u
-}
-
 // SetMaterial sets the "material" field.
 func (u *StockUpsert) SetMaterial(v stock.Material) *StockUpsert {
 	u.Set(stock.FieldMaterial, v)
@@ -1071,20 +1023,6 @@ func (u *StockUpsertOne) Update(set func(*StockUpsert)) *StockUpsertOne {
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *StockUpsertOne) SetCreatedAt(v time.Time) *StockUpsertOne {
-	return u.Update(func(s *StockUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *StockUpsertOne) UpdateCreatedAt() *StockUpsertOne {
-	return u.Update(func(s *StockUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *StockUpsertOne) SetUpdatedAt(v time.Time) *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
@@ -1117,27 +1055,6 @@ func (u *StockUpsertOne) UpdateDeletedAt() *StockUpsertOne {
 func (u *StockUpsertOne) ClearDeletedAt() *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *StockUpsertOne) SetCreator(v *model.Modifier) *StockUpsertOne {
-	return u.Update(func(s *StockUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *StockUpsertOne) UpdateCreator() *StockUpsertOne {
-	return u.Update(func(s *StockUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *StockUpsertOne) ClearCreator() *StockUpsertOne {
-	return u.Update(func(s *StockUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1379,27 +1296,6 @@ func (u *StockUpsertOne) ClearModel() *StockUpsertOne {
 	})
 }
 
-// SetNum sets the "num" field.
-func (u *StockUpsertOne) SetNum(v int) *StockUpsertOne {
-	return u.Update(func(s *StockUpsert) {
-		s.SetNum(v)
-	})
-}
-
-// AddNum adds v to the "num" field.
-func (u *StockUpsertOne) AddNum(v int) *StockUpsertOne {
-	return u.Update(func(s *StockUpsert) {
-		s.AddNum(v)
-	})
-}
-
-// UpdateNum sets the "num" field to the value that was provided on create.
-func (u *StockUpsertOne) UpdateNum() *StockUpsertOne {
-	return u.Update(func(s *StockUpsert) {
-		s.UpdateNum()
-	})
-}
-
 // SetMaterial sets the "material" field.
 func (u *StockUpsertOne) SetMaterial(v stock.Material) *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
@@ -1627,20 +1523,6 @@ func (u *StockUpsertBulk) Update(set func(*StockUpsert)) *StockUpsertBulk {
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *StockUpsertBulk) SetCreatedAt(v time.Time) *StockUpsertBulk {
-	return u.Update(func(s *StockUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *StockUpsertBulk) UpdateCreatedAt() *StockUpsertBulk {
-	return u.Update(func(s *StockUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *StockUpsertBulk) SetUpdatedAt(v time.Time) *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
@@ -1673,27 +1555,6 @@ func (u *StockUpsertBulk) UpdateDeletedAt() *StockUpsertBulk {
 func (u *StockUpsertBulk) ClearDeletedAt() *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *StockUpsertBulk) SetCreator(v *model.Modifier) *StockUpsertBulk {
-	return u.Update(func(s *StockUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *StockUpsertBulk) UpdateCreator() *StockUpsertBulk {
-	return u.Update(func(s *StockUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *StockUpsertBulk) ClearCreator() *StockUpsertBulk {
-	return u.Update(func(s *StockUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1932,27 +1793,6 @@ func (u *StockUpsertBulk) UpdateModel() *StockUpsertBulk {
 func (u *StockUpsertBulk) ClearModel() *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
 		s.ClearModel()
-	})
-}
-
-// SetNum sets the "num" field.
-func (u *StockUpsertBulk) SetNum(v int) *StockUpsertBulk {
-	return u.Update(func(s *StockUpsert) {
-		s.SetNum(v)
-	})
-}
-
-// AddNum adds v to the "num" field.
-func (u *StockUpsertBulk) AddNum(v int) *StockUpsertBulk {
-	return u.Update(func(s *StockUpsert) {
-		s.AddNum(v)
-	})
-}
-
-// UpdateNum sets the "num" field to the value that was provided on create.
-func (u *StockUpsertBulk) UpdateNum() *StockUpsertBulk {
-	return u.Update(func(s *StockUpsert) {
-		s.UpdateNum()
 	})
 }
 

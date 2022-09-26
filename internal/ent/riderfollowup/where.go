@@ -34,7 +34,7 @@ func IDNEQ(id uint64) predicate.RiderFollowUp {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.RiderFollowUp {
 	return predicate.RiderFollowUp(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -45,7 +45,7 @@ func IDIn(ids ...uint64) predicate.RiderFollowUp {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.RiderFollowUp {
 	return predicate.RiderFollowUp(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -139,7 +139,7 @@ func CreatedAtNEQ(v time.Time) predicate.RiderFollowUp {
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.RiderFollowUp {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -150,7 +150,7 @@ func CreatedAtIn(vs ...time.Time) predicate.RiderFollowUp {
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.RiderFollowUp {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -203,7 +203,7 @@ func UpdatedAtNEQ(v time.Time) predicate.RiderFollowUp {
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.RiderFollowUp {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -214,7 +214,7 @@ func UpdatedAtIn(vs ...time.Time) predicate.RiderFollowUp {
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.RiderFollowUp {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -267,7 +267,7 @@ func DeletedAtNEQ(v time.Time) predicate.RiderFollowUp {
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.RiderFollowUp {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -278,7 +278,7 @@ func DeletedAtIn(vs ...time.Time) predicate.RiderFollowUp {
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.RiderFollowUp {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -373,7 +373,7 @@ func RemarkNEQ(v string) predicate.RiderFollowUp {
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.RiderFollowUp {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -384,7 +384,7 @@ func RemarkIn(vs ...string) predicate.RiderFollowUp {
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.RiderFollowUp {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -486,7 +486,7 @@ func ManagerIDNEQ(v uint64) predicate.RiderFollowUp {
 
 // ManagerIDIn applies the In predicate on the "manager_id" field.
 func ManagerIDIn(vs ...uint64) predicate.RiderFollowUp {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -497,7 +497,7 @@ func ManagerIDIn(vs ...uint64) predicate.RiderFollowUp {
 
 // ManagerIDNotIn applies the NotIn predicate on the "manager_id" field.
 func ManagerIDNotIn(vs ...uint64) predicate.RiderFollowUp {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -522,7 +522,7 @@ func RiderIDNEQ(v uint64) predicate.RiderFollowUp {
 
 // RiderIDIn applies the In predicate on the "rider_id" field.
 func RiderIDIn(vs ...uint64) predicate.RiderFollowUp {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -533,7 +533,7 @@ func RiderIDIn(vs ...uint64) predicate.RiderFollowUp {
 
 // RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
 func RiderIDNotIn(vs ...uint64) predicate.RiderFollowUp {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}

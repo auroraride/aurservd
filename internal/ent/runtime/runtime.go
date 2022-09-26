@@ -17,6 +17,9 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/coupon"
+	"github.com/auroraride/aurservd/internal/ent/couponlog"
+	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
@@ -361,6 +364,57 @@ func init() {
 	contractDescEffective := contractFields[5].Descriptor()
 	// contract.DefaultEffective holds the default value on creation for the effective field.
 	contract.DefaultEffective = contractDescEffective.Default.(bool)
+	couponMixin := schema.Coupon{}.Mixin()
+	couponMixinHooks2 := couponMixin[2].Hooks()
+	coupon.Hooks[0] = couponMixinHooks2[0]
+	couponMixinFields0 := couponMixin[0].Fields()
+	_ = couponMixinFields0
+	couponFields := schema.Coupon{}.Fields()
+	_ = couponFields
+	// couponDescCreatedAt is the schema descriptor for created_at field.
+	couponDescCreatedAt := couponMixinFields0[0].Descriptor()
+	// coupon.DefaultCreatedAt holds the default value on creation for the created_at field.
+	coupon.DefaultCreatedAt = couponDescCreatedAt.Default.(func() time.Time)
+	// couponDescUpdatedAt is the schema descriptor for updated_at field.
+	couponDescUpdatedAt := couponMixinFields0[1].Descriptor()
+	// coupon.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	coupon.DefaultUpdatedAt = couponDescUpdatedAt.Default.(func() time.Time)
+	// coupon.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	coupon.UpdateDefaultUpdatedAt = couponDescUpdatedAt.UpdateDefault.(func() time.Time)
+	couponlogMixin := schema.CouponLog{}.Mixin()
+	couponlogMixinHooks2 := couponlogMixin[2].Hooks()
+	couponlog.Hooks[0] = couponlogMixinHooks2[0]
+	couponlogMixinFields0 := couponlogMixin[0].Fields()
+	_ = couponlogMixinFields0
+	couponlogFields := schema.CouponLog{}.Fields()
+	_ = couponlogFields
+	// couponlogDescCreatedAt is the schema descriptor for created_at field.
+	couponlogDescCreatedAt := couponlogMixinFields0[0].Descriptor()
+	// couponlog.DefaultCreatedAt holds the default value on creation for the created_at field.
+	couponlog.DefaultCreatedAt = couponlogDescCreatedAt.Default.(func() time.Time)
+	// couponlogDescUpdatedAt is the schema descriptor for updated_at field.
+	couponlogDescUpdatedAt := couponlogMixinFields0[1].Descriptor()
+	// couponlog.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	couponlog.DefaultUpdatedAt = couponlogDescUpdatedAt.Default.(func() time.Time)
+	// couponlog.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	couponlog.UpdateDefaultUpdatedAt = couponlogDescUpdatedAt.UpdateDefault.(func() time.Time)
+	coupontemplateMixin := schema.CouponTemplate{}.Mixin()
+	coupontemplateMixinHooks2 := coupontemplateMixin[2].Hooks()
+	coupontemplate.Hooks[0] = coupontemplateMixinHooks2[0]
+	coupontemplateMixinFields0 := coupontemplateMixin[0].Fields()
+	_ = coupontemplateMixinFields0
+	coupontemplateFields := schema.CouponTemplate{}.Fields()
+	_ = coupontemplateFields
+	// coupontemplateDescCreatedAt is the schema descriptor for created_at field.
+	coupontemplateDescCreatedAt := coupontemplateMixinFields0[0].Descriptor()
+	// coupontemplate.DefaultCreatedAt holds the default value on creation for the created_at field.
+	coupontemplate.DefaultCreatedAt = coupontemplateDescCreatedAt.Default.(func() time.Time)
+	// coupontemplateDescUpdatedAt is the schema descriptor for updated_at field.
+	coupontemplateDescUpdatedAt := coupontemplateMixinFields0[1].Descriptor()
+	// coupontemplate.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	coupontemplate.DefaultUpdatedAt = coupontemplateDescUpdatedAt.Default.(func() time.Time)
+	// coupontemplate.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	coupontemplate.UpdateDefaultUpdatedAt = coupontemplateDescUpdatedAt.UpdateDefault.(func() time.Time)
 	employeeMixin := schema.Employee{}.Mixin()
 	employeeMixinHooks2 := employeeMixin[2].Hooks()
 	employee.Hooks[0] = employeeMixinHooks2[0]
@@ -1026,6 +1080,5 @@ func init() {
 }
 
 const (
-	Version = "v0.11.3-0.20220819064130-b02de28afc96"           // Version of ent codegen.
-	Sum     = "h1:BabLdqg9hirckrxgW6SoT1+fqr8A/OqWiJVFSaAXKkw=" // Sum of ent codegen.
+	Version = "v0.11.3-0.20220819064130-b02de28afc96" // Version of ent codegen.
 )

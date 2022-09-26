@@ -34,7 +34,7 @@ func IDNEQ(id uint64) predicate.Order {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -45,7 +45,7 @@ func IDIn(ids ...uint64) predicate.Order {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -230,7 +230,7 @@ func CreatedAtNEQ(v time.Time) predicate.Order {
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -241,7 +241,7 @@ func CreatedAtIn(vs ...time.Time) predicate.Order {
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -294,7 +294,7 @@ func UpdatedAtNEQ(v time.Time) predicate.Order {
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -305,7 +305,7 @@ func UpdatedAtIn(vs ...time.Time) predicate.Order {
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -358,7 +358,7 @@ func DeletedAtNEQ(v time.Time) predicate.Order {
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -369,7 +369,7 @@ func DeletedAtIn(vs ...time.Time) predicate.Order {
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -464,7 +464,7 @@ func RemarkNEQ(v string) predicate.Order {
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -475,7 +475,7 @@ func RemarkIn(vs ...string) predicate.Order {
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -577,7 +577,7 @@ func PlanIDNEQ(v uint64) predicate.Order {
 
 // PlanIDIn applies the In predicate on the "plan_id" field.
 func PlanIDIn(vs ...uint64) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -588,7 +588,7 @@ func PlanIDIn(vs ...uint64) predicate.Order {
 
 // PlanIDNotIn applies the NotIn predicate on the "plan_id" field.
 func PlanIDNotIn(vs ...uint64) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -627,7 +627,7 @@ func CityIDNEQ(v uint64) predicate.Order {
 
 // CityIDIn applies the In predicate on the "city_id" field.
 func CityIDIn(vs ...uint64) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -638,7 +638,7 @@ func CityIDIn(vs ...uint64) predicate.Order {
 
 // CityIDNotIn applies the NotIn predicate on the "city_id" field.
 func CityIDNotIn(vs ...uint64) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -677,7 +677,7 @@ func RiderIDNEQ(v uint64) predicate.Order {
 
 // RiderIDIn applies the In predicate on the "rider_id" field.
 func RiderIDIn(vs ...uint64) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -688,7 +688,7 @@ func RiderIDIn(vs ...uint64) predicate.Order {
 
 // RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
 func RiderIDNotIn(vs ...uint64) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -713,7 +713,7 @@ func ParentIDNEQ(v uint64) predicate.Order {
 
 // ParentIDIn applies the In predicate on the "parent_id" field.
 func ParentIDIn(vs ...uint64) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -724,7 +724,7 @@ func ParentIDIn(vs ...uint64) predicate.Order {
 
 // ParentIDNotIn applies the NotIn predicate on the "parent_id" field.
 func ParentIDNotIn(vs ...uint64) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -763,7 +763,7 @@ func SubscribeIDNEQ(v uint64) predicate.Order {
 
 // SubscribeIDIn applies the In predicate on the "subscribe_id" field.
 func SubscribeIDIn(vs ...uint64) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -774,7 +774,7 @@ func SubscribeIDIn(vs ...uint64) predicate.Order {
 
 // SubscribeIDNotIn applies the NotIn predicate on the "subscribe_id" field.
 func SubscribeIDNotIn(vs ...uint64) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -813,7 +813,7 @@ func StatusNEQ(v uint8) predicate.Order {
 
 // StatusIn applies the In predicate on the "status" field.
 func StatusIn(vs ...uint8) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -824,7 +824,7 @@ func StatusIn(vs ...uint8) predicate.Order {
 
 // StatusNotIn applies the NotIn predicate on the "status" field.
 func StatusNotIn(vs ...uint8) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -877,7 +877,7 @@ func PaywayNEQ(v uint8) predicate.Order {
 
 // PaywayIn applies the In predicate on the "payway" field.
 func PaywayIn(vs ...uint8) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -888,7 +888,7 @@ func PaywayIn(vs ...uint8) predicate.Order {
 
 // PaywayNotIn applies the NotIn predicate on the "payway" field.
 func PaywayNotIn(vs ...uint8) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -941,7 +941,7 @@ func TypeNEQ(v uint) predicate.Order {
 
 // TypeIn applies the In predicate on the "type" field.
 func TypeIn(vs ...uint) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -952,7 +952,7 @@ func TypeIn(vs ...uint) predicate.Order {
 
 // TypeNotIn applies the NotIn predicate on the "type" field.
 func TypeNotIn(vs ...uint) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1005,7 +1005,7 @@ func OutTradeNoNEQ(v string) predicate.Order {
 
 // OutTradeNoIn applies the In predicate on the "out_trade_no" field.
 func OutTradeNoIn(vs ...string) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1016,7 +1016,7 @@ func OutTradeNoIn(vs ...string) predicate.Order {
 
 // OutTradeNoNotIn applies the NotIn predicate on the "out_trade_no" field.
 func OutTradeNoNotIn(vs ...string) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1104,7 +1104,7 @@ func TradeNoNEQ(v string) predicate.Order {
 
 // TradeNoIn applies the In predicate on the "trade_no" field.
 func TradeNoIn(vs ...string) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1115,7 +1115,7 @@ func TradeNoIn(vs ...string) predicate.Order {
 
 // TradeNoNotIn applies the NotIn predicate on the "trade_no" field.
 func TradeNoNotIn(vs ...string) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1203,7 +1203,7 @@ func AmountNEQ(v float64) predicate.Order {
 
 // AmountIn applies the In predicate on the "amount" field.
 func AmountIn(vs ...float64) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1214,7 +1214,7 @@ func AmountIn(vs ...float64) predicate.Order {
 
 // AmountNotIn applies the NotIn predicate on the "amount" field.
 func AmountNotIn(vs ...float64) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1267,7 +1267,7 @@ func TotalNEQ(v float64) predicate.Order {
 
 // TotalIn applies the In predicate on the "total" field.
 func TotalIn(vs ...float64) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1278,7 +1278,7 @@ func TotalIn(vs ...float64) predicate.Order {
 
 // TotalNotIn applies the NotIn predicate on the "total" field.
 func TotalNotIn(vs ...float64) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1331,7 +1331,7 @@ func RefundAtNEQ(v time.Time) predicate.Order {
 
 // RefundAtIn applies the In predicate on the "refund_at" field.
 func RefundAtIn(vs ...time.Time) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1342,7 +1342,7 @@ func RefundAtIn(vs ...time.Time) predicate.Order {
 
 // RefundAtNotIn applies the NotIn predicate on the "refund_at" field.
 func RefundAtNotIn(vs ...time.Time) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1409,7 +1409,7 @@ func InitialDaysNEQ(v int) predicate.Order {
 
 // InitialDaysIn applies the In predicate on the "initial_days" field.
 func InitialDaysIn(vs ...int) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1420,7 +1420,7 @@ func InitialDaysIn(vs ...int) predicate.Order {
 
 // InitialDaysNotIn applies the NotIn predicate on the "initial_days" field.
 func InitialDaysNotIn(vs ...int) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1487,7 +1487,7 @@ func PastDaysNEQ(v int) predicate.Order {
 
 // PastDaysIn applies the In predicate on the "past_days" field.
 func PastDaysIn(vs ...int) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1498,7 +1498,7 @@ func PastDaysIn(vs ...int) predicate.Order {
 
 // PastDaysNotIn applies the NotIn predicate on the "past_days" field.
 func PastDaysNotIn(vs ...int) predicate.Order {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}

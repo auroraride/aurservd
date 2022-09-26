@@ -658,18 +658,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *StoreUpsert) SetCreatedAt(v time.Time) *StoreUpsert {
-	u.Set(store.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *StoreUpsert) UpdateCreatedAt() *StoreUpsert {
-	u.SetExcluded(store.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *StoreUpsert) SetUpdatedAt(v time.Time) *StoreUpsert {
 	u.Set(store.FieldUpdatedAt, v)
@@ -697,24 +685,6 @@ func (u *StoreUpsert) UpdateDeletedAt() *StoreUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *StoreUpsert) ClearDeletedAt() *StoreUpsert {
 	u.SetNull(store.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *StoreUpsert) SetCreator(v *model.Modifier) *StoreUpsert {
-	u.Set(store.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *StoreUpsert) UpdateCreator() *StoreUpsert {
-	u.SetExcluded(store.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *StoreUpsert) ClearCreator() *StoreUpsert {
-	u.SetNull(store.FieldCreator)
 	return u
 }
 
@@ -793,18 +763,6 @@ func (u *StoreUpsert) SetBranchID(v uint64) *StoreUpsert {
 // UpdateBranchID sets the "branch_id" field to the value that was provided on create.
 func (u *StoreUpsert) UpdateBranchID() *StoreUpsert {
 	u.SetExcluded(store.FieldBranchID)
-	return u
-}
-
-// SetSn sets the "sn" field.
-func (u *StoreUpsert) SetSn(v string) *StoreUpsert {
-	u.Set(store.FieldSn, v)
-	return u
-}
-
-// UpdateSn sets the "sn" field to the value that was provided on create.
-func (u *StoreUpsert) UpdateSn() *StoreUpsert {
-	u.SetExcluded(store.FieldSn)
 	return u
 }
 
@@ -937,20 +895,6 @@ func (u *StoreUpsertOne) Update(set func(*StoreUpsert)) *StoreUpsertOne {
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *StoreUpsertOne) SetCreatedAt(v time.Time) *StoreUpsertOne {
-	return u.Update(func(s *StoreUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *StoreUpsertOne) UpdateCreatedAt() *StoreUpsertOne {
-	return u.Update(func(s *StoreUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *StoreUpsertOne) SetUpdatedAt(v time.Time) *StoreUpsertOne {
 	return u.Update(func(s *StoreUpsert) {
@@ -983,27 +927,6 @@ func (u *StoreUpsertOne) UpdateDeletedAt() *StoreUpsertOne {
 func (u *StoreUpsertOne) ClearDeletedAt() *StoreUpsertOne {
 	return u.Update(func(s *StoreUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *StoreUpsertOne) SetCreator(v *model.Modifier) *StoreUpsertOne {
-	return u.Update(func(s *StoreUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *StoreUpsertOne) UpdateCreator() *StoreUpsertOne {
-	return u.Update(func(s *StoreUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *StoreUpsertOne) ClearCreator() *StoreUpsertOne {
-	return u.Update(func(s *StoreUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1095,20 +1018,6 @@ func (u *StoreUpsertOne) SetBranchID(v uint64) *StoreUpsertOne {
 func (u *StoreUpsertOne) UpdateBranchID() *StoreUpsertOne {
 	return u.Update(func(s *StoreUpsert) {
 		s.UpdateBranchID()
-	})
-}
-
-// SetSn sets the "sn" field.
-func (u *StoreUpsertOne) SetSn(v string) *StoreUpsertOne {
-	return u.Update(func(s *StoreUpsert) {
-		s.SetSn(v)
-	})
-}
-
-// UpdateSn sets the "sn" field to the value that was provided on create.
-func (u *StoreUpsertOne) UpdateSn() *StoreUpsertOne {
-	return u.Update(func(s *StoreUpsert) {
-		s.UpdateSn()
 	})
 }
 
@@ -1416,20 +1325,6 @@ func (u *StoreUpsertBulk) Update(set func(*StoreUpsert)) *StoreUpsertBulk {
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *StoreUpsertBulk) SetCreatedAt(v time.Time) *StoreUpsertBulk {
-	return u.Update(func(s *StoreUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *StoreUpsertBulk) UpdateCreatedAt() *StoreUpsertBulk {
-	return u.Update(func(s *StoreUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *StoreUpsertBulk) SetUpdatedAt(v time.Time) *StoreUpsertBulk {
 	return u.Update(func(s *StoreUpsert) {
@@ -1462,27 +1357,6 @@ func (u *StoreUpsertBulk) UpdateDeletedAt() *StoreUpsertBulk {
 func (u *StoreUpsertBulk) ClearDeletedAt() *StoreUpsertBulk {
 	return u.Update(func(s *StoreUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *StoreUpsertBulk) SetCreator(v *model.Modifier) *StoreUpsertBulk {
-	return u.Update(func(s *StoreUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *StoreUpsertBulk) UpdateCreator() *StoreUpsertBulk {
-	return u.Update(func(s *StoreUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *StoreUpsertBulk) ClearCreator() *StoreUpsertBulk {
-	return u.Update(func(s *StoreUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1574,20 +1448,6 @@ func (u *StoreUpsertBulk) SetBranchID(v uint64) *StoreUpsertBulk {
 func (u *StoreUpsertBulk) UpdateBranchID() *StoreUpsertBulk {
 	return u.Update(func(s *StoreUpsert) {
 		s.UpdateBranchID()
-	})
-}
-
-// SetSn sets the "sn" field.
-func (u *StoreUpsertBulk) SetSn(v string) *StoreUpsertBulk {
-	return u.Update(func(s *StoreUpsert) {
-		s.SetSn(v)
-	})
-}
-
-// UpdateSn sets the "sn" field to the value that was provided on create.
-func (u *StoreUpsertBulk) UpdateSn() *StoreUpsertBulk {
-	return u.Update(func(s *StoreUpsert) {
-		s.UpdateSn()
 	})
 }
 

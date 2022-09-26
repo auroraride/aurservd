@@ -356,10 +356,10 @@ func (ecq *EnterpriseContractQuery) sqlAll(ctx context.Context, hooks ...queryHo
 			ecq.withEnterprise != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*EnterpriseContract).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &EnterpriseContract{config: ecq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -426,11 +426,14 @@ func (ecq *EnterpriseContractQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (ecq *EnterpriseContractQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := ecq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := ecq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (ecq *EnterpriseContractQuery) querySpec() *sqlgraph.QuerySpec {
@@ -540,7 +543,7 @@ func (ecgb *EnterpriseContractGroupBy) Aggregate(fns ...AggregateFunc) *Enterpri
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (ecgb *EnterpriseContractGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (ecgb *EnterpriseContractGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := ecgb.path(ctx)
 	if err != nil {
 		return err
@@ -549,7 +552,7 @@ func (ecgb *EnterpriseContractGroupBy) Scan(ctx context.Context, v interface{}) 
 	return ecgb.sqlScan(ctx, v)
 }
 
-func (ecgb *EnterpriseContractGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (ecgb *EnterpriseContractGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range ecgb.fields {
 		if !enterprisecontract.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -596,7 +599,7 @@ type EnterpriseContractSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ecs *EnterpriseContractSelect) Scan(ctx context.Context, v interface{}) error {
+func (ecs *EnterpriseContractSelect) Scan(ctx context.Context, v any) error {
 	if err := ecs.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -604,7 +607,7 @@ func (ecs *EnterpriseContractSelect) Scan(ctx context.Context, v interface{}) er
 	return ecs.sqlScan(ctx, v)
 }
 
-func (ecs *EnterpriseContractSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (ecs *EnterpriseContractSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := ecs.sql.Query()
 	if err := ecs.driver.Query(ctx, query, args, rows); err != nil {

@@ -1351,18 +1351,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *SubscribeUpsert) SetCreatedAt(v time.Time) *SubscribeUpsert {
-	u.Set(subscribe.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *SubscribeUpsert) UpdateCreatedAt() *SubscribeUpsert {
-	u.SetExcluded(subscribe.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *SubscribeUpsert) SetUpdatedAt(v time.Time) *SubscribeUpsert {
 	u.Set(subscribe.FieldUpdatedAt, v)
@@ -1390,24 +1378,6 @@ func (u *SubscribeUpsert) UpdateDeletedAt() *SubscribeUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *SubscribeUpsert) ClearDeletedAt() *SubscribeUpsert {
 	u.SetNull(subscribe.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *SubscribeUpsert) SetCreator(v *model.Modifier) *SubscribeUpsert {
-	u.Set(subscribe.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *SubscribeUpsert) UpdateCreator() *SubscribeUpsert {
-	u.SetExcluded(subscribe.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *SubscribeUpsert) ClearCreator() *SubscribeUpsert {
-	u.SetNull(subscribe.FieldCreator)
 	return u
 }
 
@@ -1612,24 +1582,6 @@ func (u *SubscribeUpsert) UpdateStatus() *SubscribeUpsert {
 // AddStatus adds v to the "status" field.
 func (u *SubscribeUpsert) AddStatus(v uint8) *SubscribeUpsert {
 	u.Add(subscribe.FieldStatus, v)
-	return u
-}
-
-// SetType sets the "type" field.
-func (u *SubscribeUpsert) SetType(v uint) *SubscribeUpsert {
-	u.Set(subscribe.FieldType, v)
-	return u
-}
-
-// UpdateType sets the "type" field to the value that was provided on create.
-func (u *SubscribeUpsert) UpdateType() *SubscribeUpsert {
-	u.SetExcluded(subscribe.FieldType)
-	return u
-}
-
-// AddType adds v to the "type" field.
-func (u *SubscribeUpsert) AddType(v uint) *SubscribeUpsert {
-	u.Add(subscribe.FieldType, v)
 	return u
 }
 
@@ -2002,20 +1954,6 @@ func (u *SubscribeUpsertOne) Update(set func(*SubscribeUpsert)) *SubscribeUpsert
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *SubscribeUpsertOne) SetCreatedAt(v time.Time) *SubscribeUpsertOne {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *SubscribeUpsertOne) UpdateCreatedAt() *SubscribeUpsertOne {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *SubscribeUpsertOne) SetUpdatedAt(v time.Time) *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
@@ -2048,27 +1986,6 @@ func (u *SubscribeUpsertOne) UpdateDeletedAt() *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) ClearDeletedAt() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *SubscribeUpsertOne) SetCreator(v *model.Modifier) *SubscribeUpsertOne {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *SubscribeUpsertOne) UpdateCreator() *SubscribeUpsertOne {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *SubscribeUpsertOne) ClearCreator() *SubscribeUpsertOne {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -2307,27 +2224,6 @@ func (u *SubscribeUpsertOne) AddStatus(v uint8) *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) UpdateStatus() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.UpdateStatus()
-	})
-}
-
-// SetType sets the "type" field.
-func (u *SubscribeUpsertOne) SetType(v uint) *SubscribeUpsertOne {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.SetType(v)
-	})
-}
-
-// AddType adds v to the "type" field.
-func (u *SubscribeUpsertOne) AddType(v uint) *SubscribeUpsertOne {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.AddType(v)
-	})
-}
-
-// UpdateType sets the "type" field to the value that was provided on create.
-func (u *SubscribeUpsertOne) UpdateType() *SubscribeUpsertOne {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.UpdateType()
 	})
 }
 
@@ -2915,20 +2811,6 @@ func (u *SubscribeUpsertBulk) Update(set func(*SubscribeUpsert)) *SubscribeUpser
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *SubscribeUpsertBulk) SetCreatedAt(v time.Time) *SubscribeUpsertBulk {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *SubscribeUpsertBulk) UpdateCreatedAt() *SubscribeUpsertBulk {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *SubscribeUpsertBulk) SetUpdatedAt(v time.Time) *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
@@ -2961,27 +2843,6 @@ func (u *SubscribeUpsertBulk) UpdateDeletedAt() *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) ClearDeletedAt() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *SubscribeUpsertBulk) SetCreator(v *model.Modifier) *SubscribeUpsertBulk {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *SubscribeUpsertBulk) UpdateCreator() *SubscribeUpsertBulk {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *SubscribeUpsertBulk) ClearCreator() *SubscribeUpsertBulk {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -3220,27 +3081,6 @@ func (u *SubscribeUpsertBulk) AddStatus(v uint8) *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) UpdateStatus() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.UpdateStatus()
-	})
-}
-
-// SetType sets the "type" field.
-func (u *SubscribeUpsertBulk) SetType(v uint) *SubscribeUpsertBulk {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.SetType(v)
-	})
-}
-
-// AddType adds v to the "type" field.
-func (u *SubscribeUpsertBulk) AddType(v uint) *SubscribeUpsertBulk {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.AddType(v)
-	})
-}
-
-// UpdateType sets the "type" field to the value that was provided on create.
-func (u *SubscribeUpsertBulk) UpdateType() *SubscribeUpsertBulk {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.UpdateType()
 	})
 }
 

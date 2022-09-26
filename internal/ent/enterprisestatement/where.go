@@ -34,7 +34,7 @@ func IDNEQ(id uint64) predicate.EnterpriseStatement {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -45,7 +45,7 @@ func IDIn(ids ...uint64) predicate.EnterpriseStatement {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -181,7 +181,7 @@ func CreatedAtNEQ(v time.Time) predicate.EnterpriseStatement {
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -192,7 +192,7 @@ func CreatedAtIn(vs ...time.Time) predicate.EnterpriseStatement {
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -245,7 +245,7 @@ func UpdatedAtNEQ(v time.Time) predicate.EnterpriseStatement {
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -256,7 +256,7 @@ func UpdatedAtIn(vs ...time.Time) predicate.EnterpriseStatement {
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -309,7 +309,7 @@ func DeletedAtNEQ(v time.Time) predicate.EnterpriseStatement {
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -320,7 +320,7 @@ func DeletedAtIn(vs ...time.Time) predicate.EnterpriseStatement {
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -415,7 +415,7 @@ func RemarkNEQ(v string) predicate.EnterpriseStatement {
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -426,7 +426,7 @@ func RemarkIn(vs ...string) predicate.EnterpriseStatement {
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -528,7 +528,7 @@ func EnterpriseIDNEQ(v uint64) predicate.EnterpriseStatement {
 
 // EnterpriseIDIn applies the In predicate on the "enterprise_id" field.
 func EnterpriseIDIn(vs ...uint64) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -539,7 +539,7 @@ func EnterpriseIDIn(vs ...uint64) predicate.EnterpriseStatement {
 
 // EnterpriseIDNotIn applies the NotIn predicate on the "enterprise_id" field.
 func EnterpriseIDNotIn(vs ...uint64) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -564,7 +564,7 @@ func CostNEQ(v float64) predicate.EnterpriseStatement {
 
 // CostIn applies the In predicate on the "cost" field.
 func CostIn(vs ...float64) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -575,7 +575,7 @@ func CostIn(vs ...float64) predicate.EnterpriseStatement {
 
 // CostNotIn applies the NotIn predicate on the "cost" field.
 func CostNotIn(vs ...float64) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -628,7 +628,7 @@ func SettledAtNEQ(v time.Time) predicate.EnterpriseStatement {
 
 // SettledAtIn applies the In predicate on the "settled_at" field.
 func SettledAtIn(vs ...time.Time) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -639,7 +639,7 @@ func SettledAtIn(vs ...time.Time) predicate.EnterpriseStatement {
 
 // SettledAtNotIn applies the NotIn predicate on the "settled_at" field.
 func SettledAtNotIn(vs ...time.Time) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -706,7 +706,7 @@ func DaysNEQ(v int) predicate.EnterpriseStatement {
 
 // DaysIn applies the In predicate on the "days" field.
 func DaysIn(vs ...int) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -717,7 +717,7 @@ func DaysIn(vs ...int) predicate.EnterpriseStatement {
 
 // DaysNotIn applies the NotIn predicate on the "days" field.
 func DaysNotIn(vs ...int) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -770,7 +770,7 @@ func RiderNumberNEQ(v int) predicate.EnterpriseStatement {
 
 // RiderNumberIn applies the In predicate on the "rider_number" field.
 func RiderNumberIn(vs ...int) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -781,7 +781,7 @@ func RiderNumberIn(vs ...int) predicate.EnterpriseStatement {
 
 // RiderNumberNotIn applies the NotIn predicate on the "rider_number" field.
 func RiderNumberNotIn(vs ...int) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -834,7 +834,7 @@ func DateNEQ(v time.Time) predicate.EnterpriseStatement {
 
 // DateIn applies the In predicate on the "date" field.
 func DateIn(vs ...time.Time) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -845,7 +845,7 @@ func DateIn(vs ...time.Time) predicate.EnterpriseStatement {
 
 // DateNotIn applies the NotIn predicate on the "date" field.
 func DateNotIn(vs ...time.Time) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -912,7 +912,7 @@ func StartNEQ(v time.Time) predicate.EnterpriseStatement {
 
 // StartIn applies the In predicate on the "start" field.
 func StartIn(vs ...time.Time) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -923,7 +923,7 @@ func StartIn(vs ...time.Time) predicate.EnterpriseStatement {
 
 // StartNotIn applies the NotIn predicate on the "start" field.
 func StartNotIn(vs ...time.Time) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -976,7 +976,7 @@ func EndNEQ(v time.Time) predicate.EnterpriseStatement {
 
 // EndIn applies the In predicate on the "end" field.
 func EndIn(vs ...time.Time) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -987,7 +987,7 @@ func EndIn(vs ...time.Time) predicate.EnterpriseStatement {
 
 // EndNotIn applies the NotIn predicate on the "end" field.
 func EndNotIn(vs ...time.Time) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}

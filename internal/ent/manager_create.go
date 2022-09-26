@@ -446,18 +446,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *ManagerUpsert) SetCreatedAt(v time.Time) *ManagerUpsert {
-	u.Set(manager.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *ManagerUpsert) UpdateCreatedAt() *ManagerUpsert {
-	u.SetExcluded(manager.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *ManagerUpsert) SetUpdatedAt(v time.Time) *ManagerUpsert {
 	u.Set(manager.FieldUpdatedAt, v)
@@ -485,24 +473,6 @@ func (u *ManagerUpsert) UpdateDeletedAt() *ManagerUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *ManagerUpsert) ClearDeletedAt() *ManagerUpsert {
 	u.SetNull(manager.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *ManagerUpsert) SetCreator(v *model.Modifier) *ManagerUpsert {
-	u.Set(manager.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *ManagerUpsert) UpdateCreator() *ManagerUpsert {
-	u.SetExcluded(manager.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *ManagerUpsert) ClearCreator() *ManagerUpsert {
-	u.SetNull(manager.FieldCreator)
 	return u
 }
 
@@ -662,20 +632,6 @@ func (u *ManagerUpsertOne) Update(set func(*ManagerUpsert)) *ManagerUpsertOne {
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *ManagerUpsertOne) SetCreatedAt(v time.Time) *ManagerUpsertOne {
-	return u.Update(func(s *ManagerUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *ManagerUpsertOne) UpdateCreatedAt() *ManagerUpsertOne {
-	return u.Update(func(s *ManagerUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *ManagerUpsertOne) SetUpdatedAt(v time.Time) *ManagerUpsertOne {
 	return u.Update(func(s *ManagerUpsert) {
@@ -708,27 +664,6 @@ func (u *ManagerUpsertOne) UpdateDeletedAt() *ManagerUpsertOne {
 func (u *ManagerUpsertOne) ClearDeletedAt() *ManagerUpsertOne {
 	return u.Update(func(s *ManagerUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *ManagerUpsertOne) SetCreator(v *model.Modifier) *ManagerUpsertOne {
-	return u.Update(func(s *ManagerUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *ManagerUpsertOne) UpdateCreator() *ManagerUpsertOne {
-	return u.Update(func(s *ManagerUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *ManagerUpsertOne) ClearCreator() *ManagerUpsertOne {
-	return u.Update(func(s *ManagerUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1068,20 +1003,6 @@ func (u *ManagerUpsertBulk) Update(set func(*ManagerUpsert)) *ManagerUpsertBulk 
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *ManagerUpsertBulk) SetCreatedAt(v time.Time) *ManagerUpsertBulk {
-	return u.Update(func(s *ManagerUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *ManagerUpsertBulk) UpdateCreatedAt() *ManagerUpsertBulk {
-	return u.Update(func(s *ManagerUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *ManagerUpsertBulk) SetUpdatedAt(v time.Time) *ManagerUpsertBulk {
 	return u.Update(func(s *ManagerUpsert) {
@@ -1114,27 +1035,6 @@ func (u *ManagerUpsertBulk) UpdateDeletedAt() *ManagerUpsertBulk {
 func (u *ManagerUpsertBulk) ClearDeletedAt() *ManagerUpsertBulk {
 	return u.Update(func(s *ManagerUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *ManagerUpsertBulk) SetCreator(v *model.Modifier) *ManagerUpsertBulk {
-	return u.Update(func(s *ManagerUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *ManagerUpsertBulk) UpdateCreator() *ManagerUpsertBulk {
-	return u.Update(func(s *ManagerUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *ManagerUpsertBulk) ClearCreator() *ManagerUpsertBulk {
-	return u.Update(func(s *ManagerUpsert) {
-		s.ClearCreator()
 	})
 }
 

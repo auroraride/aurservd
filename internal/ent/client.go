@@ -22,6 +22,9 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/coupon"
+	"github.com/auroraride/aurservd/internal/ent/couponlog"
+	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
@@ -86,6 +89,12 @@ type Client struct {
 	Commission *CommissionClient
 	// Contract is the client for interacting with the Contract builders.
 	Contract *ContractClient
+	// Coupon is the client for interacting with the Coupon builders.
+	Coupon *CouponClient
+	// CouponLog is the client for interacting with the CouponLog builders.
+	CouponLog *CouponLogClient
+	// CouponTemplate is the client for interacting with the CouponTemplate builders.
+	CouponTemplate *CouponTemplateClient
 	// Employee is the client for interacting with the Employee builders.
 	Employee *EmployeeClient
 	// Enterprise is the client for interacting with the Enterprise builders.
@@ -169,6 +178,9 @@ func (c *Client) init() {
 	c.City = NewCityClient(c.config)
 	c.Commission = NewCommissionClient(c.config)
 	c.Contract = NewContractClient(c.config)
+	c.Coupon = NewCouponClient(c.config)
+	c.CouponLog = NewCouponLogClient(c.config)
+	c.CouponTemplate = NewCouponTemplateClient(c.config)
 	c.Employee = NewEmployeeClient(c.config)
 	c.Enterprise = NewEnterpriseClient(c.config)
 	c.EnterpriseBill = NewEnterpriseBillClient(c.config)
@@ -243,6 +255,9 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		City:                 NewCityClient(cfg),
 		Commission:           NewCommissionClient(cfg),
 		Contract:             NewContractClient(cfg),
+		Coupon:               NewCouponClient(cfg),
+		CouponLog:            NewCouponLogClient(cfg),
+		CouponTemplate:       NewCouponTemplateClient(cfg),
 		Employee:             NewEmployeeClient(cfg),
 		Enterprise:           NewEnterpriseClient(cfg),
 		EnterpriseBill:       NewEnterpriseBillClient(cfg),
@@ -303,6 +318,9 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		City:                 NewCityClient(cfg),
 		Commission:           NewCommissionClient(cfg),
 		Contract:             NewContractClient(cfg),
+		Coupon:               NewCouponClient(cfg),
+		CouponLog:            NewCouponLogClient(cfg),
+		CouponTemplate:       NewCouponTemplateClient(cfg),
 		Employee:             NewEmployeeClient(cfg),
 		Enterprise:           NewEnterpriseClient(cfg),
 		EnterpriseBill:       NewEnterpriseBillClient(cfg),
@@ -372,6 +390,9 @@ func (c *Client) Use(hooks ...Hook) {
 	c.City.Use(hooks...)
 	c.Commission.Use(hooks...)
 	c.Contract.Use(hooks...)
+	c.Coupon.Use(hooks...)
+	c.CouponLog.Use(hooks...)
+	c.CouponTemplate.Use(hooks...)
 	c.Employee.Use(hooks...)
 	c.Enterprise.Use(hooks...)
 	c.EnterpriseBill.Use(hooks...)
@@ -1883,22 +1904,6 @@ func (c *CityClient) GetX(ctx context.Context, id uint64) *City {
 	return obj
 }
 
-// QueryPlans queries the plans edge of a City.
-func (c *CityClient) QueryPlans(ci *City) *PlanQuery {
-	query := &PlanQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := ci.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(city.Table, city.FieldID, id),
-			sqlgraph.To(plan.Table, plan.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, city.PlansTable, city.PlansPrimaryKey...),
-		)
-		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryParent queries the parent edge of a City.
 func (c *CityClient) QueryParent(ci *City) *CityQuery {
 	query := &CityQuery{config: c.config}
@@ -1924,6 +1929,38 @@ func (c *CityClient) QueryChildren(ci *City) *CityQuery {
 			sqlgraph.From(city.Table, city.FieldID, id),
 			sqlgraph.To(city.Table, city.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, city.ChildrenTable, city.ChildrenColumn),
+		)
+		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPlans queries the plans edge of a City.
+func (c *CityClient) QueryPlans(ci *City) *PlanQuery {
+	query := &PlanQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ci.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(city.Table, city.FieldID, id),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, city.PlansTable, city.PlansPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCoupons queries the coupons edge of a City.
+func (c *CityClient) QueryCoupons(ci *City) *CouponQuery {
+	query := &CouponQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ci.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(city.Table, city.FieldID, id),
+			sqlgraph.To(coupon.Table, coupon.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, city.CouponsTable, city.CouponsPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
 		return fromV, nil
@@ -2229,6 +2266,311 @@ func (c *ContractClient) QueryRider(co *Contract) *RiderQuery {
 func (c *ContractClient) Hooks() []Hook {
 	hooks := c.hooks.Contract
 	return append(hooks[:len(hooks):len(hooks)], contract.Hooks[:]...)
+}
+
+// CouponClient is a client for the Coupon schema.
+type CouponClient struct {
+	config
+}
+
+// NewCouponClient returns a client for the Coupon from the given config.
+func NewCouponClient(c config) *CouponClient {
+	return &CouponClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `coupon.Hooks(f(g(h())))`.
+func (c *CouponClient) Use(hooks ...Hook) {
+	c.hooks.Coupon = append(c.hooks.Coupon, hooks...)
+}
+
+// Create returns a builder for creating a Coupon entity.
+func (c *CouponClient) Create() *CouponCreate {
+	mutation := newCouponMutation(c.config, OpCreate)
+	return &CouponCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Coupon entities.
+func (c *CouponClient) CreateBulk(builders ...*CouponCreate) *CouponCreateBulk {
+	return &CouponCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Coupon.
+func (c *CouponClient) Update() *CouponUpdate {
+	mutation := newCouponMutation(c.config, OpUpdate)
+	return &CouponUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CouponClient) UpdateOne(co *Coupon) *CouponUpdateOne {
+	mutation := newCouponMutation(c.config, OpUpdateOne, withCoupon(co))
+	return &CouponUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CouponClient) UpdateOneID(id uint64) *CouponUpdateOne {
+	mutation := newCouponMutation(c.config, OpUpdateOne, withCouponID(id))
+	return &CouponUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Coupon.
+func (c *CouponClient) Delete() *CouponDelete {
+	mutation := newCouponMutation(c.config, OpDelete)
+	return &CouponDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CouponClient) DeleteOne(co *Coupon) *CouponDeleteOne {
+	return c.DeleteOneID(co.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *CouponClient) DeleteOneID(id uint64) *CouponDeleteOne {
+	builder := c.Delete().Where(coupon.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CouponDeleteOne{builder}
+}
+
+// Query returns a query builder for Coupon.
+func (c *CouponClient) Query() *CouponQuery {
+	return &CouponQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Coupon entity by its id.
+func (c *CouponClient) Get(ctx context.Context, id uint64) (*Coupon, error) {
+	return c.Query().Where(coupon.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CouponClient) GetX(ctx context.Context, id uint64) *Coupon {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCities queries the cities edge of a Coupon.
+func (c *CouponClient) QueryCities(co *Coupon) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(coupon.Table, coupon.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, coupon.CitiesTable, coupon.CitiesPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPlans queries the plans edge of a Coupon.
+func (c *CouponClient) QueryPlans(co *Coupon) *PlanQuery {
+	query := &PlanQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(coupon.Table, coupon.FieldID, id),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, coupon.PlansTable, coupon.PlansPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CouponClient) Hooks() []Hook {
+	hooks := c.hooks.Coupon
+	return append(hooks[:len(hooks):len(hooks)], coupon.Hooks[:]...)
+}
+
+// CouponLogClient is a client for the CouponLog schema.
+type CouponLogClient struct {
+	config
+}
+
+// NewCouponLogClient returns a client for the CouponLog from the given config.
+func NewCouponLogClient(c config) *CouponLogClient {
+	return &CouponLogClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `couponlog.Hooks(f(g(h())))`.
+func (c *CouponLogClient) Use(hooks ...Hook) {
+	c.hooks.CouponLog = append(c.hooks.CouponLog, hooks...)
+}
+
+// Create returns a builder for creating a CouponLog entity.
+func (c *CouponLogClient) Create() *CouponLogCreate {
+	mutation := newCouponLogMutation(c.config, OpCreate)
+	return &CouponLogCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CouponLog entities.
+func (c *CouponLogClient) CreateBulk(builders ...*CouponLogCreate) *CouponLogCreateBulk {
+	return &CouponLogCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CouponLog.
+func (c *CouponLogClient) Update() *CouponLogUpdate {
+	mutation := newCouponLogMutation(c.config, OpUpdate)
+	return &CouponLogUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CouponLogClient) UpdateOne(cl *CouponLog) *CouponLogUpdateOne {
+	mutation := newCouponLogMutation(c.config, OpUpdateOne, withCouponLog(cl))
+	return &CouponLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CouponLogClient) UpdateOneID(id uint64) *CouponLogUpdateOne {
+	mutation := newCouponLogMutation(c.config, OpUpdateOne, withCouponLogID(id))
+	return &CouponLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CouponLog.
+func (c *CouponLogClient) Delete() *CouponLogDelete {
+	mutation := newCouponLogMutation(c.config, OpDelete)
+	return &CouponLogDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CouponLogClient) DeleteOne(cl *CouponLog) *CouponLogDeleteOne {
+	return c.DeleteOneID(cl.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *CouponLogClient) DeleteOneID(id uint64) *CouponLogDeleteOne {
+	builder := c.Delete().Where(couponlog.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CouponLogDeleteOne{builder}
+}
+
+// Query returns a query builder for CouponLog.
+func (c *CouponLogClient) Query() *CouponLogQuery {
+	return &CouponLogQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a CouponLog entity by its id.
+func (c *CouponLogClient) Get(ctx context.Context, id uint64) (*CouponLog, error) {
+	return c.Query().Where(couponlog.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CouponLogClient) GetX(ctx context.Context, id uint64) *CouponLog {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CouponLogClient) Hooks() []Hook {
+	hooks := c.hooks.CouponLog
+	return append(hooks[:len(hooks):len(hooks)], couponlog.Hooks[:]...)
+}
+
+// CouponTemplateClient is a client for the CouponTemplate schema.
+type CouponTemplateClient struct {
+	config
+}
+
+// NewCouponTemplateClient returns a client for the CouponTemplate from the given config.
+func NewCouponTemplateClient(c config) *CouponTemplateClient {
+	return &CouponTemplateClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `coupontemplate.Hooks(f(g(h())))`.
+func (c *CouponTemplateClient) Use(hooks ...Hook) {
+	c.hooks.CouponTemplate = append(c.hooks.CouponTemplate, hooks...)
+}
+
+// Create returns a builder for creating a CouponTemplate entity.
+func (c *CouponTemplateClient) Create() *CouponTemplateCreate {
+	mutation := newCouponTemplateMutation(c.config, OpCreate)
+	return &CouponTemplateCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CouponTemplate entities.
+func (c *CouponTemplateClient) CreateBulk(builders ...*CouponTemplateCreate) *CouponTemplateCreateBulk {
+	return &CouponTemplateCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CouponTemplate.
+func (c *CouponTemplateClient) Update() *CouponTemplateUpdate {
+	mutation := newCouponTemplateMutation(c.config, OpUpdate)
+	return &CouponTemplateUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CouponTemplateClient) UpdateOne(ct *CouponTemplate) *CouponTemplateUpdateOne {
+	mutation := newCouponTemplateMutation(c.config, OpUpdateOne, withCouponTemplate(ct))
+	return &CouponTemplateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CouponTemplateClient) UpdateOneID(id uint64) *CouponTemplateUpdateOne {
+	mutation := newCouponTemplateMutation(c.config, OpUpdateOne, withCouponTemplateID(id))
+	return &CouponTemplateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CouponTemplate.
+func (c *CouponTemplateClient) Delete() *CouponTemplateDelete {
+	mutation := newCouponTemplateMutation(c.config, OpDelete)
+	return &CouponTemplateDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CouponTemplateClient) DeleteOne(ct *CouponTemplate) *CouponTemplateDeleteOne {
+	return c.DeleteOneID(ct.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *CouponTemplateClient) DeleteOneID(id uint64) *CouponTemplateDeleteOne {
+	builder := c.Delete().Where(coupontemplate.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CouponTemplateDeleteOne{builder}
+}
+
+// Query returns a query builder for CouponTemplate.
+func (c *CouponTemplateClient) Query() *CouponTemplateQuery {
+	return &CouponTemplateQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a CouponTemplate entity by its id.
+func (c *CouponTemplateClient) Get(ctx context.Context, id uint64) (*CouponTemplate, error) {
+	return c.Query().Where(coupontemplate.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CouponTemplateClient) GetX(ctx context.Context, id uint64) *CouponTemplate {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CouponTemplateClient) Hooks() []Hook {
+	hooks := c.hooks.CouponTemplate
+	return append(hooks[:len(hooks):len(hooks)], coupontemplate.Hooks[:]...)
 }
 
 // EmployeeClient is a client for the Employee schema.
@@ -4660,6 +5002,22 @@ func (c *PlanClient) QueryComplexes(pl *Plan) *PlanQuery {
 			sqlgraph.From(plan.Table, plan.FieldID, id),
 			sqlgraph.To(plan.Table, plan.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, plan.ComplexesTable, plan.ComplexesColumn),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCoupons queries the coupons edge of a Plan.
+func (c *PlanClient) QueryCoupons(pl *Plan) *CouponQuery {
+	query := &CouponQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plan.Table, plan.FieldID, id),
+			sqlgraph.To(coupon.Table, coupon.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, plan.CouponsTable, plan.CouponsPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
 		return fromV, nil

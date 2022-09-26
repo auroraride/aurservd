@@ -34,7 +34,7 @@ func IDNEQ(id uint64) predicate.City {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.City {
 	return predicate.City(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -45,7 +45,7 @@ func IDIn(ids ...uint64) predicate.City {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.City {
 	return predicate.City(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -167,7 +167,7 @@ func CreatedAtNEQ(v time.Time) predicate.City {
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.City {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -178,7 +178,7 @@ func CreatedAtIn(vs ...time.Time) predicate.City {
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.City {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -231,7 +231,7 @@ func UpdatedAtNEQ(v time.Time) predicate.City {
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.City {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -242,7 +242,7 @@ func UpdatedAtIn(vs ...time.Time) predicate.City {
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.City {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -295,7 +295,7 @@ func DeletedAtNEQ(v time.Time) predicate.City {
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.City {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -306,7 +306,7 @@ func DeletedAtIn(vs ...time.Time) predicate.City {
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.City {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -401,7 +401,7 @@ func RemarkNEQ(v string) predicate.City {
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.City {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -412,7 +412,7 @@ func RemarkIn(vs ...string) predicate.City {
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.City {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -542,7 +542,7 @@ func NameNEQ(v string) predicate.City {
 
 // NameIn applies the In predicate on the "name" field.
 func NameIn(vs ...string) predicate.City {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -553,7 +553,7 @@ func NameIn(vs ...string) predicate.City {
 
 // NameNotIn applies the NotIn predicate on the "name" field.
 func NameNotIn(vs ...string) predicate.City {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -641,7 +641,7 @@ func CodeNEQ(v string) predicate.City {
 
 // CodeIn applies the In predicate on the "code" field.
 func CodeIn(vs ...string) predicate.City {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -652,7 +652,7 @@ func CodeIn(vs ...string) predicate.City {
 
 // CodeNotIn applies the NotIn predicate on the "code" field.
 func CodeNotIn(vs ...string) predicate.City {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -740,7 +740,7 @@ func ParentIDNEQ(v uint64) predicate.City {
 
 // ParentIDIn applies the In predicate on the "parent_id" field.
 func ParentIDIn(vs ...uint64) predicate.City {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -751,7 +751,7 @@ func ParentIDIn(vs ...uint64) predicate.City {
 
 // ParentIDNotIn applies the NotIn predicate on the "parent_id" field.
 func ParentIDNotIn(vs ...uint64) predicate.City {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -790,7 +790,7 @@ func LngNEQ(v float64) predicate.City {
 
 // LngIn applies the In predicate on the "lng" field.
 func LngIn(vs ...float64) predicate.City {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -801,7 +801,7 @@ func LngIn(vs ...float64) predicate.City {
 
 // LngNotIn applies the NotIn predicate on the "lng" field.
 func LngNotIn(vs ...float64) predicate.City {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -868,7 +868,7 @@ func LatNEQ(v float64) predicate.City {
 
 // LatIn applies the In predicate on the "lat" field.
 func LatIn(vs ...float64) predicate.City {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -879,7 +879,7 @@ func LatIn(vs ...float64) predicate.City {
 
 // LatNotIn applies the NotIn predicate on the "lat" field.
 func LatNotIn(vs ...float64) predicate.City {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -930,34 +930,6 @@ func LatNotNil() predicate.City {
 	})
 }
 
-// HasPlans applies the HasEdge predicate on the "plans" edge.
-func HasPlans() predicate.City {
-	return predicate.City(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PlansTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, PlansTable, PlansPrimaryKey...),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasPlansWith applies the HasEdge predicate on the "plans" edge with a given conditions (other predicates).
-func HasPlansWith(preds ...predicate.Plan) predicate.City {
-	return predicate.City(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PlansInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, PlansTable, PlansPrimaryKey...),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasParent applies the HasEdge predicate on the "parent" edge.
 func HasParent() predicate.City {
 	return predicate.City(func(s *sql.Selector) {
@@ -1005,6 +977,62 @@ func HasChildrenWith(preds ...predicate.City) predicate.City {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(Table, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, ChildrenTable, ChildrenColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasPlans applies the HasEdge predicate on the "plans" edge.
+func HasPlans() predicate.City {
+	return predicate.City(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(PlansTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, PlansTable, PlansPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPlansWith applies the HasEdge predicate on the "plans" edge with a given conditions (other predicates).
+func HasPlansWith(preds ...predicate.Plan) predicate.City {
+	return predicate.City(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(PlansInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, PlansTable, PlansPrimaryKey...),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasCoupons applies the HasEdge predicate on the "coupons" edge.
+func HasCoupons() predicate.City {
+	return predicate.City(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CouponsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, CouponsTable, CouponsPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCouponsWith applies the HasEdge predicate on the "coupons" edge with a given conditions (other predicates).
+func HasCouponsWith(preds ...predicate.Coupon) predicate.City {
+	return predicate.City(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CouponsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, CouponsTable, CouponsPrimaryKey...),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

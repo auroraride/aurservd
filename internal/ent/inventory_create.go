@@ -391,18 +391,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *InventoryUpsert) SetCreatedAt(v time.Time) *InventoryUpsert {
-	u.Set(inventory.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *InventoryUpsert) UpdateCreatedAt() *InventoryUpsert {
-	u.SetExcluded(inventory.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *InventoryUpsert) SetUpdatedAt(v time.Time) *InventoryUpsert {
 	u.Set(inventory.FieldUpdatedAt, v)
@@ -430,24 +418,6 @@ func (u *InventoryUpsert) UpdateDeletedAt() *InventoryUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *InventoryUpsert) ClearDeletedAt() *InventoryUpsert {
 	u.SetNull(inventory.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *InventoryUpsert) SetCreator(v *model.Modifier) *InventoryUpsert {
-	u.Set(inventory.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *InventoryUpsert) UpdateCreator() *InventoryUpsert {
-	u.SetExcluded(inventory.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *InventoryUpsert) ClearCreator() *InventoryUpsert {
-	u.SetNull(inventory.FieldCreator)
 	return u
 }
 
@@ -583,20 +553,6 @@ func (u *InventoryUpsertOne) Update(set func(*InventoryUpsert)) *InventoryUpsert
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *InventoryUpsertOne) SetCreatedAt(v time.Time) *InventoryUpsertOne {
-	return u.Update(func(s *InventoryUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *InventoryUpsertOne) UpdateCreatedAt() *InventoryUpsertOne {
-	return u.Update(func(s *InventoryUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *InventoryUpsertOne) SetUpdatedAt(v time.Time) *InventoryUpsertOne {
 	return u.Update(func(s *InventoryUpsert) {
@@ -629,27 +585,6 @@ func (u *InventoryUpsertOne) UpdateDeletedAt() *InventoryUpsertOne {
 func (u *InventoryUpsertOne) ClearDeletedAt() *InventoryUpsertOne {
 	return u.Update(func(s *InventoryUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *InventoryUpsertOne) SetCreator(v *model.Modifier) *InventoryUpsertOne {
-	return u.Update(func(s *InventoryUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *InventoryUpsertOne) UpdateCreator() *InventoryUpsertOne {
-	return u.Update(func(s *InventoryUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *InventoryUpsertOne) ClearCreator() *InventoryUpsertOne {
-	return u.Update(func(s *InventoryUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -961,20 +896,6 @@ func (u *InventoryUpsertBulk) Update(set func(*InventoryUpsert)) *InventoryUpser
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *InventoryUpsertBulk) SetCreatedAt(v time.Time) *InventoryUpsertBulk {
-	return u.Update(func(s *InventoryUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *InventoryUpsertBulk) UpdateCreatedAt() *InventoryUpsertBulk {
-	return u.Update(func(s *InventoryUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *InventoryUpsertBulk) SetUpdatedAt(v time.Time) *InventoryUpsertBulk {
 	return u.Update(func(s *InventoryUpsert) {
@@ -1007,27 +928,6 @@ func (u *InventoryUpsertBulk) UpdateDeletedAt() *InventoryUpsertBulk {
 func (u *InventoryUpsertBulk) ClearDeletedAt() *InventoryUpsertBulk {
 	return u.Update(func(s *InventoryUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *InventoryUpsertBulk) SetCreator(v *model.Modifier) *InventoryUpsertBulk {
-	return u.Update(func(s *InventoryUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *InventoryUpsertBulk) UpdateCreator() *InventoryUpsertBulk {
-	return u.Update(func(s *InventoryUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *InventoryUpsertBulk) ClearCreator() *InventoryUpsertBulk {
-	return u.Update(func(s *InventoryUpsert) {
-		s.ClearCreator()
 	})
 }
 

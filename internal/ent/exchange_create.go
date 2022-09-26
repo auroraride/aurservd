@@ -825,18 +825,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *ExchangeUpsert) SetCreatedAt(v time.Time) *ExchangeUpsert {
-	u.Set(exchange.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *ExchangeUpsert) UpdateCreatedAt() *ExchangeUpsert {
-	u.SetExcluded(exchange.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *ExchangeUpsert) SetUpdatedAt(v time.Time) *ExchangeUpsert {
 	u.Set(exchange.FieldUpdatedAt, v)
@@ -864,24 +852,6 @@ func (u *ExchangeUpsert) UpdateDeletedAt() *ExchangeUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *ExchangeUpsert) ClearDeletedAt() *ExchangeUpsert {
 	u.SetNull(exchange.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *ExchangeUpsert) SetCreator(v *model.Modifier) *ExchangeUpsert {
-	u.Set(exchange.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *ExchangeUpsert) UpdateCreator() *ExchangeUpsert {
-	u.SetExcluded(exchange.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *ExchangeUpsert) ClearCreator() *ExchangeUpsert {
-	u.SetNull(exchange.FieldCreator)
 	return u
 }
 
@@ -1239,20 +1209,6 @@ func (u *ExchangeUpsertOne) Update(set func(*ExchangeUpsert)) *ExchangeUpsertOne
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *ExchangeUpsertOne) SetCreatedAt(v time.Time) *ExchangeUpsertOne {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *ExchangeUpsertOne) UpdateCreatedAt() *ExchangeUpsertOne {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *ExchangeUpsertOne) SetUpdatedAt(v time.Time) *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
@@ -1285,27 +1241,6 @@ func (u *ExchangeUpsertOne) UpdateDeletedAt() *ExchangeUpsertOne {
 func (u *ExchangeUpsertOne) ClearDeletedAt() *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *ExchangeUpsertOne) SetCreator(v *model.Modifier) *ExchangeUpsertOne {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *ExchangeUpsertOne) UpdateCreator() *ExchangeUpsertOne {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *ExchangeUpsertOne) ClearCreator() *ExchangeUpsertOne {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1876,20 +1811,6 @@ func (u *ExchangeUpsertBulk) Update(set func(*ExchangeUpsert)) *ExchangeUpsertBu
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *ExchangeUpsertBulk) SetCreatedAt(v time.Time) *ExchangeUpsertBulk {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *ExchangeUpsertBulk) UpdateCreatedAt() *ExchangeUpsertBulk {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *ExchangeUpsertBulk) SetUpdatedAt(v time.Time) *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
@@ -1922,27 +1843,6 @@ func (u *ExchangeUpsertBulk) UpdateDeletedAt() *ExchangeUpsertBulk {
 func (u *ExchangeUpsertBulk) ClearDeletedAt() *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *ExchangeUpsertBulk) SetCreator(v *model.Modifier) *ExchangeUpsertBulk {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *ExchangeUpsertBulk) UpdateCreator() *ExchangeUpsertBulk {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *ExchangeUpsertBulk) ClearCreator() *ExchangeUpsertBulk {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.ClearCreator()
 	})
 }
 

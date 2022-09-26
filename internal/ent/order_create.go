@@ -880,18 +880,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *OrderUpsert) SetCreatedAt(v time.Time) *OrderUpsert {
-	u.Set(order.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *OrderUpsert) UpdateCreatedAt() *OrderUpsert {
-	u.SetExcluded(order.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *OrderUpsert) SetUpdatedAt(v time.Time) *OrderUpsert {
 	u.Set(order.FieldUpdatedAt, v)
@@ -919,24 +907,6 @@ func (u *OrderUpsert) UpdateDeletedAt() *OrderUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *OrderUpsert) ClearDeletedAt() *OrderUpsert {
 	u.SetNull(order.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *OrderUpsert) SetCreator(v *model.Modifier) *OrderUpsert {
-	u.Set(order.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *OrderUpsert) UpdateCreator() *OrderUpsert {
-	u.SetExcluded(order.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *OrderUpsert) ClearCreator() *OrderUpsert {
-	u.SetNull(order.FieldCreator)
 	return u
 }
 
@@ -1078,102 +1048,6 @@ func (u *OrderUpsert) AddStatus(v uint8) *OrderUpsert {
 	return u
 }
 
-// SetPayway sets the "payway" field.
-func (u *OrderUpsert) SetPayway(v uint8) *OrderUpsert {
-	u.Set(order.FieldPayway, v)
-	return u
-}
-
-// UpdatePayway sets the "payway" field to the value that was provided on create.
-func (u *OrderUpsert) UpdatePayway() *OrderUpsert {
-	u.SetExcluded(order.FieldPayway)
-	return u
-}
-
-// AddPayway adds v to the "payway" field.
-func (u *OrderUpsert) AddPayway(v uint8) *OrderUpsert {
-	u.Add(order.FieldPayway, v)
-	return u
-}
-
-// SetType sets the "type" field.
-func (u *OrderUpsert) SetType(v uint) *OrderUpsert {
-	u.Set(order.FieldType, v)
-	return u
-}
-
-// UpdateType sets the "type" field to the value that was provided on create.
-func (u *OrderUpsert) UpdateType() *OrderUpsert {
-	u.SetExcluded(order.FieldType)
-	return u
-}
-
-// AddType adds v to the "type" field.
-func (u *OrderUpsert) AddType(v uint) *OrderUpsert {
-	u.Add(order.FieldType, v)
-	return u
-}
-
-// SetOutTradeNo sets the "out_trade_no" field.
-func (u *OrderUpsert) SetOutTradeNo(v string) *OrderUpsert {
-	u.Set(order.FieldOutTradeNo, v)
-	return u
-}
-
-// UpdateOutTradeNo sets the "out_trade_no" field to the value that was provided on create.
-func (u *OrderUpsert) UpdateOutTradeNo() *OrderUpsert {
-	u.SetExcluded(order.FieldOutTradeNo)
-	return u
-}
-
-// SetTradeNo sets the "trade_no" field.
-func (u *OrderUpsert) SetTradeNo(v string) *OrderUpsert {
-	u.Set(order.FieldTradeNo, v)
-	return u
-}
-
-// UpdateTradeNo sets the "trade_no" field to the value that was provided on create.
-func (u *OrderUpsert) UpdateTradeNo() *OrderUpsert {
-	u.SetExcluded(order.FieldTradeNo)
-	return u
-}
-
-// SetAmount sets the "amount" field.
-func (u *OrderUpsert) SetAmount(v float64) *OrderUpsert {
-	u.Set(order.FieldAmount, v)
-	return u
-}
-
-// UpdateAmount sets the "amount" field to the value that was provided on create.
-func (u *OrderUpsert) UpdateAmount() *OrderUpsert {
-	u.SetExcluded(order.FieldAmount)
-	return u
-}
-
-// AddAmount adds v to the "amount" field.
-func (u *OrderUpsert) AddAmount(v float64) *OrderUpsert {
-	u.Add(order.FieldAmount, v)
-	return u
-}
-
-// SetTotal sets the "total" field.
-func (u *OrderUpsert) SetTotal(v float64) *OrderUpsert {
-	u.Set(order.FieldTotal, v)
-	return u
-}
-
-// UpdateTotal sets the "total" field to the value that was provided on create.
-func (u *OrderUpsert) UpdateTotal() *OrderUpsert {
-	u.SetExcluded(order.FieldTotal)
-	return u
-}
-
-// AddTotal adds v to the "total" field.
-func (u *OrderUpsert) AddTotal(v float64) *OrderUpsert {
-	u.Add(order.FieldTotal, v)
-	return u
-}
-
 // SetRefundAt sets the "refund_at" field.
 func (u *OrderUpsert) SetRefundAt(v time.Time) *OrderUpsert {
 	u.Set(order.FieldRefundAt, v)
@@ -1306,20 +1180,6 @@ func (u *OrderUpsertOne) Update(set func(*OrderUpsert)) *OrderUpsertOne {
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *OrderUpsertOne) SetCreatedAt(v time.Time) *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *OrderUpsertOne) UpdateCreatedAt() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *OrderUpsertOne) SetUpdatedAt(v time.Time) *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
@@ -1352,27 +1212,6 @@ func (u *OrderUpsertOne) UpdateDeletedAt() *OrderUpsertOne {
 func (u *OrderUpsertOne) ClearDeletedAt() *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *OrderUpsertOne) SetCreator(v *model.Modifier) *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *OrderUpsertOne) UpdateCreator() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *OrderUpsertOne) ClearCreator() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1534,118 +1373,6 @@ func (u *OrderUpsertOne) AddStatus(v uint8) *OrderUpsertOne {
 func (u *OrderUpsertOne) UpdateStatus() *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
 		s.UpdateStatus()
-	})
-}
-
-// SetPayway sets the "payway" field.
-func (u *OrderUpsertOne) SetPayway(v uint8) *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetPayway(v)
-	})
-}
-
-// AddPayway adds v to the "payway" field.
-func (u *OrderUpsertOne) AddPayway(v uint8) *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.AddPayway(v)
-	})
-}
-
-// UpdatePayway sets the "payway" field to the value that was provided on create.
-func (u *OrderUpsertOne) UpdatePayway() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdatePayway()
-	})
-}
-
-// SetType sets the "type" field.
-func (u *OrderUpsertOne) SetType(v uint) *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetType(v)
-	})
-}
-
-// AddType adds v to the "type" field.
-func (u *OrderUpsertOne) AddType(v uint) *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.AddType(v)
-	})
-}
-
-// UpdateType sets the "type" field to the value that was provided on create.
-func (u *OrderUpsertOne) UpdateType() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateType()
-	})
-}
-
-// SetOutTradeNo sets the "out_trade_no" field.
-func (u *OrderUpsertOne) SetOutTradeNo(v string) *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetOutTradeNo(v)
-	})
-}
-
-// UpdateOutTradeNo sets the "out_trade_no" field to the value that was provided on create.
-func (u *OrderUpsertOne) UpdateOutTradeNo() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateOutTradeNo()
-	})
-}
-
-// SetTradeNo sets the "trade_no" field.
-func (u *OrderUpsertOne) SetTradeNo(v string) *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetTradeNo(v)
-	})
-}
-
-// UpdateTradeNo sets the "trade_no" field to the value that was provided on create.
-func (u *OrderUpsertOne) UpdateTradeNo() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateTradeNo()
-	})
-}
-
-// SetAmount sets the "amount" field.
-func (u *OrderUpsertOne) SetAmount(v float64) *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetAmount(v)
-	})
-}
-
-// AddAmount adds v to the "amount" field.
-func (u *OrderUpsertOne) AddAmount(v float64) *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.AddAmount(v)
-	})
-}
-
-// UpdateAmount sets the "amount" field to the value that was provided on create.
-func (u *OrderUpsertOne) UpdateAmount() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateAmount()
-	})
-}
-
-// SetTotal sets the "total" field.
-func (u *OrderUpsertOne) SetTotal(v float64) *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetTotal(v)
-	})
-}
-
-// AddTotal adds v to the "total" field.
-func (u *OrderUpsertOne) AddTotal(v float64) *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.AddTotal(v)
-	})
-}
-
-// UpdateTotal sets the "total" field to the value that was provided on create.
-func (u *OrderUpsertOne) UpdateTotal() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateTotal()
 	})
 }
 
@@ -1954,20 +1681,6 @@ func (u *OrderUpsertBulk) Update(set func(*OrderUpsert)) *OrderUpsertBulk {
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *OrderUpsertBulk) SetCreatedAt(v time.Time) *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *OrderUpsertBulk) UpdateCreatedAt() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *OrderUpsertBulk) SetUpdatedAt(v time.Time) *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
@@ -2000,27 +1713,6 @@ func (u *OrderUpsertBulk) UpdateDeletedAt() *OrderUpsertBulk {
 func (u *OrderUpsertBulk) ClearDeletedAt() *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *OrderUpsertBulk) SetCreator(v *model.Modifier) *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *OrderUpsertBulk) UpdateCreator() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *OrderUpsertBulk) ClearCreator() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -2182,118 +1874,6 @@ func (u *OrderUpsertBulk) AddStatus(v uint8) *OrderUpsertBulk {
 func (u *OrderUpsertBulk) UpdateStatus() *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
 		s.UpdateStatus()
-	})
-}
-
-// SetPayway sets the "payway" field.
-func (u *OrderUpsertBulk) SetPayway(v uint8) *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetPayway(v)
-	})
-}
-
-// AddPayway adds v to the "payway" field.
-func (u *OrderUpsertBulk) AddPayway(v uint8) *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.AddPayway(v)
-	})
-}
-
-// UpdatePayway sets the "payway" field to the value that was provided on create.
-func (u *OrderUpsertBulk) UpdatePayway() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdatePayway()
-	})
-}
-
-// SetType sets the "type" field.
-func (u *OrderUpsertBulk) SetType(v uint) *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetType(v)
-	})
-}
-
-// AddType adds v to the "type" field.
-func (u *OrderUpsertBulk) AddType(v uint) *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.AddType(v)
-	})
-}
-
-// UpdateType sets the "type" field to the value that was provided on create.
-func (u *OrderUpsertBulk) UpdateType() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateType()
-	})
-}
-
-// SetOutTradeNo sets the "out_trade_no" field.
-func (u *OrderUpsertBulk) SetOutTradeNo(v string) *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetOutTradeNo(v)
-	})
-}
-
-// UpdateOutTradeNo sets the "out_trade_no" field to the value that was provided on create.
-func (u *OrderUpsertBulk) UpdateOutTradeNo() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateOutTradeNo()
-	})
-}
-
-// SetTradeNo sets the "trade_no" field.
-func (u *OrderUpsertBulk) SetTradeNo(v string) *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetTradeNo(v)
-	})
-}
-
-// UpdateTradeNo sets the "trade_no" field to the value that was provided on create.
-func (u *OrderUpsertBulk) UpdateTradeNo() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateTradeNo()
-	})
-}
-
-// SetAmount sets the "amount" field.
-func (u *OrderUpsertBulk) SetAmount(v float64) *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetAmount(v)
-	})
-}
-
-// AddAmount adds v to the "amount" field.
-func (u *OrderUpsertBulk) AddAmount(v float64) *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.AddAmount(v)
-	})
-}
-
-// UpdateAmount sets the "amount" field to the value that was provided on create.
-func (u *OrderUpsertBulk) UpdateAmount() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateAmount()
-	})
-}
-
-// SetTotal sets the "total" field.
-func (u *OrderUpsertBulk) SetTotal(v float64) *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetTotal(v)
-	})
-}
-
-// AddTotal adds v to the "total" field.
-func (u *OrderUpsertBulk) AddTotal(v float64) *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.AddTotal(v)
-	})
-}
-
-// UpdateTotal sets the "total" field to the value that was provided on create.
-func (u *OrderUpsertBulk) UpdateTotal() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateTotal()
 	})
 }
 

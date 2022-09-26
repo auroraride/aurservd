@@ -607,18 +607,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *CommissionUpsert) SetCreatedAt(v time.Time) *CommissionUpsert {
-	u.Set(commission.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *CommissionUpsert) UpdateCreatedAt() *CommissionUpsert {
-	u.SetExcluded(commission.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *CommissionUpsert) SetUpdatedAt(v time.Time) *CommissionUpsert {
 	u.Set(commission.FieldUpdatedAt, v)
@@ -646,24 +634,6 @@ func (u *CommissionUpsert) UpdateDeletedAt() *CommissionUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *CommissionUpsert) ClearDeletedAt() *CommissionUpsert {
 	u.SetNull(commission.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *CommissionUpsert) SetCreator(v *model.Modifier) *CommissionUpsert {
-	u.Set(commission.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *CommissionUpsert) UpdateCreator() *CommissionUpsert {
-	u.SetExcluded(commission.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *CommissionUpsert) ClearCreator() *CommissionUpsert {
-	u.SetNull(commission.FieldCreator)
 	return u
 }
 
@@ -787,24 +757,6 @@ func (u *CommissionUpsert) UpdateOrderID() *CommissionUpsert {
 	return u
 }
 
-// SetAmount sets the "amount" field.
-func (u *CommissionUpsert) SetAmount(v float64) *CommissionUpsert {
-	u.Set(commission.FieldAmount, v)
-	return u
-}
-
-// UpdateAmount sets the "amount" field to the value that was provided on create.
-func (u *CommissionUpsert) UpdateAmount() *CommissionUpsert {
-	u.SetExcluded(commission.FieldAmount)
-	return u
-}
-
-// AddAmount adds v to the "amount" field.
-func (u *CommissionUpsert) AddAmount(v float64) *CommissionUpsert {
-	u.Add(commission.FieldAmount, v)
-	return u
-}
-
 // SetStatus sets the "status" field.
 func (u *CommissionUpsert) SetStatus(v uint8) *CommissionUpsert {
 	u.Set(commission.FieldStatus, v)
@@ -892,20 +844,6 @@ func (u *CommissionUpsertOne) Update(set func(*CommissionUpsert)) *CommissionUps
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *CommissionUpsertOne) SetCreatedAt(v time.Time) *CommissionUpsertOne {
-	return u.Update(func(s *CommissionUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *CommissionUpsertOne) UpdateCreatedAt() *CommissionUpsertOne {
-	return u.Update(func(s *CommissionUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *CommissionUpsertOne) SetUpdatedAt(v time.Time) *CommissionUpsertOne {
 	return u.Update(func(s *CommissionUpsert) {
@@ -938,27 +876,6 @@ func (u *CommissionUpsertOne) UpdateDeletedAt() *CommissionUpsertOne {
 func (u *CommissionUpsertOne) ClearDeletedAt() *CommissionUpsertOne {
 	return u.Update(func(s *CommissionUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *CommissionUpsertOne) SetCreator(v *model.Modifier) *CommissionUpsertOne {
-	return u.Update(func(s *CommissionUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *CommissionUpsertOne) UpdateCreator() *CommissionUpsertOne {
-	return u.Update(func(s *CommissionUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *CommissionUpsertOne) ClearCreator() *CommissionUpsertOne {
-	return u.Update(func(s *CommissionUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1099,27 +1016,6 @@ func (u *CommissionUpsertOne) SetOrderID(v uint64) *CommissionUpsertOne {
 func (u *CommissionUpsertOne) UpdateOrderID() *CommissionUpsertOne {
 	return u.Update(func(s *CommissionUpsert) {
 		s.UpdateOrderID()
-	})
-}
-
-// SetAmount sets the "amount" field.
-func (u *CommissionUpsertOne) SetAmount(v float64) *CommissionUpsertOne {
-	return u.Update(func(s *CommissionUpsert) {
-		s.SetAmount(v)
-	})
-}
-
-// AddAmount adds v to the "amount" field.
-func (u *CommissionUpsertOne) AddAmount(v float64) *CommissionUpsertOne {
-	return u.Update(func(s *CommissionUpsert) {
-		s.AddAmount(v)
-	})
-}
-
-// UpdateAmount sets the "amount" field to the value that was provided on create.
-func (u *CommissionUpsertOne) UpdateAmount() *CommissionUpsertOne {
-	return u.Update(func(s *CommissionUpsert) {
-		s.UpdateAmount()
 	})
 }
 
@@ -1378,20 +1274,6 @@ func (u *CommissionUpsertBulk) Update(set func(*CommissionUpsert)) *CommissionUp
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *CommissionUpsertBulk) SetCreatedAt(v time.Time) *CommissionUpsertBulk {
-	return u.Update(func(s *CommissionUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *CommissionUpsertBulk) UpdateCreatedAt() *CommissionUpsertBulk {
-	return u.Update(func(s *CommissionUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *CommissionUpsertBulk) SetUpdatedAt(v time.Time) *CommissionUpsertBulk {
 	return u.Update(func(s *CommissionUpsert) {
@@ -1424,27 +1306,6 @@ func (u *CommissionUpsertBulk) UpdateDeletedAt() *CommissionUpsertBulk {
 func (u *CommissionUpsertBulk) ClearDeletedAt() *CommissionUpsertBulk {
 	return u.Update(func(s *CommissionUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *CommissionUpsertBulk) SetCreator(v *model.Modifier) *CommissionUpsertBulk {
-	return u.Update(func(s *CommissionUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *CommissionUpsertBulk) UpdateCreator() *CommissionUpsertBulk {
-	return u.Update(func(s *CommissionUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *CommissionUpsertBulk) ClearCreator() *CommissionUpsertBulk {
-	return u.Update(func(s *CommissionUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1585,27 +1446,6 @@ func (u *CommissionUpsertBulk) SetOrderID(v uint64) *CommissionUpsertBulk {
 func (u *CommissionUpsertBulk) UpdateOrderID() *CommissionUpsertBulk {
 	return u.Update(func(s *CommissionUpsert) {
 		s.UpdateOrderID()
-	})
-}
-
-// SetAmount sets the "amount" field.
-func (u *CommissionUpsertBulk) SetAmount(v float64) *CommissionUpsertBulk {
-	return u.Update(func(s *CommissionUpsert) {
-		s.SetAmount(v)
-	})
-}
-
-// AddAmount adds v to the "amount" field.
-func (u *CommissionUpsertBulk) AddAmount(v float64) *CommissionUpsertBulk {
-	return u.Update(func(s *CommissionUpsert) {
-		s.AddAmount(v)
-	})
-}
-
-// UpdateAmount sets the "amount" field to the value that was provided on create.
-func (u *CommissionUpsertBulk) UpdateAmount() *CommissionUpsertBulk {
-	return u.Update(func(s *CommissionUpsert) {
-		s.UpdateAmount()
 	})
 }
 

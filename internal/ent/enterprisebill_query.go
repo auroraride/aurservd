@@ -541,10 +541,10 @@ func (ebq *EnterpriseBillQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 			ebq.withSubscribe != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*EnterpriseBill).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &EnterpriseBill{config: ebq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -774,11 +774,14 @@ func (ebq *EnterpriseBillQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (ebq *EnterpriseBillQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := ebq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := ebq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (ebq *EnterpriseBillQuery) querySpec() *sqlgraph.QuerySpec {
@@ -888,7 +891,7 @@ func (ebgb *EnterpriseBillGroupBy) Aggregate(fns ...AggregateFunc) *EnterpriseBi
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (ebgb *EnterpriseBillGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (ebgb *EnterpriseBillGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := ebgb.path(ctx)
 	if err != nil {
 		return err
@@ -897,7 +900,7 @@ func (ebgb *EnterpriseBillGroupBy) Scan(ctx context.Context, v interface{}) erro
 	return ebgb.sqlScan(ctx, v)
 }
 
-func (ebgb *EnterpriseBillGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (ebgb *EnterpriseBillGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range ebgb.fields {
 		if !enterprisebill.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -944,7 +947,7 @@ type EnterpriseBillSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ebs *EnterpriseBillSelect) Scan(ctx context.Context, v interface{}) error {
+func (ebs *EnterpriseBillSelect) Scan(ctx context.Context, v any) error {
 	if err := ebs.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -952,7 +955,7 @@ func (ebs *EnterpriseBillSelect) Scan(ctx context.Context, v interface{}) error 
 	return ebs.sqlScan(ctx, v)
 }
 
-func (ebs *EnterpriseBillSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (ebs *EnterpriseBillSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := ebs.sql.Query()
 	if err := ebs.driver.Query(ctx, query, args, rows); err != nil {

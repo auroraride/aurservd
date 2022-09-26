@@ -34,7 +34,7 @@ func IDNEQ(id uint64) predicate.BatteryModel {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.BatteryModel {
 	return predicate.BatteryModel(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -45,7 +45,7 @@ func IDIn(ids ...uint64) predicate.BatteryModel {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.BatteryModel {
 	return predicate.BatteryModel(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -139,7 +139,7 @@ func CreatedAtNEQ(v time.Time) predicate.BatteryModel {
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.BatteryModel {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -150,7 +150,7 @@ func CreatedAtIn(vs ...time.Time) predicate.BatteryModel {
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.BatteryModel {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -203,7 +203,7 @@ func UpdatedAtNEQ(v time.Time) predicate.BatteryModel {
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.BatteryModel {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -214,7 +214,7 @@ func UpdatedAtIn(vs ...time.Time) predicate.BatteryModel {
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.BatteryModel {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -267,7 +267,7 @@ func DeletedAtNEQ(v time.Time) predicate.BatteryModel {
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.BatteryModel {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -278,7 +278,7 @@ func DeletedAtIn(vs ...time.Time) predicate.BatteryModel {
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.BatteryModel {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -373,7 +373,7 @@ func RemarkNEQ(v string) predicate.BatteryModel {
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.BatteryModel {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -384,7 +384,7 @@ func RemarkIn(vs ...string) predicate.BatteryModel {
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.BatteryModel {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -486,7 +486,7 @@ func ModelNEQ(v string) predicate.BatteryModel {
 
 // ModelIn applies the In predicate on the "model" field.
 func ModelIn(vs ...string) predicate.BatteryModel {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -497,7 +497,7 @@ func ModelIn(vs ...string) predicate.BatteryModel {
 
 // ModelNotIn applies the NotIn predicate on the "model" field.
 func ModelNotIn(vs ...string) predicate.BatteryModel {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}

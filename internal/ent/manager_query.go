@@ -356,10 +356,10 @@ func (mq *ManagerQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Mana
 			mq.withRole != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Manager).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &Manager{config: mq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -429,11 +429,14 @@ func (mq *ManagerQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (mq *ManagerQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := mq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := mq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (mq *ManagerQuery) querySpec() *sqlgraph.QuerySpec {
@@ -543,7 +546,7 @@ func (mgb *ManagerGroupBy) Aggregate(fns ...AggregateFunc) *ManagerGroupBy {
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (mgb *ManagerGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (mgb *ManagerGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := mgb.path(ctx)
 	if err != nil {
 		return err
@@ -552,7 +555,7 @@ func (mgb *ManagerGroupBy) Scan(ctx context.Context, v interface{}) error {
 	return mgb.sqlScan(ctx, v)
 }
 
-func (mgb *ManagerGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (mgb *ManagerGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range mgb.fields {
 		if !manager.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -599,7 +602,7 @@ type ManagerSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ms *ManagerSelect) Scan(ctx context.Context, v interface{}) error {
+func (ms *ManagerSelect) Scan(ctx context.Context, v any) error {
 	if err := ms.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -607,7 +610,7 @@ func (ms *ManagerSelect) Scan(ctx context.Context, v interface{}) error {
 	return ms.sqlScan(ctx, v)
 }
 
-func (ms *ManagerSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (ms *ManagerSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := ms.sql.Query()
 	if err := ms.driver.Query(ctx, query, args, rows); err != nil {

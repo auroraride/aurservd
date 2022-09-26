@@ -393,10 +393,10 @@ func (srq *SubscribeReminderQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 			srq.withPlan != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*SubscribeReminder).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &SubscribeReminder{config: srq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -495,11 +495,14 @@ func (srq *SubscribeReminderQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (srq *SubscribeReminderQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := srq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := srq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (srq *SubscribeReminderQuery) querySpec() *sqlgraph.QuerySpec {
@@ -609,7 +612,7 @@ func (srgb *SubscribeReminderGroupBy) Aggregate(fns ...AggregateFunc) *Subscribe
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (srgb *SubscribeReminderGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (srgb *SubscribeReminderGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := srgb.path(ctx)
 	if err != nil {
 		return err
@@ -618,7 +621,7 @@ func (srgb *SubscribeReminderGroupBy) Scan(ctx context.Context, v interface{}) e
 	return srgb.sqlScan(ctx, v)
 }
 
-func (srgb *SubscribeReminderGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (srgb *SubscribeReminderGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range srgb.fields {
 		if !subscribereminder.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -665,7 +668,7 @@ type SubscribeReminderSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (srs *SubscribeReminderSelect) Scan(ctx context.Context, v interface{}) error {
+func (srs *SubscribeReminderSelect) Scan(ctx context.Context, v any) error {
 	if err := srs.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -673,7 +676,7 @@ func (srs *SubscribeReminderSelect) Scan(ctx context.Context, v interface{}) err
 	return srs.sqlScan(ctx, v)
 }
 
-func (srs *SubscribeReminderSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (srs *SubscribeReminderSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := srs.sql.Query()
 	if err := srs.driver.Query(ctx, query, args, rows); err != nil {

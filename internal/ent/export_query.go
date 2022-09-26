@@ -356,10 +356,10 @@ func (eq *ExportQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Expor
 			eq.withManager != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Export).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &Export{config: eq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -426,11 +426,14 @@ func (eq *ExportQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (eq *ExportQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := eq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := eq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (eq *ExportQuery) querySpec() *sqlgraph.QuerySpec {
@@ -540,7 +543,7 @@ func (egb *ExportGroupBy) Aggregate(fns ...AggregateFunc) *ExportGroupBy {
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (egb *ExportGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (egb *ExportGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := egb.path(ctx)
 	if err != nil {
 		return err
@@ -549,7 +552,7 @@ func (egb *ExportGroupBy) Scan(ctx context.Context, v interface{}) error {
 	return egb.sqlScan(ctx, v)
 }
 
-func (egb *ExportGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (egb *ExportGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range egb.fields {
 		if !export.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -596,7 +599,7 @@ type ExportSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (es *ExportSelect) Scan(ctx context.Context, v interface{}) error {
+func (es *ExportSelect) Scan(ctx context.Context, v any) error {
 	if err := es.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -604,7 +607,7 @@ func (es *ExportSelect) Scan(ctx context.Context, v interface{}) error {
 	return es.sqlScan(ctx, v)
 }
 
-func (es *ExportSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (es *ExportSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := es.sql.Query()
 	if err := es.driver.Query(ctx, query, args, rows); err != nil {

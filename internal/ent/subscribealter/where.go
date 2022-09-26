@@ -34,7 +34,7 @@ func IDNEQ(id uint64) predicate.SubscribeAlter {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.SubscribeAlter {
 	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -45,7 +45,7 @@ func IDIn(ids ...uint64) predicate.SubscribeAlter {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.SubscribeAlter {
 	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -167,7 +167,7 @@ func CreatedAtNEQ(v time.Time) predicate.SubscribeAlter {
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.SubscribeAlter {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -178,7 +178,7 @@ func CreatedAtIn(vs ...time.Time) predicate.SubscribeAlter {
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.SubscribeAlter {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -231,7 +231,7 @@ func UpdatedAtNEQ(v time.Time) predicate.SubscribeAlter {
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.SubscribeAlter {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -242,7 +242,7 @@ func UpdatedAtIn(vs ...time.Time) predicate.SubscribeAlter {
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.SubscribeAlter {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -295,7 +295,7 @@ func DeletedAtNEQ(v time.Time) predicate.SubscribeAlter {
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.SubscribeAlter {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -306,7 +306,7 @@ func DeletedAtIn(vs ...time.Time) predicate.SubscribeAlter {
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.SubscribeAlter {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -401,7 +401,7 @@ func RemarkNEQ(v string) predicate.SubscribeAlter {
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.SubscribeAlter {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -412,7 +412,7 @@ func RemarkIn(vs ...string) predicate.SubscribeAlter {
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.SubscribeAlter {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -514,7 +514,7 @@ func RiderIDNEQ(v uint64) predicate.SubscribeAlter {
 
 // RiderIDIn applies the In predicate on the "rider_id" field.
 func RiderIDIn(vs ...uint64) predicate.SubscribeAlter {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -525,7 +525,7 @@ func RiderIDIn(vs ...uint64) predicate.SubscribeAlter {
 
 // RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
 func RiderIDNotIn(vs ...uint64) predicate.SubscribeAlter {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -550,7 +550,7 @@ func ManagerIDNEQ(v uint64) predicate.SubscribeAlter {
 
 // ManagerIDIn applies the In predicate on the "manager_id" field.
 func ManagerIDIn(vs ...uint64) predicate.SubscribeAlter {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -561,7 +561,7 @@ func ManagerIDIn(vs ...uint64) predicate.SubscribeAlter {
 
 // ManagerIDNotIn applies the NotIn predicate on the "manager_id" field.
 func ManagerIDNotIn(vs ...uint64) predicate.SubscribeAlter {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -600,7 +600,7 @@ func EnterpriseIDNEQ(v uint64) predicate.SubscribeAlter {
 
 // EnterpriseIDIn applies the In predicate on the "enterprise_id" field.
 func EnterpriseIDIn(vs ...uint64) predicate.SubscribeAlter {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -611,7 +611,7 @@ func EnterpriseIDIn(vs ...uint64) predicate.SubscribeAlter {
 
 // EnterpriseIDNotIn applies the NotIn predicate on the "enterprise_id" field.
 func EnterpriseIDNotIn(vs ...uint64) predicate.SubscribeAlter {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -650,7 +650,7 @@ func AgentIDNEQ(v uint64) predicate.SubscribeAlter {
 
 // AgentIDIn applies the In predicate on the "agent_id" field.
 func AgentIDIn(vs ...uint64) predicate.SubscribeAlter {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -661,7 +661,7 @@ func AgentIDIn(vs ...uint64) predicate.SubscribeAlter {
 
 // AgentIDNotIn applies the NotIn predicate on the "agent_id" field.
 func AgentIDNotIn(vs ...uint64) predicate.SubscribeAlter {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -700,7 +700,7 @@ func SubscribeIDNEQ(v uint64) predicate.SubscribeAlter {
 
 // SubscribeIDIn applies the In predicate on the "subscribe_id" field.
 func SubscribeIDIn(vs ...uint64) predicate.SubscribeAlter {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -711,7 +711,7 @@ func SubscribeIDIn(vs ...uint64) predicate.SubscribeAlter {
 
 // SubscribeIDNotIn applies the NotIn predicate on the "subscribe_id" field.
 func SubscribeIDNotIn(vs ...uint64) predicate.SubscribeAlter {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -736,7 +736,7 @@ func DaysNEQ(v int) predicate.SubscribeAlter {
 
 // DaysIn applies the In predicate on the "days" field.
 func DaysIn(vs ...int) predicate.SubscribeAlter {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -747,7 +747,7 @@ func DaysIn(vs ...int) predicate.SubscribeAlter {
 
 // DaysNotIn applies the NotIn predicate on the "days" field.
 func DaysNotIn(vs ...int) predicate.SubscribeAlter {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}

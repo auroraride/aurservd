@@ -212,8 +212,8 @@ func (e BusinessEdges) CabinetOrErr() (*Cabinet, error) {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Business) scanValues(columns []string) ([]interface{}, error) {
-	values := make([]interface{}, len(columns))
+func (*Business) scanValues(columns []string) ([]any, error) {
+	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
 		case business.FieldCreator, business.FieldLastModifier, business.FieldBinInfo:
@@ -233,7 +233,7 @@ func (*Business) scanValues(columns []string) ([]interface{}, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Business fields.
-func (b *Business) assignValues(columns []string, values []interface{}) error {
+func (b *Business) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}

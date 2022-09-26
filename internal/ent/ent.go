@@ -22,6 +22,9 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/coupon"
+	"github.com/auroraride/aurservd/internal/ent/couponlog"
+	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
@@ -83,6 +86,9 @@ func columnChecker(table string) func(string) error {
 		city.Table:                 city.ValidColumn,
 		commission.Table:           commission.ValidColumn,
 		contract.Table:             contract.ValidColumn,
+		coupon.Table:               coupon.ValidColumn,
+		couponlog.Table:            couponlog.ValidColumn,
+		coupontemplate.Table:       coupontemplate.ValidColumn,
 		employee.Table:             employee.ValidColumn,
 		enterprise.Table:           enterprise.ValidColumn,
 		enterprisebill.Table:       enterprisebill.ValidColumn,
@@ -343,11 +349,11 @@ func IsConstraintError(err error) bool {
 type selector struct {
 	label string
 	flds  *[]string
-	scan  func(context.Context, interface{}) error
+	scan  func(context.Context, any) error
 }
 
 // ScanX is like Scan, but panics if an error occurs.
-func (s *selector) ScanX(ctx context.Context, v interface{}) {
+func (s *selector) ScanX(ctx context.Context, v any) {
 	if err := s.scan(ctx, v); err != nil {
 		panic(err)
 	}

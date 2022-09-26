@@ -34,7 +34,7 @@ func IDNEQ(id uint64) predicate.CabinetFault {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.CabinetFault {
 	return predicate.CabinetFault(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -45,7 +45,7 @@ func IDIn(ids ...uint64) predicate.CabinetFault {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.CabinetFault {
 	return predicate.CabinetFault(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -174,7 +174,7 @@ func CreatedAtNEQ(v time.Time) predicate.CabinetFault {
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -185,7 +185,7 @@ func CreatedAtIn(vs ...time.Time) predicate.CabinetFault {
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -238,7 +238,7 @@ func UpdatedAtNEQ(v time.Time) predicate.CabinetFault {
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -249,7 +249,7 @@ func UpdatedAtIn(vs ...time.Time) predicate.CabinetFault {
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -302,7 +302,7 @@ func DeletedAtNEQ(v time.Time) predicate.CabinetFault {
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -313,7 +313,7 @@ func DeletedAtIn(vs ...time.Time) predicate.CabinetFault {
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -408,7 +408,7 @@ func RemarkNEQ(v string) predicate.CabinetFault {
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -419,7 +419,7 @@ func RemarkIn(vs ...string) predicate.CabinetFault {
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -521,7 +521,7 @@ func CityIDNEQ(v uint64) predicate.CabinetFault {
 
 // CityIDIn applies the In predicate on the "city_id" field.
 func CityIDIn(vs ...uint64) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -532,7 +532,7 @@ func CityIDIn(vs ...uint64) predicate.CabinetFault {
 
 // CityIDNotIn applies the NotIn predicate on the "city_id" field.
 func CityIDNotIn(vs ...uint64) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -557,7 +557,7 @@ func StatusNEQ(v uint8) predicate.CabinetFault {
 
 // StatusIn applies the In predicate on the "status" field.
 func StatusIn(vs ...uint8) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -568,7 +568,7 @@ func StatusIn(vs ...uint8) predicate.CabinetFault {
 
 // StatusNotIn applies the NotIn predicate on the "status" field.
 func StatusNotIn(vs ...uint8) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -621,7 +621,7 @@ func BranchIDNEQ(v uint64) predicate.CabinetFault {
 
 // BranchIDIn applies the In predicate on the "branch_id" field.
 func BranchIDIn(vs ...uint64) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -632,7 +632,7 @@ func BranchIDIn(vs ...uint64) predicate.CabinetFault {
 
 // BranchIDNotIn applies the NotIn predicate on the "branch_id" field.
 func BranchIDNotIn(vs ...uint64) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -657,7 +657,7 @@ func CabinetIDNEQ(v uint64) predicate.CabinetFault {
 
 // CabinetIDIn applies the In predicate on the "cabinet_id" field.
 func CabinetIDIn(vs ...uint64) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -668,7 +668,7 @@ func CabinetIDIn(vs ...uint64) predicate.CabinetFault {
 
 // CabinetIDNotIn applies the NotIn predicate on the "cabinet_id" field.
 func CabinetIDNotIn(vs ...uint64) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -693,7 +693,7 @@ func RiderIDNEQ(v uint64) predicate.CabinetFault {
 
 // RiderIDIn applies the In predicate on the "rider_id" field.
 func RiderIDIn(vs ...uint64) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -704,7 +704,7 @@ func RiderIDIn(vs ...uint64) predicate.CabinetFault {
 
 // RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
 func RiderIDNotIn(vs ...uint64) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -729,7 +729,7 @@ func FaultNEQ(v string) predicate.CabinetFault {
 
 // FaultIn applies the In predicate on the "fault" field.
 func FaultIn(vs ...string) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -740,7 +740,7 @@ func FaultIn(vs ...string) predicate.CabinetFault {
 
 // FaultNotIn applies the NotIn predicate on the "fault" field.
 func FaultNotIn(vs ...string) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -856,7 +856,7 @@ func DescriptionNEQ(v string) predicate.CabinetFault {
 
 // DescriptionIn applies the In predicate on the "description" field.
 func DescriptionIn(vs ...string) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -867,7 +867,7 @@ func DescriptionIn(vs ...string) predicate.CabinetFault {
 
 // DescriptionNotIn applies the NotIn predicate on the "description" field.
 func DescriptionNotIn(vs ...string) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}

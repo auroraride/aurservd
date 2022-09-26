@@ -356,10 +356,10 @@ func (epq *EnterprisePrepaymentQuery) sqlAll(ctx context.Context, hooks ...query
 			epq.withEnterprise != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*EnterprisePrepayment).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &EnterprisePrepayment{config: epq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -426,11 +426,14 @@ func (epq *EnterprisePrepaymentQuery) sqlCount(ctx context.Context) (int, error)
 }
 
 func (epq *EnterprisePrepaymentQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := epq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := epq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (epq *EnterprisePrepaymentQuery) querySpec() *sqlgraph.QuerySpec {
@@ -540,7 +543,7 @@ func (epgb *EnterprisePrepaymentGroupBy) Aggregate(fns ...AggregateFunc) *Enterp
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (epgb *EnterprisePrepaymentGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (epgb *EnterprisePrepaymentGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := epgb.path(ctx)
 	if err != nil {
 		return err
@@ -549,7 +552,7 @@ func (epgb *EnterprisePrepaymentGroupBy) Scan(ctx context.Context, v interface{}
 	return epgb.sqlScan(ctx, v)
 }
 
-func (epgb *EnterprisePrepaymentGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (epgb *EnterprisePrepaymentGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range epgb.fields {
 		if !enterpriseprepayment.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -596,7 +599,7 @@ type EnterprisePrepaymentSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (eps *EnterprisePrepaymentSelect) Scan(ctx context.Context, v interface{}) error {
+func (eps *EnterprisePrepaymentSelect) Scan(ctx context.Context, v any) error {
 	if err := eps.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -604,7 +607,7 @@ func (eps *EnterprisePrepaymentSelect) Scan(ctx context.Context, v interface{}) 
 	return eps.sqlScan(ctx, v)
 }
 
-func (eps *EnterprisePrepaymentSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (eps *EnterprisePrepaymentSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := eps.sql.Query()
 	if err := eps.driver.Query(ctx, query, args, rows); err != nil {

@@ -34,7 +34,7 @@ func IDNEQ(id uint64) predicate.SubscribeSuspend {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.SubscribeSuspend {
 	return predicate.SubscribeSuspend(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -45,7 +45,7 @@ func IDIn(ids ...uint64) predicate.SubscribeSuspend {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.SubscribeSuspend {
 	return predicate.SubscribeSuspend(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -188,7 +188,7 @@ func RemarkNEQ(v string) predicate.SubscribeSuspend {
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.SubscribeSuspend {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -199,7 +199,7 @@ func RemarkIn(vs ...string) predicate.SubscribeSuspend {
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.SubscribeSuspend {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -301,7 +301,7 @@ func CityIDNEQ(v uint64) predicate.SubscribeSuspend {
 
 // CityIDIn applies the In predicate on the "city_id" field.
 func CityIDIn(vs ...uint64) predicate.SubscribeSuspend {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -312,7 +312,7 @@ func CityIDIn(vs ...uint64) predicate.SubscribeSuspend {
 
 // CityIDNotIn applies the NotIn predicate on the "city_id" field.
 func CityIDNotIn(vs ...uint64) predicate.SubscribeSuspend {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -337,7 +337,7 @@ func RiderIDNEQ(v uint64) predicate.SubscribeSuspend {
 
 // RiderIDIn applies the In predicate on the "rider_id" field.
 func RiderIDIn(vs ...uint64) predicate.SubscribeSuspend {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -348,7 +348,7 @@ func RiderIDIn(vs ...uint64) predicate.SubscribeSuspend {
 
 // RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
 func RiderIDNotIn(vs ...uint64) predicate.SubscribeSuspend {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -373,7 +373,7 @@ func SubscribeIDNEQ(v uint64) predicate.SubscribeSuspend {
 
 // SubscribeIDIn applies the In predicate on the "subscribe_id" field.
 func SubscribeIDIn(vs ...uint64) predicate.SubscribeSuspend {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -384,7 +384,7 @@ func SubscribeIDIn(vs ...uint64) predicate.SubscribeSuspend {
 
 // SubscribeIDNotIn applies the NotIn predicate on the "subscribe_id" field.
 func SubscribeIDNotIn(vs ...uint64) predicate.SubscribeSuspend {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -409,7 +409,7 @@ func PauseIDNEQ(v uint64) predicate.SubscribeSuspend {
 
 // PauseIDIn applies the In predicate on the "pause_id" field.
 func PauseIDIn(vs ...uint64) predicate.SubscribeSuspend {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -420,7 +420,7 @@ func PauseIDIn(vs ...uint64) predicate.SubscribeSuspend {
 
 // PauseIDNotIn applies the NotIn predicate on the "pause_id" field.
 func PauseIDNotIn(vs ...uint64) predicate.SubscribeSuspend {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -459,7 +459,7 @@ func DaysNEQ(v int) predicate.SubscribeSuspend {
 
 // DaysIn applies the In predicate on the "days" field.
 func DaysIn(vs ...int) predicate.SubscribeSuspend {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -470,7 +470,7 @@ func DaysIn(vs ...int) predicate.SubscribeSuspend {
 
 // DaysNotIn applies the NotIn predicate on the "days" field.
 func DaysNotIn(vs ...int) predicate.SubscribeSuspend {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -523,7 +523,7 @@ func StartAtNEQ(v time.Time) predicate.SubscribeSuspend {
 
 // StartAtIn applies the In predicate on the "start_at" field.
 func StartAtIn(vs ...time.Time) predicate.SubscribeSuspend {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -534,7 +534,7 @@ func StartAtIn(vs ...time.Time) predicate.SubscribeSuspend {
 
 // StartAtNotIn applies the NotIn predicate on the "start_at" field.
 func StartAtNotIn(vs ...time.Time) predicate.SubscribeSuspend {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -587,7 +587,7 @@ func EndAtNEQ(v time.Time) predicate.SubscribeSuspend {
 
 // EndAtIn applies the In predicate on the "end_at" field.
 func EndAtIn(vs ...time.Time) predicate.SubscribeSuspend {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -598,7 +598,7 @@ func EndAtIn(vs ...time.Time) predicate.SubscribeSuspend {
 
 // EndAtNotIn applies the NotIn predicate on the "end_at" field.
 func EndAtNotIn(vs ...time.Time) predicate.SubscribeSuspend {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -665,7 +665,7 @@ func EndReasonNEQ(v string) predicate.SubscribeSuspend {
 
 // EndReasonIn applies the In predicate on the "end_reason" field.
 func EndReasonIn(vs ...string) predicate.SubscribeSuspend {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -676,7 +676,7 @@ func EndReasonIn(vs ...string) predicate.SubscribeSuspend {
 
 // EndReasonNotIn applies the NotIn predicate on the "end_reason" field.
 func EndReasonNotIn(vs ...string) predicate.SubscribeSuspend {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}

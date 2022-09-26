@@ -357,10 +357,10 @@ func (pq *PersonQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Perso
 			pq.withRider != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Person).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &Person{config: pq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -432,11 +432,14 @@ func (pq *PersonQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (pq *PersonQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := pq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := pq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (pq *PersonQuery) querySpec() *sqlgraph.QuerySpec {
@@ -546,7 +549,7 @@ func (pgb *PersonGroupBy) Aggregate(fns ...AggregateFunc) *PersonGroupBy {
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (pgb *PersonGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (pgb *PersonGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := pgb.path(ctx)
 	if err != nil {
 		return err
@@ -555,7 +558,7 @@ func (pgb *PersonGroupBy) Scan(ctx context.Context, v interface{}) error {
 	return pgb.sqlScan(ctx, v)
 }
 
-func (pgb *PersonGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (pgb *PersonGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range pgb.fields {
 		if !person.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -602,7 +605,7 @@ type PersonSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ps *PersonSelect) Scan(ctx context.Context, v interface{}) error {
+func (ps *PersonSelect) Scan(ctx context.Context, v any) error {
 	if err := ps.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -610,7 +613,7 @@ func (ps *PersonSelect) Scan(ctx context.Context, v interface{}) error {
 	return ps.sqlScan(ctx, v)
 }
 
-func (ps *PersonSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (ps *PersonSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := ps.sql.Query()
 	if err := ps.driver.Query(ctx, query, args, rows); err != nil {

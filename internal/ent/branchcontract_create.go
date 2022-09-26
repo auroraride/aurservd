@@ -599,18 +599,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *BranchContractUpsert) SetCreatedAt(v time.Time) *BranchContractUpsert {
-	u.Set(branchcontract.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *BranchContractUpsert) UpdateCreatedAt() *BranchContractUpsert {
-	u.SetExcluded(branchcontract.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *BranchContractUpsert) SetUpdatedAt(v time.Time) *BranchContractUpsert {
 	u.Set(branchcontract.FieldUpdatedAt, v)
@@ -638,24 +626,6 @@ func (u *BranchContractUpsert) UpdateDeletedAt() *BranchContractUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *BranchContractUpsert) ClearDeletedAt() *BranchContractUpsert {
 	u.SetNull(branchcontract.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *BranchContractUpsert) SetCreator(v *model.Modifier) *BranchContractUpsert {
-	u.Set(branchcontract.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *BranchContractUpsert) UpdateCreator() *BranchContractUpsert {
-	u.SetExcluded(branchcontract.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *BranchContractUpsert) ClearCreator() *BranchContractUpsert {
-	u.SetNull(branchcontract.FieldCreator)
 	return u
 }
 
@@ -953,20 +923,6 @@ func (u *BranchContractUpsertOne) Update(set func(*BranchContractUpsert)) *Branc
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *BranchContractUpsertOne) SetCreatedAt(v time.Time) *BranchContractUpsertOne {
-	return u.Update(func(s *BranchContractUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *BranchContractUpsertOne) UpdateCreatedAt() *BranchContractUpsertOne {
-	return u.Update(func(s *BranchContractUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *BranchContractUpsertOne) SetUpdatedAt(v time.Time) *BranchContractUpsertOne {
 	return u.Update(func(s *BranchContractUpsert) {
@@ -999,27 +955,6 @@ func (u *BranchContractUpsertOne) UpdateDeletedAt() *BranchContractUpsertOne {
 func (u *BranchContractUpsertOne) ClearDeletedAt() *BranchContractUpsertOne {
 	return u.Update(func(s *BranchContractUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *BranchContractUpsertOne) SetCreator(v *model.Modifier) *BranchContractUpsertOne {
-	return u.Update(func(s *BranchContractUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *BranchContractUpsertOne) UpdateCreator() *BranchContractUpsertOne {
-	return u.Update(func(s *BranchContractUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *BranchContractUpsertOne) ClearCreator() *BranchContractUpsertOne {
-	return u.Update(func(s *BranchContractUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1520,20 +1455,6 @@ func (u *BranchContractUpsertBulk) Update(set func(*BranchContractUpsert)) *Bran
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *BranchContractUpsertBulk) SetCreatedAt(v time.Time) *BranchContractUpsertBulk {
-	return u.Update(func(s *BranchContractUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *BranchContractUpsertBulk) UpdateCreatedAt() *BranchContractUpsertBulk {
-	return u.Update(func(s *BranchContractUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *BranchContractUpsertBulk) SetUpdatedAt(v time.Time) *BranchContractUpsertBulk {
 	return u.Update(func(s *BranchContractUpsert) {
@@ -1566,27 +1487,6 @@ func (u *BranchContractUpsertBulk) UpdateDeletedAt() *BranchContractUpsertBulk {
 func (u *BranchContractUpsertBulk) ClearDeletedAt() *BranchContractUpsertBulk {
 	return u.Update(func(s *BranchContractUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *BranchContractUpsertBulk) SetCreator(v *model.Modifier) *BranchContractUpsertBulk {
-	return u.Update(func(s *BranchContractUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *BranchContractUpsertBulk) UpdateCreator() *BranchContractUpsertBulk {
-	return u.Update(func(s *BranchContractUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *BranchContractUpsertBulk) ClearCreator() *BranchContractUpsertBulk {
-	return u.Update(func(s *BranchContractUpsert) {
-		s.ClearCreator()
 	})
 }
 

@@ -49,30 +49,23 @@ type City struct {
 
 // CityEdges holds the relations/edges for other nodes in the graph.
 type CityEdges struct {
-	// Plans holds the value of the plans edge.
-	Plans []*Plan `json:"plans,omitempty"`
 	// Parent holds the value of the parent edge.
 	Parent *City `json:"parent,omitempty"`
 	// Children holds the value of the children edge.
 	Children []*City `json:"children,omitempty"`
+	// Plans holds the value of the plans edge.
+	Plans []*Plan `json:"plans,omitempty"`
+	// Coupons holds the value of the coupons edge.
+	Coupons []*Coupon `json:"coupons,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
-}
-
-// PlansOrErr returns the Plans value or an error if the edge
-// was not loaded in eager-loading.
-func (e CityEdges) PlansOrErr() ([]*Plan, error) {
-	if e.loadedTypes[0] {
-		return e.Plans, nil
-	}
-	return nil, &NotLoadedError{edge: "plans"}
+	loadedTypes [4]bool
 }
 
 // ParentOrErr returns the Parent value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CityEdges) ParentOrErr() (*City, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[0] {
 		if e.Parent == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: city.Label}
@@ -85,15 +78,33 @@ func (e CityEdges) ParentOrErr() (*City, error) {
 // ChildrenOrErr returns the Children value or an error if the edge
 // was not loaded in eager-loading.
 func (e CityEdges) ChildrenOrErr() ([]*City, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[1] {
 		return e.Children, nil
 	}
 	return nil, &NotLoadedError{edge: "children"}
 }
 
+// PlansOrErr returns the Plans value or an error if the edge
+// was not loaded in eager-loading.
+func (e CityEdges) PlansOrErr() ([]*Plan, error) {
+	if e.loadedTypes[2] {
+		return e.Plans, nil
+	}
+	return nil, &NotLoadedError{edge: "plans"}
+}
+
+// CouponsOrErr returns the Coupons value or an error if the edge
+// was not loaded in eager-loading.
+func (e CityEdges) CouponsOrErr() ([]*Coupon, error) {
+	if e.loadedTypes[3] {
+		return e.Coupons, nil
+	}
+	return nil, &NotLoadedError{edge: "coupons"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
-func (*City) scanValues(columns []string) ([]interface{}, error) {
-	values := make([]interface{}, len(columns))
+func (*City) scanValues(columns []string) ([]any, error) {
+	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
 		case city.FieldCreator, city.FieldLastModifier:
@@ -117,7 +128,7 @@ func (*City) scanValues(columns []string) ([]interface{}, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the City fields.
-func (c *City) assignValues(columns []string, values []interface{}) error {
+func (c *City) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -213,11 +224,6 @@ func (c *City) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
-// QueryPlans queries the "plans" edge of the City entity.
-func (c *City) QueryPlans() *PlanQuery {
-	return (&CityClient{config: c.config}).QueryPlans(c)
-}
-
 // QueryParent queries the "parent" edge of the City entity.
 func (c *City) QueryParent() *CityQuery {
 	return (&CityClient{config: c.config}).QueryParent(c)
@@ -226,6 +232,16 @@ func (c *City) QueryParent() *CityQuery {
 // QueryChildren queries the "children" edge of the City entity.
 func (c *City) QueryChildren() *CityQuery {
 	return (&CityClient{config: c.config}).QueryChildren(c)
+}
+
+// QueryPlans queries the "plans" edge of the City entity.
+func (c *City) QueryPlans() *PlanQuery {
+	return (&CityClient{config: c.config}).QueryPlans(c)
+}
+
+// QueryCoupons queries the "coupons" edge of the City entity.
+func (c *City) QueryCoupons() *CouponQuery {
+	return (&CityClient{config: c.config}).QueryCoupons(c)
 }
 
 // Update returns a builder for updating this City.

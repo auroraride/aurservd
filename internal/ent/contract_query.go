@@ -356,10 +356,10 @@ func (cq *ContractQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Con
 			cq.withRider != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Contract).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &Contract{config: cq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -426,11 +426,14 @@ func (cq *ContractQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (cq *ContractQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := cq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := cq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (cq *ContractQuery) querySpec() *sqlgraph.QuerySpec {
@@ -540,7 +543,7 @@ func (cgb *ContractGroupBy) Aggregate(fns ...AggregateFunc) *ContractGroupBy {
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (cgb *ContractGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (cgb *ContractGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := cgb.path(ctx)
 	if err != nil {
 		return err
@@ -549,7 +552,7 @@ func (cgb *ContractGroupBy) Scan(ctx context.Context, v interface{}) error {
 	return cgb.sqlScan(ctx, v)
 }
 
-func (cgb *ContractGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (cgb *ContractGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range cgb.fields {
 		if !contract.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -596,7 +599,7 @@ type ContractSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (cs *ContractSelect) Scan(ctx context.Context, v interface{}) error {
+func (cs *ContractSelect) Scan(ctx context.Context, v any) error {
 	if err := cs.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -604,7 +607,7 @@ func (cs *ContractSelect) Scan(ctx context.Context, v interface{}) error {
 	return cs.sqlScan(ctx, v)
 }
 
-func (cs *ContractSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (cs *ContractSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := cs.sql.Query()
 	if err := cs.driver.Query(ctx, query, args, rows); err != nil {

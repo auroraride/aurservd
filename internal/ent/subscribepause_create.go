@@ -873,18 +873,6 @@ type (
 	}
 )
 
-// SetCreatedAt sets the "created_at" field.
-func (u *SubscribePauseUpsert) SetCreatedAt(v time.Time) *SubscribePauseUpsert {
-	u.Set(subscribepause.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *SubscribePauseUpsert) UpdateCreatedAt() *SubscribePauseUpsert {
-	u.SetExcluded(subscribepause.FieldCreatedAt)
-	return u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *SubscribePauseUpsert) SetUpdatedAt(v time.Time) *SubscribePauseUpsert {
 	u.Set(subscribepause.FieldUpdatedAt, v)
@@ -912,24 +900,6 @@ func (u *SubscribePauseUpsert) UpdateDeletedAt() *SubscribePauseUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *SubscribePauseUpsert) ClearDeletedAt() *SubscribePauseUpsert {
 	u.SetNull(subscribepause.FieldDeletedAt)
-	return u
-}
-
-// SetCreator sets the "creator" field.
-func (u *SubscribePauseUpsert) SetCreator(v *model.Modifier) *SubscribePauseUpsert {
-	u.Set(subscribepause.FieldCreator, v)
-	return u
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *SubscribePauseUpsert) UpdateCreator() *SubscribePauseUpsert {
-	u.SetExcluded(subscribepause.FieldCreator)
-	return u
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *SubscribePauseUpsert) ClearCreator() *SubscribePauseUpsert {
-	u.SetNull(subscribepause.FieldCreator)
 	return u
 }
 
@@ -1287,20 +1257,6 @@ func (u *SubscribePauseUpsertOne) Update(set func(*SubscribePauseUpsert)) *Subsc
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *SubscribePauseUpsertOne) SetCreatedAt(v time.Time) *SubscribePauseUpsertOne {
-	return u.Update(func(s *SubscribePauseUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *SubscribePauseUpsertOne) UpdateCreatedAt() *SubscribePauseUpsertOne {
-	return u.Update(func(s *SubscribePauseUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *SubscribePauseUpsertOne) SetUpdatedAt(v time.Time) *SubscribePauseUpsertOne {
 	return u.Update(func(s *SubscribePauseUpsert) {
@@ -1333,27 +1289,6 @@ func (u *SubscribePauseUpsertOne) UpdateDeletedAt() *SubscribePauseUpsertOne {
 func (u *SubscribePauseUpsertOne) ClearDeletedAt() *SubscribePauseUpsertOne {
 	return u.Update(func(s *SubscribePauseUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *SubscribePauseUpsertOne) SetCreator(v *model.Modifier) *SubscribePauseUpsertOne {
-	return u.Update(func(s *SubscribePauseUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *SubscribePauseUpsertOne) UpdateCreator() *SubscribePauseUpsertOne {
-	return u.Update(func(s *SubscribePauseUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *SubscribePauseUpsertOne) ClearCreator() *SubscribePauseUpsertOne {
-	return u.Update(func(s *SubscribePauseUpsert) {
-		s.ClearCreator()
 	})
 }
 
@@ -1924,20 +1859,6 @@ func (u *SubscribePauseUpsertBulk) Update(set func(*SubscribePauseUpsert)) *Subs
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *SubscribePauseUpsertBulk) SetCreatedAt(v time.Time) *SubscribePauseUpsertBulk {
-	return u.Update(func(s *SubscribePauseUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *SubscribePauseUpsertBulk) UpdateCreatedAt() *SubscribePauseUpsertBulk {
-	return u.Update(func(s *SubscribePauseUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (u *SubscribePauseUpsertBulk) SetUpdatedAt(v time.Time) *SubscribePauseUpsertBulk {
 	return u.Update(func(s *SubscribePauseUpsert) {
@@ -1970,27 +1891,6 @@ func (u *SubscribePauseUpsertBulk) UpdateDeletedAt() *SubscribePauseUpsertBulk {
 func (u *SubscribePauseUpsertBulk) ClearDeletedAt() *SubscribePauseUpsertBulk {
 	return u.Update(func(s *SubscribePauseUpsert) {
 		s.ClearDeletedAt()
-	})
-}
-
-// SetCreator sets the "creator" field.
-func (u *SubscribePauseUpsertBulk) SetCreator(v *model.Modifier) *SubscribePauseUpsertBulk {
-	return u.Update(func(s *SubscribePauseUpsert) {
-		s.SetCreator(v)
-	})
-}
-
-// UpdateCreator sets the "creator" field to the value that was provided on create.
-func (u *SubscribePauseUpsertBulk) UpdateCreator() *SubscribePauseUpsertBulk {
-	return u.Update(func(s *SubscribePauseUpsert) {
-		s.UpdateCreator()
-	})
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (u *SubscribePauseUpsertBulk) ClearCreator() *SubscribePauseUpsertBulk {
-	return u.Update(func(s *SubscribePauseUpsert) {
-		s.ClearCreator()
 	})
 }
 

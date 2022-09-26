@@ -467,10 +467,10 @@ func (cfq *CabinetFaultQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 			cfq.withRider != nil,
 		}
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*CabinetFault).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &CabinetFault{config: cfq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -633,11 +633,14 @@ func (cfq *CabinetFaultQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (cfq *CabinetFaultQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := cfq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := cfq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (cfq *CabinetFaultQuery) querySpec() *sqlgraph.QuerySpec {
@@ -747,7 +750,7 @@ func (cfgb *CabinetFaultGroupBy) Aggregate(fns ...AggregateFunc) *CabinetFaultGr
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (cfgb *CabinetFaultGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (cfgb *CabinetFaultGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := cfgb.path(ctx)
 	if err != nil {
 		return err
@@ -756,7 +759,7 @@ func (cfgb *CabinetFaultGroupBy) Scan(ctx context.Context, v interface{}) error 
 	return cfgb.sqlScan(ctx, v)
 }
 
-func (cfgb *CabinetFaultGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (cfgb *CabinetFaultGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range cfgb.fields {
 		if !cabinetfault.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -803,7 +806,7 @@ type CabinetFaultSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (cfs *CabinetFaultSelect) Scan(ctx context.Context, v interface{}) error {
+func (cfs *CabinetFaultSelect) Scan(ctx context.Context, v any) error {
 	if err := cfs.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -811,7 +814,7 @@ func (cfs *CabinetFaultSelect) Scan(ctx context.Context, v interface{}) error {
 	return cfs.sqlScan(ctx, v)
 }
 
-func (cfs *CabinetFaultSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (cfs *CabinetFaultSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := cfs.sql.Query()
 	if err := cfs.driver.Query(ctx, query, args, rows); err != nil {

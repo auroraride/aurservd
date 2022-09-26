@@ -34,7 +34,7 @@ func IDNEQ(id uint64) predicate.BranchContract {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -45,7 +45,7 @@ func IDIn(ids ...uint64) predicate.BranchContract {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -223,7 +223,7 @@ func CreatedAtNEQ(v time.Time) predicate.BranchContract {
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -234,7 +234,7 @@ func CreatedAtIn(vs ...time.Time) predicate.BranchContract {
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -287,7 +287,7 @@ func UpdatedAtNEQ(v time.Time) predicate.BranchContract {
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -298,7 +298,7 @@ func UpdatedAtIn(vs ...time.Time) predicate.BranchContract {
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -351,7 +351,7 @@ func DeletedAtNEQ(v time.Time) predicate.BranchContract {
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -362,7 +362,7 @@ func DeletedAtIn(vs ...time.Time) predicate.BranchContract {
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -457,7 +457,7 @@ func RemarkNEQ(v string) predicate.BranchContract {
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -468,7 +468,7 @@ func RemarkIn(vs ...string) predicate.BranchContract {
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -570,7 +570,7 @@ func BranchIDNEQ(v uint64) predicate.BranchContract {
 
 // BranchIDIn applies the In predicate on the "branch_id" field.
 func BranchIDIn(vs ...uint64) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -581,7 +581,7 @@ func BranchIDIn(vs ...uint64) predicate.BranchContract {
 
 // BranchIDNotIn applies the NotIn predicate on the "branch_id" field.
 func BranchIDNotIn(vs ...uint64) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -606,7 +606,7 @@ func LandlordNameNEQ(v string) predicate.BranchContract {
 
 // LandlordNameIn applies the In predicate on the "landlord_name" field.
 func LandlordNameIn(vs ...string) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -617,7 +617,7 @@ func LandlordNameIn(vs ...string) predicate.BranchContract {
 
 // LandlordNameNotIn applies the NotIn predicate on the "landlord_name" field.
 func LandlordNameNotIn(vs ...string) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -705,7 +705,7 @@ func IDCardNumberNEQ(v string) predicate.BranchContract {
 
 // IDCardNumberIn applies the In predicate on the "id_card_number" field.
 func IDCardNumberIn(vs ...string) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -716,7 +716,7 @@ func IDCardNumberIn(vs ...string) predicate.BranchContract {
 
 // IDCardNumberNotIn applies the NotIn predicate on the "id_card_number" field.
 func IDCardNumberNotIn(vs ...string) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -804,7 +804,7 @@ func PhoneNEQ(v string) predicate.BranchContract {
 
 // PhoneIn applies the In predicate on the "phone" field.
 func PhoneIn(vs ...string) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -815,7 +815,7 @@ func PhoneIn(vs ...string) predicate.BranchContract {
 
 // PhoneNotIn applies the NotIn predicate on the "phone" field.
 func PhoneNotIn(vs ...string) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -903,7 +903,7 @@ func BankNumberNEQ(v string) predicate.BranchContract {
 
 // BankNumberIn applies the In predicate on the "bank_number" field.
 func BankNumberIn(vs ...string) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -914,7 +914,7 @@ func BankNumberIn(vs ...string) predicate.BranchContract {
 
 // BankNumberNotIn applies the NotIn predicate on the "bank_number" field.
 func BankNumberNotIn(vs ...string) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1002,7 +1002,7 @@ func PledgeNEQ(v float64) predicate.BranchContract {
 
 // PledgeIn applies the In predicate on the "pledge" field.
 func PledgeIn(vs ...float64) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1013,7 +1013,7 @@ func PledgeIn(vs ...float64) predicate.BranchContract {
 
 // PledgeNotIn applies the NotIn predicate on the "pledge" field.
 func PledgeNotIn(vs ...float64) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1066,7 +1066,7 @@ func RentNEQ(v float64) predicate.BranchContract {
 
 // RentIn applies the In predicate on the "rent" field.
 func RentIn(vs ...float64) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1077,7 +1077,7 @@ func RentIn(vs ...float64) predicate.BranchContract {
 
 // RentNotIn applies the NotIn predicate on the "rent" field.
 func RentNotIn(vs ...float64) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1130,7 +1130,7 @@ func LeaseNEQ(v uint) predicate.BranchContract {
 
 // LeaseIn applies the In predicate on the "lease" field.
 func LeaseIn(vs ...uint) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1141,7 +1141,7 @@ func LeaseIn(vs ...uint) predicate.BranchContract {
 
 // LeaseNotIn applies the NotIn predicate on the "lease" field.
 func LeaseNotIn(vs ...uint) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1194,7 +1194,7 @@ func ElectricityPledgeNEQ(v float64) predicate.BranchContract {
 
 // ElectricityPledgeIn applies the In predicate on the "electricity_pledge" field.
 func ElectricityPledgeIn(vs ...float64) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1205,7 +1205,7 @@ func ElectricityPledgeIn(vs ...float64) predicate.BranchContract {
 
 // ElectricityPledgeNotIn applies the NotIn predicate on the "electricity_pledge" field.
 func ElectricityPledgeNotIn(vs ...float64) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1258,7 +1258,7 @@ func ElectricityNEQ(v string) predicate.BranchContract {
 
 // ElectricityIn applies the In predicate on the "electricity" field.
 func ElectricityIn(vs ...string) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1269,7 +1269,7 @@ func ElectricityIn(vs ...string) predicate.BranchContract {
 
 // ElectricityNotIn applies the NotIn predicate on the "electricity" field.
 func ElectricityNotIn(vs ...string) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1357,7 +1357,7 @@ func AreaNEQ(v float64) predicate.BranchContract {
 
 // AreaIn applies the In predicate on the "area" field.
 func AreaIn(vs ...float64) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1368,7 +1368,7 @@ func AreaIn(vs ...float64) predicate.BranchContract {
 
 // AreaNotIn applies the NotIn predicate on the "area" field.
 func AreaNotIn(vs ...float64) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1421,7 +1421,7 @@ func StartTimeNEQ(v time.Time) predicate.BranchContract {
 
 // StartTimeIn applies the In predicate on the "start_time" field.
 func StartTimeIn(vs ...time.Time) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1432,7 +1432,7 @@ func StartTimeIn(vs ...time.Time) predicate.BranchContract {
 
 // StartTimeNotIn applies the NotIn predicate on the "start_time" field.
 func StartTimeNotIn(vs ...time.Time) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1485,7 +1485,7 @@ func EndTimeNEQ(v time.Time) predicate.BranchContract {
 
 // EndTimeIn applies the In predicate on the "end_time" field.
 func EndTimeIn(vs ...time.Time) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1496,7 +1496,7 @@ func EndTimeIn(vs ...time.Time) predicate.BranchContract {
 
 // EndTimeNotIn applies the NotIn predicate on the "end_time" field.
 func EndTimeNotIn(vs ...time.Time) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1549,7 +1549,7 @@ func FileNEQ(v string) predicate.BranchContract {
 
 // FileIn applies the In predicate on the "file" field.
 func FileIn(vs ...string) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1560,7 +1560,7 @@ func FileIn(vs ...string) predicate.BranchContract {
 
 // FileNotIn applies the NotIn predicate on the "file" field.
 func FileNotIn(vs ...string) predicate.BranchContract {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
