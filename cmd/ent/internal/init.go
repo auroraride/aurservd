@@ -31,8 +31,34 @@ import (
     "entgo.io/ent"
     "entgo.io/ent/dialect/entsql"
     "entgo.io/ent/schema"
+    "entgo.io/ent/schema/edge"
+    "entgo.io/ent/schema/field"
+    "entgo.io/ent/schema/mixin"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
+
+type {{ .name }}Mixin struct {
+    mixin.Schema
+    Optional bool
+}
+
+func (m {{ .name }}Mixin) Fields() []ent.Field {
+    relate := field.Uint64("{{ .tableName }}_id")
+    if m.Optional {
+        relate.Optional().Nillable()
+    }
+    return []ent.Field{
+        relate,
+    }
+}
+
+func (m {{ .name }}Mixin) Edges() []ent.Edge {
+    e := edge.To("{{ .name }}", {{ .name }}.Type).Unique().Field("{{ .tableName }}_id")
+    if !m.Optional {
+        e.Required()
+    }
+    return []ent.Edge{e}
+}
 
 // {{ .name }} holds the schema definition for the {{ .name }} entity.
 type {{ .name }} struct {

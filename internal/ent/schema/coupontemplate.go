@@ -17,12 +17,12 @@ type CouponTemplateMixin struct {
 }
 
 func (m CouponTemplateMixin) Fields() []ent.Field {
-    f := field.Uint64("template_id")
+    relate := field.Uint64("template_id")
     if m.Optional {
-        f.Optional().Nillable()
+        relate.Optional().Nillable()
     }
     return []ent.Field{
-        f,
+        relate,
     }
 }
 
