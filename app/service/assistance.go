@@ -35,11 +35,12 @@ import (
 )
 
 type assistanceService struct {
-    ctx      context.Context
-    modifier *model.Modifier
-    rider    *ent.Rider
-    employee *ent.Employee
-    orm      *ent.AssistanceClient
+    ctx          context.Context
+    modifier     *model.Modifier
+    rider        *ent.Rider
+    employee     *ent.Employee
+    orm          *ent.AssistanceClient
+    employeeInfo *model.Employee
 }
 
 func NewAssistance() *assistanceService {
@@ -65,8 +66,15 @@ func NewAssistanceWithModifier(m *model.Modifier) *assistanceService {
 
 func NewAssistanceWithEmployee(e *ent.Employee) *assistanceService {
     s := NewAssistance()
-    s.ctx = context.WithValue(s.ctx, "employee", e)
-    s.employee = e
+    if e != nil {
+        s.employee = e
+        s.employeeInfo = &model.Employee{
+            ID:    e.ID,
+            Name:  e.Name,
+            Phone: e.Phone,
+        }
+        s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+    }
     return s
 }
 

@@ -43,12 +43,14 @@ func NewCouponTemplateWithModifier(m *model.Modifier) *couponTemplateService {
 
 func NewCouponTemplateWithEmployee(e *ent.Employee) *couponTemplateService {
     s := NewCouponTemplate()
-    s.ctx = context.WithValue(s.ctx, "employee", e)
-    s.employee = e
-    s.employeeInfo = &model.Employee{
-        ID:    s.employee.ID,
-        Name:  s.employee.Name,
-        Phone: s.employee.Phone,
+    if e != nil {
+        s.employee = e
+        s.employeeInfo = &model.Employee{
+            ID:    e.ID,
+            Name:  e.Name,
+            Phone: e.Phone,
+        }
+        s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
     }
     return s
 }

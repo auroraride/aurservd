@@ -7012,6 +7012,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/point/modify": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M7016 修改骑手积分",
+                "operationId": "ManagerPointModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.PointModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/rider": {
             "get": {
                 "consumes": [
@@ -16128,6 +16169,28 @@ const docTemplate = `{
                 "start": {
                     "description": "开始日期",
                     "type": "string"
+                }
+            }
+        },
+        "model.PointModifyReq": {
+            "type": "object",
+            "required": [
+                "points",
+                "reason",
+                "riderId"
+            ],
+            "properties": {
+                "points": {
+                    "description": "积分 ",
+                    "type": "integer"
+                },
+                "reason": {
+                    "description": "原因 ",
+                    "type": "string"
+                },
+                "riderId": {
+                    "description": "骑手 ",
+                    "type": "integer"
                 }
             }
         },

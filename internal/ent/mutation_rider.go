@@ -39,6 +39,8 @@ type RiderMutation struct {
 	last_signin_at    *time.Time
 	blocked           *bool
 	contractual       *bool
+	points            *int64
+	addpoints         *int64
 	clearedFields     map[string]struct{}
 	station           *uint64
 	clearedstation    bool
@@ -1057,6 +1059,62 @@ func (m *RiderMutation) ResetContractual() {
 	delete(m.clearedFields, rider.FieldContractual)
 }
 
+// SetPoints sets the "points" field.
+func (m *RiderMutation) SetPoints(i int64) {
+	m.points = &i
+	m.addpoints = nil
+}
+
+// Points returns the value of the "points" field in the mutation.
+func (m *RiderMutation) Points() (r int64, exists bool) {
+	v := m.points
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPoints returns the old "points" field's value of the Rider entity.
+// If the Rider object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderMutation) OldPoints(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPoints is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPoints requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPoints: %w", err)
+	}
+	return oldValue.Points, nil
+}
+
+// AddPoints adds i to the "points" field.
+func (m *RiderMutation) AddPoints(i int64) {
+	if m.addpoints != nil {
+		*m.addpoints += i
+	} else {
+		m.addpoints = &i
+	}
+}
+
+// AddedPoints returns the value that was added to the "points" field in this mutation.
+func (m *RiderMutation) AddedPoints() (r int64, exists bool) {
+	v := m.addpoints
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetPoints resets all changes to the "points" field.
+func (m *RiderMutation) ResetPoints() {
+	m.points = nil
+	m.addpoints = nil
+}
+
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (m *RiderMutation) ClearStation() {
 	m.clearedstation = true
@@ -1532,7 +1590,7 @@ func (m *RiderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RiderMutation) Fields() []string {
-	fields := make([]string, 0, 19)
+	fields := make([]string, 0, 20)
 	if m.created_at != nil {
 		fields = append(fields, rider.FieldCreatedAt)
 	}
@@ -1590,6 +1648,9 @@ func (m *RiderMutation) Fields() []string {
 	if m.contractual != nil {
 		fields = append(fields, rider.FieldContractual)
 	}
+	if m.points != nil {
+		fields = append(fields, rider.FieldPoints)
+	}
 	return fields
 }
 
@@ -1636,6 +1697,8 @@ func (m *RiderMutation) Field(name string) (ent.Value, bool) {
 		return m.Blocked()
 	case rider.FieldContractual:
 		return m.Contractual()
+	case rider.FieldPoints:
+		return m.Points()
 	}
 	return nil, false
 }
@@ -1683,6 +1746,8 @@ func (m *RiderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldBlocked(ctx)
 	case rider.FieldContractual:
 		return m.OldContractual(ctx)
+	case rider.FieldPoints:
+		return m.OldPoints(ctx)
 	}
 	return nil, fmt.Errorf("unknown Rider field %s", name)
 }
@@ -1825,6 +1890,13 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetContractual(v)
 		return nil
+	case rider.FieldPoints:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPoints(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Rider field %s", name)
 }
@@ -1836,6 +1908,9 @@ func (m *RiderMutation) AddedFields() []string {
 	if m.adddevice_type != nil {
 		fields = append(fields, rider.FieldDeviceType)
 	}
+	if m.addpoints != nil {
+		fields = append(fields, rider.FieldPoints)
+	}
 	return fields
 }
 
@@ -1846,6 +1921,8 @@ func (m *RiderMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case rider.FieldDeviceType:
 		return m.AddedDeviceType()
+	case rider.FieldPoints:
+		return m.AddedPoints()
 	}
 	return nil, false
 }
@@ -1861,6 +1938,13 @@ func (m *RiderMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddDeviceType(v)
+		return nil
+	case rider.FieldPoints:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPoints(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Rider numeric field %s", name)
@@ -2032,6 +2116,9 @@ func (m *RiderMutation) ResetField(name string) error {
 		return nil
 	case rider.FieldContractual:
 		m.ResetContractual()
+		return nil
+	case rider.FieldPoints:
+		m.ResetPoints()
 		return nil
 	}
 	return fmt.Errorf("unknown Rider field %s", name)

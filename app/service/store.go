@@ -19,10 +19,11 @@ import (
 )
 
 type storeService struct {
-    ctx      context.Context
-    orm      *ent.StoreClient
-    employee *ent.Employee
-    modifier *model.Modifier
+    ctx          context.Context
+    orm          *ent.StoreClient
+    employee     *ent.Employee
+    modifier     *model.Modifier
+    employeeInfo *model.Employee
 }
 
 func NewStore() *storeService {
@@ -41,8 +42,15 @@ func NewStoreWithModifier(m *model.Modifier) *storeService {
 
 func NewStoreWithEmployee(e *ent.Employee) *storeService {
     s := NewStore()
-    s.ctx = context.WithValue(s.ctx, "employee", e)
-    s.employee = e
+    if e != nil {
+        s.employee = e
+        s.employeeInfo = &model.Employee{
+            ID:    e.ID,
+            Name:  e.Name,
+            Phone: e.Phone,
+        }
+        s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+    }
     return s
 }
 

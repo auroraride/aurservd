@@ -18,7 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
-	"github.com/auroraride/aurservd/internal/ent/couponlog"
+	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -37,6 +37,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/pointlog"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
@@ -381,23 +382,27 @@ func init() {
 	coupon.DefaultUpdatedAt = couponDescUpdatedAt.Default.(func() time.Time)
 	// coupon.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	coupon.UpdateDefaultUpdatedAt = couponDescUpdatedAt.UpdateDefault.(func() time.Time)
-	couponlogMixin := schema.CouponLog{}.Mixin()
-	couponlogMixinHooks2 := couponlogMixin[2].Hooks()
-	couponlog.Hooks[0] = couponlogMixinHooks2[0]
-	couponlogMixinFields0 := couponlogMixin[0].Fields()
-	_ = couponlogMixinFields0
-	couponlogFields := schema.CouponLog{}.Fields()
-	_ = couponlogFields
-	// couponlogDescCreatedAt is the schema descriptor for created_at field.
-	couponlogDescCreatedAt := couponlogMixinFields0[0].Descriptor()
-	// couponlog.DefaultCreatedAt holds the default value on creation for the created_at field.
-	couponlog.DefaultCreatedAt = couponlogDescCreatedAt.Default.(func() time.Time)
-	// couponlogDescUpdatedAt is the schema descriptor for updated_at field.
-	couponlogDescUpdatedAt := couponlogMixinFields0[1].Descriptor()
-	// couponlog.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	couponlog.DefaultUpdatedAt = couponlogDescUpdatedAt.Default.(func() time.Time)
-	// couponlog.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	couponlog.UpdateDefaultUpdatedAt = couponlogDescUpdatedAt.UpdateDefault.(func() time.Time)
+	couponassemblyMixin := schema.CouponAssembly{}.Mixin()
+	couponassemblyMixinHooks1 := couponassemblyMixin[1].Hooks()
+	couponassembly.Hooks[0] = couponassemblyMixinHooks1[0]
+	couponassemblyMixinFields0 := couponassemblyMixin[0].Fields()
+	_ = couponassemblyMixinFields0
+	couponassemblyFields := schema.CouponAssembly{}.Fields()
+	_ = couponassemblyFields
+	// couponassemblyDescCreatedAt is the schema descriptor for created_at field.
+	couponassemblyDescCreatedAt := couponassemblyMixinFields0[0].Descriptor()
+	// couponassembly.DefaultCreatedAt holds the default value on creation for the created_at field.
+	couponassembly.DefaultCreatedAt = couponassemblyDescCreatedAt.Default.(func() time.Time)
+	// couponassemblyDescUpdatedAt is the schema descriptor for updated_at field.
+	couponassemblyDescUpdatedAt := couponassemblyMixinFields0[1].Descriptor()
+	// couponassembly.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	couponassembly.DefaultUpdatedAt = couponassemblyDescUpdatedAt.Default.(func() time.Time)
+	// couponassembly.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	couponassembly.UpdateDefaultUpdatedAt = couponassemblyDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// couponassemblyDescMultiple is the schema descriptor for multiple field.
+	couponassemblyDescMultiple := couponassemblyFields[4].Descriptor()
+	// couponassembly.DefaultMultiple holds the default value on creation for the multiple field.
+	couponassembly.DefaultMultiple = couponassemblyDescMultiple.Default.(bool)
 	coupontemplateMixin := schema.CouponTemplate{}.Mixin()
 	coupontemplateMixinHooks2 := coupontemplateMixin[2].Hooks()
 	coupontemplate.Hooks[0] = coupontemplateMixinHooks2[0]
@@ -790,6 +795,25 @@ func init() {
 	plan.DefaultUpdatedAt = planDescUpdatedAt.Default.(func() time.Time)
 	// plan.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	plan.UpdateDefaultUpdatedAt = planDescUpdatedAt.UpdateDefault.(func() time.Time)
+	pointlogMixin := schema.PointLog{}.Mixin()
+	pointlogMixinHooks3 := pointlogMixin[3].Hooks()
+	pointlogMixinHooks4 := pointlogMixin[4].Hooks()
+	pointlog.Hooks[0] = pointlogMixinHooks3[0]
+	pointlog.Hooks[1] = pointlogMixinHooks4[0]
+	pointlogMixinFields0 := pointlogMixin[0].Fields()
+	_ = pointlogMixinFields0
+	pointlogFields := schema.PointLog{}.Fields()
+	_ = pointlogFields
+	// pointlogDescCreatedAt is the schema descriptor for created_at field.
+	pointlogDescCreatedAt := pointlogMixinFields0[0].Descriptor()
+	// pointlog.DefaultCreatedAt holds the default value on creation for the created_at field.
+	pointlog.DefaultCreatedAt = pointlogDescCreatedAt.Default.(func() time.Time)
+	// pointlogDescUpdatedAt is the schema descriptor for updated_at field.
+	pointlogDescUpdatedAt := pointlogMixinFields0[1].Descriptor()
+	// pointlog.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	pointlog.DefaultUpdatedAt = pointlogDescUpdatedAt.Default.(func() time.Time)
+	// pointlog.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	pointlog.UpdateDefaultUpdatedAt = pointlogDescUpdatedAt.UpdateDefault.(func() time.Time)
 	reserveMixin := schema.Reserve{}.Mixin()
 	reserveMixinHooks2 := reserveMixin[2].Hooks()
 	reserve.Hooks[0] = reserveMixinHooks2[0]
@@ -852,6 +876,10 @@ func init() {
 	riderDescContractual := riderFields[11].Descriptor()
 	// rider.DefaultContractual holds the default value on creation for the contractual field.
 	rider.DefaultContractual = riderDescContractual.Default.(bool)
+	// riderDescPoints is the schema descriptor for points field.
+	riderDescPoints := riderFields[12].Descriptor()
+	// rider.DefaultPoints holds the default value on creation for the points field.
+	rider.DefaultPoints = riderDescPoints.Default.(int64)
 	riderfollowupMixin := schema.RiderFollowUp{}.Mixin()
 	riderfollowupMixinHooks2 := riderfollowupMixin[2].Hooks()
 	riderfollowup.Hooks[0] = riderfollowupMixinHooks2[0]

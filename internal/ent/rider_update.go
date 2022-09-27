@@ -331,6 +331,27 @@ func (ru *RiderUpdate) ClearContractual() *RiderUpdate {
 	return ru
 }
 
+// SetPoints sets the "points" field.
+func (ru *RiderUpdate) SetPoints(i int64) *RiderUpdate {
+	ru.mutation.ResetPoints()
+	ru.mutation.SetPoints(i)
+	return ru
+}
+
+// SetNillablePoints sets the "points" field if the given value is not nil.
+func (ru *RiderUpdate) SetNillablePoints(i *int64) *RiderUpdate {
+	if i != nil {
+		ru.SetPoints(*i)
+	}
+	return ru
+}
+
+// AddPoints adds i to the "points" field.
+func (ru *RiderUpdate) AddPoints(i int64) *RiderUpdate {
+	ru.mutation.AddPoints(i)
+	return ru
+}
+
 // SetStation sets the "station" edge to the EnterpriseStation entity.
 func (ru *RiderUpdate) SetStation(e *EnterpriseStation) *RiderUpdate {
 	return ru.SetStationID(e.ID)
@@ -909,6 +930,20 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Column: rider.FieldContractual,
+		})
+	}
+	if value, ok := ru.mutation.Points(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: rider.FieldPoints,
+		})
+	}
+	if value, ok := ru.mutation.AddedPoints(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: rider.FieldPoints,
 		})
 	}
 	if ru.mutation.StationCleared() {
@@ -1706,6 +1741,27 @@ func (ruo *RiderUpdateOne) ClearContractual() *RiderUpdateOne {
 	return ruo
 }
 
+// SetPoints sets the "points" field.
+func (ruo *RiderUpdateOne) SetPoints(i int64) *RiderUpdateOne {
+	ruo.mutation.ResetPoints()
+	ruo.mutation.SetPoints(i)
+	return ruo
+}
+
+// SetNillablePoints sets the "points" field if the given value is not nil.
+func (ruo *RiderUpdateOne) SetNillablePoints(i *int64) *RiderUpdateOne {
+	if i != nil {
+		ruo.SetPoints(*i)
+	}
+	return ruo
+}
+
+// AddPoints adds i to the "points" field.
+func (ruo *RiderUpdateOne) AddPoints(i int64) *RiderUpdateOne {
+	ruo.mutation.AddPoints(i)
+	return ruo
+}
+
 // SetStation sets the "station" edge to the EnterpriseStation entity.
 func (ruo *RiderUpdateOne) SetStation(e *EnterpriseStation) *RiderUpdateOne {
 	return ruo.SetStationID(e.ID)
@@ -2314,6 +2370,20 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Column: rider.FieldContractual,
+		})
+	}
+	if value, ok := ruo.mutation.Points(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: rider.FieldPoints,
+		})
+	}
+	if value, ok := ruo.mutation.AddedPoints(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: rider.FieldPoints,
 		})
 	}
 	if ruo.mutation.StationCleared() {

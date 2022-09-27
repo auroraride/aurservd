@@ -193,6 +193,13 @@ func Contractual(v bool) predicate.Rider {
 	})
 }
 
+// Points applies equality check predicate on the "points" field. It's identical to PointsEQ.
+func Points(v int64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPoints), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
@@ -1351,6 +1358,70 @@ func ContractualIsNil() predicate.Rider {
 func ContractualNotNil() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldContractual)))
+	})
+}
+
+// PointsEQ applies the EQ predicate on the "points" field.
+func PointsEQ(v int64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPoints), v))
+	})
+}
+
+// PointsNEQ applies the NEQ predicate on the "points" field.
+func PointsNEQ(v int64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPoints), v))
+	})
+}
+
+// PointsIn applies the In predicate on the "points" field.
+func PointsIn(vs ...int64) predicate.Rider {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldPoints), v...))
+	})
+}
+
+// PointsNotIn applies the NotIn predicate on the "points" field.
+func PointsNotIn(vs ...int64) predicate.Rider {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldPoints), v...))
+	})
+}
+
+// PointsGT applies the GT predicate on the "points" field.
+func PointsGT(v int64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldPoints), v))
+	})
+}
+
+// PointsGTE applies the GTE predicate on the "points" field.
+func PointsGTE(v int64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldPoints), v))
+	})
+}
+
+// PointsLT applies the LT predicate on the "points" field.
+func PointsLT(v int64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldPoints), v))
+	})
+}
+
+// PointsLTE applies the LTE predicate on the "points" field.
+func PointsLTE(v int64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldPoints), v))
 	})
 }
 

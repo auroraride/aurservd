@@ -27,12 +27,8 @@ const (
 	FieldRemark = "remark"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldTotal holds the string denoting the total field in the database.
-	FieldTotal = "total"
-	// FieldExpiredType holds the string denoting the expired_type field in the database.
-	FieldExpiredType = "expired_type"
-	// FieldRule holds the string denoting the rule field in the database.
-	FieldRule = "rule"
+	// FieldExpiredAt holds the string denoting the expired_at field in the database.
+	FieldExpiredAt = "expired_at"
 	// EdgeCities holds the string denoting the cities edge name in mutations.
 	EdgeCities = "cities"
 	// EdgePlans holds the string denoting the plans edge name in mutations.
@@ -61,9 +57,7 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldName,
-	FieldTotal,
-	FieldExpiredType,
-	FieldRule,
+	FieldExpiredAt,
 }
 
 var (

@@ -90,48 +90,9 @@ func (cu *CouponUpdate) ClearRemark() *CouponUpdate {
 	return cu
 }
 
-// SetName sets the "name" field.
-func (cu *CouponUpdate) SetName(s string) *CouponUpdate {
-	cu.mutation.SetName(s)
-	return cu
-}
-
-// SetTotal sets the "total" field.
-func (cu *CouponUpdate) SetTotal(i int) *CouponUpdate {
-	cu.mutation.ResetTotal()
-	cu.mutation.SetTotal(i)
-	return cu
-}
-
-// AddTotal adds i to the "total" field.
-func (cu *CouponUpdate) AddTotal(i int) *CouponUpdate {
-	cu.mutation.AddTotal(i)
-	return cu
-}
-
-// SetExpiredType sets the "expired_type" field.
-func (cu *CouponUpdate) SetExpiredType(u uint8) *CouponUpdate {
-	cu.mutation.ResetExpiredType()
-	cu.mutation.SetExpiredType(u)
-	return cu
-}
-
-// AddExpiredType adds u to the "expired_type" field.
-func (cu *CouponUpdate) AddExpiredType(u int8) *CouponUpdate {
-	cu.mutation.AddExpiredType(u)
-	return cu
-}
-
-// SetRule sets the "rule" field.
-func (cu *CouponUpdate) SetRule(u uint8) *CouponUpdate {
-	cu.mutation.ResetRule()
-	cu.mutation.SetRule(u)
-	return cu
-}
-
-// AddRule adds u to the "rule" field.
-func (cu *CouponUpdate) AddRule(u int8) *CouponUpdate {
-	cu.mutation.AddRule(u)
+// SetExpiredAt sets the "expired_at" field.
+func (cu *CouponUpdate) SetExpiredAt(t time.Time) *CouponUpdate {
+	cu.mutation.SetExpiredAt(t)
 	return cu
 }
 
@@ -357,53 +318,11 @@ func (cu *CouponUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: coupon.FieldRemark,
 		})
 	}
-	if value, ok := cu.mutation.Name(); ok {
+	if value, ok := cu.mutation.ExpiredAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeTime,
 			Value:  value,
-			Column: coupon.FieldName,
-		})
-	}
-	if value, ok := cu.mutation.Total(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: coupon.FieldTotal,
-		})
-	}
-	if value, ok := cu.mutation.AddedTotal(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: coupon.FieldTotal,
-		})
-	}
-	if value, ok := cu.mutation.ExpiredType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: coupon.FieldExpiredType,
-		})
-	}
-	if value, ok := cu.mutation.AddedExpiredType(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: coupon.FieldExpiredType,
-		})
-	}
-	if value, ok := cu.mutation.Rule(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: coupon.FieldRule,
-		})
-	}
-	if value, ok := cu.mutation.AddedRule(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: coupon.FieldRule,
+			Column: coupon.FieldExpiredAt,
 		})
 	}
 	if cu.mutation.CitiesCleared() {
@@ -593,48 +512,9 @@ func (cuo *CouponUpdateOne) ClearRemark() *CouponUpdateOne {
 	return cuo
 }
 
-// SetName sets the "name" field.
-func (cuo *CouponUpdateOne) SetName(s string) *CouponUpdateOne {
-	cuo.mutation.SetName(s)
-	return cuo
-}
-
-// SetTotal sets the "total" field.
-func (cuo *CouponUpdateOne) SetTotal(i int) *CouponUpdateOne {
-	cuo.mutation.ResetTotal()
-	cuo.mutation.SetTotal(i)
-	return cuo
-}
-
-// AddTotal adds i to the "total" field.
-func (cuo *CouponUpdateOne) AddTotal(i int) *CouponUpdateOne {
-	cuo.mutation.AddTotal(i)
-	return cuo
-}
-
-// SetExpiredType sets the "expired_type" field.
-func (cuo *CouponUpdateOne) SetExpiredType(u uint8) *CouponUpdateOne {
-	cuo.mutation.ResetExpiredType()
-	cuo.mutation.SetExpiredType(u)
-	return cuo
-}
-
-// AddExpiredType adds u to the "expired_type" field.
-func (cuo *CouponUpdateOne) AddExpiredType(u int8) *CouponUpdateOne {
-	cuo.mutation.AddExpiredType(u)
-	return cuo
-}
-
-// SetRule sets the "rule" field.
-func (cuo *CouponUpdateOne) SetRule(u uint8) *CouponUpdateOne {
-	cuo.mutation.ResetRule()
-	cuo.mutation.SetRule(u)
-	return cuo
-}
-
-// AddRule adds u to the "rule" field.
-func (cuo *CouponUpdateOne) AddRule(u int8) *CouponUpdateOne {
-	cuo.mutation.AddRule(u)
+// SetExpiredAt sets the "expired_at" field.
+func (cuo *CouponUpdateOne) SetExpiredAt(t time.Time) *CouponUpdateOne {
+	cuo.mutation.SetExpiredAt(t)
 	return cuo
 }
 
@@ -890,53 +770,11 @@ func (cuo *CouponUpdateOne) sqlSave(ctx context.Context) (_node *Coupon, err err
 			Column: coupon.FieldRemark,
 		})
 	}
-	if value, ok := cuo.mutation.Name(); ok {
+	if value, ok := cuo.mutation.ExpiredAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeTime,
 			Value:  value,
-			Column: coupon.FieldName,
-		})
-	}
-	if value, ok := cuo.mutation.Total(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: coupon.FieldTotal,
-		})
-	}
-	if value, ok := cuo.mutation.AddedTotal(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: coupon.FieldTotal,
-		})
-	}
-	if value, ok := cuo.mutation.ExpiredType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: coupon.FieldExpiredType,
-		})
-	}
-	if value, ok := cuo.mutation.AddedExpiredType(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: coupon.FieldExpiredType,
-		})
-	}
-	if value, ok := cuo.mutation.Rule(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: coupon.FieldRule,
-		})
-	}
-	if value, ok := cuo.mutation.AddedRule(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: coupon.FieldRule,
+			Column: coupon.FieldExpiredAt,
 		})
 	}
 	if cuo.mutation.CitiesCleared() {

@@ -294,20 +294,20 @@ func (cq *CouponQuery) PaginationResult(req model.PaginationReq) model.Paginatio
 	}
 }
 
-// Pagination returns pagination query builder for CouponLogQuery.
-func (clq *CouponLogQuery) Pagination(req model.PaginationReq) *CouponLogQuery {
-	clq.Offset(req.GetOffset()).Limit(req.GetLimit())
-	return clq
+// Pagination returns pagination query builder for CouponAssemblyQuery.
+func (caq *CouponAssemblyQuery) Pagination(req model.PaginationReq) *CouponAssemblyQuery {
+	caq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return caq
 }
 
-// PaginationItems returns pagination query builder for CouponLogQuery.
-func (clq *CouponLogQuery) PaginationItemsX(req model.PaginationReq) any {
-	return clq.Pagination(req).AllX(context.Background())
+// PaginationItems returns pagination query builder for CouponAssemblyQuery.
+func (caq *CouponAssemblyQuery) PaginationItemsX(req model.PaginationReq) any {
+	return caq.Pagination(req).AllX(context.Background())
 }
 
-// PaginationResult returns pagination for CouponLogQuery.
-func (clq *CouponLogQuery) PaginationResult(req model.PaginationReq) model.Pagination {
-	ids := clq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+// PaginationResult returns pagination for CouponAssemblyQuery.
+func (caq *CouponAssemblyQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := caq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
 	total := len(ids)
 	return model.Pagination{
 		Current: req.GetCurrent(),
@@ -704,6 +704,28 @@ func (pq *PlanQuery) PaginationItemsX(req model.PaginationReq) any {
 // PaginationResult returns pagination for PlanQuery.
 func (pq *PlanQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	ids := pq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for PointLogQuery.
+func (plq *PointLogQuery) Pagination(req model.PaginationReq) *PointLogQuery {
+	plq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return plq
+}
+
+// PaginationItems returns pagination query builder for PointLogQuery.
+func (plq *PointLogQuery) PaginationItemsX(req model.PaginationReq) any {
+	return plq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for PointLogQuery.
+func (plq *PointLogQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := plq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
 	total := len(ids)
 	return model.Pagination{
 		Current: req.GetCurrent(),

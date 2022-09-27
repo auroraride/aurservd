@@ -20,10 +20,11 @@ import (
 )
 
 type refundService struct {
-    ctx      context.Context
-    modifier *model.Modifier
-    rider    *ent.Rider
-    employee *ent.Employee
+    ctx          context.Context
+    modifier     *model.Modifier
+    rider        *ent.Rider
+    employee     *ent.Employee
+    employeeInfo *model.Employee
 }
 
 func NewRefund() *refundService {
@@ -48,8 +49,15 @@ func NewRefundWithModifier(m *model.Modifier) *refundService {
 
 func NewRefundWithEmployee(e *ent.Employee) *refundService {
     s := NewRefund()
-    s.ctx = context.WithValue(s.ctx, "employee", e)
-    s.employee = e
+    if e != nil {
+        s.employee = e
+        s.employeeInfo = &model.Employee{
+            ID:    e.ID,
+            Name:  e.Name,
+            Phone: e.Phone,
+        }
+        s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+    }
     return s
 }
 

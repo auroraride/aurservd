@@ -41,7 +41,7 @@ type hooks struct {
 	Commission           []ent.Hook
 	Contract             []ent.Hook
 	Coupon               []ent.Hook
-	CouponLog            []ent.Hook
+	CouponAssembly       []ent.Hook
 	CouponTemplate       []ent.Hook
 	Employee             []ent.Hook
 	Enterprise           []ent.Hook
@@ -60,6 +60,7 @@ type hooks struct {
 	OrderRefund          []ent.Hook
 	Person               []ent.Hook
 	Plan                 []ent.Hook
+	PointLog             []ent.Hook
 	Reserve              []ent.Hook
 	Rider                []ent.Hook
 	RiderFollowUp        []ent.Hook

@@ -19,7 +19,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
-	"github.com/auroraride/aurservd/internal/ent/couponlog"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -561,46 +560,6 @@ func (c *CouponClient) GetNotDeleted(ctx context.Context, id uint64) (*Coupon, e
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *CouponClient) GetNotDeletedX(ctx context.Context, id uint64) *Coupon {
-	obj, err := c.GetNotDeleted(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// SoftDelete returns an soft delete builder for CouponLog.
-func (c *CouponLogClient) SoftDelete() *CouponLogUpdate {
-	mutation := newCouponLogMutation(c.config, OpUpdate)
-	mutation.SetDeletedAt(time.Now())
-	return &CouponLogUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOne returns an soft delete builder for the given entity.
-func (c *CouponLogClient) SoftDeleteOne(cl *CouponLog) *CouponLogUpdateOne {
-	mutation := newCouponLogMutation(c.config, OpUpdateOne, withCouponLog(cl))
-	mutation.SetDeletedAt(time.Now())
-	return &CouponLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOneID returns an soft delete builder for the given id.
-func (c *CouponLogClient) SoftDeleteOneID(id uint64) *CouponLogUpdateOne {
-	mutation := newCouponLogMutation(c.config, OpUpdateOne, withCouponLogID(id))
-	mutation.SetDeletedAt(time.Now())
-	return &CouponLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// QueryNotDeleted returns a query not deleted builder for CouponLog.
-func (c *CouponLogClient) QueryNotDeleted() *CouponLogQuery {
-	return c.Query().Where(couponlog.DeletedAtIsNil())
-}
-
-// GetNotDeleted returns a CouponLog not deleted entity by its id.
-func (c *CouponLogClient) GetNotDeleted(ctx context.Context, id uint64) (*CouponLog, error) {
-	return c.Query().Where(couponlog.ID(id), couponlog.DeletedAtIsNil()).Only(ctx)
-}
-
-// GetNotDeletedX is like Get, but panics if an error occurs.
-func (c *CouponLogClient) GetNotDeletedX(ctx context.Context, id uint64) *CouponLog {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

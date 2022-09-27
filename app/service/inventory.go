@@ -14,11 +14,12 @@ import (
 )
 
 type inventoryService struct {
-    ctx      context.Context
-    modifier *model.Modifier
-    rider    *ent.Rider
-    employee *ent.Employee
-    orm      *ent.InventoryClient
+    ctx          context.Context
+    modifier     *model.Modifier
+    rider        *ent.Rider
+    employee     *ent.Employee
+    orm          *ent.InventoryClient
+    employeeInfo *model.Employee
 }
 
 func NewInventory() *inventoryService {
@@ -44,8 +45,15 @@ func NewInventoryWithModifier(m *model.Modifier) *inventoryService {
 
 func NewInventoryWithEmployee(e *ent.Employee) *inventoryService {
     s := NewInventory()
-    s.ctx = context.WithValue(s.ctx, "employee", e)
-    s.employee = e
+    if e != nil {
+        s.employee = e
+        s.employeeInfo = &model.Employee{
+            ID:    e.ID,
+            Name:  e.Name,
+            Phone: e.Phone,
+        }
+        s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+    }
     return s
 }
 

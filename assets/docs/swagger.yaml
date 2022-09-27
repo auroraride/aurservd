@@ -3531,6 +3531,22 @@ definitions:
         description: 开始日期
         type: string
     type: object
+  model.PointModifyReq:
+    properties:
+      points:
+        description: '积分 '
+        type: integer
+      reason:
+        description: '原因 '
+        type: string
+      riderId:
+        description: '骑手 '
+        type: integer
+    required:
+    - points
+    - reason
+    - riderId
+    type: object
   model.PrepaymentListRes:
     properties:
       amount:
@@ -9998,6 +10014,33 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M6002 上下架骑士卡
+      tags:
+      - '[M]管理接口'
+  /manager/v1/point/modify:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerPointModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.PointModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M7016 修改骑手积分
       tags:
       - '[M]管理接口'
   /manager/v1/rider:

@@ -152,14 +152,14 @@ func (c *Coupon) GetName() string {
 	return c.Name
 }
 
-// GetTableName returns table name for CouponLog.
-func (cl *CouponLog) GetTableName() string {
-	return "coupon_log"
+// GetTableName returns table name for CouponAssembly.
+func (ca *CouponAssembly) GetTableName() string {
+	return "coupon_assembly"
 }
 
-// GetID returns id for CouponLog.
-func (cl *CouponLog) GetID() uint64 {
-	return cl.ID
+// GetID returns id for CouponAssembly.
+func (ca *CouponAssembly) GetID() uint64 {
+	return ca.ID
 }
 
 // GetTableName returns table name for CouponTemplate.
@@ -376,6 +376,16 @@ func (pl *Plan) GetID() uint64 {
 
 func (pl *Plan) GetName() string {
 	return pl.Name
+}
+
+// GetTableName returns table name for PointLog.
+func (pl *PointLog) GetTableName() string {
+	return "point_log"
+}
+
+// GetID returns id for PointLog.
+func (pl *PointLog) GetID() uint64 {
+	return pl.ID
 }
 
 // GetTableName returns table name for Reserve.

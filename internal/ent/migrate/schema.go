@@ -840,9 +840,7 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "name", Type: field.TypeString, Comment: "名称"},
-		{Name: "total", Type: field.TypeInt, Comment: "总数"},
-		{Name: "expired_type", Type: field.TypeUint8, Comment: "过期类型"},
-		{Name: "rule", Type: field.TypeUint8, Comment: "优惠券规则, 1:互斥 2:叠加"},
+		{Name: "expired_at", Type: field.TypeTime, Comment: "过期时间"},
 	}
 	// CouponTable holds the schema information for the "coupon" table.
 	CouponTable = &schema.Table{
@@ -860,33 +858,42 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{CouponColumns[3]},
 			},
+			{
+				Name:    "coupon_name",
+				Unique:  false,
+				Columns: []*schema.Column{CouponColumns[7]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
 		},
 	}
-	// CouponLogColumns holds the columns for the "coupon_log" table.
-	CouponLogColumns = []*schema.Column{
+	// CouponAssemblyColumns holds the columns for the "coupon_assembly" table.
+	CouponAssemblyColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "total", Type: field.TypeInt, Comment: "总数"},
+		{Name: "expired_type", Type: field.TypeUint8, Comment: "过期类型"},
+		{Name: "rule", Type: field.TypeUint8, Comment: "优惠券规则, 1:互斥 2:叠加"},
+		{Name: "amount", Type: field.TypeFloat64, Comment: "金额"},
+		{Name: "multiple", Type: field.TypeBool, Comment: "叠加时同类是否可使用多张", Default: false},
 	}
-	// CouponLogTable holds the schema information for the "coupon_log" table.
-	CouponLogTable = &schema.Table{
-		Name:       "coupon_log",
-		Columns:    CouponLogColumns,
-		PrimaryKey: []*schema.Column{CouponLogColumns[0]},
+	// CouponAssemblyTable holds the schema information for the "coupon_assembly" table.
+	CouponAssemblyTable = &schema.Table{
+		Name:       "coupon_assembly",
+		Columns:    CouponAssemblyColumns,
+		PrimaryKey: []*schema.Column{CouponAssemblyColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "couponlog_created_at",
+				Name:    "couponassembly_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{CouponLogColumns[1]},
-			},
-			{
-				Name:    "couponlog_deleted_at",
-				Unique:  false,
-				Columns: []*schema.Column{CouponLogColumns[3]},
+				Columns: []*schema.Column{CouponAssemblyColumns[1]},
 			},
 		},
 	}
@@ -2016,6 +2023,52 @@ var (
 			},
 		},
 	}
+	// PointLogColumns holds the columns for the "point_log" table.
+	PointLogColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "modifier", Type: field.TypeJSON, Comment: "管理", Nullable: true},
+		{Name: "employee_info", Type: field.TypeJSON, Comment: "店员", Nullable: true},
+		{Name: "type", Type: field.TypeUint8, Comment: "变动类型"},
+		{Name: "points", Type: field.TypeInt64, Comment: "变动数量"},
+		{Name: "after", Type: field.TypeInt64, Comment: "变动结果"},
+		{Name: "reason", Type: field.TypeString, Comment: "原因", Nullable: true},
+		{Name: "rider_id", Type: field.TypeUint64},
+		{Name: "order_id", Type: field.TypeUint64, Nullable: true},
+	}
+	// PointLogTable holds the schema information for the "point_log" table.
+	PointLogTable = &schema.Table{
+		Name:       "point_log",
+		Columns:    PointLogColumns,
+		PrimaryKey: []*schema.Column{PointLogColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "point_log_rider_rider",
+				Columns:    []*schema.Column{PointLogColumns[9]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "point_log_order_order",
+				Columns:    []*schema.Column{PointLogColumns[10]},
+				RefColumns: []*schema.Column{OrderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "pointlog_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PointLogColumns[1]},
+			},
+			{
+				Name:    "pointlog_type",
+				Unique:  false,
+				Columns: []*schema.Column{PointLogColumns[5]},
+			},
+		},
+	}
 	// ReserveColumns holds the columns for the "reserve" table.
 	ReserveColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -2105,6 +2158,7 @@ var (
 		{Name: "last_signin_at", Type: field.TypeTime, Comment: "最后登录时间", Nullable: true},
 		{Name: "blocked", Type: field.TypeBool, Comment: "是否封禁骑手账号", Default: false},
 		{Name: "contractual", Type: field.TypeBool, Comment: "是否标记为无需签约", Nullable: true, Default: false},
+		{Name: "points", Type: field.TypeInt64, Comment: "骑手积分", Default: 0},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "person_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "station_id", Type: field.TypeUint64, Nullable: true},
@@ -2117,19 +2171,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "rider_enterprise_riders",
-				Columns:    []*schema.Column{RiderColumns[17]},
+				Columns:    []*schema.Column{RiderColumns[18]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "rider_person_rider",
-				Columns:    []*schema.Column{RiderColumns[18]},
+				Columns:    []*schema.Column{RiderColumns[19]},
 				RefColumns: []*schema.Column{PersonColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "rider_enterprise_station_station",
-				Columns:    []*schema.Column{RiderColumns[19]},
+				Columns:    []*schema.Column{RiderColumns[20]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2996,7 +3050,7 @@ var (
 		CommissionTable,
 		ContractTable,
 		CouponTable,
-		CouponLogTable,
+		CouponAssemblyTable,
 		CouponTemplateTable,
 		EmployeeTable,
 		EnterpriseTable,
@@ -3015,6 +3069,7 @@ var (
 		OrderRefundTable,
 		PersonTable,
 		PlanTable,
+		PointLogTable,
 		ReserveTable,
 		RiderTable,
 		RiderFollowUpTable,
@@ -3109,8 +3164,8 @@ func init() {
 	CouponTable.Annotation = &entsql.Annotation{
 		Table: "coupon",
 	}
-	CouponLogTable.Annotation = &entsql.Annotation{
-		Table: "coupon_log",
+	CouponAssemblyTable.Annotation = &entsql.Annotation{
+		Table: "coupon_assembly",
 	}
 	CouponTemplateTable.Annotation = &entsql.Annotation{
 		Table: "coupon_template",
@@ -3199,6 +3254,11 @@ func init() {
 	PlanTable.ForeignKeys[0].RefTable = PlanTable
 	PlanTable.Annotation = &entsql.Annotation{
 		Table: "plan",
+	}
+	PointLogTable.ForeignKeys[0].RefTable = RiderTable
+	PointLogTable.ForeignKeys[1].RefTable = OrderTable
+	PointLogTable.Annotation = &entsql.Annotation{
+		Table: "point_log",
 	}
 	ReserveTable.ForeignKeys[0].RefTable = CabinetTable
 	ReserveTable.ForeignKeys[1].RefTable = RiderTable

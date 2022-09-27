@@ -23,12 +23,13 @@ import (
 )
 
 type enterpriseRiderService struct {
-    ctx        context.Context
-    modifier   *model.Modifier
-    rider      *ent.Rider
-    employee   *ent.Employee
-    agent      *ent.Agent
-    enterprise *ent.Enterprise
+    ctx          context.Context
+    modifier     *model.Modifier
+    rider        *ent.Rider
+    employee     *ent.Employee
+    agent        *ent.Agent
+    enterprise   *ent.Enterprise
+    employeeInfo *model.Employee
 }
 
 func NewEnterpriseRider() *enterpriseRiderService {
@@ -53,8 +54,15 @@ func NewEnterpriseRiderWithModifier(m *model.Modifier) *enterpriseRiderService {
 
 func NewEnterpriseRiderWithEmployee(e *ent.Employee) *enterpriseRiderService {
     s := NewEnterpriseRider()
-    s.ctx = context.WithValue(s.ctx, "employee", e)
-    s.employee = e
+    if e != nil {
+        s.employee = e
+        s.employeeInfo = &model.Employee{
+            ID:    e.ID,
+            Name:  e.Name,
+            Phone: e.Phone,
+        }
+        s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+    }
     return s
 }
 

@@ -45,8 +45,8 @@ type Contract func(*sql.Selector)
 // Coupon is the predicate function for coupon builders.
 type Coupon func(*sql.Selector)
 
-// CouponLog is the predicate function for couponlog builders.
-type CouponLog func(*sql.Selector)
+// CouponAssembly is the predicate function for couponassembly builders.
+type CouponAssembly func(*sql.Selector)
 
 // CouponTemplate is the predicate function for coupontemplate builders.
 type CouponTemplate func(*sql.Selector)
@@ -101,6 +101,9 @@ type Person func(*sql.Selector)
 
 // Plan is the predicate function for plan builders.
 type Plan func(*sql.Selector)
+
+// PointLog is the predicate function for pointlog builders.
+type PointLog func(*sql.Selector)
 
 // Reserve is the predicate function for reserve builders.
 type Reserve func(*sql.Selector)

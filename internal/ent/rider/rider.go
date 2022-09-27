@@ -51,6 +51,8 @@ const (
 	FieldBlocked = "blocked"
 	// FieldContractual holds the string denoting the contractual field in the database.
 	FieldContractual = "contractual"
+	// FieldPoints holds the string denoting the points field in the database.
+	FieldPoints = "points"
 	// EdgeStation holds the string denoting the station edge name in mutations.
 	EdgeStation = "station"
 	// EdgePerson holds the string denoting the person edge name in mutations.
@@ -167,6 +169,7 @@ var Columns = []string{
 	FieldLastSigninAt,
 	FieldBlocked,
 	FieldContractual,
+	FieldPoints,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -204,4 +207,6 @@ var (
 	DefaultBlocked bool
 	// DefaultContractual holds the default value on creation for the "contractual" field.
 	DefaultContractual bool
+	// DefaultPoints holds the default value on creation for the "points" field.
+	DefaultPoints int64
 )

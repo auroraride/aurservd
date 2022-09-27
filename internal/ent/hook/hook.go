@@ -178,15 +178,15 @@ func (f CouponFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, erro
 	return f(ctx, mv)
 }
 
-// The CouponLogFunc type is an adapter to allow the use of ordinary
-// function as CouponLog mutator.
-type CouponLogFunc func(context.Context, *ent.CouponLogMutation) (ent.Value, error)
+// The CouponAssemblyFunc type is an adapter to allow the use of ordinary
+// function as CouponAssembly mutator.
+type CouponAssemblyFunc func(context.Context, *ent.CouponAssemblyMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f CouponLogFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.CouponLogMutation)
+func (f CouponAssemblyFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.CouponAssemblyMutation)
 	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CouponLogMutation", m)
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CouponAssemblyMutation", m)
 	}
 	return f(ctx, mv)
 }
@@ -421,6 +421,19 @@ func (f PlanFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 	mv, ok := m.(*ent.PlanMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PlanMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The PointLogFunc type is an adapter to allow the use of ordinary
+// function as PointLog mutator.
+type PointLogFunc func(context.Context, *ent.PointLogMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PointLogFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.PointLogMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PointLogMutation", m)
 	}
 	return f(ctx, mv)
 }

@@ -14,11 +14,12 @@ import (
 )
 
 type enterpriseStationService struct {
-    ctx      context.Context
-    modifier *model.Modifier
-    rider    *ent.Rider
-    employee *ent.Employee
-    orm      *ent.EnterpriseStationClient
+    ctx          context.Context
+    modifier     *model.Modifier
+    rider        *ent.Rider
+    employee     *ent.Employee
+    orm          *ent.EnterpriseStationClient
+    employeeInfo *model.Employee
 }
 
 func NewEnterpriseStation() *enterpriseStationService {
@@ -44,8 +45,15 @@ func NewEnterpriseStationWithModifier(m *model.Modifier) *enterpriseStationServi
 
 func NewEnterpriseStationWithEmployee(e *ent.Employee) *enterpriseStationService {
     s := NewEnterpriseStation()
-    s.ctx = context.WithValue(s.ctx, "employee", e)
-    s.employee = e
+    if e != nil {
+        s.employee = e
+        s.employeeInfo = &model.Employee{
+            ID:    e.ID,
+            Name:  e.Name,
+            Phone: e.Phone,
+        }
+        s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+    }
     return s
 }
 

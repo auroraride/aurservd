@@ -22,11 +22,12 @@ import (
 )
 
 type attendanceService struct {
-    ctx      context.Context
-    modifier *model.Modifier
-    rider    *ent.Rider
-    employee *ent.Employee
-    orm      *ent.AttendanceClient
+    ctx          context.Context
+    modifier     *model.Modifier
+    rider        *ent.Rider
+    employee     *ent.Employee
+    orm          *ent.AttendanceClient
+    employeeInfo *model.Employee
 }
 
 func NewAttendance() *attendanceService {
@@ -52,8 +53,15 @@ func NewAttendanceWithModifier(m *model.Modifier) *attendanceService {
 
 func NewAttendanceWithEmployee(e *ent.Employee) *attendanceService {
     s := NewAttendance()
-    s.ctx = context.WithValue(s.ctx, "employee", e)
-    s.employee = e
+    if e != nil {
+        s.employee = e
+        s.employeeInfo = &model.Employee{
+            ID:    e.ID,
+            Name:  e.Name,
+            Phone: e.Phone,
+        }
+        s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+    }
     return s
 }
 

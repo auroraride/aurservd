@@ -94,7 +94,9 @@ func (s *businessRiderService) SetTask(task func() *ec.BinInfo) *businessRiderSe
 
 func NewBusinessRiderWithEmployee(e *ent.Employee) *businessRiderService {
     s := NewBusinessRider(nil)
-    s.ctx = context.WithValue(s.ctx, "employee", e)
+    if e == nil {
+        snag.Panic("店员错误")
+    }
     store := e.Edges.Store
     if store == nil {
         snag.Panic("未找到所属门店")
@@ -102,10 +104,11 @@ func NewBusinessRiderWithEmployee(e *ent.Employee) *businessRiderService {
     s.store = store
     s.employee = e
     s.employeeInfo = &model.Employee{
-        ID:    s.employee.ID,
-        Name:  s.employee.Name,
-        Phone: s.employee.Phone,
+        ID:    e.ID,
+        Name:  e.Name,
+        Phone: e.Phone,
     }
+    s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
     return s
 }
 

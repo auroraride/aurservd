@@ -19,32 +19,27 @@ import (
 // CouponMutation represents an operation that mutates the Coupon nodes in the graph.
 type CouponMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *uint64
-	created_at      *time.Time
-	updated_at      *time.Time
-	deleted_at      *time.Time
-	creator         **model.Modifier
-	last_modifier   **model.Modifier
-	remark          *string
-	name            *string
-	total           *int
-	addtotal        *int
-	expired_type    *uint8
-	addexpired_type *int8
-	rule            *uint8
-	addrule         *int8
-	clearedFields   map[string]struct{}
-	cities          map[uint64]struct{}
-	removedcities   map[uint64]struct{}
-	clearedcities   bool
-	plans           map[uint64]struct{}
-	removedplans    map[uint64]struct{}
-	clearedplans    bool
-	done            bool
-	oldValue        func(context.Context) (*Coupon, error)
-	predicates      []predicate.Coupon
+	op            Op
+	typ           string
+	id            *uint64
+	created_at    *time.Time
+	updated_at    *time.Time
+	deleted_at    *time.Time
+	creator       **model.Modifier
+	last_modifier **model.Modifier
+	remark        *string
+	name          *string
+	expired_at    *time.Time
+	clearedFields map[string]struct{}
+	cities        map[uint64]struct{}
+	removedcities map[uint64]struct{}
+	clearedcities bool
+	plans         map[uint64]struct{}
+	removedplans  map[uint64]struct{}
+	clearedplans  bool
+	done          bool
+	oldValue      func(context.Context) (*Coupon, error)
+	predicates    []predicate.Coupon
 }
 
 var _ ent.Mutation = (*CouponMutation)(nil)
@@ -449,172 +444,40 @@ func (m *CouponMutation) ResetName() {
 	m.name = nil
 }
 
-// SetTotal sets the "total" field.
-func (m *CouponMutation) SetTotal(i int) {
-	m.total = &i
-	m.addtotal = nil
+// SetExpiredAt sets the "expired_at" field.
+func (m *CouponMutation) SetExpiredAt(t time.Time) {
+	m.expired_at = &t
 }
 
-// Total returns the value of the "total" field in the mutation.
-func (m *CouponMutation) Total() (r int, exists bool) {
-	v := m.total
+// ExpiredAt returns the value of the "expired_at" field in the mutation.
+func (m *CouponMutation) ExpiredAt() (r time.Time, exists bool) {
+	v := m.expired_at
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldTotal returns the old "total" field's value of the Coupon entity.
+// OldExpiredAt returns the old "expired_at" field's value of the Coupon entity.
 // If the Coupon object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CouponMutation) OldTotal(ctx context.Context) (v int, err error) {
+func (m *CouponMutation) OldExpiredAt(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldTotal is only allowed on UpdateOne operations")
+		return v, errors.New("OldExpiredAt is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldTotal requires an ID field in the mutation")
+		return v, errors.New("OldExpiredAt requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldTotal: %w", err)
+		return v, fmt.Errorf("querying old value for OldExpiredAt: %w", err)
 	}
-	return oldValue.Total, nil
+	return oldValue.ExpiredAt, nil
 }
 
-// AddTotal adds i to the "total" field.
-func (m *CouponMutation) AddTotal(i int) {
-	if m.addtotal != nil {
-		*m.addtotal += i
-	} else {
-		m.addtotal = &i
-	}
-}
-
-// AddedTotal returns the value that was added to the "total" field in this mutation.
-func (m *CouponMutation) AddedTotal() (r int, exists bool) {
-	v := m.addtotal
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetTotal resets all changes to the "total" field.
-func (m *CouponMutation) ResetTotal() {
-	m.total = nil
-	m.addtotal = nil
-}
-
-// SetExpiredType sets the "expired_type" field.
-func (m *CouponMutation) SetExpiredType(u uint8) {
-	m.expired_type = &u
-	m.addexpired_type = nil
-}
-
-// ExpiredType returns the value of the "expired_type" field in the mutation.
-func (m *CouponMutation) ExpiredType() (r uint8, exists bool) {
-	v := m.expired_type
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldExpiredType returns the old "expired_type" field's value of the Coupon entity.
-// If the Coupon object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CouponMutation) OldExpiredType(ctx context.Context) (v uint8, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldExpiredType is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldExpiredType requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldExpiredType: %w", err)
-	}
-	return oldValue.ExpiredType, nil
-}
-
-// AddExpiredType adds u to the "expired_type" field.
-func (m *CouponMutation) AddExpiredType(u int8) {
-	if m.addexpired_type != nil {
-		*m.addexpired_type += u
-	} else {
-		m.addexpired_type = &u
-	}
-}
-
-// AddedExpiredType returns the value that was added to the "expired_type" field in this mutation.
-func (m *CouponMutation) AddedExpiredType() (r int8, exists bool) {
-	v := m.addexpired_type
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetExpiredType resets all changes to the "expired_type" field.
-func (m *CouponMutation) ResetExpiredType() {
-	m.expired_type = nil
-	m.addexpired_type = nil
-}
-
-// SetRule sets the "rule" field.
-func (m *CouponMutation) SetRule(u uint8) {
-	m.rule = &u
-	m.addrule = nil
-}
-
-// Rule returns the value of the "rule" field in the mutation.
-func (m *CouponMutation) Rule() (r uint8, exists bool) {
-	v := m.rule
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRule returns the old "rule" field's value of the Coupon entity.
-// If the Coupon object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CouponMutation) OldRule(ctx context.Context) (v uint8, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRule is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRule requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRule: %w", err)
-	}
-	return oldValue.Rule, nil
-}
-
-// AddRule adds u to the "rule" field.
-func (m *CouponMutation) AddRule(u int8) {
-	if m.addrule != nil {
-		*m.addrule += u
-	} else {
-		m.addrule = &u
-	}
-}
-
-// AddedRule returns the value that was added to the "rule" field in this mutation.
-func (m *CouponMutation) AddedRule() (r int8, exists bool) {
-	v := m.addrule
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetRule resets all changes to the "rule" field.
-func (m *CouponMutation) ResetRule() {
-	m.rule = nil
-	m.addrule = nil
+// ResetExpiredAt resets all changes to the "expired_at" field.
+func (m *CouponMutation) ResetExpiredAt() {
+	m.expired_at = nil
 }
 
 // AddCityIDs adds the "cities" edge to the City entity by ids.
@@ -744,7 +607,7 @@ func (m *CouponMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CouponMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, coupon.FieldCreatedAt)
 	}
@@ -766,14 +629,8 @@ func (m *CouponMutation) Fields() []string {
 	if m.name != nil {
 		fields = append(fields, coupon.FieldName)
 	}
-	if m.total != nil {
-		fields = append(fields, coupon.FieldTotal)
-	}
-	if m.expired_type != nil {
-		fields = append(fields, coupon.FieldExpiredType)
-	}
-	if m.rule != nil {
-		fields = append(fields, coupon.FieldRule)
+	if m.expired_at != nil {
+		fields = append(fields, coupon.FieldExpiredAt)
 	}
 	return fields
 }
@@ -797,12 +654,8 @@ func (m *CouponMutation) Field(name string) (ent.Value, bool) {
 		return m.Remark()
 	case coupon.FieldName:
 		return m.Name()
-	case coupon.FieldTotal:
-		return m.Total()
-	case coupon.FieldExpiredType:
-		return m.ExpiredType()
-	case coupon.FieldRule:
-		return m.Rule()
+	case coupon.FieldExpiredAt:
+		return m.ExpiredAt()
 	}
 	return nil, false
 }
@@ -826,12 +679,8 @@ func (m *CouponMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldRemark(ctx)
 	case coupon.FieldName:
 		return m.OldName(ctx)
-	case coupon.FieldTotal:
-		return m.OldTotal(ctx)
-	case coupon.FieldExpiredType:
-		return m.OldExpiredType(ctx)
-	case coupon.FieldRule:
-		return m.OldRule(ctx)
+	case coupon.FieldExpiredAt:
+		return m.OldExpiredAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown Coupon field %s", name)
 }
@@ -890,26 +739,12 @@ func (m *CouponMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetName(v)
 		return nil
-	case coupon.FieldTotal:
-		v, ok := value.(int)
+	case coupon.FieldExpiredAt:
+		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetTotal(v)
-		return nil
-	case coupon.FieldExpiredType:
-		v, ok := value.(uint8)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetExpiredType(v)
-		return nil
-	case coupon.FieldRule:
-		v, ok := value.(uint8)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRule(v)
+		m.SetExpiredAt(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Coupon field %s", name)
@@ -918,31 +753,13 @@ func (m *CouponMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *CouponMutation) AddedFields() []string {
-	var fields []string
-	if m.addtotal != nil {
-		fields = append(fields, coupon.FieldTotal)
-	}
-	if m.addexpired_type != nil {
-		fields = append(fields, coupon.FieldExpiredType)
-	}
-	if m.addrule != nil {
-		fields = append(fields, coupon.FieldRule)
-	}
-	return fields
+	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *CouponMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	case coupon.FieldTotal:
-		return m.AddedTotal()
-	case coupon.FieldExpiredType:
-		return m.AddedExpiredType()
-	case coupon.FieldRule:
-		return m.AddedRule()
-	}
 	return nil, false
 }
 
@@ -951,27 +768,6 @@ func (m *CouponMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *CouponMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case coupon.FieldTotal:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddTotal(v)
-		return nil
-	case coupon.FieldExpiredType:
-		v, ok := value.(int8)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddExpiredType(v)
-		return nil
-	case coupon.FieldRule:
-		v, ok := value.(int8)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddRule(v)
-		return nil
 	}
 	return fmt.Errorf("unknown Coupon numeric field %s", name)
 }
@@ -1047,14 +843,8 @@ func (m *CouponMutation) ResetField(name string) error {
 	case coupon.FieldName:
 		m.ResetName()
 		return nil
-	case coupon.FieldTotal:
-		m.ResetTotal()
-		return nil
-	case coupon.FieldExpiredType:
-		m.ResetExpiredType()
-		return nil
-	case coupon.FieldRule:
-		m.ResetRule()
+	case coupon.FieldExpiredAt:
+		m.ResetExpiredAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Coupon field %s", name)

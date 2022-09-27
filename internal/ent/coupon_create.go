@@ -99,21 +99,9 @@ func (cc *CouponCreate) SetName(s string) *CouponCreate {
 	return cc
 }
 
-// SetTotal sets the "total" field.
-func (cc *CouponCreate) SetTotal(i int) *CouponCreate {
-	cc.mutation.SetTotal(i)
-	return cc
-}
-
-// SetExpiredType sets the "expired_type" field.
-func (cc *CouponCreate) SetExpiredType(u uint8) *CouponCreate {
-	cc.mutation.SetExpiredType(u)
-	return cc
-}
-
-// SetRule sets the "rule" field.
-func (cc *CouponCreate) SetRule(u uint8) *CouponCreate {
-	cc.mutation.SetRule(u)
+// SetExpiredAt sets the "expired_at" field.
+func (cc *CouponCreate) SetExpiredAt(t time.Time) *CouponCreate {
+	cc.mutation.SetExpiredAt(t)
 	return cc
 }
 
@@ -254,14 +242,8 @@ func (cc *CouponCreate) check() error {
 	if _, ok := cc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Coupon.name"`)}
 	}
-	if _, ok := cc.mutation.Total(); !ok {
-		return &ValidationError{Name: "total", err: errors.New(`ent: missing required field "Coupon.total"`)}
-	}
-	if _, ok := cc.mutation.ExpiredType(); !ok {
-		return &ValidationError{Name: "expired_type", err: errors.New(`ent: missing required field "Coupon.expired_type"`)}
-	}
-	if _, ok := cc.mutation.Rule(); !ok {
-		return &ValidationError{Name: "rule", err: errors.New(`ent: missing required field "Coupon.rule"`)}
+	if _, ok := cc.mutation.ExpiredAt(); !ok {
+		return &ValidationError{Name: "expired_at", err: errors.New(`ent: missing required field "Coupon.expired_at"`)}
 	}
 	return nil
 }
@@ -347,29 +329,13 @@ func (cc *CouponCreate) createSpec() (*Coupon, *sqlgraph.CreateSpec) {
 		})
 		_node.Name = value
 	}
-	if value, ok := cc.mutation.Total(); ok {
+	if value, ok := cc.mutation.ExpiredAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
+			Type:   field.TypeTime,
 			Value:  value,
-			Column: coupon.FieldTotal,
+			Column: coupon.FieldExpiredAt,
 		})
-		_node.Total = value
-	}
-	if value, ok := cc.mutation.ExpiredType(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: coupon.FieldExpiredType,
-		})
-		_node.ExpiredType = value
-	}
-	if value, ok := cc.mutation.Rule(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: coupon.FieldRule,
-		})
-		_node.Rule = value
+		_node.ExpiredAt = value
 	}
 	if nodes := cc.mutation.CitiesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -527,69 +493,15 @@ func (u *CouponUpsert) ClearRemark() *CouponUpsert {
 	return u
 }
 
-// SetName sets the "name" field.
-func (u *CouponUpsert) SetName(v string) *CouponUpsert {
-	u.Set(coupon.FieldName, v)
+// SetExpiredAt sets the "expired_at" field.
+func (u *CouponUpsert) SetExpiredAt(v time.Time) *CouponUpsert {
+	u.Set(coupon.FieldExpiredAt, v)
 	return u
 }
 
-// UpdateName sets the "name" field to the value that was provided on create.
-func (u *CouponUpsert) UpdateName() *CouponUpsert {
-	u.SetExcluded(coupon.FieldName)
-	return u
-}
-
-// SetTotal sets the "total" field.
-func (u *CouponUpsert) SetTotal(v int) *CouponUpsert {
-	u.Set(coupon.FieldTotal, v)
-	return u
-}
-
-// UpdateTotal sets the "total" field to the value that was provided on create.
-func (u *CouponUpsert) UpdateTotal() *CouponUpsert {
-	u.SetExcluded(coupon.FieldTotal)
-	return u
-}
-
-// AddTotal adds v to the "total" field.
-func (u *CouponUpsert) AddTotal(v int) *CouponUpsert {
-	u.Add(coupon.FieldTotal, v)
-	return u
-}
-
-// SetExpiredType sets the "expired_type" field.
-func (u *CouponUpsert) SetExpiredType(v uint8) *CouponUpsert {
-	u.Set(coupon.FieldExpiredType, v)
-	return u
-}
-
-// UpdateExpiredType sets the "expired_type" field to the value that was provided on create.
-func (u *CouponUpsert) UpdateExpiredType() *CouponUpsert {
-	u.SetExcluded(coupon.FieldExpiredType)
-	return u
-}
-
-// AddExpiredType adds v to the "expired_type" field.
-func (u *CouponUpsert) AddExpiredType(v uint8) *CouponUpsert {
-	u.Add(coupon.FieldExpiredType, v)
-	return u
-}
-
-// SetRule sets the "rule" field.
-func (u *CouponUpsert) SetRule(v uint8) *CouponUpsert {
-	u.Set(coupon.FieldRule, v)
-	return u
-}
-
-// UpdateRule sets the "rule" field to the value that was provided on create.
-func (u *CouponUpsert) UpdateRule() *CouponUpsert {
-	u.SetExcluded(coupon.FieldRule)
-	return u
-}
-
-// AddRule adds v to the "rule" field.
-func (u *CouponUpsert) AddRule(v uint8) *CouponUpsert {
-	u.Add(coupon.FieldRule, v)
+// UpdateExpiredAt sets the "expired_at" field to the value that was provided on create.
+func (u *CouponUpsert) UpdateExpiredAt() *CouponUpsert {
+	u.SetExcluded(coupon.FieldExpiredAt)
 	return u
 }
 
@@ -609,6 +521,9 @@ func (u *CouponUpsertOne) UpdateNewValues() *CouponUpsertOne {
 		}
 		if _, exists := u.create.mutation.Creator(); exists {
 			s.SetIgnore(coupon.FieldCreator)
+		}
+		if _, exists := u.create.mutation.Name(); exists {
+			s.SetIgnore(coupon.FieldName)
 		}
 	}))
 	return u
@@ -718,80 +633,17 @@ func (u *CouponUpsertOne) ClearRemark() *CouponUpsertOne {
 	})
 }
 
-// SetName sets the "name" field.
-func (u *CouponUpsertOne) SetName(v string) *CouponUpsertOne {
+// SetExpiredAt sets the "expired_at" field.
+func (u *CouponUpsertOne) SetExpiredAt(v time.Time) *CouponUpsertOne {
 	return u.Update(func(s *CouponUpsert) {
-		s.SetName(v)
+		s.SetExpiredAt(v)
 	})
 }
 
-// UpdateName sets the "name" field to the value that was provided on create.
-func (u *CouponUpsertOne) UpdateName() *CouponUpsertOne {
+// UpdateExpiredAt sets the "expired_at" field to the value that was provided on create.
+func (u *CouponUpsertOne) UpdateExpiredAt() *CouponUpsertOne {
 	return u.Update(func(s *CouponUpsert) {
-		s.UpdateName()
-	})
-}
-
-// SetTotal sets the "total" field.
-func (u *CouponUpsertOne) SetTotal(v int) *CouponUpsertOne {
-	return u.Update(func(s *CouponUpsert) {
-		s.SetTotal(v)
-	})
-}
-
-// AddTotal adds v to the "total" field.
-func (u *CouponUpsertOne) AddTotal(v int) *CouponUpsertOne {
-	return u.Update(func(s *CouponUpsert) {
-		s.AddTotal(v)
-	})
-}
-
-// UpdateTotal sets the "total" field to the value that was provided on create.
-func (u *CouponUpsertOne) UpdateTotal() *CouponUpsertOne {
-	return u.Update(func(s *CouponUpsert) {
-		s.UpdateTotal()
-	})
-}
-
-// SetExpiredType sets the "expired_type" field.
-func (u *CouponUpsertOne) SetExpiredType(v uint8) *CouponUpsertOne {
-	return u.Update(func(s *CouponUpsert) {
-		s.SetExpiredType(v)
-	})
-}
-
-// AddExpiredType adds v to the "expired_type" field.
-func (u *CouponUpsertOne) AddExpiredType(v uint8) *CouponUpsertOne {
-	return u.Update(func(s *CouponUpsert) {
-		s.AddExpiredType(v)
-	})
-}
-
-// UpdateExpiredType sets the "expired_type" field to the value that was provided on create.
-func (u *CouponUpsertOne) UpdateExpiredType() *CouponUpsertOne {
-	return u.Update(func(s *CouponUpsert) {
-		s.UpdateExpiredType()
-	})
-}
-
-// SetRule sets the "rule" field.
-func (u *CouponUpsertOne) SetRule(v uint8) *CouponUpsertOne {
-	return u.Update(func(s *CouponUpsert) {
-		s.SetRule(v)
-	})
-}
-
-// AddRule adds v to the "rule" field.
-func (u *CouponUpsertOne) AddRule(v uint8) *CouponUpsertOne {
-	return u.Update(func(s *CouponUpsert) {
-		s.AddRule(v)
-	})
-}
-
-// UpdateRule sets the "rule" field to the value that was provided on create.
-func (u *CouponUpsertOne) UpdateRule() *CouponUpsertOne {
-	return u.Update(func(s *CouponUpsert) {
-		s.UpdateRule()
+		s.UpdateExpiredAt()
 	})
 }
 
@@ -973,6 +825,9 @@ func (u *CouponUpsertBulk) UpdateNewValues() *CouponUpsertBulk {
 			if _, exists := b.mutation.Creator(); exists {
 				s.SetIgnore(coupon.FieldCreator)
 			}
+			if _, exists := b.mutation.Name(); exists {
+				s.SetIgnore(coupon.FieldName)
+			}
 		}
 	}))
 	return u
@@ -1082,80 +937,17 @@ func (u *CouponUpsertBulk) ClearRemark() *CouponUpsertBulk {
 	})
 }
 
-// SetName sets the "name" field.
-func (u *CouponUpsertBulk) SetName(v string) *CouponUpsertBulk {
+// SetExpiredAt sets the "expired_at" field.
+func (u *CouponUpsertBulk) SetExpiredAt(v time.Time) *CouponUpsertBulk {
 	return u.Update(func(s *CouponUpsert) {
-		s.SetName(v)
+		s.SetExpiredAt(v)
 	})
 }
 
-// UpdateName sets the "name" field to the value that was provided on create.
-func (u *CouponUpsertBulk) UpdateName() *CouponUpsertBulk {
+// UpdateExpiredAt sets the "expired_at" field to the value that was provided on create.
+func (u *CouponUpsertBulk) UpdateExpiredAt() *CouponUpsertBulk {
 	return u.Update(func(s *CouponUpsert) {
-		s.UpdateName()
-	})
-}
-
-// SetTotal sets the "total" field.
-func (u *CouponUpsertBulk) SetTotal(v int) *CouponUpsertBulk {
-	return u.Update(func(s *CouponUpsert) {
-		s.SetTotal(v)
-	})
-}
-
-// AddTotal adds v to the "total" field.
-func (u *CouponUpsertBulk) AddTotal(v int) *CouponUpsertBulk {
-	return u.Update(func(s *CouponUpsert) {
-		s.AddTotal(v)
-	})
-}
-
-// UpdateTotal sets the "total" field to the value that was provided on create.
-func (u *CouponUpsertBulk) UpdateTotal() *CouponUpsertBulk {
-	return u.Update(func(s *CouponUpsert) {
-		s.UpdateTotal()
-	})
-}
-
-// SetExpiredType sets the "expired_type" field.
-func (u *CouponUpsertBulk) SetExpiredType(v uint8) *CouponUpsertBulk {
-	return u.Update(func(s *CouponUpsert) {
-		s.SetExpiredType(v)
-	})
-}
-
-// AddExpiredType adds v to the "expired_type" field.
-func (u *CouponUpsertBulk) AddExpiredType(v uint8) *CouponUpsertBulk {
-	return u.Update(func(s *CouponUpsert) {
-		s.AddExpiredType(v)
-	})
-}
-
-// UpdateExpiredType sets the "expired_type" field to the value that was provided on create.
-func (u *CouponUpsertBulk) UpdateExpiredType() *CouponUpsertBulk {
-	return u.Update(func(s *CouponUpsert) {
-		s.UpdateExpiredType()
-	})
-}
-
-// SetRule sets the "rule" field.
-func (u *CouponUpsertBulk) SetRule(v uint8) *CouponUpsertBulk {
-	return u.Update(func(s *CouponUpsert) {
-		s.SetRule(v)
-	})
-}
-
-// AddRule adds v to the "rule" field.
-func (u *CouponUpsertBulk) AddRule(v uint8) *CouponUpsertBulk {
-	return u.Update(func(s *CouponUpsert) {
-		s.AddRule(v)
-	})
-}
-
-// UpdateRule sets the "rule" field to the value that was provided on create.
-func (u *CouponUpsertBulk) UpdateRule() *CouponUpsertBulk {
-	return u.Update(func(s *CouponUpsert) {
-		s.UpdateRule()
+		s.UpdateExpiredAt()
 	})
 }
 

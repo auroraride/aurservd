@@ -30,9 +30,10 @@ import (
 
 // 门店业务处理专用
 type businessService struct {
-    ctx      context.Context
-    employee *ent.Employee
-    modifier *model.Modifier
+    ctx          context.Context
+    employee     *ent.Employee
+    modifier     *model.Modifier
+    employeeInfo *model.Employee
 }
 
 func NewBusiness() *businessService {
@@ -62,8 +63,15 @@ func (s *businessService) Text(str interface{}) string {
 
 func NewBusinessWithEmployee(e *ent.Employee) *businessService {
     s := NewBusiness()
-    s.ctx = context.WithValue(s.ctx, "employee", e)
-    s.employee = e
+    if e != nil {
+        s.employee = e
+        s.employeeInfo = &model.Employee{
+            ID:    e.ID,
+            Name:  e.Name,
+            Phone: e.Phone,
+        }
+        s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+    }
     return s
 }
 

@@ -40,8 +40,8 @@ type Tx struct {
 	Contract *ContractClient
 	// Coupon is the client for interacting with the Coupon builders.
 	Coupon *CouponClient
-	// CouponLog is the client for interacting with the CouponLog builders.
-	CouponLog *CouponLogClient
+	// CouponAssembly is the client for interacting with the CouponAssembly builders.
+	CouponAssembly *CouponAssemblyClient
 	// CouponTemplate is the client for interacting with the CouponTemplate builders.
 	CouponTemplate *CouponTemplateClient
 	// Employee is the client for interacting with the Employee builders.
@@ -78,6 +78,8 @@ type Tx struct {
 	Person *PersonClient
 	// Plan is the client for interacting with the Plan builders.
 	Plan *PlanClient
+	// PointLog is the client for interacting with the PointLog builders.
+	PointLog *PointLogClient
 	// Reserve is the client for interacting with the Reserve builders.
 	Reserve *ReserveClient
 	// Rider is the client for interacting with the Rider builders.
@@ -250,7 +252,7 @@ func (tx *Tx) init() {
 	tx.Commission = NewCommissionClient(tx.config)
 	tx.Contract = NewContractClient(tx.config)
 	tx.Coupon = NewCouponClient(tx.config)
-	tx.CouponLog = NewCouponLogClient(tx.config)
+	tx.CouponAssembly = NewCouponAssemblyClient(tx.config)
 	tx.CouponTemplate = NewCouponTemplateClient(tx.config)
 	tx.Employee = NewEmployeeClient(tx.config)
 	tx.Enterprise = NewEnterpriseClient(tx.config)
@@ -269,6 +271,7 @@ func (tx *Tx) init() {
 	tx.OrderRefund = NewOrderRefundClient(tx.config)
 	tx.Person = NewPersonClient(tx.config)
 	tx.Plan = NewPlanClient(tx.config)
+	tx.PointLog = NewPointLogClient(tx.config)
 	tx.Reserve = NewReserveClient(tx.config)
 	tx.Rider = NewRiderClient(tx.config)
 	tx.RiderFollowUp = NewRiderFollowUpClient(tx.config)

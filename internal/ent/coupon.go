@@ -32,12 +32,8 @@ type Coupon struct {
 	Remark string `json:"remark,omitempty"`
 	// 名称
 	Name string `json:"name,omitempty"`
-	// 总数
-	Total int `json:"total,omitempty"`
-	// 过期类型
-	ExpiredType uint8 `json:"expired_type,omitempty"`
-	// 优惠券规则, 1:互斥 2:叠加
-	Rule uint8 `json:"rule,omitempty"`
+	// 过期时间
+	ExpiredAt time.Time `json:"expired_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CouponQuery when eager-loading is set.
 	Edges CouponEdges `json:"edges"`
@@ -79,11 +75,11 @@ func (*Coupon) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case coupon.FieldCreator, coupon.FieldLastModifier:
 			values[i] = new([]byte)
-		case coupon.FieldID, coupon.FieldTotal, coupon.FieldExpiredType, coupon.FieldRule:
+		case coupon.FieldID:
 			values[i] = new(sql.NullInt64)
 		case coupon.FieldRemark, coupon.FieldName:
 			values[i] = new(sql.NullString)
-		case coupon.FieldCreatedAt, coupon.FieldUpdatedAt, coupon.FieldDeletedAt:
+		case coupon.FieldCreatedAt, coupon.FieldUpdatedAt, coupon.FieldDeletedAt, coupon.FieldExpiredAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Coupon", columns[i])
@@ -153,23 +149,11 @@ func (c *Coupon) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.Name = value.String
 			}
-		case coupon.FieldTotal:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field total", values[i])
+		case coupon.FieldExpiredAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field expired_at", values[i])
 			} else if value.Valid {
-				c.Total = int(value.Int64)
-			}
-		case coupon.FieldExpiredType:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field expired_type", values[i])
-			} else if value.Valid {
-				c.ExpiredType = uint8(value.Int64)
-			}
-		case coupon.FieldRule:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field rule", values[i])
-			} else if value.Valid {
-				c.Rule = uint8(value.Int64)
+				c.ExpiredAt = value.Time
 			}
 		}
 	}
@@ -232,14 +216,8 @@ func (c *Coupon) String() string {
 	builder.WriteString("name=")
 	builder.WriteString(c.Name)
 	builder.WriteString(", ")
-	builder.WriteString("total=")
-	builder.WriteString(fmt.Sprintf("%v", c.Total))
-	builder.WriteString(", ")
-	builder.WriteString("expired_type=")
-	builder.WriteString(fmt.Sprintf("%v", c.ExpiredType))
-	builder.WriteString(", ")
-	builder.WriteString("rule=")
-	builder.WriteString(fmt.Sprintf("%v", c.Rule))
+	builder.WriteString("expired_at=")
+	builder.WriteString(c.ExpiredAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -23,7 +23,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
-	"github.com/auroraride/aurservd/internal/ent/couponlog"
+	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -42,6 +42,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/pointlog"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
@@ -87,7 +88,7 @@ func columnChecker(table string) func(string) error {
 		commission.Table:           commission.ValidColumn,
 		contract.Table:             contract.ValidColumn,
 		coupon.Table:               coupon.ValidColumn,
-		couponlog.Table:            couponlog.ValidColumn,
+		couponassembly.Table:       couponassembly.ValidColumn,
 		coupontemplate.Table:       coupontemplate.ValidColumn,
 		employee.Table:             employee.ValidColumn,
 		enterprise.Table:           enterprise.ValidColumn,
@@ -106,6 +107,7 @@ func columnChecker(table string) func(string) error {
 		orderrefund.Table:          orderrefund.ValidColumn,
 		person.Table:               person.ValidColumn,
 		plan.Table:                 plan.ValidColumn,
+		pointlog.Table:             pointlog.ValidColumn,
 		reserve.Table:              reserve.ValidColumn,
 		rider.Table:                rider.ValidColumn,
 		riderfollowup.Table:        riderfollowup.ValidColumn,

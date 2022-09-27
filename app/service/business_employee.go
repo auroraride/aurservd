@@ -14,10 +14,11 @@ import (
 )
 
 type businessEmployeeService struct {
-    ctx      context.Context
-    modifier *model.Modifier
-    rider    *ent.Rider
-    employee *ent.Employee
+    ctx          context.Context
+    modifier     *model.Modifier
+    rider        *ent.Rider
+    employee     *ent.Employee
+    employeeInfo *model.Employee
 }
 
 func NewBusinessEmployee() *businessEmployeeService {
@@ -28,8 +29,15 @@ func NewBusinessEmployee() *businessEmployeeService {
 
 func NewBusinessEmployeeWithEmployee(e *ent.Employee) *businessEmployeeService {
     s := NewBusinessEmployee()
-    s.ctx = context.WithValue(s.ctx, "employee", e)
-    s.employee = e
+    if e != nil {
+        s.employee = e
+        s.employeeInfo = &model.Employee{
+            ID:    e.ID,
+            Name:  e.Name,
+            Phone: e.Phone,
+        }
+        s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+    }
     return s
 }
 

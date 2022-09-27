@@ -7,8 +7,32 @@ import (
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
+    "entgo.io/ent/schema/mixin"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
+
+type OrderMixin struct {
+    mixin.Schema
+    Optional bool
+}
+
+func (m OrderMixin) Fields() []ent.Field {
+    relate := field.Uint64("order_id")
+    if m.Optional {
+        relate.Optional().Nillable()
+    }
+    return []ent.Field{
+        relate,
+    }
+}
+
+func (m OrderMixin) Edges() []ent.Edge {
+    e := edge.To("order", Order.Type).Unique().Field("order_id")
+    if !m.Optional {
+        e.Required()
+    }
+    return []ent.Edge{e}
+}
 
 // Order holds the schema definition for the Order entity.
 type Order struct {

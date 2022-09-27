@@ -15,12 +15,13 @@ import (
 )
 
 type businessLogService struct {
-    ctx      context.Context
-    modifier *model.Modifier
-    rider    *ent.Rider
-    employee *ent.Employee
-    orm      *ent.BusinessClient
-    creator  *ent.BusinessCreate
+    ctx          context.Context
+    modifier     *model.Modifier
+    rider        *ent.Rider
+    employee     *ent.Employee
+    orm          *ent.BusinessClient
+    creator      *ent.BusinessCreate
+    employeeInfo *model.Employee
 }
 
 func NewBusinessLog(sub *ent.Subscribe) *businessLogService {
@@ -46,7 +47,12 @@ func (s *businessLogService) SetModifier(m *model.Modifier) *businessLogService 
 // SetEmployee 设置店员和门店
 func (s *businessLogService) SetEmployee(e *ent.Employee) *businessLogService {
     if e != nil {
-        s.ctx = context.WithValue(s.ctx, "employee", e)
+        s.employeeInfo = &model.Employee{
+            ID:    e.ID,
+            Name:  e.Name,
+            Phone: e.Phone,
+        }
+        s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
         s.employee = e
         s.creator.SetEmployee(e)
         if e.Edges.Store != nil {

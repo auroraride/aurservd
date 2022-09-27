@@ -116,24 +116,10 @@ func Name(v string) predicate.Coupon {
 	})
 }
 
-// Total applies equality check predicate on the "total" field. It's identical to TotalEQ.
-func Total(v int) predicate.Coupon {
+// ExpiredAt applies equality check predicate on the "expired_at" field. It's identical to ExpiredAtEQ.
+func ExpiredAt(v time.Time) predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldTotal), v))
-	})
-}
-
-// ExpiredType applies equality check predicate on the "expired_type" field. It's identical to ExpiredTypeEQ.
-func ExpiredType(v uint8) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldExpiredType), v))
-	})
-}
-
-// Rule applies equality check predicate on the "rule" field. It's identical to RuleEQ.
-func Rule(v uint8) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRule), v))
+		s.Where(sql.EQ(s.C(FieldExpiredAt), v))
 	})
 }
 
@@ -583,195 +569,67 @@ func NameContainsFold(v string) predicate.Coupon {
 	})
 }
 
-// TotalEQ applies the EQ predicate on the "total" field.
-func TotalEQ(v int) predicate.Coupon {
+// ExpiredAtEQ applies the EQ predicate on the "expired_at" field.
+func ExpiredAtEQ(v time.Time) predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldTotal), v))
+		s.Where(sql.EQ(s.C(FieldExpiredAt), v))
 	})
 }
 
-// TotalNEQ applies the NEQ predicate on the "total" field.
-func TotalNEQ(v int) predicate.Coupon {
+// ExpiredAtNEQ applies the NEQ predicate on the "expired_at" field.
+func ExpiredAtNEQ(v time.Time) predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldTotal), v))
+		s.Where(sql.NEQ(s.C(FieldExpiredAt), v))
 	})
 }
 
-// TotalIn applies the In predicate on the "total" field.
-func TotalIn(vs ...int) predicate.Coupon {
+// ExpiredAtIn applies the In predicate on the "expired_at" field.
+func ExpiredAtIn(vs ...time.Time) predicate.Coupon {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldTotal), v...))
+		s.Where(sql.In(s.C(FieldExpiredAt), v...))
 	})
 }
 
-// TotalNotIn applies the NotIn predicate on the "total" field.
-func TotalNotIn(vs ...int) predicate.Coupon {
+// ExpiredAtNotIn applies the NotIn predicate on the "expired_at" field.
+func ExpiredAtNotIn(vs ...time.Time) predicate.Coupon {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldTotal), v...))
+		s.Where(sql.NotIn(s.C(FieldExpiredAt), v...))
 	})
 }
 
-// TotalGT applies the GT predicate on the "total" field.
-func TotalGT(v int) predicate.Coupon {
+// ExpiredAtGT applies the GT predicate on the "expired_at" field.
+func ExpiredAtGT(v time.Time) predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldTotal), v))
+		s.Where(sql.GT(s.C(FieldExpiredAt), v))
 	})
 }
 
-// TotalGTE applies the GTE predicate on the "total" field.
-func TotalGTE(v int) predicate.Coupon {
+// ExpiredAtGTE applies the GTE predicate on the "expired_at" field.
+func ExpiredAtGTE(v time.Time) predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldTotal), v))
+		s.Where(sql.GTE(s.C(FieldExpiredAt), v))
 	})
 }
 
-// TotalLT applies the LT predicate on the "total" field.
-func TotalLT(v int) predicate.Coupon {
+// ExpiredAtLT applies the LT predicate on the "expired_at" field.
+func ExpiredAtLT(v time.Time) predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldTotal), v))
+		s.Where(sql.LT(s.C(FieldExpiredAt), v))
 	})
 }
 
-// TotalLTE applies the LTE predicate on the "total" field.
-func TotalLTE(v int) predicate.Coupon {
+// ExpiredAtLTE applies the LTE predicate on the "expired_at" field.
+func ExpiredAtLTE(v time.Time) predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldTotal), v))
-	})
-}
-
-// ExpiredTypeEQ applies the EQ predicate on the "expired_type" field.
-func ExpiredTypeEQ(v uint8) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldExpiredType), v))
-	})
-}
-
-// ExpiredTypeNEQ applies the NEQ predicate on the "expired_type" field.
-func ExpiredTypeNEQ(v uint8) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldExpiredType), v))
-	})
-}
-
-// ExpiredTypeIn applies the In predicate on the "expired_type" field.
-func ExpiredTypeIn(vs ...uint8) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldExpiredType), v...))
-	})
-}
-
-// ExpiredTypeNotIn applies the NotIn predicate on the "expired_type" field.
-func ExpiredTypeNotIn(vs ...uint8) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldExpiredType), v...))
-	})
-}
-
-// ExpiredTypeGT applies the GT predicate on the "expired_type" field.
-func ExpiredTypeGT(v uint8) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldExpiredType), v))
-	})
-}
-
-// ExpiredTypeGTE applies the GTE predicate on the "expired_type" field.
-func ExpiredTypeGTE(v uint8) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldExpiredType), v))
-	})
-}
-
-// ExpiredTypeLT applies the LT predicate on the "expired_type" field.
-func ExpiredTypeLT(v uint8) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldExpiredType), v))
-	})
-}
-
-// ExpiredTypeLTE applies the LTE predicate on the "expired_type" field.
-func ExpiredTypeLTE(v uint8) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldExpiredType), v))
-	})
-}
-
-// RuleEQ applies the EQ predicate on the "rule" field.
-func RuleEQ(v uint8) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRule), v))
-	})
-}
-
-// RuleNEQ applies the NEQ predicate on the "rule" field.
-func RuleNEQ(v uint8) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRule), v))
-	})
-}
-
-// RuleIn applies the In predicate on the "rule" field.
-func RuleIn(vs ...uint8) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRule), v...))
-	})
-}
-
-// RuleNotIn applies the NotIn predicate on the "rule" field.
-func RuleNotIn(vs ...uint8) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRule), v...))
-	})
-}
-
-// RuleGT applies the GT predicate on the "rule" field.
-func RuleGT(v uint8) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRule), v))
-	})
-}
-
-// RuleGTE applies the GTE predicate on the "rule" field.
-func RuleGTE(v uint8) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRule), v))
-	})
-}
-
-// RuleLT applies the LT predicate on the "rule" field.
-func RuleLT(v uint8) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRule), v))
-	})
-}
-
-// RuleLTE applies the LTE predicate on the "rule" field.
-func RuleLTE(v uint8) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRule), v))
+		s.Where(sql.LTE(s.C(FieldExpiredAt), v))
 	})
 }
 

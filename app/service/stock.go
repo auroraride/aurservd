@@ -33,11 +33,12 @@ import (
 )
 
 type stockService struct {
-    ctx      context.Context
-    modifier *model.Modifier
-    rider    *ent.Rider
-    employee *ent.Employee
-    orm      *ent.StockClient
+    ctx          context.Context
+    modifier     *model.Modifier
+    rider        *ent.Rider
+    employee     *ent.Employee
+    orm          *ent.StockClient
+    employeeInfo *model.Employee
 }
 
 func NewStock() *stockService {
@@ -65,8 +66,15 @@ func NewStockWithModifier(m *model.Modifier) *stockService {
 
 func NewStockWithEmployee(e *ent.Employee) *stockService {
     s := NewStock()
-    s.ctx = context.WithValue(s.ctx, "employee", e)
-    s.employee = e
+    if e != nil {
+        s.employee = e
+        s.employeeInfo = &model.Employee{
+            ID:    e.ID,
+            Name:  e.Name,
+            Phone: e.Phone,
+        }
+        s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+    }
     return s
 }
 

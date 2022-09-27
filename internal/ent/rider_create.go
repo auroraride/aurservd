@@ -267,6 +267,20 @@ func (rc *RiderCreate) SetNillableContractual(b *bool) *RiderCreate {
 	return rc
 }
 
+// SetPoints sets the "points" field.
+func (rc *RiderCreate) SetPoints(i int64) *RiderCreate {
+	rc.mutation.SetPoints(i)
+	return rc
+}
+
+// SetNillablePoints sets the "points" field if the given value is not nil.
+func (rc *RiderCreate) SetNillablePoints(i *int64) *RiderCreate {
+	if i != nil {
+		rc.SetPoints(*i)
+	}
+	return rc
+}
+
 // SetStation sets the "station" edge to the EnterpriseStation entity.
 func (rc *RiderCreate) SetStation(e *EnterpriseStation) *RiderCreate {
 	return rc.SetStationID(e.ID)
@@ -492,6 +506,10 @@ func (rc *RiderCreate) defaults() error {
 		v := rider.DefaultContractual
 		rc.mutation.SetContractual(v)
 	}
+	if _, ok := rc.mutation.Points(); !ok {
+		v := rider.DefaultPoints
+		rc.mutation.SetPoints(v)
+	}
 	return nil
 }
 
@@ -526,6 +544,9 @@ func (rc *RiderCreate) check() error {
 	}
 	if _, ok := rc.mutation.Blocked(); !ok {
 		return &ValidationError{Name: "blocked", err: errors.New(`ent: missing required field "Rider.blocked"`)}
+	}
+	if _, ok := rc.mutation.Points(); !ok {
+		return &ValidationError{Name: "points", err: errors.New(`ent: missing required field "Rider.points"`)}
 	}
 	return nil
 }
@@ -682,6 +703,14 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 			Column: rider.FieldContractual,
 		})
 		_node.Contractual = value
+	}
+	if value, ok := rc.mutation.Points(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: rider.FieldPoints,
+		})
+		_node.Points = value
 	}
 	if nodes := rc.mutation.StationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1216,6 +1245,24 @@ func (u *RiderUpsert) ClearContractual() *RiderUpsert {
 	return u
 }
 
+// SetPoints sets the "points" field.
+func (u *RiderUpsert) SetPoints(v int64) *RiderUpsert {
+	u.Set(rider.FieldPoints, v)
+	return u
+}
+
+// UpdatePoints sets the "points" field to the value that was provided on create.
+func (u *RiderUpsert) UpdatePoints() *RiderUpsert {
+	u.SetExcluded(rider.FieldPoints)
+	return u
+}
+
+// AddPoints adds v to the "points" field.
+func (u *RiderUpsert) AddPoints(v int64) *RiderUpsert {
+	u.Add(rider.FieldPoints, v)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1597,6 +1644,27 @@ func (u *RiderUpsertOne) UpdateContractual() *RiderUpsertOne {
 func (u *RiderUpsertOne) ClearContractual() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearContractual()
+	})
+}
+
+// SetPoints sets the "points" field.
+func (u *RiderUpsertOne) SetPoints(v int64) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetPoints(v)
+	})
+}
+
+// AddPoints adds v to the "points" field.
+func (u *RiderUpsertOne) AddPoints(v int64) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.AddPoints(v)
+	})
+}
+
+// UpdatePoints sets the "points" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdatePoints() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdatePoints()
 	})
 }
 
@@ -2143,6 +2211,27 @@ func (u *RiderUpsertBulk) UpdateContractual() *RiderUpsertBulk {
 func (u *RiderUpsertBulk) ClearContractual() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearContractual()
+	})
+}
+
+// SetPoints sets the "points" field.
+func (u *RiderUpsertBulk) SetPoints(v int64) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetPoints(v)
+	})
+}
+
+// AddPoints adds v to the "points" field.
+func (u *RiderUpsertBulk) AddPoints(v int64) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.AddPoints(v)
+	})
+}
+
+// UpdatePoints sets the "points" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdatePoints() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdatePoints()
 	})
 }
 

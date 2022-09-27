@@ -23,7 +23,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
-	"github.com/auroraride/aurservd/internal/ent/couponlog"
+	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -42,6 +42,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/pointlog"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
@@ -91,8 +92,8 @@ type Client struct {
 	Contract *ContractClient
 	// Coupon is the client for interacting with the Coupon builders.
 	Coupon *CouponClient
-	// CouponLog is the client for interacting with the CouponLog builders.
-	CouponLog *CouponLogClient
+	// CouponAssembly is the client for interacting with the CouponAssembly builders.
+	CouponAssembly *CouponAssemblyClient
 	// CouponTemplate is the client for interacting with the CouponTemplate builders.
 	CouponTemplate *CouponTemplateClient
 	// Employee is the client for interacting with the Employee builders.
@@ -129,6 +130,8 @@ type Client struct {
 	Person *PersonClient
 	// Plan is the client for interacting with the Plan builders.
 	Plan *PlanClient
+	// PointLog is the client for interacting with the PointLog builders.
+	PointLog *PointLogClient
 	// Reserve is the client for interacting with the Reserve builders.
 	Reserve *ReserveClient
 	// Rider is the client for interacting with the Rider builders.
@@ -179,7 +182,7 @@ func (c *Client) init() {
 	c.Commission = NewCommissionClient(c.config)
 	c.Contract = NewContractClient(c.config)
 	c.Coupon = NewCouponClient(c.config)
-	c.CouponLog = NewCouponLogClient(c.config)
+	c.CouponAssembly = NewCouponAssemblyClient(c.config)
 	c.CouponTemplate = NewCouponTemplateClient(c.config)
 	c.Employee = NewEmployeeClient(c.config)
 	c.Enterprise = NewEnterpriseClient(c.config)
@@ -198,6 +201,7 @@ func (c *Client) init() {
 	c.OrderRefund = NewOrderRefundClient(c.config)
 	c.Person = NewPersonClient(c.config)
 	c.Plan = NewPlanClient(c.config)
+	c.PointLog = NewPointLogClient(c.config)
 	c.Reserve = NewReserveClient(c.config)
 	c.Rider = NewRiderClient(c.config)
 	c.RiderFollowUp = NewRiderFollowUpClient(c.config)
@@ -256,7 +260,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Commission:           NewCommissionClient(cfg),
 		Contract:             NewContractClient(cfg),
 		Coupon:               NewCouponClient(cfg),
-		CouponLog:            NewCouponLogClient(cfg),
+		CouponAssembly:       NewCouponAssemblyClient(cfg),
 		CouponTemplate:       NewCouponTemplateClient(cfg),
 		Employee:             NewEmployeeClient(cfg),
 		Enterprise:           NewEnterpriseClient(cfg),
@@ -275,6 +279,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		OrderRefund:          NewOrderRefundClient(cfg),
 		Person:               NewPersonClient(cfg),
 		Plan:                 NewPlanClient(cfg),
+		PointLog:             NewPointLogClient(cfg),
 		Reserve:              NewReserveClient(cfg),
 		Rider:                NewRiderClient(cfg),
 		RiderFollowUp:        NewRiderFollowUpClient(cfg),
@@ -319,7 +324,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Commission:           NewCommissionClient(cfg),
 		Contract:             NewContractClient(cfg),
 		Coupon:               NewCouponClient(cfg),
-		CouponLog:            NewCouponLogClient(cfg),
+		CouponAssembly:       NewCouponAssemblyClient(cfg),
 		CouponTemplate:       NewCouponTemplateClient(cfg),
 		Employee:             NewEmployeeClient(cfg),
 		Enterprise:           NewEnterpriseClient(cfg),
@@ -338,6 +343,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		OrderRefund:          NewOrderRefundClient(cfg),
 		Person:               NewPersonClient(cfg),
 		Plan:                 NewPlanClient(cfg),
+		PointLog:             NewPointLogClient(cfg),
 		Reserve:              NewReserveClient(cfg),
 		Rider:                NewRiderClient(cfg),
 		RiderFollowUp:        NewRiderFollowUpClient(cfg),
@@ -391,7 +397,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Commission.Use(hooks...)
 	c.Contract.Use(hooks...)
 	c.Coupon.Use(hooks...)
-	c.CouponLog.Use(hooks...)
+	c.CouponAssembly.Use(hooks...)
 	c.CouponTemplate.Use(hooks...)
 	c.Employee.Use(hooks...)
 	c.Enterprise.Use(hooks...)
@@ -410,6 +416,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.OrderRefund.Use(hooks...)
 	c.Person.Use(hooks...)
 	c.Plan.Use(hooks...)
+	c.PointLog.Use(hooks...)
 	c.Reserve.Use(hooks...)
 	c.Rider.Use(hooks...)
 	c.RiderFollowUp.Use(hooks...)
@@ -2391,84 +2398,84 @@ func (c *CouponClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], coupon.Hooks[:]...)
 }
 
-// CouponLogClient is a client for the CouponLog schema.
-type CouponLogClient struct {
+// CouponAssemblyClient is a client for the CouponAssembly schema.
+type CouponAssemblyClient struct {
 	config
 }
 
-// NewCouponLogClient returns a client for the CouponLog from the given config.
-func NewCouponLogClient(c config) *CouponLogClient {
-	return &CouponLogClient{config: c}
+// NewCouponAssemblyClient returns a client for the CouponAssembly from the given config.
+func NewCouponAssemblyClient(c config) *CouponAssemblyClient {
+	return &CouponAssemblyClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `couponlog.Hooks(f(g(h())))`.
-func (c *CouponLogClient) Use(hooks ...Hook) {
-	c.hooks.CouponLog = append(c.hooks.CouponLog, hooks...)
+// A call to `Use(f, g, h)` equals to `couponassembly.Hooks(f(g(h())))`.
+func (c *CouponAssemblyClient) Use(hooks ...Hook) {
+	c.hooks.CouponAssembly = append(c.hooks.CouponAssembly, hooks...)
 }
 
-// Create returns a builder for creating a CouponLog entity.
-func (c *CouponLogClient) Create() *CouponLogCreate {
-	mutation := newCouponLogMutation(c.config, OpCreate)
-	return &CouponLogCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a CouponAssembly entity.
+func (c *CouponAssemblyClient) Create() *CouponAssemblyCreate {
+	mutation := newCouponAssemblyMutation(c.config, OpCreate)
+	return &CouponAssemblyCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of CouponLog entities.
-func (c *CouponLogClient) CreateBulk(builders ...*CouponLogCreate) *CouponLogCreateBulk {
-	return &CouponLogCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of CouponAssembly entities.
+func (c *CouponAssemblyClient) CreateBulk(builders ...*CouponAssemblyCreate) *CouponAssemblyCreateBulk {
+	return &CouponAssemblyCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for CouponLog.
-func (c *CouponLogClient) Update() *CouponLogUpdate {
-	mutation := newCouponLogMutation(c.config, OpUpdate)
-	return &CouponLogUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for CouponAssembly.
+func (c *CouponAssemblyClient) Update() *CouponAssemblyUpdate {
+	mutation := newCouponAssemblyMutation(c.config, OpUpdate)
+	return &CouponAssemblyUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *CouponLogClient) UpdateOne(cl *CouponLog) *CouponLogUpdateOne {
-	mutation := newCouponLogMutation(c.config, OpUpdateOne, withCouponLog(cl))
-	return &CouponLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *CouponAssemblyClient) UpdateOne(ca *CouponAssembly) *CouponAssemblyUpdateOne {
+	mutation := newCouponAssemblyMutation(c.config, OpUpdateOne, withCouponAssembly(ca))
+	return &CouponAssemblyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *CouponLogClient) UpdateOneID(id uint64) *CouponLogUpdateOne {
-	mutation := newCouponLogMutation(c.config, OpUpdateOne, withCouponLogID(id))
-	return &CouponLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *CouponAssemblyClient) UpdateOneID(id uint64) *CouponAssemblyUpdateOne {
+	mutation := newCouponAssemblyMutation(c.config, OpUpdateOne, withCouponAssemblyID(id))
+	return &CouponAssemblyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for CouponLog.
-func (c *CouponLogClient) Delete() *CouponLogDelete {
-	mutation := newCouponLogMutation(c.config, OpDelete)
-	return &CouponLogDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for CouponAssembly.
+func (c *CouponAssemblyClient) Delete() *CouponAssemblyDelete {
+	mutation := newCouponAssemblyMutation(c.config, OpDelete)
+	return &CouponAssemblyDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *CouponLogClient) DeleteOne(cl *CouponLog) *CouponLogDeleteOne {
-	return c.DeleteOneID(cl.ID)
+func (c *CouponAssemblyClient) DeleteOne(ca *CouponAssembly) *CouponAssemblyDeleteOne {
+	return c.DeleteOneID(ca.ID)
 }
 
 // DeleteOne returns a builder for deleting the given entity by its id.
-func (c *CouponLogClient) DeleteOneID(id uint64) *CouponLogDeleteOne {
-	builder := c.Delete().Where(couponlog.ID(id))
+func (c *CouponAssemblyClient) DeleteOneID(id uint64) *CouponAssemblyDeleteOne {
+	builder := c.Delete().Where(couponassembly.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &CouponLogDeleteOne{builder}
+	return &CouponAssemblyDeleteOne{builder}
 }
 
-// Query returns a query builder for CouponLog.
-func (c *CouponLogClient) Query() *CouponLogQuery {
-	return &CouponLogQuery{
+// Query returns a query builder for CouponAssembly.
+func (c *CouponAssemblyClient) Query() *CouponAssemblyQuery {
+	return &CouponAssemblyQuery{
 		config: c.config,
 	}
 }
 
-// Get returns a CouponLog entity by its id.
-func (c *CouponLogClient) Get(ctx context.Context, id uint64) (*CouponLog, error) {
-	return c.Query().Where(couponlog.ID(id)).Only(ctx)
+// Get returns a CouponAssembly entity by its id.
+func (c *CouponAssemblyClient) Get(ctx context.Context, id uint64) (*CouponAssembly, error) {
+	return c.Query().Where(couponassembly.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *CouponLogClient) GetX(ctx context.Context, id uint64) *CouponLog {
+func (c *CouponAssemblyClient) GetX(ctx context.Context, id uint64) *CouponAssembly {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -2477,9 +2484,9 @@ func (c *CouponLogClient) GetX(ctx context.Context, id uint64) *CouponLog {
 }
 
 // Hooks returns the client hooks.
-func (c *CouponLogClient) Hooks() []Hook {
-	hooks := c.hooks.CouponLog
-	return append(hooks[:len(hooks):len(hooks)], couponlog.Hooks[:]...)
+func (c *CouponAssemblyClient) Hooks() []Hook {
+	hooks := c.hooks.CouponAssembly
+	return append(hooks[:len(hooks):len(hooks)], couponassembly.Hooks[:]...)
 }
 
 // CouponTemplateClient is a client for the CouponTemplate schema.
@@ -5029,6 +5036,129 @@ func (c *PlanClient) QueryCoupons(pl *Plan) *CouponQuery {
 func (c *PlanClient) Hooks() []Hook {
 	hooks := c.hooks.Plan
 	return append(hooks[:len(hooks):len(hooks)], plan.Hooks[:]...)
+}
+
+// PointLogClient is a client for the PointLog schema.
+type PointLogClient struct {
+	config
+}
+
+// NewPointLogClient returns a client for the PointLog from the given config.
+func NewPointLogClient(c config) *PointLogClient {
+	return &PointLogClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `pointlog.Hooks(f(g(h())))`.
+func (c *PointLogClient) Use(hooks ...Hook) {
+	c.hooks.PointLog = append(c.hooks.PointLog, hooks...)
+}
+
+// Create returns a builder for creating a PointLog entity.
+func (c *PointLogClient) Create() *PointLogCreate {
+	mutation := newPointLogMutation(c.config, OpCreate)
+	return &PointLogCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PointLog entities.
+func (c *PointLogClient) CreateBulk(builders ...*PointLogCreate) *PointLogCreateBulk {
+	return &PointLogCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PointLog.
+func (c *PointLogClient) Update() *PointLogUpdate {
+	mutation := newPointLogMutation(c.config, OpUpdate)
+	return &PointLogUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PointLogClient) UpdateOne(pl *PointLog) *PointLogUpdateOne {
+	mutation := newPointLogMutation(c.config, OpUpdateOne, withPointLog(pl))
+	return &PointLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PointLogClient) UpdateOneID(id uint64) *PointLogUpdateOne {
+	mutation := newPointLogMutation(c.config, OpUpdateOne, withPointLogID(id))
+	return &PointLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PointLog.
+func (c *PointLogClient) Delete() *PointLogDelete {
+	mutation := newPointLogMutation(c.config, OpDelete)
+	return &PointLogDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PointLogClient) DeleteOne(pl *PointLog) *PointLogDeleteOne {
+	return c.DeleteOneID(pl.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *PointLogClient) DeleteOneID(id uint64) *PointLogDeleteOne {
+	builder := c.Delete().Where(pointlog.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PointLogDeleteOne{builder}
+}
+
+// Query returns a query builder for PointLog.
+func (c *PointLogClient) Query() *PointLogQuery {
+	return &PointLogQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a PointLog entity by its id.
+func (c *PointLogClient) Get(ctx context.Context, id uint64) (*PointLog, error) {
+	return c.Query().Where(pointlog.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PointLogClient) GetX(ctx context.Context, id uint64) *PointLog {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryRider queries the rider edge of a PointLog.
+func (c *PointLogClient) QueryRider(pl *PointLog) *RiderQuery {
+	query := &RiderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(pointlog.Table, pointlog.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, pointlog.RiderTable, pointlog.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOrder queries the order edge of a PointLog.
+func (c *PointLogClient) QueryOrder(pl *PointLog) *OrderQuery {
+	query := &OrderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(pointlog.Table, pointlog.FieldID, id),
+			sqlgraph.To(order.Table, order.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, pointlog.OrderTable, pointlog.OrderColumn),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PointLogClient) Hooks() []Hook {
+	hooks := c.hooks.PointLog
+	return append(hooks[:len(hooks):len(hooks)], pointlog.Hooks[:]...)
 }
 
 // ReserveClient is a client for the Reserve schema.

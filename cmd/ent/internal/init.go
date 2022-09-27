@@ -53,7 +53,7 @@ func (m {{ .name }}Mixin) Fields() []ent.Field {
 }
 
 func (m {{ .name }}Mixin) Edges() []ent.Edge {
-    e := edge.To("{{ .name }}", {{ .name }}.Type).Unique().Field("{{ .tableName }}_id")
+    e := edge.To("{{ .tableName }}", {{ .name }}.Type).Unique().Field("{{ .tableName }}_id")
     if !m.Optional {
         e.Required()
     }
