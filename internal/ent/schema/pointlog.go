@@ -8,6 +8,7 @@ import (
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -53,6 +54,7 @@ func (PointLog) Fields() []ent.Field {
         field.Int64("points").Comment("变动数量"),
         field.Int64("after").Comment("变动结果"),
         field.String("reason").Optional().Nillable().Comment("原因"),
+        field.JSON("attach", &model.PointLogAttach{}).Optional().Comment("其他信息"),
     }
 }
 

@@ -966,6 +966,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			pointlog.FieldPoints:       {Type: field.TypeInt64, Column: pointlog.FieldPoints},
 			pointlog.FieldAfter:        {Type: field.TypeInt64, Column: pointlog.FieldAfter},
 			pointlog.FieldReason:       {Type: field.TypeString, Column: pointlog.FieldReason},
+			pointlog.FieldAttach:       {Type: field.TypeJSON, Column: pointlog.FieldAttach},
 		},
 	}
 	graph.Nodes[33] = &sqlgraph.Node{
@@ -8591,6 +8592,11 @@ func (f *PointLogFilter) WhereAfter(p entql.Int64P) {
 // WhereReason applies the entql string predicate on the reason field.
 func (f *PointLogFilter) WhereReason(p entql.StringP) {
 	f.Where(p.Field(pointlog.FieldReason))
+}
+
+// WhereAttach applies the entql json.RawMessage predicate on the attach field.
+func (f *PointLogFilter) WhereAttach(p entql.BytesP) {
+	f.Where(p.Field(pointlog.FieldAttach))
 }
 
 // WhereHasRider applies a predicate to check if query has an edge rider.

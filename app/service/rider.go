@@ -578,6 +578,8 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
         Status:     model.RiderStatusNormal,
         AuthStatus: model.PersonUnauthenticated,
         Contact:    item.Contact,
+        Points:     item.Points,
+        Balance:    0,
     }
     e := item.Edges.Enterprise
     if e != nil {

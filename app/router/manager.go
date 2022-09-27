@@ -192,4 +192,5 @@ func loadManagerRoutes() {
 
     // 积分
     g.POST("/point/modify", mapi.Point.Modify)
+    g.GET("/point/log", mapi.Point.Log)
 }

@@ -31,3 +31,17 @@ func (*point) Modify(c echo.Context) (err error) {
     service.NewPointWithModifier(ctx.Modifier).Modify(req)
     return ctx.SendResponse()
 }
+
+// Log
+// @ID           ManagerPointLog
+// @Router       /manager/v1/point/log [GET]
+// @Summary      M7017 积分变动日志
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Success      200  {object}  model.PaginationRes{items=[]model.PointLogListRes}  "请求成功"
+func (*point) Log(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.PointLogListReq](c)
+    return ctx.SendResponse(service.NewPointWithModifier(ctx.Modifier).LogList(req))
+}

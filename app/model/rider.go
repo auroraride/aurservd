@@ -131,6 +131,8 @@ type RiderItem struct {
     DeletedAt  string           `json:"deleteAt,omitempty"` // 账户删除时间
     Remark     string           `json:"remark"`             // 账户备注
     Contract   string           `json:"contract,omitempty"` // 合同(有可能不存在)
+    Points     int64            `json:"points"`             // 积分
+    Balance    float64          `json:"balance"`            // 余额
     // 团签企业信息, 若无此字段则为个签用户
     Enterprise *Enterprise `json:"enterprise,omitempty"`
     // 当前有效订阅信息, 若无此字段则代表当前无有效订阅 (订阅 = 骑手骑士卡)

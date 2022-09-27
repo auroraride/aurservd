@@ -33,6 +33,8 @@ const (
 	FieldAfter = "after"
 	// FieldReason holds the string denoting the reason field in the database.
 	FieldReason = "reason"
+	// FieldAttach holds the string denoting the attach field in the database.
+	FieldAttach = "attach"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeOrder holds the string denoting the order edge name in mutations.
@@ -68,6 +70,7 @@ var Columns = []string{
 	FieldPoints,
 	FieldAfter,
 	FieldReason,
+	FieldAttach,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

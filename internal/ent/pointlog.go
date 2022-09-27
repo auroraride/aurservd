@@ -40,6 +40,8 @@ type PointLog struct {
 	After int64 `json:"after,omitempty"`
 	// 原因
 	Reason *string `json:"reason,omitempty"`
+	// 其他信息
+	Attach *model.PointLogAttach `json:"attach,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PointLogQuery when eager-loading is set.
 	Edges PointLogEdges `json:"edges"`
@@ -87,7 +89,7 @@ func (*PointLog) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case pointlog.FieldModifier, pointlog.FieldEmployeeInfo:
+		case pointlog.FieldModifier, pointlog.FieldEmployeeInfo, pointlog.FieldAttach:
 			values[i] = new([]byte)
 		case pointlog.FieldID, pointlog.FieldRiderID, pointlog.FieldOrderID, pointlog.FieldType, pointlog.FieldPoints, pointlog.FieldAfter:
 			values[i] = new(sql.NullInt64)
@@ -182,6 +184,14 @@ func (pl *PointLog) assignValues(columns []string, values []any) error {
 				pl.Reason = new(string)
 				*pl.Reason = value.String
 			}
+		case pointlog.FieldAttach:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field attach", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pl.Attach); err != nil {
+					return fmt.Errorf("unmarshal field attach: %w", err)
+				}
+			}
 		}
 	}
 	return nil
@@ -253,6 +263,9 @@ func (pl *PointLog) String() string {
 		builder.WriteString("reason=")
 		builder.WriteString(*v)
 	}
+	builder.WriteString(", ")
+	builder.WriteString("attach=")
+	builder.WriteString(fmt.Sprintf("%v", pl.Attach))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -684,6 +684,20 @@ func ReasonContainsFold(v string) predicate.PointLog {
 	})
 }
 
+// AttachIsNil applies the IsNil predicate on the "attach" field.
+func AttachIsNil() predicate.PointLog {
+	return predicate.PointLog(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAttach)))
+	})
+}
+
+// AttachNotNil applies the NotNil predicate on the "attach" field.
+func AttachNotNil() predicate.PointLog {
+	return predicate.PointLog(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAttach)))
+	})
+}
+
 // HasRider applies the HasEdge predicate on the "rider" edge.
 func HasRider() predicate.PointLog {
 	return predicate.PointLog(func(s *sql.Selector) {

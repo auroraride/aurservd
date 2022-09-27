@@ -33,6 +33,7 @@ type PointLogMutation struct {
 	after         *int64
 	addafter      *int64
 	reason        *string
+	attach        **model.PointLogAttach
 	clearedFields map[string]struct{}
 	rider         *uint64
 	clearedrider  bool
@@ -613,6 +614,55 @@ func (m *PointLogMutation) ResetReason() {
 	delete(m.clearedFields, pointlog.FieldReason)
 }
 
+// SetAttach sets the "attach" field.
+func (m *PointLogMutation) SetAttach(mla *model.PointLogAttach) {
+	m.attach = &mla
+}
+
+// Attach returns the value of the "attach" field in the mutation.
+func (m *PointLogMutation) Attach() (r *model.PointLogAttach, exists bool) {
+	v := m.attach
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAttach returns the old "attach" field's value of the PointLog entity.
+// If the PointLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PointLogMutation) OldAttach(ctx context.Context) (v *model.PointLogAttach, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAttach is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAttach requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAttach: %w", err)
+	}
+	return oldValue.Attach, nil
+}
+
+// ClearAttach clears the value of the "attach" field.
+func (m *PointLogMutation) ClearAttach() {
+	m.attach = nil
+	m.clearedFields[pointlog.FieldAttach] = struct{}{}
+}
+
+// AttachCleared returns if the "attach" field was cleared in this mutation.
+func (m *PointLogMutation) AttachCleared() bool {
+	_, ok := m.clearedFields[pointlog.FieldAttach]
+	return ok
+}
+
+// ResetAttach resets all changes to the "attach" field.
+func (m *PointLogMutation) ResetAttach() {
+	m.attach = nil
+	delete(m.clearedFields, pointlog.FieldAttach)
+}
+
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *PointLogMutation) ClearRider() {
 	m.clearedrider = true
@@ -684,7 +734,7 @@ func (m *PointLogMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PointLogMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, pointlog.FieldCreatedAt)
 	}
@@ -715,6 +765,9 @@ func (m *PointLogMutation) Fields() []string {
 	if m.reason != nil {
 		fields = append(fields, pointlog.FieldReason)
 	}
+	if m.attach != nil {
+		fields = append(fields, pointlog.FieldAttach)
+	}
 	return fields
 }
 
@@ -743,6 +796,8 @@ func (m *PointLogMutation) Field(name string) (ent.Value, bool) {
 		return m.After()
 	case pointlog.FieldReason:
 		return m.Reason()
+	case pointlog.FieldAttach:
+		return m.Attach()
 	}
 	return nil, false
 }
@@ -772,6 +827,8 @@ func (m *PointLogMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldAfter(ctx)
 	case pointlog.FieldReason:
 		return m.OldReason(ctx)
+	case pointlog.FieldAttach:
+		return m.OldAttach(ctx)
 	}
 	return nil, fmt.Errorf("unknown PointLog field %s", name)
 }
@@ -850,6 +907,13 @@ func (m *PointLogMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetReason(v)
+		return nil
+	case pointlog.FieldAttach:
+		v, ok := value.(*model.PointLogAttach)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAttach(v)
 		return nil
 	}
 	return fmt.Errorf("unknown PointLog field %s", name)
@@ -932,6 +996,9 @@ func (m *PointLogMutation) ClearedFields() []string {
 	if m.FieldCleared(pointlog.FieldReason) {
 		fields = append(fields, pointlog.FieldReason)
 	}
+	if m.FieldCleared(pointlog.FieldAttach) {
+		fields = append(fields, pointlog.FieldAttach)
+	}
 	return fields
 }
 
@@ -957,6 +1024,9 @@ func (m *PointLogMutation) ClearField(name string) error {
 		return nil
 	case pointlog.FieldReason:
 		m.ClearReason()
+		return nil
+	case pointlog.FieldAttach:
+		m.ClearAttach()
 		return nil
 	}
 	return fmt.Errorf("unknown PointLog nullable field %s", name)
@@ -995,6 +1065,9 @@ func (m *PointLogMutation) ResetField(name string) error {
 		return nil
 	case pointlog.FieldReason:
 		m.ResetReason()
+		return nil
+	case pointlog.FieldAttach:
+		m.ResetAttach()
 		return nil
 	}
 	return fmt.Errorf("unknown PointLog field %s", name)

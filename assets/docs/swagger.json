@@ -7004,6 +7004,53 @@
                 }
             }
         },
+        "/manager/v1/point/log": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M7017 积分变动日志",
+                "operationId": "ManagerPointLog",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.PointLogListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/point/modify": {
             "post": {
                 "consumes": [
@@ -16164,12 +16211,41 @@
                 }
             }
         },
+        "model.PointLogListRes": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "modifier": {
+                    "description": "操作人",
+                    "type": "string"
+                },
+                "plan": {
+                    "description": "订单骑士卡",
+                    "type": "string"
+                },
+                "points": {
+                    "description": "积分",
+                    "type": "integer"
+                },
+                "reason": {
+                    "description": "原因",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "类别",
+                    "type": "string"
+                }
+            }
+        },
         "model.PointModifyReq": {
             "type": "object",
             "required": [
                 "points",
                 "reason",
-                "riderId"
+                "riderId",
+                "type"
             ],
             "properties": {
                 "points": {
@@ -16183,6 +16259,14 @@
                 "riderId": {
                     "description": "骑手 ",
                     "type": "integer"
+                },
+                "type": {
+                    "description": "类别 1:消费 2:奖励",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
                 }
             }
         },

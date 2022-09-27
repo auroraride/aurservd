@@ -2034,6 +2034,7 @@ var (
 		{Name: "points", Type: field.TypeInt64, Comment: "变动数量"},
 		{Name: "after", Type: field.TypeInt64, Comment: "变动结果"},
 		{Name: "reason", Type: field.TypeString, Comment: "原因", Nullable: true},
+		{Name: "attach", Type: field.TypeJSON, Comment: "其他信息", Nullable: true},
 		{Name: "rider_id", Type: field.TypeUint64},
 		{Name: "order_id", Type: field.TypeUint64, Nullable: true},
 	}
@@ -2045,13 +2046,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "point_log_rider_rider",
-				Columns:    []*schema.Column{PointLogColumns[9]},
+				Columns:    []*schema.Column{PointLogColumns[10]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "point_log_order_order",
-				Columns:    []*schema.Column{PointLogColumns[10]},
+				Columns:    []*schema.Column{PointLogColumns[11]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

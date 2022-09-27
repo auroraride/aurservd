@@ -7,8 +7,12 @@ package service
 
 import (
     "context"
+    "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/person"
+    "github.com/auroraride/aurservd/internal/ent/pointlog"
+    "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/pkg/snag"
 )
 
@@ -68,4 +72,40 @@ func (s *pointService) Modify(req *model.PointModifyReq) {
     if err != nil {
         snag.Panic(err)
     }
+}
+
+// LogList 积分变动日志
+func (s *pointService) LogList(req *model.PointLogListReq) *model.PaginationRes {
+    q := s.orm.Query()
+    if req.RiderID == 0 {
+        if req.Keyword != "" {
+            q.Where(
+                pointlog.HasRiderWith(rider.Or(
+                    rider.HasPersonWith(person.NameContainsFold(req.Keyword)),
+                    rider.PhoneContainsFold(req.Keyword),
+                )),
+            )
+        }
+    } else {
+        q.Where(pointlog.RiderID(req.RiderID))
+    }
+    if req.Type != 0 {
+        q.Where(pointlog.Type(req.Type.Value()))
+    }
+    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.PointLog) model.PointLogListRes {
+        var mp, mm string
+        if item.Attach != nil {
+            if item.Attach.Plan != nil {
+                mp = fmt.Sprintf("%s-%d天", item.Attach.Plan.Name, item.Attach.Plan.Days)
+            }
+        }
+        return model.PointLogListRes{
+            ID:       item.ID,
+            Type:     model.PointLogType(item.Type).String(),
+            Plan:     mp,
+            Points:   item.Points,
+            Reason:   item.Reason,
+            Modifier: mm,
+        }
+    })
 }

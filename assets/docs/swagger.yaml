@@ -3531,6 +3531,26 @@ definitions:
         description: 开始日期
         type: string
     type: object
+  model.PointLogListRes:
+    properties:
+      id:
+        type: integer
+      modifier:
+        description: 操作人
+        type: string
+      plan:
+        description: 订单骑士卡
+        type: string
+      points:
+        description: 积分
+        type: integer
+      reason:
+        description: 原因
+        type: string
+      type:
+        description: 类别
+        type: string
+    type: object
   model.PointModifyReq:
     properties:
       points:
@@ -3542,10 +3562,17 @@ definitions:
       riderId:
         description: '骑手 '
         type: integer
+      type:
+        description: 类别 1:消费 2:奖励
+        enum:
+        - 1
+        - 2
+        type: integer
     required:
     - points
     - reason
     - riderId
+    - type
     type: object
   model.PrepaymentListRes:
     properties:
@@ -10014,6 +10041,34 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M6002 上下架骑士卡
+      tags:
+      - '[M]管理接口'
+  /manager/v1/point/log:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerPointLog
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.PointLogListRes'
+                  type: array
+              type: object
+      summary: M7017 积分变动日志
       tags:
       - '[M]管理接口'
   /manager/v1/point/modify:

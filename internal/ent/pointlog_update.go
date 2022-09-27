@@ -147,6 +147,18 @@ func (plu *PointLogUpdate) ClearReason() *PointLogUpdate {
 	return plu
 }
 
+// SetAttach sets the "attach" field.
+func (plu *PointLogUpdate) SetAttach(mla *model.PointLogAttach) *PointLogUpdate {
+	plu.mutation.SetAttach(mla)
+	return plu
+}
+
+// ClearAttach clears the value of the "attach" field.
+func (plu *PointLogUpdate) ClearAttach() *PointLogUpdate {
+	plu.mutation.ClearAttach()
+	return plu
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (plu *PointLogUpdate) SetRider(r *Rider) *PointLogUpdate {
 	return plu.SetRiderID(r.ID)
@@ -369,6 +381,19 @@ func (plu *PointLogUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: pointlog.FieldReason,
 		})
 	}
+	if value, ok := plu.mutation.Attach(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: pointlog.FieldAttach,
+		})
+	}
+	if plu.mutation.AttachCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: pointlog.FieldAttach,
+		})
+	}
 	if plu.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -572,6 +597,18 @@ func (pluo *PointLogUpdateOne) SetNillableReason(s *string) *PointLogUpdateOne {
 // ClearReason clears the value of the "reason" field.
 func (pluo *PointLogUpdateOne) ClearReason() *PointLogUpdateOne {
 	pluo.mutation.ClearReason()
+	return pluo
+}
+
+// SetAttach sets the "attach" field.
+func (pluo *PointLogUpdateOne) SetAttach(mla *model.PointLogAttach) *PointLogUpdateOne {
+	pluo.mutation.SetAttach(mla)
+	return pluo
+}
+
+// ClearAttach clears the value of the "attach" field.
+func (pluo *PointLogUpdateOne) ClearAttach() *PointLogUpdateOne {
+	pluo.mutation.ClearAttach()
 	return pluo
 }
 
@@ -825,6 +862,19 @@ func (pluo *PointLogUpdateOne) sqlSave(ctx context.Context) (_node *PointLog, er
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: pointlog.FieldReason,
+		})
+	}
+	if value, ok := pluo.mutation.Attach(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: pointlog.FieldAttach,
+		})
+	}
+	if pluo.mutation.AttachCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: pointlog.FieldAttach,
 		})
 	}
 	if pluo.mutation.RiderCleared() {

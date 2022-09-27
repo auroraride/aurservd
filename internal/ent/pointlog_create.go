@@ -117,6 +117,12 @@ func (plc *PointLogCreate) SetNillableReason(s *string) *PointLogCreate {
 	return plc
 }
 
+// SetAttach sets the "attach" field.
+func (plc *PointLogCreate) SetAttach(mla *model.PointLogAttach) *PointLogCreate {
+	plc.mutation.SetAttach(mla)
+	return plc
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (plc *PointLogCreate) SetRider(r *Rider) *PointLogCreate {
 	return plc.SetRiderID(r.ID)
@@ -337,6 +343,14 @@ func (plc *PointLogCreate) createSpec() (*PointLog, *sqlgraph.CreateSpec) {
 			Column: pointlog.FieldReason,
 		})
 		_node.Reason = &value
+	}
+	if value, ok := plc.mutation.Attach(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: pointlog.FieldAttach,
+		})
+		_node.Attach = value
 	}
 	if nodes := plc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -580,6 +594,24 @@ func (u *PointLogUpsert) ClearReason() *PointLogUpsert {
 	return u
 }
 
+// SetAttach sets the "attach" field.
+func (u *PointLogUpsert) SetAttach(v *model.PointLogAttach) *PointLogUpsert {
+	u.Set(pointlog.FieldAttach, v)
+	return u
+}
+
+// UpdateAttach sets the "attach" field to the value that was provided on create.
+func (u *PointLogUpsert) UpdateAttach() *PointLogUpsert {
+	u.SetExcluded(pointlog.FieldAttach)
+	return u
+}
+
+// ClearAttach clears the value of the "attach" field.
+func (u *PointLogUpsert) ClearAttach() *PointLogUpsert {
+	u.SetNull(pointlog.FieldAttach)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -797,6 +829,27 @@ func (u *PointLogUpsertOne) UpdateReason() *PointLogUpsertOne {
 func (u *PointLogUpsertOne) ClearReason() *PointLogUpsertOne {
 	return u.Update(func(s *PointLogUpsert) {
 		s.ClearReason()
+	})
+}
+
+// SetAttach sets the "attach" field.
+func (u *PointLogUpsertOne) SetAttach(v *model.PointLogAttach) *PointLogUpsertOne {
+	return u.Update(func(s *PointLogUpsert) {
+		s.SetAttach(v)
+	})
+}
+
+// UpdateAttach sets the "attach" field to the value that was provided on create.
+func (u *PointLogUpsertOne) UpdateAttach() *PointLogUpsertOne {
+	return u.Update(func(s *PointLogUpsert) {
+		s.UpdateAttach()
+	})
+}
+
+// ClearAttach clears the value of the "attach" field.
+func (u *PointLogUpsertOne) ClearAttach() *PointLogUpsertOne {
+	return u.Update(func(s *PointLogUpsert) {
+		s.ClearAttach()
 	})
 }
 
@@ -1179,6 +1232,27 @@ func (u *PointLogUpsertBulk) UpdateReason() *PointLogUpsertBulk {
 func (u *PointLogUpsertBulk) ClearReason() *PointLogUpsertBulk {
 	return u.Update(func(s *PointLogUpsert) {
 		s.ClearReason()
+	})
+}
+
+// SetAttach sets the "attach" field.
+func (u *PointLogUpsertBulk) SetAttach(v *model.PointLogAttach) *PointLogUpsertBulk {
+	return u.Update(func(s *PointLogUpsert) {
+		s.SetAttach(v)
+	})
+}
+
+// UpdateAttach sets the "attach" field to the value that was provided on create.
+func (u *PointLogUpsertBulk) UpdateAttach() *PointLogUpsertBulk {
+	return u.Update(func(s *PointLogUpsert) {
+		s.UpdateAttach()
+	})
+}
+
+// ClearAttach clears the value of the "attach" field.
+func (u *PointLogUpsertBulk) ClearAttach() *PointLogUpsertBulk {
+	return u.Update(func(s *PointLogUpsert) {
+		s.ClearAttach()
 	})
 }
 
