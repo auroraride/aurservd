@@ -50,14 +50,8 @@ type CouponTemplate struct {
 }
 
 type CouponTemplateDetail struct {
-    ID        uint64 `json:"id"`
-    UpdatedAt string `json:"updatedAt"`        // 更新时间
-    Total     int    `json:"total"`            // 总数
-    Remaining int    `json:"remaining"`        // 剩余
-    Used      int    `json:"used"`             // 已使用
-    Unused    int    `json:"unused"`           // 未使用
-    Expired   int    `json:"expired"`          // 已过期
-    Plans     []Plan `json:"plans,omitempty"`  // 绑定骑士卡
-    Cities    []City `json:"cities,omitempty"` // 可用城市
+    ID     uint64 `json:"id"`
+    Plans  []Plan `json:"plans,omitempty"`  // 绑定骑士卡
+    Cities []City `json:"cities,omitempty"` // 可用城市
     CouponTemplate
 }

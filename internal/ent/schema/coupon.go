@@ -52,6 +52,7 @@ func (Coupon) Fields() []ent.Field {
     return []ent.Field{
         field.String("name").Immutable().Comment("名称"),
         field.Time("expired_at").Comment("过期时间"),
+        field.Float("amount").Comment("金额"),
     }
 }
 
@@ -66,8 +67,8 @@ func (Coupon) Edges() []ent.Edge {
 func (Coupon) Mixin() []ent.Mixin {
     return []ent.Mixin{
         internal.TimeMixin{},
-        internal.DeleteMixin{},
         internal.Modifier{},
+        CouponAssemblyMixin{},
     }
 }
 
