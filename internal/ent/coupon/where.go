@@ -95,17 +95,17 @@ func UpdatedAt(v time.Time) predicate.Coupon {
 	})
 }
 
-// DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
-func DeletedAt(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
-}
-
 // Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
 func Remark(v string) predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldRemark), v))
+	})
+}
+
+// AssemblyID applies equality check predicate on the "assembly_id" field. It's identical to AssemblyIDEQ.
+func AssemblyID(v uint64) predicate.Coupon {
+	return predicate.Coupon(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAssemblyID), v))
 	})
 }
 
@@ -120,6 +120,13 @@ func Name(v string) predicate.Coupon {
 func ExpiredAt(v time.Time) predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldExpiredAt), v))
+	})
+}
+
+// Amount applies equality check predicate on the "amount" field. It's identical to AmountEQ.
+func Amount(v float64) predicate.Coupon {
+	return predicate.Coupon(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAmount), v))
 	})
 }
 
@@ -248,84 +255,6 @@ func UpdatedAtLT(v time.Time) predicate.Coupon {
 func UpdatedAtLTE(v time.Time) predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
-	})
-}
-
-// DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
-func DeletedAtEQ(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
-}
-
-// DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
-func DeletedAtNEQ(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDeletedAt), v))
-	})
-}
-
-// DeletedAtIn applies the In predicate on the "deleted_at" field.
-func DeletedAtIn(vs ...time.Time) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDeletedAt), v...))
-	})
-}
-
-// DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
-func DeletedAtNotIn(vs ...time.Time) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDeletedAt), v...))
-	})
-}
-
-// DeletedAtGT applies the GT predicate on the "deleted_at" field.
-func DeletedAtGT(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDeletedAt), v))
-	})
-}
-
-// DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
-func DeletedAtGTE(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDeletedAt), v))
-	})
-}
-
-// DeletedAtLT applies the LT predicate on the "deleted_at" field.
-func DeletedAtLT(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDeletedAt), v))
-	})
-}
-
-// DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
-func DeletedAtLTE(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDeletedAt), v))
-	})
-}
-
-// DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
-func DeletedAtIsNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDeletedAt)))
-	})
-}
-
-// DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
-func DeletedAtNotNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDeletedAt)))
 	})
 }
 
@@ -467,6 +396,42 @@ func RemarkEqualFold(v string) predicate.Coupon {
 func RemarkContainsFold(v string) predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
+	})
+}
+
+// AssemblyIDEQ applies the EQ predicate on the "assembly_id" field.
+func AssemblyIDEQ(v uint64) predicate.Coupon {
+	return predicate.Coupon(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAssemblyID), v))
+	})
+}
+
+// AssemblyIDNEQ applies the NEQ predicate on the "assembly_id" field.
+func AssemblyIDNEQ(v uint64) predicate.Coupon {
+	return predicate.Coupon(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAssemblyID), v))
+	})
+}
+
+// AssemblyIDIn applies the In predicate on the "assembly_id" field.
+func AssemblyIDIn(vs ...uint64) predicate.Coupon {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Coupon(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldAssemblyID), v...))
+	})
+}
+
+// AssemblyIDNotIn applies the NotIn predicate on the "assembly_id" field.
+func AssemblyIDNotIn(vs ...uint64) predicate.Coupon {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Coupon(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldAssemblyID), v...))
 	})
 }
 
@@ -630,6 +595,98 @@ func ExpiredAtLT(v time.Time) predicate.Coupon {
 func ExpiredAtLTE(v time.Time) predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldExpiredAt), v))
+	})
+}
+
+// AmountEQ applies the EQ predicate on the "amount" field.
+func AmountEQ(v float64) predicate.Coupon {
+	return predicate.Coupon(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAmount), v))
+	})
+}
+
+// AmountNEQ applies the NEQ predicate on the "amount" field.
+func AmountNEQ(v float64) predicate.Coupon {
+	return predicate.Coupon(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAmount), v))
+	})
+}
+
+// AmountIn applies the In predicate on the "amount" field.
+func AmountIn(vs ...float64) predicate.Coupon {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Coupon(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldAmount), v...))
+	})
+}
+
+// AmountNotIn applies the NotIn predicate on the "amount" field.
+func AmountNotIn(vs ...float64) predicate.Coupon {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Coupon(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldAmount), v...))
+	})
+}
+
+// AmountGT applies the GT predicate on the "amount" field.
+func AmountGT(v float64) predicate.Coupon {
+	return predicate.Coupon(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldAmount), v))
+	})
+}
+
+// AmountGTE applies the GTE predicate on the "amount" field.
+func AmountGTE(v float64) predicate.Coupon {
+	return predicate.Coupon(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldAmount), v))
+	})
+}
+
+// AmountLT applies the LT predicate on the "amount" field.
+func AmountLT(v float64) predicate.Coupon {
+	return predicate.Coupon(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldAmount), v))
+	})
+}
+
+// AmountLTE applies the LTE predicate on the "amount" field.
+func AmountLTE(v float64) predicate.Coupon {
+	return predicate.Coupon(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldAmount), v))
+	})
+}
+
+// HasAssembly applies the HasEdge predicate on the "assembly" edge.
+func HasAssembly() predicate.Coupon {
+	return predicate.Coupon(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(AssemblyTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, AssemblyTable, AssemblyColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAssemblyWith applies the HasEdge predicate on the "assembly" edge with a given conditions (other predicates).
+func HasAssemblyWith(preds ...predicate.CouponAssembly) predicate.Coupon {
+	return predicate.Coupon(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(AssemblyInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, AssemblyTable, AssemblyColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 

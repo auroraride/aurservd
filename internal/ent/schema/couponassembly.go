@@ -7,6 +7,7 @@ import (
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/mixin"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -52,7 +53,9 @@ func (CouponAssembly) Fields() []ent.Field {
         field.Uint8("expired_type").Comment("过期类型"),
         field.Uint8("rule").Comment("优惠券规则, 1:互斥 2:叠加"),
         field.Float("amount").Comment("金额"),
-        field.Bool("multiple").Default(false).Comment("叠加时同类是否可使用多张"),
+        field.Bool("multiple").Default(false).Comment("该券是否可叠加"),
+        field.JSON("plans", []model.Plan{}).Optional().Comment("可用骑行卡"),
+        field.JSON("cities", []model.City{}).Optional().Comment("可用城市"),
     }
 }
 

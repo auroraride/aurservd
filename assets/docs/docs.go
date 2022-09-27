@@ -551,7 +551,7 @@ const docTemplate = `{
                             "type": "string"
                         },
                         "headers": {
-                            "X-Captcha-Id  true": {
+                            "X-Captcha-Id": {
                                 "type": "string",
                                 "description": "Captcha验证码ID"
                             }
@@ -16813,6 +16813,10 @@ const docTemplate = `{
                     "description": "认证状态 0:未认证 1:认证中 2:已认证 3:认证失败",
                     "type": "integer"
                 },
+                "balance": {
+                    "description": "余额",
+                    "type": "number"
+                },
                 "city": {
                     "description": "所在城市, 有可能不存在",
                     "allOf": [
@@ -16867,6 +16871,10 @@ const docTemplate = `{
                 "phone": {
                     "description": "手机号",
                     "type": "string"
+                },
+                "points": {
+                    "description": "积分",
+                    "type": "integer"
                 },
                 "remark": {
                     "description": "账户备注",

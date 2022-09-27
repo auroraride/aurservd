@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
+	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -20,15 +21,16 @@ import (
 // CouponQuery is the builder for querying Coupon entities.
 type CouponQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
-	order      []OrderFunc
-	fields     []string
-	predicates []predicate.Coupon
-	withCities *CityQuery
-	withPlans  *PlanQuery
-	modifiers  []func(*sql.Selector)
+	limit        *int
+	offset       *int
+	unique       *bool
+	order        []OrderFunc
+	fields       []string
+	predicates   []predicate.Coupon
+	withAssembly *CouponAssemblyQuery
+	withCities   *CityQuery
+	withPlans    *PlanQuery
+	modifiers    []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -63,6 +65,28 @@ func (cq *CouponQuery) Unique(unique bool) *CouponQuery {
 func (cq *CouponQuery) Order(o ...OrderFunc) *CouponQuery {
 	cq.order = append(cq.order, o...)
 	return cq
+}
+
+// QueryAssembly chains the current query on the "assembly" edge.
+func (cq *CouponQuery) QueryAssembly() *CouponAssemblyQuery {
+	query := &CouponAssemblyQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(coupon.Table, coupon.FieldID, selector),
+			sqlgraph.To(couponassembly.Table, couponassembly.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, coupon.AssemblyTable, coupon.AssemblyColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryCities chains the current query on the "cities" edge.
@@ -285,18 +309,30 @@ func (cq *CouponQuery) Clone() *CouponQuery {
 		return nil
 	}
 	return &CouponQuery{
-		config:     cq.config,
-		limit:      cq.limit,
-		offset:     cq.offset,
-		order:      append([]OrderFunc{}, cq.order...),
-		predicates: append([]predicate.Coupon{}, cq.predicates...),
-		withCities: cq.withCities.Clone(),
-		withPlans:  cq.withPlans.Clone(),
+		config:       cq.config,
+		limit:        cq.limit,
+		offset:       cq.offset,
+		order:        append([]OrderFunc{}, cq.order...),
+		predicates:   append([]predicate.Coupon{}, cq.predicates...),
+		withAssembly: cq.withAssembly.Clone(),
+		withCities:   cq.withCities.Clone(),
+		withPlans:    cq.withPlans.Clone(),
 		// clone intermediate query.
 		sql:    cq.sql.Clone(),
 		path:   cq.path,
 		unique: cq.unique,
 	}
+}
+
+// WithAssembly tells the query-builder to eager-load the nodes that are connected to
+// the "assembly" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CouponQuery) WithAssembly(opts ...func(*CouponAssemblyQuery)) *CouponQuery {
+	query := &CouponAssemblyQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withAssembly = query
+	return cq
 }
 
 // WithCities tells the query-builder to eager-load the nodes that are connected to
@@ -389,7 +425,8 @@ func (cq *CouponQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Coupo
 	var (
 		nodes       = []*Coupon{}
 		_spec       = cq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
+			cq.withAssembly != nil,
 			cq.withCities != nil,
 			cq.withPlans != nil,
 		}
@@ -415,6 +452,12 @@ func (cq *CouponQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Coupo
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := cq.withAssembly; query != nil {
+		if err := cq.loadAssembly(ctx, query, nodes, nil,
+			func(n *Coupon, e *CouponAssembly) { n.Edges.Assembly = e }); err != nil {
+			return nil, err
+		}
+	}
 	if query := cq.withCities; query != nil {
 		if err := cq.loadCities(ctx, query, nodes,
 			func(n *Coupon) { n.Edges.Cities = []*City{} },
@@ -432,6 +475,32 @@ func (cq *CouponQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Coupo
 	return nodes, nil
 }
 
+func (cq *CouponQuery) loadAssembly(ctx context.Context, query *CouponAssemblyQuery, nodes []*Coupon, init func(*Coupon), assign func(*Coupon, *CouponAssembly)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Coupon)
+	for i := range nodes {
+		fk := nodes[i].AssemblyID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(couponassembly.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "assembly_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 func (cq *CouponQuery) loadCities(ctx context.Context, query *CityQuery, nodes []*Coupon, init func(*Coupon), assign func(*Coupon, *City)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
 	byID := make(map[uint64]*Coupon)

@@ -366,8 +366,8 @@ func init() {
 	// contract.DefaultEffective holds the default value on creation for the effective field.
 	contract.DefaultEffective = contractDescEffective.Default.(bool)
 	couponMixin := schema.Coupon{}.Mixin()
-	couponMixinHooks2 := couponMixin[2].Hooks()
-	coupon.Hooks[0] = couponMixinHooks2[0]
+	couponMixinHooks1 := couponMixin[1].Hooks()
+	coupon.Hooks[0] = couponMixinHooks1[0]
 	couponMixinFields0 := couponMixin[0].Fields()
 	_ = couponMixinFields0
 	couponFields := schema.Coupon{}.Fields()

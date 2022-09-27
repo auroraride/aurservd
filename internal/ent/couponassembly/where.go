@@ -675,6 +675,34 @@ func MultipleNEQ(v bool) predicate.CouponAssembly {
 	})
 }
 
+// PlansIsNil applies the IsNil predicate on the "plans" field.
+func PlansIsNil() predicate.CouponAssembly {
+	return predicate.CouponAssembly(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldPlans)))
+	})
+}
+
+// PlansNotNil applies the NotNil predicate on the "plans" field.
+func PlansNotNil() predicate.CouponAssembly {
+	return predicate.CouponAssembly(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldPlans)))
+	})
+}
+
+// CitiesIsNil applies the IsNil predicate on the "cities" field.
+func CitiesIsNil() predicate.CouponAssembly {
+	return predicate.CouponAssembly(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldCities)))
+	})
+}
+
+// CitiesNotNil applies the NotNil predicate on the "cities" field.
+func CitiesNotNil() predicate.CouponAssembly {
+	return predicate.CouponAssembly(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldCities)))
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.CouponAssembly) predicate.CouponAssembly {
 	return predicate.CouponAssembly(func(s *sql.Selector) {

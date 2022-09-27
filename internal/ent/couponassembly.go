@@ -36,8 +36,12 @@ type CouponAssembly struct {
 	Rule uint8 `json:"rule,omitempty"`
 	// 金额
 	Amount float64 `json:"amount,omitempty"`
-	// 叠加时同类是否可使用多张
+	// 该券是否可叠加
 	Multiple bool `json:"multiple,omitempty"`
+	// 可用骑行卡
+	Plans []model.Plan `json:"plans,omitempty"`
+	// 可用城市
+	Cities []model.City `json:"cities,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -45,7 +49,7 @@ func (*CouponAssembly) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case couponassembly.FieldCreator, couponassembly.FieldLastModifier:
+		case couponassembly.FieldCreator, couponassembly.FieldLastModifier, couponassembly.FieldPlans, couponassembly.FieldCities:
 			values[i] = new([]byte)
 		case couponassembly.FieldMultiple:
 			values[i] = new(sql.NullBool)
@@ -142,6 +146,22 @@ func (ca *CouponAssembly) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ca.Multiple = value.Bool
 			}
+		case couponassembly.FieldPlans:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field plans", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &ca.Plans); err != nil {
+					return fmt.Errorf("unmarshal field plans: %w", err)
+				}
+			}
+		case couponassembly.FieldCities:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field cities", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &ca.Cities); err != nil {
+					return fmt.Errorf("unmarshal field cities: %w", err)
+				}
+			}
 		}
 	}
 	return nil
@@ -199,6 +219,12 @@ func (ca *CouponAssembly) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("multiple=")
 	builder.WriteString(fmt.Sprintf("%v", ca.Multiple))
+	builder.WriteString(", ")
+	builder.WriteString("plans=")
+	builder.WriteString(fmt.Sprintf("%v", ca.Plans))
+	builder.WriteString(", ")
+	builder.WriteString("cities=")
+	builder.WriteString(fmt.Sprintf("%v", ca.Cities))
 	builder.WriteByte(')')
 	return builder.String()
 }

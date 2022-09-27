@@ -429,12 +429,13 @@ var schemaGraph = func() *sqlgraph.Schema {
 		Fields: map[string]*sqlgraph.FieldSpec{
 			coupon.FieldCreatedAt:    {Type: field.TypeTime, Column: coupon.FieldCreatedAt},
 			coupon.FieldUpdatedAt:    {Type: field.TypeTime, Column: coupon.FieldUpdatedAt},
-			coupon.FieldDeletedAt:    {Type: field.TypeTime, Column: coupon.FieldDeletedAt},
 			coupon.FieldCreator:      {Type: field.TypeJSON, Column: coupon.FieldCreator},
 			coupon.FieldLastModifier: {Type: field.TypeJSON, Column: coupon.FieldLastModifier},
 			coupon.FieldRemark:       {Type: field.TypeString, Column: coupon.FieldRemark},
+			coupon.FieldAssemblyID:   {Type: field.TypeUint64, Column: coupon.FieldAssemblyID},
 			coupon.FieldName:         {Type: field.TypeString, Column: coupon.FieldName},
 			coupon.FieldExpiredAt:    {Type: field.TypeTime, Column: coupon.FieldExpiredAt},
+			coupon.FieldAmount:       {Type: field.TypeFloat64, Column: coupon.FieldAmount},
 		},
 	}
 	graph.Nodes[13] = &sqlgraph.Node{
@@ -458,6 +459,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			couponassembly.FieldRule:         {Type: field.TypeUint8, Column: couponassembly.FieldRule},
 			couponassembly.FieldAmount:       {Type: field.TypeFloat64, Column: couponassembly.FieldAmount},
 			couponassembly.FieldMultiple:     {Type: field.TypeBool, Column: couponassembly.FieldMultiple},
+			couponassembly.FieldPlans:        {Type: field.TypeJSON, Column: couponassembly.FieldPlans},
+			couponassembly.FieldCities:       {Type: field.TypeJSON, Column: couponassembly.FieldCities},
 		},
 	}
 	graph.Nodes[14] = &sqlgraph.Node{
@@ -1868,6 +1871,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Contract",
 		"Rider",
+	)
+	graph.MustAddE(
+		"assembly",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   coupon.AssemblyTable,
+			Columns: []string{coupon.AssemblyColumn},
+			Bidi:    false,
+		},
+		"Coupon",
+		"CouponAssembly",
 	)
 	graph.MustAddE(
 		"cities",
@@ -5583,11 +5598,6 @@ func (f *CouponFilter) WhereUpdatedAt(p entql.TimeP) {
 	f.Where(p.Field(coupon.FieldUpdatedAt))
 }
 
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *CouponFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(coupon.FieldDeletedAt))
-}
-
 // WhereCreator applies the entql json.RawMessage predicate on the creator field.
 func (f *CouponFilter) WhereCreator(p entql.BytesP) {
 	f.Where(p.Field(coupon.FieldCreator))
@@ -5603,6 +5613,11 @@ func (f *CouponFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(coupon.FieldRemark))
 }
 
+// WhereAssemblyID applies the entql uint64 predicate on the assembly_id field.
+func (f *CouponFilter) WhereAssemblyID(p entql.Uint64P) {
+	f.Where(p.Field(coupon.FieldAssemblyID))
+}
+
 // WhereName applies the entql string predicate on the name field.
 func (f *CouponFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(coupon.FieldName))
@@ -5611,6 +5626,25 @@ func (f *CouponFilter) WhereName(p entql.StringP) {
 // WhereExpiredAt applies the entql time.Time predicate on the expired_at field.
 func (f *CouponFilter) WhereExpiredAt(p entql.TimeP) {
 	f.Where(p.Field(coupon.FieldExpiredAt))
+}
+
+// WhereAmount applies the entql float64 predicate on the amount field.
+func (f *CouponFilter) WhereAmount(p entql.Float64P) {
+	f.Where(p.Field(coupon.FieldAmount))
+}
+
+// WhereHasAssembly applies a predicate to check if query has an edge assembly.
+func (f *CouponFilter) WhereHasAssembly() {
+	f.Where(entql.HasEdge("assembly"))
+}
+
+// WhereHasAssemblyWith applies a predicate to check if query has an edge assembly with a given conditions (other predicates).
+func (f *CouponFilter) WhereHasAssemblyWith(preds ...predicate.CouponAssembly) {
+	f.Where(entql.HasEdgeWith("assembly", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }
 
 // WhereHasCities applies a predicate to check if query has an edge cities.
@@ -5729,6 +5763,16 @@ func (f *CouponAssemblyFilter) WhereAmount(p entql.Float64P) {
 // WhereMultiple applies the entql bool predicate on the multiple field.
 func (f *CouponAssemblyFilter) WhereMultiple(p entql.BoolP) {
 	f.Where(p.Field(couponassembly.FieldMultiple))
+}
+
+// WherePlans applies the entql json.RawMessage predicate on the plans field.
+func (f *CouponAssemblyFilter) WherePlans(p entql.BytesP) {
+	f.Where(p.Field(couponassembly.FieldPlans))
+}
+
+// WhereCities applies the entql json.RawMessage predicate on the cities field.
+func (f *CouponAssemblyFilter) WhereCities(p entql.BytesP) {
+	f.Where(p.Field(couponassembly.FieldCities))
 }
 
 // addPredicate implements the predicateAdder interface.

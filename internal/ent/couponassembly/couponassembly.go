@@ -33,6 +33,10 @@ const (
 	FieldAmount = "amount"
 	// FieldMultiple holds the string denoting the multiple field in the database.
 	FieldMultiple = "multiple"
+	// FieldPlans holds the string denoting the plans field in the database.
+	FieldPlans = "plans"
+	// FieldCities holds the string denoting the cities field in the database.
+	FieldCities = "cities"
 	// Table holds the table name of the couponassembly in the database.
 	Table = "coupon_assembly"
 )
@@ -50,6 +54,8 @@ var Columns = []string{
 	FieldRule,
 	FieldAmount,
 	FieldMultiple,
+	FieldPlans,
+	FieldCities,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

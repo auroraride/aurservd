@@ -115,6 +115,18 @@ func (cac *CouponAssemblyCreate) SetNillableMultiple(b *bool) *CouponAssemblyCre
 	return cac
 }
 
+// SetPlans sets the "plans" field.
+func (cac *CouponAssemblyCreate) SetPlans(m []model.Plan) *CouponAssemblyCreate {
+	cac.mutation.SetPlans(m)
+	return cac
+}
+
+// SetCities sets the "cities" field.
+func (cac *CouponAssemblyCreate) SetCities(m []model.City) *CouponAssemblyCreate {
+	cac.mutation.SetCities(m)
+	return cac
+}
+
 // Mutation returns the CouponAssemblyMutation object of the builder.
 func (cac *CouponAssemblyCreate) Mutation() *CouponAssemblyMutation {
 	return cac.mutation
@@ -346,6 +358,22 @@ func (cac *CouponAssemblyCreate) createSpec() (*CouponAssembly, *sqlgraph.Create
 		})
 		_node.Multiple = value
 	}
+	if value, ok := cac.mutation.Plans(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: couponassembly.FieldPlans,
+		})
+		_node.Plans = value
+	}
+	if value, ok := cac.mutation.Cities(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: couponassembly.FieldCities,
+		})
+		_node.Cities = value
+	}
 	return _node, _spec
 }
 
@@ -527,6 +555,42 @@ func (u *CouponAssemblyUpsert) SetMultiple(v bool) *CouponAssemblyUpsert {
 // UpdateMultiple sets the "multiple" field to the value that was provided on create.
 func (u *CouponAssemblyUpsert) UpdateMultiple() *CouponAssemblyUpsert {
 	u.SetExcluded(couponassembly.FieldMultiple)
+	return u
+}
+
+// SetPlans sets the "plans" field.
+func (u *CouponAssemblyUpsert) SetPlans(v []model.Plan) *CouponAssemblyUpsert {
+	u.Set(couponassembly.FieldPlans, v)
+	return u
+}
+
+// UpdatePlans sets the "plans" field to the value that was provided on create.
+func (u *CouponAssemblyUpsert) UpdatePlans() *CouponAssemblyUpsert {
+	u.SetExcluded(couponassembly.FieldPlans)
+	return u
+}
+
+// ClearPlans clears the value of the "plans" field.
+func (u *CouponAssemblyUpsert) ClearPlans() *CouponAssemblyUpsert {
+	u.SetNull(couponassembly.FieldPlans)
+	return u
+}
+
+// SetCities sets the "cities" field.
+func (u *CouponAssemblyUpsert) SetCities(v []model.City) *CouponAssemblyUpsert {
+	u.Set(couponassembly.FieldCities, v)
+	return u
+}
+
+// UpdateCities sets the "cities" field to the value that was provided on create.
+func (u *CouponAssemblyUpsert) UpdateCities() *CouponAssemblyUpsert {
+	u.SetExcluded(couponassembly.FieldCities)
+	return u
+}
+
+// ClearCities clears the value of the "cities" field.
+func (u *CouponAssemblyUpsert) ClearCities() *CouponAssemblyUpsert {
+	u.SetNull(couponassembly.FieldCities)
 	return u
 }
 
@@ -729,6 +793,48 @@ func (u *CouponAssemblyUpsertOne) SetMultiple(v bool) *CouponAssemblyUpsertOne {
 func (u *CouponAssemblyUpsertOne) UpdateMultiple() *CouponAssemblyUpsertOne {
 	return u.Update(func(s *CouponAssemblyUpsert) {
 		s.UpdateMultiple()
+	})
+}
+
+// SetPlans sets the "plans" field.
+func (u *CouponAssemblyUpsertOne) SetPlans(v []model.Plan) *CouponAssemblyUpsertOne {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.SetPlans(v)
+	})
+}
+
+// UpdatePlans sets the "plans" field to the value that was provided on create.
+func (u *CouponAssemblyUpsertOne) UpdatePlans() *CouponAssemblyUpsertOne {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.UpdatePlans()
+	})
+}
+
+// ClearPlans clears the value of the "plans" field.
+func (u *CouponAssemblyUpsertOne) ClearPlans() *CouponAssemblyUpsertOne {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.ClearPlans()
+	})
+}
+
+// SetCities sets the "cities" field.
+func (u *CouponAssemblyUpsertOne) SetCities(v []model.City) *CouponAssemblyUpsertOne {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.SetCities(v)
+	})
+}
+
+// UpdateCities sets the "cities" field to the value that was provided on create.
+func (u *CouponAssemblyUpsertOne) UpdateCities() *CouponAssemblyUpsertOne {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.UpdateCities()
+	})
+}
+
+// ClearCities clears the value of the "cities" field.
+func (u *CouponAssemblyUpsertOne) ClearCities() *CouponAssemblyUpsertOne {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.ClearCities()
 	})
 }
 
@@ -1093,6 +1199,48 @@ func (u *CouponAssemblyUpsertBulk) SetMultiple(v bool) *CouponAssemblyUpsertBulk
 func (u *CouponAssemblyUpsertBulk) UpdateMultiple() *CouponAssemblyUpsertBulk {
 	return u.Update(func(s *CouponAssemblyUpsert) {
 		s.UpdateMultiple()
+	})
+}
+
+// SetPlans sets the "plans" field.
+func (u *CouponAssemblyUpsertBulk) SetPlans(v []model.Plan) *CouponAssemblyUpsertBulk {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.SetPlans(v)
+	})
+}
+
+// UpdatePlans sets the "plans" field to the value that was provided on create.
+func (u *CouponAssemblyUpsertBulk) UpdatePlans() *CouponAssemblyUpsertBulk {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.UpdatePlans()
+	})
+}
+
+// ClearPlans clears the value of the "plans" field.
+func (u *CouponAssemblyUpsertBulk) ClearPlans() *CouponAssemblyUpsertBulk {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.ClearPlans()
+	})
+}
+
+// SetCities sets the "cities" field.
+func (u *CouponAssemblyUpsertBulk) SetCities(v []model.City) *CouponAssemblyUpsertBulk {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.SetCities(v)
+	})
+}
+
+// UpdateCities sets the "cities" field to the value that was provided on create.
+func (u *CouponAssemblyUpsertBulk) UpdateCities() *CouponAssemblyUpsertBulk {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.UpdateCities()
+	})
+}
+
+// ClearCities clears the value of the "cities" field.
+func (u *CouponAssemblyUpsertBulk) ClearCities() *CouponAssemblyUpsertBulk {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.ClearCities()
 	})
 }
 

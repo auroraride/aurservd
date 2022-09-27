@@ -36,6 +36,8 @@ type CouponAssemblyMutation struct {
 	amount          *float64
 	addamount       *float64
 	multiple        *bool
+	plans           *[]model.Plan
+	cities          *[]model.City
 	clearedFields   map[string]struct{}
 	done            bool
 	oldValue        func(context.Context) (*CouponAssembly, error)
@@ -619,6 +621,104 @@ func (m *CouponAssemblyMutation) ResetMultiple() {
 	m.multiple = nil
 }
 
+// SetPlans sets the "plans" field.
+func (m *CouponAssemblyMutation) SetPlans(value []model.Plan) {
+	m.plans = &value
+}
+
+// Plans returns the value of the "plans" field in the mutation.
+func (m *CouponAssemblyMutation) Plans() (r []model.Plan, exists bool) {
+	v := m.plans
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlans returns the old "plans" field's value of the CouponAssembly entity.
+// If the CouponAssembly object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CouponAssemblyMutation) OldPlans(ctx context.Context) (v []model.Plan, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlans is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlans requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlans: %w", err)
+	}
+	return oldValue.Plans, nil
+}
+
+// ClearPlans clears the value of the "plans" field.
+func (m *CouponAssemblyMutation) ClearPlans() {
+	m.plans = nil
+	m.clearedFields[couponassembly.FieldPlans] = struct{}{}
+}
+
+// PlansCleared returns if the "plans" field was cleared in this mutation.
+func (m *CouponAssemblyMutation) PlansCleared() bool {
+	_, ok := m.clearedFields[couponassembly.FieldPlans]
+	return ok
+}
+
+// ResetPlans resets all changes to the "plans" field.
+func (m *CouponAssemblyMutation) ResetPlans() {
+	m.plans = nil
+	delete(m.clearedFields, couponassembly.FieldPlans)
+}
+
+// SetCities sets the "cities" field.
+func (m *CouponAssemblyMutation) SetCities(value []model.City) {
+	m.cities = &value
+}
+
+// Cities returns the value of the "cities" field in the mutation.
+func (m *CouponAssemblyMutation) Cities() (r []model.City, exists bool) {
+	v := m.cities
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCities returns the old "cities" field's value of the CouponAssembly entity.
+// If the CouponAssembly object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CouponAssemblyMutation) OldCities(ctx context.Context) (v []model.City, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCities is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCities requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCities: %w", err)
+	}
+	return oldValue.Cities, nil
+}
+
+// ClearCities clears the value of the "cities" field.
+func (m *CouponAssemblyMutation) ClearCities() {
+	m.cities = nil
+	m.clearedFields[couponassembly.FieldCities] = struct{}{}
+}
+
+// CitiesCleared returns if the "cities" field was cleared in this mutation.
+func (m *CouponAssemblyMutation) CitiesCleared() bool {
+	_, ok := m.clearedFields[couponassembly.FieldCities]
+	return ok
+}
+
+// ResetCities resets all changes to the "cities" field.
+func (m *CouponAssemblyMutation) ResetCities() {
+	m.cities = nil
+	delete(m.clearedFields, couponassembly.FieldCities)
+}
+
 // Where appends a list predicates to the CouponAssemblyMutation builder.
 func (m *CouponAssemblyMutation) Where(ps ...predicate.CouponAssembly) {
 	m.predicates = append(m.predicates, ps...)
@@ -638,7 +738,7 @@ func (m *CouponAssemblyMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CouponAssemblyMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 12)
 	if m.created_at != nil {
 		fields = append(fields, couponassembly.FieldCreatedAt)
 	}
@@ -669,6 +769,12 @@ func (m *CouponAssemblyMutation) Fields() []string {
 	if m.multiple != nil {
 		fields = append(fields, couponassembly.FieldMultiple)
 	}
+	if m.plans != nil {
+		fields = append(fields, couponassembly.FieldPlans)
+	}
+	if m.cities != nil {
+		fields = append(fields, couponassembly.FieldCities)
+	}
 	return fields
 }
 
@@ -697,6 +803,10 @@ func (m *CouponAssemblyMutation) Field(name string) (ent.Value, bool) {
 		return m.Amount()
 	case couponassembly.FieldMultiple:
 		return m.Multiple()
+	case couponassembly.FieldPlans:
+		return m.Plans()
+	case couponassembly.FieldCities:
+		return m.Cities()
 	}
 	return nil, false
 }
@@ -726,6 +836,10 @@ func (m *CouponAssemblyMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldAmount(ctx)
 	case couponassembly.FieldMultiple:
 		return m.OldMultiple(ctx)
+	case couponassembly.FieldPlans:
+		return m.OldPlans(ctx)
+	case couponassembly.FieldCities:
+		return m.OldCities(ctx)
 	}
 	return nil, fmt.Errorf("unknown CouponAssembly field %s", name)
 }
@@ -804,6 +918,20 @@ func (m *CouponAssemblyMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetMultiple(v)
+		return nil
+	case couponassembly.FieldPlans:
+		v, ok := value.([]model.Plan)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlans(v)
+		return nil
+	case couponassembly.FieldCities:
+		v, ok := value.([]model.City)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCities(v)
 		return nil
 	}
 	return fmt.Errorf("unknown CouponAssembly field %s", name)
@@ -895,6 +1023,12 @@ func (m *CouponAssemblyMutation) ClearedFields() []string {
 	if m.FieldCleared(couponassembly.FieldRemark) {
 		fields = append(fields, couponassembly.FieldRemark)
 	}
+	if m.FieldCleared(couponassembly.FieldPlans) {
+		fields = append(fields, couponassembly.FieldPlans)
+	}
+	if m.FieldCleared(couponassembly.FieldCities) {
+		fields = append(fields, couponassembly.FieldCities)
+	}
 	return fields
 }
 
@@ -917,6 +1051,12 @@ func (m *CouponAssemblyMutation) ClearField(name string) error {
 		return nil
 	case couponassembly.FieldRemark:
 		m.ClearRemark()
+		return nil
+	case couponassembly.FieldPlans:
+		m.ClearPlans()
+		return nil
+	case couponassembly.FieldCities:
+		m.ClearCities()
 		return nil
 	}
 	return fmt.Errorf("unknown CouponAssembly nullable field %s", name)
@@ -955,6 +1095,12 @@ func (m *CouponAssemblyMutation) ResetField(name string) error {
 		return nil
 	case couponassembly.FieldMultiple:
 		m.ResetMultiple()
+		return nil
+	case couponassembly.FieldPlans:
+		m.ResetPlans()
+		return nil
+	case couponassembly.FieldCities:
+		m.ResetCities()
 		return nil
 	}
 	return fmt.Errorf("unknown CouponAssembly field %s", name)

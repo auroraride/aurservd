@@ -2360,6 +2360,22 @@ func (c *CouponClient) GetX(ctx context.Context, id uint64) *Coupon {
 	return obj
 }
 
+// QueryAssembly queries the assembly edge of a Coupon.
+func (c *CouponClient) QueryAssembly(co *Coupon) *CouponAssemblyQuery {
+	query := &CouponAssemblyQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(coupon.Table, coupon.FieldID, id),
+			sqlgraph.To(couponassembly.Table, couponassembly.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, coupon.AssemblyTable, coupon.AssemblyColumn),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryCities queries the cities edge of a Coupon.
 func (c *CouponClient) QueryCities(co *Coupon) *CityQuery {
 	query := &CityQuery{config: c.config}

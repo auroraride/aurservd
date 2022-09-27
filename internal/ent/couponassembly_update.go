@@ -134,6 +134,30 @@ func (cau *CouponAssemblyUpdate) SetNillableMultiple(b *bool) *CouponAssemblyUpd
 	return cau
 }
 
+// SetPlans sets the "plans" field.
+func (cau *CouponAssemblyUpdate) SetPlans(m []model.Plan) *CouponAssemblyUpdate {
+	cau.mutation.SetPlans(m)
+	return cau
+}
+
+// ClearPlans clears the value of the "plans" field.
+func (cau *CouponAssemblyUpdate) ClearPlans() *CouponAssemblyUpdate {
+	cau.mutation.ClearPlans()
+	return cau
+}
+
+// SetCities sets the "cities" field.
+func (cau *CouponAssemblyUpdate) SetCities(m []model.City) *CouponAssemblyUpdate {
+	cau.mutation.SetCities(m)
+	return cau
+}
+
+// ClearCities clears the value of the "cities" field.
+func (cau *CouponAssemblyUpdate) ClearCities() *CouponAssemblyUpdate {
+	cau.mutation.ClearCities()
+	return cau
+}
+
 // Mutation returns the CouponAssemblyMutation object of the builder.
 func (cau *CouponAssemblyUpdate) Mutation() *CouponAssemblyMutation {
 	return cau.mutation
@@ -334,6 +358,32 @@ func (cau *CouponAssemblyUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: couponassembly.FieldMultiple,
 		})
 	}
+	if value, ok := cau.mutation.Plans(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: couponassembly.FieldPlans,
+		})
+	}
+	if cau.mutation.PlansCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: couponassembly.FieldPlans,
+		})
+	}
+	if value, ok := cau.mutation.Cities(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: couponassembly.FieldCities,
+		})
+	}
+	if cau.mutation.CitiesCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: couponassembly.FieldCities,
+		})
+	}
 	_spec.Modifiers = cau.modifiers
 	if n, err = sqlgraph.UpdateNodes(ctx, cau.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -456,6 +506,30 @@ func (cauo *CouponAssemblyUpdateOne) SetNillableMultiple(b *bool) *CouponAssembl
 	if b != nil {
 		cauo.SetMultiple(*b)
 	}
+	return cauo
+}
+
+// SetPlans sets the "plans" field.
+func (cauo *CouponAssemblyUpdateOne) SetPlans(m []model.Plan) *CouponAssemblyUpdateOne {
+	cauo.mutation.SetPlans(m)
+	return cauo
+}
+
+// ClearPlans clears the value of the "plans" field.
+func (cauo *CouponAssemblyUpdateOne) ClearPlans() *CouponAssemblyUpdateOne {
+	cauo.mutation.ClearPlans()
+	return cauo
+}
+
+// SetCities sets the "cities" field.
+func (cauo *CouponAssemblyUpdateOne) SetCities(m []model.City) *CouponAssemblyUpdateOne {
+	cauo.mutation.SetCities(m)
+	return cauo
+}
+
+// ClearCities clears the value of the "cities" field.
+func (cauo *CouponAssemblyUpdateOne) ClearCities() *CouponAssemblyUpdateOne {
+	cauo.mutation.ClearCities()
 	return cauo
 }
 
@@ -687,6 +761,32 @@ func (cauo *CouponAssemblyUpdateOne) sqlSave(ctx context.Context) (_node *Coupon
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: couponassembly.FieldMultiple,
+		})
+	}
+	if value, ok := cauo.mutation.Plans(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: couponassembly.FieldPlans,
+		})
+	}
+	if cauo.mutation.PlansCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: couponassembly.FieldPlans,
+		})
+	}
+	if value, ok := cauo.mutation.Cities(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: couponassembly.FieldCities,
+		})
+	}
+	if cauo.mutation.CitiesCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: couponassembly.FieldCities,
 		})
 	}
 	_spec.Modifiers = cauo.modifiers

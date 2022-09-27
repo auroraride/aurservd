@@ -835,18 +835,27 @@ var (
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "name", Type: field.TypeString, Comment: "名称"},
 		{Name: "expired_at", Type: field.TypeTime, Comment: "过期时间"},
+		{Name: "amount", Type: field.TypeFloat64, Comment: "金额"},
+		{Name: "assembly_id", Type: field.TypeUint64},
 	}
 	// CouponTable holds the schema information for the "coupon" table.
 	CouponTable = &schema.Table{
 		Name:       "coupon",
 		Columns:    CouponColumns,
 		PrimaryKey: []*schema.Column{CouponColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "coupon_coupon_assembly_assembly",
+				Columns:    []*schema.Column{CouponColumns[9]},
+				RefColumns: []*schema.Column{CouponAssemblyColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
 		Indexes: []*schema.Index{
 			{
 				Name:    "coupon_created_at",
@@ -854,14 +863,9 @@ var (
 				Columns: []*schema.Column{CouponColumns[1]},
 			},
 			{
-				Name:    "coupon_deleted_at",
-				Unique:  false,
-				Columns: []*schema.Column{CouponColumns[3]},
-			},
-			{
 				Name:    "coupon_name",
 				Unique:  false,
-				Columns: []*schema.Column{CouponColumns[7]},
+				Columns: []*schema.Column{CouponColumns[6]},
 				Annotation: &entsql.IndexAnnotation{
 					Types: map[string]string{
 						"postgres": "GIN",
@@ -882,7 +886,9 @@ var (
 		{Name: "expired_type", Type: field.TypeUint8, Comment: "过期类型"},
 		{Name: "rule", Type: field.TypeUint8, Comment: "优惠券规则, 1:互斥 2:叠加"},
 		{Name: "amount", Type: field.TypeFloat64, Comment: "金额"},
-		{Name: "multiple", Type: field.TypeBool, Comment: "叠加时同类是否可使用多张", Default: false},
+		{Name: "multiple", Type: field.TypeBool, Comment: "该券是否可叠加", Default: false},
+		{Name: "plans", Type: field.TypeJSON, Comment: "可用骑行卡", Nullable: true},
+		{Name: "cities", Type: field.TypeJSON, Comment: "可用城市", Nullable: true},
 	}
 	// CouponAssemblyTable holds the schema information for the "coupon_assembly" table.
 	CouponAssemblyTable = &schema.Table{
@@ -3162,6 +3168,7 @@ func init() {
 	ContractTable.Annotation = &entsql.Annotation{
 		Table: "contract",
 	}
+	CouponTable.ForeignKeys[0].RefTable = CouponAssemblyTable
 	CouponTable.Annotation = &entsql.Annotation{
 		Table: "coupon",
 	}

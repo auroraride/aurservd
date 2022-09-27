@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
+	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 )
 
 // Coupon is the model entity for the Coupon schema.
@@ -22,18 +23,20 @@ type Coupon struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// 创建人
 	Creator *model.Modifier `json:"creator,omitempty"`
 	// 最后修改人
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
+	// AssemblyID holds the value of the "assembly_id" field.
+	AssemblyID uint64 `json:"assembly_id,omitempty"`
 	// 名称
 	Name string `json:"name,omitempty"`
 	// 过期时间
 	ExpiredAt time.Time `json:"expired_at,omitempty"`
+	// 金额
+	Amount float64 `json:"amount,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CouponQuery when eager-loading is set.
 	Edges CouponEdges `json:"edges"`
@@ -41,19 +44,34 @@ type Coupon struct {
 
 // CouponEdges holds the relations/edges for other nodes in the graph.
 type CouponEdges struct {
+	// Assembly holds the value of the assembly edge.
+	Assembly *CouponAssembly `json:"assembly,omitempty"`
 	// Cities holds the value of the cities edge.
 	Cities []*City `json:"cities,omitempty"`
 	// Plans holds the value of the plans edge.
 	Plans []*Plan `json:"plans,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
+}
+
+// AssemblyOrErr returns the Assembly value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CouponEdges) AssemblyOrErr() (*CouponAssembly, error) {
+	if e.loadedTypes[0] {
+		if e.Assembly == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: couponassembly.Label}
+		}
+		return e.Assembly, nil
+	}
+	return nil, &NotLoadedError{edge: "assembly"}
 }
 
 // CitiesOrErr returns the Cities value or an error if the edge
 // was not loaded in eager-loading.
 func (e CouponEdges) CitiesOrErr() ([]*City, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		return e.Cities, nil
 	}
 	return nil, &NotLoadedError{edge: "cities"}
@@ -62,7 +80,7 @@ func (e CouponEdges) CitiesOrErr() ([]*City, error) {
 // PlansOrErr returns the Plans value or an error if the edge
 // was not loaded in eager-loading.
 func (e CouponEdges) PlansOrErr() ([]*Plan, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		return e.Plans, nil
 	}
 	return nil, &NotLoadedError{edge: "plans"}
@@ -75,11 +93,13 @@ func (*Coupon) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case coupon.FieldCreator, coupon.FieldLastModifier:
 			values[i] = new([]byte)
-		case coupon.FieldID:
+		case coupon.FieldAmount:
+			values[i] = new(sql.NullFloat64)
+		case coupon.FieldID, coupon.FieldAssemblyID:
 			values[i] = new(sql.NullInt64)
 		case coupon.FieldRemark, coupon.FieldName:
 			values[i] = new(sql.NullString)
-		case coupon.FieldCreatedAt, coupon.FieldUpdatedAt, coupon.FieldDeletedAt, coupon.FieldExpiredAt:
+		case coupon.FieldCreatedAt, coupon.FieldUpdatedAt, coupon.FieldExpiredAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Coupon", columns[i])
@@ -114,13 +134,6 @@ func (c *Coupon) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.UpdatedAt = value.Time
 			}
-		case coupon.FieldDeletedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
-			} else if value.Valid {
-				c.DeletedAt = new(time.Time)
-				*c.DeletedAt = value.Time
-			}
 		case coupon.FieldCreator:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field creator", values[i])
@@ -143,6 +156,12 @@ func (c *Coupon) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.Remark = value.String
 			}
+		case coupon.FieldAssemblyID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field assembly_id", values[i])
+			} else if value.Valid {
+				c.AssemblyID = uint64(value.Int64)
+			}
 		case coupon.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -155,9 +174,20 @@ func (c *Coupon) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.ExpiredAt = value.Time
 			}
+		case coupon.FieldAmount:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field amount", values[i])
+			} else if value.Valid {
+				c.Amount = value.Float64
+			}
 		}
 	}
 	return nil
+}
+
+// QueryAssembly queries the "assembly" edge of the Coupon entity.
+func (c *Coupon) QueryAssembly() *CouponAssemblyQuery {
+	return (&CouponClient{config: c.config}).QueryAssembly(c)
 }
 
 // QueryCities queries the "cities" edge of the Coupon entity.
@@ -199,11 +229,6 @@ func (c *Coupon) String() string {
 	builder.WriteString("updated_at=")
 	builder.WriteString(c.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	if v := c.DeletedAt; v != nil {
-		builder.WriteString("deleted_at=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
-	builder.WriteString(", ")
 	builder.WriteString("creator=")
 	builder.WriteString(fmt.Sprintf("%v", c.Creator))
 	builder.WriteString(", ")
@@ -213,11 +238,17 @@ func (c *Coupon) String() string {
 	builder.WriteString("remark=")
 	builder.WriteString(c.Remark)
 	builder.WriteString(", ")
+	builder.WriteString("assembly_id=")
+	builder.WriteString(fmt.Sprintf("%v", c.AssemblyID))
+	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(c.Name)
 	builder.WriteString(", ")
 	builder.WriteString("expired_at=")
 	builder.WriteString(c.ExpiredAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("amount=")
+	builder.WriteString(fmt.Sprintf("%v", c.Amount))
 	builder.WriteByte(')')
 	return builder.String()
 }

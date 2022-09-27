@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
+	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -35,26 +36,6 @@ func (cu *CouponUpdate) Where(ps ...predicate.Coupon) *CouponUpdate {
 // SetUpdatedAt sets the "updated_at" field.
 func (cu *CouponUpdate) SetUpdatedAt(t time.Time) *CouponUpdate {
 	cu.mutation.SetUpdatedAt(t)
-	return cu
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (cu *CouponUpdate) SetDeletedAt(t time.Time) *CouponUpdate {
-	cu.mutation.SetDeletedAt(t)
-	return cu
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (cu *CouponUpdate) SetNillableDeletedAt(t *time.Time) *CouponUpdate {
-	if t != nil {
-		cu.SetDeletedAt(*t)
-	}
-	return cu
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (cu *CouponUpdate) ClearDeletedAt() *CouponUpdate {
-	cu.mutation.ClearDeletedAt()
 	return cu
 }
 
@@ -90,10 +71,34 @@ func (cu *CouponUpdate) ClearRemark() *CouponUpdate {
 	return cu
 }
 
+// SetAssemblyID sets the "assembly_id" field.
+func (cu *CouponUpdate) SetAssemblyID(u uint64) *CouponUpdate {
+	cu.mutation.SetAssemblyID(u)
+	return cu
+}
+
 // SetExpiredAt sets the "expired_at" field.
 func (cu *CouponUpdate) SetExpiredAt(t time.Time) *CouponUpdate {
 	cu.mutation.SetExpiredAt(t)
 	return cu
+}
+
+// SetAmount sets the "amount" field.
+func (cu *CouponUpdate) SetAmount(f float64) *CouponUpdate {
+	cu.mutation.ResetAmount()
+	cu.mutation.SetAmount(f)
+	return cu
+}
+
+// AddAmount adds f to the "amount" field.
+func (cu *CouponUpdate) AddAmount(f float64) *CouponUpdate {
+	cu.mutation.AddAmount(f)
+	return cu
+}
+
+// SetAssembly sets the "assembly" edge to the CouponAssembly entity.
+func (cu *CouponUpdate) SetAssembly(c *CouponAssembly) *CouponUpdate {
+	return cu.SetAssemblyID(c.ID)
 }
 
 // AddCityIDs adds the "cities" edge to the City entity by IDs.
@@ -129,6 +134,12 @@ func (cu *CouponUpdate) AddPlans(p ...*Plan) *CouponUpdate {
 // Mutation returns the CouponMutation object of the builder.
 func (cu *CouponUpdate) Mutation() *CouponMutation {
 	return cu.mutation
+}
+
+// ClearAssembly clears the "assembly" edge to the CouponAssembly entity.
+func (cu *CouponUpdate) ClearAssembly() *CouponUpdate {
+	cu.mutation.ClearAssembly()
+	return cu
 }
 
 // ClearCities clears all "cities" edges to the City entity.
@@ -183,12 +194,18 @@ func (cu *CouponUpdate) Save(ctx context.Context) (int, error) {
 		return 0, err
 	}
 	if len(cu.hooks) == 0 {
+		if err = cu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = cu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*CouponMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = cu.check(); err != nil {
+				return 0, err
 			}
 			cu.mutation = mutation
 			affected, err = cu.sqlSave(ctx)
@@ -242,6 +259,14 @@ func (cu *CouponUpdate) defaults() error {
 	return nil
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (cu *CouponUpdate) check() error {
+	if _, ok := cu.mutation.AssemblyID(); cu.mutation.AssemblyCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Coupon.assembly"`)
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (cu *CouponUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *CouponUpdate {
 	cu.modifiers = append(cu.modifiers, modifiers...)
@@ -271,19 +296,6 @@ func (cu *CouponUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeTime,
 			Value:  value,
 			Column: coupon.FieldUpdatedAt,
-		})
-	}
-	if value, ok := cu.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: coupon.FieldDeletedAt,
-		})
-	}
-	if cu.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: coupon.FieldDeletedAt,
 		})
 	}
 	if cu.mutation.CreatorCleared() {
@@ -324,6 +336,55 @@ func (cu *CouponUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Value:  value,
 			Column: coupon.FieldExpiredAt,
 		})
+	}
+	if value, ok := cu.mutation.Amount(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: coupon.FieldAmount,
+		})
+	}
+	if value, ok := cu.mutation.AddedAmount(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: coupon.FieldAmount,
+		})
+	}
+	if cu.mutation.AssemblyCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   coupon.AssemblyTable,
+			Columns: []string{coupon.AssemblyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: couponassembly.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.AssemblyIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   coupon.AssemblyTable,
+			Columns: []string{coupon.AssemblyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: couponassembly.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if cu.mutation.CitiesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -460,26 +521,6 @@ func (cuo *CouponUpdateOne) SetUpdatedAt(t time.Time) *CouponUpdateOne {
 	return cuo
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (cuo *CouponUpdateOne) SetDeletedAt(t time.Time) *CouponUpdateOne {
-	cuo.mutation.SetDeletedAt(t)
-	return cuo
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (cuo *CouponUpdateOne) SetNillableDeletedAt(t *time.Time) *CouponUpdateOne {
-	if t != nil {
-		cuo.SetDeletedAt(*t)
-	}
-	return cuo
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (cuo *CouponUpdateOne) ClearDeletedAt() *CouponUpdateOne {
-	cuo.mutation.ClearDeletedAt()
-	return cuo
-}
-
 // SetLastModifier sets the "last_modifier" field.
 func (cuo *CouponUpdateOne) SetLastModifier(m *model.Modifier) *CouponUpdateOne {
 	cuo.mutation.SetLastModifier(m)
@@ -512,10 +553,34 @@ func (cuo *CouponUpdateOne) ClearRemark() *CouponUpdateOne {
 	return cuo
 }
 
+// SetAssemblyID sets the "assembly_id" field.
+func (cuo *CouponUpdateOne) SetAssemblyID(u uint64) *CouponUpdateOne {
+	cuo.mutation.SetAssemblyID(u)
+	return cuo
+}
+
 // SetExpiredAt sets the "expired_at" field.
 func (cuo *CouponUpdateOne) SetExpiredAt(t time.Time) *CouponUpdateOne {
 	cuo.mutation.SetExpiredAt(t)
 	return cuo
+}
+
+// SetAmount sets the "amount" field.
+func (cuo *CouponUpdateOne) SetAmount(f float64) *CouponUpdateOne {
+	cuo.mutation.ResetAmount()
+	cuo.mutation.SetAmount(f)
+	return cuo
+}
+
+// AddAmount adds f to the "amount" field.
+func (cuo *CouponUpdateOne) AddAmount(f float64) *CouponUpdateOne {
+	cuo.mutation.AddAmount(f)
+	return cuo
+}
+
+// SetAssembly sets the "assembly" edge to the CouponAssembly entity.
+func (cuo *CouponUpdateOne) SetAssembly(c *CouponAssembly) *CouponUpdateOne {
+	return cuo.SetAssemblyID(c.ID)
 }
 
 // AddCityIDs adds the "cities" edge to the City entity by IDs.
@@ -551,6 +616,12 @@ func (cuo *CouponUpdateOne) AddPlans(p ...*Plan) *CouponUpdateOne {
 // Mutation returns the CouponMutation object of the builder.
 func (cuo *CouponUpdateOne) Mutation() *CouponMutation {
 	return cuo.mutation
+}
+
+// ClearAssembly clears the "assembly" edge to the CouponAssembly entity.
+func (cuo *CouponUpdateOne) ClearAssembly() *CouponUpdateOne {
+	cuo.mutation.ClearAssembly()
+	return cuo
 }
 
 // ClearCities clears all "cities" edges to the City entity.
@@ -612,12 +683,18 @@ func (cuo *CouponUpdateOne) Save(ctx context.Context) (*Coupon, error) {
 		return nil, err
 	}
 	if len(cuo.hooks) == 0 {
+		if err = cuo.check(); err != nil {
+			return nil, err
+		}
 		node, err = cuo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*CouponMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = cuo.check(); err != nil {
+				return nil, err
 			}
 			cuo.mutation = mutation
 			node, err = cuo.sqlSave(ctx)
@@ -677,6 +754,14 @@ func (cuo *CouponUpdateOne) defaults() error {
 	return nil
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (cuo *CouponUpdateOne) check() error {
+	if _, ok := cuo.mutation.AssemblyID(); cuo.mutation.AssemblyCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Coupon.assembly"`)
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (cuo *CouponUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *CouponUpdateOne {
 	cuo.modifiers = append(cuo.modifiers, modifiers...)
@@ -725,19 +810,6 @@ func (cuo *CouponUpdateOne) sqlSave(ctx context.Context) (_node *Coupon, err err
 			Column: coupon.FieldUpdatedAt,
 		})
 	}
-	if value, ok := cuo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: coupon.FieldDeletedAt,
-		})
-	}
-	if cuo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: coupon.FieldDeletedAt,
-		})
-	}
 	if cuo.mutation.CreatorCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
@@ -776,6 +848,55 @@ func (cuo *CouponUpdateOne) sqlSave(ctx context.Context) (_node *Coupon, err err
 			Value:  value,
 			Column: coupon.FieldExpiredAt,
 		})
+	}
+	if value, ok := cuo.mutation.Amount(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: coupon.FieldAmount,
+		})
+	}
+	if value, ok := cuo.mutation.AddedAmount(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: coupon.FieldAmount,
+		})
+	}
+	if cuo.mutation.AssemblyCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   coupon.AssemblyTable,
+			Columns: []string{coupon.AssemblyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: couponassembly.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.AssemblyIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   coupon.AssemblyTable,
+			Columns: []string{coupon.AssemblyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: couponassembly.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if cuo.mutation.CitiesCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -17,24 +17,35 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
-	FieldDeletedAt = "deleted_at"
 	// FieldCreator holds the string denoting the creator field in the database.
 	FieldCreator = "creator"
 	// FieldLastModifier holds the string denoting the last_modifier field in the database.
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
+	// FieldAssemblyID holds the string denoting the assembly_id field in the database.
+	FieldAssemblyID = "assembly_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldExpiredAt holds the string denoting the expired_at field in the database.
 	FieldExpiredAt = "expired_at"
+	// FieldAmount holds the string denoting the amount field in the database.
+	FieldAmount = "amount"
+	// EdgeAssembly holds the string denoting the assembly edge name in mutations.
+	EdgeAssembly = "assembly"
 	// EdgeCities holds the string denoting the cities edge name in mutations.
 	EdgeCities = "cities"
 	// EdgePlans holds the string denoting the plans edge name in mutations.
 	EdgePlans = "plans"
 	// Table holds the table name of the coupon in the database.
 	Table = "coupon"
+	// AssemblyTable is the table that holds the assembly relation/edge.
+	AssemblyTable = "coupon"
+	// AssemblyInverseTable is the table name for the CouponAssembly entity.
+	// It exists in this package in order to avoid circular dependency with the "couponassembly" package.
+	AssemblyInverseTable = "coupon_assembly"
+	// AssemblyColumn is the table column denoting the assembly relation/edge.
+	AssemblyColumn = "assembly_id"
 	// CitiesTable is the table that holds the cities relation/edge. The primary key declared below.
 	CitiesTable = "coupon_cities"
 	// CitiesInverseTable is the table name for the City entity.
@@ -52,12 +63,13 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
-	FieldDeletedAt,
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
+	FieldAssemblyID,
 	FieldName,
 	FieldExpiredAt,
+	FieldAmount,
 }
 
 var (

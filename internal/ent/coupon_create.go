@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
+	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 )
 
@@ -53,20 +54,6 @@ func (cc *CouponCreate) SetNillableUpdatedAt(t *time.Time) *CouponCreate {
 	return cc
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (cc *CouponCreate) SetDeletedAt(t time.Time) *CouponCreate {
-	cc.mutation.SetDeletedAt(t)
-	return cc
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (cc *CouponCreate) SetNillableDeletedAt(t *time.Time) *CouponCreate {
-	if t != nil {
-		cc.SetDeletedAt(*t)
-	}
-	return cc
-}
-
 // SetCreator sets the "creator" field.
 func (cc *CouponCreate) SetCreator(m *model.Modifier) *CouponCreate {
 	cc.mutation.SetCreator(m)
@@ -93,6 +80,12 @@ func (cc *CouponCreate) SetNillableRemark(s *string) *CouponCreate {
 	return cc
 }
 
+// SetAssemblyID sets the "assembly_id" field.
+func (cc *CouponCreate) SetAssemblyID(u uint64) *CouponCreate {
+	cc.mutation.SetAssemblyID(u)
+	return cc
+}
+
 // SetName sets the "name" field.
 func (cc *CouponCreate) SetName(s string) *CouponCreate {
 	cc.mutation.SetName(s)
@@ -103,6 +96,17 @@ func (cc *CouponCreate) SetName(s string) *CouponCreate {
 func (cc *CouponCreate) SetExpiredAt(t time.Time) *CouponCreate {
 	cc.mutation.SetExpiredAt(t)
 	return cc
+}
+
+// SetAmount sets the "amount" field.
+func (cc *CouponCreate) SetAmount(f float64) *CouponCreate {
+	cc.mutation.SetAmount(f)
+	return cc
+}
+
+// SetAssembly sets the "assembly" edge to the CouponAssembly entity.
+func (cc *CouponCreate) SetAssembly(c *CouponAssembly) *CouponCreate {
+	return cc.SetAssemblyID(c.ID)
 }
 
 // AddCityIDs adds the "cities" edge to the City entity by IDs.
@@ -239,11 +243,20 @@ func (cc *CouponCreate) check() error {
 	if _, ok := cc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Coupon.updated_at"`)}
 	}
+	if _, ok := cc.mutation.AssemblyID(); !ok {
+		return &ValidationError{Name: "assembly_id", err: errors.New(`ent: missing required field "Coupon.assembly_id"`)}
+	}
 	if _, ok := cc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Coupon.name"`)}
 	}
 	if _, ok := cc.mutation.ExpiredAt(); !ok {
 		return &ValidationError{Name: "expired_at", err: errors.New(`ent: missing required field "Coupon.expired_at"`)}
+	}
+	if _, ok := cc.mutation.Amount(); !ok {
+		return &ValidationError{Name: "amount", err: errors.New(`ent: missing required field "Coupon.amount"`)}
+	}
+	if _, ok := cc.mutation.AssemblyID(); !ok {
+		return &ValidationError{Name: "assembly", err: errors.New(`ent: missing required edge "Coupon.assembly"`)}
 	}
 	return nil
 }
@@ -289,14 +302,6 @@ func (cc *CouponCreate) createSpec() (*Coupon, *sqlgraph.CreateSpec) {
 		})
 		_node.UpdatedAt = value
 	}
-	if value, ok := cc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: coupon.FieldDeletedAt,
-		})
-		_node.DeletedAt = &value
-	}
 	if value, ok := cc.mutation.Creator(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
@@ -336,6 +341,34 @@ func (cc *CouponCreate) createSpec() (*Coupon, *sqlgraph.CreateSpec) {
 			Column: coupon.FieldExpiredAt,
 		})
 		_node.ExpiredAt = value
+	}
+	if value, ok := cc.mutation.Amount(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: coupon.FieldAmount,
+		})
+		_node.Amount = value
+	}
+	if nodes := cc.mutation.AssemblyIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   coupon.AssemblyTable,
+			Columns: []string{coupon.AssemblyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: couponassembly.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.AssemblyID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := cc.mutation.CitiesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -439,24 +472,6 @@ func (u *CouponUpsert) UpdateUpdatedAt() *CouponUpsert {
 	return u
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (u *CouponUpsert) SetDeletedAt(v time.Time) *CouponUpsert {
-	u.Set(coupon.FieldDeletedAt, v)
-	return u
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *CouponUpsert) UpdateDeletedAt() *CouponUpsert {
-	u.SetExcluded(coupon.FieldDeletedAt)
-	return u
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *CouponUpsert) ClearDeletedAt() *CouponUpsert {
-	u.SetNull(coupon.FieldDeletedAt)
-	return u
-}
-
 // SetLastModifier sets the "last_modifier" field.
 func (u *CouponUpsert) SetLastModifier(v *model.Modifier) *CouponUpsert {
 	u.Set(coupon.FieldLastModifier, v)
@@ -493,6 +508,18 @@ func (u *CouponUpsert) ClearRemark() *CouponUpsert {
 	return u
 }
 
+// SetAssemblyID sets the "assembly_id" field.
+func (u *CouponUpsert) SetAssemblyID(v uint64) *CouponUpsert {
+	u.Set(coupon.FieldAssemblyID, v)
+	return u
+}
+
+// UpdateAssemblyID sets the "assembly_id" field to the value that was provided on create.
+func (u *CouponUpsert) UpdateAssemblyID() *CouponUpsert {
+	u.SetExcluded(coupon.FieldAssemblyID)
+	return u
+}
+
 // SetExpiredAt sets the "expired_at" field.
 func (u *CouponUpsert) SetExpiredAt(v time.Time) *CouponUpsert {
 	u.Set(coupon.FieldExpiredAt, v)
@@ -502,6 +529,24 @@ func (u *CouponUpsert) SetExpiredAt(v time.Time) *CouponUpsert {
 // UpdateExpiredAt sets the "expired_at" field to the value that was provided on create.
 func (u *CouponUpsert) UpdateExpiredAt() *CouponUpsert {
 	u.SetExcluded(coupon.FieldExpiredAt)
+	return u
+}
+
+// SetAmount sets the "amount" field.
+func (u *CouponUpsert) SetAmount(v float64) *CouponUpsert {
+	u.Set(coupon.FieldAmount, v)
+	return u
+}
+
+// UpdateAmount sets the "amount" field to the value that was provided on create.
+func (u *CouponUpsert) UpdateAmount() *CouponUpsert {
+	u.SetExcluded(coupon.FieldAmount)
+	return u
+}
+
+// AddAmount adds v to the "amount" field.
+func (u *CouponUpsert) AddAmount(v float64) *CouponUpsert {
+	u.Add(coupon.FieldAmount, v)
 	return u
 }
 
@@ -570,27 +615,6 @@ func (u *CouponUpsertOne) UpdateUpdatedAt() *CouponUpsertOne {
 	})
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (u *CouponUpsertOne) SetDeletedAt(v time.Time) *CouponUpsertOne {
-	return u.Update(func(s *CouponUpsert) {
-		s.SetDeletedAt(v)
-	})
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *CouponUpsertOne) UpdateDeletedAt() *CouponUpsertOne {
-	return u.Update(func(s *CouponUpsert) {
-		s.UpdateDeletedAt()
-	})
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *CouponUpsertOne) ClearDeletedAt() *CouponUpsertOne {
-	return u.Update(func(s *CouponUpsert) {
-		s.ClearDeletedAt()
-	})
-}
-
 // SetLastModifier sets the "last_modifier" field.
 func (u *CouponUpsertOne) SetLastModifier(v *model.Modifier) *CouponUpsertOne {
 	return u.Update(func(s *CouponUpsert) {
@@ -633,6 +657,20 @@ func (u *CouponUpsertOne) ClearRemark() *CouponUpsertOne {
 	})
 }
 
+// SetAssemblyID sets the "assembly_id" field.
+func (u *CouponUpsertOne) SetAssemblyID(v uint64) *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.SetAssemblyID(v)
+	})
+}
+
+// UpdateAssemblyID sets the "assembly_id" field to the value that was provided on create.
+func (u *CouponUpsertOne) UpdateAssemblyID() *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.UpdateAssemblyID()
+	})
+}
+
 // SetExpiredAt sets the "expired_at" field.
 func (u *CouponUpsertOne) SetExpiredAt(v time.Time) *CouponUpsertOne {
 	return u.Update(func(s *CouponUpsert) {
@@ -644,6 +682,27 @@ func (u *CouponUpsertOne) SetExpiredAt(v time.Time) *CouponUpsertOne {
 func (u *CouponUpsertOne) UpdateExpiredAt() *CouponUpsertOne {
 	return u.Update(func(s *CouponUpsert) {
 		s.UpdateExpiredAt()
+	})
+}
+
+// SetAmount sets the "amount" field.
+func (u *CouponUpsertOne) SetAmount(v float64) *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.SetAmount(v)
+	})
+}
+
+// AddAmount adds v to the "amount" field.
+func (u *CouponUpsertOne) AddAmount(v float64) *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.AddAmount(v)
+	})
+}
+
+// UpdateAmount sets the "amount" field to the value that was provided on create.
+func (u *CouponUpsertOne) UpdateAmount() *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.UpdateAmount()
 	})
 }
 
@@ -874,27 +933,6 @@ func (u *CouponUpsertBulk) UpdateUpdatedAt() *CouponUpsertBulk {
 	})
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (u *CouponUpsertBulk) SetDeletedAt(v time.Time) *CouponUpsertBulk {
-	return u.Update(func(s *CouponUpsert) {
-		s.SetDeletedAt(v)
-	})
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *CouponUpsertBulk) UpdateDeletedAt() *CouponUpsertBulk {
-	return u.Update(func(s *CouponUpsert) {
-		s.UpdateDeletedAt()
-	})
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *CouponUpsertBulk) ClearDeletedAt() *CouponUpsertBulk {
-	return u.Update(func(s *CouponUpsert) {
-		s.ClearDeletedAt()
-	})
-}
-
 // SetLastModifier sets the "last_modifier" field.
 func (u *CouponUpsertBulk) SetLastModifier(v *model.Modifier) *CouponUpsertBulk {
 	return u.Update(func(s *CouponUpsert) {
@@ -937,6 +975,20 @@ func (u *CouponUpsertBulk) ClearRemark() *CouponUpsertBulk {
 	})
 }
 
+// SetAssemblyID sets the "assembly_id" field.
+func (u *CouponUpsertBulk) SetAssemblyID(v uint64) *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.SetAssemblyID(v)
+	})
+}
+
+// UpdateAssemblyID sets the "assembly_id" field to the value that was provided on create.
+func (u *CouponUpsertBulk) UpdateAssemblyID() *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.UpdateAssemblyID()
+	})
+}
+
 // SetExpiredAt sets the "expired_at" field.
 func (u *CouponUpsertBulk) SetExpiredAt(v time.Time) *CouponUpsertBulk {
 	return u.Update(func(s *CouponUpsert) {
@@ -948,6 +1000,27 @@ func (u *CouponUpsertBulk) SetExpiredAt(v time.Time) *CouponUpsertBulk {
 func (u *CouponUpsertBulk) UpdateExpiredAt() *CouponUpsertBulk {
 	return u.Update(func(s *CouponUpsert) {
 		s.UpdateExpiredAt()
+	})
+}
+
+// SetAmount sets the "amount" field.
+func (u *CouponUpsertBulk) SetAmount(v float64) *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.SetAmount(v)
+	})
+}
+
+// AddAmount adds v to the "amount" field.
+func (u *CouponUpsertBulk) AddAmount(v float64) *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.AddAmount(v)
+	})
+}
+
+// UpdateAmount sets the "amount" field to the value that was provided on create.
+func (u *CouponUpsertBulk) UpdateAmount() *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.UpdateAmount()
 	})
 }
 
