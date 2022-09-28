@@ -551,7 +551,7 @@ const docTemplate = `{
                             "type": "string"
                         },
                         "headers": {
-                            "X-Captcha-Id  true": {
+                            "X-Captcha-Id": {
                                 "type": "string",
                                 "description": "Captcha验证码ID"
                             }
