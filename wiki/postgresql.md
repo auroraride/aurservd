@@ -25,3 +25,10 @@ psql -d auroraride-prod -U liasica -f auroraride.sql
 
 - [Faster PostgreSQL Counting](https://dzone.com/articles/faster-postgresql-counting)
 - [提升 PostgreSQL 中 Count 的速度](https://www.oschina.net/translate/faster-postgresql-counting)
+
+```
+str, args := query.Modify(func(s *sql.Selector) {
+    s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+}).sqlQuery(context.Background()).Query()
+fmt.Println(str, args)
+```
