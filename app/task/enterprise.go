@@ -39,10 +39,10 @@ func (t *enterpriseTask) Start() {
     log.Infof("[ENTERPRISE TASK] started: %d", entryID)
 }
 
-// Do 检查逾期状态
+// Do 更新企业订单
 func (*enterpriseTask) Do() {
     srv := service.NewEnterprise()
-    // 获取当前所有生效的订阅
+    // 获取当前合作中的企业
     items := srv.QueryAllCollaborated()
     for _, item := range items {
         srv.UpdateStatement(item)

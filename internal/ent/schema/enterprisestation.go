@@ -6,13 +6,15 @@ import (
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
+    "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
 type StationMixin struct {
     mixin.Schema
-    Optional bool
+    DisableIndex bool
+    Optional     bool
 }
 
 func (m StationMixin) Fields() []ent.Field {
@@ -29,6 +31,13 @@ func (m StationMixin) Edges() []ent.Edge {
         e.Required()
     }
     return []ent.Edge{e}
+}
+
+func (m StationMixin) Indexes() (arr []ent.Index) {
+    if !m.DisableIndex {
+        arr = append(arr, index.Fields("station_id"))
+    }
+    return
 }
 
 // EnterpriseStation holds the schema definition for the EnterpriseStation entity.
@@ -67,5 +76,7 @@ func (EnterpriseStation) Mixin() []ent.Mixin {
 }
 
 func (EnterpriseStation) Indexes() []ent.Index {
-    return []ent.Index{}
+    return []ent.Index{
+        index.Fields("enterprise_id"),
+    }
 }

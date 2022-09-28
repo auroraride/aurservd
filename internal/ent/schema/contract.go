@@ -51,6 +51,7 @@ func (Contract) Mixin() []ent.Mixin {
 
 func (Contract) Indexes() []ent.Index {
     return []ent.Index{
+        index.Fields("rider_id"),
         index.Fields("status", "effective"),
     }
 }

@@ -14,7 +14,8 @@ import (
 
 type PointLogMixin struct {
     mixin.Schema
-    Optional bool
+    DisableIndex bool
+    Optional     bool
 }
 
 func (m PointLogMixin) Fields() []ent.Field {
@@ -33,6 +34,13 @@ func (m PointLogMixin) Edges() []ent.Edge {
         e.Required()
     }
     return []ent.Edge{e}
+}
+
+func (m PointLogMixin) Indexes() (arr []ent.Index) {
+    if !m.DisableIndex {
+        arr = append(arr, index.Fields("log_id"))
+    }
+    return
 }
 
 // PointLog holds the schema definition for the PointLog entity.

@@ -6,6 +6,7 @@ import (
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
+    "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
@@ -13,7 +14,8 @@ import (
 
 type CouponTemplateMixin struct {
     mixin.Schema
-    Optional bool
+    DisableIndex bool
+    Optional     bool
 }
 
 func (m CouponTemplateMixin) Fields() []ent.Field {
@@ -32,6 +34,13 @@ func (m CouponTemplateMixin) Edges() []ent.Edge {
         e.Required()
     }
     return []ent.Edge{e}
+}
+
+func (m CouponTemplateMixin) Indexes() (arr []ent.Index) {
+    if !m.DisableIndex {
+        arr = append(arr, index.Fields("template_id"))
+    }
+    return
 }
 
 // CouponTemplate holds the schema definition for the CouponTemplate entity.

@@ -6,13 +6,15 @@ import (
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
+    "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
 type CouponAssemblyMixin struct {
     mixin.Schema
-    Optional bool
+    Optional     bool
+    DisableIndex bool
 }
 
 func (m CouponAssemblyMixin) Fields() []ent.Field {
@@ -31,6 +33,13 @@ func (m CouponAssemblyMixin) Edges() []ent.Edge {
         e.Required()
     }
     return []ent.Edge{e}
+}
+
+func (m CouponAssemblyMixin) Indexes() (arr []ent.Index) {
+    if !m.DisableIndex {
+        arr = append(arr, index.Fields("assembly_id"))
+    }
+    return
 }
 
 // CouponAssembly holds the schema definition for the CouponAssembly entity.

@@ -61,5 +61,8 @@ func (EnterpriseBill) Mixin() []ent.Mixin {
 func (EnterpriseBill) Indexes() []ent.Index {
     return []ent.Index{
         index.Fields("model"),
+        index.Fields("enterprise_id"),
+        index.Fields("statement_id"),
+        index.Fields("subscribe_id"),
     }
 }

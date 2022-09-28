@@ -51,6 +51,7 @@ func (OrderRefund) Mixin() []ent.Mixin {
 
 func (OrderRefund) Indexes() []ent.Index {
     return []ent.Index{
+        index.Fields("order_id"),
         index.Fields("status"),
         index.Fields("out_refund_no"),
     }

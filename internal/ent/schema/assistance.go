@@ -78,5 +78,7 @@ func (Assistance) Mixin() []ent.Mixin {
 func (Assistance) Indexes() []ent.Index {
     return []ent.Index{
         index.Fields("status"),
+        index.Fields("order_id"),
+        index.Fields("employee_id"),
     }
 }

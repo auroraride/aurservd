@@ -49,6 +49,7 @@ func (Stock) Edges() []ent.Edge {
         edge.From("cabinet", Cabinet.Type).Unique().Ref("stocks").Field("cabinet_id"),
         edge.From("rider", Rider.Type).Unique().Ref("stocks").Field("rider_id"),
         edge.From("employee", Employee.Type).Unique().Ref("stocks").Field("employee_id"),
+
         edge.To("spouse", Stock.Type).Unique(),
     }
 }
@@ -67,6 +68,10 @@ func (Stock) Mixin() []ent.Mixin {
 
 func (Stock) Indexes() []ent.Index {
     return []ent.Index{
+        index.Fields("store_id"),
+        index.Fields("cabinet_id"),
+        index.Fields("rider_id"),
+        index.Fields("employee_id"),
         index.Fields("name"),
         index.Fields("model"),
         index.Fields("sn"),

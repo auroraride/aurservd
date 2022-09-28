@@ -15,7 +15,8 @@ import (
 
 type RiderMixin struct {
     mixin.Schema
-    Optional bool
+    DisableIndex bool
+    Optional     bool
 }
 
 func (m RiderMixin) Fields() []ent.Field {
@@ -32,6 +33,13 @@ func (m RiderMixin) Edges() []ent.Edge {
         e.Required()
     }
     return []ent.Edge{e}
+}
+
+func (m RiderMixin) Indexes() (arr []ent.Index) {
+    if !m.DisableIndex {
+        arr = append(arr, index.Fields("rider_id"))
+    }
+    return
 }
 
 // Rider holds the schema definition for the Rider entity.
@@ -100,6 +108,8 @@ func (Rider) Indexes() []ent.Index {
                 dialect.Postgres: "GIN",
             }),
         ),
+        index.Fields("person_id"),
+        index.Fields("enterprise_id"),
         index.Fields("last_device"),
         index.Fields("push_id"),
     }

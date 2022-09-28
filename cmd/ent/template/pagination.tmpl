@@ -37,8 +37,15 @@ func ({{ $receiver }} *{{ $builder }}) PaginationItemsX(req model.PaginationReq)
 
 // PaginationResult returns pagination for {{ $builder }}.
 func ({{ $receiver }} *{{ $builder }}) PaginationResult(req model.PaginationReq) model.Pagination {
-    ids := {{ $receiver }}.Clone().Select("{{ $n.ID.Name }}").GroupBy("{{ $n.ID.Name }}").IntsX(context.Background())
-    total := len(ids)
+    query := {{ $receiver }}.Clone()
+    query.order = nil
+    var result []struct{
+        Count int `json:"count"`
+    }
+    query.Modify(func(s *sql.Selector) {
+        s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+    }).ScanX(context.Background(), &result)
+    total := result[0].Count
 	return model.Pagination{
 	    Current: req.GetCurrent(),
         Pages:   req.GetPages(total),

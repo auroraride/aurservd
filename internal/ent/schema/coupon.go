@@ -14,7 +14,8 @@ import (
 
 type CouponMixin struct {
     mixin.Schema
-    Optional bool
+    Optional     bool
+    DisableIndex bool
 }
 
 func (m CouponMixin) Fields() []ent.Field {
@@ -33,6 +34,13 @@ func (m CouponMixin) Edges() []ent.Edge {
         e.Required()
     }
     return []ent.Edge{e}
+}
+
+func (m CouponMixin) Indexes() (arr []ent.Index) {
+    if !m.DisableIndex {
+        arr = append(arr, index.Fields("coupon_id"))
+    }
+    return
 }
 
 // Coupon holds the schema definition for the Coupon entity.

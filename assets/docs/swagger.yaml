@@ -5803,7 +5803,7 @@ paths:
         "200":
           description: ok
           headers:
-            X-Captcha-Id:
+            X-Captcha-Id  true:
               description: Captcha验证码ID
               type: string
           schema:

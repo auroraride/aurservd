@@ -13,7 +13,8 @@ import (
 
 type OrderMixin struct {
     mixin.Schema
-    Optional bool
+    DisableIndex bool
+    Optional     bool
 }
 
 func (m OrderMixin) Fields() []ent.Field {
@@ -32,6 +33,13 @@ func (m OrderMixin) Edges() []ent.Edge {
         e.Required()
     }
     return []ent.Edge{e}
+}
+
+func (m OrderMixin) Indexes() (arr []ent.Index) {
+    if !m.DisableIndex {
+        arr = append(arr, index.Fields("order_id"))
+    }
+    return
 }
 
 // Order holds the schema definition for the Order entity.
@@ -90,6 +98,8 @@ func (Order) Mixin() []ent.Mixin {
 
 func (Order) Indexes() []ent.Index {
     return []ent.Index{
+        index.Fields("rider_id"),
+        index.Fields("subscribe_id"),
         index.Fields("trade_no"),
         index.Fields("out_trade_no"),
         index.Fields("status"),

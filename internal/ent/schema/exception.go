@@ -57,6 +57,7 @@ func (Exception) Mixin() []ent.Mixin {
 
 func (Exception) Indexes() []ent.Index {
     return []ent.Index{
+        index.Fields("store_id"),
         index.Fields("name"),
         index.Fields("model"),
         index.Fields("num"),

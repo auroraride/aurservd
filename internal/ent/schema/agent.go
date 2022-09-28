@@ -13,7 +13,8 @@ import (
 
 type AgentMixin struct {
     mixin.Schema
-    Optional bool
+    Optional     bool
+    DisableIndex bool
 }
 
 func (m AgentMixin) Fields() []ent.Field {
@@ -30,6 +31,13 @@ func (m AgentMixin) Edges() []ent.Edge {
         e.Required()
     }
     return []ent.Edge{e}
+}
+
+func (m AgentMixin) Indexes() (arr []ent.Index) {
+    if !m.DisableIndex {
+        arr = append(arr, index.Fields("agent_id"))
+    }
+    return
 }
 
 // Agent holds the schema definition for the Agent entity.

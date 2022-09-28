@@ -16,8 +16,9 @@ import (
 
 type CabinetMixin struct {
     mixin.Schema
-    Optional bool
-    Prefix   string
+    Optional     bool
+    Prefix       string
+    DisableIndex bool
 
     field    string
     edgeName string
@@ -46,6 +47,14 @@ func (m CabinetMixin) Edges() []ent.Edge {
         e.Required()
     }
     return []ent.Edge{e}
+}
+
+func (m CabinetMixin) Indexes() (arr []ent.Index) {
+    pf, _ := m.prefield()
+    if !m.DisableIndex {
+        arr = append(arr, index.Fields(pf))
+    }
+    return
 }
 
 // Cabinet holds the schema definition for the Cabinet entity.

@@ -15,8 +15,9 @@ import (
 
 type EmployeeMixin struct {
     mixin.Schema
-    Optional  bool
-    Immutable bool
+    Optional     bool
+    Immutable    bool
+    DisableIndex bool
 }
 
 func (m EmployeeMixin) Fields() []ent.Field {
@@ -33,6 +34,13 @@ func (m EmployeeMixin) Edges() []ent.Edge {
         e.Required()
     }
     return []ent.Edge{e}
+}
+
+func (m EmployeeMixin) Indexes() (arr []ent.Index) {
+    if !m.DisableIndex {
+        arr = append(arr, index.Fields("employee_id"))
+    }
+    return
 }
 
 // Employee holds the schema definition for the Employee entity.

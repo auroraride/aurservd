@@ -67,6 +67,7 @@ func (CabinetFault) Indexes() []ent.Index {
         //     }),
         // ),
         // index.Fields("cabinet_name"),
+        index.Fields("branch_id"),
         index.Fields("status"),
         // index.Fields("models").Annotations(
         //     entsql.IndexTypes(map[string]string{

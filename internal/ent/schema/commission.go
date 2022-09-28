@@ -56,5 +56,7 @@ func (Commission) Mixin() []ent.Mixin {
 func (Commission) Indexes() []ent.Index {
     return []ent.Index{
         index.Fields("status"),
+        index.Fields("order_id"),
+        index.Fields("employee_id"),
     }
 }

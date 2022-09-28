@@ -15,8 +15,9 @@ import (
 
 type StoreMixin struct {
     mixin.Schema
-    Optional bool
-    Prefix   string
+    Optional     bool
+    DisableIndex bool
+    Prefix       string
 
     field    string
     edgeName string
@@ -45,6 +46,14 @@ func (m StoreMixin) Edges() []ent.Edge {
         e.Required()
     }
     return []ent.Edge{e}
+}
+
+func (m StoreMixin) Indexes() (arr []ent.Index) {
+    pf, _ := m.prefield()
+    if !m.DisableIndex {
+        arr = append(arr, index.Fields(pf))
+    }
+    return
 }
 
 // Store holds the schema definition for the Store entity.
@@ -97,6 +106,8 @@ func (Store) Mixin() []ent.Mixin {
 
 func (Store) Indexes() []ent.Index {
     return []ent.Index{
+        index.Fields("branch_id"),
+        index.Fields("employee_id"),
         index.Fields("status"),
         index.Fields("name").Annotations(
             entsql.IndexTypes(map[string]string{

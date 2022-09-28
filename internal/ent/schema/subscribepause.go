@@ -65,6 +65,7 @@ func (SubscribePause) Mixin() []ent.Mixin {
 
 func (SubscribePause) Indexes() []ent.Index {
     return []ent.Index{
+        index.Fields("subscribe_id"),
         index.Fields("end_modifier").Annotations(
             entsql.IndexTypes(map[string]string{
                 dialect.Postgres: "GIN",

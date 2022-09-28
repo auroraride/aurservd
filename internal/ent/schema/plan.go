@@ -14,7 +14,8 @@ import (
 
 type PlanMixin struct {
     mixin.Schema
-    Optional bool
+    DisableIndex bool
+    Optional     bool
 }
 
 func (m PlanMixin) Fields() []ent.Field {
@@ -31,6 +32,13 @@ func (m PlanMixin) Edges() []ent.Edge {
         e.Required()
     }
     return []ent.Edge{e}
+}
+
+func (m PlanMixin) Indexes() (arr []ent.Index) {
+    if !m.DisableIndex {
+        arr = append(arr, index.Fields("plan_id"))
+    }
+    return
 }
 
 // Plan holds the schema definition for the Plan entity.

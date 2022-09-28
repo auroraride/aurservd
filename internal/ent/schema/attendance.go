@@ -58,5 +58,7 @@ func (Attendance) Mixin() []ent.Mixin {
 func (Attendance) Indexes() []ent.Index {
     return []ent.Index{
         index.Fields("date", "duty"),
+        index.Fields("employee_id"),
+        index.Fields("store_id"),
     }
 }

@@ -48,6 +48,11 @@ var (
 				Columns: []*schema.Column{AgentColumns[3]},
 			},
 			{
+				Name:    "agent_enterprise_id",
+				Unique:  false,
+				Columns: []*schema.Column{AgentColumns[10]},
+			},
+			{
 				Name:    "agent_phone",
 				Unique:  false,
 				Columns: []*schema.Column{AgentColumns[8]},
@@ -149,9 +154,39 @@ var (
 				Columns: []*schema.Column{AssistanceColumns[3]},
 			},
 			{
+				Name:    "assistance_store_id",
+				Unique:  false,
+				Columns: []*schema.Column{AssistanceColumns[31]},
+			},
+			{
+				Name:    "assistance_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{AssistanceColumns[32]},
+			},
+			{
+				Name:    "assistance_subscribe_id",
+				Unique:  false,
+				Columns: []*schema.Column{AssistanceColumns[33]},
+			},
+			{
+				Name:    "assistance_city_id",
+				Unique:  false,
+				Columns: []*schema.Column{AssistanceColumns[34]},
+			},
+			{
 				Name:    "assistance_status",
 				Unique:  false,
 				Columns: []*schema.Column{AssistanceColumns[7]},
+			},
+			{
+				Name:    "assistance_order_id",
+				Unique:  false,
+				Columns: []*schema.Column{AssistanceColumns[36]},
+			},
+			{
+				Name:    "assistance_employee_id",
+				Unique:  false,
+				Columns: []*schema.Column{AssistanceColumns[35]},
 			},
 		},
 	}
@@ -209,6 +244,16 @@ var (
 				Name:    "attendance_date_duty",
 				Unique:  false,
 				Columns: []*schema.Column{AttendanceColumns[10], AttendanceColumns[9]},
+			},
+			{
+				Name:    "attendance_employee_id",
+				Unique:  false,
+				Columns: []*schema.Column{AttendanceColumns[15]},
+			},
+			{
+				Name:    "attendance_store_id",
+				Unique:  false,
+				Columns: []*schema.Column{AttendanceColumns[16]},
 			},
 		},
 	}
@@ -294,6 +339,11 @@ var (
 				Columns: []*schema.Column{BranchColumns[3]},
 			},
 			{
+				Name:    "branch_city_id",
+				Unique:  false,
+				Columns: []*schema.Column{BranchColumns[13]},
+			},
+			{
 				Name:    "branch_lng_lat",
 				Unique:  false,
 				Columns: []*schema.Column{BranchColumns[8], BranchColumns[9]},
@@ -368,6 +418,11 @@ var (
 				Name:    "branchcontract_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{BranchContractColumns[3]},
+			},
+			{
+				Name:    "branchcontract_branch_id",
+				Unique:  false,
+				Columns: []*schema.Column{BranchContractColumns[21]},
 			},
 		},
 	}
@@ -466,6 +521,51 @@ var (
 				Columns: []*schema.Column{BusinessColumns[3]},
 			},
 			{
+				Name:    "business_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{BusinessColumns[10]},
+			},
+			{
+				Name:    "business_city_id",
+				Unique:  false,
+				Columns: []*schema.Column{BusinessColumns[11]},
+			},
+			{
+				Name:    "business_subscribe_id",
+				Unique:  false,
+				Columns: []*schema.Column{BusinessColumns[12]},
+			},
+			{
+				Name:    "business_employee_id",
+				Unique:  false,
+				Columns: []*schema.Column{BusinessColumns[13]},
+			},
+			{
+				Name:    "business_store_id",
+				Unique:  false,
+				Columns: []*schema.Column{BusinessColumns[14]},
+			},
+			{
+				Name:    "business_plan_id",
+				Unique:  false,
+				Columns: []*schema.Column{BusinessColumns[15]},
+			},
+			{
+				Name:    "business_enterprise_id",
+				Unique:  false,
+				Columns: []*schema.Column{BusinessColumns[16]},
+			},
+			{
+				Name:    "business_station_id",
+				Unique:  false,
+				Columns: []*schema.Column{BusinessColumns[17]},
+			},
+			{
+				Name:    "business_cabinet_id",
+				Unique:  false,
+				Columns: []*schema.Column{BusinessColumns[18]},
+			},
+			{
 				Name:    "business_type",
 				Unique:  false,
 				Columns: []*schema.Column{BusinessColumns[7]},
@@ -537,6 +637,11 @@ var (
 				Name:    "cabinet_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{CabinetColumns[3]},
+			},
+			{
+				Name:    "cabinet_city_id",
+				Unique:  false,
+				Columns: []*schema.Column{CabinetColumns[27]},
 			},
 			{
 				Name:    "cabinet_branch_id",
@@ -644,6 +749,16 @@ var (
 				Name:    "cabinetfault_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{CabinetFaultColumns[3]},
+			},
+			{
+				Name:    "cabinetfault_city_id",
+				Unique:  false,
+				Columns: []*schema.Column{CabinetFaultColumns[13]},
+			},
+			{
+				Name:    "cabinetfault_branch_id",
+				Unique:  false,
+				Columns: []*schema.Column{CabinetFaultColumns[11]},
 			},
 			{
 				Name:    "cabinetfault_status",
@@ -777,9 +892,39 @@ var (
 				Columns: []*schema.Column{CommissionColumns[3]},
 			},
 			{
+				Name:    "commission_business_id",
+				Unique:  false,
+				Columns: []*schema.Column{CommissionColumns[9]},
+			},
+			{
+				Name:    "commission_subscribe_id",
+				Unique:  false,
+				Columns: []*schema.Column{CommissionColumns[10]},
+			},
+			{
+				Name:    "commission_plan_id",
+				Unique:  false,
+				Columns: []*schema.Column{CommissionColumns[11]},
+			},
+			{
+				Name:    "commission_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{CommissionColumns[12]},
+			},
+			{
 				Name:    "commission_status",
 				Unique:  false,
 				Columns: []*schema.Column{CommissionColumns[8]},
+			},
+			{
+				Name:    "commission_order_id",
+				Unique:  false,
+				Columns: []*schema.Column{CommissionColumns[14]},
+			},
+			{
+				Name:    "commission_employee_id",
+				Unique:  false,
+				Columns: []*schema.Column{CommissionColumns[13]},
 			},
 		},
 	}
@@ -822,6 +967,11 @@ var (
 				Name:    "contract_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{ContractColumns[3]},
+			},
+			{
+				Name:    "contract_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{ContractColumns[12]},
 			},
 			{
 				Name:    "contract_status_effective",
@@ -893,6 +1043,31 @@ var (
 				Columns: []*schema.Column{CouponColumns[1]},
 			},
 			{
+				Name:    "coupon_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{CouponColumns[11]},
+			},
+			{
+				Name:    "coupon_assembly_id",
+				Unique:  false,
+				Columns: []*schema.Column{CouponColumns[12]},
+			},
+			{
+				Name:    "coupon_template_id",
+				Unique:  false,
+				Columns: []*schema.Column{CouponColumns[13]},
+			},
+			{
+				Name:    "coupon_order_id",
+				Unique:  false,
+				Columns: []*schema.Column{CouponColumns[14]},
+			},
+			{
+				Name:    "coupon_plan_id",
+				Unique:  false,
+				Columns: []*schema.Column{CouponColumns[15]},
+			},
+			{
 				Name:    "coupon_name",
 				Unique:  false,
 				Columns: []*schema.Column{CouponColumns[6]},
@@ -932,6 +1107,11 @@ var (
 				Name:    "couponassembly_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{CouponAssemblyColumns[1]},
+			},
+			{
+				Name:    "couponassembly_template_id",
+				Unique:  false,
+				Columns: []*schema.Column{CouponAssemblyColumns[6]},
 			},
 		},
 	}
@@ -995,6 +1175,11 @@ var (
 				Name:    "employee_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{EmployeeColumns[3]},
+			},
+			{
+				Name:    "employee_city_id",
+				Unique:  false,
+				Columns: []*schema.Column{EmployeeColumns[11]},
 			},
 			{
 				Name:    "employee_enable",
@@ -1072,6 +1257,11 @@ var (
 				Name:    "enterprise_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{EnterpriseColumns[3]},
+			},
+			{
+				Name:    "enterprise_city_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseColumns[22]},
 			},
 			{
 				Name:    "enterprise_payment",
@@ -1202,9 +1392,39 @@ var (
 				Columns: []*schema.Column{EnterpriseBillColumns[3]},
 			},
 			{
+				Name:    "enterprisebill_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseBillColumns[14]},
+			},
+			{
+				Name:    "enterprisebill_city_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseBillColumns[15]},
+			},
+			{
+				Name:    "enterprisebill_station_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseBillColumns[16]},
+			},
+			{
 				Name:    "enterprisebill_model",
 				Unique:  false,
 				Columns: []*schema.Column{EnterpriseBillColumns[12]},
+			},
+			{
+				Name:    "enterprisebill_enterprise_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseBillColumns[13]},
+			},
+			{
+				Name:    "enterprisebill_statement_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseBillColumns[17]},
+			},
+			{
+				Name:    "enterprisebill_subscribe_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseBillColumns[18]},
 			},
 		},
 	}
@@ -1256,6 +1476,11 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{EnterpriseContractColumns[8]},
 			},
+			{
+				Name:    "enterprisecontract_enterprise_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseContractColumns[10]},
+			},
 		},
 	}
 	// EnterprisePrepaymentColumns holds the columns for the "enterprise_prepayment" table.
@@ -1293,6 +1518,11 @@ var (
 				Name:    "enterpriseprepayment_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{EnterprisePrepaymentColumns[3]},
+			},
+			{
+				Name:    "enterpriseprepayment_enterprise_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterprisePrepaymentColumns[8]},
 			},
 		},
 	}
@@ -1341,9 +1571,19 @@ var (
 				Columns: []*schema.Column{EnterprisePriceColumns[3]},
 			},
 			{
+				Name:    "enterpriseprice_city_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterprisePriceColumns[10]},
+			},
+			{
 				Name:    "enterpriseprice_model",
 				Unique:  false,
 				Columns: []*schema.Column{EnterprisePriceColumns[8]},
+			},
+			{
+				Name:    "enterpriseprice_enterprise_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterprisePriceColumns[9]},
 			},
 		},
 	}
@@ -1388,6 +1628,11 @@ var (
 				Name:    "enterprisestatement_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{EnterpriseStatementColumns[3]},
+			},
+			{
+				Name:    "enterprisestatement_enterprise_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseStatementColumns[14]},
 			},
 			{
 				Name:    "enterprisestatement_date",
@@ -1436,6 +1681,11 @@ var (
 				Name:    "enterprisestation_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{EnterpriseStationColumns[3]},
+			},
+			{
+				Name:    "enterprisestation_enterprise_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseStationColumns[8]},
 			},
 		},
 	}
@@ -1494,6 +1744,21 @@ var (
 				Name:    "exception_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{ExceptionColumns[3]},
+			},
+			{
+				Name:    "exception_city_id",
+				Unique:  false,
+				Columns: []*schema.Column{ExceptionColumns[14]},
+			},
+			{
+				Name:    "exception_employee_id",
+				Unique:  false,
+				Columns: []*schema.Column{ExceptionColumns[15]},
+			},
+			{
+				Name:    "exception_store_id",
+				Unique:  false,
+				Columns: []*schema.Column{ExceptionColumns[16]},
 			},
 			{
 				Name:    "exception_name",
@@ -1606,6 +1871,46 @@ var (
 				Columns: []*schema.Column{ExchangeColumns[3]},
 			},
 			{
+				Name:    "exchange_subscribe_id",
+				Unique:  false,
+				Columns: []*schema.Column{ExchangeColumns[18]},
+			},
+			{
+				Name:    "exchange_city_id",
+				Unique:  false,
+				Columns: []*schema.Column{ExchangeColumns[19]},
+			},
+			{
+				Name:    "exchange_store_id",
+				Unique:  false,
+				Columns: []*schema.Column{ExchangeColumns[20]},
+			},
+			{
+				Name:    "exchange_enterprise_id",
+				Unique:  false,
+				Columns: []*schema.Column{ExchangeColumns[21]},
+			},
+			{
+				Name:    "exchange_station_id",
+				Unique:  false,
+				Columns: []*schema.Column{ExchangeColumns[22]},
+			},
+			{
+				Name:    "exchange_cabinet_id",
+				Unique:  false,
+				Columns: []*schema.Column{ExchangeColumns[16]},
+			},
+			{
+				Name:    "exchange_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{ExchangeColumns[23]},
+			},
+			{
+				Name:    "exchange_employee_id",
+				Unique:  false,
+				Columns: []*schema.Column{ExchangeColumns[17]},
+			},
+			{
 				Name:    "exchange_success",
 				Unique:  false,
 				Columns: []*schema.Column{ExchangeColumns[8]},
@@ -1658,6 +1963,11 @@ var (
 				Name:    "export_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{ExportColumns[3]},
+			},
+			{
+				Name:    "export_manager_id",
+				Unique:  false,
+				Columns: []*schema.Column{ExportColumns[14]},
 			},
 			{
 				Name:    "export_sn",
@@ -1758,6 +2068,11 @@ var (
 				Columns: []*schema.Column{ManagerColumns[3]},
 			},
 			{
+				Name:    "manager_role_id",
+				Unique:  false,
+				Columns: []*schema.Column{ManagerColumns[11]},
+			},
+			{
 				Name:    "manager_phone",
 				Unique:  false,
 				Columns: []*schema.Column{ManagerColumns[7]},
@@ -1853,6 +2168,26 @@ var (
 				Columns: []*schema.Column{OrderColumns[3]},
 			},
 			{
+				Name:    "order_plan_id",
+				Unique:  false,
+				Columns: []*schema.Column{OrderColumns[17]},
+			},
+			{
+				Name:    "order_city_id",
+				Unique:  false,
+				Columns: []*schema.Column{OrderColumns[18]},
+			},
+			{
+				Name:    "order_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{OrderColumns[20]},
+			},
+			{
+				Name:    "order_subscribe_id",
+				Unique:  false,
+				Columns: []*schema.Column{OrderColumns[21]},
+			},
+			{
 				Name:    "order_trade_no",
 				Unique:  false,
 				Columns: []*schema.Column{OrderColumns[11]},
@@ -1913,6 +2248,11 @@ var (
 				Name:    "orderrefund_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{OrderRefundColumns[3]},
+			},
+			{
+				Name:    "orderrefund_order_id",
+				Unique:  false,
+				Columns: []*schema.Column{OrderRefundColumns[12]},
 			},
 			{
 				Name:    "orderrefund_status",
@@ -2094,6 +2434,16 @@ var (
 				Columns: []*schema.Column{PointLogColumns[1]},
 			},
 			{
+				Name:    "pointlog_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{PointLogColumns[10]},
+			},
+			{
+				Name:    "pointlog_order_id",
+				Unique:  false,
+				Columns: []*schema.Column{PointLogColumns[11]},
+			},
+			{
 				Name:    "pointlog_type",
 				Unique:  false,
 				Columns: []*schema.Column{PointLogColumns[5]},
@@ -2157,6 +2507,26 @@ var (
 				Name:    "reserve_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{ReserveColumns[3]},
+			},
+			{
+				Name:    "reserve_cabinet_id",
+				Unique:  false,
+				Columns: []*schema.Column{ReserveColumns[9]},
+			},
+			{
+				Name:    "reserve_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{ReserveColumns[10]},
+			},
+			{
+				Name:    "reserve_city_id",
+				Unique:  false,
+				Columns: []*schema.Column{ReserveColumns[11]},
+			},
+			{
+				Name:    "reserve_business_id",
+				Unique:  false,
+				Columns: []*schema.Column{ReserveColumns[12]},
 			},
 			{
 				Name:    "reserve_type",
@@ -2231,6 +2601,11 @@ var (
 				Columns: []*schema.Column{RiderColumns[3]},
 			},
 			{
+				Name:    "rider_station_id",
+				Unique:  false,
+				Columns: []*schema.Column{RiderColumns[20]},
+			},
+			{
 				Name:    "rider_phone",
 				Unique:  false,
 				Columns: []*schema.Column{RiderColumns[7]},
@@ -2239,6 +2614,16 @@ var (
 						"postgres": "GIN",
 					},
 				},
+			},
+			{
+				Name:    "rider_person_id",
+				Unique:  false,
+				Columns: []*schema.Column{RiderColumns[19]},
+			},
+			{
+				Name:    "rider_enterprise_id",
+				Unique:  false,
+				Columns: []*schema.Column{RiderColumns[18]},
 			},
 			{
 				Name:    "rider_last_device",
@@ -2293,6 +2678,16 @@ var (
 				Name:    "riderfollowup_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{RiderFollowUpColumns[3]},
+			},
+			{
+				Name:    "riderfollowup_manager_id",
+				Unique:  false,
+				Columns: []*schema.Column{RiderFollowUpColumns[8]},
+			},
+			{
+				Name:    "riderfollowup_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{RiderFollowUpColumns[7]},
 			},
 		},
 	}
@@ -2442,6 +2837,36 @@ var (
 				},
 			},
 			{
+				Name:    "stock_city_id",
+				Unique:  false,
+				Columns: []*schema.Column{StockColumns[16]},
+			},
+			{
+				Name:    "stock_subscribe_id",
+				Unique:  false,
+				Columns: []*schema.Column{StockColumns[17]},
+			},
+			{
+				Name:    "stock_store_id",
+				Unique:  false,
+				Columns: []*schema.Column{StockColumns[19]},
+			},
+			{
+				Name:    "stock_cabinet_id",
+				Unique:  false,
+				Columns: []*schema.Column{StockColumns[13]},
+			},
+			{
+				Name:    "stock_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{StockColumns[15]},
+			},
+			{
+				Name:    "stock_employee_id",
+				Unique:  false,
+				Columns: []*schema.Column{StockColumns[14]},
+			},
+			{
 				Name:    "stock_name",
 				Unique:  false,
 				Columns: []*schema.Column{StockColumns[9]},
@@ -2512,6 +2937,21 @@ var (
 				Name:    "store_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{StoreColumns[3]},
+			},
+			{
+				Name:    "store_city_id",
+				Unique:  false,
+				Columns: []*schema.Column{StoreColumns[15]},
+			},
+			{
+				Name:    "store_branch_id",
+				Unique:  false,
+				Columns: []*schema.Column{StoreColumns[13]},
+			},
+			{
+				Name:    "store_employee_id",
+				Unique:  false,
+				Columns: []*schema.Column{StoreColumns[14]},
 			},
 			{
 				Name:    "store_status",
@@ -2642,6 +3082,46 @@ var (
 				Columns: []*schema.Column{SubscribeColumns[3]},
 			},
 			{
+				Name:    "subscribe_plan_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeColumns[29]},
+			},
+			{
+				Name:    "subscribe_employee_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeColumns[30]},
+			},
+			{
+				Name:    "subscribe_city_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeColumns[31]},
+			},
+			{
+				Name:    "subscribe_station_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeColumns[32]},
+			},
+			{
+				Name:    "subscribe_store_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeColumns[33]},
+			},
+			{
+				Name:    "subscribe_cabinet_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeColumns[34]},
+			},
+			{
+				Name:    "subscribe_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeColumns[28]},
+			},
+			{
+				Name:    "subscribe_enterprise_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeColumns[27]},
+			},
+			{
 				Name:    "subscribe_paused_at",
 				Unique:  false,
 				Columns: []*schema.Column{SubscribeColumns[17]},
@@ -2721,6 +3201,31 @@ var (
 				Name:    "subscribealter_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{SubscribeAlterColumns[3]},
+			},
+			{
+				Name:    "subscribealter_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeAlterColumns[9]},
+			},
+			{
+				Name:    "subscribealter_manager_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeAlterColumns[10]},
+			},
+			{
+				Name:    "subscribealter_enterprise_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeAlterColumns[11]},
+			},
+			{
+				Name:    "subscribealter_agent_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeAlterColumns[12]},
+			},
+			{
+				Name:    "subscribealter_subscribe_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeAlterColumns[8]},
 			},
 		},
 	}
@@ -2833,6 +3338,46 @@ var (
 				},
 			},
 			{
+				Name:    "subscribepause_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribePauseColumns[15]},
+			},
+			{
+				Name:    "subscribepause_employee_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribePauseColumns[16]},
+			},
+			{
+				Name:    "subscribepause_city_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribePauseColumns[17]},
+			},
+			{
+				Name:    "subscribepause_store_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribePauseColumns[18]},
+			},
+			{
+				Name:    "subscribepause_end_store_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribePauseColumns[19]},
+			},
+			{
+				Name:    "subscribepause_cabinet_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribePauseColumns[20]},
+			},
+			{
+				Name:    "subscribepause_end_cabinet_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribePauseColumns[21]},
+			},
+			{
+				Name:    "subscribepause_subscribe_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribePauseColumns[14]},
+			},
+			{
 				Name:    "subscribepause_end_modifier",
 				Unique:  false,
 				Columns: []*schema.Column{SubscribePauseColumns[11]},
@@ -2881,6 +3426,16 @@ var (
 			},
 		},
 		Indexes: []*schema.Index{
+			{
+				Name:    "subscribereminder_subscribe_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeReminderColumns[12]},
+			},
+			{
+				Name:    "subscribereminder_plan_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeReminderColumns[13]},
+			},
 			{
 				Name:    "subscribereminder_type",
 				Unique:  false,
@@ -2938,6 +3493,28 @@ var (
 				Columns:    []*schema.Column{SubscribeSuspendColumns[12]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "subscribesuspend_city_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeSuspendColumns[11]},
+			},
+			{
+				Name:    "subscribesuspend_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeSuspendColumns[12]},
+			},
+			{
+				Name:    "subscribesuspend_subscribe_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeSuspendColumns[9]},
+			},
+			{
+				Name:    "subscribesuspend_pause_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeSuspendColumns[10]},
 			},
 		},
 	}

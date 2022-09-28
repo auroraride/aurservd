@@ -410,7 +410,11 @@ func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.Paginat
             res.Full = fmt.Sprintf("%d号仓, %.2f%%", ex.Fully.Index+1, ex.Fully.Electricity)
             res.Empty = fmt.Sprintf("%d号仓, %.2f%%", ex.Empty.Index+1, ex.Empty.Electricity)
             if !item.Success && !item.FinishAt.IsZero() {
-                res.Error = fmt.Sprintf("%s [%s]", item.Info.Message, ex.CurrentStep().Step)
+                if len(ex.Steps) > 0 {
+                    res.Error = fmt.Sprintf("%s [%s]", item.Info.Message, ex.CurrentStep().Step)
+                } else {
+                    res.Error = "未找到换电信息"
+                }
             }
         }
         return res

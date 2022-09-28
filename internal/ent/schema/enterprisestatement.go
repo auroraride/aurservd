@@ -54,6 +54,7 @@ func (EnterpriseStatement) Mixin() []ent.Mixin {
 
 func (EnterpriseStatement) Indexes() []ent.Index {
     return []ent.Index{
+        index.Fields("enterprise_id"),
         index.Fields("date"),
         index.Fields("start", "end"),
     }

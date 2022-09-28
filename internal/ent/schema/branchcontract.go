@@ -6,6 +6,7 @@ import (
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
+    "entgo.io/ent/schema/index"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -63,6 +64,6 @@ func (BranchContract) Mixin() []ent.Mixin {
 
 func (BranchContract) Indexes() []ent.Index {
     return []ent.Index{
-        // index.Fields("end_time"),
+        index.Fields("branch_id"),
     }
 }

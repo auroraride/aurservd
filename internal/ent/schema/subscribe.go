@@ -17,7 +17,8 @@ import (
 
 type SubscribeMixin struct {
     mixin.Schema
-    Optional bool
+    DisableIndex bool
+    Optional     bool
 }
 
 func (m SubscribeMixin) Fields() []ent.Field {
@@ -34,6 +35,13 @@ func (m SubscribeMixin) Edges() []ent.Edge {
         e.Required()
     }
     return []ent.Edge{e}
+}
+
+func (m SubscribeMixin) Indexes() (arr []ent.Index) {
+    if !m.DisableIndex {
+        arr = append(arr, index.Fields("subscribe_id"))
+    }
+    return
 }
 
 // Subscribe holds the schema definition for the Subscribe entity.
@@ -114,6 +122,8 @@ func (Subscribe) Mixin() []ent.Mixin {
 
 func (Subscribe) Indexes() []ent.Index {
     return []ent.Index{
+        index.Fields("rider_id"),
+        index.Fields("enterprise_id"),
         index.Fields("paused_at"),
         index.Fields("last_bill_date"),
         index.Fields("start_at", "end_at"),

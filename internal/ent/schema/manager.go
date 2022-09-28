@@ -14,23 +14,31 @@ import (
 
 type ManagerMixin struct {
     mixin.Schema
-    Optional bool
+    DisableIndex bool
+    Optional     bool
 }
 
-func (mmm ManagerMixin) Fields() []ent.Field {
+func (m ManagerMixin) Fields() []ent.Field {
     f := field.Uint64("manager_id").Comment("管理人ID")
-    if mmm.Optional {
+    if m.Optional {
         f.Optional().Nillable()
     }
     return []ent.Field{f}
 }
 
-func (mmm ManagerMixin) Edges() []ent.Edge {
+func (m ManagerMixin) Edges() []ent.Edge {
     e := edge.To("manager", Manager.Type).Unique().Field("manager_id")
-    if !mmm.Optional {
+    if !m.Optional {
         e.Required()
     }
     return []ent.Edge{e}
+}
+
+func (m ManagerMixin) Indexes() (arr []ent.Index) {
+    if !m.DisableIndex {
+        arr = append(arr, index.Fields("manager_id"))
+    }
+    return
 }
 
 // Manager holds the schema definition for the Manager entity.
@@ -73,6 +81,7 @@ func (Manager) Mixin() []ent.Mixin {
 
 func (Manager) Indexes() []ent.Index {
     return []ent.Index{
+        index.Fields("role_id"),
         index.Fields("phone").Annotations(
             entsql.IndexTypes(map[string]string{
                 dialect.Postgres: "GIN",

@@ -55,5 +55,6 @@ func (EnterpriseContract) Indexes() []ent.Index {
     return []ent.Index{
         index.Fields("start"),
         index.Fields("end"),
+        index.Fields("enterprise_id"),
     }
 }

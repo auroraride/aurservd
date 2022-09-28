@@ -55,5 +55,6 @@ func (EnterprisePrice) Mixin() []ent.Mixin {
 func (EnterprisePrice) Indexes() []ent.Index {
     return []ent.Index{
         index.Fields("model"),
+        index.Fields("enterprise_id"),
     }
 }

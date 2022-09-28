@@ -33,17 +33,19 @@ import (
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
+    "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
 type {{ .name }}Mixin struct {
     mixin.Schema
-    Optional bool
+    Optional     bool
+    DisableIndex bool
 }
 
 func (m {{ .name }}Mixin) Fields() []ent.Field {
-    relate := field.Uint64("{{ .tableName }}_id")
+    relate := field.Uint64("{{ .relationField }}")
     if m.Optional {
         relate.Optional().Nillable()
     }
@@ -53,11 +55,18 @@ func (m {{ .name }}Mixin) Fields() []ent.Field {
 }
 
 func (m {{ .name }}Mixin) Edges() []ent.Edge {
-    e := edge.To("{{ .tableName }}", {{ .name }}.Type).Unique().Field("{{ .tableName }}_id")
+    e := edge.To("{{ .relation }}", {{ .name }}.Type).Unique().Field("{{ .relationField }}")
     if !m.Optional {
         e.Required()
     }
     return []ent.Edge{e}
+}
+
+func (m {{ .name }}Mixin) Indexes() (arr []ent.Index) {
+    if !m.DisableIndex {
+        arr = append(arr, index.Fields("{{ .relationField }}"))
+    }
+    return
 }
 
 // {{ .name }} holds the schema definition for the {{ .name }} entity.
@@ -127,9 +136,15 @@ func initEnv(target string, names []string) error {
             return fmt.Errorf("init schema %s: %w", name, err)
         }
         b := bytes.NewBuffer(nil)
+        tableName := strings.ToLower(utils.StrToSnakeCase(name))
+        ts := strings.Split(tableName, "_")
+        relation := ts[len(ts)-1]
+        relationField := relation + "_id"
         if err := tmpl.Execute(b, map[string]string{
-            "name":      name,
-            "tableName": strings.ToLower(utils.StrToSnakeCase(name)),
+            "name":          name,
+            "tableName":     tableName,
+            "relation":      relation,
+            "relationField": relationField,
         }); err != nil {
             return fmt.Errorf("executing template %s: %w", name, err)
         }

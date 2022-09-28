@@ -16,7 +16,7 @@ import (
 // TimeMixin 时间字段
 type TimeMixin struct {
     mixin.Schema
-    DoNotIndexCreatedAt bool
+    DisableIndex bool
 }
 
 func (TimeMixin) Fields() []ent.Field {
@@ -29,7 +29,7 @@ func (TimeMixin) Fields() []ent.Field {
 
 func (t TimeMixin) Indexes() []ent.Index {
     var list []ent.Index
-    if !t.DoNotIndexCreatedAt {
+    if !t.DisableIndex {
         list = append(list, index.Fields("created_at"))
     }
     return list

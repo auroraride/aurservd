@@ -13,7 +13,8 @@ import (
 
 type CityMixin struct {
     mixin.Schema
-    Optional bool
+    Optional     bool
+    DisableIndex bool
 }
 
 func (m CityMixin) Fields() []ent.Field {
@@ -30,6 +31,13 @@ func (m CityMixin) Edges() []ent.Edge {
         e.Required()
     }
     return []ent.Edge{e}
+}
+
+func (m CityMixin) Indexes() (arr []ent.Index) {
+    if !m.DisableIndex {
+        arr = append(arr, index.Fields("city_id"))
+    }
+    return
 }
 
 // City holds the schema definition for the City entity.

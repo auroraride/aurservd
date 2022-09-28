@@ -68,6 +68,9 @@ func (Exchange) Mixin() []ent.Mixin {
 
 func (Exchange) Indexes() []ent.Index {
     return []ent.Index{
+        index.Fields("cabinet_id"),
+        index.Fields("rider_id"),
+        index.Fields("employee_id"),
         index.Fields("success"),
         index.Fields("model"),
     }

@@ -233,7 +233,9 @@ func (s *enterpriseService) Detail(item *ent.Enterprise) (res model.EnterpriseRe
 func (s *enterpriseService) QueryAllCollaborated() []*ent.Enterprise {
     items, _ := s.orm.QueryNotDeleted().
         Where(enterprise.Status(model.EnterpriseStatusCollaborated)).
-        WithPrices().
+        WithPrices(func(query *ent.EnterprisePriceQuery) {
+            query.Where(enterpriseprice.DeletedAtIsNil())
+        }).
         All(s.ctx)
     return items
 }

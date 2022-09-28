@@ -43,7 +43,7 @@ func (SubscribeReminder) Edges() []ent.Edge {
 
 func (SubscribeReminder) Mixin() []ent.Mixin {
     return []ent.Mixin{
-        internal.TimeMixin{DoNotIndexCreatedAt: true},
+        internal.TimeMixin{DisableIndex: true},
         SubscribeMixin{},
         PlanMixin{},
     }

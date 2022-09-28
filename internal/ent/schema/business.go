@@ -14,7 +14,8 @@ import (
 
 type BusinessMixin struct {
     mixin.Schema
-    Optional bool
+    Optional     bool
+    DisableIndex bool
 }
 
 func (m BusinessMixin) Fields() []ent.Field {
@@ -31,6 +32,13 @@ func (m BusinessMixin) Edges() []ent.Edge {
         e.Required()
     }
     return []ent.Edge{e}
+}
+
+func (m BusinessMixin) Indexes() (arr []ent.Index) {
+    if !m.DisableIndex {
+        arr = append(arr, index.Fields("business_id"))
+    }
+    return
 }
 
 // Business holds the schema definition for the Business entity.
