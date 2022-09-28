@@ -46,7 +46,7 @@ func autoMigrate(c *Client) {
         migrate.WithDropIndex(true),
         migrate.WithDropColumn(true),
         migrate.WithGlobalUniqueID(true),
-        // migrate.WithForeignKeys(false),
+        migrate.WithForeignKeys(false),
     ); err != nil {
         log.Fatalf("数据库迁移失败: %v", err)
     }

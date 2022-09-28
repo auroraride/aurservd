@@ -23,22 +23,49 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
+	// FieldRiderID holds the string denoting the rider_id field in the database.
+	FieldRiderID = "rider_id"
 	// FieldAssemblyID holds the string denoting the assembly_id field in the database.
 	FieldAssemblyID = "assembly_id"
+	// FieldTemplateID holds the string denoting the template_id field in the database.
+	FieldTemplateID = "template_id"
+	// FieldOrderID holds the string denoting the order_id field in the database.
+	FieldOrderID = "order_id"
+	// FieldPlanID holds the string denoting the plan_id field in the database.
+	FieldPlanID = "plan_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldExpiredAt holds the string denoting the expired_at field in the database.
-	FieldExpiredAt = "expired_at"
 	// FieldAmount holds the string denoting the amount field in the database.
 	FieldAmount = "amount"
+	// FieldCode holds the string denoting the code field in the database.
+	FieldCode = "code"
+	// FieldExpiredAt holds the string denoting the expired_at field in the database.
+	FieldExpiredAt = "expired_at"
+	// FieldUsedAt holds the string denoting the used_at field in the database.
+	FieldUsedAt = "used_at"
+	// EdgeRider holds the string denoting the rider edge name in mutations.
+	EdgeRider = "rider"
 	// EdgeAssembly holds the string denoting the assembly edge name in mutations.
 	EdgeAssembly = "assembly"
+	// EdgeTemplate holds the string denoting the template edge name in mutations.
+	EdgeTemplate = "template"
+	// EdgeOrder holds the string denoting the order edge name in mutations.
+	EdgeOrder = "order"
+	// EdgePlan holds the string denoting the plan edge name in mutations.
+	EdgePlan = "plan"
 	// EdgeCities holds the string denoting the cities edge name in mutations.
 	EdgeCities = "cities"
 	// EdgePlans holds the string denoting the plans edge name in mutations.
 	EdgePlans = "plans"
 	// Table holds the table name of the coupon in the database.
 	Table = "coupon"
+	// RiderTable is the table that holds the rider relation/edge.
+	RiderTable = "coupon"
+	// RiderInverseTable is the table name for the Rider entity.
+	// It exists in this package in order to avoid circular dependency with the "rider" package.
+	RiderInverseTable = "rider"
+	// RiderColumn is the table column denoting the rider relation/edge.
+	RiderColumn = "rider_id"
 	// AssemblyTable is the table that holds the assembly relation/edge.
 	AssemblyTable = "coupon"
 	// AssemblyInverseTable is the table name for the CouponAssembly entity.
@@ -46,6 +73,27 @@ const (
 	AssemblyInverseTable = "coupon_assembly"
 	// AssemblyColumn is the table column denoting the assembly relation/edge.
 	AssemblyColumn = "assembly_id"
+	// TemplateTable is the table that holds the template relation/edge.
+	TemplateTable = "coupon"
+	// TemplateInverseTable is the table name for the CouponTemplate entity.
+	// It exists in this package in order to avoid circular dependency with the "coupontemplate" package.
+	TemplateInverseTable = "coupon_template"
+	// TemplateColumn is the table column denoting the template relation/edge.
+	TemplateColumn = "template_id"
+	// OrderTable is the table that holds the order relation/edge.
+	OrderTable = "coupon"
+	// OrderInverseTable is the table name for the Order entity.
+	// It exists in this package in order to avoid circular dependency with the "order" package.
+	OrderInverseTable = "order"
+	// OrderColumn is the table column denoting the order relation/edge.
+	OrderColumn = "order_id"
+	// PlanTable is the table that holds the plan relation/edge.
+	PlanTable = "coupon"
+	// PlanInverseTable is the table name for the Plan entity.
+	// It exists in this package in order to avoid circular dependency with the "plan" package.
+	PlanInverseTable = "plan"
+	// PlanColumn is the table column denoting the plan relation/edge.
+	PlanColumn = "plan_id"
 	// CitiesTable is the table that holds the cities relation/edge. The primary key declared below.
 	CitiesTable = "coupon_cities"
 	// CitiesInverseTable is the table name for the City entity.
@@ -66,10 +114,16 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
+	FieldRiderID,
 	FieldAssemblyID,
+	FieldTemplateID,
+	FieldOrderID,
+	FieldPlanID,
 	FieldName,
-	FieldExpiredAt,
 	FieldAmount,
+	FieldCode,
+	FieldExpiredAt,
+	FieldUsedAt,
 }
 
 var (

@@ -49,8 +49,9 @@ func (CouponTemplate) Annotations() []schema.Annotation {
 // Fields of the CouponTemplate.
 func (CouponTemplate) Fields() []ent.Field {
     return []ent.Field{
+        field.Bool("enable").Default(true).Comment("是否启用"),
         field.String("name").Comment("名称"),
-        field.JSON("data", &model.CouponTemplate{}).Comment("详情"),
+        field.JSON("meta", &model.CouponTemplateMeta{}).Comment("详情"),
     }
 }
 
@@ -62,8 +63,6 @@ func (CouponTemplate) Edges() []ent.Edge {
 func (CouponTemplate) Mixin() []ent.Mixin {
     return []ent.Mixin{
         internal.TimeMixin{},
-        internal.DeleteMixin{},
-        internal.Modifier{},
     }
 }
 

@@ -11,19 +11,21 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/couponassembly"
+	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
 // CouponAssemblyQuery is the builder for querying CouponAssembly entities.
 type CouponAssemblyQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
-	order      []OrderFunc
-	fields     []string
-	predicates []predicate.CouponAssembly
-	modifiers  []func(*sql.Selector)
+	limit        *int
+	offset       *int
+	unique       *bool
+	order        []OrderFunc
+	fields       []string
+	predicates   []predicate.CouponAssembly
+	withTemplate *CouponTemplateQuery
+	modifiers    []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -58,6 +60,28 @@ func (caq *CouponAssemblyQuery) Unique(unique bool) *CouponAssemblyQuery {
 func (caq *CouponAssemblyQuery) Order(o ...OrderFunc) *CouponAssemblyQuery {
 	caq.order = append(caq.order, o...)
 	return caq
+}
+
+// QueryTemplate chains the current query on the "template" edge.
+func (caq *CouponAssemblyQuery) QueryTemplate() *CouponTemplateQuery {
+	query := &CouponTemplateQuery{config: caq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := caq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := caq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(couponassembly.Table, couponassembly.FieldID, selector),
+			sqlgraph.To(coupontemplate.Table, coupontemplate.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, couponassembly.TemplateTable, couponassembly.TemplateColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(caq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first CouponAssembly entity from the query.
@@ -236,16 +260,28 @@ func (caq *CouponAssemblyQuery) Clone() *CouponAssemblyQuery {
 		return nil
 	}
 	return &CouponAssemblyQuery{
-		config:     caq.config,
-		limit:      caq.limit,
-		offset:     caq.offset,
-		order:      append([]OrderFunc{}, caq.order...),
-		predicates: append([]predicate.CouponAssembly{}, caq.predicates...),
+		config:       caq.config,
+		limit:        caq.limit,
+		offset:       caq.offset,
+		order:        append([]OrderFunc{}, caq.order...),
+		predicates:   append([]predicate.CouponAssembly{}, caq.predicates...),
+		withTemplate: caq.withTemplate.Clone(),
 		// clone intermediate query.
 		sql:    caq.sql.Clone(),
 		path:   caq.path,
 		unique: caq.unique,
 	}
+}
+
+// WithTemplate tells the query-builder to eager-load the nodes that are connected to
+// the "template" edge. The optional arguments are used to configure the query builder of the edge.
+func (caq *CouponAssemblyQuery) WithTemplate(opts ...func(*CouponTemplateQuery)) *CouponAssemblyQuery {
+	query := &CouponTemplateQuery{config: caq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	caq.withTemplate = query
+	return caq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -314,8 +350,11 @@ func (caq *CouponAssemblyQuery) prepareQuery(ctx context.Context) error {
 
 func (caq *CouponAssemblyQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*CouponAssembly, error) {
 	var (
-		nodes = []*CouponAssembly{}
-		_spec = caq.querySpec()
+		nodes       = []*CouponAssembly{}
+		_spec       = caq.querySpec()
+		loadedTypes = [1]bool{
+			caq.withTemplate != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*CouponAssembly).scanValues(nil, columns)
@@ -323,6 +362,7 @@ func (caq *CouponAssemblyQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &CouponAssembly{config: caq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if len(caq.modifiers) > 0 {
@@ -337,7 +377,40 @@ func (caq *CouponAssemblyQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := caq.withTemplate; query != nil {
+		if err := caq.loadTemplate(ctx, query, nodes, nil,
+			func(n *CouponAssembly, e *CouponTemplate) { n.Edges.Template = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (caq *CouponAssemblyQuery) loadTemplate(ctx context.Context, query *CouponTemplateQuery, nodes []*CouponAssembly, init func(*CouponAssembly), assign func(*CouponAssembly, *CouponTemplate)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*CouponAssembly)
+	for i := range nodes {
+		fk := nodes[i].TemplateID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(coupontemplate.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "template_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
 }
 
 func (caq *CouponAssemblyQuery) sqlCount(ctx context.Context) (int, error) {

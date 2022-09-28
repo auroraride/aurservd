@@ -2360,6 +2360,22 @@ func (c *CouponClient) GetX(ctx context.Context, id uint64) *Coupon {
 	return obj
 }
 
+// QueryRider queries the rider edge of a Coupon.
+func (c *CouponClient) QueryRider(co *Coupon) *RiderQuery {
+	query := &RiderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(coupon.Table, coupon.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, coupon.RiderTable, coupon.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryAssembly queries the assembly edge of a Coupon.
 func (c *CouponClient) QueryAssembly(co *Coupon) *CouponAssemblyQuery {
 	query := &CouponAssemblyQuery{config: c.config}
@@ -2369,6 +2385,54 @@ func (c *CouponClient) QueryAssembly(co *Coupon) *CouponAssemblyQuery {
 			sqlgraph.From(coupon.Table, coupon.FieldID, id),
 			sqlgraph.To(couponassembly.Table, couponassembly.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, coupon.AssemblyTable, coupon.AssemblyColumn),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTemplate queries the template edge of a Coupon.
+func (c *CouponClient) QueryTemplate(co *Coupon) *CouponTemplateQuery {
+	query := &CouponTemplateQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(coupon.Table, coupon.FieldID, id),
+			sqlgraph.To(coupontemplate.Table, coupontemplate.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, coupon.TemplateTable, coupon.TemplateColumn),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOrder queries the order edge of a Coupon.
+func (c *CouponClient) QueryOrder(co *Coupon) *OrderQuery {
+	query := &OrderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(coupon.Table, coupon.FieldID, id),
+			sqlgraph.To(order.Table, order.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, coupon.OrderTable, coupon.OrderColumn),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPlan queries the plan edge of a Coupon.
+func (c *CouponClient) QueryPlan(co *Coupon) *PlanQuery {
+	query := &PlanQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(coupon.Table, coupon.FieldID, id),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, coupon.PlanTable, coupon.PlanColumn),
 		)
 		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
 		return fromV, nil
@@ -2499,6 +2563,22 @@ func (c *CouponAssemblyClient) GetX(ctx context.Context, id uint64) *CouponAssem
 	return obj
 }
 
+// QueryTemplate queries the template edge of a CouponAssembly.
+func (c *CouponAssemblyClient) QueryTemplate(ca *CouponAssembly) *CouponTemplateQuery {
+	query := &CouponTemplateQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(couponassembly.Table, couponassembly.FieldID, id),
+			sqlgraph.To(coupontemplate.Table, coupontemplate.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, couponassembly.TemplateTable, couponassembly.TemplateColumn),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *CouponAssemblyClient) Hooks() []Hook {
 	hooks := c.hooks.CouponAssembly
@@ -2592,8 +2672,7 @@ func (c *CouponTemplateClient) GetX(ctx context.Context, id uint64) *CouponTempl
 
 // Hooks returns the client hooks.
 func (c *CouponTemplateClient) Hooks() []Hook {
-	hooks := c.hooks.CouponTemplate
-	return append(hooks[:len(hooks):len(hooks)], coupontemplate.Hooks[:]...)
+	return c.hooks.CouponTemplate
 }
 
 // EmployeeClient is a client for the Employee schema.

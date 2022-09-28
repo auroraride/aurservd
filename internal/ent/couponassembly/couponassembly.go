@@ -23,22 +23,19 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
-	// FieldTotal holds the string denoting the total field in the database.
-	FieldTotal = "total"
-	// FieldExpiredType holds the string denoting the expired_type field in the database.
-	FieldExpiredType = "expired_type"
-	// FieldRule holds the string denoting the rule field in the database.
-	FieldRule = "rule"
-	// FieldAmount holds the string denoting the amount field in the database.
-	FieldAmount = "amount"
-	// FieldMultiple holds the string denoting the multiple field in the database.
-	FieldMultiple = "multiple"
-	// FieldPlans holds the string denoting the plans field in the database.
-	FieldPlans = "plans"
-	// FieldCities holds the string denoting the cities field in the database.
-	FieldCities = "cities"
+	// FieldTemplateID holds the string denoting the template_id field in the database.
+	FieldTemplateID = "template_id"
+	// EdgeTemplate holds the string denoting the template edge name in mutations.
+	EdgeTemplate = "template"
 	// Table holds the table name of the couponassembly in the database.
 	Table = "coupon_assembly"
+	// TemplateTable is the table that holds the template relation/edge.
+	TemplateTable = "coupon_assembly"
+	// TemplateInverseTable is the table name for the CouponTemplate entity.
+	// It exists in this package in order to avoid circular dependency with the "coupontemplate" package.
+	TemplateInverseTable = "coupon_template"
+	// TemplateColumn is the table column denoting the template relation/edge.
+	TemplateColumn = "template_id"
 )
 
 // Columns holds all SQL columns for couponassembly fields.
@@ -49,13 +46,7 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
-	FieldTotal,
-	FieldExpiredType,
-	FieldRule,
-	FieldAmount,
-	FieldMultiple,
-	FieldPlans,
-	FieldCities,
+	FieldTemplateID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -81,6 +72,4 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// DefaultMultiple holds the default value on creation for the "multiple" field.
-	DefaultMultiple bool
 )

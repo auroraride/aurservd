@@ -36,55 +36,17 @@ func (ctu *CouponTemplateUpdate) SetUpdatedAt(t time.Time) *CouponTemplateUpdate
 	return ctu
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (ctu *CouponTemplateUpdate) SetDeletedAt(t time.Time) *CouponTemplateUpdate {
-	ctu.mutation.SetDeletedAt(t)
+// SetEnable sets the "enable" field.
+func (ctu *CouponTemplateUpdate) SetEnable(b bool) *CouponTemplateUpdate {
+	ctu.mutation.SetEnable(b)
 	return ctu
 }
 
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (ctu *CouponTemplateUpdate) SetNillableDeletedAt(t *time.Time) *CouponTemplateUpdate {
-	if t != nil {
-		ctu.SetDeletedAt(*t)
+// SetNillableEnable sets the "enable" field if the given value is not nil.
+func (ctu *CouponTemplateUpdate) SetNillableEnable(b *bool) *CouponTemplateUpdate {
+	if b != nil {
+		ctu.SetEnable(*b)
 	}
-	return ctu
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (ctu *CouponTemplateUpdate) ClearDeletedAt() *CouponTemplateUpdate {
-	ctu.mutation.ClearDeletedAt()
-	return ctu
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (ctu *CouponTemplateUpdate) SetLastModifier(m *model.Modifier) *CouponTemplateUpdate {
-	ctu.mutation.SetLastModifier(m)
-	return ctu
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (ctu *CouponTemplateUpdate) ClearLastModifier() *CouponTemplateUpdate {
-	ctu.mutation.ClearLastModifier()
-	return ctu
-}
-
-// SetRemark sets the "remark" field.
-func (ctu *CouponTemplateUpdate) SetRemark(s string) *CouponTemplateUpdate {
-	ctu.mutation.SetRemark(s)
-	return ctu
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (ctu *CouponTemplateUpdate) SetNillableRemark(s *string) *CouponTemplateUpdate {
-	if s != nil {
-		ctu.SetRemark(*s)
-	}
-	return ctu
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (ctu *CouponTemplateUpdate) ClearRemark() *CouponTemplateUpdate {
-	ctu.mutation.ClearRemark()
 	return ctu
 }
 
@@ -94,9 +56,9 @@ func (ctu *CouponTemplateUpdate) SetName(s string) *CouponTemplateUpdate {
 	return ctu
 }
 
-// SetData sets the "data" field.
-func (ctu *CouponTemplateUpdate) SetData(mt *model.CouponTemplate) *CouponTemplateUpdate {
-	ctu.mutation.SetData(mt)
+// SetMeta sets the "meta" field.
+func (ctu *CouponTemplateUpdate) SetMeta(mtm *model.CouponTemplateMeta) *CouponTemplateUpdate {
+	ctu.mutation.SetMeta(mtm)
 	return ctu
 }
 
@@ -111,9 +73,7 @@ func (ctu *CouponTemplateUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
-	if err := ctu.defaults(); err != nil {
-		return 0, err
-	}
+	ctu.defaults()
 	if len(ctu.hooks) == 0 {
 		affected, err = ctu.sqlSave(ctx)
 	} else {
@@ -163,15 +123,11 @@ func (ctu *CouponTemplateUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (ctu *CouponTemplateUpdate) defaults() error {
+func (ctu *CouponTemplateUpdate) defaults() {
 	if _, ok := ctu.mutation.UpdatedAt(); !ok {
-		if coupontemplate.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized coupontemplate.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := coupontemplate.UpdateDefaultUpdatedAt()
 		ctu.mutation.SetUpdatedAt(v)
 	}
-	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
@@ -205,49 +161,11 @@ func (ctu *CouponTemplateUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: coupontemplate.FieldUpdatedAt,
 		})
 	}
-	if value, ok := ctu.mutation.DeletedAt(); ok {
+	if value, ok := ctu.mutation.Enable(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeBool,
 			Value:  value,
-			Column: coupontemplate.FieldDeletedAt,
-		})
-	}
-	if ctu.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: coupontemplate.FieldDeletedAt,
-		})
-	}
-	if ctu.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: coupontemplate.FieldCreator,
-		})
-	}
-	if value, ok := ctu.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: coupontemplate.FieldLastModifier,
-		})
-	}
-	if ctu.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: coupontemplate.FieldLastModifier,
-		})
-	}
-	if value, ok := ctu.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: coupontemplate.FieldRemark,
-		})
-	}
-	if ctu.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: coupontemplate.FieldRemark,
+			Column: coupontemplate.FieldEnable,
 		})
 	}
 	if value, ok := ctu.mutation.Name(); ok {
@@ -257,11 +175,11 @@ func (ctu *CouponTemplateUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: coupontemplate.FieldName,
 		})
 	}
-	if value, ok := ctu.mutation.Data(); ok {
+	if value, ok := ctu.mutation.Meta(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: coupontemplate.FieldData,
+			Column: coupontemplate.FieldMeta,
 		})
 	}
 	_spec.Modifiers = ctu.modifiers
@@ -291,55 +209,17 @@ func (ctuo *CouponTemplateUpdateOne) SetUpdatedAt(t time.Time) *CouponTemplateUp
 	return ctuo
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (ctuo *CouponTemplateUpdateOne) SetDeletedAt(t time.Time) *CouponTemplateUpdateOne {
-	ctuo.mutation.SetDeletedAt(t)
+// SetEnable sets the "enable" field.
+func (ctuo *CouponTemplateUpdateOne) SetEnable(b bool) *CouponTemplateUpdateOne {
+	ctuo.mutation.SetEnable(b)
 	return ctuo
 }
 
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (ctuo *CouponTemplateUpdateOne) SetNillableDeletedAt(t *time.Time) *CouponTemplateUpdateOne {
-	if t != nil {
-		ctuo.SetDeletedAt(*t)
+// SetNillableEnable sets the "enable" field if the given value is not nil.
+func (ctuo *CouponTemplateUpdateOne) SetNillableEnable(b *bool) *CouponTemplateUpdateOne {
+	if b != nil {
+		ctuo.SetEnable(*b)
 	}
-	return ctuo
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (ctuo *CouponTemplateUpdateOne) ClearDeletedAt() *CouponTemplateUpdateOne {
-	ctuo.mutation.ClearDeletedAt()
-	return ctuo
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (ctuo *CouponTemplateUpdateOne) SetLastModifier(m *model.Modifier) *CouponTemplateUpdateOne {
-	ctuo.mutation.SetLastModifier(m)
-	return ctuo
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (ctuo *CouponTemplateUpdateOne) ClearLastModifier() *CouponTemplateUpdateOne {
-	ctuo.mutation.ClearLastModifier()
-	return ctuo
-}
-
-// SetRemark sets the "remark" field.
-func (ctuo *CouponTemplateUpdateOne) SetRemark(s string) *CouponTemplateUpdateOne {
-	ctuo.mutation.SetRemark(s)
-	return ctuo
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (ctuo *CouponTemplateUpdateOne) SetNillableRemark(s *string) *CouponTemplateUpdateOne {
-	if s != nil {
-		ctuo.SetRemark(*s)
-	}
-	return ctuo
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (ctuo *CouponTemplateUpdateOne) ClearRemark() *CouponTemplateUpdateOne {
-	ctuo.mutation.ClearRemark()
 	return ctuo
 }
 
@@ -349,9 +229,9 @@ func (ctuo *CouponTemplateUpdateOne) SetName(s string) *CouponTemplateUpdateOne 
 	return ctuo
 }
 
-// SetData sets the "data" field.
-func (ctuo *CouponTemplateUpdateOne) SetData(mt *model.CouponTemplate) *CouponTemplateUpdateOne {
-	ctuo.mutation.SetData(mt)
+// SetMeta sets the "meta" field.
+func (ctuo *CouponTemplateUpdateOne) SetMeta(mtm *model.CouponTemplateMeta) *CouponTemplateUpdateOne {
+	ctuo.mutation.SetMeta(mtm)
 	return ctuo
 }
 
@@ -373,9 +253,7 @@ func (ctuo *CouponTemplateUpdateOne) Save(ctx context.Context) (*CouponTemplate,
 		err  error
 		node *CouponTemplate
 	)
-	if err := ctuo.defaults(); err != nil {
-		return nil, err
-	}
+	ctuo.defaults()
 	if len(ctuo.hooks) == 0 {
 		node, err = ctuo.sqlSave(ctx)
 	} else {
@@ -431,15 +309,11 @@ func (ctuo *CouponTemplateUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (ctuo *CouponTemplateUpdateOne) defaults() error {
+func (ctuo *CouponTemplateUpdateOne) defaults() {
 	if _, ok := ctuo.mutation.UpdatedAt(); !ok {
-		if coupontemplate.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized coupontemplate.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := coupontemplate.UpdateDefaultUpdatedAt()
 		ctuo.mutation.SetUpdatedAt(v)
 	}
-	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
@@ -490,49 +364,11 @@ func (ctuo *CouponTemplateUpdateOne) sqlSave(ctx context.Context) (_node *Coupon
 			Column: coupontemplate.FieldUpdatedAt,
 		})
 	}
-	if value, ok := ctuo.mutation.DeletedAt(); ok {
+	if value, ok := ctuo.mutation.Enable(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeBool,
 			Value:  value,
-			Column: coupontemplate.FieldDeletedAt,
-		})
-	}
-	if ctuo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: coupontemplate.FieldDeletedAt,
-		})
-	}
-	if ctuo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: coupontemplate.FieldCreator,
-		})
-	}
-	if value, ok := ctuo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: coupontemplate.FieldLastModifier,
-		})
-	}
-	if ctuo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: coupontemplate.FieldLastModifier,
-		})
-	}
-	if value, ok := ctuo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: coupontemplate.FieldRemark,
-		})
-	}
-	if ctuo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: coupontemplate.FieldRemark,
+			Column: coupontemplate.FieldEnable,
 		})
 	}
 	if value, ok := ctuo.mutation.Name(); ok {
@@ -542,11 +378,11 @@ func (ctuo *CouponTemplateUpdateOne) sqlSave(ctx context.Context) (_node *Coupon
 			Column: coupontemplate.FieldName,
 		})
 	}
-	if value, ok := ctuo.mutation.Data(); ok {
+	if value, ok := ctuo.mutation.Meta(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: coupontemplate.FieldData,
+			Column: coupontemplate.FieldMeta,
 		})
 	}
 	_spec.Modifiers = ctuo.modifiers

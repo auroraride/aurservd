@@ -51,8 +51,10 @@ func (Coupon) Annotations() []schema.Annotation {
 func (Coupon) Fields() []ent.Field {
     return []ent.Field{
         field.String("name").Immutable().Comment("名称"),
-        field.Time("expired_at").Comment("过期时间"),
         field.Float("amount").Comment("金额"),
+        field.String("code").Unique().Comment("券码"),
+        field.Time("expired_at").Comment("过期时间"),
+        field.Time("used_at").Optional().Comment("使用时间"),
     }
 }
 
@@ -68,7 +70,11 @@ func (Coupon) Mixin() []ent.Mixin {
     return []ent.Mixin{
         internal.TimeMixin{},
         internal.Modifier{},
+        RiderMixin{Optional: true},
         CouponAssemblyMixin{},
+        CouponTemplateMixin{},
+        OrderMixin{Optional: true},
+        PlanMixin{Optional: true},
     }
 }
 

@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/couponassembly"
+	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
 )
 
 // CouponAssembly is the model entity for the CouponAssembly schema.
@@ -28,20 +29,33 @@ type CouponAssembly struct {
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
-	// 总数
-	Total int `json:"total,omitempty"`
-	// 过期类型
-	ExpiredType uint8 `json:"expired_type,omitempty"`
-	// 优惠券规则, 1:互斥 2:叠加
-	Rule uint8 `json:"rule,omitempty"`
-	// 金额
-	Amount float64 `json:"amount,omitempty"`
-	// 该券是否可叠加
-	Multiple bool `json:"multiple,omitempty"`
-	// 可用骑行卡
-	Plans []model.Plan `json:"plans,omitempty"`
-	// 可用城市
-	Cities []model.City `json:"cities,omitempty"`
+	// TemplateID holds the value of the "template_id" field.
+	TemplateID uint64 `json:"template_id,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the CouponAssemblyQuery when eager-loading is set.
+	Edges CouponAssemblyEdges `json:"edges"`
+}
+
+// CouponAssemblyEdges holds the relations/edges for other nodes in the graph.
+type CouponAssemblyEdges struct {
+	// Template holds the value of the template edge.
+	Template *CouponTemplate `json:"template,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// TemplateOrErr returns the Template value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CouponAssemblyEdges) TemplateOrErr() (*CouponTemplate, error) {
+	if e.loadedTypes[0] {
+		if e.Template == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: coupontemplate.Label}
+		}
+		return e.Template, nil
+	}
+	return nil, &NotLoadedError{edge: "template"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -49,13 +63,9 @@ func (*CouponAssembly) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case couponassembly.FieldCreator, couponassembly.FieldLastModifier, couponassembly.FieldPlans, couponassembly.FieldCities:
+		case couponassembly.FieldCreator, couponassembly.FieldLastModifier:
 			values[i] = new([]byte)
-		case couponassembly.FieldMultiple:
-			values[i] = new(sql.NullBool)
-		case couponassembly.FieldAmount:
-			values[i] = new(sql.NullFloat64)
-		case couponassembly.FieldID, couponassembly.FieldTotal, couponassembly.FieldExpiredType, couponassembly.FieldRule:
+		case couponassembly.FieldID, couponassembly.FieldTemplateID:
 			values[i] = new(sql.NullInt64)
 		case couponassembly.FieldRemark:
 			values[i] = new(sql.NullString)
@@ -116,55 +126,20 @@ func (ca *CouponAssembly) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ca.Remark = value.String
 			}
-		case couponassembly.FieldTotal:
+		case couponassembly.FieldTemplateID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field total", values[i])
+				return fmt.Errorf("unexpected type %T for field template_id", values[i])
 			} else if value.Valid {
-				ca.Total = int(value.Int64)
-			}
-		case couponassembly.FieldExpiredType:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field expired_type", values[i])
-			} else if value.Valid {
-				ca.ExpiredType = uint8(value.Int64)
-			}
-		case couponassembly.FieldRule:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field rule", values[i])
-			} else if value.Valid {
-				ca.Rule = uint8(value.Int64)
-			}
-		case couponassembly.FieldAmount:
-			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field amount", values[i])
-			} else if value.Valid {
-				ca.Amount = value.Float64
-			}
-		case couponassembly.FieldMultiple:
-			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field multiple", values[i])
-			} else if value.Valid {
-				ca.Multiple = value.Bool
-			}
-		case couponassembly.FieldPlans:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field plans", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &ca.Plans); err != nil {
-					return fmt.Errorf("unmarshal field plans: %w", err)
-				}
-			}
-		case couponassembly.FieldCities:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field cities", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &ca.Cities); err != nil {
-					return fmt.Errorf("unmarshal field cities: %w", err)
-				}
+				ca.TemplateID = uint64(value.Int64)
 			}
 		}
 	}
 	return nil
+}
+
+// QueryTemplate queries the "template" edge of the CouponAssembly entity.
+func (ca *CouponAssembly) QueryTemplate() *CouponTemplateQuery {
+	return (&CouponAssemblyClient{config: ca.config}).QueryTemplate(ca)
 }
 
 // Update returns a builder for updating this CouponAssembly.
@@ -205,26 +180,8 @@ func (ca *CouponAssembly) String() string {
 	builder.WriteString("remark=")
 	builder.WriteString(ca.Remark)
 	builder.WriteString(", ")
-	builder.WriteString("total=")
-	builder.WriteString(fmt.Sprintf("%v", ca.Total))
-	builder.WriteString(", ")
-	builder.WriteString("expired_type=")
-	builder.WriteString(fmt.Sprintf("%v", ca.ExpiredType))
-	builder.WriteString(", ")
-	builder.WriteString("rule=")
-	builder.WriteString(fmt.Sprintf("%v", ca.Rule))
-	builder.WriteString(", ")
-	builder.WriteString("amount=")
-	builder.WriteString(fmt.Sprintf("%v", ca.Amount))
-	builder.WriteString(", ")
-	builder.WriteString("multiple=")
-	builder.WriteString(fmt.Sprintf("%v", ca.Multiple))
-	builder.WriteString(", ")
-	builder.WriteString("plans=")
-	builder.WriteString(fmt.Sprintf("%v", ca.Plans))
-	builder.WriteString(", ")
-	builder.WriteString("cities=")
-	builder.WriteString(fmt.Sprintf("%v", ca.Cities))
+	builder.WriteString("template_id=")
+	builder.WriteString(fmt.Sprintf("%v", ca.TemplateID))
 	builder.WriteByte(')')
 	return builder.String()
 }

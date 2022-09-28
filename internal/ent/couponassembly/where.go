@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -101,38 +102,10 @@ func Remark(v string) predicate.CouponAssembly {
 	})
 }
 
-// Total applies equality check predicate on the "total" field. It's identical to TotalEQ.
-func Total(v int) predicate.CouponAssembly {
+// TemplateID applies equality check predicate on the "template_id" field. It's identical to TemplateIDEQ.
+func TemplateID(v uint64) predicate.CouponAssembly {
 	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldTotal), v))
-	})
-}
-
-// ExpiredType applies equality check predicate on the "expired_type" field. It's identical to ExpiredTypeEQ.
-func ExpiredType(v uint8) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldExpiredType), v))
-	})
-}
-
-// Rule applies equality check predicate on the "rule" field. It's identical to RuleEQ.
-func Rule(v uint8) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRule), v))
-	})
-}
-
-// Amount applies equality check predicate on the "amount" field. It's identical to AmountEQ.
-func Amount(v float64) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAmount), v))
-	})
-}
-
-// Multiple applies equality check predicate on the "multiple" field. It's identical to MultipleEQ.
-func Multiple(v bool) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldMultiple), v))
+		s.Where(sql.EQ(s.C(FieldTemplateID), v))
 	})
 }
 
@@ -405,301 +378,67 @@ func RemarkContainsFold(v string) predicate.CouponAssembly {
 	})
 }
 
-// TotalEQ applies the EQ predicate on the "total" field.
-func TotalEQ(v int) predicate.CouponAssembly {
+// TemplateIDEQ applies the EQ predicate on the "template_id" field.
+func TemplateIDEQ(v uint64) predicate.CouponAssembly {
 	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldTotal), v))
+		s.Where(sql.EQ(s.C(FieldTemplateID), v))
 	})
 }
 
-// TotalNEQ applies the NEQ predicate on the "total" field.
-func TotalNEQ(v int) predicate.CouponAssembly {
+// TemplateIDNEQ applies the NEQ predicate on the "template_id" field.
+func TemplateIDNEQ(v uint64) predicate.CouponAssembly {
 	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldTotal), v))
+		s.Where(sql.NEQ(s.C(FieldTemplateID), v))
 	})
 }
 
-// TotalIn applies the In predicate on the "total" field.
-func TotalIn(vs ...int) predicate.CouponAssembly {
+// TemplateIDIn applies the In predicate on the "template_id" field.
+func TemplateIDIn(vs ...uint64) predicate.CouponAssembly {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldTotal), v...))
+		s.Where(sql.In(s.C(FieldTemplateID), v...))
 	})
 }
 
-// TotalNotIn applies the NotIn predicate on the "total" field.
-func TotalNotIn(vs ...int) predicate.CouponAssembly {
+// TemplateIDNotIn applies the NotIn predicate on the "template_id" field.
+func TemplateIDNotIn(vs ...uint64) predicate.CouponAssembly {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldTotal), v...))
+		s.Where(sql.NotIn(s.C(FieldTemplateID), v...))
 	})
 }
 
-// TotalGT applies the GT predicate on the "total" field.
-func TotalGT(v int) predicate.CouponAssembly {
+// HasTemplate applies the HasEdge predicate on the "template" edge.
+func HasTemplate() predicate.CouponAssembly {
 	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldTotal), v))
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TemplateTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, TemplateTable, TemplateColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// TotalGTE applies the GTE predicate on the "total" field.
-func TotalGTE(v int) predicate.CouponAssembly {
+// HasTemplateWith applies the HasEdge predicate on the "template" edge with a given conditions (other predicates).
+func HasTemplateWith(preds ...predicate.CouponTemplate) predicate.CouponAssembly {
 	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldTotal), v))
-	})
-}
-
-// TotalLT applies the LT predicate on the "total" field.
-func TotalLT(v int) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldTotal), v))
-	})
-}
-
-// TotalLTE applies the LTE predicate on the "total" field.
-func TotalLTE(v int) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldTotal), v))
-	})
-}
-
-// ExpiredTypeEQ applies the EQ predicate on the "expired_type" field.
-func ExpiredTypeEQ(v uint8) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldExpiredType), v))
-	})
-}
-
-// ExpiredTypeNEQ applies the NEQ predicate on the "expired_type" field.
-func ExpiredTypeNEQ(v uint8) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldExpiredType), v))
-	})
-}
-
-// ExpiredTypeIn applies the In predicate on the "expired_type" field.
-func ExpiredTypeIn(vs ...uint8) predicate.CouponAssembly {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldExpiredType), v...))
-	})
-}
-
-// ExpiredTypeNotIn applies the NotIn predicate on the "expired_type" field.
-func ExpiredTypeNotIn(vs ...uint8) predicate.CouponAssembly {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldExpiredType), v...))
-	})
-}
-
-// ExpiredTypeGT applies the GT predicate on the "expired_type" field.
-func ExpiredTypeGT(v uint8) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldExpiredType), v))
-	})
-}
-
-// ExpiredTypeGTE applies the GTE predicate on the "expired_type" field.
-func ExpiredTypeGTE(v uint8) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldExpiredType), v))
-	})
-}
-
-// ExpiredTypeLT applies the LT predicate on the "expired_type" field.
-func ExpiredTypeLT(v uint8) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldExpiredType), v))
-	})
-}
-
-// ExpiredTypeLTE applies the LTE predicate on the "expired_type" field.
-func ExpiredTypeLTE(v uint8) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldExpiredType), v))
-	})
-}
-
-// RuleEQ applies the EQ predicate on the "rule" field.
-func RuleEQ(v uint8) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRule), v))
-	})
-}
-
-// RuleNEQ applies the NEQ predicate on the "rule" field.
-func RuleNEQ(v uint8) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRule), v))
-	})
-}
-
-// RuleIn applies the In predicate on the "rule" field.
-func RuleIn(vs ...uint8) predicate.CouponAssembly {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRule), v...))
-	})
-}
-
-// RuleNotIn applies the NotIn predicate on the "rule" field.
-func RuleNotIn(vs ...uint8) predicate.CouponAssembly {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRule), v...))
-	})
-}
-
-// RuleGT applies the GT predicate on the "rule" field.
-func RuleGT(v uint8) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRule), v))
-	})
-}
-
-// RuleGTE applies the GTE predicate on the "rule" field.
-func RuleGTE(v uint8) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRule), v))
-	})
-}
-
-// RuleLT applies the LT predicate on the "rule" field.
-func RuleLT(v uint8) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRule), v))
-	})
-}
-
-// RuleLTE applies the LTE predicate on the "rule" field.
-func RuleLTE(v uint8) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRule), v))
-	})
-}
-
-// AmountEQ applies the EQ predicate on the "amount" field.
-func AmountEQ(v float64) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAmount), v))
-	})
-}
-
-// AmountNEQ applies the NEQ predicate on the "amount" field.
-func AmountNEQ(v float64) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAmount), v))
-	})
-}
-
-// AmountIn applies the In predicate on the "amount" field.
-func AmountIn(vs ...float64) predicate.CouponAssembly {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAmount), v...))
-	})
-}
-
-// AmountNotIn applies the NotIn predicate on the "amount" field.
-func AmountNotIn(vs ...float64) predicate.CouponAssembly {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAmount), v...))
-	})
-}
-
-// AmountGT applies the GT predicate on the "amount" field.
-func AmountGT(v float64) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAmount), v))
-	})
-}
-
-// AmountGTE applies the GTE predicate on the "amount" field.
-func AmountGTE(v float64) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAmount), v))
-	})
-}
-
-// AmountLT applies the LT predicate on the "amount" field.
-func AmountLT(v float64) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAmount), v))
-	})
-}
-
-// AmountLTE applies the LTE predicate on the "amount" field.
-func AmountLTE(v float64) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAmount), v))
-	})
-}
-
-// MultipleEQ applies the EQ predicate on the "multiple" field.
-func MultipleEQ(v bool) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldMultiple), v))
-	})
-}
-
-// MultipleNEQ applies the NEQ predicate on the "multiple" field.
-func MultipleNEQ(v bool) predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldMultiple), v))
-	})
-}
-
-// PlansIsNil applies the IsNil predicate on the "plans" field.
-func PlansIsNil() predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldPlans)))
-	})
-}
-
-// PlansNotNil applies the NotNil predicate on the "plans" field.
-func PlansNotNil() predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldPlans)))
-	})
-}
-
-// CitiesIsNil applies the IsNil predicate on the "cities" field.
-func CitiesIsNil() predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCities)))
-	})
-}
-
-// CitiesNotNil applies the NotNil predicate on the "cities" field.
-func CitiesNotNil() predicate.CouponAssembly {
-	return predicate.CouponAssembly(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCities)))
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TemplateInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, TemplateTable, TemplateColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 

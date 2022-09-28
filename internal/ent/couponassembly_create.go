@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/couponassembly"
+	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
 )
 
 // CouponAssemblyCreate is the builder for creating a CouponAssembly entity.
@@ -77,54 +78,15 @@ func (cac *CouponAssemblyCreate) SetNillableRemark(s *string) *CouponAssemblyCre
 	return cac
 }
 
-// SetTotal sets the "total" field.
-func (cac *CouponAssemblyCreate) SetTotal(i int) *CouponAssemblyCreate {
-	cac.mutation.SetTotal(i)
+// SetTemplateID sets the "template_id" field.
+func (cac *CouponAssemblyCreate) SetTemplateID(u uint64) *CouponAssemblyCreate {
+	cac.mutation.SetTemplateID(u)
 	return cac
 }
 
-// SetExpiredType sets the "expired_type" field.
-func (cac *CouponAssemblyCreate) SetExpiredType(u uint8) *CouponAssemblyCreate {
-	cac.mutation.SetExpiredType(u)
-	return cac
-}
-
-// SetRule sets the "rule" field.
-func (cac *CouponAssemblyCreate) SetRule(u uint8) *CouponAssemblyCreate {
-	cac.mutation.SetRule(u)
-	return cac
-}
-
-// SetAmount sets the "amount" field.
-func (cac *CouponAssemblyCreate) SetAmount(f float64) *CouponAssemblyCreate {
-	cac.mutation.SetAmount(f)
-	return cac
-}
-
-// SetMultiple sets the "multiple" field.
-func (cac *CouponAssemblyCreate) SetMultiple(b bool) *CouponAssemblyCreate {
-	cac.mutation.SetMultiple(b)
-	return cac
-}
-
-// SetNillableMultiple sets the "multiple" field if the given value is not nil.
-func (cac *CouponAssemblyCreate) SetNillableMultiple(b *bool) *CouponAssemblyCreate {
-	if b != nil {
-		cac.SetMultiple(*b)
-	}
-	return cac
-}
-
-// SetPlans sets the "plans" field.
-func (cac *CouponAssemblyCreate) SetPlans(m []model.Plan) *CouponAssemblyCreate {
-	cac.mutation.SetPlans(m)
-	return cac
-}
-
-// SetCities sets the "cities" field.
-func (cac *CouponAssemblyCreate) SetCities(m []model.City) *CouponAssemblyCreate {
-	cac.mutation.SetCities(m)
-	return cac
+// SetTemplate sets the "template" edge to the CouponTemplate entity.
+func (cac *CouponAssemblyCreate) SetTemplate(c *CouponTemplate) *CouponAssemblyCreate {
+	return cac.SetTemplateID(c.ID)
 }
 
 // Mutation returns the CouponAssemblyMutation object of the builder.
@@ -220,10 +182,6 @@ func (cac *CouponAssemblyCreate) defaults() error {
 		v := couponassembly.DefaultUpdatedAt()
 		cac.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := cac.mutation.Multiple(); !ok {
-		v := couponassembly.DefaultMultiple
-		cac.mutation.SetMultiple(v)
-	}
 	return nil
 }
 
@@ -235,20 +193,11 @@ func (cac *CouponAssemblyCreate) check() error {
 	if _, ok := cac.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "CouponAssembly.updated_at"`)}
 	}
-	if _, ok := cac.mutation.Total(); !ok {
-		return &ValidationError{Name: "total", err: errors.New(`ent: missing required field "CouponAssembly.total"`)}
+	if _, ok := cac.mutation.TemplateID(); !ok {
+		return &ValidationError{Name: "template_id", err: errors.New(`ent: missing required field "CouponAssembly.template_id"`)}
 	}
-	if _, ok := cac.mutation.ExpiredType(); !ok {
-		return &ValidationError{Name: "expired_type", err: errors.New(`ent: missing required field "CouponAssembly.expired_type"`)}
-	}
-	if _, ok := cac.mutation.Rule(); !ok {
-		return &ValidationError{Name: "rule", err: errors.New(`ent: missing required field "CouponAssembly.rule"`)}
-	}
-	if _, ok := cac.mutation.Amount(); !ok {
-		return &ValidationError{Name: "amount", err: errors.New(`ent: missing required field "CouponAssembly.amount"`)}
-	}
-	if _, ok := cac.mutation.Multiple(); !ok {
-		return &ValidationError{Name: "multiple", err: errors.New(`ent: missing required field "CouponAssembly.multiple"`)}
+	if _, ok := cac.mutation.TemplateID(); !ok {
+		return &ValidationError{Name: "template", err: errors.New(`ent: missing required edge "CouponAssembly.template"`)}
 	}
 	return nil
 }
@@ -318,61 +267,25 @@ func (cac *CouponAssemblyCreate) createSpec() (*CouponAssembly, *sqlgraph.Create
 		})
 		_node.Remark = value
 	}
-	if value, ok := cac.mutation.Total(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: couponassembly.FieldTotal,
-		})
-		_node.Total = value
-	}
-	if value, ok := cac.mutation.ExpiredType(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: couponassembly.FieldExpiredType,
-		})
-		_node.ExpiredType = value
-	}
-	if value, ok := cac.mutation.Rule(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: couponassembly.FieldRule,
-		})
-		_node.Rule = value
-	}
-	if value, ok := cac.mutation.Amount(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: couponassembly.FieldAmount,
-		})
-		_node.Amount = value
-	}
-	if value, ok := cac.mutation.Multiple(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: couponassembly.FieldMultiple,
-		})
-		_node.Multiple = value
-	}
-	if value, ok := cac.mutation.Plans(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: couponassembly.FieldPlans,
-		})
-		_node.Plans = value
-	}
-	if value, ok := cac.mutation.Cities(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: couponassembly.FieldCities,
-		})
-		_node.Cities = value
+	if nodes := cac.mutation.TemplateIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   couponassembly.TemplateTable,
+			Columns: []string{couponassembly.TemplateColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupontemplate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.TemplateID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
@@ -474,123 +387,15 @@ func (u *CouponAssemblyUpsert) ClearRemark() *CouponAssemblyUpsert {
 	return u
 }
 
-// SetTotal sets the "total" field.
-func (u *CouponAssemblyUpsert) SetTotal(v int) *CouponAssemblyUpsert {
-	u.Set(couponassembly.FieldTotal, v)
+// SetTemplateID sets the "template_id" field.
+func (u *CouponAssemblyUpsert) SetTemplateID(v uint64) *CouponAssemblyUpsert {
+	u.Set(couponassembly.FieldTemplateID, v)
 	return u
 }
 
-// UpdateTotal sets the "total" field to the value that was provided on create.
-func (u *CouponAssemblyUpsert) UpdateTotal() *CouponAssemblyUpsert {
-	u.SetExcluded(couponassembly.FieldTotal)
-	return u
-}
-
-// AddTotal adds v to the "total" field.
-func (u *CouponAssemblyUpsert) AddTotal(v int) *CouponAssemblyUpsert {
-	u.Add(couponassembly.FieldTotal, v)
-	return u
-}
-
-// SetExpiredType sets the "expired_type" field.
-func (u *CouponAssemblyUpsert) SetExpiredType(v uint8) *CouponAssemblyUpsert {
-	u.Set(couponassembly.FieldExpiredType, v)
-	return u
-}
-
-// UpdateExpiredType sets the "expired_type" field to the value that was provided on create.
-func (u *CouponAssemblyUpsert) UpdateExpiredType() *CouponAssemblyUpsert {
-	u.SetExcluded(couponassembly.FieldExpiredType)
-	return u
-}
-
-// AddExpiredType adds v to the "expired_type" field.
-func (u *CouponAssemblyUpsert) AddExpiredType(v uint8) *CouponAssemblyUpsert {
-	u.Add(couponassembly.FieldExpiredType, v)
-	return u
-}
-
-// SetRule sets the "rule" field.
-func (u *CouponAssemblyUpsert) SetRule(v uint8) *CouponAssemblyUpsert {
-	u.Set(couponassembly.FieldRule, v)
-	return u
-}
-
-// UpdateRule sets the "rule" field to the value that was provided on create.
-func (u *CouponAssemblyUpsert) UpdateRule() *CouponAssemblyUpsert {
-	u.SetExcluded(couponassembly.FieldRule)
-	return u
-}
-
-// AddRule adds v to the "rule" field.
-func (u *CouponAssemblyUpsert) AddRule(v uint8) *CouponAssemblyUpsert {
-	u.Add(couponassembly.FieldRule, v)
-	return u
-}
-
-// SetAmount sets the "amount" field.
-func (u *CouponAssemblyUpsert) SetAmount(v float64) *CouponAssemblyUpsert {
-	u.Set(couponassembly.FieldAmount, v)
-	return u
-}
-
-// UpdateAmount sets the "amount" field to the value that was provided on create.
-func (u *CouponAssemblyUpsert) UpdateAmount() *CouponAssemblyUpsert {
-	u.SetExcluded(couponassembly.FieldAmount)
-	return u
-}
-
-// AddAmount adds v to the "amount" field.
-func (u *CouponAssemblyUpsert) AddAmount(v float64) *CouponAssemblyUpsert {
-	u.Add(couponassembly.FieldAmount, v)
-	return u
-}
-
-// SetMultiple sets the "multiple" field.
-func (u *CouponAssemblyUpsert) SetMultiple(v bool) *CouponAssemblyUpsert {
-	u.Set(couponassembly.FieldMultiple, v)
-	return u
-}
-
-// UpdateMultiple sets the "multiple" field to the value that was provided on create.
-func (u *CouponAssemblyUpsert) UpdateMultiple() *CouponAssemblyUpsert {
-	u.SetExcluded(couponassembly.FieldMultiple)
-	return u
-}
-
-// SetPlans sets the "plans" field.
-func (u *CouponAssemblyUpsert) SetPlans(v []model.Plan) *CouponAssemblyUpsert {
-	u.Set(couponassembly.FieldPlans, v)
-	return u
-}
-
-// UpdatePlans sets the "plans" field to the value that was provided on create.
-func (u *CouponAssemblyUpsert) UpdatePlans() *CouponAssemblyUpsert {
-	u.SetExcluded(couponassembly.FieldPlans)
-	return u
-}
-
-// ClearPlans clears the value of the "plans" field.
-func (u *CouponAssemblyUpsert) ClearPlans() *CouponAssemblyUpsert {
-	u.SetNull(couponassembly.FieldPlans)
-	return u
-}
-
-// SetCities sets the "cities" field.
-func (u *CouponAssemblyUpsert) SetCities(v []model.City) *CouponAssemblyUpsert {
-	u.Set(couponassembly.FieldCities, v)
-	return u
-}
-
-// UpdateCities sets the "cities" field to the value that was provided on create.
-func (u *CouponAssemblyUpsert) UpdateCities() *CouponAssemblyUpsert {
-	u.SetExcluded(couponassembly.FieldCities)
-	return u
-}
-
-// ClearCities clears the value of the "cities" field.
-func (u *CouponAssemblyUpsert) ClearCities() *CouponAssemblyUpsert {
-	u.SetNull(couponassembly.FieldCities)
+// UpdateTemplateID sets the "template_id" field to the value that was provided on create.
+func (u *CouponAssemblyUpsert) UpdateTemplateID() *CouponAssemblyUpsert {
+	u.SetExcluded(couponassembly.FieldTemplateID)
 	return u
 }
 
@@ -698,143 +503,17 @@ func (u *CouponAssemblyUpsertOne) ClearRemark() *CouponAssemblyUpsertOne {
 	})
 }
 
-// SetTotal sets the "total" field.
-func (u *CouponAssemblyUpsertOne) SetTotal(v int) *CouponAssemblyUpsertOne {
+// SetTemplateID sets the "template_id" field.
+func (u *CouponAssemblyUpsertOne) SetTemplateID(v uint64) *CouponAssemblyUpsertOne {
 	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.SetTotal(v)
+		s.SetTemplateID(v)
 	})
 }
 
-// AddTotal adds v to the "total" field.
-func (u *CouponAssemblyUpsertOne) AddTotal(v int) *CouponAssemblyUpsertOne {
+// UpdateTemplateID sets the "template_id" field to the value that was provided on create.
+func (u *CouponAssemblyUpsertOne) UpdateTemplateID() *CouponAssemblyUpsertOne {
 	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.AddTotal(v)
-	})
-}
-
-// UpdateTotal sets the "total" field to the value that was provided on create.
-func (u *CouponAssemblyUpsertOne) UpdateTotal() *CouponAssemblyUpsertOne {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.UpdateTotal()
-	})
-}
-
-// SetExpiredType sets the "expired_type" field.
-func (u *CouponAssemblyUpsertOne) SetExpiredType(v uint8) *CouponAssemblyUpsertOne {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.SetExpiredType(v)
-	})
-}
-
-// AddExpiredType adds v to the "expired_type" field.
-func (u *CouponAssemblyUpsertOne) AddExpiredType(v uint8) *CouponAssemblyUpsertOne {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.AddExpiredType(v)
-	})
-}
-
-// UpdateExpiredType sets the "expired_type" field to the value that was provided on create.
-func (u *CouponAssemblyUpsertOne) UpdateExpiredType() *CouponAssemblyUpsertOne {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.UpdateExpiredType()
-	})
-}
-
-// SetRule sets the "rule" field.
-func (u *CouponAssemblyUpsertOne) SetRule(v uint8) *CouponAssemblyUpsertOne {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.SetRule(v)
-	})
-}
-
-// AddRule adds v to the "rule" field.
-func (u *CouponAssemblyUpsertOne) AddRule(v uint8) *CouponAssemblyUpsertOne {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.AddRule(v)
-	})
-}
-
-// UpdateRule sets the "rule" field to the value that was provided on create.
-func (u *CouponAssemblyUpsertOne) UpdateRule() *CouponAssemblyUpsertOne {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.UpdateRule()
-	})
-}
-
-// SetAmount sets the "amount" field.
-func (u *CouponAssemblyUpsertOne) SetAmount(v float64) *CouponAssemblyUpsertOne {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.SetAmount(v)
-	})
-}
-
-// AddAmount adds v to the "amount" field.
-func (u *CouponAssemblyUpsertOne) AddAmount(v float64) *CouponAssemblyUpsertOne {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.AddAmount(v)
-	})
-}
-
-// UpdateAmount sets the "amount" field to the value that was provided on create.
-func (u *CouponAssemblyUpsertOne) UpdateAmount() *CouponAssemblyUpsertOne {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.UpdateAmount()
-	})
-}
-
-// SetMultiple sets the "multiple" field.
-func (u *CouponAssemblyUpsertOne) SetMultiple(v bool) *CouponAssemblyUpsertOne {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.SetMultiple(v)
-	})
-}
-
-// UpdateMultiple sets the "multiple" field to the value that was provided on create.
-func (u *CouponAssemblyUpsertOne) UpdateMultiple() *CouponAssemblyUpsertOne {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.UpdateMultiple()
-	})
-}
-
-// SetPlans sets the "plans" field.
-func (u *CouponAssemblyUpsertOne) SetPlans(v []model.Plan) *CouponAssemblyUpsertOne {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.SetPlans(v)
-	})
-}
-
-// UpdatePlans sets the "plans" field to the value that was provided on create.
-func (u *CouponAssemblyUpsertOne) UpdatePlans() *CouponAssemblyUpsertOne {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.UpdatePlans()
-	})
-}
-
-// ClearPlans clears the value of the "plans" field.
-func (u *CouponAssemblyUpsertOne) ClearPlans() *CouponAssemblyUpsertOne {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.ClearPlans()
-	})
-}
-
-// SetCities sets the "cities" field.
-func (u *CouponAssemblyUpsertOne) SetCities(v []model.City) *CouponAssemblyUpsertOne {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.SetCities(v)
-	})
-}
-
-// UpdateCities sets the "cities" field to the value that was provided on create.
-func (u *CouponAssemblyUpsertOne) UpdateCities() *CouponAssemblyUpsertOne {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.UpdateCities()
-	})
-}
-
-// ClearCities clears the value of the "cities" field.
-func (u *CouponAssemblyUpsertOne) ClearCities() *CouponAssemblyUpsertOne {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.ClearCities()
+		s.UpdateTemplateID()
 	})
 }
 
@@ -1104,143 +783,17 @@ func (u *CouponAssemblyUpsertBulk) ClearRemark() *CouponAssemblyUpsertBulk {
 	})
 }
 
-// SetTotal sets the "total" field.
-func (u *CouponAssemblyUpsertBulk) SetTotal(v int) *CouponAssemblyUpsertBulk {
+// SetTemplateID sets the "template_id" field.
+func (u *CouponAssemblyUpsertBulk) SetTemplateID(v uint64) *CouponAssemblyUpsertBulk {
 	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.SetTotal(v)
+		s.SetTemplateID(v)
 	})
 }
 
-// AddTotal adds v to the "total" field.
-func (u *CouponAssemblyUpsertBulk) AddTotal(v int) *CouponAssemblyUpsertBulk {
+// UpdateTemplateID sets the "template_id" field to the value that was provided on create.
+func (u *CouponAssemblyUpsertBulk) UpdateTemplateID() *CouponAssemblyUpsertBulk {
 	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.AddTotal(v)
-	})
-}
-
-// UpdateTotal sets the "total" field to the value that was provided on create.
-func (u *CouponAssemblyUpsertBulk) UpdateTotal() *CouponAssemblyUpsertBulk {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.UpdateTotal()
-	})
-}
-
-// SetExpiredType sets the "expired_type" field.
-func (u *CouponAssemblyUpsertBulk) SetExpiredType(v uint8) *CouponAssemblyUpsertBulk {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.SetExpiredType(v)
-	})
-}
-
-// AddExpiredType adds v to the "expired_type" field.
-func (u *CouponAssemblyUpsertBulk) AddExpiredType(v uint8) *CouponAssemblyUpsertBulk {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.AddExpiredType(v)
-	})
-}
-
-// UpdateExpiredType sets the "expired_type" field to the value that was provided on create.
-func (u *CouponAssemblyUpsertBulk) UpdateExpiredType() *CouponAssemblyUpsertBulk {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.UpdateExpiredType()
-	})
-}
-
-// SetRule sets the "rule" field.
-func (u *CouponAssemblyUpsertBulk) SetRule(v uint8) *CouponAssemblyUpsertBulk {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.SetRule(v)
-	})
-}
-
-// AddRule adds v to the "rule" field.
-func (u *CouponAssemblyUpsertBulk) AddRule(v uint8) *CouponAssemblyUpsertBulk {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.AddRule(v)
-	})
-}
-
-// UpdateRule sets the "rule" field to the value that was provided on create.
-func (u *CouponAssemblyUpsertBulk) UpdateRule() *CouponAssemblyUpsertBulk {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.UpdateRule()
-	})
-}
-
-// SetAmount sets the "amount" field.
-func (u *CouponAssemblyUpsertBulk) SetAmount(v float64) *CouponAssemblyUpsertBulk {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.SetAmount(v)
-	})
-}
-
-// AddAmount adds v to the "amount" field.
-func (u *CouponAssemblyUpsertBulk) AddAmount(v float64) *CouponAssemblyUpsertBulk {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.AddAmount(v)
-	})
-}
-
-// UpdateAmount sets the "amount" field to the value that was provided on create.
-func (u *CouponAssemblyUpsertBulk) UpdateAmount() *CouponAssemblyUpsertBulk {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.UpdateAmount()
-	})
-}
-
-// SetMultiple sets the "multiple" field.
-func (u *CouponAssemblyUpsertBulk) SetMultiple(v bool) *CouponAssemblyUpsertBulk {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.SetMultiple(v)
-	})
-}
-
-// UpdateMultiple sets the "multiple" field to the value that was provided on create.
-func (u *CouponAssemblyUpsertBulk) UpdateMultiple() *CouponAssemblyUpsertBulk {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.UpdateMultiple()
-	})
-}
-
-// SetPlans sets the "plans" field.
-func (u *CouponAssemblyUpsertBulk) SetPlans(v []model.Plan) *CouponAssemblyUpsertBulk {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.SetPlans(v)
-	})
-}
-
-// UpdatePlans sets the "plans" field to the value that was provided on create.
-func (u *CouponAssemblyUpsertBulk) UpdatePlans() *CouponAssemblyUpsertBulk {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.UpdatePlans()
-	})
-}
-
-// ClearPlans clears the value of the "plans" field.
-func (u *CouponAssemblyUpsertBulk) ClearPlans() *CouponAssemblyUpsertBulk {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.ClearPlans()
-	})
-}
-
-// SetCities sets the "cities" field.
-func (u *CouponAssemblyUpsertBulk) SetCities(v []model.City) *CouponAssemblyUpsertBulk {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.SetCities(v)
-	})
-}
-
-// UpdateCities sets the "cities" field to the value that was provided on create.
-func (u *CouponAssemblyUpsertBulk) UpdateCities() *CouponAssemblyUpsertBulk {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.UpdateCities()
-	})
-}
-
-// ClearCities clears the value of the "cities" field.
-func (u *CouponAssemblyUpsertBulk) ClearCities() *CouponAssemblyUpsertBulk {
-	return u.Update(func(s *CouponAssemblyUpsert) {
-		s.ClearCities()
+		s.UpdateTemplateID()
 	})
 }
 

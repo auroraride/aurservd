@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/couponassembly"
+	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -68,99 +69,26 @@ func (cau *CouponAssemblyUpdate) ClearRemark() *CouponAssemblyUpdate {
 	return cau
 }
 
-// SetTotal sets the "total" field.
-func (cau *CouponAssemblyUpdate) SetTotal(i int) *CouponAssemblyUpdate {
-	cau.mutation.ResetTotal()
-	cau.mutation.SetTotal(i)
+// SetTemplateID sets the "template_id" field.
+func (cau *CouponAssemblyUpdate) SetTemplateID(u uint64) *CouponAssemblyUpdate {
+	cau.mutation.SetTemplateID(u)
 	return cau
 }
 
-// AddTotal adds i to the "total" field.
-func (cau *CouponAssemblyUpdate) AddTotal(i int) *CouponAssemblyUpdate {
-	cau.mutation.AddTotal(i)
-	return cau
-}
-
-// SetExpiredType sets the "expired_type" field.
-func (cau *CouponAssemblyUpdate) SetExpiredType(u uint8) *CouponAssemblyUpdate {
-	cau.mutation.ResetExpiredType()
-	cau.mutation.SetExpiredType(u)
-	return cau
-}
-
-// AddExpiredType adds u to the "expired_type" field.
-func (cau *CouponAssemblyUpdate) AddExpiredType(u int8) *CouponAssemblyUpdate {
-	cau.mutation.AddExpiredType(u)
-	return cau
-}
-
-// SetRule sets the "rule" field.
-func (cau *CouponAssemblyUpdate) SetRule(u uint8) *CouponAssemblyUpdate {
-	cau.mutation.ResetRule()
-	cau.mutation.SetRule(u)
-	return cau
-}
-
-// AddRule adds u to the "rule" field.
-func (cau *CouponAssemblyUpdate) AddRule(u int8) *CouponAssemblyUpdate {
-	cau.mutation.AddRule(u)
-	return cau
-}
-
-// SetAmount sets the "amount" field.
-func (cau *CouponAssemblyUpdate) SetAmount(f float64) *CouponAssemblyUpdate {
-	cau.mutation.ResetAmount()
-	cau.mutation.SetAmount(f)
-	return cau
-}
-
-// AddAmount adds f to the "amount" field.
-func (cau *CouponAssemblyUpdate) AddAmount(f float64) *CouponAssemblyUpdate {
-	cau.mutation.AddAmount(f)
-	return cau
-}
-
-// SetMultiple sets the "multiple" field.
-func (cau *CouponAssemblyUpdate) SetMultiple(b bool) *CouponAssemblyUpdate {
-	cau.mutation.SetMultiple(b)
-	return cau
-}
-
-// SetNillableMultiple sets the "multiple" field if the given value is not nil.
-func (cau *CouponAssemblyUpdate) SetNillableMultiple(b *bool) *CouponAssemblyUpdate {
-	if b != nil {
-		cau.SetMultiple(*b)
-	}
-	return cau
-}
-
-// SetPlans sets the "plans" field.
-func (cau *CouponAssemblyUpdate) SetPlans(m []model.Plan) *CouponAssemblyUpdate {
-	cau.mutation.SetPlans(m)
-	return cau
-}
-
-// ClearPlans clears the value of the "plans" field.
-func (cau *CouponAssemblyUpdate) ClearPlans() *CouponAssemblyUpdate {
-	cau.mutation.ClearPlans()
-	return cau
-}
-
-// SetCities sets the "cities" field.
-func (cau *CouponAssemblyUpdate) SetCities(m []model.City) *CouponAssemblyUpdate {
-	cau.mutation.SetCities(m)
-	return cau
-}
-
-// ClearCities clears the value of the "cities" field.
-func (cau *CouponAssemblyUpdate) ClearCities() *CouponAssemblyUpdate {
-	cau.mutation.ClearCities()
-	return cau
+// SetTemplate sets the "template" edge to the CouponTemplate entity.
+func (cau *CouponAssemblyUpdate) SetTemplate(c *CouponTemplate) *CouponAssemblyUpdate {
+	return cau.SetTemplateID(c.ID)
 }
 
 // Mutation returns the CouponAssemblyMutation object of the builder.
 func (cau *CouponAssemblyUpdate) Mutation() *CouponAssemblyMutation {
 	return cau.mutation
+}
+
+// ClearTemplate clears the "template" edge to the CouponTemplate entity.
+func (cau *CouponAssemblyUpdate) ClearTemplate() *CouponAssemblyUpdate {
+	cau.mutation.ClearTemplate()
+	return cau
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -173,12 +101,18 @@ func (cau *CouponAssemblyUpdate) Save(ctx context.Context) (int, error) {
 		return 0, err
 	}
 	if len(cau.hooks) == 0 {
+		if err = cau.check(); err != nil {
+			return 0, err
+		}
 		affected, err = cau.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*CouponAssemblyMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = cau.check(); err != nil {
+				return 0, err
 			}
 			cau.mutation = mutation
 			affected, err = cau.sqlSave(ctx)
@@ -228,6 +162,14 @@ func (cau *CouponAssemblyUpdate) defaults() error {
 		}
 		v := couponassembly.UpdateDefaultUpdatedAt()
 		cau.mutation.SetUpdatedAt(v)
+	}
+	return nil
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (cau *CouponAssemblyUpdate) check() error {
+	if _, ok := cau.mutation.TemplateID(); cau.mutation.TemplateCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "CouponAssembly.template"`)
 	}
 	return nil
 }
@@ -295,94 +237,40 @@ func (cau *CouponAssemblyUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: couponassembly.FieldRemark,
 		})
 	}
-	if value, ok := cau.mutation.Total(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: couponassembly.FieldTotal,
-		})
+	if cau.mutation.TemplateCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   couponassembly.TemplateTable,
+			Columns: []string{couponassembly.TemplateColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupontemplate.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if value, ok := cau.mutation.AddedTotal(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: couponassembly.FieldTotal,
-		})
-	}
-	if value, ok := cau.mutation.ExpiredType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: couponassembly.FieldExpiredType,
-		})
-	}
-	if value, ok := cau.mutation.AddedExpiredType(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: couponassembly.FieldExpiredType,
-		})
-	}
-	if value, ok := cau.mutation.Rule(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: couponassembly.FieldRule,
-		})
-	}
-	if value, ok := cau.mutation.AddedRule(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: couponassembly.FieldRule,
-		})
-	}
-	if value, ok := cau.mutation.Amount(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: couponassembly.FieldAmount,
-		})
-	}
-	if value, ok := cau.mutation.AddedAmount(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: couponassembly.FieldAmount,
-		})
-	}
-	if value, ok := cau.mutation.Multiple(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: couponassembly.FieldMultiple,
-		})
-	}
-	if value, ok := cau.mutation.Plans(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: couponassembly.FieldPlans,
-		})
-	}
-	if cau.mutation.PlansCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: couponassembly.FieldPlans,
-		})
-	}
-	if value, ok := cau.mutation.Cities(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: couponassembly.FieldCities,
-		})
-	}
-	if cau.mutation.CitiesCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: couponassembly.FieldCities,
-		})
+	if nodes := cau.mutation.TemplateIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   couponassembly.TemplateTable,
+			Columns: []string{couponassembly.TemplateColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupontemplate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.Modifiers = cau.modifiers
 	if n, err = sqlgraph.UpdateNodes(ctx, cau.driver, _spec); err != nil {
@@ -443,99 +331,26 @@ func (cauo *CouponAssemblyUpdateOne) ClearRemark() *CouponAssemblyUpdateOne {
 	return cauo
 }
 
-// SetTotal sets the "total" field.
-func (cauo *CouponAssemblyUpdateOne) SetTotal(i int) *CouponAssemblyUpdateOne {
-	cauo.mutation.ResetTotal()
-	cauo.mutation.SetTotal(i)
+// SetTemplateID sets the "template_id" field.
+func (cauo *CouponAssemblyUpdateOne) SetTemplateID(u uint64) *CouponAssemblyUpdateOne {
+	cauo.mutation.SetTemplateID(u)
 	return cauo
 }
 
-// AddTotal adds i to the "total" field.
-func (cauo *CouponAssemblyUpdateOne) AddTotal(i int) *CouponAssemblyUpdateOne {
-	cauo.mutation.AddTotal(i)
-	return cauo
-}
-
-// SetExpiredType sets the "expired_type" field.
-func (cauo *CouponAssemblyUpdateOne) SetExpiredType(u uint8) *CouponAssemblyUpdateOne {
-	cauo.mutation.ResetExpiredType()
-	cauo.mutation.SetExpiredType(u)
-	return cauo
-}
-
-// AddExpiredType adds u to the "expired_type" field.
-func (cauo *CouponAssemblyUpdateOne) AddExpiredType(u int8) *CouponAssemblyUpdateOne {
-	cauo.mutation.AddExpiredType(u)
-	return cauo
-}
-
-// SetRule sets the "rule" field.
-func (cauo *CouponAssemblyUpdateOne) SetRule(u uint8) *CouponAssemblyUpdateOne {
-	cauo.mutation.ResetRule()
-	cauo.mutation.SetRule(u)
-	return cauo
-}
-
-// AddRule adds u to the "rule" field.
-func (cauo *CouponAssemblyUpdateOne) AddRule(u int8) *CouponAssemblyUpdateOne {
-	cauo.mutation.AddRule(u)
-	return cauo
-}
-
-// SetAmount sets the "amount" field.
-func (cauo *CouponAssemblyUpdateOne) SetAmount(f float64) *CouponAssemblyUpdateOne {
-	cauo.mutation.ResetAmount()
-	cauo.mutation.SetAmount(f)
-	return cauo
-}
-
-// AddAmount adds f to the "amount" field.
-func (cauo *CouponAssemblyUpdateOne) AddAmount(f float64) *CouponAssemblyUpdateOne {
-	cauo.mutation.AddAmount(f)
-	return cauo
-}
-
-// SetMultiple sets the "multiple" field.
-func (cauo *CouponAssemblyUpdateOne) SetMultiple(b bool) *CouponAssemblyUpdateOne {
-	cauo.mutation.SetMultiple(b)
-	return cauo
-}
-
-// SetNillableMultiple sets the "multiple" field if the given value is not nil.
-func (cauo *CouponAssemblyUpdateOne) SetNillableMultiple(b *bool) *CouponAssemblyUpdateOne {
-	if b != nil {
-		cauo.SetMultiple(*b)
-	}
-	return cauo
-}
-
-// SetPlans sets the "plans" field.
-func (cauo *CouponAssemblyUpdateOne) SetPlans(m []model.Plan) *CouponAssemblyUpdateOne {
-	cauo.mutation.SetPlans(m)
-	return cauo
-}
-
-// ClearPlans clears the value of the "plans" field.
-func (cauo *CouponAssemblyUpdateOne) ClearPlans() *CouponAssemblyUpdateOne {
-	cauo.mutation.ClearPlans()
-	return cauo
-}
-
-// SetCities sets the "cities" field.
-func (cauo *CouponAssemblyUpdateOne) SetCities(m []model.City) *CouponAssemblyUpdateOne {
-	cauo.mutation.SetCities(m)
-	return cauo
-}
-
-// ClearCities clears the value of the "cities" field.
-func (cauo *CouponAssemblyUpdateOne) ClearCities() *CouponAssemblyUpdateOne {
-	cauo.mutation.ClearCities()
-	return cauo
+// SetTemplate sets the "template" edge to the CouponTemplate entity.
+func (cauo *CouponAssemblyUpdateOne) SetTemplate(c *CouponTemplate) *CouponAssemblyUpdateOne {
+	return cauo.SetTemplateID(c.ID)
 }
 
 // Mutation returns the CouponAssemblyMutation object of the builder.
 func (cauo *CouponAssemblyUpdateOne) Mutation() *CouponAssemblyMutation {
 	return cauo.mutation
+}
+
+// ClearTemplate clears the "template" edge to the CouponTemplate entity.
+func (cauo *CouponAssemblyUpdateOne) ClearTemplate() *CouponAssemblyUpdateOne {
+	cauo.mutation.ClearTemplate()
+	return cauo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -555,12 +370,18 @@ func (cauo *CouponAssemblyUpdateOne) Save(ctx context.Context) (*CouponAssembly,
 		return nil, err
 	}
 	if len(cauo.hooks) == 0 {
+		if err = cauo.check(); err != nil {
+			return nil, err
+		}
 		node, err = cauo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*CouponAssemblyMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = cauo.check(); err != nil {
+				return nil, err
 			}
 			cauo.mutation = mutation
 			node, err = cauo.sqlSave(ctx)
@@ -616,6 +437,14 @@ func (cauo *CouponAssemblyUpdateOne) defaults() error {
 		}
 		v := couponassembly.UpdateDefaultUpdatedAt()
 		cauo.mutation.SetUpdatedAt(v)
+	}
+	return nil
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (cauo *CouponAssemblyUpdateOne) check() error {
+	if _, ok := cauo.mutation.TemplateID(); cauo.mutation.TemplateCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "CouponAssembly.template"`)
 	}
 	return nil
 }
@@ -700,94 +529,40 @@ func (cauo *CouponAssemblyUpdateOne) sqlSave(ctx context.Context) (_node *Coupon
 			Column: couponassembly.FieldRemark,
 		})
 	}
-	if value, ok := cauo.mutation.Total(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: couponassembly.FieldTotal,
-		})
+	if cauo.mutation.TemplateCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   couponassembly.TemplateTable,
+			Columns: []string{couponassembly.TemplateColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupontemplate.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if value, ok := cauo.mutation.AddedTotal(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: couponassembly.FieldTotal,
-		})
-	}
-	if value, ok := cauo.mutation.ExpiredType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: couponassembly.FieldExpiredType,
-		})
-	}
-	if value, ok := cauo.mutation.AddedExpiredType(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: couponassembly.FieldExpiredType,
-		})
-	}
-	if value, ok := cauo.mutation.Rule(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: couponassembly.FieldRule,
-		})
-	}
-	if value, ok := cauo.mutation.AddedRule(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: couponassembly.FieldRule,
-		})
-	}
-	if value, ok := cauo.mutation.Amount(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: couponassembly.FieldAmount,
-		})
-	}
-	if value, ok := cauo.mutation.AddedAmount(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: couponassembly.FieldAmount,
-		})
-	}
-	if value, ok := cauo.mutation.Multiple(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: couponassembly.FieldMultiple,
-		})
-	}
-	if value, ok := cauo.mutation.Plans(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: couponassembly.FieldPlans,
-		})
-	}
-	if cauo.mutation.PlansCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: couponassembly.FieldPlans,
-		})
-	}
-	if value, ok := cauo.mutation.Cities(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: couponassembly.FieldCities,
-		})
-	}
-	if cauo.mutation.CitiesCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: couponassembly.FieldCities,
-		})
+	if nodes := cauo.mutation.TemplateIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   couponassembly.TemplateTable,
+			Columns: []string{couponassembly.TemplateColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupontemplate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.Modifiers = cauo.modifiers
 	_node = &CouponAssembly{config: cauo.config}

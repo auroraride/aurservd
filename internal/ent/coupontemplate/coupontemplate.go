@@ -4,8 +4,6 @@ package coupontemplate
 
 import (
 	"time"
-
-	"entgo.io/ent"
 )
 
 const (
@@ -17,18 +15,12 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
-	FieldDeletedAt = "deleted_at"
-	// FieldCreator holds the string denoting the creator field in the database.
-	FieldCreator = "creator"
-	// FieldLastModifier holds the string denoting the last_modifier field in the database.
-	FieldLastModifier = "last_modifier"
-	// FieldRemark holds the string denoting the remark field in the database.
-	FieldRemark = "remark"
+	// FieldEnable holds the string denoting the enable field in the database.
+	FieldEnable = "enable"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldData holds the string denoting the data field in the database.
-	FieldData = "data"
+	// FieldMeta holds the string denoting the meta field in the database.
+	FieldMeta = "meta"
 	// Table holds the table name of the coupontemplate in the database.
 	Table = "coupon_template"
 )
@@ -38,12 +30,9 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
-	FieldDeletedAt,
-	FieldCreator,
-	FieldLastModifier,
-	FieldRemark,
+	FieldEnable,
 	FieldName,
-	FieldData,
+	FieldMeta,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -56,17 +45,13 @@ func ValidColumn(column string) bool {
 	return false
 }
 
-// Note that the variables below are initialized by the runtime
-// package on the initialization of the application. Therefore,
-// it should be imported in the main as follows:
-//
-//	import _ "github.com/auroraride/aurservd/internal/ent/runtime"
 var (
-	Hooks [1]ent.Hook
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultEnable holds the default value on creation for the "enable" field.
+	DefaultEnable bool
 )

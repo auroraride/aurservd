@@ -399,13 +399,7 @@ func init() {
 	couponassembly.DefaultUpdatedAt = couponassemblyDescUpdatedAt.Default.(func() time.Time)
 	// couponassembly.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	couponassembly.UpdateDefaultUpdatedAt = couponassemblyDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// couponassemblyDescMultiple is the schema descriptor for multiple field.
-	couponassemblyDescMultiple := couponassemblyFields[4].Descriptor()
-	// couponassembly.DefaultMultiple holds the default value on creation for the multiple field.
-	couponassembly.DefaultMultiple = couponassemblyDescMultiple.Default.(bool)
 	coupontemplateMixin := schema.CouponTemplate{}.Mixin()
-	coupontemplateMixinHooks2 := coupontemplateMixin[2].Hooks()
-	coupontemplate.Hooks[0] = coupontemplateMixinHooks2[0]
 	coupontemplateMixinFields0 := coupontemplateMixin[0].Fields()
 	_ = coupontemplateMixinFields0
 	coupontemplateFields := schema.CouponTemplate{}.Fields()
@@ -420,6 +414,10 @@ func init() {
 	coupontemplate.DefaultUpdatedAt = coupontemplateDescUpdatedAt.Default.(func() time.Time)
 	// coupontemplate.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	coupontemplate.UpdateDefaultUpdatedAt = coupontemplateDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// coupontemplateDescEnable is the schema descriptor for enable field.
+	coupontemplateDescEnable := coupontemplateFields[0].Descriptor()
+	// coupontemplate.DefaultEnable holds the default value on creation for the enable field.
+	coupontemplate.DefaultEnable = coupontemplateDescEnable.Default.(bool)
 	employeeMixin := schema.Employee{}.Mixin()
 	employeeMixinHooks2 := employeeMixin[2].Hooks()
 	employee.Hooks[0] = employeeMixinHooks2[0]

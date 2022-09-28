@@ -22,18 +22,12 @@ type CouponTemplate struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
-	// 创建人
-	Creator *model.Modifier `json:"creator,omitempty"`
-	// 最后修改人
-	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
-	// 管理员改动原因/备注
-	Remark string `json:"remark,omitempty"`
+	// 是否启用
+	Enable bool `json:"enable,omitempty"`
 	// 名称
 	Name string `json:"name,omitempty"`
 	// 详情
-	Data *model.CouponTemplate `json:"data,omitempty"`
+	Meta *model.CouponTemplateMeta `json:"meta,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -41,13 +35,15 @@ func (*CouponTemplate) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case coupontemplate.FieldCreator, coupontemplate.FieldLastModifier, coupontemplate.FieldData:
+		case coupontemplate.FieldMeta:
 			values[i] = new([]byte)
+		case coupontemplate.FieldEnable:
+			values[i] = new(sql.NullBool)
 		case coupontemplate.FieldID:
 			values[i] = new(sql.NullInt64)
-		case coupontemplate.FieldRemark, coupontemplate.FieldName:
+		case coupontemplate.FieldName:
 			values[i] = new(sql.NullString)
-		case coupontemplate.FieldCreatedAt, coupontemplate.FieldUpdatedAt, coupontemplate.FieldDeletedAt:
+		case coupontemplate.FieldCreatedAt, coupontemplate.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type CouponTemplate", columns[i])
@@ -82,34 +78,11 @@ func (ct *CouponTemplate) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ct.UpdatedAt = value.Time
 			}
-		case coupontemplate.FieldDeletedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
+		case coupontemplate.FieldEnable:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field enable", values[i])
 			} else if value.Valid {
-				ct.DeletedAt = new(time.Time)
-				*ct.DeletedAt = value.Time
-			}
-		case coupontemplate.FieldCreator:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field creator", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &ct.Creator); err != nil {
-					return fmt.Errorf("unmarshal field creator: %w", err)
-				}
-			}
-		case coupontemplate.FieldLastModifier:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field last_modifier", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &ct.LastModifier); err != nil {
-					return fmt.Errorf("unmarshal field last_modifier: %w", err)
-				}
-			}
-		case coupontemplate.FieldRemark:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field remark", values[i])
-			} else if value.Valid {
-				ct.Remark = value.String
+				ct.Enable = value.Bool
 			}
 		case coupontemplate.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -117,12 +90,12 @@ func (ct *CouponTemplate) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ct.Name = value.String
 			}
-		case coupontemplate.FieldData:
+		case coupontemplate.FieldMeta:
 			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field data", values[i])
+				return fmt.Errorf("unexpected type %T for field meta", values[i])
 			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &ct.Data); err != nil {
-					return fmt.Errorf("unmarshal field data: %w", err)
+				if err := json.Unmarshal(*value, &ct.Meta); err != nil {
+					return fmt.Errorf("unmarshal field meta: %w", err)
 				}
 			}
 		}
@@ -159,25 +132,14 @@ func (ct *CouponTemplate) String() string {
 	builder.WriteString("updated_at=")
 	builder.WriteString(ct.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	if v := ct.DeletedAt; v != nil {
-		builder.WriteString("deleted_at=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
-	builder.WriteString(", ")
-	builder.WriteString("creator=")
-	builder.WriteString(fmt.Sprintf("%v", ct.Creator))
-	builder.WriteString(", ")
-	builder.WriteString("last_modifier=")
-	builder.WriteString(fmt.Sprintf("%v", ct.LastModifier))
-	builder.WriteString(", ")
-	builder.WriteString("remark=")
-	builder.WriteString(ct.Remark)
+	builder.WriteString("enable=")
+	builder.WriteString(fmt.Sprintf("%v", ct.Enable))
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(ct.Name)
 	builder.WriteString(", ")
-	builder.WriteString("data=")
-	builder.WriteString(fmt.Sprintf("%v", ct.Data))
+	builder.WriteString("meta=")
+	builder.WriteString(fmt.Sprintf("%v", ct.Meta))
 	builder.WriteByte(')')
 	return builder.String()
 }
