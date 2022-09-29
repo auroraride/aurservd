@@ -14,6 +14,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/internal/ent/city"
+    "github.com/auroraride/aurservd/internal/ent/coupontemplate"
     "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/plan"
     "github.com/auroraride/aurservd/internal/ent/rider"
@@ -423,4 +424,35 @@ func (s *selectionService) CabinetModelX() (items []model.CascaderOption) {
 
 func (s *selectionService) Models() []string {
     return NewBattery().Models()
+}
+
+// CouponTemplate 选择优惠券模板
+func (s *selectionService) CouponTemplate() (items []model.SelectOptionGroup) {
+    cts, _ := ent.Database.CouponTemplate.Query().Order(ent.Desc(coupontemplate.FieldUpdatedAt)).All(s.ctx)
+    var enable, disable []model.SelectOption
+    for _, ct := range cts {
+        t := model.SelectOption{
+            Value: ct.ID,
+            Label: ct.Name,
+            Desc:  ct.Remark,
+        }
+        if ct.Enable {
+            enable = append(enable, t)
+        } else {
+            disable = append(disable, t)
+        }
+    }
+    if len(enable) > 0 {
+        items = append(items, model.SelectOptionGroup{
+            Label:   "已启用",
+            Options: enable,
+        })
+    }
+    if len(disable) > 0 {
+        items = append(items, model.SelectOptionGroup{
+            Label:   "已禁用",
+            Options: disable,
+        })
+    }
+    return
 }

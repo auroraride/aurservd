@@ -202,3 +202,18 @@ func (*selection) Model(c echo.Context) (err error) {
     ctx := app.ContextX[app.ManagerContext](c)
     return ctx.SendResponse(service.NewSelection().Models())
 }
+
+// CouponTemplate
+// @ID           ManagerSelectionCouponTemplate
+// @Router       /manager/v1/selection/coupon/template [GET]
+// @Summary      MB014 筛选优惠券模板
+// @Description  筛选样式参考 <a target="_blank" href="https://element.eleme.cn/#/zh-CN/component/select#fen-zu">ElementUI-select-分组</a> <a target="_blank" href="https://element.eleme.cn/#/zh-CN/component/select#zi-ding-yi-mo-ban">ElementUI-select-自定义模板</a>
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Success      200  {object}  []model.SelectOptionGroup  "请求成功"
+func (*selection) CouponTemplate(c echo.Context) (err error) {
+    ctx := app.Context(c)
+    return ctx.SendResponse(service.NewSelection().CouponTemplate())
+}

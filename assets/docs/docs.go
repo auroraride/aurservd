@@ -551,7 +551,7 @@ const docTemplate = `{
                             "type": "string"
                         },
                         "headers": {
-                            "X-Captcha-Id": {
+                            "X-Captcha-Id  true": {
                                 "type": "string",
                                 "description": "Captcha验证码ID"
                             }
@@ -4048,6 +4048,315 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/model.CityModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/coupon": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MH006 优惠券列表",
+                "operationId": "ManagerCouponList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/coupon/allocate": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MH007 分配优惠券",
+                "operationId": "ManagerCouponAllocate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "优惠券和骑手信息",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CouponAllocateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/coupon/assembly": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MH005 发券记录",
+                "operationId": "ManagerCouponAssembly",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "模板",
+                        "name": "templateId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/coupon/generate": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MH004 生成优惠券",
+                "operationId": "ManagerCouponGenerate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "优惠券信息",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CouponGenerateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/coupon/template": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MH001 模板列表",
+                "operationId": "ManagerCouponTemplateList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否启用, 默认` + "`" + `true` + "`" + `是",
+                        "name": "enable",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.CouponTemplateListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MH002 创建模板",
+                "operationId": "ManagerCouponTemplateCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "模板内容",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CouponTemplateCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/coupon/template/status": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MH003 模板启用/禁用",
+                "operationId": "ManagerCouponTemplateStatus",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "模板信息",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CouponTemplateStatusReq"
                         }
                     }
                 ],
@@ -7753,6 +8062,42 @@ const docTemplate = `{
                             "type": "array",
                             "items": {
                                 "$ref": "#/definitions/model.CascaderOptionLevel2"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/selection/coupon/template": {
+            "get": {
+                "description": "筛选样式参考 \u003ca target=\"_blank\" href=\"https://element.eleme.cn/#/zh-CN/component/select#fen-zu\"\u003eElementUI-select-分组\u003c/a\u003e \u003ca target=\"_blank\" href=\"https://element.eleme.cn/#/zh-CN/component/select#zi-ding-yi-mo-ban\"\u003eElementUI-select-自定义模板\u003c/a\u003e",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MB014 筛选优惠券模板",
+                "operationId": "ManagerSelectionCouponTemplate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOptionGroup"
                             }
                         }
                     }
@@ -14352,6 +14697,10 @@ const docTemplate = `{
                         "$ref": "#/definitions/model.SelectOption"
                     }
                 },
+                "desc": {
+                    "description": "描述",
+                    "type": "string"
+                },
                 "label": {
                     "description": "选择项名称",
                     "type": "string"
@@ -14371,6 +14720,10 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.CascaderOptionLevel2"
                     }
+                },
+                "desc": {
+                    "description": "描述",
+                    "type": "string"
                 },
                 "label": {
                     "description": "选择项名称",
@@ -14487,6 +14840,227 @@ const docTemplate = `{
                 "url": {
                     "description": "签署URL",
                     "type": "string"
+                }
+            }
+        },
+        "model.CouponAllocateReq": {
+            "type": "object",
+            "required": [
+                "id",
+                "riderId"
+            ],
+            "properties": {
+                "id": {
+                    "description": "优惠券",
+                    "type": "integer"
+                },
+                "riderId": {
+                    "description": "骑手",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.CouponGenerateReq": {
+            "type": "object",
+            "required": [
+                "amount",
+                "remark",
+                "templateId"
+            ],
+            "properties": {
+                "amount": {
+                    "description": "金额 ",
+                    "type": "number"
+                },
+                "number": {
+                    "description": "生成数量 ",
+                    "type": "integer"
+                },
+                "phones": {
+                    "description": "骑手电话 ",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "remark": {
+                    "description": "备注 ",
+                    "type": "string"
+                },
+                "templateId": {
+                    "description": "优惠券模板 ",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.CouponTemplateCreateReq": {
+            "type": "object",
+            "required": [
+                "durationRule",
+                "name",
+                "remark",
+                "rule"
+            ],
+            "properties": {
+                "cityIds": {
+                    "description": "可用城市 和` + "`" + `plans` + "`" + `不能同时为空也不能同时存在",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "durationDays": {
+                    "description": "相对天数 ` + "`" + `durationRule=2` + "`" + `必填",
+                    "type": "integer"
+                },
+                "durationRule": {
+                    "description": "有效期规则 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
+                "durationTime": {
+                    "description": "过期时间 ` + "`" + `durationRule=1` + "`" + `必填 yyyy-mm-dd, 如 2022-09-25",
+                    "type": "string"
+                },
+                "multiple": {
+                    "description": "重复使用(该券是否可叠加使用)",
+                    "type": "boolean"
+                },
+                "name": {
+                    "description": "名称 ",
+                    "type": "string"
+                },
+                "planIds": {
+                    "description": "绑定骑士卡 和` + "`" + `cities` + "`" + `不能同时为空也不能同时存在",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "remark": {
+                    "description": "备注信息 10字以内, 需要显示在优惠券列表中",
+                    "type": "string",
+                    "maxLength": 10
+                },
+                "rule": {
+                    "description": "使用规则 1:互斥 2:可叠加",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                }
+            }
+        },
+        "model.CouponTemplateListRes": {
+            "type": "object",
+            "required": [
+                "durationRule",
+                "rule"
+            ],
+            "properties": {
+                "cities": {
+                    "description": "可用城市",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.City"
+                    }
+                },
+                "cityIds": {
+                    "description": "可用城市 和` + "`" + `plans` + "`" + `不能同时为空也不能同时存在",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "durationDays": {
+                    "description": "相对天数 ` + "`" + `durationRule=2` + "`" + `必填",
+                    "type": "integer"
+                },
+                "durationRule": {
+                    "description": "有效期规则 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
+                "durationTime": {
+                    "description": "过期时间 ` + "`" + `durationRule=1` + "`" + `必填 yyyy-mm-dd, 如 2022-09-25",
+                    "type": "string"
+                },
+                "expired": {
+                    "description": "已过期",
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "inStock": {
+                    "description": "库存",
+                    "type": "integer"
+                },
+                "multiple": {
+                    "description": "重复使用(该券是否可叠加使用)",
+                    "type": "boolean"
+                },
+                "planIds": {
+                    "description": "绑定骑士卡 和` + "`" + `cities` + "`" + `不能同时为空也不能同时存在",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "plans": {
+                    "description": "绑定骑士卡",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Plan"
+                    }
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "rule": {
+                    "description": "使用规则 1:互斥 2:可叠加",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
+                "time": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "total": {
+                    "description": "总数",
+                    "type": "integer"
+                },
+                "unused": {
+                    "description": "未使用",
+                    "type": "integer"
+                },
+                "used": {
+                    "description": "已使用",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.CouponTemplateStatusReq": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "enable": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
                 }
             }
         },
@@ -17420,6 +17994,10 @@ const docTemplate = `{
         "model.SelectOption": {
             "type": "object",
             "properties": {
+                "desc": {
+                    "description": "描述",
+                    "type": "string"
+                },
                 "label": {
                     "description": "选择项名称",
                     "type": "string"
@@ -17427,6 +18005,22 @@ const docTemplate = `{
                 "value": {
                     "description": "选择项值 (ID)",
                     "type": "integer"
+                }
+            }
+        },
+        "model.SelectOptionGroup": {
+            "type": "object",
+            "properties": {
+                "label": {
+                    "description": "分组名称",
+                    "type": "string"
+                },
+                "options": {
+                    "description": "分组选项",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.SelectOption"
+                    }
                 }
             }
         },

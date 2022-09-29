@@ -382,6 +382,10 @@ func init() {
 	coupon.DefaultUpdatedAt = couponDescUpdatedAt.Default.(func() time.Time)
 	// coupon.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	coupon.UpdateDefaultUpdatedAt = couponDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// couponDescMultiple is the schema descriptor for multiple field.
+	couponDescMultiple := couponFields[3].Descriptor()
+	// coupon.DefaultMultiple holds the default value on creation for the multiple field.
+	coupon.DefaultMultiple = couponDescMultiple.Default.(bool)
 	couponassemblyMixin := schema.CouponAssembly{}.Mixin()
 	couponassemblyMixinHooks1 := couponassemblyMixin[1].Hooks()
 	couponassembly.Hooks[0] = couponassemblyMixinHooks1[0]
@@ -400,6 +404,8 @@ func init() {
 	// couponassembly.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	couponassembly.UpdateDefaultUpdatedAt = couponassemblyDescUpdatedAt.UpdateDefault.(func() time.Time)
 	coupontemplateMixin := schema.CouponTemplate{}.Mixin()
+	coupontemplateMixinHooks1 := coupontemplateMixin[1].Hooks()
+	coupontemplate.Hooks[0] = coupontemplateMixinHooks1[0]
 	coupontemplateMixinFields0 := coupontemplateMixin[0].Fields()
 	_ = coupontemplateMixinFields0
 	coupontemplateFields := schema.CouponTemplate{}.Fields()
@@ -1106,5 +1112,5 @@ func init() {
 }
 
 const (
-	Version = "v0.11.3-0.20220819064130-b02de28afc96" // Version of ent codegen.
+	Version = "v0.11.3" // Version of ent codegen.
 )

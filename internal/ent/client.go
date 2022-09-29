@@ -2392,22 +2392,6 @@ func (c *CouponClient) QueryAssembly(co *Coupon) *CouponAssemblyQuery {
 	return query
 }
 
-// QueryTemplate queries the template edge of a Coupon.
-func (c *CouponClient) QueryTemplate(co *Coupon) *CouponTemplateQuery {
-	query := &CouponTemplateQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := co.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(coupon.Table, coupon.FieldID, id),
-			sqlgraph.To(coupontemplate.Table, coupontemplate.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, coupon.TemplateTable, coupon.TemplateColumn),
-		)
-		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryOrder queries the order edge of a Coupon.
 func (c *CouponClient) QueryOrder(co *Coupon) *OrderQuery {
 	query := &OrderQuery{config: c.config}
@@ -2433,6 +2417,22 @@ func (c *CouponClient) QueryPlan(co *Coupon) *PlanQuery {
 			sqlgraph.From(coupon.Table, coupon.FieldID, id),
 			sqlgraph.To(plan.Table, plan.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, coupon.PlanTable, coupon.PlanColumn),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTemplate queries the template edge of a Coupon.
+func (c *CouponClient) QueryTemplate(co *Coupon) *CouponTemplateQuery {
+	query := &CouponTemplateQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(coupon.Table, coupon.FieldID, id),
+			sqlgraph.To(coupontemplate.Table, coupontemplate.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, coupon.TemplateTable, coupon.TemplateColumn),
 		)
 		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
 		return fromV, nil
@@ -2670,9 +2670,26 @@ func (c *CouponTemplateClient) GetX(ctx context.Context, id uint64) *CouponTempl
 	return obj
 }
 
+// QueryCoupons queries the coupons edge of a CouponTemplate.
+func (c *CouponTemplateClient) QueryCoupons(ct *CouponTemplate) *CouponQuery {
+	query := &CouponQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ct.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(coupontemplate.Table, coupontemplate.FieldID, id),
+			sqlgraph.To(coupon.Table, coupon.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, coupontemplate.CouponsTable, coupontemplate.CouponsColumn),
+		)
+		fromV = sqlgraph.Neighbors(ct.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *CouponTemplateClient) Hooks() []Hook {
-	return c.hooks.CouponTemplate
+	hooks := c.hooks.CouponTemplate
+	return append(hooks[:len(hooks):len(hooks)], coupontemplate.Hooks[:]...)
 }
 
 // EmployeeClient is a client for the Employee schema.

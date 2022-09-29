@@ -100,12 +100,6 @@ func (cu *CouponUpdate) SetAssemblyID(u uint64) *CouponUpdate {
 	return cu
 }
 
-// SetTemplateID sets the "template_id" field.
-func (cu *CouponUpdate) SetTemplateID(u uint64) *CouponUpdate {
-	cu.mutation.SetTemplateID(u)
-	return cu
-}
-
 // SetOrderID sets the "order_id" field.
 func (cu *CouponUpdate) SetOrderID(u uint64) *CouponUpdate {
 	cu.mutation.SetOrderID(u)
@@ -146,6 +140,39 @@ func (cu *CouponUpdate) ClearPlanID() *CouponUpdate {
 	return cu
 }
 
+// SetTemplateID sets the "template_id" field.
+func (cu *CouponUpdate) SetTemplateID(u uint64) *CouponUpdate {
+	cu.mutation.SetTemplateID(u)
+	return cu
+}
+
+// SetRule sets the "rule" field.
+func (cu *CouponUpdate) SetRule(u uint8) *CouponUpdate {
+	cu.mutation.ResetRule()
+	cu.mutation.SetRule(u)
+	return cu
+}
+
+// AddRule adds u to the "rule" field.
+func (cu *CouponUpdate) AddRule(u int8) *CouponUpdate {
+	cu.mutation.AddRule(u)
+	return cu
+}
+
+// SetMultiple sets the "multiple" field.
+func (cu *CouponUpdate) SetMultiple(b bool) *CouponUpdate {
+	cu.mutation.SetMultiple(b)
+	return cu
+}
+
+// SetNillableMultiple sets the "multiple" field if the given value is not nil.
+func (cu *CouponUpdate) SetNillableMultiple(b *bool) *CouponUpdate {
+	if b != nil {
+		cu.SetMultiple(*b)
+	}
+	return cu
+}
+
 // SetAmount sets the "amount" field.
 func (cu *CouponUpdate) SetAmount(f float64) *CouponUpdate {
 	cu.mutation.ResetAmount()
@@ -165,9 +192,23 @@ func (cu *CouponUpdate) SetCode(s string) *CouponUpdate {
 	return cu
 }
 
-// SetExpiredAt sets the "expired_at" field.
-func (cu *CouponUpdate) SetExpiredAt(t time.Time) *CouponUpdate {
-	cu.mutation.SetExpiredAt(t)
+// SetExpiresAt sets the "expires_at" field.
+func (cu *CouponUpdate) SetExpiresAt(t time.Time) *CouponUpdate {
+	cu.mutation.SetExpiresAt(t)
+	return cu
+}
+
+// SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
+func (cu *CouponUpdate) SetNillableExpiresAt(t *time.Time) *CouponUpdate {
+	if t != nil {
+		cu.SetExpiresAt(*t)
+	}
+	return cu
+}
+
+// ClearExpiresAt clears the value of the "expires_at" field.
+func (cu *CouponUpdate) ClearExpiresAt() *CouponUpdate {
+	cu.mutation.ClearExpiresAt()
 	return cu
 }
 
@@ -191,6 +232,12 @@ func (cu *CouponUpdate) ClearUsedAt() *CouponUpdate {
 	return cu
 }
 
+// SetDuration sets the "duration" field.
+func (cu *CouponUpdate) SetDuration(md *model.CouponDuration) *CouponUpdate {
+	cu.mutation.SetDuration(md)
+	return cu
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (cu *CouponUpdate) SetRider(r *Rider) *CouponUpdate {
 	return cu.SetRiderID(r.ID)
@@ -201,11 +248,6 @@ func (cu *CouponUpdate) SetAssembly(c *CouponAssembly) *CouponUpdate {
 	return cu.SetAssemblyID(c.ID)
 }
 
-// SetTemplate sets the "template" edge to the CouponTemplate entity.
-func (cu *CouponUpdate) SetTemplate(c *CouponTemplate) *CouponUpdate {
-	return cu.SetTemplateID(c.ID)
-}
-
 // SetOrder sets the "order" edge to the Order entity.
 func (cu *CouponUpdate) SetOrder(o *Order) *CouponUpdate {
 	return cu.SetOrderID(o.ID)
@@ -214,6 +256,11 @@ func (cu *CouponUpdate) SetOrder(o *Order) *CouponUpdate {
 // SetPlan sets the "plan" edge to the Plan entity.
 func (cu *CouponUpdate) SetPlan(p *Plan) *CouponUpdate {
 	return cu.SetPlanID(p.ID)
+}
+
+// SetTemplate sets the "template" edge to the CouponTemplate entity.
+func (cu *CouponUpdate) SetTemplate(c *CouponTemplate) *CouponUpdate {
+	return cu.SetTemplateID(c.ID)
 }
 
 // AddCityIDs adds the "cities" edge to the City entity by IDs.
@@ -263,12 +310,6 @@ func (cu *CouponUpdate) ClearAssembly() *CouponUpdate {
 	return cu
 }
 
-// ClearTemplate clears the "template" edge to the CouponTemplate entity.
-func (cu *CouponUpdate) ClearTemplate() *CouponUpdate {
-	cu.mutation.ClearTemplate()
-	return cu
-}
-
 // ClearOrder clears the "order" edge to the Order entity.
 func (cu *CouponUpdate) ClearOrder() *CouponUpdate {
 	cu.mutation.ClearOrder()
@@ -278,6 +319,12 @@ func (cu *CouponUpdate) ClearOrder() *CouponUpdate {
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (cu *CouponUpdate) ClearPlan() *CouponUpdate {
 	cu.mutation.ClearPlan()
+	return cu
+}
+
+// ClearTemplate clears the "template" edge to the CouponTemplate entity.
+func (cu *CouponUpdate) ClearTemplate() *CouponUpdate {
+	cu.mutation.ClearTemplate()
 	return cu
 }
 
@@ -472,6 +519,27 @@ func (cu *CouponUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: coupon.FieldRemark,
 		})
 	}
+	if value, ok := cu.mutation.Rule(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: coupon.FieldRule,
+		})
+	}
+	if value, ok := cu.mutation.AddedRule(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: coupon.FieldRule,
+		})
+	}
+	if value, ok := cu.mutation.Multiple(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: coupon.FieldMultiple,
+		})
+	}
 	if value, ok := cu.mutation.Amount(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
@@ -493,11 +561,17 @@ func (cu *CouponUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: coupon.FieldCode,
 		})
 	}
-	if value, ok := cu.mutation.ExpiredAt(); ok {
+	if value, ok := cu.mutation.ExpiresAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: coupon.FieldExpiredAt,
+			Column: coupon.FieldExpiresAt,
+		})
+	}
+	if cu.mutation.ExpiresAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: coupon.FieldExpiresAt,
 		})
 	}
 	if value, ok := cu.mutation.UsedAt(); ok {
@@ -511,6 +585,13 @@ func (cu *CouponUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: coupon.FieldUsedAt,
+		})
+	}
+	if value, ok := cu.mutation.Duration(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: coupon.FieldDuration,
 		})
 	}
 	if cu.mutation.RiderCleared() {
@@ -583,41 +664,6 @@ func (cu *CouponUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if cu.mutation.TemplateCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   coupon.TemplateTable,
-			Columns: []string{coupon.TemplateColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupontemplate.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cu.mutation.TemplateIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   coupon.TemplateTable,
-			Columns: []string{coupon.TemplateColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupontemplate.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if cu.mutation.OrderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -680,6 +726,41 @@ func (cu *CouponUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: plan.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cu.mutation.TemplateCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   coupon.TemplateTable,
+			Columns: []string{coupon.TemplateColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupontemplate.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.TemplateIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   coupon.TemplateTable,
+			Columns: []string{coupon.TemplateColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupontemplate.FieldID,
 				},
 			},
 		}
@@ -881,12 +962,6 @@ func (cuo *CouponUpdateOne) SetAssemblyID(u uint64) *CouponUpdateOne {
 	return cuo
 }
 
-// SetTemplateID sets the "template_id" field.
-func (cuo *CouponUpdateOne) SetTemplateID(u uint64) *CouponUpdateOne {
-	cuo.mutation.SetTemplateID(u)
-	return cuo
-}
-
 // SetOrderID sets the "order_id" field.
 func (cuo *CouponUpdateOne) SetOrderID(u uint64) *CouponUpdateOne {
 	cuo.mutation.SetOrderID(u)
@@ -927,6 +1002,39 @@ func (cuo *CouponUpdateOne) ClearPlanID() *CouponUpdateOne {
 	return cuo
 }
 
+// SetTemplateID sets the "template_id" field.
+func (cuo *CouponUpdateOne) SetTemplateID(u uint64) *CouponUpdateOne {
+	cuo.mutation.SetTemplateID(u)
+	return cuo
+}
+
+// SetRule sets the "rule" field.
+func (cuo *CouponUpdateOne) SetRule(u uint8) *CouponUpdateOne {
+	cuo.mutation.ResetRule()
+	cuo.mutation.SetRule(u)
+	return cuo
+}
+
+// AddRule adds u to the "rule" field.
+func (cuo *CouponUpdateOne) AddRule(u int8) *CouponUpdateOne {
+	cuo.mutation.AddRule(u)
+	return cuo
+}
+
+// SetMultiple sets the "multiple" field.
+func (cuo *CouponUpdateOne) SetMultiple(b bool) *CouponUpdateOne {
+	cuo.mutation.SetMultiple(b)
+	return cuo
+}
+
+// SetNillableMultiple sets the "multiple" field if the given value is not nil.
+func (cuo *CouponUpdateOne) SetNillableMultiple(b *bool) *CouponUpdateOne {
+	if b != nil {
+		cuo.SetMultiple(*b)
+	}
+	return cuo
+}
+
 // SetAmount sets the "amount" field.
 func (cuo *CouponUpdateOne) SetAmount(f float64) *CouponUpdateOne {
 	cuo.mutation.ResetAmount()
@@ -946,9 +1054,23 @@ func (cuo *CouponUpdateOne) SetCode(s string) *CouponUpdateOne {
 	return cuo
 }
 
-// SetExpiredAt sets the "expired_at" field.
-func (cuo *CouponUpdateOne) SetExpiredAt(t time.Time) *CouponUpdateOne {
-	cuo.mutation.SetExpiredAt(t)
+// SetExpiresAt sets the "expires_at" field.
+func (cuo *CouponUpdateOne) SetExpiresAt(t time.Time) *CouponUpdateOne {
+	cuo.mutation.SetExpiresAt(t)
+	return cuo
+}
+
+// SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
+func (cuo *CouponUpdateOne) SetNillableExpiresAt(t *time.Time) *CouponUpdateOne {
+	if t != nil {
+		cuo.SetExpiresAt(*t)
+	}
+	return cuo
+}
+
+// ClearExpiresAt clears the value of the "expires_at" field.
+func (cuo *CouponUpdateOne) ClearExpiresAt() *CouponUpdateOne {
+	cuo.mutation.ClearExpiresAt()
 	return cuo
 }
 
@@ -972,6 +1094,12 @@ func (cuo *CouponUpdateOne) ClearUsedAt() *CouponUpdateOne {
 	return cuo
 }
 
+// SetDuration sets the "duration" field.
+func (cuo *CouponUpdateOne) SetDuration(md *model.CouponDuration) *CouponUpdateOne {
+	cuo.mutation.SetDuration(md)
+	return cuo
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (cuo *CouponUpdateOne) SetRider(r *Rider) *CouponUpdateOne {
 	return cuo.SetRiderID(r.ID)
@@ -982,11 +1110,6 @@ func (cuo *CouponUpdateOne) SetAssembly(c *CouponAssembly) *CouponUpdateOne {
 	return cuo.SetAssemblyID(c.ID)
 }
 
-// SetTemplate sets the "template" edge to the CouponTemplate entity.
-func (cuo *CouponUpdateOne) SetTemplate(c *CouponTemplate) *CouponUpdateOne {
-	return cuo.SetTemplateID(c.ID)
-}
-
 // SetOrder sets the "order" edge to the Order entity.
 func (cuo *CouponUpdateOne) SetOrder(o *Order) *CouponUpdateOne {
 	return cuo.SetOrderID(o.ID)
@@ -995,6 +1118,11 @@ func (cuo *CouponUpdateOne) SetOrder(o *Order) *CouponUpdateOne {
 // SetPlan sets the "plan" edge to the Plan entity.
 func (cuo *CouponUpdateOne) SetPlan(p *Plan) *CouponUpdateOne {
 	return cuo.SetPlanID(p.ID)
+}
+
+// SetTemplate sets the "template" edge to the CouponTemplate entity.
+func (cuo *CouponUpdateOne) SetTemplate(c *CouponTemplate) *CouponUpdateOne {
+	return cuo.SetTemplateID(c.ID)
 }
 
 // AddCityIDs adds the "cities" edge to the City entity by IDs.
@@ -1044,12 +1172,6 @@ func (cuo *CouponUpdateOne) ClearAssembly() *CouponUpdateOne {
 	return cuo
 }
 
-// ClearTemplate clears the "template" edge to the CouponTemplate entity.
-func (cuo *CouponUpdateOne) ClearTemplate() *CouponUpdateOne {
-	cuo.mutation.ClearTemplate()
-	return cuo
-}
-
 // ClearOrder clears the "order" edge to the Order entity.
 func (cuo *CouponUpdateOne) ClearOrder() *CouponUpdateOne {
 	cuo.mutation.ClearOrder()
@@ -1059,6 +1181,12 @@ func (cuo *CouponUpdateOne) ClearOrder() *CouponUpdateOne {
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (cuo *CouponUpdateOne) ClearPlan() *CouponUpdateOne {
 	cuo.mutation.ClearPlan()
+	return cuo
+}
+
+// ClearTemplate clears the "template" edge to the CouponTemplate entity.
+func (cuo *CouponUpdateOne) ClearTemplate() *CouponUpdateOne {
+	cuo.mutation.ClearTemplate()
 	return cuo
 }
 
@@ -1283,6 +1411,27 @@ func (cuo *CouponUpdateOne) sqlSave(ctx context.Context) (_node *Coupon, err err
 			Column: coupon.FieldRemark,
 		})
 	}
+	if value, ok := cuo.mutation.Rule(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: coupon.FieldRule,
+		})
+	}
+	if value, ok := cuo.mutation.AddedRule(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: coupon.FieldRule,
+		})
+	}
+	if value, ok := cuo.mutation.Multiple(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: coupon.FieldMultiple,
+		})
+	}
 	if value, ok := cuo.mutation.Amount(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
@@ -1304,11 +1453,17 @@ func (cuo *CouponUpdateOne) sqlSave(ctx context.Context) (_node *Coupon, err err
 			Column: coupon.FieldCode,
 		})
 	}
-	if value, ok := cuo.mutation.ExpiredAt(); ok {
+	if value, ok := cuo.mutation.ExpiresAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: coupon.FieldExpiredAt,
+			Column: coupon.FieldExpiresAt,
+		})
+	}
+	if cuo.mutation.ExpiresAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: coupon.FieldExpiresAt,
 		})
 	}
 	if value, ok := cuo.mutation.UsedAt(); ok {
@@ -1322,6 +1477,13 @@ func (cuo *CouponUpdateOne) sqlSave(ctx context.Context) (_node *Coupon, err err
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: coupon.FieldUsedAt,
+		})
+	}
+	if value, ok := cuo.mutation.Duration(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: coupon.FieldDuration,
 		})
 	}
 	if cuo.mutation.RiderCleared() {
@@ -1394,41 +1556,6 @@ func (cuo *CouponUpdateOne) sqlSave(ctx context.Context) (_node *Coupon, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if cuo.mutation.TemplateCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   coupon.TemplateTable,
-			Columns: []string{coupon.TemplateColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupontemplate.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cuo.mutation.TemplateIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   coupon.TemplateTable,
-			Columns: []string{coupon.TemplateColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupontemplate.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if cuo.mutation.OrderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1491,6 +1618,41 @@ func (cuo *CouponUpdateOne) sqlSave(ctx context.Context) (_node *Coupon, err err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: plan.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.TemplateCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   coupon.TemplateTable,
+			Columns: []string{coupon.TemplateColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupontemplate.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.TemplateIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   coupon.TemplateTable,
+			Columns: []string{coupon.TemplateColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupontemplate.FieldID,
 				},
 			},
 		}

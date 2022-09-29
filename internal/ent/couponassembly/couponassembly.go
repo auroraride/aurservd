@@ -25,6 +25,16 @@ const (
 	FieldRemark = "remark"
 	// FieldTemplateID holds the string denoting the template_id field in the database.
 	FieldTemplateID = "template_id"
+	// FieldName holds the string denoting the name field in the database.
+	FieldName = "name"
+	// FieldNumber holds the string denoting the number field in the database.
+	FieldNumber = "number"
+	// FieldAmount holds the string denoting the amount field in the database.
+	FieldAmount = "amount"
+	// FieldTarget holds the string denoting the target field in the database.
+	FieldTarget = "target"
+	// FieldMeta holds the string denoting the meta field in the database.
+	FieldMeta = "meta"
 	// EdgeTemplate holds the string denoting the template edge name in mutations.
 	EdgeTemplate = "template"
 	// Table holds the table name of the couponassembly in the database.
@@ -47,6 +57,11 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldTemplateID,
+	FieldName,
+	FieldNumber,
+	FieldAmount,
+	FieldTarget,
+	FieldMeta,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

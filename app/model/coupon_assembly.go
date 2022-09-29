@@ -5,13 +5,18 @@
 
 package model
 
-// type CouponAssembly struct {
-//     ID        uint64 `json:"id"`
-//     Name      string `json:"name"`      // 名称
-//     UpdatedAt string `json:"updatedAt"` // 更新时间
-//     Total     int    `json:"total"`     // 总数
-//     Remaining int    `json:"remaining"` // 剩余
-//     Used      int    `json:"used"`      // 已使用
-//     Unused    int    `json:"unused"`    // 未使用
-//     Expired   int    `json:"expired"`   // 已过期
-// }
+type CouponAssemblyListReq struct {
+    PaginationReq
+    TemplateID uint64 `json:"templateId" query:"templateId"` // 模板
+}
+
+type CouponAssembly struct {
+    ID      uint64             `json:"id"`
+    Target  uint8              `json:"target" enums:"1,2"` // 对象, 1:骑手 2:库存
+    Amount  float64            `json:"amount"`             // 金额
+    Number  int                `json:"number"`             // 数量
+    Creator *Modifier          `json:"creator"`            // 操作人
+    Time    string             `json:"time"`               // 时间
+    Remark  string             `json:"remark"`             // 备注
+    Meta    CouponTemplateMeta `json:"meta"`               // 详细信息
+}

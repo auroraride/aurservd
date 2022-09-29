@@ -75,6 +75,57 @@ func (cau *CouponAssemblyUpdate) SetTemplateID(u uint64) *CouponAssemblyUpdate {
 	return cau
 }
 
+// SetName sets the "name" field.
+func (cau *CouponAssemblyUpdate) SetName(s string) *CouponAssemblyUpdate {
+	cau.mutation.SetName(s)
+	return cau
+}
+
+// SetNumber sets the "number" field.
+func (cau *CouponAssemblyUpdate) SetNumber(i int) *CouponAssemblyUpdate {
+	cau.mutation.ResetNumber()
+	cau.mutation.SetNumber(i)
+	return cau
+}
+
+// AddNumber adds i to the "number" field.
+func (cau *CouponAssemblyUpdate) AddNumber(i int) *CouponAssemblyUpdate {
+	cau.mutation.AddNumber(i)
+	return cau
+}
+
+// SetAmount sets the "amount" field.
+func (cau *CouponAssemblyUpdate) SetAmount(f float64) *CouponAssemblyUpdate {
+	cau.mutation.ResetAmount()
+	cau.mutation.SetAmount(f)
+	return cau
+}
+
+// AddAmount adds f to the "amount" field.
+func (cau *CouponAssemblyUpdate) AddAmount(f float64) *CouponAssemblyUpdate {
+	cau.mutation.AddAmount(f)
+	return cau
+}
+
+// SetTarget sets the "target" field.
+func (cau *CouponAssemblyUpdate) SetTarget(u uint8) *CouponAssemblyUpdate {
+	cau.mutation.ResetTarget()
+	cau.mutation.SetTarget(u)
+	return cau
+}
+
+// AddTarget adds u to the "target" field.
+func (cau *CouponAssemblyUpdate) AddTarget(u int8) *CouponAssemblyUpdate {
+	cau.mutation.AddTarget(u)
+	return cau
+}
+
+// SetMeta sets the "meta" field.
+func (cau *CouponAssemblyUpdate) SetMeta(mtm *model.CouponTemplateMeta) *CouponAssemblyUpdate {
+	cau.mutation.SetMeta(mtm)
+	return cau
+}
+
 // SetTemplate sets the "template" edge to the CouponTemplate entity.
 func (cau *CouponAssemblyUpdate) SetTemplate(c *CouponTemplate) *CouponAssemblyUpdate {
 	return cau.SetTemplateID(c.ID)
@@ -237,6 +288,62 @@ func (cau *CouponAssemblyUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: couponassembly.FieldRemark,
 		})
 	}
+	if value, ok := cau.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: couponassembly.FieldName,
+		})
+	}
+	if value, ok := cau.mutation.Number(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: couponassembly.FieldNumber,
+		})
+	}
+	if value, ok := cau.mutation.AddedNumber(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: couponassembly.FieldNumber,
+		})
+	}
+	if value, ok := cau.mutation.Amount(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: couponassembly.FieldAmount,
+		})
+	}
+	if value, ok := cau.mutation.AddedAmount(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: couponassembly.FieldAmount,
+		})
+	}
+	if value, ok := cau.mutation.Target(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: couponassembly.FieldTarget,
+		})
+	}
+	if value, ok := cau.mutation.AddedTarget(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: couponassembly.FieldTarget,
+		})
+	}
+	if value, ok := cau.mutation.Meta(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: couponassembly.FieldMeta,
+		})
+	}
 	if cau.mutation.TemplateCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -334,6 +441,57 @@ func (cauo *CouponAssemblyUpdateOne) ClearRemark() *CouponAssemblyUpdateOne {
 // SetTemplateID sets the "template_id" field.
 func (cauo *CouponAssemblyUpdateOne) SetTemplateID(u uint64) *CouponAssemblyUpdateOne {
 	cauo.mutation.SetTemplateID(u)
+	return cauo
+}
+
+// SetName sets the "name" field.
+func (cauo *CouponAssemblyUpdateOne) SetName(s string) *CouponAssemblyUpdateOne {
+	cauo.mutation.SetName(s)
+	return cauo
+}
+
+// SetNumber sets the "number" field.
+func (cauo *CouponAssemblyUpdateOne) SetNumber(i int) *CouponAssemblyUpdateOne {
+	cauo.mutation.ResetNumber()
+	cauo.mutation.SetNumber(i)
+	return cauo
+}
+
+// AddNumber adds i to the "number" field.
+func (cauo *CouponAssemblyUpdateOne) AddNumber(i int) *CouponAssemblyUpdateOne {
+	cauo.mutation.AddNumber(i)
+	return cauo
+}
+
+// SetAmount sets the "amount" field.
+func (cauo *CouponAssemblyUpdateOne) SetAmount(f float64) *CouponAssemblyUpdateOne {
+	cauo.mutation.ResetAmount()
+	cauo.mutation.SetAmount(f)
+	return cauo
+}
+
+// AddAmount adds f to the "amount" field.
+func (cauo *CouponAssemblyUpdateOne) AddAmount(f float64) *CouponAssemblyUpdateOne {
+	cauo.mutation.AddAmount(f)
+	return cauo
+}
+
+// SetTarget sets the "target" field.
+func (cauo *CouponAssemblyUpdateOne) SetTarget(u uint8) *CouponAssemblyUpdateOne {
+	cauo.mutation.ResetTarget()
+	cauo.mutation.SetTarget(u)
+	return cauo
+}
+
+// AddTarget adds u to the "target" field.
+func (cauo *CouponAssemblyUpdateOne) AddTarget(u int8) *CouponAssemblyUpdateOne {
+	cauo.mutation.AddTarget(u)
+	return cauo
+}
+
+// SetMeta sets the "meta" field.
+func (cauo *CouponAssemblyUpdateOne) SetMeta(mtm *model.CouponTemplateMeta) *CouponAssemblyUpdateOne {
+	cauo.mutation.SetMeta(mtm)
 	return cauo
 }
 
@@ -527,6 +685,62 @@ func (cauo *CouponAssemblyUpdateOne) sqlSave(ctx context.Context) (_node *Coupon
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: couponassembly.FieldRemark,
+		})
+	}
+	if value, ok := cauo.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: couponassembly.FieldName,
+		})
+	}
+	if value, ok := cauo.mutation.Number(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: couponassembly.FieldNumber,
+		})
+	}
+	if value, ok := cauo.mutation.AddedNumber(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: couponassembly.FieldNumber,
+		})
+	}
+	if value, ok := cauo.mutation.Amount(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: couponassembly.FieldAmount,
+		})
+	}
+	if value, ok := cauo.mutation.AddedAmount(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: couponassembly.FieldAmount,
+		})
+	}
+	if value, ok := cauo.mutation.Target(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: couponassembly.FieldTarget,
+		})
+	}
+	if value, ok := cauo.mutation.AddedTarget(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: couponassembly.FieldTarget,
+		})
+	}
+	if value, ok := cauo.mutation.Meta(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: couponassembly.FieldMeta,
 		})
 	}
 	if cauo.mutation.TemplateCleared() {

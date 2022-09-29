@@ -66,12 +66,15 @@ func (CouponTemplate) Fields() []ent.Field {
 
 // Edges of the CouponTemplate.
 func (CouponTemplate) Edges() []ent.Edge {
-    return []ent.Edge{}
+    return []ent.Edge{
+        edge.To("coupons", Coupon.Type),
+    }
 }
 
 func (CouponTemplate) Mixin() []ent.Mixin {
     return []ent.Mixin{
         internal.TimeMixin{},
+        internal.Modifier{},
     }
 }
 

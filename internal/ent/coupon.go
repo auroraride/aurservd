@@ -37,22 +37,28 @@ type Coupon struct {
 	RiderID *uint64 `json:"rider_id,omitempty"`
 	// AssemblyID holds the value of the "assembly_id" field.
 	AssemblyID uint64 `json:"assembly_id,omitempty"`
-	// TemplateID holds the value of the "template_id" field.
-	TemplateID uint64 `json:"template_id,omitempty"`
 	// OrderID holds the value of the "order_id" field.
 	OrderID *uint64 `json:"order_id,omitempty"`
-	// 骑士卡ID
+	// 实际使用骑士卡
 	PlanID *uint64 `json:"plan_id,omitempty"`
+	// TemplateID holds the value of the "template_id" field.
+	TemplateID uint64 `json:"template_id,omitempty"`
 	// 名称
 	Name string `json:"name,omitempty"`
+	// 使用规则
+	Rule uint8 `json:"rule,omitempty"`
+	// 该券是否可叠加
+	Multiple bool `json:"multiple,omitempty"`
 	// 金额
 	Amount float64 `json:"amount,omitempty"`
 	// 券码
 	Code string `json:"code,omitempty"`
 	// 过期时间
-	ExpiredAt time.Time `json:"expired_at,omitempty"`
+	ExpiresAt time.Time `json:"expires_at,omitempty"`
 	// 使用时间
-	UsedAt time.Time `json:"used_at,omitempty"`
+	UsedAt *time.Time `json:"used_at,omitempty"`
+	// 有效期规则
+	Duration *model.CouponDuration `json:"duration,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CouponQuery when eager-loading is set.
 	Edges CouponEdges `json:"edges"`
@@ -64,12 +70,12 @@ type CouponEdges struct {
 	Rider *Rider `json:"rider,omitempty"`
 	// Assembly holds the value of the assembly edge.
 	Assembly *CouponAssembly `json:"assembly,omitempty"`
-	// Template holds the value of the template edge.
-	Template *CouponTemplate `json:"template,omitempty"`
 	// Order holds the value of the order edge.
 	Order *Order `json:"order,omitempty"`
 	// Plan holds the value of the plan edge.
 	Plan *Plan `json:"plan,omitempty"`
+	// Template holds the value of the template edge.
+	Template *CouponTemplate `json:"template,omitempty"`
 	// Cities holds the value of the cities edge.
 	Cities []*City `json:"cities,omitempty"`
 	// Plans holds the value of the plans edge.
@@ -105,23 +111,10 @@ func (e CouponEdges) AssemblyOrErr() (*CouponAssembly, error) {
 	return nil, &NotLoadedError{edge: "assembly"}
 }
 
-// TemplateOrErr returns the Template value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e CouponEdges) TemplateOrErr() (*CouponTemplate, error) {
-	if e.loadedTypes[2] {
-		if e.Template == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: coupontemplate.Label}
-		}
-		return e.Template, nil
-	}
-	return nil, &NotLoadedError{edge: "template"}
-}
-
 // OrderOrErr returns the Order value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CouponEdges) OrderOrErr() (*Order, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[2] {
 		if e.Order == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: order.Label}
@@ -134,7 +127,7 @@ func (e CouponEdges) OrderOrErr() (*Order, error) {
 // PlanOrErr returns the Plan value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CouponEdges) PlanOrErr() (*Plan, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[3] {
 		if e.Plan == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: plan.Label}
@@ -142,6 +135,19 @@ func (e CouponEdges) PlanOrErr() (*Plan, error) {
 		return e.Plan, nil
 	}
 	return nil, &NotLoadedError{edge: "plan"}
+}
+
+// TemplateOrErr returns the Template value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CouponEdges) TemplateOrErr() (*CouponTemplate, error) {
+	if e.loadedTypes[4] {
+		if e.Template == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: coupontemplate.Label}
+		}
+		return e.Template, nil
+	}
+	return nil, &NotLoadedError{edge: "template"}
 }
 
 // CitiesOrErr returns the Cities value or an error if the edge
@@ -167,15 +173,17 @@ func (*Coupon) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case coupon.FieldCreator, coupon.FieldLastModifier:
+		case coupon.FieldCreator, coupon.FieldLastModifier, coupon.FieldDuration:
 			values[i] = new([]byte)
+		case coupon.FieldMultiple:
+			values[i] = new(sql.NullBool)
 		case coupon.FieldAmount:
 			values[i] = new(sql.NullFloat64)
-		case coupon.FieldID, coupon.FieldRiderID, coupon.FieldAssemblyID, coupon.FieldTemplateID, coupon.FieldOrderID, coupon.FieldPlanID:
+		case coupon.FieldID, coupon.FieldRiderID, coupon.FieldAssemblyID, coupon.FieldOrderID, coupon.FieldPlanID, coupon.FieldTemplateID, coupon.FieldRule:
 			values[i] = new(sql.NullInt64)
 		case coupon.FieldRemark, coupon.FieldName, coupon.FieldCode:
 			values[i] = new(sql.NullString)
-		case coupon.FieldCreatedAt, coupon.FieldUpdatedAt, coupon.FieldExpiredAt, coupon.FieldUsedAt:
+		case coupon.FieldCreatedAt, coupon.FieldUpdatedAt, coupon.FieldExpiresAt, coupon.FieldUsedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Coupon", columns[i])
@@ -245,12 +253,6 @@ func (c *Coupon) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.AssemblyID = uint64(value.Int64)
 			}
-		case coupon.FieldTemplateID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field template_id", values[i])
-			} else if value.Valid {
-				c.TemplateID = uint64(value.Int64)
-			}
 		case coupon.FieldOrderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field order_id", values[i])
@@ -265,11 +267,29 @@ func (c *Coupon) assignValues(columns []string, values []any) error {
 				c.PlanID = new(uint64)
 				*c.PlanID = uint64(value.Int64)
 			}
+		case coupon.FieldTemplateID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field template_id", values[i])
+			} else if value.Valid {
+				c.TemplateID = uint64(value.Int64)
+			}
 		case coupon.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				c.Name = value.String
+			}
+		case coupon.FieldRule:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field rule", values[i])
+			} else if value.Valid {
+				c.Rule = uint8(value.Int64)
+			}
+		case coupon.FieldMultiple:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field multiple", values[i])
+			} else if value.Valid {
+				c.Multiple = value.Bool
 			}
 		case coupon.FieldAmount:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
@@ -283,17 +303,26 @@ func (c *Coupon) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.Code = value.String
 			}
-		case coupon.FieldExpiredAt:
+		case coupon.FieldExpiresAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field expired_at", values[i])
+				return fmt.Errorf("unexpected type %T for field expires_at", values[i])
 			} else if value.Valid {
-				c.ExpiredAt = value.Time
+				c.ExpiresAt = value.Time
 			}
 		case coupon.FieldUsedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field used_at", values[i])
 			} else if value.Valid {
-				c.UsedAt = value.Time
+				c.UsedAt = new(time.Time)
+				*c.UsedAt = value.Time
+			}
+		case coupon.FieldDuration:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field duration", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &c.Duration); err != nil {
+					return fmt.Errorf("unmarshal field duration: %w", err)
+				}
 			}
 		}
 	}
@@ -310,11 +339,6 @@ func (c *Coupon) QueryAssembly() *CouponAssemblyQuery {
 	return (&CouponClient{config: c.config}).QueryAssembly(c)
 }
 
-// QueryTemplate queries the "template" edge of the Coupon entity.
-func (c *Coupon) QueryTemplate() *CouponTemplateQuery {
-	return (&CouponClient{config: c.config}).QueryTemplate(c)
-}
-
 // QueryOrder queries the "order" edge of the Coupon entity.
 func (c *Coupon) QueryOrder() *OrderQuery {
 	return (&CouponClient{config: c.config}).QueryOrder(c)
@@ -323,6 +347,11 @@ func (c *Coupon) QueryOrder() *OrderQuery {
 // QueryPlan queries the "plan" edge of the Coupon entity.
 func (c *Coupon) QueryPlan() *PlanQuery {
 	return (&CouponClient{config: c.config}).QueryPlan(c)
+}
+
+// QueryTemplate queries the "template" edge of the Coupon entity.
+func (c *Coupon) QueryTemplate() *CouponTemplateQuery {
+	return (&CouponClient{config: c.config}).QueryTemplate(c)
 }
 
 // QueryCities queries the "cities" edge of the Coupon entity.
@@ -381,9 +410,6 @@ func (c *Coupon) String() string {
 	builder.WriteString("assembly_id=")
 	builder.WriteString(fmt.Sprintf("%v", c.AssemblyID))
 	builder.WriteString(", ")
-	builder.WriteString("template_id=")
-	builder.WriteString(fmt.Sprintf("%v", c.TemplateID))
-	builder.WriteString(", ")
 	if v := c.OrderID; v != nil {
 		builder.WriteString("order_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
@@ -394,8 +420,17 @@ func (c *Coupon) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
+	builder.WriteString("template_id=")
+	builder.WriteString(fmt.Sprintf("%v", c.TemplateID))
+	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(c.Name)
+	builder.WriteString(", ")
+	builder.WriteString("rule=")
+	builder.WriteString(fmt.Sprintf("%v", c.Rule))
+	builder.WriteString(", ")
+	builder.WriteString("multiple=")
+	builder.WriteString(fmt.Sprintf("%v", c.Multiple))
 	builder.WriteString(", ")
 	builder.WriteString("amount=")
 	builder.WriteString(fmt.Sprintf("%v", c.Amount))
@@ -403,11 +438,16 @@ func (c *Coupon) String() string {
 	builder.WriteString("code=")
 	builder.WriteString(c.Code)
 	builder.WriteString(", ")
-	builder.WriteString("expired_at=")
-	builder.WriteString(c.ExpiredAt.Format(time.ANSIC))
+	builder.WriteString("expires_at=")
+	builder.WriteString(c.ExpiresAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("used_at=")
-	builder.WriteString(c.UsedAt.Format(time.ANSIC))
+	if v := c.UsedAt; v != nil {
+		builder.WriteString("used_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	builder.WriteString("duration=")
+	builder.WriteString(fmt.Sprintf("%v", c.Duration))
 	builder.WriteByte(')')
 	return builder.String()
 }

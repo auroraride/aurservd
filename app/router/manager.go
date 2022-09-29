@@ -159,6 +159,7 @@ func loadManagerRoutes() {
     g.GET("/selection/planmodel", mapi.Selection.PlanModel)
     g.GET("/selection/cabinetmodel", mapi.Selection.CabinetModel)
     g.GET("/selection/model", mapi.Selection.Model)
+    g.GET("/selection/coupon/template", mapi.Selection.CouponTemplate)
 
     // 救援
     g.GET("/assistance", mapi.Assistance.List)
@@ -193,4 +194,13 @@ func loadManagerRoutes() {
     // 积分
     g.POST("/point/modify", mapi.Point.Modify)
     g.GET("/point/log", mapi.Point.Log)
+
+    // 优惠券
+    g.GET("/coupon/template", mapi.Coupon.TemplateList)
+    g.POST("/coupon/template", mapi.Coupon.TemplateCreate)
+    g.POST("/coupon/template/status", mapi.Coupon.TemplateStatus)
+    g.POST("/coupon/generate", mapi.Coupon.Generate)
+    g.GET("/coupon/assembly", mapi.Coupon.Assembly)
+    g.GET("/coupon", mapi.Coupon.List)
+    g.POST("/coupon/allocate", mapi.Coupon.Allocate)
 }

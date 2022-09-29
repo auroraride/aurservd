@@ -2209,6 +2209,9 @@ definitions:
         items:
           $ref: '#/definitions/model.SelectOption'
         type: array
+      desc:
+        description: 描述
+        type: string
       label:
         description: 选择项名称
         type: string
@@ -2223,6 +2226,9 @@ definitions:
         items:
           $ref: '#/definitions/model.CascaderOptionLevel2'
         type: array
+      desc:
+        description: 描述
+        type: string
       label:
         description: 选择项名称
         type: string
@@ -2305,6 +2311,166 @@ definitions:
       url:
         description: 签署URL
         type: string
+    type: object
+  model.CouponAllocateReq:
+    properties:
+      id:
+        description: 优惠券
+        type: integer
+      riderId:
+        description: 骑手
+        type: integer
+    required:
+    - id
+    - riderId
+    type: object
+  model.CouponGenerateReq:
+    properties:
+      amount:
+        description: '金额 '
+        type: number
+      number:
+        description: '生成数量 '
+        type: integer
+      phones:
+        description: '骑手电话 '
+        items:
+          type: string
+        type: array
+      remark:
+        description: '备注 '
+        type: string
+      templateId:
+        description: '优惠券模板 '
+        type: integer
+    required:
+    - amount
+    - remark
+    - templateId
+    type: object
+  model.CouponTemplateCreateReq:
+    properties:
+      cityIds:
+        description: 可用城市 和`plans`不能同时为空也不能同时存在
+        items:
+          type: integer
+        type: array
+      durationDays:
+        description: 相对天数 `durationRule=2`必填
+        type: integer
+      durationRule:
+        description: 有效期规则 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)
+        enum:
+        - 1
+        - 2
+        type: integer
+      durationTime:
+        description: 过期时间 `durationRule=1`必填 yyyy-mm-dd, 如 2022-09-25
+        type: string
+      multiple:
+        description: 重复使用(该券是否可叠加使用)
+        type: boolean
+      name:
+        description: '名称 '
+        type: string
+      planIds:
+        description: 绑定骑士卡 和`cities`不能同时为空也不能同时存在
+        items:
+          type: integer
+        type: array
+      remark:
+        description: 备注信息 10字以内, 需要显示在优惠券列表中
+        maxLength: 10
+        type: string
+      rule:
+        description: 使用规则 1:互斥 2:可叠加
+        enum:
+        - 1
+        - 2
+        type: integer
+    required:
+    - durationRule
+    - name
+    - remark
+    - rule
+    type: object
+  model.CouponTemplateListRes:
+    properties:
+      cities:
+        description: 可用城市
+        items:
+          $ref: '#/definitions/model.City'
+        type: array
+      cityIds:
+        description: 可用城市 和`plans`不能同时为空也不能同时存在
+        items:
+          type: integer
+        type: array
+      durationDays:
+        description: 相对天数 `durationRule=2`必填
+        type: integer
+      durationRule:
+        description: 有效期规则 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)
+        enum:
+        - 1
+        - 2
+        type: integer
+      durationTime:
+        description: 过期时间 `durationRule=1`必填 yyyy-mm-dd, 如 2022-09-25
+        type: string
+      expired:
+        description: 已过期
+        type: integer
+      id:
+        type: integer
+      inStock:
+        description: 库存
+        type: integer
+      multiple:
+        description: 重复使用(该券是否可叠加使用)
+        type: boolean
+      planIds:
+        description: 绑定骑士卡 和`cities`不能同时为空也不能同时存在
+        items:
+          type: integer
+        type: array
+      plans:
+        description: 绑定骑士卡
+        items:
+          $ref: '#/definitions/model.Plan'
+        type: array
+      remark:
+        type: string
+      rule:
+        description: 使用规则 1:互斥 2:可叠加
+        enum:
+        - 1
+        - 2
+        type: integer
+      time:
+        description: 更新时间
+        type: string
+      total:
+        description: 总数
+        type: integer
+      unused:
+        description: 未使用
+        type: integer
+      used:
+        description: 已使用
+        type: integer
+    required:
+    - durationRule
+    - rule
+    type: object
+  model.CouponTemplateStatusReq:
+    properties:
+      enable:
+        type: boolean
+      id:
+        type: integer
+    required:
+    - id
     type: object
   model.Employee:
     properties:
@@ -4357,12 +4523,26 @@ definitions:
     type: object
   model.SelectOption:
     properties:
+      desc:
+        description: 描述
+        type: string
       label:
         description: 选择项名称
         type: string
       value:
         description: 选择项值 (ID)
         type: integer
+    type: object
+  model.SelectOptionGroup:
+    properties:
+      label:
+        description: 分组名称
+        type: string
+      options:
+        description: 分组选项
+        items:
+          $ref: '#/definitions/model.SelectOption'
+        type: array
     type: object
   model.SettingReq:
     properties:
@@ -5803,7 +5983,7 @@ paths:
         "200":
           description: ok
           headers:
-            X-Captcha-Id:
+            X-Captcha-Id  true:
               description: Captcha验证码ID
               type: string
           schema:
@@ -8110,6 +8290,207 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M2002 修改城市
+      tags:
+      - '[M]管理接口'
+  /manager/v1/coupon:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerCouponList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: MH006 优惠券列表
+      tags:
+      - '[M]管理接口'
+  /manager/v1/coupon/allocate:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerCouponAllocate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 优惠券和骑手信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.CouponAllocateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: MH007 分配优惠券
+      tags:
+      - '[M]管理接口'
+  /manager/v1/coupon/assembly:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerCouponAssembly
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 模板
+        in: query
+        name: templateId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: MH005 发券记录
+      tags:
+      - '[M]管理接口'
+  /manager/v1/coupon/generate:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerCouponGenerate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 优惠券信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.CouponGenerateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: MH004 生成优惠券
+      tags:
+      - '[M]管理接口'
+  /manager/v1/coupon/template:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerCouponTemplateList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 是否启用, 默认`true`是
+        in: query
+        name: enable
+        type: boolean
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.CouponTemplateListRes'
+                  type: array
+              type: object
+      summary: MH001 模板列表
+      tags:
+      - '[M]管理接口'
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerCouponTemplateCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 模板内容
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.CouponTemplateCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: MH002 创建模板
+      tags:
+      - '[M]管理接口'
+  /manager/v1/coupon/template/status:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerCouponTemplateStatus
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 模板信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.CouponTemplateStatusReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: MH003 模板启用/禁用
       tags:
       - '[M]管理接口'
   /manager/v1/csc/irv:
@@ -10536,6 +10917,31 @@ paths:
               $ref: '#/definitions/model.CascaderOptionLevel2'
             type: array
       summary: MB005 筛选启用的城市
+      tags:
+      - '[M]管理接口'
+  /manager/v1/selection/coupon/template:
+    get:
+      consumes:
+      - application/json
+      description: 筛选样式参考 <a target="_blank" href="https://element.eleme.cn/#/zh-CN/component/select#fen-zu">ElementUI-select-分组</a>
+        <a target="_blank" href="https://element.eleme.cn/#/zh-CN/component/select#zi-ding-yi-mo-ban">ElementUI-select-自定义模板</a>
+      operationId: ManagerSelectionCouponTemplate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.SelectOptionGroup'
+            type: array
+      summary: MB014 筛选优惠券模板
       tags:
       - '[M]管理接口'
   /manager/v1/selection/employee:

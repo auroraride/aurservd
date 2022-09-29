@@ -103,12 +103,6 @@ func (cc *CouponCreate) SetAssemblyID(u uint64) *CouponCreate {
 	return cc
 }
 
-// SetTemplateID sets the "template_id" field.
-func (cc *CouponCreate) SetTemplateID(u uint64) *CouponCreate {
-	cc.mutation.SetTemplateID(u)
-	return cc
-}
-
 // SetOrderID sets the "order_id" field.
 func (cc *CouponCreate) SetOrderID(u uint64) *CouponCreate {
 	cc.mutation.SetOrderID(u)
@@ -137,9 +131,35 @@ func (cc *CouponCreate) SetNillablePlanID(u *uint64) *CouponCreate {
 	return cc
 }
 
+// SetTemplateID sets the "template_id" field.
+func (cc *CouponCreate) SetTemplateID(u uint64) *CouponCreate {
+	cc.mutation.SetTemplateID(u)
+	return cc
+}
+
 // SetName sets the "name" field.
 func (cc *CouponCreate) SetName(s string) *CouponCreate {
 	cc.mutation.SetName(s)
+	return cc
+}
+
+// SetRule sets the "rule" field.
+func (cc *CouponCreate) SetRule(u uint8) *CouponCreate {
+	cc.mutation.SetRule(u)
+	return cc
+}
+
+// SetMultiple sets the "multiple" field.
+func (cc *CouponCreate) SetMultiple(b bool) *CouponCreate {
+	cc.mutation.SetMultiple(b)
+	return cc
+}
+
+// SetNillableMultiple sets the "multiple" field if the given value is not nil.
+func (cc *CouponCreate) SetNillableMultiple(b *bool) *CouponCreate {
+	if b != nil {
+		cc.SetMultiple(*b)
+	}
 	return cc
 }
 
@@ -155,9 +175,17 @@ func (cc *CouponCreate) SetCode(s string) *CouponCreate {
 	return cc
 }
 
-// SetExpiredAt sets the "expired_at" field.
-func (cc *CouponCreate) SetExpiredAt(t time.Time) *CouponCreate {
-	cc.mutation.SetExpiredAt(t)
+// SetExpiresAt sets the "expires_at" field.
+func (cc *CouponCreate) SetExpiresAt(t time.Time) *CouponCreate {
+	cc.mutation.SetExpiresAt(t)
+	return cc
+}
+
+// SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
+func (cc *CouponCreate) SetNillableExpiresAt(t *time.Time) *CouponCreate {
+	if t != nil {
+		cc.SetExpiresAt(*t)
+	}
 	return cc
 }
 
@@ -175,6 +203,12 @@ func (cc *CouponCreate) SetNillableUsedAt(t *time.Time) *CouponCreate {
 	return cc
 }
 
+// SetDuration sets the "duration" field.
+func (cc *CouponCreate) SetDuration(md *model.CouponDuration) *CouponCreate {
+	cc.mutation.SetDuration(md)
+	return cc
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (cc *CouponCreate) SetRider(r *Rider) *CouponCreate {
 	return cc.SetRiderID(r.ID)
@@ -185,11 +219,6 @@ func (cc *CouponCreate) SetAssembly(c *CouponAssembly) *CouponCreate {
 	return cc.SetAssemblyID(c.ID)
 }
 
-// SetTemplate sets the "template" edge to the CouponTemplate entity.
-func (cc *CouponCreate) SetTemplate(c *CouponTemplate) *CouponCreate {
-	return cc.SetTemplateID(c.ID)
-}
-
 // SetOrder sets the "order" edge to the Order entity.
 func (cc *CouponCreate) SetOrder(o *Order) *CouponCreate {
 	return cc.SetOrderID(o.ID)
@@ -198,6 +227,11 @@ func (cc *CouponCreate) SetOrder(o *Order) *CouponCreate {
 // SetPlan sets the "plan" edge to the Plan entity.
 func (cc *CouponCreate) SetPlan(p *Plan) *CouponCreate {
 	return cc.SetPlanID(p.ID)
+}
+
+// SetTemplate sets the "template" edge to the CouponTemplate entity.
+func (cc *CouponCreate) SetTemplate(c *CouponTemplate) *CouponCreate {
+	return cc.SetTemplateID(c.ID)
 }
 
 // AddCityIDs adds the "cities" edge to the City entity by IDs.
@@ -323,6 +357,10 @@ func (cc *CouponCreate) defaults() error {
 		v := coupon.DefaultUpdatedAt()
 		cc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := cc.mutation.Multiple(); !ok {
+		v := coupon.DefaultMultiple
+		cc.mutation.SetMultiple(v)
+	}
 	return nil
 }
 
@@ -343,14 +381,20 @@ func (cc *CouponCreate) check() error {
 	if _, ok := cc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Coupon.name"`)}
 	}
+	if _, ok := cc.mutation.Rule(); !ok {
+		return &ValidationError{Name: "rule", err: errors.New(`ent: missing required field "Coupon.rule"`)}
+	}
+	if _, ok := cc.mutation.Multiple(); !ok {
+		return &ValidationError{Name: "multiple", err: errors.New(`ent: missing required field "Coupon.multiple"`)}
+	}
 	if _, ok := cc.mutation.Amount(); !ok {
 		return &ValidationError{Name: "amount", err: errors.New(`ent: missing required field "Coupon.amount"`)}
 	}
 	if _, ok := cc.mutation.Code(); !ok {
 		return &ValidationError{Name: "code", err: errors.New(`ent: missing required field "Coupon.code"`)}
 	}
-	if _, ok := cc.mutation.ExpiredAt(); !ok {
-		return &ValidationError{Name: "expired_at", err: errors.New(`ent: missing required field "Coupon.expired_at"`)}
+	if _, ok := cc.mutation.Duration(); !ok {
+		return &ValidationError{Name: "duration", err: errors.New(`ent: missing required field "Coupon.duration"`)}
 	}
 	if _, ok := cc.mutation.AssemblyID(); !ok {
 		return &ValidationError{Name: "assembly", err: errors.New(`ent: missing required edge "Coupon.assembly"`)}
@@ -434,6 +478,22 @@ func (cc *CouponCreate) createSpec() (*Coupon, *sqlgraph.CreateSpec) {
 		})
 		_node.Name = value
 	}
+	if value, ok := cc.mutation.Rule(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: coupon.FieldRule,
+		})
+		_node.Rule = value
+	}
+	if value, ok := cc.mutation.Multiple(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: coupon.FieldMultiple,
+		})
+		_node.Multiple = value
+	}
 	if value, ok := cc.mutation.Amount(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
@@ -450,13 +510,13 @@ func (cc *CouponCreate) createSpec() (*Coupon, *sqlgraph.CreateSpec) {
 		})
 		_node.Code = value
 	}
-	if value, ok := cc.mutation.ExpiredAt(); ok {
+	if value, ok := cc.mutation.ExpiresAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: coupon.FieldExpiredAt,
+			Column: coupon.FieldExpiresAt,
 		})
-		_node.ExpiredAt = value
+		_node.ExpiresAt = value
 	}
 	if value, ok := cc.mutation.UsedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -464,7 +524,15 @@ func (cc *CouponCreate) createSpec() (*Coupon, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: coupon.FieldUsedAt,
 		})
-		_node.UsedAt = value
+		_node.UsedAt = &value
+	}
+	if value, ok := cc.mutation.Duration(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: coupon.FieldDuration,
+		})
+		_node.Duration = value
 	}
 	if nodes := cc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -506,26 +574,6 @@ func (cc *CouponCreate) createSpec() (*Coupon, *sqlgraph.CreateSpec) {
 		_node.AssemblyID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := cc.mutation.TemplateIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   coupon.TemplateTable,
-			Columns: []string{coupon.TemplateColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupontemplate.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.TemplateID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := cc.mutation.OrderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -564,6 +612,26 @@ func (cc *CouponCreate) createSpec() (*Coupon, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.PlanID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.TemplateIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   coupon.TemplateTable,
+			Columns: []string{coupon.TemplateColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupontemplate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.TemplateID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := cc.mutation.CitiesIDs(); len(nodes) > 0 {
@@ -734,18 +802,6 @@ func (u *CouponUpsert) UpdateAssemblyID() *CouponUpsert {
 	return u
 }
 
-// SetTemplateID sets the "template_id" field.
-func (u *CouponUpsert) SetTemplateID(v uint64) *CouponUpsert {
-	u.Set(coupon.FieldTemplateID, v)
-	return u
-}
-
-// UpdateTemplateID sets the "template_id" field to the value that was provided on create.
-func (u *CouponUpsert) UpdateTemplateID() *CouponUpsert {
-	u.SetExcluded(coupon.FieldTemplateID)
-	return u
-}
-
 // SetOrderID sets the "order_id" field.
 func (u *CouponUpsert) SetOrderID(v uint64) *CouponUpsert {
 	u.Set(coupon.FieldOrderID, v)
@@ -782,6 +838,48 @@ func (u *CouponUpsert) ClearPlanID() *CouponUpsert {
 	return u
 }
 
+// SetTemplateID sets the "template_id" field.
+func (u *CouponUpsert) SetTemplateID(v uint64) *CouponUpsert {
+	u.Set(coupon.FieldTemplateID, v)
+	return u
+}
+
+// UpdateTemplateID sets the "template_id" field to the value that was provided on create.
+func (u *CouponUpsert) UpdateTemplateID() *CouponUpsert {
+	u.SetExcluded(coupon.FieldTemplateID)
+	return u
+}
+
+// SetRule sets the "rule" field.
+func (u *CouponUpsert) SetRule(v uint8) *CouponUpsert {
+	u.Set(coupon.FieldRule, v)
+	return u
+}
+
+// UpdateRule sets the "rule" field to the value that was provided on create.
+func (u *CouponUpsert) UpdateRule() *CouponUpsert {
+	u.SetExcluded(coupon.FieldRule)
+	return u
+}
+
+// AddRule adds v to the "rule" field.
+func (u *CouponUpsert) AddRule(v uint8) *CouponUpsert {
+	u.Add(coupon.FieldRule, v)
+	return u
+}
+
+// SetMultiple sets the "multiple" field.
+func (u *CouponUpsert) SetMultiple(v bool) *CouponUpsert {
+	u.Set(coupon.FieldMultiple, v)
+	return u
+}
+
+// UpdateMultiple sets the "multiple" field to the value that was provided on create.
+func (u *CouponUpsert) UpdateMultiple() *CouponUpsert {
+	u.SetExcluded(coupon.FieldMultiple)
+	return u
+}
+
 // SetAmount sets the "amount" field.
 func (u *CouponUpsert) SetAmount(v float64) *CouponUpsert {
 	u.Set(coupon.FieldAmount, v)
@@ -812,15 +910,21 @@ func (u *CouponUpsert) UpdateCode() *CouponUpsert {
 	return u
 }
 
-// SetExpiredAt sets the "expired_at" field.
-func (u *CouponUpsert) SetExpiredAt(v time.Time) *CouponUpsert {
-	u.Set(coupon.FieldExpiredAt, v)
+// SetExpiresAt sets the "expires_at" field.
+func (u *CouponUpsert) SetExpiresAt(v time.Time) *CouponUpsert {
+	u.Set(coupon.FieldExpiresAt, v)
 	return u
 }
 
-// UpdateExpiredAt sets the "expired_at" field to the value that was provided on create.
-func (u *CouponUpsert) UpdateExpiredAt() *CouponUpsert {
-	u.SetExcluded(coupon.FieldExpiredAt)
+// UpdateExpiresAt sets the "expires_at" field to the value that was provided on create.
+func (u *CouponUpsert) UpdateExpiresAt() *CouponUpsert {
+	u.SetExcluded(coupon.FieldExpiresAt)
+	return u
+}
+
+// ClearExpiresAt clears the value of the "expires_at" field.
+func (u *CouponUpsert) ClearExpiresAt() *CouponUpsert {
+	u.SetNull(coupon.FieldExpiresAt)
 	return u
 }
 
@@ -839,6 +943,18 @@ func (u *CouponUpsert) UpdateUsedAt() *CouponUpsert {
 // ClearUsedAt clears the value of the "used_at" field.
 func (u *CouponUpsert) ClearUsedAt() *CouponUpsert {
 	u.SetNull(coupon.FieldUsedAt)
+	return u
+}
+
+// SetDuration sets the "duration" field.
+func (u *CouponUpsert) SetDuration(v *model.CouponDuration) *CouponUpsert {
+	u.Set(coupon.FieldDuration, v)
+	return u
+}
+
+// UpdateDuration sets the "duration" field to the value that was provided on create.
+func (u *CouponUpsert) UpdateDuration() *CouponUpsert {
+	u.SetExcluded(coupon.FieldDuration)
 	return u
 }
 
@@ -984,20 +1100,6 @@ func (u *CouponUpsertOne) UpdateAssemblyID() *CouponUpsertOne {
 	})
 }
 
-// SetTemplateID sets the "template_id" field.
-func (u *CouponUpsertOne) SetTemplateID(v uint64) *CouponUpsertOne {
-	return u.Update(func(s *CouponUpsert) {
-		s.SetTemplateID(v)
-	})
-}
-
-// UpdateTemplateID sets the "template_id" field to the value that was provided on create.
-func (u *CouponUpsertOne) UpdateTemplateID() *CouponUpsertOne {
-	return u.Update(func(s *CouponUpsert) {
-		s.UpdateTemplateID()
-	})
-}
-
 // SetOrderID sets the "order_id" field.
 func (u *CouponUpsertOne) SetOrderID(v uint64) *CouponUpsertOne {
 	return u.Update(func(s *CouponUpsert) {
@@ -1040,6 +1142,55 @@ func (u *CouponUpsertOne) ClearPlanID() *CouponUpsertOne {
 	})
 }
 
+// SetTemplateID sets the "template_id" field.
+func (u *CouponUpsertOne) SetTemplateID(v uint64) *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.SetTemplateID(v)
+	})
+}
+
+// UpdateTemplateID sets the "template_id" field to the value that was provided on create.
+func (u *CouponUpsertOne) UpdateTemplateID() *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.UpdateTemplateID()
+	})
+}
+
+// SetRule sets the "rule" field.
+func (u *CouponUpsertOne) SetRule(v uint8) *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.SetRule(v)
+	})
+}
+
+// AddRule adds v to the "rule" field.
+func (u *CouponUpsertOne) AddRule(v uint8) *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.AddRule(v)
+	})
+}
+
+// UpdateRule sets the "rule" field to the value that was provided on create.
+func (u *CouponUpsertOne) UpdateRule() *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.UpdateRule()
+	})
+}
+
+// SetMultiple sets the "multiple" field.
+func (u *CouponUpsertOne) SetMultiple(v bool) *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.SetMultiple(v)
+	})
+}
+
+// UpdateMultiple sets the "multiple" field to the value that was provided on create.
+func (u *CouponUpsertOne) UpdateMultiple() *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.UpdateMultiple()
+	})
+}
+
 // SetAmount sets the "amount" field.
 func (u *CouponUpsertOne) SetAmount(v float64) *CouponUpsertOne {
 	return u.Update(func(s *CouponUpsert) {
@@ -1075,17 +1226,24 @@ func (u *CouponUpsertOne) UpdateCode() *CouponUpsertOne {
 	})
 }
 
-// SetExpiredAt sets the "expired_at" field.
-func (u *CouponUpsertOne) SetExpiredAt(v time.Time) *CouponUpsertOne {
+// SetExpiresAt sets the "expires_at" field.
+func (u *CouponUpsertOne) SetExpiresAt(v time.Time) *CouponUpsertOne {
 	return u.Update(func(s *CouponUpsert) {
-		s.SetExpiredAt(v)
+		s.SetExpiresAt(v)
 	})
 }
 
-// UpdateExpiredAt sets the "expired_at" field to the value that was provided on create.
-func (u *CouponUpsertOne) UpdateExpiredAt() *CouponUpsertOne {
+// UpdateExpiresAt sets the "expires_at" field to the value that was provided on create.
+func (u *CouponUpsertOne) UpdateExpiresAt() *CouponUpsertOne {
 	return u.Update(func(s *CouponUpsert) {
-		s.UpdateExpiredAt()
+		s.UpdateExpiresAt()
+	})
+}
+
+// ClearExpiresAt clears the value of the "expires_at" field.
+func (u *CouponUpsertOne) ClearExpiresAt() *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.ClearExpiresAt()
 	})
 }
 
@@ -1107,6 +1265,20 @@ func (u *CouponUpsertOne) UpdateUsedAt() *CouponUpsertOne {
 func (u *CouponUpsertOne) ClearUsedAt() *CouponUpsertOne {
 	return u.Update(func(s *CouponUpsert) {
 		s.ClearUsedAt()
+	})
+}
+
+// SetDuration sets the "duration" field.
+func (u *CouponUpsertOne) SetDuration(v *model.CouponDuration) *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.SetDuration(v)
+	})
+}
+
+// UpdateDuration sets the "duration" field to the value that was provided on create.
+func (u *CouponUpsertOne) UpdateDuration() *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.UpdateDuration()
 	})
 }
 
@@ -1414,20 +1586,6 @@ func (u *CouponUpsertBulk) UpdateAssemblyID() *CouponUpsertBulk {
 	})
 }
 
-// SetTemplateID sets the "template_id" field.
-func (u *CouponUpsertBulk) SetTemplateID(v uint64) *CouponUpsertBulk {
-	return u.Update(func(s *CouponUpsert) {
-		s.SetTemplateID(v)
-	})
-}
-
-// UpdateTemplateID sets the "template_id" field to the value that was provided on create.
-func (u *CouponUpsertBulk) UpdateTemplateID() *CouponUpsertBulk {
-	return u.Update(func(s *CouponUpsert) {
-		s.UpdateTemplateID()
-	})
-}
-
 // SetOrderID sets the "order_id" field.
 func (u *CouponUpsertBulk) SetOrderID(v uint64) *CouponUpsertBulk {
 	return u.Update(func(s *CouponUpsert) {
@@ -1470,6 +1628,55 @@ func (u *CouponUpsertBulk) ClearPlanID() *CouponUpsertBulk {
 	})
 }
 
+// SetTemplateID sets the "template_id" field.
+func (u *CouponUpsertBulk) SetTemplateID(v uint64) *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.SetTemplateID(v)
+	})
+}
+
+// UpdateTemplateID sets the "template_id" field to the value that was provided on create.
+func (u *CouponUpsertBulk) UpdateTemplateID() *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.UpdateTemplateID()
+	})
+}
+
+// SetRule sets the "rule" field.
+func (u *CouponUpsertBulk) SetRule(v uint8) *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.SetRule(v)
+	})
+}
+
+// AddRule adds v to the "rule" field.
+func (u *CouponUpsertBulk) AddRule(v uint8) *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.AddRule(v)
+	})
+}
+
+// UpdateRule sets the "rule" field to the value that was provided on create.
+func (u *CouponUpsertBulk) UpdateRule() *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.UpdateRule()
+	})
+}
+
+// SetMultiple sets the "multiple" field.
+func (u *CouponUpsertBulk) SetMultiple(v bool) *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.SetMultiple(v)
+	})
+}
+
+// UpdateMultiple sets the "multiple" field to the value that was provided on create.
+func (u *CouponUpsertBulk) UpdateMultiple() *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.UpdateMultiple()
+	})
+}
+
 // SetAmount sets the "amount" field.
 func (u *CouponUpsertBulk) SetAmount(v float64) *CouponUpsertBulk {
 	return u.Update(func(s *CouponUpsert) {
@@ -1505,17 +1712,24 @@ func (u *CouponUpsertBulk) UpdateCode() *CouponUpsertBulk {
 	})
 }
 
-// SetExpiredAt sets the "expired_at" field.
-func (u *CouponUpsertBulk) SetExpiredAt(v time.Time) *CouponUpsertBulk {
+// SetExpiresAt sets the "expires_at" field.
+func (u *CouponUpsertBulk) SetExpiresAt(v time.Time) *CouponUpsertBulk {
 	return u.Update(func(s *CouponUpsert) {
-		s.SetExpiredAt(v)
+		s.SetExpiresAt(v)
 	})
 }
 
-// UpdateExpiredAt sets the "expired_at" field to the value that was provided on create.
-func (u *CouponUpsertBulk) UpdateExpiredAt() *CouponUpsertBulk {
+// UpdateExpiresAt sets the "expires_at" field to the value that was provided on create.
+func (u *CouponUpsertBulk) UpdateExpiresAt() *CouponUpsertBulk {
 	return u.Update(func(s *CouponUpsert) {
-		s.UpdateExpiredAt()
+		s.UpdateExpiresAt()
+	})
+}
+
+// ClearExpiresAt clears the value of the "expires_at" field.
+func (u *CouponUpsertBulk) ClearExpiresAt() *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.ClearExpiresAt()
 	})
 }
 
@@ -1537,6 +1751,20 @@ func (u *CouponUpsertBulk) UpdateUsedAt() *CouponUpsertBulk {
 func (u *CouponUpsertBulk) ClearUsedAt() *CouponUpsertBulk {
 	return u.Update(func(s *CouponUpsert) {
 		s.ClearUsedAt()
+	})
+}
+
+// SetDuration sets the "duration" field.
+func (u *CouponUpsertBulk) SetDuration(v *model.CouponDuration) *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.SetDuration(v)
+	})
+}
+
+// UpdateDuration sets the "duration" field to the value that was provided on create.
+func (u *CouponUpsertBulk) UpdateDuration() *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.UpdateDuration()
 	})
 }
 

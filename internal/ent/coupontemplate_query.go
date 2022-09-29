@@ -4,12 +4,14 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -17,13 +19,14 @@ import (
 // CouponTemplateQuery is the builder for querying CouponTemplate entities.
 type CouponTemplateQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
-	order      []OrderFunc
-	fields     []string
-	predicates []predicate.CouponTemplate
-	modifiers  []func(*sql.Selector)
+	limit       *int
+	offset      *int
+	unique      *bool
+	order       []OrderFunc
+	fields      []string
+	predicates  []predicate.CouponTemplate
+	withCoupons *CouponQuery
+	modifiers   []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -58,6 +61,28 @@ func (ctq *CouponTemplateQuery) Unique(unique bool) *CouponTemplateQuery {
 func (ctq *CouponTemplateQuery) Order(o ...OrderFunc) *CouponTemplateQuery {
 	ctq.order = append(ctq.order, o...)
 	return ctq
+}
+
+// QueryCoupons chains the current query on the "coupons" edge.
+func (ctq *CouponTemplateQuery) QueryCoupons() *CouponQuery {
+	query := &CouponQuery{config: ctq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ctq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ctq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(coupontemplate.Table, coupontemplate.FieldID, selector),
+			sqlgraph.To(coupon.Table, coupon.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, coupontemplate.CouponsTable, coupontemplate.CouponsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ctq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first CouponTemplate entity from the query.
@@ -236,16 +261,28 @@ func (ctq *CouponTemplateQuery) Clone() *CouponTemplateQuery {
 		return nil
 	}
 	return &CouponTemplateQuery{
-		config:     ctq.config,
-		limit:      ctq.limit,
-		offset:     ctq.offset,
-		order:      append([]OrderFunc{}, ctq.order...),
-		predicates: append([]predicate.CouponTemplate{}, ctq.predicates...),
+		config:      ctq.config,
+		limit:       ctq.limit,
+		offset:      ctq.offset,
+		order:       append([]OrderFunc{}, ctq.order...),
+		predicates:  append([]predicate.CouponTemplate{}, ctq.predicates...),
+		withCoupons: ctq.withCoupons.Clone(),
 		// clone intermediate query.
 		sql:    ctq.sql.Clone(),
 		path:   ctq.path,
 		unique: ctq.unique,
 	}
+}
+
+// WithCoupons tells the query-builder to eager-load the nodes that are connected to
+// the "coupons" edge. The optional arguments are used to configure the query builder of the edge.
+func (ctq *CouponTemplateQuery) WithCoupons(opts ...func(*CouponQuery)) *CouponTemplateQuery {
+	query := &CouponQuery{config: ctq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	ctq.withCoupons = query
+	return ctq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -314,8 +351,11 @@ func (ctq *CouponTemplateQuery) prepareQuery(ctx context.Context) error {
 
 func (ctq *CouponTemplateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*CouponTemplate, error) {
 	var (
-		nodes = []*CouponTemplate{}
-		_spec = ctq.querySpec()
+		nodes       = []*CouponTemplate{}
+		_spec       = ctq.querySpec()
+		loadedTypes = [1]bool{
+			ctq.withCoupons != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*CouponTemplate).scanValues(nil, columns)
@@ -323,6 +363,7 @@ func (ctq *CouponTemplateQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &CouponTemplate{config: ctq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if len(ctq.modifiers) > 0 {
@@ -337,7 +378,42 @@ func (ctq *CouponTemplateQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := ctq.withCoupons; query != nil {
+		if err := ctq.loadCoupons(ctx, query, nodes,
+			func(n *CouponTemplate) { n.Edges.Coupons = []*Coupon{} },
+			func(n *CouponTemplate, e *Coupon) { n.Edges.Coupons = append(n.Edges.Coupons, e) }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (ctq *CouponTemplateQuery) loadCoupons(ctx context.Context, query *CouponQuery, nodes []*CouponTemplate, init func(*CouponTemplate), assign func(*CouponTemplate, *Coupon)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*CouponTemplate)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.Where(predicate.Coupon(func(s *sql.Selector) {
+		s.Where(sql.InValues(coupontemplate.CouponsColumn, fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.TemplateID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "template_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
 }
 
 func (ctq *CouponTemplateQuery) sqlCount(ctx context.Context) (int, error) {

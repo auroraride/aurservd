@@ -19,18 +19,24 @@ import (
 // CouponTemplateMutation represents an operation that mutates the CouponTemplate nodes in the graph.
 type CouponTemplateMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uint64
-	created_at    *time.Time
-	updated_at    *time.Time
-	enable        *bool
-	name          *string
-	meta          **model.CouponTemplateMeta
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*CouponTemplate, error)
-	predicates    []predicate.CouponTemplate
+	op             Op
+	typ            string
+	id             *uint64
+	created_at     *time.Time
+	updated_at     *time.Time
+	creator        **model.Modifier
+	last_modifier  **model.Modifier
+	remark         *string
+	enable         *bool
+	name           *string
+	meta           **model.CouponTemplateMeta
+	clearedFields  map[string]struct{}
+	coupons        map[uint64]struct{}
+	removedcoupons map[uint64]struct{}
+	clearedcoupons bool
+	done           bool
+	oldValue       func(context.Context) (*CouponTemplate, error)
+	predicates     []predicate.CouponTemplate
 }
 
 var _ ent.Mutation = (*CouponTemplateMutation)(nil)
@@ -203,6 +209,153 @@ func (m *CouponTemplateMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
+// SetCreator sets the "creator" field.
+func (m *CouponTemplateMutation) SetCreator(value *model.Modifier) {
+	m.creator = &value
+}
+
+// Creator returns the value of the "creator" field in the mutation.
+func (m *CouponTemplateMutation) Creator() (r *model.Modifier, exists bool) {
+	v := m.creator
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreator returns the old "creator" field's value of the CouponTemplate entity.
+// If the CouponTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CouponTemplateMutation) OldCreator(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreator is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreator requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreator: %w", err)
+	}
+	return oldValue.Creator, nil
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (m *CouponTemplateMutation) ClearCreator() {
+	m.creator = nil
+	m.clearedFields[coupontemplate.FieldCreator] = struct{}{}
+}
+
+// CreatorCleared returns if the "creator" field was cleared in this mutation.
+func (m *CouponTemplateMutation) CreatorCleared() bool {
+	_, ok := m.clearedFields[coupontemplate.FieldCreator]
+	return ok
+}
+
+// ResetCreator resets all changes to the "creator" field.
+func (m *CouponTemplateMutation) ResetCreator() {
+	m.creator = nil
+	delete(m.clearedFields, coupontemplate.FieldCreator)
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (m *CouponTemplateMutation) SetLastModifier(value *model.Modifier) {
+	m.last_modifier = &value
+}
+
+// LastModifier returns the value of the "last_modifier" field in the mutation.
+func (m *CouponTemplateMutation) LastModifier() (r *model.Modifier, exists bool) {
+	v := m.last_modifier
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastModifier returns the old "last_modifier" field's value of the CouponTemplate entity.
+// If the CouponTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CouponTemplateMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastModifier is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastModifier requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastModifier: %w", err)
+	}
+	return oldValue.LastModifier, nil
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (m *CouponTemplateMutation) ClearLastModifier() {
+	m.last_modifier = nil
+	m.clearedFields[coupontemplate.FieldLastModifier] = struct{}{}
+}
+
+// LastModifierCleared returns if the "last_modifier" field was cleared in this mutation.
+func (m *CouponTemplateMutation) LastModifierCleared() bool {
+	_, ok := m.clearedFields[coupontemplate.FieldLastModifier]
+	return ok
+}
+
+// ResetLastModifier resets all changes to the "last_modifier" field.
+func (m *CouponTemplateMutation) ResetLastModifier() {
+	m.last_modifier = nil
+	delete(m.clearedFields, coupontemplate.FieldLastModifier)
+}
+
+// SetRemark sets the "remark" field.
+func (m *CouponTemplateMutation) SetRemark(s string) {
+	m.remark = &s
+}
+
+// Remark returns the value of the "remark" field in the mutation.
+func (m *CouponTemplateMutation) Remark() (r string, exists bool) {
+	v := m.remark
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemark returns the old "remark" field's value of the CouponTemplate entity.
+// If the CouponTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CouponTemplateMutation) OldRemark(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemark requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemark: %w", err)
+	}
+	return oldValue.Remark, nil
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (m *CouponTemplateMutation) ClearRemark() {
+	m.remark = nil
+	m.clearedFields[coupontemplate.FieldRemark] = struct{}{}
+}
+
+// RemarkCleared returns if the "remark" field was cleared in this mutation.
+func (m *CouponTemplateMutation) RemarkCleared() bool {
+	_, ok := m.clearedFields[coupontemplate.FieldRemark]
+	return ok
+}
+
+// ResetRemark resets all changes to the "remark" field.
+func (m *CouponTemplateMutation) ResetRemark() {
+	m.remark = nil
+	delete(m.clearedFields, coupontemplate.FieldRemark)
+}
+
 // SetEnable sets the "enable" field.
 func (m *CouponTemplateMutation) SetEnable(b bool) {
 	m.enable = &b
@@ -311,6 +464,60 @@ func (m *CouponTemplateMutation) ResetMeta() {
 	m.meta = nil
 }
 
+// AddCouponIDs adds the "coupons" edge to the Coupon entity by ids.
+func (m *CouponTemplateMutation) AddCouponIDs(ids ...uint64) {
+	if m.coupons == nil {
+		m.coupons = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.coupons[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCoupons clears the "coupons" edge to the Coupon entity.
+func (m *CouponTemplateMutation) ClearCoupons() {
+	m.clearedcoupons = true
+}
+
+// CouponsCleared reports if the "coupons" edge to the Coupon entity was cleared.
+func (m *CouponTemplateMutation) CouponsCleared() bool {
+	return m.clearedcoupons
+}
+
+// RemoveCouponIDs removes the "coupons" edge to the Coupon entity by IDs.
+func (m *CouponTemplateMutation) RemoveCouponIDs(ids ...uint64) {
+	if m.removedcoupons == nil {
+		m.removedcoupons = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.coupons, ids[i])
+		m.removedcoupons[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCoupons returns the removed IDs of the "coupons" edge to the Coupon entity.
+func (m *CouponTemplateMutation) RemovedCouponsIDs() (ids []uint64) {
+	for id := range m.removedcoupons {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CouponsIDs returns the "coupons" edge IDs in the mutation.
+func (m *CouponTemplateMutation) CouponsIDs() (ids []uint64) {
+	for id := range m.coupons {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCoupons resets all changes to the "coupons" edge.
+func (m *CouponTemplateMutation) ResetCoupons() {
+	m.coupons = nil
+	m.clearedcoupons = false
+	m.removedcoupons = nil
+}
+
 // Where appends a list predicates to the CouponTemplateMutation builder.
 func (m *CouponTemplateMutation) Where(ps ...predicate.CouponTemplate) {
 	m.predicates = append(m.predicates, ps...)
@@ -330,12 +537,21 @@ func (m *CouponTemplateMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CouponTemplateMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, coupontemplate.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, coupontemplate.FieldUpdatedAt)
+	}
+	if m.creator != nil {
+		fields = append(fields, coupontemplate.FieldCreator)
+	}
+	if m.last_modifier != nil {
+		fields = append(fields, coupontemplate.FieldLastModifier)
+	}
+	if m.remark != nil {
+		fields = append(fields, coupontemplate.FieldRemark)
 	}
 	if m.enable != nil {
 		fields = append(fields, coupontemplate.FieldEnable)
@@ -358,6 +574,12 @@ func (m *CouponTemplateMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case coupontemplate.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case coupontemplate.FieldCreator:
+		return m.Creator()
+	case coupontemplate.FieldLastModifier:
+		return m.LastModifier()
+	case coupontemplate.FieldRemark:
+		return m.Remark()
 	case coupontemplate.FieldEnable:
 		return m.Enable()
 	case coupontemplate.FieldName:
@@ -377,6 +599,12 @@ func (m *CouponTemplateMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldCreatedAt(ctx)
 	case coupontemplate.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case coupontemplate.FieldCreator:
+		return m.OldCreator(ctx)
+	case coupontemplate.FieldLastModifier:
+		return m.OldLastModifier(ctx)
+	case coupontemplate.FieldRemark:
+		return m.OldRemark(ctx)
 	case coupontemplate.FieldEnable:
 		return m.OldEnable(ctx)
 	case coupontemplate.FieldName:
@@ -405,6 +633,27 @@ func (m *CouponTemplateMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
+		return nil
+	case coupontemplate.FieldCreator:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreator(v)
+		return nil
+	case coupontemplate.FieldLastModifier:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastModifier(v)
+		return nil
+	case coupontemplate.FieldRemark:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemark(v)
 		return nil
 	case coupontemplate.FieldEnable:
 		v, ok := value.(bool)
@@ -456,7 +705,17 @@ func (m *CouponTemplateMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *CouponTemplateMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(coupontemplate.FieldCreator) {
+		fields = append(fields, coupontemplate.FieldCreator)
+	}
+	if m.FieldCleared(coupontemplate.FieldLastModifier) {
+		fields = append(fields, coupontemplate.FieldLastModifier)
+	}
+	if m.FieldCleared(coupontemplate.FieldRemark) {
+		fields = append(fields, coupontemplate.FieldRemark)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -469,6 +728,17 @@ func (m *CouponTemplateMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *CouponTemplateMutation) ClearField(name string) error {
+	switch name {
+	case coupontemplate.FieldCreator:
+		m.ClearCreator()
+		return nil
+	case coupontemplate.FieldLastModifier:
+		m.ClearLastModifier()
+		return nil
+	case coupontemplate.FieldRemark:
+		m.ClearRemark()
+		return nil
+	}
 	return fmt.Errorf("unknown CouponTemplate nullable field %s", name)
 }
 
@@ -481,6 +751,15 @@ func (m *CouponTemplateMutation) ResetField(name string) error {
 		return nil
 	case coupontemplate.FieldUpdatedAt:
 		m.ResetUpdatedAt()
+		return nil
+	case coupontemplate.FieldCreator:
+		m.ResetCreator()
+		return nil
+	case coupontemplate.FieldLastModifier:
+		m.ResetLastModifier()
+		return nil
+	case coupontemplate.FieldRemark:
+		m.ResetRemark()
 		return nil
 	case coupontemplate.FieldEnable:
 		m.ResetEnable()
@@ -497,49 +776,85 @@ func (m *CouponTemplateMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CouponTemplateMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.coupons != nil {
+		edges = append(edges, coupontemplate.EdgeCoupons)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *CouponTemplateMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case coupontemplate.EdgeCoupons:
+		ids := make([]ent.Value, 0, len(m.coupons))
+		for id := range m.coupons {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CouponTemplateMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.removedcoupons != nil {
+		edges = append(edges, coupontemplate.EdgeCoupons)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *CouponTemplateMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case coupontemplate.EdgeCoupons:
+		ids := make([]ent.Value, 0, len(m.removedcoupons))
+		for id := range m.removedcoupons {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CouponTemplateMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedcoupons {
+		edges = append(edges, coupontemplate.EdgeCoupons)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *CouponTemplateMutation) EdgeCleared(name string) bool {
+	switch name {
+	case coupontemplate.EdgeCoupons:
+		return m.clearedcoupons
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *CouponTemplateMutation) ClearEdge(name string) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown CouponTemplate unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *CouponTemplateMutation) ResetEdge(name string) error {
+	switch name {
+	case coupontemplate.EdgeCoupons:
+		m.ResetCoupons()
+		return nil
+	}
 	return fmt.Errorf("unknown CouponTemplate edge %s", name)
 }
 

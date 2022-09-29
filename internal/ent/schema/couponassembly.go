@@ -8,6 +8,7 @@ import (
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -56,7 +57,13 @@ func (CouponAssembly) Annotations() []schema.Annotation {
 
 // Fields of the CouponAssembly.
 func (CouponAssembly) Fields() []ent.Field {
-    return []ent.Field{}
+    return []ent.Field{
+        field.String("name").Comment("名称"),
+        field.Int("number").Comment("数量"),
+        field.Float("amount").Comment("金额"),
+        field.Uint8("target").Comment("发送对象"),
+        field.JSON("meta", &model.CouponTemplateMeta{}).Comment("详情"),
+    }
 }
 
 // Edges of the CouponAssembly.

@@ -4,6 +4,8 @@ package coupontemplate
 
 import (
 	"time"
+
+	"entgo.io/ent"
 )
 
 const (
@@ -15,14 +17,29 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldCreator holds the string denoting the creator field in the database.
+	FieldCreator = "creator"
+	// FieldLastModifier holds the string denoting the last_modifier field in the database.
+	FieldLastModifier = "last_modifier"
+	// FieldRemark holds the string denoting the remark field in the database.
+	FieldRemark = "remark"
 	// FieldEnable holds the string denoting the enable field in the database.
 	FieldEnable = "enable"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldMeta holds the string denoting the meta field in the database.
 	FieldMeta = "meta"
+	// EdgeCoupons holds the string denoting the coupons edge name in mutations.
+	EdgeCoupons = "coupons"
 	// Table holds the table name of the coupontemplate in the database.
 	Table = "coupon_template"
+	// CouponsTable is the table that holds the coupons relation/edge.
+	CouponsTable = "coupon"
+	// CouponsInverseTable is the table name for the Coupon entity.
+	// It exists in this package in order to avoid circular dependency with the "coupon" package.
+	CouponsInverseTable = "coupon"
+	// CouponsColumn is the table column denoting the coupons relation/edge.
+	CouponsColumn = "template_id"
 )
 
 // Columns holds all SQL columns for coupontemplate fields.
@@ -30,6 +47,9 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldCreator,
+	FieldLastModifier,
+	FieldRemark,
 	FieldEnable,
 	FieldName,
 	FieldMeta,
@@ -45,7 +65,13 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+// Note that the variables below are initialized by the runtime
+// package on the initialization of the application. Therefore,
+// it should be imported in the main as follows:
+//
+//	import _ "github.com/auroraride/aurservd/internal/ent/runtime"
 var (
+	Hooks [1]ent.Hook
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

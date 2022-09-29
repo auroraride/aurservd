@@ -989,15 +989,18 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "name", Type: field.TypeString, Comment: "名称"},
+		{Name: "rule", Type: field.TypeUint8, Comment: "使用规则"},
+		{Name: "multiple", Type: field.TypeBool, Comment: "该券是否可叠加", Default: false},
 		{Name: "amount", Type: field.TypeFloat64, Comment: "金额"},
 		{Name: "code", Type: field.TypeString, Unique: true, Comment: "券码"},
-		{Name: "expired_at", Type: field.TypeTime, Comment: "过期时间"},
+		{Name: "expires_at", Type: field.TypeTime, Comment: "过期时间", Nullable: true},
 		{Name: "used_at", Type: field.TypeTime, Comment: "使用时间", Nullable: true},
+		{Name: "duration", Type: field.TypeJSON, Comment: "有效期规则"},
 		{Name: "rider_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "assembly_id", Type: field.TypeUint64},
-		{Name: "template_id", Type: field.TypeUint64},
 		{Name: "order_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "template_id", Type: field.TypeUint64},
 	}
 	// CouponTable holds the schema information for the "coupon" table.
 	CouponTable = &schema.Table{
@@ -1007,33 +1010,33 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "coupon_rider_rider",
-				Columns:    []*schema.Column{CouponColumns[11]},
+				Columns:    []*schema.Column{CouponColumns[14]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "coupon_coupon_assembly_assembly",
-				Columns:    []*schema.Column{CouponColumns[12]},
+				Columns:    []*schema.Column{CouponColumns[15]},
 				RefColumns: []*schema.Column{CouponAssemblyColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "coupon_coupon_template_template",
-				Columns:    []*schema.Column{CouponColumns[13]},
-				RefColumns: []*schema.Column{CouponTemplateColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-			{
 				Symbol:     "coupon_order_order",
-				Columns:    []*schema.Column{CouponColumns[14]},
+				Columns:    []*schema.Column{CouponColumns[16]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "coupon_plan_plan",
-				Columns:    []*schema.Column{CouponColumns[15]},
+				Columns:    []*schema.Column{CouponColumns[17]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "coupon_coupon_template_coupons",
+				Columns:    []*schema.Column{CouponColumns[18]},
+				RefColumns: []*schema.Column{CouponTemplateColumns[0]},
+				OnDelete:   schema.NoAction,
 			},
 		},
 		Indexes: []*schema.Index{
@@ -1045,27 +1048,22 @@ var (
 			{
 				Name:    "coupon_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{CouponColumns[11]},
+				Columns: []*schema.Column{CouponColumns[14]},
 			},
 			{
 				Name:    "coupon_assembly_id",
 				Unique:  false,
-				Columns: []*schema.Column{CouponColumns[12]},
-			},
-			{
-				Name:    "coupon_template_id",
-				Unique:  false,
-				Columns: []*schema.Column{CouponColumns[13]},
+				Columns: []*schema.Column{CouponColumns[15]},
 			},
 			{
 				Name:    "coupon_order_id",
 				Unique:  false,
-				Columns: []*schema.Column{CouponColumns[14]},
+				Columns: []*schema.Column{CouponColumns[16]},
 			},
 			{
 				Name:    "coupon_plan_id",
 				Unique:  false,
-				Columns: []*schema.Column{CouponColumns[15]},
+				Columns: []*schema.Column{CouponColumns[17]},
 			},
 			{
 				Name:    "coupon_name",
@@ -1077,6 +1075,26 @@ var (
 					},
 				},
 			},
+			{
+				Name:    "coupon_template_id",
+				Unique:  false,
+				Columns: []*schema.Column{CouponColumns[18]},
+			},
+			{
+				Name:    "coupon_multiple",
+				Unique:  false,
+				Columns: []*schema.Column{CouponColumns[8]},
+			},
+			{
+				Name:    "coupon_expires_at",
+				Unique:  false,
+				Columns: []*schema.Column{CouponColumns[11]},
+			},
+			{
+				Name:    "coupon_used_at",
+				Unique:  false,
+				Columns: []*schema.Column{CouponColumns[12]},
+			},
 		},
 	}
 	// CouponAssemblyColumns holds the columns for the "coupon_assembly" table.
@@ -1087,6 +1105,11 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "name", Type: field.TypeString, Comment: "名称"},
+		{Name: "number", Type: field.TypeInt, Comment: "数量"},
+		{Name: "amount", Type: field.TypeFloat64, Comment: "金额"},
+		{Name: "target", Type: field.TypeUint8, Comment: "发送对象"},
+		{Name: "meta", Type: field.TypeJSON, Comment: "详情"},
 		{Name: "template_id", Type: field.TypeUint64},
 	}
 	// CouponAssemblyTable holds the schema information for the "coupon_assembly" table.
@@ -1097,7 +1120,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "coupon_assembly_coupon_template_template",
-				Columns:    []*schema.Column{CouponAssemblyColumns[6]},
+				Columns:    []*schema.Column{CouponAssemblyColumns[11]},
 				RefColumns: []*schema.Column{CouponTemplateColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -1111,7 +1134,7 @@ var (
 			{
 				Name:    "couponassembly_template_id",
 				Unique:  false,
-				Columns: []*schema.Column{CouponAssemblyColumns[6]},
+				Columns: []*schema.Column{CouponAssemblyColumns[11]},
 			},
 		},
 	}
@@ -1120,6 +1143,9 @@ var (
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "enable", Type: field.TypeBool, Comment: "是否启用", Default: true},
 		{Name: "name", Type: field.TypeString, Comment: "名称"},
 		{Name: "meta", Type: field.TypeJSON, Comment: "详情"},
@@ -3771,9 +3797,9 @@ func init() {
 	}
 	CouponTable.ForeignKeys[0].RefTable = RiderTable
 	CouponTable.ForeignKeys[1].RefTable = CouponAssemblyTable
-	CouponTable.ForeignKeys[2].RefTable = CouponTemplateTable
-	CouponTable.ForeignKeys[3].RefTable = OrderTable
-	CouponTable.ForeignKeys[4].RefTable = PlanTable
+	CouponTable.ForeignKeys[2].RefTable = OrderTable
+	CouponTable.ForeignKeys[3].RefTable = PlanTable
+	CouponTable.ForeignKeys[4].RefTable = CouponTemplateTable
 	CouponTable.Annotation = &entsql.Annotation{
 		Table: "coupon",
 	}

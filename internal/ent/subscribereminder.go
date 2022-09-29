@@ -24,7 +24,7 @@ type SubscribeReminder struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// SubscribeID holds the value of the "subscribe_id" field.
 	SubscribeID uint64 `json:"subscribe_id,omitempty"`
-	// 骑士卡ID
+	// PlanID holds the value of the "plan_id" field.
 	PlanID uint64 `json:"plan_id,omitempty"`
 	// 催费类型
 	Type subscribereminder.Type `json:"type,omitempty"`

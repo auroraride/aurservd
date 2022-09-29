@@ -434,14 +434,17 @@ var schemaGraph = func() *sqlgraph.Schema {
 			coupon.FieldRemark:       {Type: field.TypeString, Column: coupon.FieldRemark},
 			coupon.FieldRiderID:      {Type: field.TypeUint64, Column: coupon.FieldRiderID},
 			coupon.FieldAssemblyID:   {Type: field.TypeUint64, Column: coupon.FieldAssemblyID},
-			coupon.FieldTemplateID:   {Type: field.TypeUint64, Column: coupon.FieldTemplateID},
 			coupon.FieldOrderID:      {Type: field.TypeUint64, Column: coupon.FieldOrderID},
 			coupon.FieldPlanID:       {Type: field.TypeUint64, Column: coupon.FieldPlanID},
+			coupon.FieldTemplateID:   {Type: field.TypeUint64, Column: coupon.FieldTemplateID},
 			coupon.FieldName:         {Type: field.TypeString, Column: coupon.FieldName},
+			coupon.FieldRule:         {Type: field.TypeUint8, Column: coupon.FieldRule},
+			coupon.FieldMultiple:     {Type: field.TypeBool, Column: coupon.FieldMultiple},
 			coupon.FieldAmount:       {Type: field.TypeFloat64, Column: coupon.FieldAmount},
 			coupon.FieldCode:         {Type: field.TypeString, Column: coupon.FieldCode},
-			coupon.FieldExpiredAt:    {Type: field.TypeTime, Column: coupon.FieldExpiredAt},
+			coupon.FieldExpiresAt:    {Type: field.TypeTime, Column: coupon.FieldExpiresAt},
 			coupon.FieldUsedAt:       {Type: field.TypeTime, Column: coupon.FieldUsedAt},
+			coupon.FieldDuration:     {Type: field.TypeJSON, Column: coupon.FieldDuration},
 		},
 	}
 	graph.Nodes[13] = &sqlgraph.Node{
@@ -461,6 +464,11 @@ var schemaGraph = func() *sqlgraph.Schema {
 			couponassembly.FieldLastModifier: {Type: field.TypeJSON, Column: couponassembly.FieldLastModifier},
 			couponassembly.FieldRemark:       {Type: field.TypeString, Column: couponassembly.FieldRemark},
 			couponassembly.FieldTemplateID:   {Type: field.TypeUint64, Column: couponassembly.FieldTemplateID},
+			couponassembly.FieldName:         {Type: field.TypeString, Column: couponassembly.FieldName},
+			couponassembly.FieldNumber:       {Type: field.TypeInt, Column: couponassembly.FieldNumber},
+			couponassembly.FieldAmount:       {Type: field.TypeFloat64, Column: couponassembly.FieldAmount},
+			couponassembly.FieldTarget:       {Type: field.TypeUint8, Column: couponassembly.FieldTarget},
+			couponassembly.FieldMeta:         {Type: field.TypeJSON, Column: couponassembly.FieldMeta},
 		},
 	}
 	graph.Nodes[14] = &sqlgraph.Node{
@@ -474,11 +482,14 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "CouponTemplate",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			coupontemplate.FieldCreatedAt: {Type: field.TypeTime, Column: coupontemplate.FieldCreatedAt},
-			coupontemplate.FieldUpdatedAt: {Type: field.TypeTime, Column: coupontemplate.FieldUpdatedAt},
-			coupontemplate.FieldEnable:    {Type: field.TypeBool, Column: coupontemplate.FieldEnable},
-			coupontemplate.FieldName:      {Type: field.TypeString, Column: coupontemplate.FieldName},
-			coupontemplate.FieldMeta:      {Type: field.TypeJSON, Column: coupontemplate.FieldMeta},
+			coupontemplate.FieldCreatedAt:    {Type: field.TypeTime, Column: coupontemplate.FieldCreatedAt},
+			coupontemplate.FieldUpdatedAt:    {Type: field.TypeTime, Column: coupontemplate.FieldUpdatedAt},
+			coupontemplate.FieldCreator:      {Type: field.TypeJSON, Column: coupontemplate.FieldCreator},
+			coupontemplate.FieldLastModifier: {Type: field.TypeJSON, Column: coupontemplate.FieldLastModifier},
+			coupontemplate.FieldRemark:       {Type: field.TypeString, Column: coupontemplate.FieldRemark},
+			coupontemplate.FieldEnable:       {Type: field.TypeBool, Column: coupontemplate.FieldEnable},
+			coupontemplate.FieldName:         {Type: field.TypeString, Column: coupontemplate.FieldName},
+			coupontemplate.FieldMeta:         {Type: field.TypeJSON, Column: coupontemplate.FieldMeta},
 		},
 	}
 	graph.Nodes[15] = &sqlgraph.Node{
@@ -1894,18 +1905,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"CouponAssembly",
 	)
 	graph.MustAddE(
-		"template",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   coupon.TemplateTable,
-			Columns: []string{coupon.TemplateColumn},
-			Bidi:    false,
-		},
-		"Coupon",
-		"CouponTemplate",
-	)
-	graph.MustAddE(
 		"order",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1928,6 +1927,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Coupon",
 		"Plan",
+	)
+	graph.MustAddE(
+		"template",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   coupon.TemplateTable,
+			Columns: []string{coupon.TemplateColumn},
+			Bidi:    false,
+		},
+		"Coupon",
+		"CouponTemplate",
 	)
 	graph.MustAddE(
 		"cities",
@@ -1964,6 +1975,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"CouponAssembly",
 		"CouponTemplate",
+	)
+	graph.MustAddE(
+		"coupons",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   coupontemplate.CouponsTable,
+			Columns: []string{coupontemplate.CouponsColumn},
+			Bidi:    false,
+		},
+		"CouponTemplate",
+		"Coupon",
 	)
 	graph.MustAddE(
 		"city",
@@ -5680,11 +5703,6 @@ func (f *CouponFilter) WhereAssemblyID(p entql.Uint64P) {
 	f.Where(p.Field(coupon.FieldAssemblyID))
 }
 
-// WhereTemplateID applies the entql uint64 predicate on the template_id field.
-func (f *CouponFilter) WhereTemplateID(p entql.Uint64P) {
-	f.Where(p.Field(coupon.FieldTemplateID))
-}
-
 // WhereOrderID applies the entql uint64 predicate on the order_id field.
 func (f *CouponFilter) WhereOrderID(p entql.Uint64P) {
 	f.Where(p.Field(coupon.FieldOrderID))
@@ -5695,9 +5713,24 @@ func (f *CouponFilter) WherePlanID(p entql.Uint64P) {
 	f.Where(p.Field(coupon.FieldPlanID))
 }
 
+// WhereTemplateID applies the entql uint64 predicate on the template_id field.
+func (f *CouponFilter) WhereTemplateID(p entql.Uint64P) {
+	f.Where(p.Field(coupon.FieldTemplateID))
+}
+
 // WhereName applies the entql string predicate on the name field.
 func (f *CouponFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(coupon.FieldName))
+}
+
+// WhereRule applies the entql uint8 predicate on the rule field.
+func (f *CouponFilter) WhereRule(p entql.Uint8P) {
+	f.Where(p.Field(coupon.FieldRule))
+}
+
+// WhereMultiple applies the entql bool predicate on the multiple field.
+func (f *CouponFilter) WhereMultiple(p entql.BoolP) {
+	f.Where(p.Field(coupon.FieldMultiple))
 }
 
 // WhereAmount applies the entql float64 predicate on the amount field.
@@ -5710,14 +5743,19 @@ func (f *CouponFilter) WhereCode(p entql.StringP) {
 	f.Where(p.Field(coupon.FieldCode))
 }
 
-// WhereExpiredAt applies the entql time.Time predicate on the expired_at field.
-func (f *CouponFilter) WhereExpiredAt(p entql.TimeP) {
-	f.Where(p.Field(coupon.FieldExpiredAt))
+// WhereExpiresAt applies the entql time.Time predicate on the expires_at field.
+func (f *CouponFilter) WhereExpiresAt(p entql.TimeP) {
+	f.Where(p.Field(coupon.FieldExpiresAt))
 }
 
 // WhereUsedAt applies the entql time.Time predicate on the used_at field.
 func (f *CouponFilter) WhereUsedAt(p entql.TimeP) {
 	f.Where(p.Field(coupon.FieldUsedAt))
+}
+
+// WhereDuration applies the entql json.RawMessage predicate on the duration field.
+func (f *CouponFilter) WhereDuration(p entql.BytesP) {
+	f.Where(p.Field(coupon.FieldDuration))
 }
 
 // WhereHasRider applies a predicate to check if query has an edge rider.
@@ -5748,20 +5786,6 @@ func (f *CouponFilter) WhereHasAssemblyWith(preds ...predicate.CouponAssembly) {
 	})))
 }
 
-// WhereHasTemplate applies a predicate to check if query has an edge template.
-func (f *CouponFilter) WhereHasTemplate() {
-	f.Where(entql.HasEdge("template"))
-}
-
-// WhereHasTemplateWith applies a predicate to check if query has an edge template with a given conditions (other predicates).
-func (f *CouponFilter) WhereHasTemplateWith(preds ...predicate.CouponTemplate) {
-	f.Where(entql.HasEdgeWith("template", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
 // WhereHasOrder applies a predicate to check if query has an edge order.
 func (f *CouponFilter) WhereHasOrder() {
 	f.Where(entql.HasEdge("order"))
@@ -5784,6 +5808,20 @@ func (f *CouponFilter) WhereHasPlan() {
 // WhereHasPlanWith applies a predicate to check if query has an edge plan with a given conditions (other predicates).
 func (f *CouponFilter) WhereHasPlanWith(preds ...predicate.Plan) {
 	f.Where(entql.HasEdgeWith("plan", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasTemplate applies a predicate to check if query has an edge template.
+func (f *CouponFilter) WhereHasTemplate() {
+	f.Where(entql.HasEdge("template"))
+}
+
+// WhereHasTemplateWith applies a predicate to check if query has an edge template with a given conditions (other predicates).
+func (f *CouponFilter) WhereHasTemplateWith(preds ...predicate.CouponTemplate) {
+	f.Where(entql.HasEdgeWith("template", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -5888,6 +5926,31 @@ func (f *CouponAssemblyFilter) WhereTemplateID(p entql.Uint64P) {
 	f.Where(p.Field(couponassembly.FieldTemplateID))
 }
 
+// WhereName applies the entql string predicate on the name field.
+func (f *CouponAssemblyFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(couponassembly.FieldName))
+}
+
+// WhereNumber applies the entql int predicate on the number field.
+func (f *CouponAssemblyFilter) WhereNumber(p entql.IntP) {
+	f.Where(p.Field(couponassembly.FieldNumber))
+}
+
+// WhereAmount applies the entql float64 predicate on the amount field.
+func (f *CouponAssemblyFilter) WhereAmount(p entql.Float64P) {
+	f.Where(p.Field(couponassembly.FieldAmount))
+}
+
+// WhereTarget applies the entql uint8 predicate on the target field.
+func (f *CouponAssemblyFilter) WhereTarget(p entql.Uint8P) {
+	f.Where(p.Field(couponassembly.FieldTarget))
+}
+
+// WhereMeta applies the entql json.RawMessage predicate on the meta field.
+func (f *CouponAssemblyFilter) WhereMeta(p entql.BytesP) {
+	f.Where(p.Field(couponassembly.FieldMeta))
+}
+
 // WhereHasTemplate applies a predicate to check if query has an edge template.
 func (f *CouponAssemblyFilter) WhereHasTemplate() {
 	f.Where(entql.HasEdge("template"))
@@ -5952,6 +6015,21 @@ func (f *CouponTemplateFilter) WhereUpdatedAt(p entql.TimeP) {
 	f.Where(p.Field(coupontemplate.FieldUpdatedAt))
 }
 
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *CouponTemplateFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(coupontemplate.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *CouponTemplateFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(coupontemplate.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *CouponTemplateFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(coupontemplate.FieldRemark))
+}
+
 // WhereEnable applies the entql bool predicate on the enable field.
 func (f *CouponTemplateFilter) WhereEnable(p entql.BoolP) {
 	f.Where(p.Field(coupontemplate.FieldEnable))
@@ -5965,6 +6043,20 @@ func (f *CouponTemplateFilter) WhereName(p entql.StringP) {
 // WhereMeta applies the entql json.RawMessage predicate on the meta field.
 func (f *CouponTemplateFilter) WhereMeta(p entql.BytesP) {
 	f.Where(p.Field(coupontemplate.FieldMeta))
+}
+
+// WhereHasCoupons applies a predicate to check if query has an edge coupons.
+func (f *CouponTemplateFilter) WhereHasCoupons() {
+	f.Where(entql.HasEdge("coupons"))
+}
+
+// WhereHasCouponsWith applies a predicate to check if query has an edge coupons with a given conditions (other predicates).
+func (f *CouponTemplateFilter) WhereHasCouponsWith(preds ...predicate.Coupon) {
+	f.Where(entql.HasEdgeWith("coupons", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }
 
 // addPredicate implements the predicateAdder interface.

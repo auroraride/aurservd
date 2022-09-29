@@ -32,9 +32,9 @@ type CouponQuery struct {
 	predicates   []predicate.Coupon
 	withRider    *RiderQuery
 	withAssembly *CouponAssemblyQuery
-	withTemplate *CouponTemplateQuery
 	withOrder    *OrderQuery
 	withPlan     *PlanQuery
+	withTemplate *CouponTemplateQuery
 	withCities   *CityQuery
 	withPlans    *PlanQuery
 	modifiers    []func(*sql.Selector)
@@ -118,28 +118,6 @@ func (cq *CouponQuery) QueryAssembly() *CouponAssemblyQuery {
 	return query
 }
 
-// QueryTemplate chains the current query on the "template" edge.
-func (cq *CouponQuery) QueryTemplate() *CouponTemplateQuery {
-	query := &CouponTemplateQuery{config: cq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := cq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := cq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(coupon.Table, coupon.FieldID, selector),
-			sqlgraph.To(coupontemplate.Table, coupontemplate.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, coupon.TemplateTable, coupon.TemplateColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
 // QueryOrder chains the current query on the "order" edge.
 func (cq *CouponQuery) QueryOrder() *OrderQuery {
 	query := &OrderQuery{config: cq.config}
@@ -177,6 +155,28 @@ func (cq *CouponQuery) QueryPlan() *PlanQuery {
 			sqlgraph.From(coupon.Table, coupon.FieldID, selector),
 			sqlgraph.To(plan.Table, plan.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, coupon.PlanTable, coupon.PlanColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTemplate chains the current query on the "template" edge.
+func (cq *CouponQuery) QueryTemplate() *CouponTemplateQuery {
+	query := &CouponTemplateQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(coupon.Table, coupon.FieldID, selector),
+			sqlgraph.To(coupontemplate.Table, coupontemplate.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, coupon.TemplateTable, coupon.TemplateColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -411,9 +411,9 @@ func (cq *CouponQuery) Clone() *CouponQuery {
 		predicates:   append([]predicate.Coupon{}, cq.predicates...),
 		withRider:    cq.withRider.Clone(),
 		withAssembly: cq.withAssembly.Clone(),
-		withTemplate: cq.withTemplate.Clone(),
 		withOrder:    cq.withOrder.Clone(),
 		withPlan:     cq.withPlan.Clone(),
+		withTemplate: cq.withTemplate.Clone(),
 		withCities:   cq.withCities.Clone(),
 		withPlans:    cq.withPlans.Clone(),
 		// clone intermediate query.
@@ -445,17 +445,6 @@ func (cq *CouponQuery) WithAssembly(opts ...func(*CouponAssemblyQuery)) *CouponQ
 	return cq
 }
 
-// WithTemplate tells the query-builder to eager-load the nodes that are connected to
-// the "template" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *CouponQuery) WithTemplate(opts ...func(*CouponTemplateQuery)) *CouponQuery {
-	query := &CouponTemplateQuery{config: cq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	cq.withTemplate = query
-	return cq
-}
-
 // WithOrder tells the query-builder to eager-load the nodes that are connected to
 // the "order" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *CouponQuery) WithOrder(opts ...func(*OrderQuery)) *CouponQuery {
@@ -475,6 +464,17 @@ func (cq *CouponQuery) WithPlan(opts ...func(*PlanQuery)) *CouponQuery {
 		opt(query)
 	}
 	cq.withPlan = query
+	return cq
+}
+
+// WithTemplate tells the query-builder to eager-load the nodes that are connected to
+// the "template" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CouponQuery) WithTemplate(opts ...func(*CouponTemplateQuery)) *CouponQuery {
+	query := &CouponTemplateQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withTemplate = query
 	return cq
 }
 
@@ -571,9 +571,9 @@ func (cq *CouponQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Coupo
 		loadedTypes = [7]bool{
 			cq.withRider != nil,
 			cq.withAssembly != nil,
-			cq.withTemplate != nil,
 			cq.withOrder != nil,
 			cq.withPlan != nil,
+			cq.withTemplate != nil,
 			cq.withCities != nil,
 			cq.withPlans != nil,
 		}
@@ -611,12 +611,6 @@ func (cq *CouponQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Coupo
 			return nil, err
 		}
 	}
-	if query := cq.withTemplate; query != nil {
-		if err := cq.loadTemplate(ctx, query, nodes, nil,
-			func(n *Coupon, e *CouponTemplate) { n.Edges.Template = e }); err != nil {
-			return nil, err
-		}
-	}
 	if query := cq.withOrder; query != nil {
 		if err := cq.loadOrder(ctx, query, nodes, nil,
 			func(n *Coupon, e *Order) { n.Edges.Order = e }); err != nil {
@@ -626,6 +620,12 @@ func (cq *CouponQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Coupo
 	if query := cq.withPlan; query != nil {
 		if err := cq.loadPlan(ctx, query, nodes, nil,
 			func(n *Coupon, e *Plan) { n.Edges.Plan = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := cq.withTemplate; query != nil {
+		if err := cq.loadTemplate(ctx, query, nodes, nil,
+			func(n *Coupon, e *CouponTemplate) { n.Edges.Template = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -701,32 +701,6 @@ func (cq *CouponQuery) loadAssembly(ctx context.Context, query *CouponAssemblyQu
 	}
 	return nil
 }
-func (cq *CouponQuery) loadTemplate(ctx context.Context, query *CouponTemplateQuery, nodes []*Coupon, init func(*Coupon), assign func(*Coupon, *CouponTemplate)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*Coupon)
-	for i := range nodes {
-		fk := nodes[i].TemplateID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	query.Where(coupontemplate.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "template_id" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
 func (cq *CouponQuery) loadOrder(ctx context.Context, query *OrderQuery, nodes []*Coupon, init func(*Coupon), assign func(*Coupon, *Order)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*Coupon)
@@ -778,6 +752,32 @@ func (cq *CouponQuery) loadPlan(ctx context.Context, query *PlanQuery, nodes []*
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "plan_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (cq *CouponQuery) loadTemplate(ctx context.Context, query *CouponTemplateQuery, nodes []*Coupon, init func(*Coupon), assign func(*Coupon, *CouponTemplate)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Coupon)
+	for i := range nodes {
+		fk := nodes[i].TemplateID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(coupontemplate.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "template_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

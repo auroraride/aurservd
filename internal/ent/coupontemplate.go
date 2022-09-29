@@ -22,12 +22,39 @@ type CouponTemplate struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// 创建人
+	Creator *model.Modifier `json:"creator,omitempty"`
+	// 最后修改人
+	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
+	// 管理员改动原因/备注
+	Remark string `json:"remark,omitempty"`
 	// 是否启用
 	Enable bool `json:"enable,omitempty"`
 	// 名称
 	Name string `json:"name,omitempty"`
 	// 详情
 	Meta *model.CouponTemplateMeta `json:"meta,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the CouponTemplateQuery when eager-loading is set.
+	Edges CouponTemplateEdges `json:"edges"`
+}
+
+// CouponTemplateEdges holds the relations/edges for other nodes in the graph.
+type CouponTemplateEdges struct {
+	// Coupons holds the value of the coupons edge.
+	Coupons []*Coupon `json:"coupons,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// CouponsOrErr returns the Coupons value or an error if the edge
+// was not loaded in eager-loading.
+func (e CouponTemplateEdges) CouponsOrErr() ([]*Coupon, error) {
+	if e.loadedTypes[0] {
+		return e.Coupons, nil
+	}
+	return nil, &NotLoadedError{edge: "coupons"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -35,13 +62,13 @@ func (*CouponTemplate) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case coupontemplate.FieldMeta:
+		case coupontemplate.FieldCreator, coupontemplate.FieldLastModifier, coupontemplate.FieldMeta:
 			values[i] = new([]byte)
 		case coupontemplate.FieldEnable:
 			values[i] = new(sql.NullBool)
 		case coupontemplate.FieldID:
 			values[i] = new(sql.NullInt64)
-		case coupontemplate.FieldName:
+		case coupontemplate.FieldRemark, coupontemplate.FieldName:
 			values[i] = new(sql.NullString)
 		case coupontemplate.FieldCreatedAt, coupontemplate.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -78,6 +105,28 @@ func (ct *CouponTemplate) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ct.UpdatedAt = value.Time
 			}
+		case coupontemplate.FieldCreator:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field creator", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &ct.Creator); err != nil {
+					return fmt.Errorf("unmarshal field creator: %w", err)
+				}
+			}
+		case coupontemplate.FieldLastModifier:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field last_modifier", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &ct.LastModifier); err != nil {
+					return fmt.Errorf("unmarshal field last_modifier: %w", err)
+				}
+			}
+		case coupontemplate.FieldRemark:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field remark", values[i])
+			} else if value.Valid {
+				ct.Remark = value.String
+			}
 		case coupontemplate.FieldEnable:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field enable", values[i])
@@ -101,6 +150,11 @@ func (ct *CouponTemplate) assignValues(columns []string, values []any) error {
 		}
 	}
 	return nil
+}
+
+// QueryCoupons queries the "coupons" edge of the CouponTemplate entity.
+func (ct *CouponTemplate) QueryCoupons() *CouponQuery {
+	return (&CouponTemplateClient{config: ct.config}).QueryCoupons(ct)
 }
 
 // Update returns a builder for updating this CouponTemplate.
@@ -131,6 +185,15 @@ func (ct *CouponTemplate) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(ct.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("creator=")
+	builder.WriteString(fmt.Sprintf("%v", ct.Creator))
+	builder.WriteString(", ")
+	builder.WriteString("last_modifier=")
+	builder.WriteString(fmt.Sprintf("%v", ct.LastModifier))
+	builder.WriteString(", ")
+	builder.WriteString("remark=")
+	builder.WriteString(ct.Remark)
 	builder.WriteString(", ")
 	builder.WriteString("enable=")
 	builder.WriteString(fmt.Sprintf("%v", ct.Enable))

@@ -88,8 +88,14 @@ type QRQueryReq struct {
 }
 
 type SelectOption struct {
-    Value uint64 `json:"value"` // 选择项值 (ID)
-    Label string `json:"label"` // 选择项名称
+    Value uint64 `json:"value"`          // 选择项值 (ID)
+    Label string `json:"label"`          // 选择项名称
+    Desc  string `json:"desc,omitempty"` // 描述
+}
+
+type SelectOptionGroup struct {
+    Label   string         `json:"label"`   // 分组名称
+    Options []SelectOption `json:"options"` // 分组选项
 }
 
 type CascaderOptionLevel2 struct {

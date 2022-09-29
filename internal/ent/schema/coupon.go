@@ -9,6 +9,7 @@ import (
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -58,17 +59,23 @@ func (Coupon) Annotations() []schema.Annotation {
 // Fields of the Coupon.
 func (Coupon) Fields() []ent.Field {
     return []ent.Field{
+        field.Uint64("template_id"),
         field.String("name").Immutable().Comment("名称"),
+        field.Uint8("rule").Comment("使用规则"),
+        field.Bool("multiple").Default(false).Comment("该券是否可叠加"),
         field.Float("amount").Comment("金额"),
         field.String("code").Unique().Comment("券码"),
-        field.Time("expired_at").Comment("过期时间"),
-        field.Time("used_at").Optional().Comment("使用时间"),
+        field.Time("expires_at").Optional().Comment("过期时间"),
+        field.Time("used_at").Optional().Nillable().Comment("使用时间"),
+        field.JSON("duration", &model.CouponDuration{}).Comment("有效期规则"),
     }
 }
 
 // Edges of the Coupon.
 func (Coupon) Edges() []ent.Edge {
     return []ent.Edge{
+        edge.From("template", CouponTemplate.Type).Required().Unique().Ref("coupons").Field("template_id"),
+
         edge.To("cities", City.Type),
         edge.To("plans", Plan.Type),
     }
@@ -80,9 +87,8 @@ func (Coupon) Mixin() []ent.Mixin {
         internal.Modifier{},
         RiderMixin{Optional: true},
         CouponAssemblyMixin{},
-        CouponTemplateMixin{},
         OrderMixin{Optional: true},
-        PlanMixin{Optional: true},
+        PlanMixin{Optional: true, Comment: "实际使用骑士卡"},
     }
 }
 
@@ -93,5 +99,9 @@ func (Coupon) Indexes() []ent.Index {
                 dialect.Postgres: "GIN",
             }),
         ),
+        index.Fields("template_id"),
+        index.Fields("multiple"),
+        index.Fields("expires_at"),
+        index.Fields("used_at"),
     }
 }

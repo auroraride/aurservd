@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -91,6 +92,13 @@ func CreatedAt(v time.Time) predicate.CouponTemplate {
 func UpdatedAt(v time.Time) predicate.CouponTemplate {
 	return predicate.CouponTemplate(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
+	})
+}
+
+// Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
+func Remark(v string) predicate.CouponTemplate {
+	return predicate.CouponTemplate(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRemark), v))
 	})
 }
 
@@ -236,6 +244,147 @@ func UpdatedAtLTE(v time.Time) predicate.CouponTemplate {
 	})
 }
 
+// CreatorIsNil applies the IsNil predicate on the "creator" field.
+func CreatorIsNil() predicate.CouponTemplate {
+	return predicate.CouponTemplate(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldCreator)))
+	})
+}
+
+// CreatorNotNil applies the NotNil predicate on the "creator" field.
+func CreatorNotNil() predicate.CouponTemplate {
+	return predicate.CouponTemplate(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldCreator)))
+	})
+}
+
+// LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
+func LastModifierIsNil() predicate.CouponTemplate {
+	return predicate.CouponTemplate(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldLastModifier)))
+	})
+}
+
+// LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
+func LastModifierNotNil() predicate.CouponTemplate {
+	return predicate.CouponTemplate(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldLastModifier)))
+	})
+}
+
+// RemarkEQ applies the EQ predicate on the "remark" field.
+func RemarkEQ(v string) predicate.CouponTemplate {
+	return predicate.CouponTemplate(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkNEQ applies the NEQ predicate on the "remark" field.
+func RemarkNEQ(v string) predicate.CouponTemplate {
+	return predicate.CouponTemplate(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkIn applies the In predicate on the "remark" field.
+func RemarkIn(vs ...string) predicate.CouponTemplate {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.CouponTemplate(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldRemark), v...))
+	})
+}
+
+// RemarkNotIn applies the NotIn predicate on the "remark" field.
+func RemarkNotIn(vs ...string) predicate.CouponTemplate {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.CouponTemplate(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldRemark), v...))
+	})
+}
+
+// RemarkGT applies the GT predicate on the "remark" field.
+func RemarkGT(v string) predicate.CouponTemplate {
+	return predicate.CouponTemplate(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkGTE applies the GTE predicate on the "remark" field.
+func RemarkGTE(v string) predicate.CouponTemplate {
+	return predicate.CouponTemplate(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkLT applies the LT predicate on the "remark" field.
+func RemarkLT(v string) predicate.CouponTemplate {
+	return predicate.CouponTemplate(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkLTE applies the LTE predicate on the "remark" field.
+func RemarkLTE(v string) predicate.CouponTemplate {
+	return predicate.CouponTemplate(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkContains applies the Contains predicate on the "remark" field.
+func RemarkContains(v string) predicate.CouponTemplate {
+	return predicate.CouponTemplate(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
+func RemarkHasPrefix(v string) predicate.CouponTemplate {
+	return predicate.CouponTemplate(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
+func RemarkHasSuffix(v string) predicate.CouponTemplate {
+	return predicate.CouponTemplate(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkIsNil applies the IsNil predicate on the "remark" field.
+func RemarkIsNil() predicate.CouponTemplate {
+	return predicate.CouponTemplate(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldRemark)))
+	})
+}
+
+// RemarkNotNil applies the NotNil predicate on the "remark" field.
+func RemarkNotNil() predicate.CouponTemplate {
+	return predicate.CouponTemplate(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldRemark)))
+	})
+}
+
+// RemarkEqualFold applies the EqualFold predicate on the "remark" field.
+func RemarkEqualFold(v string) predicate.CouponTemplate {
+	return predicate.CouponTemplate(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
+func RemarkContainsFold(v string) predicate.CouponTemplate {
+	return predicate.CouponTemplate(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
+	})
+}
+
 // EnableEQ applies the EQ predicate on the "enable" field.
 func EnableEQ(v bool) predicate.CouponTemplate {
 	return predicate.CouponTemplate(func(s *sql.Selector) {
@@ -346,6 +495,34 @@ func NameEqualFold(v string) predicate.CouponTemplate {
 func NameContainsFold(v string) predicate.CouponTemplate {
 	return predicate.CouponTemplate(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldName), v))
+	})
+}
+
+// HasCoupons applies the HasEdge predicate on the "coupons" edge.
+func HasCoupons() predicate.CouponTemplate {
+	return predicate.CouponTemplate(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CouponsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CouponsTable, CouponsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCouponsWith applies the HasEdge predicate on the "coupons" edge with a given conditions (other predicates).
+func HasCouponsWith(preds ...predicate.Coupon) predicate.CouponTemplate {
+	return predicate.CouponTemplate(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CouponsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CouponsTable, CouponsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 

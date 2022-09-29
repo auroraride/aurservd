@@ -27,32 +27,38 @@ const (
 	FieldRiderID = "rider_id"
 	// FieldAssemblyID holds the string denoting the assembly_id field in the database.
 	FieldAssemblyID = "assembly_id"
-	// FieldTemplateID holds the string denoting the template_id field in the database.
-	FieldTemplateID = "template_id"
 	// FieldOrderID holds the string denoting the order_id field in the database.
 	FieldOrderID = "order_id"
 	// FieldPlanID holds the string denoting the plan_id field in the database.
 	FieldPlanID = "plan_id"
+	// FieldTemplateID holds the string denoting the template_id field in the database.
+	FieldTemplateID = "template_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldRule holds the string denoting the rule field in the database.
+	FieldRule = "rule"
+	// FieldMultiple holds the string denoting the multiple field in the database.
+	FieldMultiple = "multiple"
 	// FieldAmount holds the string denoting the amount field in the database.
 	FieldAmount = "amount"
 	// FieldCode holds the string denoting the code field in the database.
 	FieldCode = "code"
-	// FieldExpiredAt holds the string denoting the expired_at field in the database.
-	FieldExpiredAt = "expired_at"
+	// FieldExpiresAt holds the string denoting the expires_at field in the database.
+	FieldExpiresAt = "expires_at"
 	// FieldUsedAt holds the string denoting the used_at field in the database.
 	FieldUsedAt = "used_at"
+	// FieldDuration holds the string denoting the duration field in the database.
+	FieldDuration = "duration"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeAssembly holds the string denoting the assembly edge name in mutations.
 	EdgeAssembly = "assembly"
-	// EdgeTemplate holds the string denoting the template edge name in mutations.
-	EdgeTemplate = "template"
 	// EdgeOrder holds the string denoting the order edge name in mutations.
 	EdgeOrder = "order"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
+	// EdgeTemplate holds the string denoting the template edge name in mutations.
+	EdgeTemplate = "template"
 	// EdgeCities holds the string denoting the cities edge name in mutations.
 	EdgeCities = "cities"
 	// EdgePlans holds the string denoting the plans edge name in mutations.
@@ -73,13 +79,6 @@ const (
 	AssemblyInverseTable = "coupon_assembly"
 	// AssemblyColumn is the table column denoting the assembly relation/edge.
 	AssemblyColumn = "assembly_id"
-	// TemplateTable is the table that holds the template relation/edge.
-	TemplateTable = "coupon"
-	// TemplateInverseTable is the table name for the CouponTemplate entity.
-	// It exists in this package in order to avoid circular dependency with the "coupontemplate" package.
-	TemplateInverseTable = "coupon_template"
-	// TemplateColumn is the table column denoting the template relation/edge.
-	TemplateColumn = "template_id"
 	// OrderTable is the table that holds the order relation/edge.
 	OrderTable = "coupon"
 	// OrderInverseTable is the table name for the Order entity.
@@ -94,6 +93,13 @@ const (
 	PlanInverseTable = "plan"
 	// PlanColumn is the table column denoting the plan relation/edge.
 	PlanColumn = "plan_id"
+	// TemplateTable is the table that holds the template relation/edge.
+	TemplateTable = "coupon"
+	// TemplateInverseTable is the table name for the CouponTemplate entity.
+	// It exists in this package in order to avoid circular dependency with the "coupontemplate" package.
+	TemplateInverseTable = "coupon_template"
+	// TemplateColumn is the table column denoting the template relation/edge.
+	TemplateColumn = "template_id"
 	// CitiesTable is the table that holds the cities relation/edge. The primary key declared below.
 	CitiesTable = "coupon_cities"
 	// CitiesInverseTable is the table name for the City entity.
@@ -116,14 +122,17 @@ var Columns = []string{
 	FieldRemark,
 	FieldRiderID,
 	FieldAssemblyID,
-	FieldTemplateID,
 	FieldOrderID,
 	FieldPlanID,
+	FieldTemplateID,
 	FieldName,
+	FieldRule,
+	FieldMultiple,
 	FieldAmount,
 	FieldCode,
-	FieldExpiredAt,
+	FieldExpiresAt,
 	FieldUsedAt,
+	FieldDuration,
 }
 
 var (
@@ -158,4 +167,6 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultMultiple holds the default value on creation for the "multiple" field.
+	DefaultMultiple bool
 )

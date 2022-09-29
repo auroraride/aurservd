@@ -37,7 +37,7 @@ type Order struct {
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
-	// 骑士卡ID
+	// PlanID holds the value of the "plan_id" field.
 	PlanID *uint64 `json:"plan_id,omitempty"`
 	// 城市ID
 	CityID *uint64 `json:"city_id,omitempty"`

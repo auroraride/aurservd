@@ -27,6 +27,14 @@ type CouponAssemblyMutation struct {
 	creator         **model.Modifier
 	last_modifier   **model.Modifier
 	remark          *string
+	name            *string
+	number          *int
+	addnumber       *int
+	amount          *float64
+	addamount       *float64
+	target          *uint8
+	addtarget       *int8
+	meta            **model.CouponTemplateMeta
 	clearedFields   map[string]struct{}
 	template        *uint64
 	clearedtemplate bool
@@ -388,6 +396,246 @@ func (m *CouponAssemblyMutation) ResetTemplateID() {
 	m.template = nil
 }
 
+// SetName sets the "name" field.
+func (m *CouponAssemblyMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *CouponAssemblyMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the CouponAssembly entity.
+// If the CouponAssembly object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CouponAssemblyMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *CouponAssemblyMutation) ResetName() {
+	m.name = nil
+}
+
+// SetNumber sets the "number" field.
+func (m *CouponAssemblyMutation) SetNumber(i int) {
+	m.number = &i
+	m.addnumber = nil
+}
+
+// Number returns the value of the "number" field in the mutation.
+func (m *CouponAssemblyMutation) Number() (r int, exists bool) {
+	v := m.number
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNumber returns the old "number" field's value of the CouponAssembly entity.
+// If the CouponAssembly object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CouponAssemblyMutation) OldNumber(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNumber is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNumber requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNumber: %w", err)
+	}
+	return oldValue.Number, nil
+}
+
+// AddNumber adds i to the "number" field.
+func (m *CouponAssemblyMutation) AddNumber(i int) {
+	if m.addnumber != nil {
+		*m.addnumber += i
+	} else {
+		m.addnumber = &i
+	}
+}
+
+// AddedNumber returns the value that was added to the "number" field in this mutation.
+func (m *CouponAssemblyMutation) AddedNumber() (r int, exists bool) {
+	v := m.addnumber
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetNumber resets all changes to the "number" field.
+func (m *CouponAssemblyMutation) ResetNumber() {
+	m.number = nil
+	m.addnumber = nil
+}
+
+// SetAmount sets the "amount" field.
+func (m *CouponAssemblyMutation) SetAmount(f float64) {
+	m.amount = &f
+	m.addamount = nil
+}
+
+// Amount returns the value of the "amount" field in the mutation.
+func (m *CouponAssemblyMutation) Amount() (r float64, exists bool) {
+	v := m.amount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAmount returns the old "amount" field's value of the CouponAssembly entity.
+// If the CouponAssembly object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CouponAssemblyMutation) OldAmount(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAmount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAmount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAmount: %w", err)
+	}
+	return oldValue.Amount, nil
+}
+
+// AddAmount adds f to the "amount" field.
+func (m *CouponAssemblyMutation) AddAmount(f float64) {
+	if m.addamount != nil {
+		*m.addamount += f
+	} else {
+		m.addamount = &f
+	}
+}
+
+// AddedAmount returns the value that was added to the "amount" field in this mutation.
+func (m *CouponAssemblyMutation) AddedAmount() (r float64, exists bool) {
+	v := m.addamount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetAmount resets all changes to the "amount" field.
+func (m *CouponAssemblyMutation) ResetAmount() {
+	m.amount = nil
+	m.addamount = nil
+}
+
+// SetTarget sets the "target" field.
+func (m *CouponAssemblyMutation) SetTarget(u uint8) {
+	m.target = &u
+	m.addtarget = nil
+}
+
+// Target returns the value of the "target" field in the mutation.
+func (m *CouponAssemblyMutation) Target() (r uint8, exists bool) {
+	v := m.target
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTarget returns the old "target" field's value of the CouponAssembly entity.
+// If the CouponAssembly object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CouponAssemblyMutation) OldTarget(ctx context.Context) (v uint8, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTarget is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTarget requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTarget: %w", err)
+	}
+	return oldValue.Target, nil
+}
+
+// AddTarget adds u to the "target" field.
+func (m *CouponAssemblyMutation) AddTarget(u int8) {
+	if m.addtarget != nil {
+		*m.addtarget += u
+	} else {
+		m.addtarget = &u
+	}
+}
+
+// AddedTarget returns the value that was added to the "target" field in this mutation.
+func (m *CouponAssemblyMutation) AddedTarget() (r int8, exists bool) {
+	v := m.addtarget
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTarget resets all changes to the "target" field.
+func (m *CouponAssemblyMutation) ResetTarget() {
+	m.target = nil
+	m.addtarget = nil
+}
+
+// SetMeta sets the "meta" field.
+func (m *CouponAssemblyMutation) SetMeta(mtm *model.CouponTemplateMeta) {
+	m.meta = &mtm
+}
+
+// Meta returns the value of the "meta" field in the mutation.
+func (m *CouponAssemblyMutation) Meta() (r *model.CouponTemplateMeta, exists bool) {
+	v := m.meta
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMeta returns the old "meta" field's value of the CouponAssembly entity.
+// If the CouponAssembly object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CouponAssemblyMutation) OldMeta(ctx context.Context) (v *model.CouponTemplateMeta, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMeta is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMeta requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMeta: %w", err)
+	}
+	return oldValue.Meta, nil
+}
+
+// ResetMeta resets all changes to the "meta" field.
+func (m *CouponAssemblyMutation) ResetMeta() {
+	m.meta = nil
+}
+
 // ClearTemplate clears the "template" edge to the CouponTemplate entity.
 func (m *CouponAssemblyMutation) ClearTemplate() {
 	m.clearedtemplate = true
@@ -433,7 +681,7 @@ func (m *CouponAssemblyMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CouponAssemblyMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, couponassembly.FieldCreatedAt)
 	}
@@ -451,6 +699,21 @@ func (m *CouponAssemblyMutation) Fields() []string {
 	}
 	if m.template != nil {
 		fields = append(fields, couponassembly.FieldTemplateID)
+	}
+	if m.name != nil {
+		fields = append(fields, couponassembly.FieldName)
+	}
+	if m.number != nil {
+		fields = append(fields, couponassembly.FieldNumber)
+	}
+	if m.amount != nil {
+		fields = append(fields, couponassembly.FieldAmount)
+	}
+	if m.target != nil {
+		fields = append(fields, couponassembly.FieldTarget)
+	}
+	if m.meta != nil {
+		fields = append(fields, couponassembly.FieldMeta)
 	}
 	return fields
 }
@@ -472,6 +735,16 @@ func (m *CouponAssemblyMutation) Field(name string) (ent.Value, bool) {
 		return m.Remark()
 	case couponassembly.FieldTemplateID:
 		return m.TemplateID()
+	case couponassembly.FieldName:
+		return m.Name()
+	case couponassembly.FieldNumber:
+		return m.Number()
+	case couponassembly.FieldAmount:
+		return m.Amount()
+	case couponassembly.FieldTarget:
+		return m.Target()
+	case couponassembly.FieldMeta:
+		return m.Meta()
 	}
 	return nil, false
 }
@@ -493,6 +766,16 @@ func (m *CouponAssemblyMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldRemark(ctx)
 	case couponassembly.FieldTemplateID:
 		return m.OldTemplateID(ctx)
+	case couponassembly.FieldName:
+		return m.OldName(ctx)
+	case couponassembly.FieldNumber:
+		return m.OldNumber(ctx)
+	case couponassembly.FieldAmount:
+		return m.OldAmount(ctx)
+	case couponassembly.FieldTarget:
+		return m.OldTarget(ctx)
+	case couponassembly.FieldMeta:
+		return m.OldMeta(ctx)
 	}
 	return nil, fmt.Errorf("unknown CouponAssembly field %s", name)
 }
@@ -544,6 +827,41 @@ func (m *CouponAssemblyMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetTemplateID(v)
 		return nil
+	case couponassembly.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case couponassembly.FieldNumber:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNumber(v)
+		return nil
+	case couponassembly.FieldAmount:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAmount(v)
+		return nil
+	case couponassembly.FieldTarget:
+		v, ok := value.(uint8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTarget(v)
+		return nil
+	case couponassembly.FieldMeta:
+		v, ok := value.(*model.CouponTemplateMeta)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMeta(v)
+		return nil
 	}
 	return fmt.Errorf("unknown CouponAssembly field %s", name)
 }
@@ -552,6 +870,15 @@ func (m *CouponAssemblyMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *CouponAssemblyMutation) AddedFields() []string {
 	var fields []string
+	if m.addnumber != nil {
+		fields = append(fields, couponassembly.FieldNumber)
+	}
+	if m.addamount != nil {
+		fields = append(fields, couponassembly.FieldAmount)
+	}
+	if m.addtarget != nil {
+		fields = append(fields, couponassembly.FieldTarget)
+	}
 	return fields
 }
 
@@ -560,6 +887,12 @@ func (m *CouponAssemblyMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *CouponAssemblyMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case couponassembly.FieldNumber:
+		return m.AddedNumber()
+	case couponassembly.FieldAmount:
+		return m.AddedAmount()
+	case couponassembly.FieldTarget:
+		return m.AddedTarget()
 	}
 	return nil, false
 }
@@ -569,6 +902,27 @@ func (m *CouponAssemblyMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *CouponAssemblyMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case couponassembly.FieldNumber:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddNumber(v)
+		return nil
+	case couponassembly.FieldAmount:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddAmount(v)
+		return nil
+	case couponassembly.FieldTarget:
+		v, ok := value.(int8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTarget(v)
+		return nil
 	}
 	return fmt.Errorf("unknown CouponAssembly numeric field %s", name)
 }
@@ -634,6 +988,21 @@ func (m *CouponAssemblyMutation) ResetField(name string) error {
 		return nil
 	case couponassembly.FieldTemplateID:
 		m.ResetTemplateID()
+		return nil
+	case couponassembly.FieldName:
+		m.ResetName()
+		return nil
+	case couponassembly.FieldNumber:
+		m.ResetNumber()
+		return nil
+	case couponassembly.FieldAmount:
+		m.ResetAmount()
+		return nil
+	case couponassembly.FieldTarget:
+		m.ResetTarget()
+		return nil
+	case couponassembly.FieldMeta:
+		m.ResetMeta()
 		return nil
 	}
 	return fmt.Errorf("unknown CouponAssembly field %s", name)

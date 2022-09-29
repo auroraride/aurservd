@@ -50,7 +50,7 @@ type Business struct {
 	EmployeeID *uint64 `json:"employee_id,omitempty"`
 	// 门店ID
 	StoreID *uint64 `json:"store_id,omitempty"`
-	// 骑士卡ID
+	// PlanID holds the value of the "plan_id" field.
 	PlanID *uint64 `json:"plan_id,omitempty"`
 	// 企业ID
 	EnterpriseID *uint64 `json:"enterprise_id,omitempty"`

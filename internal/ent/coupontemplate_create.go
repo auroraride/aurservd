@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
 )
 
@@ -51,6 +52,32 @@ func (ctc *CouponTemplateCreate) SetNillableUpdatedAt(t *time.Time) *CouponTempl
 	return ctc
 }
 
+// SetCreator sets the "creator" field.
+func (ctc *CouponTemplateCreate) SetCreator(m *model.Modifier) *CouponTemplateCreate {
+	ctc.mutation.SetCreator(m)
+	return ctc
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (ctc *CouponTemplateCreate) SetLastModifier(m *model.Modifier) *CouponTemplateCreate {
+	ctc.mutation.SetLastModifier(m)
+	return ctc
+}
+
+// SetRemark sets the "remark" field.
+func (ctc *CouponTemplateCreate) SetRemark(s string) *CouponTemplateCreate {
+	ctc.mutation.SetRemark(s)
+	return ctc
+}
+
+// SetNillableRemark sets the "remark" field if the given value is not nil.
+func (ctc *CouponTemplateCreate) SetNillableRemark(s *string) *CouponTemplateCreate {
+	if s != nil {
+		ctc.SetRemark(*s)
+	}
+	return ctc
+}
+
 // SetEnable sets the "enable" field.
 func (ctc *CouponTemplateCreate) SetEnable(b bool) *CouponTemplateCreate {
 	ctc.mutation.SetEnable(b)
@@ -77,6 +104,21 @@ func (ctc *CouponTemplateCreate) SetMeta(mtm *model.CouponTemplateMeta) *CouponT
 	return ctc
 }
 
+// AddCouponIDs adds the "coupons" edge to the Coupon entity by IDs.
+func (ctc *CouponTemplateCreate) AddCouponIDs(ids ...uint64) *CouponTemplateCreate {
+	ctc.mutation.AddCouponIDs(ids...)
+	return ctc
+}
+
+// AddCoupons adds the "coupons" edges to the Coupon entity.
+func (ctc *CouponTemplateCreate) AddCoupons(c ...*Coupon) *CouponTemplateCreate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ctc.AddCouponIDs(ids...)
+}
+
 // Mutation returns the CouponTemplateMutation object of the builder.
 func (ctc *CouponTemplateCreate) Mutation() *CouponTemplateMutation {
 	return ctc.mutation
@@ -88,7 +130,9 @@ func (ctc *CouponTemplateCreate) Save(ctx context.Context) (*CouponTemplate, err
 		err  error
 		node *CouponTemplate
 	)
-	ctc.defaults()
+	if err := ctc.defaults(); err != nil {
+		return nil, err
+	}
 	if len(ctc.hooks) == 0 {
 		if err = ctc.check(); err != nil {
 			return nil, err
@@ -153,12 +197,18 @@ func (ctc *CouponTemplateCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (ctc *CouponTemplateCreate) defaults() {
+func (ctc *CouponTemplateCreate) defaults() error {
 	if _, ok := ctc.mutation.CreatedAt(); !ok {
+		if coupontemplate.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized coupontemplate.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := coupontemplate.DefaultCreatedAt()
 		ctc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := ctc.mutation.UpdatedAt(); !ok {
+		if coupontemplate.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized coupontemplate.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := coupontemplate.DefaultUpdatedAt()
 		ctc.mutation.SetUpdatedAt(v)
 	}
@@ -166,6 +216,7 @@ func (ctc *CouponTemplateCreate) defaults() {
 		v := coupontemplate.DefaultEnable
 		ctc.mutation.SetEnable(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -229,6 +280,30 @@ func (ctc *CouponTemplateCreate) createSpec() (*CouponTemplate, *sqlgraph.Create
 		})
 		_node.UpdatedAt = value
 	}
+	if value, ok := ctc.mutation.Creator(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: coupontemplate.FieldCreator,
+		})
+		_node.Creator = value
+	}
+	if value, ok := ctc.mutation.LastModifier(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: coupontemplate.FieldLastModifier,
+		})
+		_node.LastModifier = value
+	}
+	if value, ok := ctc.mutation.Remark(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: coupontemplate.FieldRemark,
+		})
+		_node.Remark = value
+	}
 	if value, ok := ctc.mutation.Enable(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
@@ -252,6 +327,25 @@ func (ctc *CouponTemplateCreate) createSpec() (*CouponTemplate, *sqlgraph.Create
 			Column: coupontemplate.FieldMeta,
 		})
 		_node.Meta = value
+	}
+	if nodes := ctc.mutation.CouponsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   coupontemplate.CouponsTable,
+			Columns: []string{coupontemplate.CouponsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupon.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
@@ -317,6 +411,42 @@ func (u *CouponTemplateUpsert) UpdateUpdatedAt() *CouponTemplateUpsert {
 	return u
 }
 
+// SetLastModifier sets the "last_modifier" field.
+func (u *CouponTemplateUpsert) SetLastModifier(v *model.Modifier) *CouponTemplateUpsert {
+	u.Set(coupontemplate.FieldLastModifier, v)
+	return u
+}
+
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *CouponTemplateUpsert) UpdateLastModifier() *CouponTemplateUpsert {
+	u.SetExcluded(coupontemplate.FieldLastModifier)
+	return u
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *CouponTemplateUpsert) ClearLastModifier() *CouponTemplateUpsert {
+	u.SetNull(coupontemplate.FieldLastModifier)
+	return u
+}
+
+// SetRemark sets the "remark" field.
+func (u *CouponTemplateUpsert) SetRemark(v string) *CouponTemplateUpsert {
+	u.Set(coupontemplate.FieldRemark, v)
+	return u
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *CouponTemplateUpsert) UpdateRemark() *CouponTemplateUpsert {
+	u.SetExcluded(coupontemplate.FieldRemark)
+	return u
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (u *CouponTemplateUpsert) ClearRemark() *CouponTemplateUpsert {
+	u.SetNull(coupontemplate.FieldRemark)
+	return u
+}
+
 // SetEnable sets the "enable" field.
 func (u *CouponTemplateUpsert) SetEnable(v bool) *CouponTemplateUpsert {
 	u.Set(coupontemplate.FieldEnable, v)
@@ -367,6 +497,9 @@ func (u *CouponTemplateUpsertOne) UpdateNewValues() *CouponTemplateUpsertOne {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(coupontemplate.FieldCreatedAt)
 		}
+		if _, exists := u.create.mutation.Creator(); exists {
+			s.SetIgnore(coupontemplate.FieldCreator)
+		}
 	}))
 	return u
 }
@@ -409,6 +542,48 @@ func (u *CouponTemplateUpsertOne) SetUpdatedAt(v time.Time) *CouponTemplateUpser
 func (u *CouponTemplateUpsertOne) UpdateUpdatedAt() *CouponTemplateUpsertOne {
 	return u.Update(func(s *CouponTemplateUpsert) {
 		s.UpdateUpdatedAt()
+	})
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (u *CouponTemplateUpsertOne) SetLastModifier(v *model.Modifier) *CouponTemplateUpsertOne {
+	return u.Update(func(s *CouponTemplateUpsert) {
+		s.SetLastModifier(v)
+	})
+}
+
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *CouponTemplateUpsertOne) UpdateLastModifier() *CouponTemplateUpsertOne {
+	return u.Update(func(s *CouponTemplateUpsert) {
+		s.UpdateLastModifier()
+	})
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *CouponTemplateUpsertOne) ClearLastModifier() *CouponTemplateUpsertOne {
+	return u.Update(func(s *CouponTemplateUpsert) {
+		s.ClearLastModifier()
+	})
+}
+
+// SetRemark sets the "remark" field.
+func (u *CouponTemplateUpsertOne) SetRemark(v string) *CouponTemplateUpsertOne {
+	return u.Update(func(s *CouponTemplateUpsert) {
+		s.SetRemark(v)
+	})
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *CouponTemplateUpsertOne) UpdateRemark() *CouponTemplateUpsertOne {
+	return u.Update(func(s *CouponTemplateUpsert) {
+		s.UpdateRemark()
+	})
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (u *CouponTemplateUpsertOne) ClearRemark() *CouponTemplateUpsertOne {
+	return u.Update(func(s *CouponTemplateUpsert) {
+		s.ClearRemark()
 	})
 }
 
@@ -629,6 +804,9 @@ func (u *CouponTemplateUpsertBulk) UpdateNewValues() *CouponTemplateUpsertBulk {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(coupontemplate.FieldCreatedAt)
 			}
+			if _, exists := b.mutation.Creator(); exists {
+				s.SetIgnore(coupontemplate.FieldCreator)
+			}
 		}
 	}))
 	return u
@@ -672,6 +850,48 @@ func (u *CouponTemplateUpsertBulk) SetUpdatedAt(v time.Time) *CouponTemplateUpse
 func (u *CouponTemplateUpsertBulk) UpdateUpdatedAt() *CouponTemplateUpsertBulk {
 	return u.Update(func(s *CouponTemplateUpsert) {
 		s.UpdateUpdatedAt()
+	})
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (u *CouponTemplateUpsertBulk) SetLastModifier(v *model.Modifier) *CouponTemplateUpsertBulk {
+	return u.Update(func(s *CouponTemplateUpsert) {
+		s.SetLastModifier(v)
+	})
+}
+
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *CouponTemplateUpsertBulk) UpdateLastModifier() *CouponTemplateUpsertBulk {
+	return u.Update(func(s *CouponTemplateUpsert) {
+		s.UpdateLastModifier()
+	})
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *CouponTemplateUpsertBulk) ClearLastModifier() *CouponTemplateUpsertBulk {
+	return u.Update(func(s *CouponTemplateUpsert) {
+		s.ClearLastModifier()
+	})
+}
+
+// SetRemark sets the "remark" field.
+func (u *CouponTemplateUpsertBulk) SetRemark(v string) *CouponTemplateUpsertBulk {
+	return u.Update(func(s *CouponTemplateUpsert) {
+		s.SetRemark(v)
+	})
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *CouponTemplateUpsertBulk) UpdateRemark() *CouponTemplateUpsertBulk {
+	return u.Update(func(s *CouponTemplateUpsert) {
+		s.UpdateRemark()
+	})
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (u *CouponTemplateUpsertBulk) ClearRemark() *CouponTemplateUpsertBulk {
+	return u.Update(func(s *CouponTemplateUpsert) {
+		s.ClearRemark()
 	})
 }
 

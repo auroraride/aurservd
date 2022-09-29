@@ -31,6 +31,16 @@ type CouponAssembly struct {
 	Remark string `json:"remark,omitempty"`
 	// TemplateID holds the value of the "template_id" field.
 	TemplateID uint64 `json:"template_id,omitempty"`
+	// 名称
+	Name string `json:"name,omitempty"`
+	// 数量
+	Number int `json:"number,omitempty"`
+	// 金额
+	Amount float64 `json:"amount,omitempty"`
+	// 发送对象
+	Target uint8 `json:"target,omitempty"`
+	// 详情
+	Meta *model.CouponTemplateMeta `json:"meta,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CouponAssemblyQuery when eager-loading is set.
 	Edges CouponAssemblyEdges `json:"edges"`
@@ -63,11 +73,13 @@ func (*CouponAssembly) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case couponassembly.FieldCreator, couponassembly.FieldLastModifier:
+		case couponassembly.FieldCreator, couponassembly.FieldLastModifier, couponassembly.FieldMeta:
 			values[i] = new([]byte)
-		case couponassembly.FieldID, couponassembly.FieldTemplateID:
+		case couponassembly.FieldAmount:
+			values[i] = new(sql.NullFloat64)
+		case couponassembly.FieldID, couponassembly.FieldTemplateID, couponassembly.FieldNumber, couponassembly.FieldTarget:
 			values[i] = new(sql.NullInt64)
-		case couponassembly.FieldRemark:
+		case couponassembly.FieldRemark, couponassembly.FieldName:
 			values[i] = new(sql.NullString)
 		case couponassembly.FieldCreatedAt, couponassembly.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -132,6 +144,38 @@ func (ca *CouponAssembly) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ca.TemplateID = uint64(value.Int64)
 			}
+		case couponassembly.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
+			} else if value.Valid {
+				ca.Name = value.String
+			}
+		case couponassembly.FieldNumber:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field number", values[i])
+			} else if value.Valid {
+				ca.Number = int(value.Int64)
+			}
+		case couponassembly.FieldAmount:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field amount", values[i])
+			} else if value.Valid {
+				ca.Amount = value.Float64
+			}
+		case couponassembly.FieldTarget:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field target", values[i])
+			} else if value.Valid {
+				ca.Target = uint8(value.Int64)
+			}
+		case couponassembly.FieldMeta:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field meta", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &ca.Meta); err != nil {
+					return fmt.Errorf("unmarshal field meta: %w", err)
+				}
+			}
 		}
 	}
 	return nil
@@ -182,6 +226,21 @@ func (ca *CouponAssembly) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("template_id=")
 	builder.WriteString(fmt.Sprintf("%v", ca.TemplateID))
+	builder.WriteString(", ")
+	builder.WriteString("name=")
+	builder.WriteString(ca.Name)
+	builder.WriteString(", ")
+	builder.WriteString("number=")
+	builder.WriteString(fmt.Sprintf("%v", ca.Number))
+	builder.WriteString(", ")
+	builder.WriteString("amount=")
+	builder.WriteString(fmt.Sprintf("%v", ca.Amount))
+	builder.WriteString(", ")
+	builder.WriteString("target=")
+	builder.WriteString(fmt.Sprintf("%v", ca.Target))
+	builder.WriteString(", ")
+	builder.WriteString("meta=")
+	builder.WriteString(fmt.Sprintf("%v", ca.Meta))
 	builder.WriteByte(')')
 	return builder.String()
 }

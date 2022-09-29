@@ -84,6 +84,36 @@ func (cac *CouponAssemblyCreate) SetTemplateID(u uint64) *CouponAssemblyCreate {
 	return cac
 }
 
+// SetName sets the "name" field.
+func (cac *CouponAssemblyCreate) SetName(s string) *CouponAssemblyCreate {
+	cac.mutation.SetName(s)
+	return cac
+}
+
+// SetNumber sets the "number" field.
+func (cac *CouponAssemblyCreate) SetNumber(i int) *CouponAssemblyCreate {
+	cac.mutation.SetNumber(i)
+	return cac
+}
+
+// SetAmount sets the "amount" field.
+func (cac *CouponAssemblyCreate) SetAmount(f float64) *CouponAssemblyCreate {
+	cac.mutation.SetAmount(f)
+	return cac
+}
+
+// SetTarget sets the "target" field.
+func (cac *CouponAssemblyCreate) SetTarget(u uint8) *CouponAssemblyCreate {
+	cac.mutation.SetTarget(u)
+	return cac
+}
+
+// SetMeta sets the "meta" field.
+func (cac *CouponAssemblyCreate) SetMeta(mtm *model.CouponTemplateMeta) *CouponAssemblyCreate {
+	cac.mutation.SetMeta(mtm)
+	return cac
+}
+
 // SetTemplate sets the "template" edge to the CouponTemplate entity.
 func (cac *CouponAssemblyCreate) SetTemplate(c *CouponTemplate) *CouponAssemblyCreate {
 	return cac.SetTemplateID(c.ID)
@@ -196,6 +226,21 @@ func (cac *CouponAssemblyCreate) check() error {
 	if _, ok := cac.mutation.TemplateID(); !ok {
 		return &ValidationError{Name: "template_id", err: errors.New(`ent: missing required field "CouponAssembly.template_id"`)}
 	}
+	if _, ok := cac.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "CouponAssembly.name"`)}
+	}
+	if _, ok := cac.mutation.Number(); !ok {
+		return &ValidationError{Name: "number", err: errors.New(`ent: missing required field "CouponAssembly.number"`)}
+	}
+	if _, ok := cac.mutation.Amount(); !ok {
+		return &ValidationError{Name: "amount", err: errors.New(`ent: missing required field "CouponAssembly.amount"`)}
+	}
+	if _, ok := cac.mutation.Target(); !ok {
+		return &ValidationError{Name: "target", err: errors.New(`ent: missing required field "CouponAssembly.target"`)}
+	}
+	if _, ok := cac.mutation.Meta(); !ok {
+		return &ValidationError{Name: "meta", err: errors.New(`ent: missing required field "CouponAssembly.meta"`)}
+	}
 	if _, ok := cac.mutation.TemplateID(); !ok {
 		return &ValidationError{Name: "template", err: errors.New(`ent: missing required edge "CouponAssembly.template"`)}
 	}
@@ -266,6 +311,46 @@ func (cac *CouponAssemblyCreate) createSpec() (*CouponAssembly, *sqlgraph.Create
 			Column: couponassembly.FieldRemark,
 		})
 		_node.Remark = value
+	}
+	if value, ok := cac.mutation.Name(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: couponassembly.FieldName,
+		})
+		_node.Name = value
+	}
+	if value, ok := cac.mutation.Number(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: couponassembly.FieldNumber,
+		})
+		_node.Number = value
+	}
+	if value, ok := cac.mutation.Amount(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: couponassembly.FieldAmount,
+		})
+		_node.Amount = value
+	}
+	if value, ok := cac.mutation.Target(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: couponassembly.FieldTarget,
+		})
+		_node.Target = value
+	}
+	if value, ok := cac.mutation.Meta(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: couponassembly.FieldMeta,
+		})
+		_node.Meta = value
 	}
 	if nodes := cac.mutation.TemplateIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -399,6 +484,84 @@ func (u *CouponAssemblyUpsert) UpdateTemplateID() *CouponAssemblyUpsert {
 	return u
 }
 
+// SetName sets the "name" field.
+func (u *CouponAssemblyUpsert) SetName(v string) *CouponAssemblyUpsert {
+	u.Set(couponassembly.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *CouponAssemblyUpsert) UpdateName() *CouponAssemblyUpsert {
+	u.SetExcluded(couponassembly.FieldName)
+	return u
+}
+
+// SetNumber sets the "number" field.
+func (u *CouponAssemblyUpsert) SetNumber(v int) *CouponAssemblyUpsert {
+	u.Set(couponassembly.FieldNumber, v)
+	return u
+}
+
+// UpdateNumber sets the "number" field to the value that was provided on create.
+func (u *CouponAssemblyUpsert) UpdateNumber() *CouponAssemblyUpsert {
+	u.SetExcluded(couponassembly.FieldNumber)
+	return u
+}
+
+// AddNumber adds v to the "number" field.
+func (u *CouponAssemblyUpsert) AddNumber(v int) *CouponAssemblyUpsert {
+	u.Add(couponassembly.FieldNumber, v)
+	return u
+}
+
+// SetAmount sets the "amount" field.
+func (u *CouponAssemblyUpsert) SetAmount(v float64) *CouponAssemblyUpsert {
+	u.Set(couponassembly.FieldAmount, v)
+	return u
+}
+
+// UpdateAmount sets the "amount" field to the value that was provided on create.
+func (u *CouponAssemblyUpsert) UpdateAmount() *CouponAssemblyUpsert {
+	u.SetExcluded(couponassembly.FieldAmount)
+	return u
+}
+
+// AddAmount adds v to the "amount" field.
+func (u *CouponAssemblyUpsert) AddAmount(v float64) *CouponAssemblyUpsert {
+	u.Add(couponassembly.FieldAmount, v)
+	return u
+}
+
+// SetTarget sets the "target" field.
+func (u *CouponAssemblyUpsert) SetTarget(v uint8) *CouponAssemblyUpsert {
+	u.Set(couponassembly.FieldTarget, v)
+	return u
+}
+
+// UpdateTarget sets the "target" field to the value that was provided on create.
+func (u *CouponAssemblyUpsert) UpdateTarget() *CouponAssemblyUpsert {
+	u.SetExcluded(couponassembly.FieldTarget)
+	return u
+}
+
+// AddTarget adds v to the "target" field.
+func (u *CouponAssemblyUpsert) AddTarget(v uint8) *CouponAssemblyUpsert {
+	u.Add(couponassembly.FieldTarget, v)
+	return u
+}
+
+// SetMeta sets the "meta" field.
+func (u *CouponAssemblyUpsert) SetMeta(v *model.CouponTemplateMeta) *CouponAssemblyUpsert {
+	u.Set(couponassembly.FieldMeta, v)
+	return u
+}
+
+// UpdateMeta sets the "meta" field to the value that was provided on create.
+func (u *CouponAssemblyUpsert) UpdateMeta() *CouponAssemblyUpsert {
+	u.SetExcluded(couponassembly.FieldMeta)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -514,6 +677,97 @@ func (u *CouponAssemblyUpsertOne) SetTemplateID(v uint64) *CouponAssemblyUpsertO
 func (u *CouponAssemblyUpsertOne) UpdateTemplateID() *CouponAssemblyUpsertOne {
 	return u.Update(func(s *CouponAssemblyUpsert) {
 		s.UpdateTemplateID()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *CouponAssemblyUpsertOne) SetName(v string) *CouponAssemblyUpsertOne {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *CouponAssemblyUpsertOne) UpdateName() *CouponAssemblyUpsertOne {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetNumber sets the "number" field.
+func (u *CouponAssemblyUpsertOne) SetNumber(v int) *CouponAssemblyUpsertOne {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.SetNumber(v)
+	})
+}
+
+// AddNumber adds v to the "number" field.
+func (u *CouponAssemblyUpsertOne) AddNumber(v int) *CouponAssemblyUpsertOne {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.AddNumber(v)
+	})
+}
+
+// UpdateNumber sets the "number" field to the value that was provided on create.
+func (u *CouponAssemblyUpsertOne) UpdateNumber() *CouponAssemblyUpsertOne {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.UpdateNumber()
+	})
+}
+
+// SetAmount sets the "amount" field.
+func (u *CouponAssemblyUpsertOne) SetAmount(v float64) *CouponAssemblyUpsertOne {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.SetAmount(v)
+	})
+}
+
+// AddAmount adds v to the "amount" field.
+func (u *CouponAssemblyUpsertOne) AddAmount(v float64) *CouponAssemblyUpsertOne {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.AddAmount(v)
+	})
+}
+
+// UpdateAmount sets the "amount" field to the value that was provided on create.
+func (u *CouponAssemblyUpsertOne) UpdateAmount() *CouponAssemblyUpsertOne {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.UpdateAmount()
+	})
+}
+
+// SetTarget sets the "target" field.
+func (u *CouponAssemblyUpsertOne) SetTarget(v uint8) *CouponAssemblyUpsertOne {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.SetTarget(v)
+	})
+}
+
+// AddTarget adds v to the "target" field.
+func (u *CouponAssemblyUpsertOne) AddTarget(v uint8) *CouponAssemblyUpsertOne {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.AddTarget(v)
+	})
+}
+
+// UpdateTarget sets the "target" field to the value that was provided on create.
+func (u *CouponAssemblyUpsertOne) UpdateTarget() *CouponAssemblyUpsertOne {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.UpdateTarget()
+	})
+}
+
+// SetMeta sets the "meta" field.
+func (u *CouponAssemblyUpsertOne) SetMeta(v *model.CouponTemplateMeta) *CouponAssemblyUpsertOne {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.SetMeta(v)
+	})
+}
+
+// UpdateMeta sets the "meta" field to the value that was provided on create.
+func (u *CouponAssemblyUpsertOne) UpdateMeta() *CouponAssemblyUpsertOne {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.UpdateMeta()
 	})
 }
 
@@ -794,6 +1048,97 @@ func (u *CouponAssemblyUpsertBulk) SetTemplateID(v uint64) *CouponAssemblyUpsert
 func (u *CouponAssemblyUpsertBulk) UpdateTemplateID() *CouponAssemblyUpsertBulk {
 	return u.Update(func(s *CouponAssemblyUpsert) {
 		s.UpdateTemplateID()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *CouponAssemblyUpsertBulk) SetName(v string) *CouponAssemblyUpsertBulk {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *CouponAssemblyUpsertBulk) UpdateName() *CouponAssemblyUpsertBulk {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetNumber sets the "number" field.
+func (u *CouponAssemblyUpsertBulk) SetNumber(v int) *CouponAssemblyUpsertBulk {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.SetNumber(v)
+	})
+}
+
+// AddNumber adds v to the "number" field.
+func (u *CouponAssemblyUpsertBulk) AddNumber(v int) *CouponAssemblyUpsertBulk {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.AddNumber(v)
+	})
+}
+
+// UpdateNumber sets the "number" field to the value that was provided on create.
+func (u *CouponAssemblyUpsertBulk) UpdateNumber() *CouponAssemblyUpsertBulk {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.UpdateNumber()
+	})
+}
+
+// SetAmount sets the "amount" field.
+func (u *CouponAssemblyUpsertBulk) SetAmount(v float64) *CouponAssemblyUpsertBulk {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.SetAmount(v)
+	})
+}
+
+// AddAmount adds v to the "amount" field.
+func (u *CouponAssemblyUpsertBulk) AddAmount(v float64) *CouponAssemblyUpsertBulk {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.AddAmount(v)
+	})
+}
+
+// UpdateAmount sets the "amount" field to the value that was provided on create.
+func (u *CouponAssemblyUpsertBulk) UpdateAmount() *CouponAssemblyUpsertBulk {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.UpdateAmount()
+	})
+}
+
+// SetTarget sets the "target" field.
+func (u *CouponAssemblyUpsertBulk) SetTarget(v uint8) *CouponAssemblyUpsertBulk {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.SetTarget(v)
+	})
+}
+
+// AddTarget adds v to the "target" field.
+func (u *CouponAssemblyUpsertBulk) AddTarget(v uint8) *CouponAssemblyUpsertBulk {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.AddTarget(v)
+	})
+}
+
+// UpdateTarget sets the "target" field to the value that was provided on create.
+func (u *CouponAssemblyUpsertBulk) UpdateTarget() *CouponAssemblyUpsertBulk {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.UpdateTarget()
+	})
+}
+
+// SetMeta sets the "meta" field.
+func (u *CouponAssemblyUpsertBulk) SetMeta(v *model.CouponTemplateMeta) *CouponAssemblyUpsertBulk {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.SetMeta(v)
+	})
+}
+
+// UpdateMeta sets the "meta" field to the value that was provided on create.
+func (u *CouponAssemblyUpsertBulk) UpdateMeta() *CouponAssemblyUpsertBulk {
+	return u.Update(func(s *CouponAssemblyUpsert) {
+		s.UpdateMeta()
 	})
 }
 

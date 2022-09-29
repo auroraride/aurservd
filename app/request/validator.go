@@ -72,6 +72,18 @@ func NewGlobalValidator() *GlobalValidator {
         return field.Name
     })
 
+    _ = validate.RegisterTranslation("excluded_with", trans, func(ut ut.Translator) error {
+        return nil
+    }, func(ut ut.Translator, fe validator.FieldError) string {
+        return fe.Field() + "为排除字段"
+    })
+
+    _ = validate.RegisterTranslation("excluded_if", trans, func(ut ut.Translator) error {
+        return nil
+    }, func(ut ut.Translator, fe validator.FieldError) string {
+        return fe.Field() + "为排除字段"
+    })
+
     return &GlobalValidator{validator: validate, trans: trans}
 }
 

@@ -16,10 +16,11 @@ type PlanMixin struct {
     mixin.Schema
     DisableIndex bool
     Optional     bool
+    Comment      string
 }
 
 func (m PlanMixin) Fields() []ent.Field {
-    f := field.Uint64("plan_id").Comment("骑士卡ID")
+    f := field.Uint64("plan_id").Comment(m.Comment)
     if m.Optional {
         f.Optional().Nillable()
     }

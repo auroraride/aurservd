@@ -162,6 +162,10 @@ func (ca *CouponAssembly) GetID() uint64 {
 	return ca.ID
 }
 
+func (ca *CouponAssembly) GetName() string {
+	return ca.Name
+}
+
 // GetTableName returns table name for CouponTemplate.
 func (ct *CouponTemplate) GetTableName() string {
 	return "coupon_template"

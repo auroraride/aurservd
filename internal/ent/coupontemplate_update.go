@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -33,6 +34,38 @@ func (ctu *CouponTemplateUpdate) Where(ps ...predicate.CouponTemplate) *CouponTe
 // SetUpdatedAt sets the "updated_at" field.
 func (ctu *CouponTemplateUpdate) SetUpdatedAt(t time.Time) *CouponTemplateUpdate {
 	ctu.mutation.SetUpdatedAt(t)
+	return ctu
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (ctu *CouponTemplateUpdate) SetLastModifier(m *model.Modifier) *CouponTemplateUpdate {
+	ctu.mutation.SetLastModifier(m)
+	return ctu
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (ctu *CouponTemplateUpdate) ClearLastModifier() *CouponTemplateUpdate {
+	ctu.mutation.ClearLastModifier()
+	return ctu
+}
+
+// SetRemark sets the "remark" field.
+func (ctu *CouponTemplateUpdate) SetRemark(s string) *CouponTemplateUpdate {
+	ctu.mutation.SetRemark(s)
+	return ctu
+}
+
+// SetNillableRemark sets the "remark" field if the given value is not nil.
+func (ctu *CouponTemplateUpdate) SetNillableRemark(s *string) *CouponTemplateUpdate {
+	if s != nil {
+		ctu.SetRemark(*s)
+	}
+	return ctu
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (ctu *CouponTemplateUpdate) ClearRemark() *CouponTemplateUpdate {
+	ctu.mutation.ClearRemark()
 	return ctu
 }
 
@@ -62,9 +95,45 @@ func (ctu *CouponTemplateUpdate) SetMeta(mtm *model.CouponTemplateMeta) *CouponT
 	return ctu
 }
 
+// AddCouponIDs adds the "coupons" edge to the Coupon entity by IDs.
+func (ctu *CouponTemplateUpdate) AddCouponIDs(ids ...uint64) *CouponTemplateUpdate {
+	ctu.mutation.AddCouponIDs(ids...)
+	return ctu
+}
+
+// AddCoupons adds the "coupons" edges to the Coupon entity.
+func (ctu *CouponTemplateUpdate) AddCoupons(c ...*Coupon) *CouponTemplateUpdate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ctu.AddCouponIDs(ids...)
+}
+
 // Mutation returns the CouponTemplateMutation object of the builder.
 func (ctu *CouponTemplateUpdate) Mutation() *CouponTemplateMutation {
 	return ctu.mutation
+}
+
+// ClearCoupons clears all "coupons" edges to the Coupon entity.
+func (ctu *CouponTemplateUpdate) ClearCoupons() *CouponTemplateUpdate {
+	ctu.mutation.ClearCoupons()
+	return ctu
+}
+
+// RemoveCouponIDs removes the "coupons" edge to Coupon entities by IDs.
+func (ctu *CouponTemplateUpdate) RemoveCouponIDs(ids ...uint64) *CouponTemplateUpdate {
+	ctu.mutation.RemoveCouponIDs(ids...)
+	return ctu
+}
+
+// RemoveCoupons removes "coupons" edges to Coupon entities.
+func (ctu *CouponTemplateUpdate) RemoveCoupons(c ...*Coupon) *CouponTemplateUpdate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ctu.RemoveCouponIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -73,7 +142,9 @@ func (ctu *CouponTemplateUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
-	ctu.defaults()
+	if err := ctu.defaults(); err != nil {
+		return 0, err
+	}
 	if len(ctu.hooks) == 0 {
 		affected, err = ctu.sqlSave(ctx)
 	} else {
@@ -123,11 +194,15 @@ func (ctu *CouponTemplateUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (ctu *CouponTemplateUpdate) defaults() {
+func (ctu *CouponTemplateUpdate) defaults() error {
 	if _, ok := ctu.mutation.UpdatedAt(); !ok {
+		if coupontemplate.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized coupontemplate.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := coupontemplate.UpdateDefaultUpdatedAt()
 		ctu.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
@@ -161,6 +236,38 @@ func (ctu *CouponTemplateUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: coupontemplate.FieldUpdatedAt,
 		})
 	}
+	if ctu.mutation.CreatorCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: coupontemplate.FieldCreator,
+		})
+	}
+	if value, ok := ctu.mutation.LastModifier(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: coupontemplate.FieldLastModifier,
+		})
+	}
+	if ctu.mutation.LastModifierCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: coupontemplate.FieldLastModifier,
+		})
+	}
+	if value, ok := ctu.mutation.Remark(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: coupontemplate.FieldRemark,
+		})
+	}
+	if ctu.mutation.RemarkCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: coupontemplate.FieldRemark,
+		})
+	}
 	if value, ok := ctu.mutation.Enable(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
@@ -181,6 +288,60 @@ func (ctu *CouponTemplateUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Value:  value,
 			Column: coupontemplate.FieldMeta,
 		})
+	}
+	if ctu.mutation.CouponsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   coupontemplate.CouponsTable,
+			Columns: []string{coupontemplate.CouponsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupon.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ctu.mutation.RemovedCouponsIDs(); len(nodes) > 0 && !ctu.mutation.CouponsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   coupontemplate.CouponsTable,
+			Columns: []string{coupontemplate.CouponsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupon.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ctu.mutation.CouponsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   coupontemplate.CouponsTable,
+			Columns: []string{coupontemplate.CouponsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupon.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.Modifiers = ctu.modifiers
 	if n, err = sqlgraph.UpdateNodes(ctx, ctu.driver, _spec); err != nil {
@@ -206,6 +367,38 @@ type CouponTemplateUpdateOne struct {
 // SetUpdatedAt sets the "updated_at" field.
 func (ctuo *CouponTemplateUpdateOne) SetUpdatedAt(t time.Time) *CouponTemplateUpdateOne {
 	ctuo.mutation.SetUpdatedAt(t)
+	return ctuo
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (ctuo *CouponTemplateUpdateOne) SetLastModifier(m *model.Modifier) *CouponTemplateUpdateOne {
+	ctuo.mutation.SetLastModifier(m)
+	return ctuo
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (ctuo *CouponTemplateUpdateOne) ClearLastModifier() *CouponTemplateUpdateOne {
+	ctuo.mutation.ClearLastModifier()
+	return ctuo
+}
+
+// SetRemark sets the "remark" field.
+func (ctuo *CouponTemplateUpdateOne) SetRemark(s string) *CouponTemplateUpdateOne {
+	ctuo.mutation.SetRemark(s)
+	return ctuo
+}
+
+// SetNillableRemark sets the "remark" field if the given value is not nil.
+func (ctuo *CouponTemplateUpdateOne) SetNillableRemark(s *string) *CouponTemplateUpdateOne {
+	if s != nil {
+		ctuo.SetRemark(*s)
+	}
+	return ctuo
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (ctuo *CouponTemplateUpdateOne) ClearRemark() *CouponTemplateUpdateOne {
+	ctuo.mutation.ClearRemark()
 	return ctuo
 }
 
@@ -235,9 +428,45 @@ func (ctuo *CouponTemplateUpdateOne) SetMeta(mtm *model.CouponTemplateMeta) *Cou
 	return ctuo
 }
 
+// AddCouponIDs adds the "coupons" edge to the Coupon entity by IDs.
+func (ctuo *CouponTemplateUpdateOne) AddCouponIDs(ids ...uint64) *CouponTemplateUpdateOne {
+	ctuo.mutation.AddCouponIDs(ids...)
+	return ctuo
+}
+
+// AddCoupons adds the "coupons" edges to the Coupon entity.
+func (ctuo *CouponTemplateUpdateOne) AddCoupons(c ...*Coupon) *CouponTemplateUpdateOne {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ctuo.AddCouponIDs(ids...)
+}
+
 // Mutation returns the CouponTemplateMutation object of the builder.
 func (ctuo *CouponTemplateUpdateOne) Mutation() *CouponTemplateMutation {
 	return ctuo.mutation
+}
+
+// ClearCoupons clears all "coupons" edges to the Coupon entity.
+func (ctuo *CouponTemplateUpdateOne) ClearCoupons() *CouponTemplateUpdateOne {
+	ctuo.mutation.ClearCoupons()
+	return ctuo
+}
+
+// RemoveCouponIDs removes the "coupons" edge to Coupon entities by IDs.
+func (ctuo *CouponTemplateUpdateOne) RemoveCouponIDs(ids ...uint64) *CouponTemplateUpdateOne {
+	ctuo.mutation.RemoveCouponIDs(ids...)
+	return ctuo
+}
+
+// RemoveCoupons removes "coupons" edges to Coupon entities.
+func (ctuo *CouponTemplateUpdateOne) RemoveCoupons(c ...*Coupon) *CouponTemplateUpdateOne {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ctuo.RemoveCouponIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -253,7 +482,9 @@ func (ctuo *CouponTemplateUpdateOne) Save(ctx context.Context) (*CouponTemplate,
 		err  error
 		node *CouponTemplate
 	)
-	ctuo.defaults()
+	if err := ctuo.defaults(); err != nil {
+		return nil, err
+	}
 	if len(ctuo.hooks) == 0 {
 		node, err = ctuo.sqlSave(ctx)
 	} else {
@@ -309,11 +540,15 @@ func (ctuo *CouponTemplateUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (ctuo *CouponTemplateUpdateOne) defaults() {
+func (ctuo *CouponTemplateUpdateOne) defaults() error {
 	if _, ok := ctuo.mutation.UpdatedAt(); !ok {
+		if coupontemplate.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized coupontemplate.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := coupontemplate.UpdateDefaultUpdatedAt()
 		ctuo.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
@@ -364,6 +599,38 @@ func (ctuo *CouponTemplateUpdateOne) sqlSave(ctx context.Context) (_node *Coupon
 			Column: coupontemplate.FieldUpdatedAt,
 		})
 	}
+	if ctuo.mutation.CreatorCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: coupontemplate.FieldCreator,
+		})
+	}
+	if value, ok := ctuo.mutation.LastModifier(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: coupontemplate.FieldLastModifier,
+		})
+	}
+	if ctuo.mutation.LastModifierCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: coupontemplate.FieldLastModifier,
+		})
+	}
+	if value, ok := ctuo.mutation.Remark(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: coupontemplate.FieldRemark,
+		})
+	}
+	if ctuo.mutation.RemarkCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: coupontemplate.FieldRemark,
+		})
+	}
 	if value, ok := ctuo.mutation.Enable(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
@@ -384,6 +651,60 @@ func (ctuo *CouponTemplateUpdateOne) sqlSave(ctx context.Context) (_node *Coupon
 			Value:  value,
 			Column: coupontemplate.FieldMeta,
 		})
+	}
+	if ctuo.mutation.CouponsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   coupontemplate.CouponsTable,
+			Columns: []string{coupontemplate.CouponsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupon.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ctuo.mutation.RemovedCouponsIDs(); len(nodes) > 0 && !ctuo.mutation.CouponsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   coupontemplate.CouponsTable,
+			Columns: []string{coupontemplate.CouponsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupon.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ctuo.mutation.CouponsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   coupontemplate.CouponsTable,
+			Columns: []string{coupontemplate.CouponsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupon.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.Modifiers = ctuo.modifiers
 	_node = &CouponTemplate{config: ctuo.config}
