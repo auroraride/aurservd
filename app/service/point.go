@@ -67,11 +67,13 @@ func (s *pointService) Modify(req *model.PointModifyReq) {
     if after < 0 {
         snag.Panic("积分余额不能小于0")
     }
-    creater := s.orm.Create().SetRiderID(req.RiderID).SetPoints(req.Points).SetReason(req.Reason).SetType(req.Type.Value()).SetAfter(after)
-    err := creater.Exec(s.ctx)
-    if err != nil {
-        snag.Panic(err)
-    }
+    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+        err = tx.Rider.UpdateOne(r).SetPoints(after).Exec(s.ctx)
+        if err != nil {
+            return
+        }
+        return tx.PointLog.Create().SetRiderID(req.RiderID).SetPoints(req.Points).SetReason(req.Reason).SetType(req.Type.Value()).SetAfter(after).Exec(s.ctx)
+    })
 }
 
 // LogList 积分变动日志
