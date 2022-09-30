@@ -15041,6 +15041,10 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
                 "number": {
                     "description": "数量",
                     "type": "integer"

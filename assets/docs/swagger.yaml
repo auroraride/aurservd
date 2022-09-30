@@ -2339,6 +2339,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.CouponTemplateMeta'
         description: 详细信息
+      name:
+        description: 名称
+        type: string
       number:
         description: 数量
         type: integer

@@ -12,6 +12,7 @@ type CouponAssemblyListReq struct {
 
 type CouponAssembly struct {
     ID      uint64             `json:"id"`
+    Name    string             `json:"name"`               // 名称
     Target  uint8              `json:"target" enums:"1,2"` // 对象, 1:骑手 2:库存
     Amount  float64            `json:"amount"`             // 金额
     Number  int                `json:"number"`             // 数量

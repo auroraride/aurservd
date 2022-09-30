@@ -72,6 +72,7 @@ func (s *couponAssemblyService) List(req *model.CouponAssemblyListReq) *model.Pa
             Amount:  item.Amount,
             Target:  item.Target,
             Number:  item.Number,
+            Name:    item.Name,
             Meta: model.CouponTemplateMeta{
                 CouponTemplate: model.CouponTemplate{
                     Rule:           item.Meta.Rule,
