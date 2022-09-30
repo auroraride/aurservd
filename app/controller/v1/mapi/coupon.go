@@ -88,7 +88,7 @@ func (*coupon) Generate(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        query  query   model.CouponAssemblyListReq  false  "筛选条件"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @Success      200  {object}  model.PaginationRes{items=[]model.CouponAssembly}  "请求成功"
 func (*coupon) Assembly(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CouponAssemblyListReq](c)
     return ctx.SendResponse(service.NewCouponAssemblyWithModifier(ctx.Modifier).List(req))
@@ -102,7 +102,8 @@ func (*coupon) Assembly(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @Param        query  query   model.CouponListReq  false  "筛选条件"
+// @Success      200  {object}  model.PaginationRes{items=[]model.CouponListRes}  "请求成功"
 func (*coupon) List(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CouponListReq](c)
     return ctx.SendResponse(service.NewCouponWithModifier(ctx.Modifier).List(req))

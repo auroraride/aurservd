@@ -2324,6 +2324,37 @@ definitions:
     - id
     - riderId
     type: object
+  model.CouponAssembly:
+    properties:
+      amount:
+        description: 金额
+        type: number
+      creator:
+        allOf:
+        - $ref: '#/definitions/model.Modifier'
+        description: 操作人
+      id:
+        type: integer
+      meta:
+        allOf:
+        - $ref: '#/definitions/model.CouponTemplateMeta'
+        description: 详细信息
+      number:
+        description: 数量
+        type: integer
+      remark:
+        description: 备注
+        type: string
+      target:
+        description: 对象, 1:骑手 2:库存
+        enum:
+        - 1
+        - 2
+        type: integer
+      time:
+        description: 时间
+        type: string
+    type: object
   model.CouponGenerateReq:
     properties:
       amount:
@@ -2347,6 +2378,57 @@ definitions:
     - amount
     - remark
     - templateId
+    type: object
+  model.CouponListRes:
+    properties:
+      assemblyId:
+        description: 发券记录ID
+        type: integer
+      cities:
+        description: 可用城市
+        items:
+          type: string
+        type: array
+      creator:
+        description: 创建者
+        type: string
+      expiredAt:
+        description: 过期时间
+        type: string
+      id:
+        type: integer
+      name:
+        description: 名称
+        type: string
+      outTradeNo:
+        description: 使用订单编号
+        type: string
+      phone:
+        description: 骑手电话
+        type: string
+      plan:
+        description: 使用骑士卡
+        type: string
+      plans:
+        description: 可用骑士卡
+        items:
+          type: string
+        type: array
+      rider:
+        description: 骑手
+        type: string
+      status:
+        description: 状态, 不携带参数为全部, 0:库存中 1:未使用 2:已使用 3:已过期
+        type: integer
+      templateId:
+        description: 模板ID
+        type: integer
+      time:
+        description: 生成时间
+        type: string
+      usedAt:
+        description: 使用时间
+        type: string
     type: object
   model.CouponTemplateCreateReq:
     properties:
@@ -2462,6 +2544,53 @@ definitions:
         type: integer
       used:
         description: 已使用
+        type: integer
+    required:
+    - durationRule
+    - rule
+    type: object
+  model.CouponTemplateMeta:
+    properties:
+      cities:
+        description: 可用城市
+        items:
+          $ref: '#/definitions/model.City'
+        type: array
+      cityIds:
+        description: 可用城市 和`plans`不能同时为空也不能同时存在
+        items:
+          type: integer
+        type: array
+      durationDays:
+        description: 相对天数 `durationRule=2`必填
+        type: integer
+      durationRule:
+        description: 有效期规则 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)
+        enum:
+        - 1
+        - 2
+        type: integer
+      durationTime:
+        description: 过期时间 `durationRule=1`必填 yyyy-mm-dd, 如 2022-09-25
+        type: string
+      multiple:
+        description: 重复使用(该券是否可叠加使用)
+        type: boolean
+      planIds:
+        description: 绑定骑士卡 和`cities`不能同时为空也不能同时存在
+        items:
+          type: integer
+        type: array
+      plans:
+        description: 绑定骑士卡
+        items:
+          $ref: '#/definitions/model.Plan'
+        type: array
+      rule:
+        description: 使用规则 1:互斥 2:可叠加
+        enum:
+        - 1
+        - 2
         type: integer
     required:
     - durationRule
@@ -8351,13 +8480,55 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
+      - description: 券码
+        in: query
+        name: code
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 骑手查询关键词
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: riderId
+        type: integer
+      - description: 状态, 不携带参数为全部, 0:库存中 1:未使用 2:已使用 3:已过期
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        in: query
+        name: status
+        type: integer
+      - description: 发送对象, 不携带参数为全部, 1:骑手 2:库存
+        enum:
+        - 1
+        - 2
+        in: query
+        name: target
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.StatusResponse'
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.CouponListRes'
+                  type: array
+              type: object
       summary: MH006 优惠券列表
       tags:
       - '[M]管理接口'
@@ -8417,7 +8588,14 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.StatusResponse'
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.CouponAssembly'
+                  type: array
+              type: object
       summary: MH005 发券记录
       tags:
       - '[M]管理接口'
