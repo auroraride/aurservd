@@ -12,6 +12,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/workwx"
     "github.com/auroraride/aurservd/internal/ent"
+    log "github.com/sirupsen/logrus"
     "math"
 )
 
@@ -107,7 +108,12 @@ func (s *updater) DoUpdate() (err error) {
         health = model.CabinetHealthStatusOffline
     }
 
-    item, _ := up.SetHealth(health).Save(s.ctx)
+    var item *ent.Cabinet
+    item, err = up.SetHealth(health).Save(s.ctx)
+    log.Errorf("%s更新写入失败: %v", s.cab.Serial, err)
+    if err != nil {
+        return
+    }
 
     // 在线变化
     if s.old.Health != health {
