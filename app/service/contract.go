@@ -278,11 +278,11 @@ func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) mode
 }
 
 // Result 合同签署结果
-func (s *contractService) Result(u *ent.Rider, sn string) model.StatusResponse {
+func (s *contractService) Result(r *ent.Rider, sn string) model.StatusResponse {
     orm := ent.Database.Contract
     // 查询合同是否存在
     c, err := orm.QueryNotDeleted().
-        Where(contract.Sn(sn), contract.RiderID(u.ID)).
+        Where(contract.Sn(sn), contract.RiderID(r.ID)).
         Only(context.Background())
     if err != nil || c == nil {
         snag.Panic("合同查询失败")
@@ -291,9 +291,8 @@ func (s *contractService) Result(u *ent.Rider, sn string) model.StatusResponse {
     update := orm.UpdateOneID(c.ID)
     if success {
         // 获取合同并上传到阿里云
-        p := u.Edges.Person
         update.SetStatus(model.ContractStatusSuccess.Value()).
-            SetFiles(s.esign.DownloadDocument(fmt.Sprintf("%s-%s/contracts/", p.Name, p.IDCardNumber), c.FlowID))
+            SetFiles(s.esign.DownloadDocument(fmt.Sprintf("%s-%s/contracts/", r.Name, r.IDCardNumber), c.FlowID))
     }
     err = update.Exec(context.Background())
     if err != nil {

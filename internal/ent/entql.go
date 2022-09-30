@@ -988,9 +988,11 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "PlanIntroduce",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			planintroduce.FieldModelID: {Type: field.TypeUint64, Column: planintroduce.FieldModelID},
-			planintroduce.FieldBrandID: {Type: field.TypeUint64, Column: planintroduce.FieldBrandID},
-			planintroduce.FieldImage:   {Type: field.TypeString, Column: planintroduce.FieldImage},
+			planintroduce.FieldCreatedAt: {Type: field.TypeTime, Column: planintroduce.FieldCreatedAt},
+			planintroduce.FieldUpdatedAt: {Type: field.TypeTime, Column: planintroduce.FieldUpdatedAt},
+			planintroduce.FieldModelID:   {Type: field.TypeUint64, Column: planintroduce.FieldModelID},
+			planintroduce.FieldBrandID:   {Type: field.TypeUint64, Column: planintroduce.FieldBrandID},
+			planintroduce.FieldImage:     {Type: field.TypeString, Column: planintroduce.FieldImage},
 		},
 	}
 	graph.Nodes[34] = &sqlgraph.Node{
@@ -1061,6 +1063,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldRemark:       {Type: field.TypeString, Column: rider.FieldRemark},
 			rider.FieldStationID:    {Type: field.TypeUint64, Column: rider.FieldStationID},
 			rider.FieldPersonID:     {Type: field.TypeUint64, Column: rider.FieldPersonID},
+			rider.FieldName:         {Type: field.TypeString, Column: rider.FieldName},
+			rider.FieldIDCardNumber: {Type: field.TypeString, Column: rider.FieldIDCardNumber},
 			rider.FieldEnterpriseID: {Type: field.TypeUint64, Column: rider.FieldEnterpriseID},
 			rider.FieldPhone:        {Type: field.TypeString, Column: rider.FieldPhone},
 			rider.FieldContact:      {Type: field.TypeJSON, Column: rider.FieldContact},
@@ -8923,6 +8927,16 @@ func (f *PlanIntroduceFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(planintroduce.FieldID))
 }
 
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *PlanIntroduceFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(planintroduce.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *PlanIntroduceFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(planintroduce.FieldUpdatedAt))
+}
+
 // WhereModelID applies the entql uint64 predicate on the model_id field.
 func (f *PlanIntroduceFilter) WhereModelID(p entql.Uint64P) {
 	f.Where(p.Field(planintroduce.FieldModelID))
@@ -9323,6 +9337,16 @@ func (f *RiderFilter) WhereStationID(p entql.Uint64P) {
 // WherePersonID applies the entql uint64 predicate on the person_id field.
 func (f *RiderFilter) WherePersonID(p entql.Uint64P) {
 	f.Where(p.Field(rider.FieldPersonID))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *RiderFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(rider.FieldName))
+}
+
+// WhereIDCardNumber applies the entql string predicate on the id_card_number field.
+func (f *RiderFilter) WhereIDCardNumber(p entql.StringP) {
+	f.Where(p.Field(rider.FieldIDCardNumber))
 }
 
 // WhereEnterpriseID applies the entql uint64 predicate on the enterprise_id field.

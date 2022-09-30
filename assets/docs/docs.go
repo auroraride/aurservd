@@ -12472,7 +12472,7 @@ const docTemplate = `{
                     "description": "骑手信息",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.RiderBasic"
+                            "$ref": "#/definitions/model.Rider"
                         }
                     ]
                 },
@@ -12584,7 +12584,7 @@ const docTemplate = `{
                     "description": "骑手信息",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.RiderBasic"
+                            "$ref": "#/definitions/model.Rider"
                         }
                     ]
                 },
@@ -12674,7 +12674,7 @@ const docTemplate = `{
                     "description": "骑手信息",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.RiderBasic"
+                            "$ref": "#/definitions/model.Rider"
                         }
                     ]
                 },
@@ -12792,7 +12792,7 @@ const docTemplate = `{
                     "description": "骑手信息",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.RiderBasic"
+                            "$ref": "#/definitions/model.Rider"
                         }
                     ]
                 },
@@ -12901,7 +12901,7 @@ const docTemplate = `{
                     "description": "骑手信息",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.RiderBasic"
+                            "$ref": "#/definitions/model.Rider"
                         }
                     ]
                 },
@@ -17149,7 +17149,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.RiderBasic": {
+        "model.Rider": {
             "type": "object",
             "properties": {
                 "id": {
@@ -17744,7 +17744,7 @@ const docTemplate = `{
                     "description": "骑手",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.RiderBasic"
+                            "$ref": "#/definitions/model.Rider"
                         }
                     ]
                 },
@@ -18375,7 +18375,7 @@ const docTemplate = `{
                     "description": "骑手信息",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.RiderBasic"
+                            "$ref": "#/definitions/model.Rider"
                         }
                     ]
                 },
@@ -18473,7 +18473,7 @@ const docTemplate = `{
                     "description": "骑手信息",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.RiderBasic"
+                            "$ref": "#/definitions/model.Rider"
                         }
                     ]
                 },
@@ -19279,7 +19279,7 @@ const docTemplate = `{
                     "description": "骑手详情",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.RiderBasic"
+                            "$ref": "#/definitions/model.Rider"
                         }
                     ]
                 }

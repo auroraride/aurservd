@@ -13,7 +13,6 @@ import (
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/internal/ent/exchange"
-    "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/pkg/cache"
@@ -129,7 +128,7 @@ func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStor
     message = strings.ReplaceAll(message, "AH", "安")
     message = strings.ReplaceAll(message, "V", "伏")
     // 发送播报信息给店员
-    NewSpeech().SendSpeech(ee.ID, fmt.Sprintf("%s扫码换电%s", s.rider.Edges.Person.Name, message))
+    NewSpeech().SendSpeech(ee.ID, fmt.Sprintf("%s扫码换电%s", s.rider.Name, message))
 
     return &model.ExchangeStoreRes{
         Model:     sub.Model,
@@ -206,9 +205,7 @@ func (s *exchangeService) listBasicQuery(req model.ExchangeListReq) *ent.Exchang
 
     q := ent.Database.Exchange.
         QueryNotDeleted().
-        WithRider(func(rq *ent.RiderQuery) {
-            rq.WithPerson()
-        }).
+        WithRider().
         WithEnterprise().
         Order(ent.Desc(exchange.FieldCreatedAt))
 
@@ -225,7 +222,7 @@ func (s *exchangeService) listBasicQuery(req model.ExchangeListReq) *ent.Exchang
             exchange.HasRiderWith(
                 rider.Or(
                     rider.PhoneContainsFold(*req.Keyword),
-                    rider.HasPersonWith(person.NameContainsFold(*req.Keyword)),
+                    rider.NameContainsFold(*req.Keyword),
                 ),
             ),
         )
@@ -256,7 +253,7 @@ func (s *exchangeService) EmployeeList(req *model.ExchangeListReq) *model.Pagina
         func(item *ent.Exchange) (res model.ExchangeEmployeeListRes) {
             res = model.ExchangeEmployeeListRes{
                 ID:    item.ID,
-                Name:  item.Edges.Rider.Edges.Person.Name,
+                Name:  item.Edges.Rider.Name,
                 Phone: item.Edges.Rider.Phone,
                 Time:  item.CreatedAt.Format(carbon.DateTimeLayout),
                 Model: item.Model,
@@ -356,7 +353,7 @@ func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.Paginat
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Exchange) model.ExchangeManagerListRes {
         res := model.ExchangeManagerListRes{
             ID:          item.ID,
-            Name:        item.Edges.Rider.Edges.Person.Name,
+            Name:        item.Edges.Rider.Name,
             Phone:       item.Edges.Rider.Phone,
             Time:        item.CreatedAt.Format(carbon.DateTimeLayout),
             Model:       item.Model,

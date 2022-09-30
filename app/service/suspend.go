@@ -129,9 +129,7 @@ func (s *suspendService) UnSuspend(req *model.SuspendReq) {
 
 func (s *suspendService) listFilter(req model.SuspendListFilter) (q *ent.SubscribeSuspendQuery, info ar.Map) {
     info = make(ar.Map)
-    q = s.orm.Query().WithRider(func(query *ent.RiderQuery) {
-        query.WithPerson()
-    }).WithCity().WithSubscribe(func(query *ent.SubscribeQuery) {
+    q = s.orm.Query().WithRider().WithCity().WithSubscribe(func(query *ent.SubscribeQuery) {
         query.WithPlan()
     }).Order(ent.Desc(subscribesuspend.FieldStartAt))
     if req.CityID != 0 {
@@ -168,7 +166,7 @@ func (s *suspendService) List(req *model.SuspendListReq) *model.PaginationRes {
         sub := item.Edges.Subscribe
         res = model.SuspendListRes{
             City:            item.Edges.City.Name,
-            Name:            item.Edges.Rider.Edges.Person.Name,
+            Name:            item.Edges.Rider.Name,
             Phone:           item.Edges.Rider.Phone,
             Plan:            item.Edges.Subscribe.Edges.Plan.Name,
             Status:          status,

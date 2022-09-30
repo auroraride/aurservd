@@ -8,6 +8,7 @@ import (
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
+    "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
 type PlanIntroduceMixin struct {
@@ -67,6 +68,7 @@ func (PlanIntroduce) Edges() []ent.Edge {
 
 func (PlanIntroduce) Mixin() []ent.Mixin {
     return []ent.Mixin{
+        internal.TimeMixin{DisableIndex: true},
         BatteryModelMixin{},
         EbikeBrandMixin{Optional: true},
     }

@@ -371,7 +371,7 @@ func (s *cabinetService) Detail(item *ent.Cabinet) *model.CabinetDetailRes {
     revs := NewReserve().CabinetUnfinished(item.ID)
     for _, rev := range revs {
         res.Reserves = append(res.Reserves, model.ReserveCabinetItem{
-            Name:     rev.Edges.Rider.Edges.Person.Name,
+            Name:     rev.Edges.Rider.Name,
             Phone:    rev.Edges.Rider.Phone,
             Business: rev.Type,
             Time:     rev.CreatedAt.Format(carbon.TimeLayout),

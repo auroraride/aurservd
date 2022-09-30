@@ -18,7 +18,6 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/assistance"
     "github.com/auroraride/aurservd/internal/ent/employee"
-    "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/internal/payment"
@@ -93,9 +92,7 @@ func (s *assistanceService) Unpaid(riderID uint64) *ent.Assistance {
 // List 列举
 func (s *assistanceService) List(req *model.AssistanceListReq) *model.PaginationRes {
     q := s.orm.QueryNotDeleted().
-        WithRider(func(rq *ent.RiderQuery) {
-            rq.WithPerson()
-        }).
+        WithRider().
         WithCity().
         WithStore().
         WithEmployee().
@@ -126,7 +123,7 @@ func (s *assistanceService) List(req *model.AssistanceListReq) *model.Pagination
     if req.Keyword != "" {
         q.Where(
             assistance.HasRiderWith(rider.Or(
-                rider.HasPersonWith(person.NameContainsFold(req.Keyword)),
+                rider.NameContainsFold(req.Keyword),
                 rider.PhoneContainsFold(req.Keyword),
             )),
         )
@@ -142,7 +139,6 @@ func (s *assistanceService) List(req *model.AssistanceListReq) *model.Pagination
 // BasicInfo 基础信息
 func (s *assistanceService) BasicInfo(item *ent.Assistance) model.AssistanceListRes {
     r := item.Edges.Rider
-    p := r.Edges.Person
     c := item.Edges.City
     res := model.AssistanceListRes{
         ID:       item.ID,
@@ -150,10 +146,10 @@ func (s *assistanceService) BasicInfo(item *ent.Assistance) model.AssistanceList
         Cost:     item.Cost,
         Distance: item.Distance,
         Time:     item.CreatedAt.Format(carbon.DateTimeLayout),
-        Rider: model.RiderBasic{
+        Rider: model.Rider{
             ID:    r.ID,
             Phone: r.Phone,
-            Name:  p.Name,
+            Name:  r.Name,
         },
         City: model.City{
             ID:   c.ID,
@@ -197,9 +193,7 @@ func (s *assistanceService) QueryX(id uint64) *ent.Assistance {
 
 func (s *assistanceService) QueryDetail(id uint64) (*ent.Assistance, error) {
     return s.orm.QueryNotDeleted().
-        WithRider(func(rq *ent.RiderQuery) {
-            rq.WithPerson()
-        }).
+        WithRider().
         WithCity().
         WithStore().
         WithEmployee().
@@ -557,9 +551,7 @@ func (s *assistanceService) Cancel(req *model.AssistanceCancelReq) {
 func (s *assistanceService) EmployeeDetail(id uint64) (res model.AssistanceEmployeeDetailRes) {
     ass, _ := s.orm.QueryNotDeleted().
         Where(assistance.ID(id), assistance.EmployeeID(s.employee.ID)).
-        WithRider(func(rq *ent.RiderQuery) {
-            rq.WithPerson()
-        }).
+        WithRider().
         WithStore().
         WithSubscribe().
         First(s.ctx)
@@ -572,17 +564,11 @@ func (s *assistanceService) EmployeeDetail(id uint64) (res model.AssistanceEmplo
     if r == nil {
         return
     }
-    res.Rider = model.RiderBasic{
+    res.Rider = model.Rider{
         ID:    r.ID,
         Phone: r.Phone,
+        Name:  r.Name,
     }
-
-    p := r.Edges.Person
-    if p == nil {
-        return
-    }
-
-    res.Rider.Name = p.Name
 
     // 救援原因
     res.Configure.Breakdown = s.Breakdown().([]interface{})
@@ -626,9 +612,7 @@ func (s *assistanceService) EmployeeDetail(id uint64) (res model.AssistanceEmplo
 func (s *assistanceService) Process(req *model.AssistanceProcessReq) (res model.AssistanceProcessRes) {
     ass, _ := s.orm.QueryNotDeleted().
         Where(assistance.ID(req.ID), assistance.EmployeeID(s.employee.ID), assistance.Status(model.AssistanceStatusAllocated)).
-        WithRider(func(rq *ent.RiderQuery) {
-            rq.WithPerson()
-        }).
+        WithRider().
         First(s.ctx)
     if ass == nil {
         snag.Panic("未找到有效救援信息")
@@ -679,7 +663,7 @@ func (s *assistanceService) SimpleInfo(ass *ent.Assistance) model.AssistanceSimp
     res := model.AssistanceSimpleListRes{
         ID:       ass.ID,
         Status:   ass.Status,
-        Rider:    model.RiderBasic{},
+        Rider:    model.Rider{},
         Cost:     ass.Cost,
         Time:     ass.CreatedAt.Format(carbon.DateTimeLayout),
         Reason:   ass.Reason,
@@ -693,14 +677,10 @@ func (s *assistanceService) SimpleInfo(ass *ent.Assistance) model.AssistanceSimp
 
     r := ass.Edges.Rider
     if r != nil {
-        res.Rider = model.RiderBasic{
+        res.Rider = model.Rider{
             ID:    r.ID,
             Phone: r.Phone,
-        }
-
-        p := r.Edges.Person
-        if p != nil {
-            res.Rider.Name = p.Name
+            Name:  r.Name,
         }
     }
 
@@ -724,9 +704,7 @@ func (s *assistanceService) Pay(req *model.AssistancePayReq) model.AssistancePay
             assistance.CostGT(0),
             assistance.ID(req.ID),
         ).
-        WithRider(func(rq *ent.RiderQuery) {
-            rq.WithPerson()
-        }).
+        WithRider().
         WithSubscribe().
         WithStore().
         First(s.ctx)
@@ -827,9 +805,7 @@ func (s *assistanceService) Paid(trade *model.PaymentAssistance) {
 
 // SimpleList 简单列表
 func (s *assistanceService) SimpleList(req model.PaginationReq) *model.PaginationRes {
-    q := s.orm.QueryNotDeleted().Order(ent.Desc(assistance.FieldCreatedAt)).WithSubscribe().WithRider(func(rq *ent.RiderQuery) {
-        rq.WithPerson()
-    }).WithStore()
+    q := s.orm.QueryNotDeleted().Order(ent.Desc(assistance.FieldCreatedAt)).WithSubscribe().WithRider().WithStore()
 
     if s.rider != nil {
         q.Where(assistance.RiderID(s.rider.ID))

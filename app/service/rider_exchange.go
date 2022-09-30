@@ -103,7 +103,7 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
         Job:       ec.JobExchange,
         Rider: &ec.Rider{
             ID:    s.rider.ID,
-            Name:  s.rider.Edges.Person.Name,
+            Name:  s.rider.Name,
             Phone: s.rider.Phone,
         },
         Cabinet: cab.GetTaskInfo(),
@@ -442,7 +442,7 @@ func (s *riderExchangeService) ProcessOpenBin() *riderExchangeService {
     operator := model.CabinetDoorOperator{
         ID:    r.ID,
         Role:  model.CabinetDoorOperatorRoleRider,
-        Name:  r.Edges.Person.Name,
+        Name:  r.Name,
         Phone: r.Phone,
     }
 

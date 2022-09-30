@@ -12,7 +12,6 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/enterpriseprice"
-    "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -158,7 +157,6 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.PaginationRes {
     q := ent.Database.Rider.
         Query().
-        WithPerson().
         WithSubscribes(func(sq *ent.SubscribeQuery) {
             sq.Where(subscribe.StartAtNotNil()).Order(ent.Desc(subscribe.FieldCreatedAt))
         }).
@@ -168,7 +166,7 @@ func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.
     if req.Keyword != nil {
         q.Where(
             rider.Or(
-                rider.HasPersonWith(person.NameContainsFold(*req.Keyword)),
+                rider.NameContainsFold(*req.Keyword),
                 rider.PhoneContainsFold(*req.Keyword),
             ),
         )
@@ -215,18 +213,15 @@ func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.
         q,
         req.PaginationReq,
         func(item *ent.Rider) model.EnterpriseRider {
-            p := item.Edges.Person
             res := model.EnterpriseRider{
                 ID:        item.ID,
                 Phone:     item.Phone,
                 CreatedAt: item.CreatedAt.Format(carbon.DateTimeLayout),
+                Name:      item.Name,
                 Station: model.EnterpriseStation{
                     ID:   item.Edges.Station.ID,
                     Name: item.Edges.Station.Name,
                 },
-            }
-            if p != nil {
-                res.Name = p.Name
             }
             if item.Edges.Subscribes != nil {
                 for i, sub := range item.Edges.Subscribes {

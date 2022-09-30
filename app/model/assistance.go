@@ -71,15 +71,15 @@ type AssistanceListReq struct {
 }
 
 type AssistanceListRes struct {
-    ID       uint64     `json:"id"`
-    Status   uint8      `json:"status" enums:"0,1,2,3,4,5"` // 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
-    Cost     float64    `json:"cost"`                       // 费用, 未分配时为0
-    Distance float64    `json:"distance"`                   // 救援距离(米), 未分配时为0
-    Time     string     `json:"time"`                       // 救援发起时间
-    Rider    RiderBasic `json:"rider"`                      // 骑手信息
-    City     City       `json:"city"`                       // 城市
-    Employee *Employee  `json:"employee,omitempty"`         // 店员信息, 未分配此字段不存在
-    Store    *Store     `json:"store,omitempty"`            // 门店, 未分配此字段不存在
+    ID       uint64    `json:"id"`
+    Status   uint8     `json:"status" enums:"0,1,2,3,4,5"` // 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
+    Cost     float64   `json:"cost"`                       // 费用, 未分配时为0
+    Distance float64   `json:"distance"`                   // 救援距离(米), 未分配时为0
+    Time     string    `json:"time"`                       // 救援发起时间
+    Rider    Rider     `json:"rider"`                      // 骑手信息
+    City     City      `json:"city"`                       // 城市
+    Employee *Employee `json:"employee,omitempty"`         // 店员信息, 未分配此字段不存在
+    Store    *Store    `json:"store,omitempty"`            // 门店, 未分配此字段不存在
 }
 
 type AssistanceDetail struct {
@@ -124,7 +124,7 @@ type AssistanceCancelReq struct {
 type AssistanceEmployeeDetailRes struct {
     ID              uint64      `json:"id"`
     Status          uint8       `json:"status"`             // 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
-    Rider           RiderBasic  `json:"rider"`              // 骑手信息
+    Rider           Rider       `json:"rider"`              // 骑手信息
     Lng             float64     `json:"lng"`                // 经度
     Lat             float64     `json:"lat"`                // 纬度
     Address         string      `json:"address"`            // 详细位置
@@ -169,15 +169,15 @@ type AssistancePayReq struct {
 }
 
 type AssistanceSimpleListRes struct {
-    ID       uint64     `json:"id"`
-    Status   uint8      `json:"status"`          // 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
-    Rider    RiderBasic `json:"rider"`           // 骑手信息
-    Cost     float64    `json:"cost"`            // 费用
-    Time     string     `json:"time"`            // 发起时间
-    Reason   string     `json:"reason"`          // 救援原因
-    Distance string     `json:"distance"`        // 救援距离
-    Model    string     `json:"model"`           // 电池型号
-    Store    *Store     `json:"store,omitempty"` // 门店
+    ID       uint64  `json:"id"`
+    Status   uint8   `json:"status"`          // 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
+    Rider    Rider   `json:"rider"`           // 骑手信息
+    Cost     float64 `json:"cost"`            // 费用
+    Time     string  `json:"time"`            // 发起时间
+    Reason   string  `json:"reason"`          // 救援原因
+    Distance string  `json:"distance"`        // 救援距离
+    Model    string  `json:"model"`           // 电池型号
+    Store    *Store  `json:"store,omitempty"` // 门店
 }
 
 type AssistancePayRes struct {

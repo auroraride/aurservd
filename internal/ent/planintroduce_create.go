@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -21,6 +22,34 @@ type PlanIntroduceCreate struct {
 	mutation *PlanIntroduceMutation
 	hooks    []Hook
 	conflict []sql.ConflictOption
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (pic *PlanIntroduceCreate) SetCreatedAt(t time.Time) *PlanIntroduceCreate {
+	pic.mutation.SetCreatedAt(t)
+	return pic
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (pic *PlanIntroduceCreate) SetNillableCreatedAt(t *time.Time) *PlanIntroduceCreate {
+	if t != nil {
+		pic.SetCreatedAt(*t)
+	}
+	return pic
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (pic *PlanIntroduceCreate) SetUpdatedAt(t time.Time) *PlanIntroduceCreate {
+	pic.mutation.SetUpdatedAt(t)
+	return pic
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (pic *PlanIntroduceCreate) SetNillableUpdatedAt(t *time.Time) *PlanIntroduceCreate {
+	if t != nil {
+		pic.SetUpdatedAt(*t)
+	}
+	return pic
 }
 
 // SetModelID sets the "model_id" field.
@@ -70,6 +99,7 @@ func (pic *PlanIntroduceCreate) Save(ctx context.Context) (*PlanIntroduce, error
 		err  error
 		node *PlanIntroduce
 	)
+	pic.defaults()
 	if len(pic.hooks) == 0 {
 		if err = pic.check(); err != nil {
 			return nil, err
@@ -133,8 +163,26 @@ func (pic *PlanIntroduceCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (pic *PlanIntroduceCreate) defaults() {
+	if _, ok := pic.mutation.CreatedAt(); !ok {
+		v := planintroduce.DefaultCreatedAt()
+		pic.mutation.SetCreatedAt(v)
+	}
+	if _, ok := pic.mutation.UpdatedAt(); !ok {
+		v := planintroduce.DefaultUpdatedAt()
+		pic.mutation.SetUpdatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (pic *PlanIntroduceCreate) check() error {
+	if _, ok := pic.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "PlanIntroduce.created_at"`)}
+	}
+	if _, ok := pic.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "PlanIntroduce.updated_at"`)}
+	}
 	if _, ok := pic.mutation.ModelID(); !ok {
 		return &ValidationError{Name: "model_id", err: errors.New(`ent: missing required field "PlanIntroduce.model_id"`)}
 	}
@@ -172,6 +220,22 @@ func (pic *PlanIntroduceCreate) createSpec() (*PlanIntroduce, *sqlgraph.CreateSp
 		}
 	)
 	_spec.OnConflict = pic.conflict
+	if value, ok := pic.mutation.CreatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: planintroduce.FieldCreatedAt,
+		})
+		_node.CreatedAt = value
+	}
+	if value, ok := pic.mutation.UpdatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: planintroduce.FieldUpdatedAt,
+		})
+		_node.UpdatedAt = value
+	}
 	if value, ok := pic.mutation.Image(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -227,7 +291,7 @@ func (pic *PlanIntroduceCreate) createSpec() (*PlanIntroduce, *sqlgraph.CreateSp
 // of the `INSERT` statement. For example:
 //
 //	client.PlanIntroduce.Create().
-//		SetModelID(v).
+//		SetCreatedAt(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -236,7 +300,7 @@ func (pic *PlanIntroduceCreate) createSpec() (*PlanIntroduce, *sqlgraph.CreateSp
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.PlanIntroduceUpsert) {
-//			SetModelID(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (pic *PlanIntroduceCreate) OnConflict(opts ...sql.ConflictOption) *PlanIntroduceUpsertOne {
@@ -271,6 +335,18 @@ type (
 		*sql.UpdateSet
 	}
 )
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *PlanIntroduceUpsert) SetUpdatedAt(v time.Time) *PlanIntroduceUpsert {
+	u.Set(planintroduce.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *PlanIntroduceUpsert) UpdateUpdatedAt() *PlanIntroduceUpsert {
+	u.SetExcluded(planintroduce.FieldUpdatedAt)
+	return u
+}
 
 // SetModelID sets the "model_id" field.
 func (u *PlanIntroduceUpsert) SetModelID(v uint64) *PlanIntroduceUpsert {
@@ -324,6 +400,11 @@ func (u *PlanIntroduceUpsert) UpdateImage() *PlanIntroduceUpsert {
 //		Exec(ctx)
 func (u *PlanIntroduceUpsertOne) UpdateNewValues() *PlanIntroduceUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(planintroduce.FieldCreatedAt)
+		}
+	}))
 	return u
 }
 
@@ -352,6 +433,20 @@ func (u *PlanIntroduceUpsertOne) Update(set func(*PlanIntroduceUpsert)) *PlanInt
 		set(&PlanIntroduceUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *PlanIntroduceUpsertOne) SetUpdatedAt(v time.Time) *PlanIntroduceUpsertOne {
+	return u.Update(func(s *PlanIntroduceUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *PlanIntroduceUpsertOne) UpdateUpdatedAt() *PlanIntroduceUpsertOne {
+	return u.Update(func(s *PlanIntroduceUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetModelID sets the "model_id" field.
@@ -451,6 +546,7 @@ func (picb *PlanIntroduceCreateBulk) Save(ctx context.Context) ([]*PlanIntroduce
 	for i := range picb.builders {
 		func(i int, root context.Context) {
 			builder := picb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*PlanIntroduceMutation)
 				if !ok {
@@ -533,7 +629,7 @@ func (picb *PlanIntroduceCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.PlanIntroduceUpsert) {
-//			SetModelID(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (picb *PlanIntroduceCreateBulk) OnConflict(opts ...sql.ConflictOption) *PlanIntroduceUpsertBulk {
@@ -572,6 +668,13 @@ type PlanIntroduceUpsertBulk struct {
 //		Exec(ctx)
 func (u *PlanIntroduceUpsertBulk) UpdateNewValues() *PlanIntroduceUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(planintroduce.FieldCreatedAt)
+			}
+		}
+	}))
 	return u
 }
 
@@ -600,6 +703,20 @@ func (u *PlanIntroduceUpsertBulk) Update(set func(*PlanIntroduceUpsert)) *PlanIn
 		set(&PlanIntroduceUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *PlanIntroduceUpsertBulk) SetUpdatedAt(v time.Time) *PlanIntroduceUpsertBulk {
+	return u.Update(func(s *PlanIntroduceUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *PlanIntroduceUpsertBulk) UpdateUpdatedAt() *PlanIntroduceUpsertBulk {
+	return u.Update(func(s *PlanIntroduceUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetModelID sets the "model_id" field.

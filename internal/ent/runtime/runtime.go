@@ -38,6 +38,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/planintroduce"
 	"github.com/auroraride/aurservd/internal/ent/pointlog"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -817,6 +818,21 @@ func init() {
 	plan.DefaultUpdatedAt = planDescUpdatedAt.Default.(func() time.Time)
 	// plan.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	plan.UpdateDefaultUpdatedAt = planDescUpdatedAt.UpdateDefault.(func() time.Time)
+	planintroduceMixin := schema.PlanIntroduce{}.Mixin()
+	planintroduceMixinFields0 := planintroduceMixin[0].Fields()
+	_ = planintroduceMixinFields0
+	planintroduceFields := schema.PlanIntroduce{}.Fields()
+	_ = planintroduceFields
+	// planintroduceDescCreatedAt is the schema descriptor for created_at field.
+	planintroduceDescCreatedAt := planintroduceMixinFields0[0].Descriptor()
+	// planintroduce.DefaultCreatedAt holds the default value on creation for the created_at field.
+	planintroduce.DefaultCreatedAt = planintroduceDescCreatedAt.Default.(func() time.Time)
+	// planintroduceDescUpdatedAt is the schema descriptor for updated_at field.
+	planintroduceDescUpdatedAt := planintroduceMixinFields0[1].Descriptor()
+	// planintroduce.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	planintroduce.DefaultUpdatedAt = planintroduceDescUpdatedAt.Default.(func() time.Time)
+	// planintroduce.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	planintroduce.UpdateDefaultUpdatedAt = planintroduceDescUpdatedAt.UpdateDefault.(func() time.Time)
 	pointlogMixin := schema.PointLog{}.Mixin()
 	pointlogMixinHooks3 := pointlogMixin[3].Hooks()
 	pointlogMixinHooks4 := pointlogMixin[4].Hooks()
@@ -875,31 +891,31 @@ func init() {
 	// rider.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	rider.UpdateDefaultUpdatedAt = riderDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// riderDescPhone is the schema descriptor for phone field.
-	riderDescPhone := riderFields[2].Descriptor()
+	riderDescPhone := riderFields[4].Descriptor()
 	// rider.PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
 	rider.PhoneValidator = riderDescPhone.Validators[0].(func(string) error)
 	// riderDescLastDevice is the schema descriptor for last_device field.
-	riderDescLastDevice := riderFields[5].Descriptor()
+	riderDescLastDevice := riderFields[7].Descriptor()
 	// rider.LastDeviceValidator is a validator for the "last_device" field. It is called by the builders before save.
 	rider.LastDeviceValidator = riderDescLastDevice.Validators[0].(func(string) error)
 	// riderDescIsNewDevice is the schema descriptor for is_new_device field.
-	riderDescIsNewDevice := riderFields[6].Descriptor()
+	riderDescIsNewDevice := riderFields[8].Descriptor()
 	// rider.DefaultIsNewDevice holds the default value on creation for the is_new_device field.
 	rider.DefaultIsNewDevice = riderDescIsNewDevice.Default.(bool)
 	// riderDescPushID is the schema descriptor for push_id field.
-	riderDescPushID := riderFields[8].Descriptor()
+	riderDescPushID := riderFields[10].Descriptor()
 	// rider.PushIDValidator is a validator for the "push_id" field. It is called by the builders before save.
 	rider.PushIDValidator = riderDescPushID.Validators[0].(func(string) error)
 	// riderDescBlocked is the schema descriptor for blocked field.
-	riderDescBlocked := riderFields[10].Descriptor()
+	riderDescBlocked := riderFields[12].Descriptor()
 	// rider.DefaultBlocked holds the default value on creation for the blocked field.
 	rider.DefaultBlocked = riderDescBlocked.Default.(bool)
 	// riderDescContractual is the schema descriptor for contractual field.
-	riderDescContractual := riderFields[11].Descriptor()
+	riderDescContractual := riderFields[13].Descriptor()
 	// rider.DefaultContractual holds the default value on creation for the contractual field.
 	rider.DefaultContractual = riderDescContractual.Default.(bool)
 	// riderDescPoints is the schema descriptor for points field.
-	riderDescPoints := riderFields[12].Descriptor()
+	riderDescPoints := riderFields[14].Descriptor()
 	// rider.DefaultPoints holds the default value on creation for the points field.
 	rider.DefaultPoints = riderDescPoints.Default.(int64)
 	riderfollowupMixin := schema.RiderFollowUp{}.Mixin()

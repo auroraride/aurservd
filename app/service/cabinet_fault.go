@@ -98,9 +98,7 @@ func (s *cabinetFaultService) Report(rider *ent.Rider, req *model.CabinetFaultRe
 func (s *cabinetFaultService) List(req *model.CabinetFaultListReq) (res *model.PaginationRes) {
     q := s.orm.QueryNotDeleted().
         WithBranch().
-        WithRider(func(rq *ent.RiderQuery) {
-            rq.WithPerson()
-        }).
+        WithRider().
         WithCity().
         WithCabinet().
         Order(ent.Asc(cabinetfault.FieldStatus), ent.Desc(cabinetfault.FieldCreatedAt))

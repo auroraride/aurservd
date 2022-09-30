@@ -10,7 +10,6 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
-    "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/pointlog"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -83,7 +82,7 @@ func (s *pointService) LogList(req *model.PointLogListReq) *model.PaginationRes 
         if req.Keyword != "" {
             q.Where(
                 pointlog.HasRiderWith(rider.Or(
-                    rider.HasPersonWith(person.NameContainsFold(req.Keyword)),
+                    rider.NameContainsFold(req.Keyword),
                     rider.PhoneContainsFold(req.Keyword),
                 )),
             )

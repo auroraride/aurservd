@@ -144,7 +144,7 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
         Cabinet:   cab.GetTaskInfo(),
         Rider: &ec.Rider{
             ID:    s.rider.ID,
-            Name:  s.rider.Edges.Person.Name,
+            Name:  s.rider.Name,
             Phone: s.rider.Phone,
         },
     }
@@ -165,7 +165,7 @@ func (s *riderBusinessService) open(bin *ec.BinInfo, remark string) (status bool
     }, model.CabinetDoorOperator{
         ID:    s.rider.ID,
         Role:  model.CabinetDoorOperatorRoleRider,
-        Name:  s.rider.Edges.Person.Name,
+        Name:  s.rider.Name,
         Phone: s.rider.Phone,
     })
 

@@ -2450,6 +2450,8 @@ var (
 	// PlanIntroduceColumns holds the columns for the "plan_introduce" table.
 	PlanIntroduceColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "image", Type: field.TypeString},
 		{Name: "model_id", Type: field.TypeUint64},
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
@@ -2462,13 +2464,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "plan_introduce_battery_model_model",
-				Columns:    []*schema.Column{PlanIntroduceColumns[2]},
+				Columns:    []*schema.Column{PlanIntroduceColumns[4]},
 				RefColumns: []*schema.Column{BatteryModelColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "plan_introduce_ebike_brand_brand",
-				Columns:    []*schema.Column{PlanIntroduceColumns[3]},
+				Columns:    []*schema.Column{PlanIntroduceColumns[5]},
 				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2477,12 +2479,12 @@ var (
 			{
 				Name:    "planintroduce_model_id",
 				Unique:  false,
-				Columns: []*schema.Column{PlanIntroduceColumns[2]},
+				Columns: []*schema.Column{PlanIntroduceColumns[4]},
 			},
 			{
 				Name:    "planintroduce_brand_id",
 				Unique:  false,
-				Columns: []*schema.Column{PlanIntroduceColumns[3]},
+				Columns: []*schema.Column{PlanIntroduceColumns[5]},
 			},
 		},
 	}
@@ -2642,6 +2644,8 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "name", Type: field.TypeString, Comment: "骑手姓名", Nullable: true},
+		{Name: "id_card_number", Type: field.TypeString, Comment: "身份证号", Nullable: true},
 		{Name: "phone", Type: field.TypeString, Comment: "手机号", Size: 11},
 		{Name: "contact", Type: field.TypeJSON, Comment: "紧急联系人", Nullable: true},
 		{Name: "device_type", Type: field.TypeUint8, Comment: "登录设备类型: 1iOS 2Android", Nullable: true},
@@ -2665,19 +2669,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "rider_enterprise_riders",
-				Columns:    []*schema.Column{RiderColumns[18]},
+				Columns:    []*schema.Column{RiderColumns[20]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "rider_person_rider",
-				Columns:    []*schema.Column{RiderColumns[19]},
+				Columns:    []*schema.Column{RiderColumns[21]},
 				RefColumns: []*schema.Column{PersonColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "rider_enterprise_station_station",
-				Columns:    []*schema.Column{RiderColumns[20]},
+				Columns:    []*schema.Column{RiderColumns[22]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2696,10 +2700,20 @@ var (
 			{
 				Name:    "rider_station_id",
 				Unique:  false,
-				Columns: []*schema.Column{RiderColumns[20]},
+				Columns: []*schema.Column{RiderColumns[22]},
 			},
 			{
 				Name:    "rider_phone",
+				Unique:  false,
+				Columns: []*schema.Column{RiderColumns[9]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
+			{
+				Name:    "rider_name",
 				Unique:  false,
 				Columns: []*schema.Column{RiderColumns[7]},
 				Annotation: &entsql.IndexAnnotation{
@@ -2709,24 +2723,29 @@ var (
 				},
 			},
 			{
+				Name:    "rider_id_card_number",
+				Unique:  false,
+				Columns: []*schema.Column{RiderColumns[8]},
+			},
+			{
 				Name:    "rider_person_id",
 				Unique:  false,
-				Columns: []*schema.Column{RiderColumns[19]},
+				Columns: []*schema.Column{RiderColumns[21]},
 			},
 			{
 				Name:    "rider_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{RiderColumns[18]},
+				Columns: []*schema.Column{RiderColumns[20]},
 			},
 			{
 				Name:    "rider_last_device",
 				Unique:  false,
-				Columns: []*schema.Column{RiderColumns[10]},
+				Columns: []*schema.Column{RiderColumns[12]},
 			},
 			{
 				Name:    "rider_push_id",
 				Unique:  false,
-				Columns: []*schema.Column{RiderColumns[13]},
+				Columns: []*schema.Column{RiderColumns[15]},
 			},
 		},
 	}

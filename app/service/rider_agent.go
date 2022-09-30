@@ -9,7 +9,6 @@ import (
     "context"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
-    "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/predicate"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -55,16 +54,12 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
         ID:    item.ID,
         Phone: item.Phone,
         Date:  item.CreatedAt.Format(carbon.DateLayout),
+        Name:  item.Name,
     }
     // 获取站点
     st := item.Edges.Station
     if st != nil {
         res.Station = st.Name
-    }
-    // 获取实名信息
-    p := item.Edges.Person
-    if p != nil {
-        res.Name = p.Name
     }
     // 获取订阅信息
     subs := item.Edges.Subscribes
@@ -120,7 +115,6 @@ func (s *riderAgentService) List(enterpriseID uint64, req *model.AgentRiderListR
             query.Order(ent.Desc(subscribe.FieldCreatedAt)).WithCity()
         }).
         WithStation().
-        WithPerson().
         Order(ent.Desc(rider.FieldCreatedAt))
 
     today := carbon.Now().StartOfDay().Carbon2Time()
@@ -134,9 +128,7 @@ func (s *riderAgentService) List(enterpriseID uint64, req *model.AgentRiderListR
     if req.Keyword != "" {
         q.Where(
             rider.Or(
-                rider.HasPersonWith(
-                    person.NameContainsFold(req.Keyword),
-                ),
+                rider.NameContainsFold(req.Keyword),
                 rider.PhoneContainsFold(req.Keyword),
             ),
         )
@@ -190,7 +182,6 @@ func (s *riderAgentService) Detail(req *model.IDParamReq, enterpriseID uint64) m
             query.Order(ent.Desc(subscribe.FieldCreatedAt)).WithCity()
         }).
         WithStation().
-        WithPerson().
         First(s.ctx)
     if item == nil {
         snag.Panic("未找到骑手")

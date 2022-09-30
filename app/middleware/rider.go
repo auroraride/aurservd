@@ -105,7 +105,7 @@ func RiderRequireAuthAndContact() echo.MiddlewareFunc {
 
             ctx := c.(*app.RiderContext)
 
-            p := ctx.Rider.Edges.Person
+            p, _ := ctx.Rider.QueryPerson().First(context.Background())
             if ctx.Rider.Contact == nil && url != "/rider/contact" {
                 snag.Panic(snag.StatusRequireContact)
             }

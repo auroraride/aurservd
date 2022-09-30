@@ -25,7 +25,7 @@ const (
     RiderStatusBanned                   // 黑名单
 )
 
-type RiderBasic struct {
+type Rider struct {
     ID    uint64 `json:"id"`
     Phone string `json:"phone"` // 电话
     Name  string `json:"name"`  // 姓名

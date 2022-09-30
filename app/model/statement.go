@@ -92,7 +92,7 @@ type StatementBillDetailExport struct {
 }
 
 type StatementDetail struct {
-    Rider   RiderBasic         `json:"rider"`             // 骑手信息
+    Rider   Rider              `json:"rider"`             // 骑手信息
     City    City               `json:"city"`              // 城市
     Start   string             `json:"start"`             // 开始日期
     End     string             `json:"end"`               // 结束日期
@@ -134,7 +134,7 @@ type StatementUsageItem struct {
 
 type StatementUsageRes struct {
     Model     string                `json:"model"`               // 电池型号
-    Rider     RiderBasic            `json:"rider"`               // 骑手信息
+    Rider     Rider                 `json:"rider"`               // 骑手信息
     City      City                  `json:"city"`                // 城市
     Station   *EnterpriseStation    `json:"station,omitempty"`   // 站点, 可能为空
     Status    string                `json:"status"`              // 骑手状态 计费中,已退租

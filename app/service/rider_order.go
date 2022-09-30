@@ -55,9 +55,7 @@ func (s *riderOrderService) List(riderID uint64, req model.PaginationReq) *model
             order.RiderID(riderID),
             order.TypeIn(model.OrderSubscribeTypes...),
         ).
-        WithRider(func(rq *ent.RiderQuery) {
-            rq.WithPerson()
-        }).
+        WithRider().
         WithSubscribe(func(sq *ent.SubscribeQuery) {
             sq.WithEmployee().WithStore()
         })
@@ -102,12 +100,10 @@ func (s *riderOrderService) Detail(item *ent.Order) model.RiderOrder {
     // 骑手信息
     or := item.Edges.Rider
     if or != nil {
-        res.Rider = model.RiderBasic{
+        res.Rider = model.Rider{
             ID:    or.ID,
             Phone: or.Phone,
-        }
-        if or.Edges.Person != nil {
-            res.Rider.Name = or.Edges.Person.Name
+            Name:  or.Name,
         }
     }
 
@@ -160,9 +156,7 @@ func (s *riderOrderService) Query(riderID, orderID uint64) *ent.Order {
         WithPlan(func(pq *ent.PlanQuery) {
             pq.WithModels()
         }).
-        WithRider(func(rq *ent.RiderQuery) {
-            rq.WithPerson()
-        }).
+        WithRider().
         WithSubscribe(func(sq *ent.SubscribeQuery) {
             sq.WithEmployee().WithStore()
         }).

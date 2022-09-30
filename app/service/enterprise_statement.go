@@ -293,9 +293,7 @@ func (s *enterpriseStatementService) Statement(id uint64) []model.StatementDetai
 func (s *enterpriseStatementService) detail(id uint64) []model.StatementDetail {
     items, _ := ent.Database.EnterpriseBill.
         QueryNotDeleted().
-        WithRider(func(query *ent.RiderQuery) {
-            query.WithPerson()
-        }).
+        WithRider().
         WithCity().
         WithStation().
         Where(enterprisebill.StatementID(id)).
@@ -304,14 +302,13 @@ func (s *enterpriseStatementService) detail(id uint64) []model.StatementDetail {
     res := make([]model.StatementDetail, len(items))
     for i, item := range items {
         r := item.Edges.Rider
-        p := item.Edges.Rider.Edges.Person
         c := item.Edges.City
         t := item.Edges.Station
         res[i] = model.StatementDetail{
-            Rider: model.RiderBasic{
+            Rider: model.Rider{
                 ID:    r.ID,
                 Phone: r.Phone,
-                Name:  p.Name,
+                Name:  r.Name,
             },
             City: model.City{
                 ID:   c.ID,
@@ -371,9 +368,7 @@ func (s *enterpriseStatementService) DetailExport(req *model.StatementBillDetail
 
 func (s *enterpriseStatementService) usageFilter(e *ent.Enterprise, req model.StatementUsageFilter) (q *ent.SubscribeQuery, start time.Time, end time.Time) {
     q = ent.Database.Subscribe.QueryNotDeleted().
-        WithRider(func(rq *ent.RiderQuery) {
-            rq.WithPerson()
-        }).
+        WithRider().
         WithCity().
         WithStation().
         Where(
@@ -508,7 +503,6 @@ func (s *enterpriseStatementService) UsageExport(req *model.StatementUsageExport
 func (s *enterpriseStatementService) usageDetail(en *ent.Enterprise, item *ent.Subscribe, start, end time.Time, prices map[string]float64) model.StatementUsageRes {
     r := item.Edges.Rider
     c := item.Edges.City
-    p := r.Edges.Person
     del := ""
     if r.DeletedAt != nil {
         del = r.DeletedAt.Format(carbon.DateTimeLayout)
@@ -524,10 +518,10 @@ func (s *enterpriseStatementService) usageDetail(en *ent.Enterprise, item *ent.S
             ID:   c.ID,
             Name: c.Name,
         },
-        Rider: model.RiderBasic{
+        Rider: model.Rider{
             ID:    r.ID,
             Phone: r.Phone,
-            Name:  p.Name,
+            Name:  r.Name,
         },
         Status:    status,
         DeletedAt: del,

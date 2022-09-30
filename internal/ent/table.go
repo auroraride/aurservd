@@ -432,6 +432,10 @@ func (r *Rider) GetID() uint64 {
 	return r.ID
 }
 
+func (r *Rider) GetName() string {
+	return r.Name
+}
+
 // GetTableName returns table name for RiderFollowUp.
 func (rfu *RiderFollowUp) GetTableName() string {
 	return "rider_follow_up"

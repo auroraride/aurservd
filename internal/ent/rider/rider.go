@@ -29,6 +29,10 @@ const (
 	FieldStationID = "station_id"
 	// FieldPersonID holds the string denoting the person_id field in the database.
 	FieldPersonID = "person_id"
+	// FieldName holds the string denoting the name field in the database.
+	FieldName = "name"
+	// FieldIDCardNumber holds the string denoting the id_card_number field in the database.
+	FieldIDCardNumber = "id_card_number"
 	// FieldEnterpriseID holds the string denoting the enterprise_id field in the database.
 	FieldEnterpriseID = "enterprise_id"
 	// FieldPhone holds the string denoting the phone field in the database.
@@ -158,6 +162,8 @@ var Columns = []string{
 	FieldRemark,
 	FieldStationID,
 	FieldPersonID,
+	FieldName,
+	FieldIDCardNumber,
 	FieldEnterpriseID,
 	FieldPhone,
 	FieldContact,

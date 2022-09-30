@@ -3,6 +3,9 @@
 - 备份数据库
 - 删除所有外键
 ```postgresql
+ALTER TABLE plan_pms RENAME TO plan_models;
+ALTER TABLE cabinet_bms RENAME TO cabinet_models;
+
 DO
 $$
     DECLARE
@@ -19,4 +22,10 @@ $$
             END LOOP;
     END;
 $$;
+
+UPDATE rider r
+SET name = p.name, id_card_number = p.id_card_number
+FROM person p
+WHERE p.id = r.person_id;
+
 ```

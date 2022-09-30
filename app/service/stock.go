@@ -579,10 +579,7 @@ func (s *stockService) EmployeeOverview() (res model.StockEmployeeOverview) {
 func (s *stockService) listBasicQuery(req *model.StockEmployeeListReq) *ent.StockQuery {
     tt := tools.NewTime()
 
-    q := s.orm.QueryNotDeleted().
-        WithRider(func(rq *ent.RiderQuery) {
-            rq.WithPerson()
-        })
+    q := s.orm.QueryNotDeleted().WithRider()
 
     if req.Outbound {
         q.Where(stock.NumLT(0))
@@ -622,9 +619,7 @@ func (s *stockService) EmployeeList(req *model.StockEmployeeListReq) model.Stock
             }
             if r != nil {
                 res.Phone = r.Phone
-                if p := r.Edges.Person; p != nil {
-                    res.Name = p.Name
-                }
+                res.Name = r.Name
             }
             return res
         },
@@ -717,12 +712,8 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
     info = make(ar.Map)
 
     q = s.orm.QueryNotDeleted().WithCabinet().WithStore().WithSpouse(func(sq *ent.StockQuery) {
-        sq.WithStore().WithCabinet().WithRider(func(rq *ent.RiderQuery) {
-            rq.WithPerson()
-        })
-    }).WithRider(func(rq *ent.RiderQuery) {
-        rq.WithPerson()
-    }).WithEmployee().WithCity()
+        sq.WithStore().WithCabinet().WithRider()
+    }).WithRider().WithEmployee().WithCity()
     // 排序
     if req.Positive {
         q.Order(ent.Asc(stock.FieldSn))
@@ -878,7 +869,7 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
         var riderName string
 
         if er != nil {
-            riderName = er.Edges.Person.Name
+            riderName = er.Name
             res.Rider = fmt.Sprintf("%s - %s", riderName, er.Phone)
         }
 
@@ -906,7 +897,7 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
         res.Type = tmr + tm[item.Type]
 
         // 出入库对象
-        target := fmt.Sprintf("[骑手] %s - %s", er.Phone, er.Edges.Person.Name)
+        target := fmt.Sprintf("[骑手] %s - %s", er.Phone, er.Name)
         switch item.Type {
         case model.StockTypeRiderActive, model.StockTypeRiderContinue:
             res.Inbound = target

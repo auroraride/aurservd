@@ -15,7 +15,6 @@ import (
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/coupontemplate"
-    "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/plan"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -118,12 +117,12 @@ func (s *selectionService) Plan(req *model.PlanSelectionReq) (items []model.Casc
 
 // Rider 筛选骑手
 func (s *selectionService) Rider(req *model.RiderSelectionReq) (items []model.SelectOption) {
-    q := ent.Database.Rider.QueryNotDeleted().WithPerson()
+    q := ent.Database.Rider.QueryNotDeleted()
     if req.Keyword != nil {
         q.Where(
             rider.Or(
                 rider.PhoneContainsFold(*req.Keyword),
-                rider.HasPersonWith(person.NameContainsFold(*req.Keyword)),
+                rider.NameContainsFold(*req.Keyword),
             ),
         )
     }
@@ -132,8 +131,8 @@ func (s *selectionService) Rider(req *model.RiderSelectionReq) (items []model.Se
 
     for i, r := range res {
         name := "[未认证]"
-        if r.Edges.Person != nil {
-            name = r.Edges.Person.Name
+        if r.Name != "" {
+            name = r.Name
         }
         items[i] = model.SelectOption{
             Value: r.ID,

@@ -264,11 +264,14 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
         if u.PersonID != nil && *u.PersonID != id {
             _ = ent.Database.Person.DeleteOneID(*u.PersonID).Exec(s.ctx)
         }
+        // 更新骑手信息
         err = ent.Database.Rider.
             UpdateOneID(u.ID).
             SetPersonID(id).
             SetLastFace(fm).
             SetIsNewDevice(false).
+            SetName(vr.Name).
+            SetIDCardNumber(icNum).
             Exec(context.Background())
         if err != nil {
             snag.Panic(err)
@@ -342,11 +345,11 @@ func (s *riderService) ExtendTokenTime(id uint64, token string) {
 }
 
 // GetRiderSampleInfo 获取骑手简单信息
-func (*riderService) GetRiderSampleInfo(rider *ent.Rider) model.RiderSampleInfo {
+func (*riderService) GetRiderSampleInfo(r *ent.Rider) model.RiderSampleInfo {
     return model.RiderSampleInfo{
-        ID:    rider.ID,
-        Name:  rider.Edges.Person.Name,
-        Phone: rider.Phone,
+        ID:    r.ID,
+        Name:  r.Name,
+        Phone: r.Phone,
     }
 }
 
@@ -388,12 +391,8 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
         // 判定是否id字段
         q.Where(
             rider.Or(
-                rider.HasPersonWith(
-                    person.Or(
-                        person.NameContainsFold(*req.Keyword),
-                        person.IDCardNumberContainsFold(*req.Keyword),
-                    ),
-                ),
+                rider.NameContainsFold(*req.Keyword),
+                rider.IDCardNumberContainsFold(*req.Keyword),
                 rider.PhoneContainsFold(*req.Keyword),
             ),
         )

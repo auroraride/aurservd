@@ -326,12 +326,12 @@ func (piq *PlanIntroduceQuery) WithBrand(opts ...func(*EbikeBrandQuery)) *PlanIn
 // Example:
 //
 //	var v []struct {
-//		ModelID uint64 `json:"model_id,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.PlanIntroduce.Query().
-//		GroupBy(planintroduce.FieldModelID).
+//		GroupBy(planintroduce.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (piq *PlanIntroduceQuery) GroupBy(field string, fields ...string) *PlanIntroduceGroupBy {
@@ -354,11 +354,11 @@ func (piq *PlanIntroduceQuery) GroupBy(field string, fields ...string) *PlanIntr
 // Example:
 //
 //	var v []struct {
-//		ModelID uint64 `json:"model_id,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.PlanIntroduce.Query().
-//		Select(planintroduce.FieldModelID).
+//		Select(planintroduce.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (piq *PlanIntroduceQuery) Select(fields ...string) *PlanIntroduceSelect {
 	piq.fields = append(piq.fields, fields...)

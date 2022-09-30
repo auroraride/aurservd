@@ -129,6 +129,34 @@ func (rc *RiderCreate) SetNillablePersonID(u *uint64) *RiderCreate {
 	return rc
 }
 
+// SetName sets the "name" field.
+func (rc *RiderCreate) SetName(s string) *RiderCreate {
+	rc.mutation.SetName(s)
+	return rc
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (rc *RiderCreate) SetNillableName(s *string) *RiderCreate {
+	if s != nil {
+		rc.SetName(*s)
+	}
+	return rc
+}
+
+// SetIDCardNumber sets the "id_card_number" field.
+func (rc *RiderCreate) SetIDCardNumber(s string) *RiderCreate {
+	rc.mutation.SetIDCardNumber(s)
+	return rc
+}
+
+// SetNillableIDCardNumber sets the "id_card_number" field if the given value is not nil.
+func (rc *RiderCreate) SetNillableIDCardNumber(s *string) *RiderCreate {
+	if s != nil {
+		rc.SetIDCardNumber(*s)
+	}
+	return rc
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (rc *RiderCreate) SetEnterpriseID(u uint64) *RiderCreate {
 	rc.mutation.SetEnterpriseID(u)
@@ -624,6 +652,22 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 		})
 		_node.Remark = value
 	}
+	if value, ok := rc.mutation.Name(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: rider.FieldName,
+		})
+		_node.Name = value
+	}
+	if value, ok := rc.mutation.IDCardNumber(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: rider.FieldIDCardNumber,
+		})
+		_node.IDCardNumber = value
+	}
 	if value, ok := rc.mutation.Phone(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -1059,6 +1103,42 @@ func (u *RiderUpsert) ClearPersonID() *RiderUpsert {
 	return u
 }
 
+// SetName sets the "name" field.
+func (u *RiderUpsert) SetName(v string) *RiderUpsert {
+	u.Set(rider.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateName() *RiderUpsert {
+	u.SetExcluded(rider.FieldName)
+	return u
+}
+
+// ClearName clears the value of the "name" field.
+func (u *RiderUpsert) ClearName() *RiderUpsert {
+	u.SetNull(rider.FieldName)
+	return u
+}
+
+// SetIDCardNumber sets the "id_card_number" field.
+func (u *RiderUpsert) SetIDCardNumber(v string) *RiderUpsert {
+	u.Set(rider.FieldIDCardNumber, v)
+	return u
+}
+
+// UpdateIDCardNumber sets the "id_card_number" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateIDCardNumber() *RiderUpsert {
+	u.SetExcluded(rider.FieldIDCardNumber)
+	return u
+}
+
+// ClearIDCardNumber clears the value of the "id_card_number" field.
+func (u *RiderUpsert) ClearIDCardNumber() *RiderUpsert {
+	u.SetNull(rider.FieldIDCardNumber)
+	return u
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (u *RiderUpsert) SetEnterpriseID(v uint64) *RiderUpsert {
 	u.Set(rider.FieldEnterpriseID, v)
@@ -1427,6 +1507,48 @@ func (u *RiderUpsertOne) UpdatePersonID() *RiderUpsertOne {
 func (u *RiderUpsertOne) ClearPersonID() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearPersonID()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *RiderUpsertOne) SetName(v string) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateName() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateName()
+	})
+}
+
+// ClearName clears the value of the "name" field.
+func (u *RiderUpsertOne) ClearName() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearName()
+	})
+}
+
+// SetIDCardNumber sets the "id_card_number" field.
+func (u *RiderUpsertOne) SetIDCardNumber(v string) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetIDCardNumber(v)
+	})
+}
+
+// UpdateIDCardNumber sets the "id_card_number" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateIDCardNumber() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateIDCardNumber()
+	})
+}
+
+// ClearIDCardNumber clears the value of the "id_card_number" field.
+func (u *RiderUpsertOne) ClearIDCardNumber() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearIDCardNumber()
 	})
 }
 
@@ -1994,6 +2116,48 @@ func (u *RiderUpsertBulk) UpdatePersonID() *RiderUpsertBulk {
 func (u *RiderUpsertBulk) ClearPersonID() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearPersonID()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *RiderUpsertBulk) SetName(v string) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateName() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateName()
+	})
+}
+
+// ClearName clears the value of the "name" field.
+func (u *RiderUpsertBulk) ClearName() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearName()
+	})
+}
+
+// SetIDCardNumber sets the "id_card_number" field.
+func (u *RiderUpsertBulk) SetIDCardNumber(v string) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetIDCardNumber(v)
+	})
+}
+
+// UpdateIDCardNumber sets the "id_card_number" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateIDCardNumber() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateIDCardNumber()
+	})
+}
+
+// ClearIDCardNumber clears the value of the "id_card_number" field.
+func (u *RiderUpsertBulk) ClearIDCardNumber() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearIDCardNumber()
 	})
 }
 

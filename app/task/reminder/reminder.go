@@ -118,14 +118,13 @@ func Subscribe(sub *ent.Subscribe) {
     if ri == nil {
         return
     }
-    pe := ri.Edges.Person
     pl := sub.Edges.Plan
-    if pe == nil || pl == nil {
+    if pl == nil {
         return
     }
 
     task := &Task{
-        Name:        pe.Name,
+        Name:        ri.Name,
         Phone:       ri.Phone,
         Days:        sub.Remaining,
         SubscribeID: sub.ID,

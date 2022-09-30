@@ -37,6 +37,10 @@ type Rider struct {
 	StationID *uint64 `json:"station_id,omitempty"`
 	// 身份
 	PersonID *uint64 `json:"person_id,omitempty"`
+	// 骑手姓名
+	Name string `json:"name,omitempty"`
+	// 身份证号
+	IDCardNumber string `json:"id_card_number,omitempty"`
 	// 所属企业
 	EnterpriseID *uint64 `json:"enterprise_id,omitempty"`
 	// 手机号
@@ -206,7 +210,7 @@ func (*Rider) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case rider.FieldID, rider.FieldStationID, rider.FieldPersonID, rider.FieldEnterpriseID, rider.FieldDeviceType, rider.FieldPoints:
 			values[i] = new(sql.NullInt64)
-		case rider.FieldRemark, rider.FieldPhone, rider.FieldLastDevice, rider.FieldLastFace, rider.FieldPushID:
+		case rider.FieldRemark, rider.FieldName, rider.FieldIDCardNumber, rider.FieldPhone, rider.FieldLastDevice, rider.FieldLastFace, rider.FieldPushID:
 			values[i] = new(sql.NullString)
 		case rider.FieldCreatedAt, rider.FieldUpdatedAt, rider.FieldDeletedAt, rider.FieldLastSigninAt:
 			values[i] = new(sql.NullTime)
@@ -285,6 +289,18 @@ func (r *Rider) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				r.PersonID = new(uint64)
 				*r.PersonID = uint64(value.Int64)
+			}
+		case rider.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
+			} else if value.Valid {
+				r.Name = value.String
+			}
+		case rider.FieldIDCardNumber:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field id_card_number", values[i])
+			} else if value.Valid {
+				r.IDCardNumber = value.String
 			}
 		case rider.FieldEnterpriseID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -470,6 +486,12 @@ func (r *Rider) String() string {
 		builder.WriteString("person_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
+	builder.WriteString(", ")
+	builder.WriteString("name=")
+	builder.WriteString(r.Name)
+	builder.WriteString(", ")
+	builder.WriteString("id_card_number=")
+	builder.WriteString(r.IDCardNumber)
 	builder.WriteString(", ")
 	if v := r.EnterpriseID; v != nil {
 		builder.WriteString("enterprise_id=")

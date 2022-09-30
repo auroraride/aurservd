@@ -12464,7 +12464,7 @@
                     "description": "骑手信息",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.RiderBasic"
+                            "$ref": "#/definitions/model.Rider"
                         }
                     ]
                 },
@@ -12576,7 +12576,7 @@
                     "description": "骑手信息",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.RiderBasic"
+                            "$ref": "#/definitions/model.Rider"
                         }
                     ]
                 },
@@ -12666,7 +12666,7 @@
                     "description": "骑手信息",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.RiderBasic"
+                            "$ref": "#/definitions/model.Rider"
                         }
                     ]
                 },
@@ -12784,7 +12784,7 @@
                     "description": "骑手信息",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.RiderBasic"
+                            "$ref": "#/definitions/model.Rider"
                         }
                     ]
                 },
@@ -12893,7 +12893,7 @@
                     "description": "骑手信息",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.RiderBasic"
+                            "$ref": "#/definitions/model.Rider"
                         }
                     ]
                 },
@@ -17141,7 +17141,7 @@
                 }
             }
         },
-        "model.RiderBasic": {
+        "model.Rider": {
             "type": "object",
             "properties": {
                 "id": {
@@ -17736,7 +17736,7 @@
                     "description": "骑手",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.RiderBasic"
+                            "$ref": "#/definitions/model.Rider"
                         }
                     ]
                 },
@@ -18367,7 +18367,7 @@
                     "description": "骑手信息",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.RiderBasic"
+                            "$ref": "#/definitions/model.Rider"
                         }
                     ]
                 },
@@ -18465,7 +18465,7 @@
                     "description": "骑手信息",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.RiderBasic"
+                            "$ref": "#/definitions/model.Rider"
                         }
                     ]
                 },
@@ -19271,7 +19271,7 @@
                     "description": "骑手详情",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.RiderBasic"
+                            "$ref": "#/definitions/model.Rider"
                         }
                     ]
                 }

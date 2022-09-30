@@ -58,6 +58,8 @@ func (Rider) Annotations() []schema.Annotation {
 func (Rider) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("person_id").Optional().Nillable().Comment("身份"),
+        field.String("name").Optional().Comment("骑手姓名"),
+        field.String("id_card_number").Optional().Comment("身份证号"),
         field.Uint64("enterprise_id").Optional().Nillable().Comment("所属企业"),
         field.String("phone").MaxLen(11).Comment("手机号"),
         field.JSON("contact", &model.RiderContact{}).Optional().Comment("紧急联系人"),
@@ -108,6 +110,12 @@ func (Rider) Indexes() []ent.Index {
                 dialect.Postgres: "GIN",
             }),
         ),
+        index.Fields("name").Annotations(
+            entsql.IndexTypes(map[string]string{
+                dialect.Postgres: "GIN",
+            }),
+        ),
+        index.Fields("id_card_number"),
         index.Fields("person_id"),
         index.Fields("enterprise_id"),
         index.Fields("last_device"),

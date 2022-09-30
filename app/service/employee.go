@@ -196,9 +196,7 @@ func (s *employeeService) activityListFilter(req model.EmployeeActivityListFilte
                 query.Where(commission.CreatedAtLT(end))
             }
             if export {
-                query.WithPlan().WithOrder().WithRider(func(rq *ent.RiderQuery) {
-                    rq.WithPerson()
-                })
+                query.WithPlan().WithOrder().WithRider()
             }
         }).
         WithAssistances(func(query *ent.AssistanceQuery) {
@@ -211,9 +209,7 @@ func (s *employeeService) activityListFilter(req model.EmployeeActivityListFilte
                 query.Where(assistance.CreatedAtLT(end))
             }
             if export {
-                query.WithRider(func(rq *ent.RiderQuery) {
-                    rq.WithPerson()
-                }).WithStore()
+                query.WithRider().WithStore()
             }
         })
 
@@ -325,7 +321,7 @@ func (s *employeeService) ActivityExport(req *model.EmployeeActivityExportReq) m
                 assistances = append(assistances, []any{
                     a.Distance,
                     a.Breakdown,
-                    fmt.Sprintf("%s - %s", a.Edges.Rider.Edges.Person.Name, a.Edges.Rider.Phone),
+                    fmt.Sprintf("%s - %s", a.Edges.Rider.Name, a.Edges.Rider.Phone),
                     fmt.Sprintf("[%s] %s", asto, a.Address),
                     a.CreatedAt.Format(carbon.DateTimeLayout),
                 })
@@ -341,7 +337,7 @@ func (s *employeeService) ActivityExport(req *model.EmployeeActivityExportReq) m
             for _, c := range item.Edges.Commissions {
                 comtotal = tools.NewDecimal().Sum(comtotal, c.Amount)
                 coms = append(coms, []any{
-                    fmt.Sprintf("%s - %s", c.Edges.Rider.Edges.Person.Name, c.Edges.Rider.Phone),
+                    fmt.Sprintf("%s - %s", c.Edges.Rider.Name, c.Edges.Rider.Phone),
                     fmt.Sprintf("%s - %d天", c.Edges.Plan.Name, c.Edges.Plan.Days),
                     fmt.Sprintf("%.2f", c.Edges.Order.Amount),
                     fmt.Sprintf("%.2f", c.Amount),

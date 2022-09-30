@@ -286,9 +286,7 @@ func (s *subscribeService) QueryAllRidersEffective() []*ent.Subscribe {
             spq.Order(ent.Desc(subscribesuspend.FieldStartAt))
         }).
         WithPlan().
-        WithRider(func(query *ent.RiderQuery) {
-            query.WithPerson()
-        }).
+        WithRider().
         All(s.ctx)
     return items
 }

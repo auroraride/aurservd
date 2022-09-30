@@ -205,14 +205,18 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
         }
         if r == nil {
             // 创建骑手并设置为不需要签约
-            r, err = tx.Rider.Create().SetPhone(req.Phone).SetPerson(p).SetRemark("导入骑手").SetContractual(true).Save(s.ctx)
+            rc := tx.Rider.Create().SetPhone(req.Phone).SetName(req.Name).SetRemark("导入骑手").SetContractual(true)
+            if p != nil {
+                rc.SetPersonID(p.ID).SetIDCardNumber(p.IDCardNumber)
+            }
+            r, err = rc.Save(s.ctx)
             if err != nil {
                 return
             }
         } else {
             ru := tx.Rider.UpdateOne(r).SetRemark("导入骑手 & 更新").SetContractual(true)
             if r.Edges.Person == nil {
-                ru.SetPerson(p)
+                ru.SetPersonID(p.ID).SetIDCardNumber(p.IDCardNumber).SetName(p.Name)
             }
             r, err = ru.Save(s.ctx)
             if err != nil {

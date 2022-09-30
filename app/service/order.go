@@ -17,7 +17,6 @@ import (
     "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/internal/ent/order"
     "github.com/auroraride/aurservd/internal/ent/orderrefund"
-    "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -539,9 +538,7 @@ func (s *orderService) listFilter(req model.OrderListFilter) (*ent.OrderQuery, a
         WithCity().
         WithPlan().
         WithCity().
-        WithRider(func(rq *ent.RiderQuery) {
-            rq.WithPerson()
-        }).
+        WithRider().
         WithSubscribe(func(sq *ent.SubscribeQuery) {
             sq.WithEmployee().WithStore()
         }).
@@ -566,7 +563,7 @@ func (s *orderService) listFilter(req model.OrderListFilter) (*ent.OrderQuery, a
         info["关键词"] = *req.Keyword
         q.Where(order.HasRiderWith(
             rider.Or(
-                rider.HasPersonWith(person.NameContainsFold(*req.Keyword)),
+                rider.NameContainsFold(*req.Keyword),
                 rider.PhoneContainsFold(*req.Keyword),
             ),
         ))

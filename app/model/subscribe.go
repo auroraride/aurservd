@@ -85,7 +85,7 @@ type SubscribeActiveInfo struct {
     ID           uint64              `json:"id"`                     // 订阅ID
     Model        string              `json:"model"`                  // 电池型号
     EnterpriseID *uint64             `json:"enterpriseId,omitempty"` // 企业ID, 团签用户判定依据, 非团签用户此字段不存在
-    Rider        RiderBasic          `json:"rider"`                  // 骑手详情
+    Rider        Rider               `json:"rider"`                  // 骑手详情
     City         City                `json:"city"`                   // 所在城市
     Plan         *Plan               `json:"plan,omitempty"`         // 套餐详情, 团签骑手此字段不存在
     Order        *SubscribeOrderInfo `json:"order,omitempty"`        // 订单详情, 团签骑手此字段不存在

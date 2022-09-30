@@ -138,6 +138,46 @@ func (ru *RiderUpdate) ClearPersonID() *RiderUpdate {
 	return ru
 }
 
+// SetName sets the "name" field.
+func (ru *RiderUpdate) SetName(s string) *RiderUpdate {
+	ru.mutation.SetName(s)
+	return ru
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ru *RiderUpdate) SetNillableName(s *string) *RiderUpdate {
+	if s != nil {
+		ru.SetName(*s)
+	}
+	return ru
+}
+
+// ClearName clears the value of the "name" field.
+func (ru *RiderUpdate) ClearName() *RiderUpdate {
+	ru.mutation.ClearName()
+	return ru
+}
+
+// SetIDCardNumber sets the "id_card_number" field.
+func (ru *RiderUpdate) SetIDCardNumber(s string) *RiderUpdate {
+	ru.mutation.SetIDCardNumber(s)
+	return ru
+}
+
+// SetNillableIDCardNumber sets the "id_card_number" field if the given value is not nil.
+func (ru *RiderUpdate) SetNillableIDCardNumber(s *string) *RiderUpdate {
+	if s != nil {
+		ru.SetIDCardNumber(*s)
+	}
+	return ru
+}
+
+// ClearIDCardNumber clears the value of the "id_card_number" field.
+func (ru *RiderUpdate) ClearIDCardNumber() *RiderUpdate {
+	ru.mutation.ClearIDCardNumber()
+	return ru
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (ru *RiderUpdate) SetEnterpriseID(u uint64) *RiderUpdate {
 	ru.mutation.SetEnterpriseID(u)
@@ -811,6 +851,32 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: rider.FieldRemark,
+		})
+	}
+	if value, ok := ru.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: rider.FieldName,
+		})
+	}
+	if ru.mutation.NameCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: rider.FieldName,
+		})
+	}
+	if value, ok := ru.mutation.IDCardNumber(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: rider.FieldIDCardNumber,
+		})
+	}
+	if ru.mutation.IDCardNumberCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: rider.FieldIDCardNumber,
 		})
 	}
 	if value, ok := ru.mutation.Phone(); ok {
@@ -1548,6 +1614,46 @@ func (ruo *RiderUpdateOne) ClearPersonID() *RiderUpdateOne {
 	return ruo
 }
 
+// SetName sets the "name" field.
+func (ruo *RiderUpdateOne) SetName(s string) *RiderUpdateOne {
+	ruo.mutation.SetName(s)
+	return ruo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ruo *RiderUpdateOne) SetNillableName(s *string) *RiderUpdateOne {
+	if s != nil {
+		ruo.SetName(*s)
+	}
+	return ruo
+}
+
+// ClearName clears the value of the "name" field.
+func (ruo *RiderUpdateOne) ClearName() *RiderUpdateOne {
+	ruo.mutation.ClearName()
+	return ruo
+}
+
+// SetIDCardNumber sets the "id_card_number" field.
+func (ruo *RiderUpdateOne) SetIDCardNumber(s string) *RiderUpdateOne {
+	ruo.mutation.SetIDCardNumber(s)
+	return ruo
+}
+
+// SetNillableIDCardNumber sets the "id_card_number" field if the given value is not nil.
+func (ruo *RiderUpdateOne) SetNillableIDCardNumber(s *string) *RiderUpdateOne {
+	if s != nil {
+		ruo.SetIDCardNumber(*s)
+	}
+	return ruo
+}
+
+// ClearIDCardNumber clears the value of the "id_card_number" field.
+func (ruo *RiderUpdateOne) ClearIDCardNumber() *RiderUpdateOne {
+	ruo.mutation.ClearIDCardNumber()
+	return ruo
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (ruo *RiderUpdateOne) SetEnterpriseID(u uint64) *RiderUpdateOne {
 	ruo.mutation.SetEnterpriseID(u)
@@ -2251,6 +2357,32 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: rider.FieldRemark,
+		})
+	}
+	if value, ok := ruo.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: rider.FieldName,
+		})
+	}
+	if ruo.mutation.NameCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: rider.FieldName,
+		})
+	}
+	if value, ok := ruo.mutation.IDCardNumber(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: rider.FieldIDCardNumber,
+		})
+	}
+	if ruo.mutation.IDCardNumberCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: rider.FieldIDCardNumber,
 		})
 	}
 	if value, ok := ruo.mutation.Phone(); ok {

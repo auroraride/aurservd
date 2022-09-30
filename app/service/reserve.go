@@ -79,9 +79,7 @@ func (s *reserveService) RiderUnfinished(riderID uint64) *ent.Reserve {
 
 func (s *reserveService) CabinetUnfinished(cabinetID uint64) []*ent.Reserve {
     items, _ := s.orm.QueryNotDeleted().
-        WithRider(func(query *ent.RiderQuery) {
-            query.WithPerson()
-        }).
+        WithRider().
         Where(
             reserve.StatusIn(model.ReserveStatusPending.Value(), model.ReserveStatusProcessing.Value()),
             reserve.CreatedAtGTE(time.Now().Add(-s.max*time.Minute)),
@@ -201,9 +199,7 @@ func (s *reserveService) Cancel(req *model.IDParamReq) {
 }
 
 func (s *reserveService) listFilter(req model.ReserveListFilter) (q *ent.ReserveQuery, info ar.Map) {
-    q = s.orm.QueryNotDeleted().WithCity().WithCabinet().WithRider(func(query *ent.RiderQuery) {
-        query.WithPerson()
-    }).Order(ent.Desc(reserve.FieldCreatedAt))
+    q = s.orm.QueryNotDeleted().WithCity().WithCabinet().WithRider().Order(ent.Desc(reserve.FieldCreatedAt))
     info = make(ar.Map)
     if req.CityID != 0 {
         q.Where(reserve.CityID(req.CityID))
@@ -246,7 +242,7 @@ func (s *reserveService) List(req *model.ReserveListReq) *model.PaginationRes {
 func (s *reserveService) listDetail(item *ent.Reserve) (res model.ReserveListRes) {
     res = model.ReserveListRes{
         City:     item.Edges.City.Name,
-        Name:     item.Edges.Rider.Edges.Person.Name,
+        Name:     item.Edges.Rider.Name,
         Phone:    item.Edges.Rider.Phone,
         Business: model.BusinessTypeText(item.Type),
         Status:   model.ReserveStatus(item.Status).String(),

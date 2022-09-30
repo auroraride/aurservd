@@ -628,7 +628,7 @@ definitions:
         type: string
       rider:
         allOf:
-        - $ref: '#/definitions/model.RiderBasic'
+        - $ref: '#/definitions/model.Rider'
         description: 骑手信息
       status:
         description: 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
@@ -707,7 +707,7 @@ definitions:
         type: string
       rider:
         allOf:
-        - $ref: '#/definitions/model.RiderBasic'
+        - $ref: '#/definitions/model.Rider'
         description: 骑手信息
       status:
         description: 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
@@ -764,7 +764,7 @@ definitions:
         type: integer
       rider:
         allOf:
-        - $ref: '#/definitions/model.RiderBasic'
+        - $ref: '#/definitions/model.Rider'
         description: 骑手信息
       status:
         description: 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
@@ -845,7 +845,7 @@ definitions:
         type: string
       rider:
         allOf:
-        - $ref: '#/definitions/model.RiderBasic'
+        - $ref: '#/definitions/model.Rider'
         description: 骑手信息
       status:
         description: 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
@@ -919,7 +919,7 @@ definitions:
         type: string
       rider:
         allOf:
-        - $ref: '#/definitions/model.RiderBasic'
+        - $ref: '#/definitions/model.Rider'
         description: 骑手信息
       status:
         description: 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
@@ -3925,7 +3925,7 @@ definitions:
         description: 预约时间
         type: string
     type: object
-  model.RiderBasic:
+  model.Rider:
     properties:
       id:
         type: integer
@@ -4327,7 +4327,7 @@ definitions:
         description: 退款详情 (可为空)
       rider:
         allOf:
-        - $ref: '#/definitions/model.RiderBasic'
+        - $ref: '#/definitions/model.Rider'
         description: 骑手
       status:
         description: 订单状态 0未支付 1已支付 2申请退款 3已退款 4退款被拒绝
@@ -4759,7 +4759,7 @@ definitions:
         type: number
       rider:
         allOf:
-        - $ref: '#/definitions/model.RiderBasic'
+        - $ref: '#/definitions/model.Rider'
         description: 骑手信息
       start:
         description: 开始日期
@@ -4824,7 +4824,7 @@ definitions:
         type: string
       rider:
         allOf:
-        - $ref: '#/definitions/model.RiderBasic'
+        - $ref: '#/definitions/model.Rider'
         description: 骑手信息
       station:
         allOf:
@@ -5379,7 +5379,7 @@ definitions:
         description: 套餐详情, 团签骑手此字段不存在
       rider:
         allOf:
-        - $ref: '#/definitions/model.RiderBasic'
+        - $ref: '#/definitions/model.Rider'
         description: 骑手详情
     type: object
   model.SubscribeAlter:

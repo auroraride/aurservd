@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
@@ -17,6 +18,10 @@ type PlanIntroduce struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID uint64 `json:"id,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// ModelID holds the value of the "model_id" field.
 	ModelID uint64 `json:"model_id,omitempty"`
 	// BrandID holds the value of the "brand_id" field.
@@ -74,6 +79,8 @@ func (*PlanIntroduce) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case planintroduce.FieldImage:
 			values[i] = new(sql.NullString)
+		case planintroduce.FieldCreatedAt, planintroduce.FieldUpdatedAt:
+			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type PlanIntroduce", columns[i])
 		}
@@ -95,6 +102,18 @@ func (pi *PlanIntroduce) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			pi.ID = uint64(value.Int64)
+		case planintroduce.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				pi.CreatedAt = value.Time
+			}
+		case planintroduce.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				pi.UpdatedAt = value.Time
+			}
 		case planintroduce.FieldModelID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field model_id", values[i])
@@ -152,6 +171,12 @@ func (pi *PlanIntroduce) String() string {
 	var builder strings.Builder
 	builder.WriteString("PlanIntroduce(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", pi.ID))
+	builder.WriteString("created_at=")
+	builder.WriteString(pi.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(pi.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
 	builder.WriteString("model_id=")
 	builder.WriteString(fmt.Sprintf("%v", pi.ModelID))
 	builder.WriteString(", ")

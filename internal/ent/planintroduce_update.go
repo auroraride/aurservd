@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -27,6 +28,12 @@ type PlanIntroduceUpdate struct {
 // Where appends a list predicates to the PlanIntroduceUpdate builder.
 func (piu *PlanIntroduceUpdate) Where(ps ...predicate.PlanIntroduce) *PlanIntroduceUpdate {
 	piu.mutation.Where(ps...)
+	return piu
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (piu *PlanIntroduceUpdate) SetUpdatedAt(t time.Time) *PlanIntroduceUpdate {
+	piu.mutation.SetUpdatedAt(t)
 	return piu
 }
 
@@ -95,6 +102,7 @@ func (piu *PlanIntroduceUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	piu.defaults()
 	if len(piu.hooks) == 0 {
 		if err = piu.check(); err != nil {
 			return 0, err
@@ -149,6 +157,14 @@ func (piu *PlanIntroduceUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (piu *PlanIntroduceUpdate) defaults() {
+	if _, ok := piu.mutation.UpdatedAt(); !ok {
+		v := planintroduce.UpdateDefaultUpdatedAt()
+		piu.mutation.SetUpdatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (piu *PlanIntroduceUpdate) check() error {
 	if _, ok := piu.mutation.ModelID(); piu.mutation.ModelCleared() && !ok {
@@ -180,6 +196,13 @@ func (piu *PlanIntroduceUpdate) sqlSave(ctx context.Context) (n int, err error) 
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := piu.mutation.UpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: planintroduce.FieldUpdatedAt,
+		})
 	}
 	if value, ok := piu.mutation.Image(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -279,6 +302,12 @@ type PlanIntroduceUpdateOne struct {
 	modifiers []func(*sql.UpdateBuilder)
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (piuo *PlanIntroduceUpdateOne) SetUpdatedAt(t time.Time) *PlanIntroduceUpdateOne {
+	piuo.mutation.SetUpdatedAt(t)
+	return piuo
+}
+
 // SetModelID sets the "model_id" field.
 func (piuo *PlanIntroduceUpdateOne) SetModelID(u uint64) *PlanIntroduceUpdateOne {
 	piuo.mutation.SetModelID(u)
@@ -351,6 +380,7 @@ func (piuo *PlanIntroduceUpdateOne) Save(ctx context.Context) (*PlanIntroduce, e
 		err  error
 		node *PlanIntroduce
 	)
+	piuo.defaults()
 	if len(piuo.hooks) == 0 {
 		if err = piuo.check(); err != nil {
 			return nil, err
@@ -411,6 +441,14 @@ func (piuo *PlanIntroduceUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (piuo *PlanIntroduceUpdateOne) defaults() {
+	if _, ok := piuo.mutation.UpdatedAt(); !ok {
+		v := planintroduce.UpdateDefaultUpdatedAt()
+		piuo.mutation.SetUpdatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (piuo *PlanIntroduceUpdateOne) check() error {
 	if _, ok := piuo.mutation.ModelID(); piuo.mutation.ModelCleared() && !ok {
@@ -459,6 +497,13 @@ func (piuo *PlanIntroduceUpdateOne) sqlSave(ctx context.Context) (_node *PlanInt
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := piuo.mutation.UpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: planintroduce.FieldUpdatedAt,
+		})
 	}
 	if value, ok := piuo.mutation.Image(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{

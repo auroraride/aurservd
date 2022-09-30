@@ -13,7 +13,6 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/coupon"
     "github.com/auroraride/aurservd/internal/ent/couponassembly"
-    "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/utils"
@@ -213,7 +212,7 @@ func (s *couponService) listFilter(req model.CouponListFilter) (q *ent.CouponQue
     if req.Keyword != "" {
         q.Where(
             coupon.HasRiderWith(rider.Or(
-                rider.HasPersonWith(person.NameContainsFold(req.Keyword)),
+                rider.NameContainsFold(req.Keyword),
                 rider.PhoneContainsFold(req.Keyword),
             )),
         )
@@ -263,9 +262,7 @@ func (s *couponService) Status(c *ent.Coupon) model.CouponStatus {
 
 func (s *couponService) List(req *model.CouponListReq) *model.PaginationRes {
     q, _ := s.listFilter(req.CouponListFilter)
-    return model.ParsePaginationResponse(q.WithPlan().WithRider(func(query *ent.RiderQuery) {
-        query.WithPerson()
-    }).WithOrder().WithAssembly(), req.PaginationReq, func(item *ent.Coupon) (res model.CouponListRes) {
+    return model.ParsePaginationResponse(q.WithPlan().WithRider().WithOrder().WithAssembly(), req.PaginationReq, func(item *ent.Coupon) (res model.CouponListRes) {
         // 城市 / 骑士卡
         ea := item.Edges.Assembly
         var cities, plans []string
@@ -279,7 +276,7 @@ func (s *couponService) List(req *model.CouponListReq) *model.PaginationRes {
         er := item.Edges.Rider
         var rn, rp string
         if er != nil {
-            rn = er.Edges.Person.Name
+            rn = er.Name
             rp = er.Phone
         }
 

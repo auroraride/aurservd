@@ -138,9 +138,7 @@ func (s *businessRiderService) Inactive(id uint64) (*model.SubscribeActiveInfo, 
         WithInitialOrder(func(oq *ent.OrderQuery) {
             oq.WithPlan().WithCommission()
         }).
-        WithRider(func(rq *ent.RiderQuery) {
-            rq.WithPerson()
-        }).
+        WithRider().
         WithEnterprise().
         WithCity().
         Only(s.ctx)
@@ -158,17 +156,15 @@ func (s *businessRiderService) Inactive(id uint64) (*model.SubscribeActiveInfo, 
         snag.Panic("骑手信息获取失败")
     }
 
-    p := sub.Edges.Rider.Edges.Person
-
     res := &model.SubscribeActiveInfo{
         ID:           sub.ID,
         EnterpriseID: sub.EnterpriseID,
         Model:        sub.Model,
         CommissionID: nil,
-        Rider: model.RiderBasic{
+        Rider: model.Rider{
             ID:    r.ID,
             Phone: r.Phone,
-            Name:  p.Name,
+            Name:  r.Name,
         },
         City: model.City{
             ID:   sub.Edges.City.ID,

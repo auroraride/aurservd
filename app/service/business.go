@@ -18,7 +18,6 @@ import (
     "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/internal/ent/enterprise"
-    "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
@@ -106,13 +105,18 @@ func (s *businessService) Detail(id uint64) (res model.SubscribeBusiness) {
 
     s.CheckCity(subd.City.ID, s.employee.Edges.Store)
 
-    ic := r.Edges.Person.IDCardNumber
+    var ic string
+    if len(r.IDCardNumber) > 0 {
+        ic = r.IDCardNumber
+        ic = ic[len(ic)-4:]
+    }
+
     res = model.SubscribeBusiness{
         ID:           r.ID,
         Status:       subd.Status,
-        Name:         r.Edges.Person.Name,
+        Name:         r.Name,
         Phone:        r.Phone,
-        IDCardNumber: ic[len(ic)-4:],
+        IDCardNumber: ic,
         Model:        subd.Model,
         SubscribeID:  subd.ID,
     }
@@ -151,9 +155,7 @@ func (s *businessService) listFilter(req model.BusinessFilter) (q *ent.BusinessQ
 
     q = ent.Database.Business.
         QueryNotDeleted().
-        WithRider(func(rq *ent.RiderQuery) {
-            rq.WithPerson()
-        }).
+        WithRider().
         WithEnterprise().
         WithPlan().
         WithCity().
@@ -199,7 +201,7 @@ func (s *businessService) listFilter(req model.BusinessFilter) (q *ent.BusinessQ
         q.Where(business.HasRiderWith(
             rider.Or(
                 rider.PhoneContainsFold(*req.Keyword),
-                rider.HasPersonWith(person.NameContainsFold(*req.Keyword)),
+                rider.NameContainsFold(*req.Keyword),
             ),
         ))
     }
@@ -235,7 +237,7 @@ func (s *businessService) listFilter(req model.BusinessFilter) (q *ent.BusinessQ
 func (s *businessService) basicDetail(item *ent.Business) (res model.BusinessEmployeeListRes) {
     res = model.BusinessEmployeeListRes{
         ID:    item.ID,
-        Name:  item.Edges.Rider.Edges.Person.Name,
+        Name:  item.Edges.Rider.Name,
         Phone: item.Edges.Rider.Phone,
         Type:  s.Text(item.Type),
         Time:  item.CreatedAt.Format(carbon.DateTimeLayout),
@@ -342,9 +344,7 @@ func (s *businessService) ListPause(req *model.BusinessPauseList) *model.Paginat
         WithSubscribe(func(query *ent.SubscribeQuery) {
             query.WithPlan()
         }).
-        WithRider(func(query *ent.RiderQuery) {
-            query.WithPerson()
-        }).
+        WithRider().
         Order(ent.Desc(subscribepause.FieldCreatedAt))
 
     // 筛选城市
@@ -472,7 +472,7 @@ func (s *businessService) pauseDetail(item *ent.SubscribePause) (res model.Busin
     ep := sub.Edges.Plan
     res = model.BusinessPauseListRes{
         City:            item.Edges.City.Name,
-        Name:            item.Edges.Rider.Edges.Person.Name,
+        Name:            item.Edges.Rider.Name,
         Phone:           item.Edges.Rider.Phone,
         Plan:            fmt.Sprintf("%s - %d天", ep.Name, ep.Days),
         Start:           item.StartAt.Format(carbon.DateLayout),
