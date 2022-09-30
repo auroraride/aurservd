@@ -7275,6 +7275,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/plan/introduce/notset": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M6005 获取未设定介绍的车电型号",
+                "operationId": "ManagerPlanIntroduceNotset",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "未设定列表",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.PlanIntroduceOption"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/plan/{id}": {
             "put": {
                 "consumes": [
@@ -15031,6 +15066,9 @@ const docTemplate = `{
                     "description": "过期时间 ` + "`" + `durationRule=1` + "`" + `必填 yyyy-mm-dd, 如 2022-09-25",
                     "type": "string"
                 },
+                "enable": {
+                    "type": "boolean"
+                },
                 "expired": {
                     "description": "已过期",
                     "type": "integer"
@@ -15045,6 +15083,9 @@ const docTemplate = `{
                 "multiple": {
                     "description": "重复使用(该券是否可叠加使用)",
                     "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
                 },
                 "planIds": {
                     "description": "绑定骑士卡 和` + "`" + `cities` + "`" + `不能同时为空也不能同时存在",
@@ -15100,6 +15141,17 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                }
+            }
+        },
+        "model.EbikeBrand": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },
@@ -16783,6 +16835,22 @@ const docTemplate = `{
                 "enable": {
                     "description": "启用或禁用",
                     "type": "boolean"
+                }
+            }
+        },
+        "model.PlanIntroduceOption": {
+            "type": "object",
+            "properties": {
+                "brands": {
+                    "description": "该电池型号未设置的电车品牌",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EbikeBrand"
+                    }
+                },
+                "model": {
+                    "description": "未设定的电池型号",
+                    "type": "string"
                 }
             }
         },

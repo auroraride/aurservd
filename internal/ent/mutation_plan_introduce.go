@@ -23,10 +23,9 @@ type PlanIntroduceMutation struct {
 	id            *uint64
 	created_at    *time.Time
 	updated_at    *time.Time
+	model         *string
 	image         *string
 	clearedFields map[string]struct{}
-	model         *uint64
-	clearedmodel  bool
 	brand         *uint64
 	clearedbrand  bool
 	done          bool
@@ -204,42 +203,6 @@ func (m *PlanIntroduceMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// SetModelID sets the "model_id" field.
-func (m *PlanIntroduceMutation) SetModelID(u uint64) {
-	m.model = &u
-}
-
-// ModelID returns the value of the "model_id" field in the mutation.
-func (m *PlanIntroduceMutation) ModelID() (r uint64, exists bool) {
-	v := m.model
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldModelID returns the old "model_id" field's value of the PlanIntroduce entity.
-// If the PlanIntroduce object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PlanIntroduceMutation) OldModelID(ctx context.Context) (v uint64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldModelID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldModelID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldModelID: %w", err)
-	}
-	return oldValue.ModelID, nil
-}
-
-// ResetModelID resets all changes to the "model_id" field.
-func (m *PlanIntroduceMutation) ResetModelID() {
-	m.model = nil
-}
-
 // SetBrandID sets the "brand_id" field.
 func (m *PlanIntroduceMutation) SetBrandID(u uint64) {
 	m.brand = &u
@@ -289,6 +252,42 @@ func (m *PlanIntroduceMutation) ResetBrandID() {
 	delete(m.clearedFields, planintroduce.FieldBrandID)
 }
 
+// SetModel sets the "model" field.
+func (m *PlanIntroduceMutation) SetModel(s string) {
+	m.model = &s
+}
+
+// Model returns the value of the "model" field in the mutation.
+func (m *PlanIntroduceMutation) Model() (r string, exists bool) {
+	v := m.model
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldModel returns the old "model" field's value of the PlanIntroduce entity.
+// If the PlanIntroduce object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanIntroduceMutation) OldModel(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldModel is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldModel requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldModel: %w", err)
+	}
+	return oldValue.Model, nil
+}
+
+// ResetModel resets all changes to the "model" field.
+func (m *PlanIntroduceMutation) ResetModel() {
+	m.model = nil
+}
+
 // SetImage sets the "image" field.
 func (m *PlanIntroduceMutation) SetImage(s string) {
 	m.image = &s
@@ -323,32 +322,6 @@ func (m *PlanIntroduceMutation) OldImage(ctx context.Context) (v string, err err
 // ResetImage resets all changes to the "image" field.
 func (m *PlanIntroduceMutation) ResetImage() {
 	m.image = nil
-}
-
-// ClearModel clears the "model" edge to the BatteryModel entity.
-func (m *PlanIntroduceMutation) ClearModel() {
-	m.clearedmodel = true
-}
-
-// ModelCleared reports if the "model" edge to the BatteryModel entity was cleared.
-func (m *PlanIntroduceMutation) ModelCleared() bool {
-	return m.clearedmodel
-}
-
-// ModelIDs returns the "model" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// ModelID instead. It exists only for internal usage by the builders.
-func (m *PlanIntroduceMutation) ModelIDs() (ids []uint64) {
-	if id := m.model; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetModel resets all changes to the "model" edge.
-func (m *PlanIntroduceMutation) ResetModel() {
-	m.model = nil
-	m.clearedmodel = false
 }
 
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
@@ -403,11 +376,11 @@ func (m *PlanIntroduceMutation) Fields() []string {
 	if m.updated_at != nil {
 		fields = append(fields, planintroduce.FieldUpdatedAt)
 	}
-	if m.model != nil {
-		fields = append(fields, planintroduce.FieldModelID)
-	}
 	if m.brand != nil {
 		fields = append(fields, planintroduce.FieldBrandID)
+	}
+	if m.model != nil {
+		fields = append(fields, planintroduce.FieldModel)
 	}
 	if m.image != nil {
 		fields = append(fields, planintroduce.FieldImage)
@@ -424,10 +397,10 @@ func (m *PlanIntroduceMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case planintroduce.FieldUpdatedAt:
 		return m.UpdatedAt()
-	case planintroduce.FieldModelID:
-		return m.ModelID()
 	case planintroduce.FieldBrandID:
 		return m.BrandID()
+	case planintroduce.FieldModel:
+		return m.Model()
 	case planintroduce.FieldImage:
 		return m.Image()
 	}
@@ -443,10 +416,10 @@ func (m *PlanIntroduceMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldCreatedAt(ctx)
 	case planintroduce.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
-	case planintroduce.FieldModelID:
-		return m.OldModelID(ctx)
 	case planintroduce.FieldBrandID:
 		return m.OldBrandID(ctx)
+	case planintroduce.FieldModel:
+		return m.OldModel(ctx)
 	case planintroduce.FieldImage:
 		return m.OldImage(ctx)
 	}
@@ -472,19 +445,19 @@ func (m *PlanIntroduceMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdatedAt(v)
 		return nil
-	case planintroduce.FieldModelID:
-		v, ok := value.(uint64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetModelID(v)
-		return nil
 	case planintroduce.FieldBrandID:
 		v, ok := value.(uint64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetBrandID(v)
+		return nil
+	case planintroduce.FieldModel:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetModel(v)
 		return nil
 	case planintroduce.FieldImage:
 		v, ok := value.(string)
@@ -560,11 +533,11 @@ func (m *PlanIntroduceMutation) ResetField(name string) error {
 	case planintroduce.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
-	case planintroduce.FieldModelID:
-		m.ResetModelID()
-		return nil
 	case planintroduce.FieldBrandID:
 		m.ResetBrandID()
+		return nil
+	case planintroduce.FieldModel:
+		m.ResetModel()
 		return nil
 	case planintroduce.FieldImage:
 		m.ResetImage()
@@ -575,10 +548,7 @@ func (m *PlanIntroduceMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlanIntroduceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.model != nil {
-		edges = append(edges, planintroduce.EdgeModel)
-	}
+	edges := make([]string, 0, 1)
 	if m.brand != nil {
 		edges = append(edges, planintroduce.EdgeBrand)
 	}
@@ -589,10 +559,6 @@ func (m *PlanIntroduceMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *PlanIntroduceMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case planintroduce.EdgeModel:
-		if id := m.model; id != nil {
-			return []ent.Value{*id}
-		}
 	case planintroduce.EdgeBrand:
 		if id := m.brand; id != nil {
 			return []ent.Value{*id}
@@ -603,7 +569,7 @@ func (m *PlanIntroduceMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlanIntroduceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 1)
 	return edges
 }
 
@@ -617,10 +583,7 @@ func (m *PlanIntroduceMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlanIntroduceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.clearedmodel {
-		edges = append(edges, planintroduce.EdgeModel)
-	}
+	edges := make([]string, 0, 1)
 	if m.clearedbrand {
 		edges = append(edges, planintroduce.EdgeBrand)
 	}
@@ -631,8 +594,6 @@ func (m *PlanIntroduceMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *PlanIntroduceMutation) EdgeCleared(name string) bool {
 	switch name {
-	case planintroduce.EdgeModel:
-		return m.clearedmodel
 	case planintroduce.EdgeBrand:
 		return m.clearedbrand
 	}
@@ -643,9 +604,6 @@ func (m *PlanIntroduceMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *PlanIntroduceMutation) ClearEdge(name string) error {
 	switch name {
-	case planintroduce.EdgeModel:
-		m.ClearModel()
-		return nil
 	case planintroduce.EdgeBrand:
 		m.ClearBrand()
 		return nil
@@ -657,9 +615,6 @@ func (m *PlanIntroduceMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *PlanIntroduceMutation) ResetEdge(name string) error {
 	switch name {
-	case planintroduce.EdgeModel:
-		m.ResetModel()
-		return nil
 	case planintroduce.EdgeBrand:
 		m.ResetBrand()
 		return nil

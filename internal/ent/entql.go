@@ -511,6 +511,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			ebikebrand.FieldCreator:      {Type: field.TypeJSON, Column: ebikebrand.FieldCreator},
 			ebikebrand.FieldLastModifier: {Type: field.TypeJSON, Column: ebikebrand.FieldLastModifier},
 			ebikebrand.FieldRemark:       {Type: field.TypeString, Column: ebikebrand.FieldRemark},
+			ebikebrand.FieldName:         {Type: field.TypeString, Column: ebikebrand.FieldName},
 		},
 	}
 	graph.Nodes[16] = &sqlgraph.Node{
@@ -990,8 +991,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 		Fields: map[string]*sqlgraph.FieldSpec{
 			planintroduce.FieldCreatedAt: {Type: field.TypeTime, Column: planintroduce.FieldCreatedAt},
 			planintroduce.FieldUpdatedAt: {Type: field.TypeTime, Column: planintroduce.FieldUpdatedAt},
-			planintroduce.FieldModelID:   {Type: field.TypeUint64, Column: planintroduce.FieldModelID},
 			planintroduce.FieldBrandID:   {Type: field.TypeUint64, Column: planintroduce.FieldBrandID},
+			planintroduce.FieldModel:     {Type: field.TypeString, Column: planintroduce.FieldModel},
 			planintroduce.FieldImage:     {Type: field.TypeString, Column: planintroduce.FieldImage},
 		},
 	}
@@ -2712,18 +2713,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Plan",
 		"Coupon",
-	)
-	graph.MustAddE(
-		"model",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   planintroduce.ModelTable,
-			Columns: []string{planintroduce.ModelColumn},
-			Bidi:    false,
-		},
-		"PlanIntroduce",
-		"BatteryModel",
 	)
 	graph.MustAddE(
 		"brand",
@@ -6194,6 +6183,11 @@ func (f *EbikeBrandFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(ebikebrand.FieldRemark))
 }
 
+// WhereName applies the entql string predicate on the name field.
+func (f *EbikeBrandFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(ebikebrand.FieldName))
+}
+
 // addPredicate implements the predicateAdder interface.
 func (eq *EmployeeQuery) addPredicate(pred func(s *sql.Selector)) {
 	eq.predicates = append(eq.predicates, pred)
@@ -8937,33 +8931,19 @@ func (f *PlanIntroduceFilter) WhereUpdatedAt(p entql.TimeP) {
 	f.Where(p.Field(planintroduce.FieldUpdatedAt))
 }
 
-// WhereModelID applies the entql uint64 predicate on the model_id field.
-func (f *PlanIntroduceFilter) WhereModelID(p entql.Uint64P) {
-	f.Where(p.Field(planintroduce.FieldModelID))
-}
-
 // WhereBrandID applies the entql uint64 predicate on the brand_id field.
 func (f *PlanIntroduceFilter) WhereBrandID(p entql.Uint64P) {
 	f.Where(p.Field(planintroduce.FieldBrandID))
 }
 
+// WhereModel applies the entql string predicate on the model field.
+func (f *PlanIntroduceFilter) WhereModel(p entql.StringP) {
+	f.Where(p.Field(planintroduce.FieldModel))
+}
+
 // WhereImage applies the entql string predicate on the image field.
 func (f *PlanIntroduceFilter) WhereImage(p entql.StringP) {
 	f.Where(p.Field(planintroduce.FieldImage))
-}
-
-// WhereHasModel applies a predicate to check if query has an edge model.
-func (f *PlanIntroduceFilter) WhereHasModel() {
-	f.Where(entql.HasEdge("model"))
-}
-
-// WhereHasModelWith applies a predicate to check if query has an edge model with a given conditions (other predicates).
-func (f *PlanIntroduceFilter) WhereHasModelWith(preds ...predicate.BatteryModel) {
-	f.Where(entql.HasEdgeWith("model", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
 }
 
 // WhereHasBrand applies a predicate to check if query has an edge brand.

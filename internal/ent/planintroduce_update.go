@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/planintroduce"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -37,12 +36,6 @@ func (piu *PlanIntroduceUpdate) SetUpdatedAt(t time.Time) *PlanIntroduceUpdate {
 	return piu
 }
 
-// SetModelID sets the "model_id" field.
-func (piu *PlanIntroduceUpdate) SetModelID(u uint64) *PlanIntroduceUpdate {
-	piu.mutation.SetModelID(u)
-	return piu
-}
-
 // SetBrandID sets the "brand_id" field.
 func (piu *PlanIntroduceUpdate) SetBrandID(u uint64) *PlanIntroduceUpdate {
 	piu.mutation.SetBrandID(u)
@@ -63,15 +56,16 @@ func (piu *PlanIntroduceUpdate) ClearBrandID() *PlanIntroduceUpdate {
 	return piu
 }
 
+// SetModel sets the "model" field.
+func (piu *PlanIntroduceUpdate) SetModel(s string) *PlanIntroduceUpdate {
+	piu.mutation.SetModel(s)
+	return piu
+}
+
 // SetImage sets the "image" field.
 func (piu *PlanIntroduceUpdate) SetImage(s string) *PlanIntroduceUpdate {
 	piu.mutation.SetImage(s)
 	return piu
-}
-
-// SetModel sets the "model" edge to the BatteryModel entity.
-func (piu *PlanIntroduceUpdate) SetModel(b *BatteryModel) *PlanIntroduceUpdate {
-	return piu.SetModelID(b.ID)
 }
 
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
@@ -82,12 +76,6 @@ func (piu *PlanIntroduceUpdate) SetBrand(e *EbikeBrand) *PlanIntroduceUpdate {
 // Mutation returns the PlanIntroduceMutation object of the builder.
 func (piu *PlanIntroduceUpdate) Mutation() *PlanIntroduceMutation {
 	return piu.mutation
-}
-
-// ClearModel clears the "model" edge to the BatteryModel entity.
-func (piu *PlanIntroduceUpdate) ClearModel() *PlanIntroduceUpdate {
-	piu.mutation.ClearModel()
-	return piu
 }
 
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
@@ -104,18 +92,12 @@ func (piu *PlanIntroduceUpdate) Save(ctx context.Context) (int, error) {
 	)
 	piu.defaults()
 	if len(piu.hooks) == 0 {
-		if err = piu.check(); err != nil {
-			return 0, err
-		}
 		affected, err = piu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*PlanIntroduceMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = piu.check(); err != nil {
-				return 0, err
 			}
 			piu.mutation = mutation
 			affected, err = piu.sqlSave(ctx)
@@ -165,14 +147,6 @@ func (piu *PlanIntroduceUpdate) defaults() {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (piu *PlanIntroduceUpdate) check() error {
-	if _, ok := piu.mutation.ModelID(); piu.mutation.ModelCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "PlanIntroduce.model"`)
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (piu *PlanIntroduceUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *PlanIntroduceUpdate {
 	piu.modifiers = append(piu.modifiers, modifiers...)
@@ -204,47 +178,19 @@ func (piu *PlanIntroduceUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Column: planintroduce.FieldUpdatedAt,
 		})
 	}
+	if value, ok := piu.mutation.Model(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: planintroduce.FieldModel,
+		})
+	}
 	if value, ok := piu.mutation.Image(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
 			Column: planintroduce.FieldImage,
 		})
-	}
-	if piu.mutation.ModelCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   planintroduce.ModelTable,
-			Columns: []string{planintroduce.ModelColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: batterymodel.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := piu.mutation.ModelIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   planintroduce.ModelTable,
-			Columns: []string{planintroduce.ModelColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: batterymodel.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if piu.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -308,12 +254,6 @@ func (piuo *PlanIntroduceUpdateOne) SetUpdatedAt(t time.Time) *PlanIntroduceUpda
 	return piuo
 }
 
-// SetModelID sets the "model_id" field.
-func (piuo *PlanIntroduceUpdateOne) SetModelID(u uint64) *PlanIntroduceUpdateOne {
-	piuo.mutation.SetModelID(u)
-	return piuo
-}
-
 // SetBrandID sets the "brand_id" field.
 func (piuo *PlanIntroduceUpdateOne) SetBrandID(u uint64) *PlanIntroduceUpdateOne {
 	piuo.mutation.SetBrandID(u)
@@ -334,15 +274,16 @@ func (piuo *PlanIntroduceUpdateOne) ClearBrandID() *PlanIntroduceUpdateOne {
 	return piuo
 }
 
+// SetModel sets the "model" field.
+func (piuo *PlanIntroduceUpdateOne) SetModel(s string) *PlanIntroduceUpdateOne {
+	piuo.mutation.SetModel(s)
+	return piuo
+}
+
 // SetImage sets the "image" field.
 func (piuo *PlanIntroduceUpdateOne) SetImage(s string) *PlanIntroduceUpdateOne {
 	piuo.mutation.SetImage(s)
 	return piuo
-}
-
-// SetModel sets the "model" edge to the BatteryModel entity.
-func (piuo *PlanIntroduceUpdateOne) SetModel(b *BatteryModel) *PlanIntroduceUpdateOne {
-	return piuo.SetModelID(b.ID)
 }
 
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
@@ -353,12 +294,6 @@ func (piuo *PlanIntroduceUpdateOne) SetBrand(e *EbikeBrand) *PlanIntroduceUpdate
 // Mutation returns the PlanIntroduceMutation object of the builder.
 func (piuo *PlanIntroduceUpdateOne) Mutation() *PlanIntroduceMutation {
 	return piuo.mutation
-}
-
-// ClearModel clears the "model" edge to the BatteryModel entity.
-func (piuo *PlanIntroduceUpdateOne) ClearModel() *PlanIntroduceUpdateOne {
-	piuo.mutation.ClearModel()
-	return piuo
 }
 
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
@@ -382,18 +317,12 @@ func (piuo *PlanIntroduceUpdateOne) Save(ctx context.Context) (*PlanIntroduce, e
 	)
 	piuo.defaults()
 	if len(piuo.hooks) == 0 {
-		if err = piuo.check(); err != nil {
-			return nil, err
-		}
 		node, err = piuo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*PlanIntroduceMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = piuo.check(); err != nil {
-				return nil, err
 			}
 			piuo.mutation = mutation
 			node, err = piuo.sqlSave(ctx)
@@ -449,14 +378,6 @@ func (piuo *PlanIntroduceUpdateOne) defaults() {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (piuo *PlanIntroduceUpdateOne) check() error {
-	if _, ok := piuo.mutation.ModelID(); piuo.mutation.ModelCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "PlanIntroduce.model"`)
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (piuo *PlanIntroduceUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *PlanIntroduceUpdateOne {
 	piuo.modifiers = append(piuo.modifiers, modifiers...)
@@ -505,47 +426,19 @@ func (piuo *PlanIntroduceUpdateOne) sqlSave(ctx context.Context) (_node *PlanInt
 			Column: planintroduce.FieldUpdatedAt,
 		})
 	}
+	if value, ok := piuo.mutation.Model(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: planintroduce.FieldModel,
+		})
+	}
 	if value, ok := piuo.mutation.Image(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
 			Column: planintroduce.FieldImage,
 		})
-	}
-	if piuo.mutation.ModelCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   planintroduce.ModelTable,
-			Columns: []string{planintroduce.ModelColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: batterymodel.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := piuo.mutation.ModelIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   planintroduce.ModelTable,
-			Columns: []string{planintroduce.ModelColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: batterymodel.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if piuo.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{

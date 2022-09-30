@@ -91,6 +91,12 @@ func (ebc *EbikeBrandCreate) SetNillableRemark(s *string) *EbikeBrandCreate {
 	return ebc
 }
 
+// SetName sets the "name" field.
+func (ebc *EbikeBrandCreate) SetName(s string) *EbikeBrandCreate {
+	ebc.mutation.SetName(s)
+	return ebc
+}
+
 // Mutation returns the EbikeBrandMutation object of the builder.
 func (ebc *EbikeBrandCreate) Mutation() *EbikeBrandMutation {
 	return ebc.mutation
@@ -195,6 +201,9 @@ func (ebc *EbikeBrandCreate) check() error {
 	if _, ok := ebc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "EbikeBrand.updated_at"`)}
 	}
+	if _, ok := ebc.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "EbikeBrand.name"`)}
+	}
 	return nil
 }
 
@@ -270,6 +279,14 @@ func (ebc *EbikeBrandCreate) createSpec() (*EbikeBrand, *sqlgraph.CreateSpec) {
 			Column: ebikebrand.FieldRemark,
 		})
 		_node.Remark = value
+	}
+	if value, ok := ebc.mutation.Name(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: ebikebrand.FieldName,
+		})
+		_node.Name = value
 	}
 	return _node, _spec
 }
@@ -386,6 +403,18 @@ func (u *EbikeBrandUpsert) UpdateRemark() *EbikeBrandUpsert {
 // ClearRemark clears the value of the "remark" field.
 func (u *EbikeBrandUpsert) ClearRemark() *EbikeBrandUpsert {
 	u.SetNull(ebikebrand.FieldRemark)
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *EbikeBrandUpsert) SetName(v string) *EbikeBrandUpsert {
+	u.Set(ebikebrand.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *EbikeBrandUpsert) UpdateName() *EbikeBrandUpsert {
+	u.SetExcluded(ebikebrand.FieldName)
 	return u
 }
 
@@ -511,6 +540,20 @@ func (u *EbikeBrandUpsertOne) UpdateRemark() *EbikeBrandUpsertOne {
 func (u *EbikeBrandUpsertOne) ClearRemark() *EbikeBrandUpsertOne {
 	return u.Update(func(s *EbikeBrandUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *EbikeBrandUpsertOne) SetName(v string) *EbikeBrandUpsertOne {
+	return u.Update(func(s *EbikeBrandUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *EbikeBrandUpsertOne) UpdateName() *EbikeBrandUpsertOne {
+	return u.Update(func(s *EbikeBrandUpsert) {
+		s.UpdateName()
 	})
 }
 
@@ -798,6 +841,20 @@ func (u *EbikeBrandUpsertBulk) UpdateRemark() *EbikeBrandUpsertBulk {
 func (u *EbikeBrandUpsertBulk) ClearRemark() *EbikeBrandUpsertBulk {
 	return u.Update(func(s *EbikeBrandUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *EbikeBrandUpsertBulk) SetName(v string) *EbikeBrandUpsertBulk {
+	return u.Update(func(s *EbikeBrandUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *EbikeBrandUpsertBulk) UpdateName() *EbikeBrandUpsertBulk {
+	return u.Update(func(s *EbikeBrandUpsert) {
+		s.UpdateName()
 	})
 }
 

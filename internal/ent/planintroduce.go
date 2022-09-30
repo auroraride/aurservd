@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/planintroduce"
 )
@@ -22,10 +21,10 @@ type PlanIntroduce struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// ModelID holds the value of the "model_id" field.
-	ModelID uint64 `json:"model_id,omitempty"`
 	// BrandID holds the value of the "brand_id" field.
 	BrandID *uint64 `json:"brand_id,omitempty"`
+	// 电池型号
+	Model string `json:"model,omitempty"`
 	// Image holds the value of the "image" field.
 	Image string `json:"image,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -35,32 +34,17 @@ type PlanIntroduce struct {
 
 // PlanIntroduceEdges holds the relations/edges for other nodes in the graph.
 type PlanIntroduceEdges struct {
-	// Model holds the value of the model edge.
-	Model *BatteryModel `json:"model,omitempty"`
 	// Brand holds the value of the brand edge.
 	Brand *EbikeBrand `json:"brand,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
-}
-
-// ModelOrErr returns the Model value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e PlanIntroduceEdges) ModelOrErr() (*BatteryModel, error) {
-	if e.loadedTypes[0] {
-		if e.Model == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: batterymodel.Label}
-		}
-		return e.Model, nil
-	}
-	return nil, &NotLoadedError{edge: "model"}
+	loadedTypes [1]bool
 }
 
 // BrandOrErr returns the Brand value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PlanIntroduceEdges) BrandOrErr() (*EbikeBrand, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[0] {
 		if e.Brand == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: ebikebrand.Label}
@@ -75,9 +59,9 @@ func (*PlanIntroduce) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case planintroduce.FieldID, planintroduce.FieldModelID, planintroduce.FieldBrandID:
+		case planintroduce.FieldID, planintroduce.FieldBrandID:
 			values[i] = new(sql.NullInt64)
-		case planintroduce.FieldImage:
+		case planintroduce.FieldModel, planintroduce.FieldImage:
 			values[i] = new(sql.NullString)
 		case planintroduce.FieldCreatedAt, planintroduce.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -114,18 +98,18 @@ func (pi *PlanIntroduce) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pi.UpdatedAt = value.Time
 			}
-		case planintroduce.FieldModelID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field model_id", values[i])
-			} else if value.Valid {
-				pi.ModelID = uint64(value.Int64)
-			}
 		case planintroduce.FieldBrandID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field brand_id", values[i])
 			} else if value.Valid {
 				pi.BrandID = new(uint64)
 				*pi.BrandID = uint64(value.Int64)
+			}
+		case planintroduce.FieldModel:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field model", values[i])
+			} else if value.Valid {
+				pi.Model = value.String
 			}
 		case planintroduce.FieldImage:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -136,11 +120,6 @@ func (pi *PlanIntroduce) assignValues(columns []string, values []any) error {
 		}
 	}
 	return nil
-}
-
-// QueryModel queries the "model" edge of the PlanIntroduce entity.
-func (pi *PlanIntroduce) QueryModel() *BatteryModelQuery {
-	return (&PlanIntroduceClient{config: pi.config}).QueryModel(pi)
 }
 
 // QueryBrand queries the "brand" edge of the PlanIntroduce entity.
@@ -177,13 +156,13 @@ func (pi *PlanIntroduce) String() string {
 	builder.WriteString("updated_at=")
 	builder.WriteString(pi.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("model_id=")
-	builder.WriteString(fmt.Sprintf("%v", pi.ModelID))
-	builder.WriteString(", ")
 	if v := pi.BrandID; v != nil {
 		builder.WriteString("brand_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
+	builder.WriteString(", ")
+	builder.WriteString("model=")
+	builder.WriteString(pi.Model)
 	builder.WriteString(", ")
 	builder.WriteString("image=")
 	builder.WriteString(pi.Image)

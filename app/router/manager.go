@@ -74,6 +74,7 @@ func loadManagerRoutes() {
     g.POST("/plan", mapi.Plan.Create)
     g.PUT("/plan/:id", mapi.Plan.UpdateEnable)
     g.DELETE("/plan/:id", mapi.Plan.Delete)
+    g.GET("/plan/introduce/notset", mapi.Plan.IntroduceNotset)
 
     // 骑手
     g.GET("/rider", mapi.Rider.List)

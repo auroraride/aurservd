@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/planintroduce"
 )
@@ -52,12 +51,6 @@ func (pic *PlanIntroduceCreate) SetNillableUpdatedAt(t *time.Time) *PlanIntroduc
 	return pic
 }
 
-// SetModelID sets the "model_id" field.
-func (pic *PlanIntroduceCreate) SetModelID(u uint64) *PlanIntroduceCreate {
-	pic.mutation.SetModelID(u)
-	return pic
-}
-
 // SetBrandID sets the "brand_id" field.
 func (pic *PlanIntroduceCreate) SetBrandID(u uint64) *PlanIntroduceCreate {
 	pic.mutation.SetBrandID(u)
@@ -72,15 +65,16 @@ func (pic *PlanIntroduceCreate) SetNillableBrandID(u *uint64) *PlanIntroduceCrea
 	return pic
 }
 
+// SetModel sets the "model" field.
+func (pic *PlanIntroduceCreate) SetModel(s string) *PlanIntroduceCreate {
+	pic.mutation.SetModel(s)
+	return pic
+}
+
 // SetImage sets the "image" field.
 func (pic *PlanIntroduceCreate) SetImage(s string) *PlanIntroduceCreate {
 	pic.mutation.SetImage(s)
 	return pic
-}
-
-// SetModel sets the "model" edge to the BatteryModel entity.
-func (pic *PlanIntroduceCreate) SetModel(b *BatteryModel) *PlanIntroduceCreate {
-	return pic.SetModelID(b.ID)
 }
 
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
@@ -183,14 +177,11 @@ func (pic *PlanIntroduceCreate) check() error {
 	if _, ok := pic.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "PlanIntroduce.updated_at"`)}
 	}
-	if _, ok := pic.mutation.ModelID(); !ok {
-		return &ValidationError{Name: "model_id", err: errors.New(`ent: missing required field "PlanIntroduce.model_id"`)}
+	if _, ok := pic.mutation.Model(); !ok {
+		return &ValidationError{Name: "model", err: errors.New(`ent: missing required field "PlanIntroduce.model"`)}
 	}
 	if _, ok := pic.mutation.Image(); !ok {
 		return &ValidationError{Name: "image", err: errors.New(`ent: missing required field "PlanIntroduce.image"`)}
-	}
-	if _, ok := pic.mutation.ModelID(); !ok {
-		return &ValidationError{Name: "model", err: errors.New(`ent: missing required edge "PlanIntroduce.model"`)}
 	}
 	return nil
 }
@@ -236,6 +227,14 @@ func (pic *PlanIntroduceCreate) createSpec() (*PlanIntroduce, *sqlgraph.CreateSp
 		})
 		_node.UpdatedAt = value
 	}
+	if value, ok := pic.mutation.Model(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: planintroduce.FieldModel,
+		})
+		_node.Model = value
+	}
 	if value, ok := pic.mutation.Image(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -243,26 +242,6 @@ func (pic *PlanIntroduceCreate) createSpec() (*PlanIntroduce, *sqlgraph.CreateSp
 			Column: planintroduce.FieldImage,
 		})
 		_node.Image = value
-	}
-	if nodes := pic.mutation.ModelIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   planintroduce.ModelTable,
-			Columns: []string{planintroduce.ModelColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: batterymodel.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.ModelID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := pic.mutation.BrandIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -348,18 +327,6 @@ func (u *PlanIntroduceUpsert) UpdateUpdatedAt() *PlanIntroduceUpsert {
 	return u
 }
 
-// SetModelID sets the "model_id" field.
-func (u *PlanIntroduceUpsert) SetModelID(v uint64) *PlanIntroduceUpsert {
-	u.Set(planintroduce.FieldModelID, v)
-	return u
-}
-
-// UpdateModelID sets the "model_id" field to the value that was provided on create.
-func (u *PlanIntroduceUpsert) UpdateModelID() *PlanIntroduceUpsert {
-	u.SetExcluded(planintroduce.FieldModelID)
-	return u
-}
-
 // SetBrandID sets the "brand_id" field.
 func (u *PlanIntroduceUpsert) SetBrandID(v uint64) *PlanIntroduceUpsert {
 	u.Set(planintroduce.FieldBrandID, v)
@@ -375,6 +342,18 @@ func (u *PlanIntroduceUpsert) UpdateBrandID() *PlanIntroduceUpsert {
 // ClearBrandID clears the value of the "brand_id" field.
 func (u *PlanIntroduceUpsert) ClearBrandID() *PlanIntroduceUpsert {
 	u.SetNull(planintroduce.FieldBrandID)
+	return u
+}
+
+// SetModel sets the "model" field.
+func (u *PlanIntroduceUpsert) SetModel(v string) *PlanIntroduceUpsert {
+	u.Set(planintroduce.FieldModel, v)
+	return u
+}
+
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *PlanIntroduceUpsert) UpdateModel() *PlanIntroduceUpsert {
+	u.SetExcluded(planintroduce.FieldModel)
 	return u
 }
 
@@ -449,20 +428,6 @@ func (u *PlanIntroduceUpsertOne) UpdateUpdatedAt() *PlanIntroduceUpsertOne {
 	})
 }
 
-// SetModelID sets the "model_id" field.
-func (u *PlanIntroduceUpsertOne) SetModelID(v uint64) *PlanIntroduceUpsertOne {
-	return u.Update(func(s *PlanIntroduceUpsert) {
-		s.SetModelID(v)
-	})
-}
-
-// UpdateModelID sets the "model_id" field to the value that was provided on create.
-func (u *PlanIntroduceUpsertOne) UpdateModelID() *PlanIntroduceUpsertOne {
-	return u.Update(func(s *PlanIntroduceUpsert) {
-		s.UpdateModelID()
-	})
-}
-
 // SetBrandID sets the "brand_id" field.
 func (u *PlanIntroduceUpsertOne) SetBrandID(v uint64) *PlanIntroduceUpsertOne {
 	return u.Update(func(s *PlanIntroduceUpsert) {
@@ -481,6 +446,20 @@ func (u *PlanIntroduceUpsertOne) UpdateBrandID() *PlanIntroduceUpsertOne {
 func (u *PlanIntroduceUpsertOne) ClearBrandID() *PlanIntroduceUpsertOne {
 	return u.Update(func(s *PlanIntroduceUpsert) {
 		s.ClearBrandID()
+	})
+}
+
+// SetModel sets the "model" field.
+func (u *PlanIntroduceUpsertOne) SetModel(v string) *PlanIntroduceUpsertOne {
+	return u.Update(func(s *PlanIntroduceUpsert) {
+		s.SetModel(v)
+	})
+}
+
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *PlanIntroduceUpsertOne) UpdateModel() *PlanIntroduceUpsertOne {
+	return u.Update(func(s *PlanIntroduceUpsert) {
+		s.UpdateModel()
 	})
 }
 
@@ -719,20 +698,6 @@ func (u *PlanIntroduceUpsertBulk) UpdateUpdatedAt() *PlanIntroduceUpsertBulk {
 	})
 }
 
-// SetModelID sets the "model_id" field.
-func (u *PlanIntroduceUpsertBulk) SetModelID(v uint64) *PlanIntroduceUpsertBulk {
-	return u.Update(func(s *PlanIntroduceUpsert) {
-		s.SetModelID(v)
-	})
-}
-
-// UpdateModelID sets the "model_id" field to the value that was provided on create.
-func (u *PlanIntroduceUpsertBulk) UpdateModelID() *PlanIntroduceUpsertBulk {
-	return u.Update(func(s *PlanIntroduceUpsert) {
-		s.UpdateModelID()
-	})
-}
-
 // SetBrandID sets the "brand_id" field.
 func (u *PlanIntroduceUpsertBulk) SetBrandID(v uint64) *PlanIntroduceUpsertBulk {
 	return u.Update(func(s *PlanIntroduceUpsert) {
@@ -751,6 +716,20 @@ func (u *PlanIntroduceUpsertBulk) UpdateBrandID() *PlanIntroduceUpsertBulk {
 func (u *PlanIntroduceUpsertBulk) ClearBrandID() *PlanIntroduceUpsertBulk {
 	return u.Update(func(s *PlanIntroduceUpsert) {
 		s.ClearBrandID()
+	})
+}
+
+// SetModel sets the "model" field.
+func (u *PlanIntroduceUpsertBulk) SetModel(v string) *PlanIntroduceUpsertBulk {
+	return u.Update(func(s *PlanIntroduceUpsert) {
+		s.SetModel(v)
+	})
+}
+
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *PlanIntroduceUpsertBulk) UpdateModel() *PlanIntroduceUpsertBulk {
+	return u.Update(func(s *PlanIntroduceUpsert) {
+		s.UpdateModel()
 	})
 }
 

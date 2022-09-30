@@ -15,25 +15,16 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// FieldModelID holds the string denoting the model_id field in the database.
-	FieldModelID = "model_id"
 	// FieldBrandID holds the string denoting the brand_id field in the database.
 	FieldBrandID = "brand_id"
+	// FieldModel holds the string denoting the model field in the database.
+	FieldModel = "model"
 	// FieldImage holds the string denoting the image field in the database.
 	FieldImage = "image"
-	// EdgeModel holds the string denoting the model edge name in mutations.
-	EdgeModel = "model"
 	// EdgeBrand holds the string denoting the brand edge name in mutations.
 	EdgeBrand = "brand"
 	// Table holds the table name of the planintroduce in the database.
 	Table = "plan_introduce"
-	// ModelTable is the table that holds the model relation/edge.
-	ModelTable = "plan_introduce"
-	// ModelInverseTable is the table name for the BatteryModel entity.
-	// It exists in this package in order to avoid circular dependency with the "batterymodel" package.
-	ModelInverseTable = "battery_model"
-	// ModelColumn is the table column denoting the model relation/edge.
-	ModelColumn = "model_id"
 	// BrandTable is the table that holds the brand relation/edge.
 	BrandTable = "plan_introduce"
 	// BrandInverseTable is the table name for the EbikeBrand entity.
@@ -48,8 +39,8 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
-	FieldModelID,
 	FieldBrandID,
+	FieldModel,
 	FieldImage,
 }
 

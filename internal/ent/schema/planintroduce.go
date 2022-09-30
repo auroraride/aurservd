@@ -57,6 +57,7 @@ func (PlanIntroduce) Annotations() []schema.Annotation {
 // Fields of the PlanIntroduce.
 func (PlanIntroduce) Fields() []ent.Field {
     return []ent.Field{
+        field.String("model").Comment("电池型号"),
         field.String("image"),
     }
 }
@@ -69,11 +70,12 @@ func (PlanIntroduce) Edges() []ent.Edge {
 func (PlanIntroduce) Mixin() []ent.Mixin {
     return []ent.Mixin{
         internal.TimeMixin{DisableIndex: true},
-        BatteryModelMixin{},
         EbikeBrandMixin{Optional: true},
     }
 }
 
 func (PlanIntroduce) Indexes() []ent.Index {
-    return []ent.Index{}
+    return []ent.Index{
+        index.Fields("model"),
+    }
 }

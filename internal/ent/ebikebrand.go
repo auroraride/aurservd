@@ -30,6 +30,8 @@ type EbikeBrand struct {
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
+	// 名称
+	Name string `json:"name,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -41,7 +43,7 @@ func (*EbikeBrand) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case ebikebrand.FieldID:
 			values[i] = new(sql.NullInt64)
-		case ebikebrand.FieldRemark:
+		case ebikebrand.FieldRemark, ebikebrand.FieldName:
 			values[i] = new(sql.NullString)
 		case ebikebrand.FieldCreatedAt, ebikebrand.FieldUpdatedAt, ebikebrand.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -107,6 +109,12 @@ func (eb *EbikeBrand) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				eb.Remark = value.String
 			}
+		case ebikebrand.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
+			} else if value.Valid {
+				eb.Name = value.String
+			}
 		}
 	}
 	return nil
@@ -154,6 +162,9 @@ func (eb *EbikeBrand) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("remark=")
 	builder.WriteString(eb.Remark)
+	builder.WriteString(", ")
+	builder.WriteString("name=")
+	builder.WriteString(eb.Name)
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -149,6 +149,8 @@ func (s *couponTemplateService) List(req *model.CouponTemplateListReq) *model.Pa
         res = model.CouponTemplateListRes{
             ID:     item.ID,
             Total:  len(cps),
+            Name:   item.Name,
+            Enable: item.Enable,
             Time:   item.UpdatedAt.Format(carbon.DateTimeLayout),
             Remark: item.Remark,
             CouponTemplateMeta: model.CouponTemplateMeta{

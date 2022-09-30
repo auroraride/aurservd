@@ -88,6 +88,8 @@ type CouponTemplateMeta struct {
 type CouponTemplateListRes struct {
     ID uint64 `json:"id"`
     CouponTemplateMeta
+    Name    string `json:"name"`
+    Enable  bool   `json:"enable"`
     Total   int    `json:"total"`   // 总数
     InStock int    `json:"inStock"` // 库存
     Used    int    `json:"used"`    // 已使用

@@ -2,6 +2,7 @@ package schema
 
 import (
     "entgo.io/ent"
+    "entgo.io/ent/dialect"
     "entgo.io/ent/dialect/entsql"
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
@@ -56,7 +57,9 @@ func (EbikeBrand) Annotations() []schema.Annotation {
 
 // Fields of the EbikeBrand.
 func (EbikeBrand) Fields() []ent.Field {
-    return []ent.Field{}
+    return []ent.Field{
+        field.String("name").Comment("名称"),
+    }
 }
 
 // Edges of the EbikeBrand.
@@ -73,5 +76,11 @@ func (EbikeBrand) Mixin() []ent.Mixin {
 }
 
 func (EbikeBrand) Indexes() []ent.Index {
-    return []ent.Index{}
+    return []ent.Index{
+        index.Fields("name").Annotations(
+            entsql.IndexTypes(map[string]string{
+                dialect.Postgres: "GIN",
+            }),
+        ),
+    }
 }

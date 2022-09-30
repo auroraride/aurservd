@@ -5340,22 +5340,6 @@ func (c *PlanIntroduceClient) GetX(ctx context.Context, id uint64) *PlanIntroduc
 	return obj
 }
 
-// QueryModel queries the model edge of a PlanIntroduce.
-func (c *PlanIntroduceClient) QueryModel(pi *PlanIntroduce) *BatteryModelQuery {
-	query := &BatteryModelQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := pi.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(planintroduce.Table, planintroduce.FieldID, id),
-			sqlgraph.To(batterymodel.Table, batterymodel.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, planintroduce.ModelTable, planintroduce.ModelColumn),
-		)
-		fromV = sqlgraph.Neighbors(pi.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryBrand queries the brand edge of a PlanIntroduce.
 func (c *PlanIntroduceClient) QueryBrand(pi *PlanIntroduce) *EbikeBrandQuery {
 	query := &EbikeBrandQuery{config: c.config}

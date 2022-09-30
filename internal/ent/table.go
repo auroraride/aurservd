@@ -190,6 +190,10 @@ func (eb *EbikeBrand) GetID() uint64 {
 	return eb.ID
 }
 
+func (eb *EbikeBrand) GetName() string {
+	return eb.Name
+}
+
 // GetTableName returns table name for Employee.
 func (e *Employee) GetTableName() string {
 	return "employee"

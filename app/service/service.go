@@ -13,7 +13,7 @@ import (
 
 type BaseService struct {
     ctx      context.Context
-    rider    *ent.Rider
+    rider    *model.Rider
     modifier *model.Modifier
     employee *model.Employee
 }
@@ -24,27 +24,29 @@ func NewService(params ...any) (bs *BaseService) {
     for _, param := range params {
         switch p := param.(type) {
         case *ent.Rider:
-            ctx = context.WithValue(ctx, "rider", p)
-            bs.rider = p
-        case *ent.Manager:
-            m := &model.Modifier{
+            bs.rider = &model.Rider{
                 ID:    p.ID,
-                Name:  p.Name,
                 Phone: p.Phone,
+                Name:  p.Name,
             }
-            bs.modifier = m
-            ctx = context.WithValue(ctx, "modifier", m)
+            ctx = context.WithValue(ctx, "rider", bs.rider)
+        case *ent.Manager:
+            bs.modifier = &model.Modifier{
+                ID:    p.ID,
+                Phone: p.Phone,
+                Name:  p.Name,
+            }
+            ctx = context.WithValue(ctx, "modifier", bs.modifier)
         case *model.Modifier:
             bs.modifier = p
-            ctx = context.WithValue(ctx, "modifier", p)
+            ctx = context.WithValue(ctx, "modifier", bs.modifier)
         case *ent.Employee:
-            e := &model.Employee{
+            bs.employee = &model.Employee{
                 ID:    p.ID,
                 Name:  p.Name,
                 Phone: p.Phone,
             }
-            bs.employee = e
-            ctx = context.WithValue(ctx, "employee", e)
+            ctx = context.WithValue(ctx, "employee", bs.employee)
         }
     }
 

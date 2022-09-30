@@ -25,6 +25,8 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
+	// FieldName holds the string denoting the name field in the database.
+	FieldName = "name"
 	// Table holds the table name of the ebikebrand in the database.
 	Table = "ebike_brand"
 )
@@ -38,6 +40,7 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
+	FieldName,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

@@ -83,3 +83,17 @@ func (*plan) List(c echo.Context) (err error) {
 //     ctx, req := app.ManagerContextAndBinding[model.PlanModifyReq](c)
 //     return ctx.SendResponse(service.NewPlanWithModifier(ctx.Modifier).Modify(req))
 // }
+
+// IntroduceNotset
+// @ID           ManagerPlanIntroduceNotset
+// @Router       /manager/v1/plan/introduce/notset [GET]
+// @Summary      M6005 获取未设定介绍的车电型号
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Success      200  {object}  []model.PlanIntroduceOption  "未设定列表"
+func (*plan) IntroduceNotset(c echo.Context) (err error) {
+    ctx := app.Context(c)
+    return ctx.SendResponse(service.NewPlanIntroduce().Notset())
+}

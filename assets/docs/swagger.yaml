@@ -2418,6 +2418,8 @@ definitions:
       durationTime:
         description: 过期时间 `durationRule=1`必填 yyyy-mm-dd, 如 2022-09-25
         type: string
+      enable:
+        type: boolean
       expired:
         description: 已过期
         type: integer
@@ -2429,6 +2431,8 @@ definitions:
       multiple:
         description: 重复使用(该券是否可叠加使用)
         type: boolean
+      name:
+        type: string
       planIds:
         description: 绑定骑士卡 和`cities`不能同时为空也不能同时存在
         items:
@@ -2471,6 +2475,13 @@ definitions:
         type: integer
     required:
     - id
+    type: object
+  model.EbikeBrand:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
     type: object
   model.Employee:
     properties:
@@ -3663,6 +3674,17 @@ definitions:
         type: boolean
     required:
     - enable
+    type: object
+  model.PlanIntroduceOption:
+    properties:
+      brands:
+        description: 该电池型号未设置的电车品牌
+        items:
+          $ref: '#/definitions/model.EbikeBrand'
+        type: array
+      model:
+        description: 未设定的电池型号
+        type: string
     type: object
   model.PlanWithComplexes:
     properties:
@@ -10454,6 +10476,29 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M6002 上下架骑士卡
+      tags:
+      - '[M]管理接口'
+  /manager/v1/plan/introduce/notset:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerPlanIntroduceNotset
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 未设定列表
+          schema:
+            items:
+              $ref: '#/definitions/model.PlanIntroduceOption'
+            type: array
+      summary: M6005 获取未设定介绍的车电型号
       tags:
       - '[M]管理接口'
   /manager/v1/point/log:

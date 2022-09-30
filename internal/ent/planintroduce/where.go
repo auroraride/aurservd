@@ -95,17 +95,17 @@ func UpdatedAt(v time.Time) predicate.PlanIntroduce {
 	})
 }
 
-// ModelID applies equality check predicate on the "model_id" field. It's identical to ModelIDEQ.
-func ModelID(v uint64) predicate.PlanIntroduce {
-	return predicate.PlanIntroduce(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldModelID), v))
-	})
-}
-
 // BrandID applies equality check predicate on the "brand_id" field. It's identical to BrandIDEQ.
 func BrandID(v uint64) predicate.PlanIntroduce {
 	return predicate.PlanIntroduce(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldBrandID), v))
+	})
+}
+
+// Model applies equality check predicate on the "model" field. It's identical to ModelEQ.
+func Model(v string) predicate.PlanIntroduce {
+	return predicate.PlanIntroduce(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldModel), v))
 	})
 }
 
@@ -244,42 +244,6 @@ func UpdatedAtLTE(v time.Time) predicate.PlanIntroduce {
 	})
 }
 
-// ModelIDEQ applies the EQ predicate on the "model_id" field.
-func ModelIDEQ(v uint64) predicate.PlanIntroduce {
-	return predicate.PlanIntroduce(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldModelID), v))
-	})
-}
-
-// ModelIDNEQ applies the NEQ predicate on the "model_id" field.
-func ModelIDNEQ(v uint64) predicate.PlanIntroduce {
-	return predicate.PlanIntroduce(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldModelID), v))
-	})
-}
-
-// ModelIDIn applies the In predicate on the "model_id" field.
-func ModelIDIn(vs ...uint64) predicate.PlanIntroduce {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.PlanIntroduce(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldModelID), v...))
-	})
-}
-
-// ModelIDNotIn applies the NotIn predicate on the "model_id" field.
-func ModelIDNotIn(vs ...uint64) predicate.PlanIntroduce {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.PlanIntroduce(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldModelID), v...))
-	})
-}
-
 // BrandIDEQ applies the EQ predicate on the "brand_id" field.
 func BrandIDEQ(v uint64) predicate.PlanIntroduce {
 	return predicate.PlanIntroduce(func(s *sql.Selector) {
@@ -327,6 +291,105 @@ func BrandIDIsNil() predicate.PlanIntroduce {
 func BrandIDNotNil() predicate.PlanIntroduce {
 	return predicate.PlanIntroduce(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldBrandID)))
+	})
+}
+
+// ModelEQ applies the EQ predicate on the "model" field.
+func ModelEQ(v string) predicate.PlanIntroduce {
+	return predicate.PlanIntroduce(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldModel), v))
+	})
+}
+
+// ModelNEQ applies the NEQ predicate on the "model" field.
+func ModelNEQ(v string) predicate.PlanIntroduce {
+	return predicate.PlanIntroduce(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldModel), v))
+	})
+}
+
+// ModelIn applies the In predicate on the "model" field.
+func ModelIn(vs ...string) predicate.PlanIntroduce {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.PlanIntroduce(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldModel), v...))
+	})
+}
+
+// ModelNotIn applies the NotIn predicate on the "model" field.
+func ModelNotIn(vs ...string) predicate.PlanIntroduce {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.PlanIntroduce(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldModel), v...))
+	})
+}
+
+// ModelGT applies the GT predicate on the "model" field.
+func ModelGT(v string) predicate.PlanIntroduce {
+	return predicate.PlanIntroduce(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldModel), v))
+	})
+}
+
+// ModelGTE applies the GTE predicate on the "model" field.
+func ModelGTE(v string) predicate.PlanIntroduce {
+	return predicate.PlanIntroduce(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldModel), v))
+	})
+}
+
+// ModelLT applies the LT predicate on the "model" field.
+func ModelLT(v string) predicate.PlanIntroduce {
+	return predicate.PlanIntroduce(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldModel), v))
+	})
+}
+
+// ModelLTE applies the LTE predicate on the "model" field.
+func ModelLTE(v string) predicate.PlanIntroduce {
+	return predicate.PlanIntroduce(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldModel), v))
+	})
+}
+
+// ModelContains applies the Contains predicate on the "model" field.
+func ModelContains(v string) predicate.PlanIntroduce {
+	return predicate.PlanIntroduce(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldModel), v))
+	})
+}
+
+// ModelHasPrefix applies the HasPrefix predicate on the "model" field.
+func ModelHasPrefix(v string) predicate.PlanIntroduce {
+	return predicate.PlanIntroduce(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldModel), v))
+	})
+}
+
+// ModelHasSuffix applies the HasSuffix predicate on the "model" field.
+func ModelHasSuffix(v string) predicate.PlanIntroduce {
+	return predicate.PlanIntroduce(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldModel), v))
+	})
+}
+
+// ModelEqualFold applies the EqualFold predicate on the "model" field.
+func ModelEqualFold(v string) predicate.PlanIntroduce {
+	return predicate.PlanIntroduce(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldModel), v))
+	})
+}
+
+// ModelContainsFold applies the ContainsFold predicate on the "model" field.
+func ModelContainsFold(v string) predicate.PlanIntroduce {
+	return predicate.PlanIntroduce(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldModel), v))
 	})
 }
 
@@ -426,34 +489,6 @@ func ImageEqualFold(v string) predicate.PlanIntroduce {
 func ImageContainsFold(v string) predicate.PlanIntroduce {
 	return predicate.PlanIntroduce(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldImage), v))
-	})
-}
-
-// HasModel applies the HasEdge predicate on the "model" edge.
-func HasModel() predicate.PlanIntroduce {
-	return predicate.PlanIntroduce(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ModelTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, ModelTable, ModelColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasModelWith applies the HasEdge predicate on the "model" edge with a given conditions (other predicates).
-func HasModelWith(preds ...predicate.BatteryModel) predicate.PlanIntroduce {
-	return predicate.PlanIntroduce(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ModelInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, ModelTable, ModelColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
 	})
 }
 

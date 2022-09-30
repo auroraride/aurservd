@@ -88,6 +88,12 @@ func (ebu *EbikeBrandUpdate) ClearRemark() *EbikeBrandUpdate {
 	return ebu
 }
 
+// SetName sets the "name" field.
+func (ebu *EbikeBrandUpdate) SetName(s string) *EbikeBrandUpdate {
+	ebu.mutation.SetName(s)
+	return ebu
+}
+
 // Mutation returns the EbikeBrandMutation object of the builder.
 func (ebu *EbikeBrandUpdate) Mutation() *EbikeBrandMutation {
 	return ebu.mutation
@@ -238,6 +244,13 @@ func (ebu *EbikeBrandUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: ebikebrand.FieldRemark,
 		})
 	}
+	if value, ok := ebu.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: ebikebrand.FieldName,
+		})
+	}
 	_spec.Modifiers = ebu.modifiers
 	if n, err = sqlgraph.UpdateNodes(ctx, ebu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -314,6 +327,12 @@ func (ebuo *EbikeBrandUpdateOne) SetNillableRemark(s *string) *EbikeBrandUpdateO
 // ClearRemark clears the value of the "remark" field.
 func (ebuo *EbikeBrandUpdateOne) ClearRemark() *EbikeBrandUpdateOne {
 	ebuo.mutation.ClearRemark()
+	return ebuo
+}
+
+// SetName sets the "name" field.
+func (ebuo *EbikeBrandUpdateOne) SetName(s string) *EbikeBrandUpdateOne {
+	ebuo.mutation.SetName(s)
 	return ebuo
 }
 
@@ -495,6 +514,13 @@ func (ebuo *EbikeBrandUpdateOne) sqlSave(ctx context.Context) (_node *EbikeBrand
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: ebikebrand.FieldRemark,
+		})
+	}
+	if value, ok := ebuo.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: ebikebrand.FieldName,
 		})
 	}
 	_spec.Modifiers = ebuo.modifiers

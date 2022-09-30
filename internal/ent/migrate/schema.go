@@ -1172,6 +1172,7 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "name", Type: field.TypeString, Comment: "名称"},
 	}
 	// EbikeBrandTable holds the schema information for the "ebike_brand" table.
 	EbikeBrandTable = &schema.Table{
@@ -1188,6 +1189,16 @@ var (
 				Name:    "ebikebrand_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{EbikeBrandColumns[3]},
+			},
+			{
+				Name:    "ebikebrand_name",
+				Unique:  false,
+				Columns: []*schema.Column{EbikeBrandColumns[7]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
 			},
 		},
 	}
@@ -2452,8 +2463,8 @@ var (
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "model", Type: field.TypeString, Comment: "电池型号"},
 		{Name: "image", Type: field.TypeString},
-		{Name: "model_id", Type: field.TypeUint64},
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// PlanIntroduceTable holds the schema information for the "plan_introduce" table.
@@ -2463,12 +2474,6 @@ var (
 		PrimaryKey: []*schema.Column{PlanIntroduceColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "plan_introduce_battery_model_model",
-				Columns:    []*schema.Column{PlanIntroduceColumns[4]},
-				RefColumns: []*schema.Column{BatteryModelColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-			{
 				Symbol:     "plan_introduce_ebike_brand_brand",
 				Columns:    []*schema.Column{PlanIntroduceColumns[5]},
 				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
@@ -2477,14 +2482,14 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "planintroduce_model_id",
-				Unique:  false,
-				Columns: []*schema.Column{PlanIntroduceColumns[4]},
-			},
-			{
 				Name:    "planintroduce_brand_id",
 				Unique:  false,
 				Columns: []*schema.Column{PlanIntroduceColumns[5]},
+			},
+			{
+				Name:    "planintroduce_model",
+				Unique:  false,
+				Columns: []*schema.Column{PlanIntroduceColumns[3]},
 			},
 		},
 	}
@@ -3986,8 +3991,7 @@ func init() {
 	PlanTable.Annotation = &entsql.Annotation{
 		Table: "plan",
 	}
-	PlanIntroduceTable.ForeignKeys[0].RefTable = BatteryModelTable
-	PlanIntroduceTable.ForeignKeys[1].RefTable = EbikeBrandTable
+	PlanIntroduceTable.ForeignKeys[0].RefTable = EbikeBrandTable
 	PlanIntroduceTable.Annotation = &entsql.Annotation{
 		Table: "plan_introduce",
 	}
