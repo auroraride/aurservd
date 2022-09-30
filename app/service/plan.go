@@ -67,7 +67,7 @@ func (s *planService) QueryEffectiveWithID(id uint64) *ent.Plan {
             plan.StartLTE(today),
             plan.EndGTE(today),
         ).
-        WithPms().
+        WithModels().
         Only(s.ctx)
     if err != nil || item == nil {
         log.Error(err)
@@ -84,7 +84,7 @@ func (s *planService) checkDuplicate(cities []uint64, models []string, start, en
                 Where(
                     plan.Enable(true),
                     plan.HasCitiesWith(city.ID(cityID)),
-                    plan.HasPmsWith(batterymodel.Model(rm)),
+                    plan.HasModelsWith(batterymodel.Model(rm)),
                     plan.StartLTE(end),
                     plan.EndGTE(start),
                 )
@@ -139,7 +139,7 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanWithComplexes {
             SetName(strings.TrimSpace(req.Name)).
             SetEnable(req.Enable).
             AddCityIDs(req.Cities...).
-            AddPms(pms...).
+            AddModels(pms...).
             SetStart(start).
             SetEnd(end)
 
@@ -161,7 +161,7 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanWithComplexes {
             if i == 0 {
                 parent = r
                 parent.Edges.Cities = cities
-                parent.Edges.Pms = pms
+                parent.Edges.Models = pms
                 parent.Edges.Complexes = make([]*ent.Plan, len(req.Complexes))
                 parent.Edges.Complexes[i] = r
             } else {
@@ -177,7 +177,7 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanWithComplexes {
 
 // // Modify 修改骑士卡 TODO: 修改太麻烦了, 情况贼多, 暂时不做?
 // func (s *planService) Modify(req *model.PlanModifyReq) model.PlanWithComplexes {
-//     old, err := s.orm.QueryNotDeleted().Where(plan.ID(req.ID)).WithPms().WithCities().WithComplexes().First(s.ctx)
+//     old, err := s.orm.QueryNotDeleted().Where(plan.ID(req.ID)).WithModels().WithCities().WithComplexes().First(s.ctx)
 //     if err != nil {
 //         snag.Panic("未找到骑士卡")
 //     }
@@ -245,7 +245,7 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanWithCompl
         Start:     item.Start.Format(carbon.DateLayout),
         End:       item.End.Format(carbon.DateLayout),
         Cities:    make([]model.City, len(item.Edges.Cities)),
-        Models:    make([]model.BatteryModel, len(item.Edges.Pms)),
+        Models:    make([]model.BatteryModel, len(item.Edges.Models)),
         Complexes: make([]model.PlanComplex, len(item.Edges.Complexes)+1),
     }
 
@@ -256,7 +256,7 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanWithCompl
         }
     }
 
-    for i, pm := range item.Edges.Pms {
+    for i, pm := range item.Edges.Models {
         res.Models[i] = model.BatteryModel{
             ID:    pm.ID,
             Model: pm.Model,
@@ -293,7 +293,7 @@ func (s *planService) List(req *model.PlanListReq) *model.PaginationRes {
             pq.Where(plan.DeletedAtIsNil())
         }).
         WithCities().
-        WithPms().
+        WithModels().
         Order(ent.Desc(plan.FieldStart), ent.Asc(plan.FieldEnd))
 
     if req.CityID != nil {
@@ -329,12 +329,12 @@ func (s *planService) CityList(req *model.PlanListRiderReq) map[string]*[]model.
                 city.ID(req.CityID),
             ),
         ).
-        WithPms().
+        WithModels().
         Order(ent.Asc(plan.FieldDays)).
         AllX(s.ctx)
 
     for _, item := range items {
-        for _, pm := range item.Edges.Pms {
+        for _, pm := range item.Edges.Models {
             list, ok := rmap[pm.Model]
             if !ok {
                 list = new([]model.RiderPlanItem)

@@ -70,7 +70,7 @@ func (s *cabinetService) QueryOne(id uint64) *ent.Cabinet {
 
 func (s *cabinetService) QueryOneSerial(serial string) *ent.Cabinet {
     serial = strings.ReplaceAll(serial, "https://www.yunfuture.cn/qrcode/cabinet?cabinetSN=", "")
-    cab, _ := s.orm.QueryNotDeleted().Where(cabinet.Serial(serial)).WithBms().First(s.ctx)
+    cab, _ := s.orm.QueryNotDeleted().Where(cabinet.Serial(serial)).WithModels().First(s.ctx)
     return cab
 }
 
@@ -113,7 +113,7 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
     for _, bm := range models {
         res.Models = append(res.Models, bm.Model)
     }
-    q.AddBms(models...)
+    q.AddModels(models...)
 
     item := q.SaveX(s.ctx)
     res = new(model.CabinetItem)
@@ -128,7 +128,7 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
 
 // List 查询电柜
 func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.PaginationRes) {
-    q := s.orm.QueryNotDeleted().WithCity().WithBms()
+    q := s.orm.QueryNotDeleted().WithCity().WithModels()
 
     if s.modifier != nil && s.modifier.Phone == "15537112255" {
         req.CityID = tools.NewPointer().UInt64(410100)
@@ -150,7 +150,7 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
         q.Where(cabinet.Status(*req.Status))
     }
     if req.Model != nil {
-        q.Where(cabinet.HasBmsWith(batterymodel.Model(*req.Model)))
+        q.Where(cabinet.HasModelsWith(batterymodel.Model(*req.Model)))
     }
     if req.Online != 0 {
         switch req.Online {
@@ -179,7 +179,7 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
                 Name: city.Name,
             }
         }
-        bms := item.Edges.Bms
+        bms := item.Edges.Models
         for _, bm := range bms {
             res.Models = append(res.Models, bm.Model)
         }
@@ -189,7 +189,7 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
 
 // Modify 修改电柜
 func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
-    cab, _ := s.orm.QueryNotDeleted().Where(cabinet.ID(req.ID)).WithBms().First(s.ctx)
+    cab, _ := s.orm.QueryNotDeleted().Where(cabinet.ID(req.ID)).WithModels().First(s.ctx)
     if cab == nil {
         snag.Panic("未找到电柜")
     }
@@ -198,7 +198,7 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
         q := tx.Cabinet.UpdateOne(cab)
         if req.Models != nil {
             var models []string
-            for _, bm := range cab.Edges.Bms {
+            for _, bm := range cab.Edges.Models {
                 models = append(models, bm.Model)
             }
             // 排序
@@ -211,9 +211,9 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
             })
 
             if slices.Compare(rms, models) != 0 {
-                q.ClearBms()
+                q.ClearModels()
                 // 查询设置电池型号
-                q.AddBms(NewBattery().QueryModelsX(*req.Models)...)
+                q.AddModels(NewBattery().QueryModelsX(*req.Models)...)
             }
         }
         if req.BranchID != nil {
@@ -336,7 +336,7 @@ func (s *cabinetService) DoorOpenStatus(item *ent.Cabinet, index int) ec.DoorSta
 func (s *cabinetService) DetailFromID(id uint64) *model.CabinetDetailRes {
     item := s.orm.QueryNotDeleted().
         Where(cabinet.ID(id)).
-        WithBms().
+        WithModels().
         OnlyX(s.ctx)
     if item == nil {
         snag.Panic("未找到电柜")
@@ -353,9 +353,9 @@ func (s *cabinetService) Detail(item *ent.Cabinet) *model.CabinetDetailRes {
         }
     }
 
-    bms := item.Edges.Bms
+    bms := item.Edges.Models
     if bms == nil {
-        bms, _ = item.QueryBms().All(s.ctx)
+        bms, _ = item.QueryModels().All(s.ctx)
     }
 
     res := new(model.CabinetDetailRes)
@@ -465,9 +465,9 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
 
 // ModelInclude 电柜是否可用指定型号电池
 func (s *cabinetService) ModelInclude(item *ent.Cabinet, model string) bool {
-    bms := item.Edges.Bms
+    bms := item.Edges.Models
     if bms == nil {
-        bms, _ = item.QueryBms().All(s.ctx)
+        bms, _ = item.QueryModels().All(s.ctx)
     }
     if bms == nil {
         return false
@@ -533,7 +533,7 @@ func (s *cabinetService) BusinessableX(cab *ent.Cabinet) {
 }
 
 func (s *cabinetService) Data(req *model.CabinetDataReq) *model.PaginationRes {
-    q := s.orm.QueryNotDeleted().WithBms().Order(ent.Desc(cabinet.FieldCreatedAt))
+    q := s.orm.QueryNotDeleted().WithModels().Order(ent.Desc(cabinet.FieldCreatedAt))
     switch req.Status {
     case 1:
         q.Where(cabinet.Health(model.CabinetHealthStatusOnline))
@@ -570,7 +570,7 @@ func (s *cabinetService) Data(req *model.CabinetDataReq) *model.PaginationRes {
 
     if req.Votage != 0 {
         bm := fmt.Sprintf("%.0fV", req.Votage)
-        q.Where(cabinet.HasBmsWith(batterymodel.ModelHasPrefix(bm)))
+        q.Where(cabinet.HasModelsWith(batterymodel.ModelHasPrefix(bm)))
     }
 
     return s.dataItems(model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Cabinet) model.CabinetDataRes {
@@ -602,7 +602,7 @@ func (s *cabinetService) dataDetail(item *ent.Cabinet) model.CabinetDataRes {
         BatteryNum: item.BatteryNum,
     }
 
-    bms := item.Edges.Bms
+    bms := item.Edges.Models
     if len(bms) > 0 {
         res.Model = regexp.MustCompile(`(?m)(\d+)V\d+AH`).ReplaceAllString(bms[0].Model, "${1}V")
     }

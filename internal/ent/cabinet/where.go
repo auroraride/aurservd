@@ -2148,25 +2148,25 @@ func HasBranchWith(preds ...predicate.Branch) predicate.Cabinet {
 	})
 }
 
-// HasBms applies the HasEdge predicate on the "bms" edge.
-func HasBms() predicate.Cabinet {
+// HasModels applies the HasEdge predicate on the "models" edge.
+func HasModels() predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(BmsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, BmsTable, BmsPrimaryKey...),
+			sqlgraph.To(ModelsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, ModelsTable, ModelsPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasBmsWith applies the HasEdge predicate on the "bms" edge with a given conditions (other predicates).
-func HasBmsWith(preds ...predicate.BatteryModel) predicate.Cabinet {
+// HasModelsWith applies the HasEdge predicate on the "models" edge with a given conditions (other predicates).
+func HasModelsWith(preds ...predicate.BatteryModel) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(BmsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, BmsTable, BmsPrimaryKey...),
+			sqlgraph.To(ModelsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, ModelsTable, ModelsPrimaryKey...),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

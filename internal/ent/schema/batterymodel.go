@@ -34,8 +34,8 @@ func (BatteryModel) Fields() []ent.Field {
 // Edges of the BatteryModel.
 func (BatteryModel) Edges() []ent.Edge {
     return []ent.Edge{
-        edge.From("cabinets", Cabinet.Type).Ref("bms"),
-        edge.From("plans", Plan.Type).Ref("pms"),
+        edge.From("cabinets", Cabinet.Type).Ref("models"),
+        edge.From("plans", Plan.Type).Ref("models"),
     }
 }
 

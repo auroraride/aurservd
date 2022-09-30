@@ -85,8 +85,8 @@ type CabinetEdges struct {
 	City *City `json:"city,omitempty"`
 	// Branch holds the value of the branch edge.
 	Branch *Branch `json:"branch,omitempty"`
-	// Bms holds the value of the bms edge.
-	Bms []*BatteryModel `json:"bms,omitempty"`
+	// Models holds the value of the models edge.
+	Models []*BatteryModel `json:"models,omitempty"`
 	// Faults holds the value of the faults edge.
 	Faults []*CabinetFault `json:"faults,omitempty"`
 	// Exchanges holds the value of the exchanges edge.
@@ -124,13 +124,13 @@ func (e CabinetEdges) BranchOrErr() (*Branch, error) {
 	return nil, &NotLoadedError{edge: "branch"}
 }
 
-// BmsOrErr returns the Bms value or an error if the edge
+// ModelsOrErr returns the Models value or an error if the edge
 // was not loaded in eager-loading.
-func (e CabinetEdges) BmsOrErr() ([]*BatteryModel, error) {
+func (e CabinetEdges) ModelsOrErr() ([]*BatteryModel, error) {
 	if e.loadedTypes[2] {
-		return e.Bms, nil
+		return e.Models, nil
 	}
-	return nil, &NotLoadedError{edge: "bms"}
+	return nil, &NotLoadedError{edge: "models"}
 }
 
 // FaultsOrErr returns the Faults value or an error if the edge
@@ -384,9 +384,9 @@ func (c *Cabinet) QueryBranch() *BranchQuery {
 	return (&CabinetClient{config: c.config}).QueryBranch(c)
 }
 
-// QueryBms queries the "bms" edge of the Cabinet entity.
-func (c *Cabinet) QueryBms() *BatteryModelQuery {
-	return (&CabinetClient{config: c.config}).QueryBms(c)
+// QueryModels queries the "models" edge of the Cabinet entity.
+func (c *Cabinet) QueryModels() *BatteryModelQuery {
+	return (&CabinetClient{config: c.config}).QueryModels(c)
 }
 
 // QueryFaults queries the "faults" edge of the Cabinet entity.

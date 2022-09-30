@@ -57,8 +57,8 @@ type Plan struct {
 
 // PlanEdges holds the relations/edges for other nodes in the graph.
 type PlanEdges struct {
-	// Pms holds the value of the pms edge.
-	Pms []*BatteryModel `json:"pms,omitempty"`
+	// Models holds the value of the models edge.
+	Models []*BatteryModel `json:"models,omitempty"`
 	// Cities holds the value of the cities edge.
 	Cities []*City `json:"cities,omitempty"`
 	// Parent holds the value of the parent edge.
@@ -72,13 +72,13 @@ type PlanEdges struct {
 	loadedTypes [5]bool
 }
 
-// PmsOrErr returns the Pms value or an error if the edge
+// ModelsOrErr returns the Models value or an error if the edge
 // was not loaded in eager-loading.
-func (e PlanEdges) PmsOrErr() ([]*BatteryModel, error) {
+func (e PlanEdges) ModelsOrErr() ([]*BatteryModel, error) {
 	if e.loadedTypes[0] {
-		return e.Pms, nil
+		return e.Models, nil
 	}
-	return nil, &NotLoadedError{edge: "pms"}
+	return nil, &NotLoadedError{edge: "models"}
 }
 
 // CitiesOrErr returns the Cities value or an error if the edge
@@ -266,9 +266,9 @@ func (pl *Plan) assignValues(columns []string, values []any) error {
 	return nil
 }
 
-// QueryPms queries the "pms" edge of the Plan entity.
-func (pl *Plan) QueryPms() *BatteryModelQuery {
-	return (&PlanClient{config: pl.config}).QueryPms(pl)
+// QueryModels queries the "models" edge of the Plan entity.
+func (pl *Plan) QueryModels() *BatteryModelQuery {
+	return (&PlanClient{config: pl.config}).QueryModels(pl)
 }
 
 // QueryCities queries the "cities" edge of the Plan entity.

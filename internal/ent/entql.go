@@ -1653,12 +1653,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Branch",
 	)
 	graph.MustAddE(
-		"bms",
+		"models",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   cabinet.BmsTable,
-			Columns: cabinet.BmsPrimaryKey,
+			Table:   cabinet.ModelsTable,
+			Columns: cabinet.ModelsPrimaryKey,
 			Bidi:    false,
 		},
 		"Cabinet",
@@ -2613,12 +2613,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Rider",
 	)
 	graph.MustAddE(
-		"pms",
+		"models",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   plan.PmsTable,
-			Columns: plan.PmsPrimaryKey,
+			Table:   plan.ModelsTable,
+			Columns: plan.ModelsPrimaryKey,
 			Bidi:    false,
 		},
 		"Plan",
@@ -4942,14 +4942,14 @@ func (f *CabinetFilter) WhereHasBranchWith(preds ...predicate.Branch) {
 	})))
 }
 
-// WhereHasBms applies a predicate to check if query has an edge bms.
-func (f *CabinetFilter) WhereHasBms() {
-	f.Where(entql.HasEdge("bms"))
+// WhereHasModels applies a predicate to check if query has an edge models.
+func (f *CabinetFilter) WhereHasModels() {
+	f.Where(entql.HasEdge("models"))
 }
 
-// WhereHasBmsWith applies a predicate to check if query has an edge bms with a given conditions (other predicates).
-func (f *CabinetFilter) WhereHasBmsWith(preds ...predicate.BatteryModel) {
-	f.Where(entql.HasEdgeWith("bms", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasModelsWith applies a predicate to check if query has an edge models with a given conditions (other predicates).
+func (f *CabinetFilter) WhereHasModelsWith(preds ...predicate.BatteryModel) {
+	f.Where(entql.HasEdgeWith("models", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -8682,14 +8682,14 @@ func (f *PlanFilter) WhereParentID(p entql.Uint64P) {
 	f.Where(p.Field(plan.FieldParentID))
 }
 
-// WhereHasPms applies a predicate to check if query has an edge pms.
-func (f *PlanFilter) WhereHasPms() {
-	f.Where(entql.HasEdge("pms"))
+// WhereHasModels applies a predicate to check if query has an edge models.
+func (f *PlanFilter) WhereHasModels() {
+	f.Where(entql.HasEdge("models"))
 }
 
-// WhereHasPmsWith applies a predicate to check if query has an edge pms with a given conditions (other predicates).
-func (f *PlanFilter) WhereHasPmsWith(preds ...predicate.BatteryModel) {
-	f.Where(entql.HasEdgeWith("pms", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasModelsWith applies a predicate to check if query has an edge models with a given conditions (other predicates).
+func (f *PlanFilter) WhereHasModelsWith(preds ...predicate.BatteryModel) {
+	f.Where(entql.HasEdgeWith("models", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

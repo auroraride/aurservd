@@ -1601,15 +1601,15 @@ func (c *CabinetClient) QueryBranch(ca *Cabinet) *BranchQuery {
 	return query
 }
 
-// QueryBms queries the bms edge of a Cabinet.
-func (c *CabinetClient) QueryBms(ca *Cabinet) *BatteryModelQuery {
+// QueryModels queries the models edge of a Cabinet.
+func (c *CabinetClient) QueryModels(ca *Cabinet) *BatteryModelQuery {
 	query := &BatteryModelQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := ca.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(cabinet.Table, cabinet.FieldID, id),
 			sqlgraph.To(batterymodel.Table, batterymodel.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, cabinet.BmsTable, cabinet.BmsPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, false, cabinet.ModelsTable, cabinet.ModelsPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
 		return fromV, nil
@@ -5064,15 +5064,15 @@ func (c *PlanClient) GetX(ctx context.Context, id uint64) *Plan {
 	return obj
 }
 
-// QueryPms queries the pms edge of a Plan.
-func (c *PlanClient) QueryPms(pl *Plan) *BatteryModelQuery {
+// QueryModels queries the models edge of a Plan.
+func (c *PlanClient) QueryModels(pl *Plan) *BatteryModelQuery {
 	query := &BatteryModelQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := pl.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(plan.Table, plan.FieldID, id),
 			sqlgraph.To(batterymodel.Table, batterymodel.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, plan.PmsTable, plan.PmsPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, false, plan.ModelsTable, plan.ModelsPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
 		return fromV, nil

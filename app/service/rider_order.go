@@ -158,7 +158,7 @@ func (s *riderOrderService) Query(riderID, orderID uint64) *ent.Order {
         Where(order.RiderID(riderID), order.ID(orderID)).
         WithCity().
         WithPlan(func(pq *ent.PlanQuery) {
-            pq.WithPms()
+            pq.WithModels()
         }).
         WithRider(func(rq *ent.RiderQuery) {
             rq.WithPerson()

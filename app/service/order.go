@@ -150,7 +150,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
     case model.OrderTypeNewly, model.OrderTypeAgain:
         // 新签/重签判定
         var m string
-        for _, pm := range op.Edges.Pms {
+        for _, pm := range op.Edges.Models {
             if strings.ToUpper(req.Model) == strings.ToUpper(pm.Model) {
                 m = pm.Model
             }

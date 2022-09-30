@@ -102,7 +102,7 @@ func (Cabinet) Edges() []ent.Edge {
             Ref("cabinets").
             Unique().
             Field("branch_id"),
-        edge.To("bms", BatteryModel.Type),
+        edge.To("models", BatteryModel.Type),
         edge.To("faults", CabinetFault.Type),
         edge.To("exchanges", Exchange.Type),
         edge.To("stocks", Stock.Type),

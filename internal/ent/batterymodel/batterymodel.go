@@ -36,12 +36,12 @@ const (
 	// Table holds the table name of the batterymodel in the database.
 	Table = "battery_model"
 	// CabinetsTable is the table that holds the cabinets relation/edge. The primary key declared below.
-	CabinetsTable = "cabinet_bms"
+	CabinetsTable = "cabinet_models"
 	// CabinetsInverseTable is the table name for the Cabinet entity.
 	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
 	CabinetsInverseTable = "cabinet"
 	// PlansTable is the table that holds the plans relation/edge. The primary key declared below.
-	PlansTable = "plan_pms"
+	PlansTable = "plan_models"
 	// PlansInverseTable is the table name for the Plan entity.
 	// It exists in this package in order to avoid circular dependency with the "plan" package.
 	PlansInverseTable = "plan"

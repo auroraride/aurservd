@@ -460,19 +460,19 @@ func (cu *CabinetUpdate) SetBranch(b *Branch) *CabinetUpdate {
 	return cu.SetBranchID(b.ID)
 }
 
-// AddBmIDs adds the "bms" edge to the BatteryModel entity by IDs.
-func (cu *CabinetUpdate) AddBmIDs(ids ...uint64) *CabinetUpdate {
-	cu.mutation.AddBmIDs(ids...)
+// AddModelIDs adds the "models" edge to the BatteryModel entity by IDs.
+func (cu *CabinetUpdate) AddModelIDs(ids ...uint64) *CabinetUpdate {
+	cu.mutation.AddModelIDs(ids...)
 	return cu
 }
 
-// AddBms adds the "bms" edges to the BatteryModel entity.
-func (cu *CabinetUpdate) AddBms(b ...*BatteryModel) *CabinetUpdate {
+// AddModels adds the "models" edges to the BatteryModel entity.
+func (cu *CabinetUpdate) AddModels(b ...*BatteryModel) *CabinetUpdate {
 	ids := make([]uint64, len(b))
 	for i := range b {
 		ids[i] = b[i].ID
 	}
-	return cu.AddBmIDs(ids...)
+	return cu.AddModelIDs(ids...)
 }
 
 // AddFaultIDs adds the "faults" edge to the CabinetFault entity by IDs.
@@ -537,25 +537,25 @@ func (cu *CabinetUpdate) ClearBranch() *CabinetUpdate {
 	return cu
 }
 
-// ClearBms clears all "bms" edges to the BatteryModel entity.
-func (cu *CabinetUpdate) ClearBms() *CabinetUpdate {
-	cu.mutation.ClearBms()
+// ClearModels clears all "models" edges to the BatteryModel entity.
+func (cu *CabinetUpdate) ClearModels() *CabinetUpdate {
+	cu.mutation.ClearModels()
 	return cu
 }
 
-// RemoveBmIDs removes the "bms" edge to BatteryModel entities by IDs.
-func (cu *CabinetUpdate) RemoveBmIDs(ids ...uint64) *CabinetUpdate {
-	cu.mutation.RemoveBmIDs(ids...)
+// RemoveModelIDs removes the "models" edge to BatteryModel entities by IDs.
+func (cu *CabinetUpdate) RemoveModelIDs(ids ...uint64) *CabinetUpdate {
+	cu.mutation.RemoveModelIDs(ids...)
 	return cu
 }
 
-// RemoveBms removes "bms" edges to BatteryModel entities.
-func (cu *CabinetUpdate) RemoveBms(b ...*BatteryModel) *CabinetUpdate {
+// RemoveModels removes "models" edges to BatteryModel entities.
+func (cu *CabinetUpdate) RemoveModels(b ...*BatteryModel) *CabinetUpdate {
 	ids := make([]uint64, len(b))
 	for i := range b {
 		ids[i] = b[i].ID
 	}
-	return cu.RemoveBmIDs(ids...)
+	return cu.RemoveModelIDs(ids...)
 }
 
 // ClearFaults clears all "faults" edges to the CabinetFault entity.
@@ -1075,12 +1075,12 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if cu.mutation.BmsCleared() {
+	if cu.mutation.ModelsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   cabinet.BmsTable,
-			Columns: cabinet.BmsPrimaryKey,
+			Table:   cabinet.ModelsTable,
+			Columns: cabinet.ModelsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1091,12 +1091,12 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cu.mutation.RemovedBmsIDs(); len(nodes) > 0 && !cu.mutation.BmsCleared() {
+	if nodes := cu.mutation.RemovedModelsIDs(); len(nodes) > 0 && !cu.mutation.ModelsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   cabinet.BmsTable,
-			Columns: cabinet.BmsPrimaryKey,
+			Table:   cabinet.ModelsTable,
+			Columns: cabinet.ModelsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1110,12 +1110,12 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cu.mutation.BmsIDs(); len(nodes) > 0 {
+	if nodes := cu.mutation.ModelsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   cabinet.BmsTable,
-			Columns: cabinet.BmsPrimaryKey,
+			Table:   cabinet.ModelsTable,
+			Columns: cabinet.ModelsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1736,19 +1736,19 @@ func (cuo *CabinetUpdateOne) SetBranch(b *Branch) *CabinetUpdateOne {
 	return cuo.SetBranchID(b.ID)
 }
 
-// AddBmIDs adds the "bms" edge to the BatteryModel entity by IDs.
-func (cuo *CabinetUpdateOne) AddBmIDs(ids ...uint64) *CabinetUpdateOne {
-	cuo.mutation.AddBmIDs(ids...)
+// AddModelIDs adds the "models" edge to the BatteryModel entity by IDs.
+func (cuo *CabinetUpdateOne) AddModelIDs(ids ...uint64) *CabinetUpdateOne {
+	cuo.mutation.AddModelIDs(ids...)
 	return cuo
 }
 
-// AddBms adds the "bms" edges to the BatteryModel entity.
-func (cuo *CabinetUpdateOne) AddBms(b ...*BatteryModel) *CabinetUpdateOne {
+// AddModels adds the "models" edges to the BatteryModel entity.
+func (cuo *CabinetUpdateOne) AddModels(b ...*BatteryModel) *CabinetUpdateOne {
 	ids := make([]uint64, len(b))
 	for i := range b {
 		ids[i] = b[i].ID
 	}
-	return cuo.AddBmIDs(ids...)
+	return cuo.AddModelIDs(ids...)
 }
 
 // AddFaultIDs adds the "faults" edge to the CabinetFault entity by IDs.
@@ -1813,25 +1813,25 @@ func (cuo *CabinetUpdateOne) ClearBranch() *CabinetUpdateOne {
 	return cuo
 }
 
-// ClearBms clears all "bms" edges to the BatteryModel entity.
-func (cuo *CabinetUpdateOne) ClearBms() *CabinetUpdateOne {
-	cuo.mutation.ClearBms()
+// ClearModels clears all "models" edges to the BatteryModel entity.
+func (cuo *CabinetUpdateOne) ClearModels() *CabinetUpdateOne {
+	cuo.mutation.ClearModels()
 	return cuo
 }
 
-// RemoveBmIDs removes the "bms" edge to BatteryModel entities by IDs.
-func (cuo *CabinetUpdateOne) RemoveBmIDs(ids ...uint64) *CabinetUpdateOne {
-	cuo.mutation.RemoveBmIDs(ids...)
+// RemoveModelIDs removes the "models" edge to BatteryModel entities by IDs.
+func (cuo *CabinetUpdateOne) RemoveModelIDs(ids ...uint64) *CabinetUpdateOne {
+	cuo.mutation.RemoveModelIDs(ids...)
 	return cuo
 }
 
-// RemoveBms removes "bms" edges to BatteryModel entities.
-func (cuo *CabinetUpdateOne) RemoveBms(b ...*BatteryModel) *CabinetUpdateOne {
+// RemoveModels removes "models" edges to BatteryModel entities.
+func (cuo *CabinetUpdateOne) RemoveModels(b ...*BatteryModel) *CabinetUpdateOne {
 	ids := make([]uint64, len(b))
 	for i := range b {
 		ids[i] = b[i].ID
 	}
-	return cuo.RemoveBmIDs(ids...)
+	return cuo.RemoveModelIDs(ids...)
 }
 
 // ClearFaults clears all "faults" edges to the CabinetFault entity.
@@ -2381,12 +2381,12 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if cuo.mutation.BmsCleared() {
+	if cuo.mutation.ModelsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   cabinet.BmsTable,
-			Columns: cabinet.BmsPrimaryKey,
+			Table:   cabinet.ModelsTable,
+			Columns: cabinet.ModelsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -2397,12 +2397,12 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cuo.mutation.RemovedBmsIDs(); len(nodes) > 0 && !cuo.mutation.BmsCleared() {
+	if nodes := cuo.mutation.RemovedModelsIDs(); len(nodes) > 0 && !cuo.mutation.ModelsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   cabinet.BmsTable,
-			Columns: cabinet.BmsPrimaryKey,
+			Table:   cabinet.ModelsTable,
+			Columns: cabinet.ModelsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -2416,12 +2416,12 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cuo.mutation.BmsIDs(); len(nodes) > 0 {
+	if nodes := cuo.mutation.ModelsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   cabinet.BmsTable,
-			Columns: cabinet.BmsPrimaryKey,
+			Table:   cabinet.ModelsTable,
+			Columns: cabinet.ModelsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

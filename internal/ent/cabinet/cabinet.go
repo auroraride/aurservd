@@ -71,8 +71,8 @@ const (
 	EdgeCity = "city"
 	// EdgeBranch holds the string denoting the branch edge name in mutations.
 	EdgeBranch = "branch"
-	// EdgeBms holds the string denoting the bms edge name in mutations.
-	EdgeBms = "bms"
+	// EdgeModels holds the string denoting the models edge name in mutations.
+	EdgeModels = "models"
 	// EdgeFaults holds the string denoting the faults edge name in mutations.
 	EdgeFaults = "faults"
 	// EdgeExchanges holds the string denoting the exchanges edge name in mutations.
@@ -95,11 +95,11 @@ const (
 	BranchInverseTable = "branch"
 	// BranchColumn is the table column denoting the branch relation/edge.
 	BranchColumn = "branch_id"
-	// BmsTable is the table that holds the bms relation/edge. The primary key declared below.
-	BmsTable = "cabinet_bms"
-	// BmsInverseTable is the table name for the BatteryModel entity.
+	// ModelsTable is the table that holds the models relation/edge. The primary key declared below.
+	ModelsTable = "cabinet_models"
+	// ModelsInverseTable is the table name for the BatteryModel entity.
 	// It exists in this package in order to avoid circular dependency with the "batterymodel" package.
-	BmsInverseTable = "battery_model"
+	ModelsInverseTable = "battery_model"
 	// FaultsTable is the table that holds the faults relation/edge.
 	FaultsTable = "cabinet_fault"
 	// FaultsInverseTable is the table name for the CabinetFault entity.
@@ -156,9 +156,9 @@ var Columns = []string{
 }
 
 var (
-	// BmsPrimaryKey and BmsColumn2 are the table columns denoting the
-	// primary key for the bms relation (M2M).
-	BmsPrimaryKey = []string{"cabinet_id", "battery_model_id"}
+	// ModelsPrimaryKey and ModelsColumn2 are the table columns denoting the
+	// primary key for the models relation (M2M).
+	ModelsPrimaryKey = []string{"cabinet_id", "battery_model_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).

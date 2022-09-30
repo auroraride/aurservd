@@ -62,9 +62,9 @@ type CabinetMutation struct {
 	clearedcity             bool
 	branch                  *uint64
 	clearedbranch           bool
-	bms                     map[uint64]struct{}
-	removedbms              map[uint64]struct{}
-	clearedbms              bool
+	models                  map[uint64]struct{}
+	removedmodels           map[uint64]struct{}
+	clearedmodels           bool
 	faults                  map[uint64]struct{}
 	removedfaults           map[uint64]struct{}
 	clearedfaults           bool
@@ -1559,58 +1559,58 @@ func (m *CabinetMutation) ResetBranch() {
 	m.clearedbranch = false
 }
 
-// AddBmIDs adds the "bms" edge to the BatteryModel entity by ids.
-func (m *CabinetMutation) AddBmIDs(ids ...uint64) {
-	if m.bms == nil {
-		m.bms = make(map[uint64]struct{})
+// AddModelIDs adds the "models" edge to the BatteryModel entity by ids.
+func (m *CabinetMutation) AddModelIDs(ids ...uint64) {
+	if m.models == nil {
+		m.models = make(map[uint64]struct{})
 	}
 	for i := range ids {
-		m.bms[ids[i]] = struct{}{}
+		m.models[ids[i]] = struct{}{}
 	}
 }
 
-// ClearBms clears the "bms" edge to the BatteryModel entity.
-func (m *CabinetMutation) ClearBms() {
-	m.clearedbms = true
+// ClearModels clears the "models" edge to the BatteryModel entity.
+func (m *CabinetMutation) ClearModels() {
+	m.clearedmodels = true
 }
 
-// BmsCleared reports if the "bms" edge to the BatteryModel entity was cleared.
-func (m *CabinetMutation) BmsCleared() bool {
-	return m.clearedbms
+// ModelsCleared reports if the "models" edge to the BatteryModel entity was cleared.
+func (m *CabinetMutation) ModelsCleared() bool {
+	return m.clearedmodels
 }
 
-// RemoveBmIDs removes the "bms" edge to the BatteryModel entity by IDs.
-func (m *CabinetMutation) RemoveBmIDs(ids ...uint64) {
-	if m.removedbms == nil {
-		m.removedbms = make(map[uint64]struct{})
+// RemoveModelIDs removes the "models" edge to the BatteryModel entity by IDs.
+func (m *CabinetMutation) RemoveModelIDs(ids ...uint64) {
+	if m.removedmodels == nil {
+		m.removedmodels = make(map[uint64]struct{})
 	}
 	for i := range ids {
-		delete(m.bms, ids[i])
-		m.removedbms[ids[i]] = struct{}{}
+		delete(m.models, ids[i])
+		m.removedmodels[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedBms returns the removed IDs of the "bms" edge to the BatteryModel entity.
-func (m *CabinetMutation) RemovedBmsIDs() (ids []uint64) {
-	for id := range m.removedbms {
+// RemovedModels returns the removed IDs of the "models" edge to the BatteryModel entity.
+func (m *CabinetMutation) RemovedModelsIDs() (ids []uint64) {
+	for id := range m.removedmodels {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// BmsIDs returns the "bms" edge IDs in the mutation.
-func (m *CabinetMutation) BmsIDs() (ids []uint64) {
-	for id := range m.bms {
+// ModelsIDs returns the "models" edge IDs in the mutation.
+func (m *CabinetMutation) ModelsIDs() (ids []uint64) {
+	for id := range m.models {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetBms resets all changes to the "bms" edge.
-func (m *CabinetMutation) ResetBms() {
-	m.bms = nil
-	m.clearedbms = false
-	m.removedbms = nil
+// ResetModels resets all changes to the "models" edge.
+func (m *CabinetMutation) ResetModels() {
+	m.models = nil
+	m.clearedmodels = false
+	m.removedmodels = nil
 }
 
 // AddFaultIDs adds the "faults" edge to the CabinetFault entity by ids.
@@ -2540,8 +2540,8 @@ func (m *CabinetMutation) AddedEdges() []string {
 	if m.branch != nil {
 		edges = append(edges, cabinet.EdgeBranch)
 	}
-	if m.bms != nil {
-		edges = append(edges, cabinet.EdgeBms)
+	if m.models != nil {
+		edges = append(edges, cabinet.EdgeModels)
 	}
 	if m.faults != nil {
 		edges = append(edges, cabinet.EdgeFaults)
@@ -2567,9 +2567,9 @@ func (m *CabinetMutation) AddedIDs(name string) []ent.Value {
 		if id := m.branch; id != nil {
 			return []ent.Value{*id}
 		}
-	case cabinet.EdgeBms:
-		ids := make([]ent.Value, 0, len(m.bms))
-		for id := range m.bms {
+	case cabinet.EdgeModels:
+		ids := make([]ent.Value, 0, len(m.models))
+		for id := range m.models {
 			ids = append(ids, id)
 		}
 		return ids
@@ -2598,8 +2598,8 @@ func (m *CabinetMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CabinetMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 6)
-	if m.removedbms != nil {
-		edges = append(edges, cabinet.EdgeBms)
+	if m.removedmodels != nil {
+		edges = append(edges, cabinet.EdgeModels)
 	}
 	if m.removedfaults != nil {
 		edges = append(edges, cabinet.EdgeFaults)
@@ -2617,9 +2617,9 @@ func (m *CabinetMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *CabinetMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case cabinet.EdgeBms:
-		ids := make([]ent.Value, 0, len(m.removedbms))
-		for id := range m.removedbms {
+	case cabinet.EdgeModels:
+		ids := make([]ent.Value, 0, len(m.removedmodels))
+		for id := range m.removedmodels {
 			ids = append(ids, id)
 		}
 		return ids
@@ -2654,8 +2654,8 @@ func (m *CabinetMutation) ClearedEdges() []string {
 	if m.clearedbranch {
 		edges = append(edges, cabinet.EdgeBranch)
 	}
-	if m.clearedbms {
-		edges = append(edges, cabinet.EdgeBms)
+	if m.clearedmodels {
+		edges = append(edges, cabinet.EdgeModels)
 	}
 	if m.clearedfaults {
 		edges = append(edges, cabinet.EdgeFaults)
@@ -2677,8 +2677,8 @@ func (m *CabinetMutation) EdgeCleared(name string) bool {
 		return m.clearedcity
 	case cabinet.EdgeBranch:
 		return m.clearedbranch
-	case cabinet.EdgeBms:
-		return m.clearedbms
+	case cabinet.EdgeModels:
+		return m.clearedmodels
 	case cabinet.EdgeFaults:
 		return m.clearedfaults
 	case cabinet.EdgeExchanges:
@@ -2713,8 +2713,8 @@ func (m *CabinetMutation) ResetEdge(name string) error {
 	case cabinet.EdgeBranch:
 		m.ResetBranch()
 		return nil
-	case cabinet.EdgeBms:
-		m.ResetBms()
+	case cabinet.EdgeModels:
+		m.ResetModels()
 		return nil
 	case cabinet.EdgeFaults:
 		m.ResetFaults()

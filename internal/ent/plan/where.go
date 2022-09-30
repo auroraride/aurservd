@@ -1200,25 +1200,25 @@ func ParentIDNotNil() predicate.Plan {
 	})
 }
 
-// HasPms applies the HasEdge predicate on the "pms" edge.
-func HasPms() predicate.Plan {
+// HasModels applies the HasEdge predicate on the "models" edge.
+func HasModels() predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PmsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, PmsTable, PmsPrimaryKey...),
+			sqlgraph.To(ModelsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, ModelsTable, ModelsPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasPmsWith applies the HasEdge predicate on the "pms" edge with a given conditions (other predicates).
-func HasPmsWith(preds ...predicate.BatteryModel) predicate.Plan {
+// HasModelsWith applies the HasEdge predicate on the "models" edge with a given conditions (other predicates).
+func HasModelsWith(preds ...predicate.BatteryModel) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PmsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, PmsTable, PmsPrimaryKey...),
+			sqlgraph.To(ModelsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, ModelsTable, ModelsPrimaryKey...),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

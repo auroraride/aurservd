@@ -42,9 +42,9 @@ type PlanMutation struct {
 	addoriginal      *float64
 	desc             *string
 	clearedFields    map[string]struct{}
-	pms              map[uint64]struct{}
-	removedpms       map[uint64]struct{}
-	clearedpms       bool
+	models           map[uint64]struct{}
+	removedmodels    map[uint64]struct{}
+	clearedmodels    bool
 	cities           map[uint64]struct{}
 	removedcities    map[uint64]struct{}
 	clearedcities    bool
@@ -907,58 +907,58 @@ func (m *PlanMutation) ResetParentID() {
 	delete(m.clearedFields, plan.FieldParentID)
 }
 
-// AddPmIDs adds the "pms" edge to the BatteryModel entity by ids.
-func (m *PlanMutation) AddPmIDs(ids ...uint64) {
-	if m.pms == nil {
-		m.pms = make(map[uint64]struct{})
+// AddModelIDs adds the "models" edge to the BatteryModel entity by ids.
+func (m *PlanMutation) AddModelIDs(ids ...uint64) {
+	if m.models == nil {
+		m.models = make(map[uint64]struct{})
 	}
 	for i := range ids {
-		m.pms[ids[i]] = struct{}{}
+		m.models[ids[i]] = struct{}{}
 	}
 }
 
-// ClearPms clears the "pms" edge to the BatteryModel entity.
-func (m *PlanMutation) ClearPms() {
-	m.clearedpms = true
+// ClearModels clears the "models" edge to the BatteryModel entity.
+func (m *PlanMutation) ClearModels() {
+	m.clearedmodels = true
 }
 
-// PmsCleared reports if the "pms" edge to the BatteryModel entity was cleared.
-func (m *PlanMutation) PmsCleared() bool {
-	return m.clearedpms
+// ModelsCleared reports if the "models" edge to the BatteryModel entity was cleared.
+func (m *PlanMutation) ModelsCleared() bool {
+	return m.clearedmodels
 }
 
-// RemovePmIDs removes the "pms" edge to the BatteryModel entity by IDs.
-func (m *PlanMutation) RemovePmIDs(ids ...uint64) {
-	if m.removedpms == nil {
-		m.removedpms = make(map[uint64]struct{})
+// RemoveModelIDs removes the "models" edge to the BatteryModel entity by IDs.
+func (m *PlanMutation) RemoveModelIDs(ids ...uint64) {
+	if m.removedmodels == nil {
+		m.removedmodels = make(map[uint64]struct{})
 	}
 	for i := range ids {
-		delete(m.pms, ids[i])
-		m.removedpms[ids[i]] = struct{}{}
+		delete(m.models, ids[i])
+		m.removedmodels[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedPms returns the removed IDs of the "pms" edge to the BatteryModel entity.
-func (m *PlanMutation) RemovedPmsIDs() (ids []uint64) {
-	for id := range m.removedpms {
+// RemovedModels returns the removed IDs of the "models" edge to the BatteryModel entity.
+func (m *PlanMutation) RemovedModelsIDs() (ids []uint64) {
+	for id := range m.removedmodels {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// PmsIDs returns the "pms" edge IDs in the mutation.
-func (m *PlanMutation) PmsIDs() (ids []uint64) {
-	for id := range m.pms {
+// ModelsIDs returns the "models" edge IDs in the mutation.
+func (m *PlanMutation) ModelsIDs() (ids []uint64) {
+	for id := range m.models {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetPms resets all changes to the "pms" edge.
-func (m *PlanMutation) ResetPms() {
-	m.pms = nil
-	m.clearedpms = false
-	m.removedpms = nil
+// ResetModels resets all changes to the "models" edge.
+func (m *PlanMutation) ResetModels() {
+	m.models = nil
+	m.clearedmodels = false
+	m.removedmodels = nil
 }
 
 // AddCityIDs adds the "cities" edge to the City entity by ids.
@@ -1619,8 +1619,8 @@ func (m *PlanMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlanMutation) AddedEdges() []string {
 	edges := make([]string, 0, 5)
-	if m.pms != nil {
-		edges = append(edges, plan.EdgePms)
+	if m.models != nil {
+		edges = append(edges, plan.EdgeModels)
 	}
 	if m.cities != nil {
 		edges = append(edges, plan.EdgeCities)
@@ -1641,9 +1641,9 @@ func (m *PlanMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *PlanMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case plan.EdgePms:
-		ids := make([]ent.Value, 0, len(m.pms))
-		for id := range m.pms {
+	case plan.EdgeModels:
+		ids := make([]ent.Value, 0, len(m.models))
+		for id := range m.models {
 			ids = append(ids, id)
 		}
 		return ids
@@ -1676,8 +1676,8 @@ func (m *PlanMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlanMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 5)
-	if m.removedpms != nil {
-		edges = append(edges, plan.EdgePms)
+	if m.removedmodels != nil {
+		edges = append(edges, plan.EdgeModels)
 	}
 	if m.removedcities != nil {
 		edges = append(edges, plan.EdgeCities)
@@ -1695,9 +1695,9 @@ func (m *PlanMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *PlanMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case plan.EdgePms:
-		ids := make([]ent.Value, 0, len(m.removedpms))
-		for id := range m.removedpms {
+	case plan.EdgeModels:
+		ids := make([]ent.Value, 0, len(m.removedmodels))
+		for id := range m.removedmodels {
 			ids = append(ids, id)
 		}
 		return ids
@@ -1726,8 +1726,8 @@ func (m *PlanMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlanMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 5)
-	if m.clearedpms {
-		edges = append(edges, plan.EdgePms)
+	if m.clearedmodels {
+		edges = append(edges, plan.EdgeModels)
 	}
 	if m.clearedcities {
 		edges = append(edges, plan.EdgeCities)
@@ -1748,8 +1748,8 @@ func (m *PlanMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *PlanMutation) EdgeCleared(name string) bool {
 	switch name {
-	case plan.EdgePms:
-		return m.clearedpms
+	case plan.EdgeModels:
+		return m.clearedmodels
 	case plan.EdgeCities:
 		return m.clearedcities
 	case plan.EdgeParent:
@@ -1777,8 +1777,8 @@ func (m *PlanMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *PlanMutation) ResetEdge(name string) error {
 	switch name {
-	case plan.EdgePms:
-		m.ResetPms()
+	case plan.EdgeModels:
+		m.ResetModels()
 		return nil
 	case plan.EdgeCities:
 		m.ResetCities()

@@ -32,7 +32,7 @@ func (s *riderBranchService) cabinetDetail(req *model.RiderBranchDetailReq) any 
     items, _ := ent.Database.Cabinet.QueryNotDeleted().
         Where(
             cabinet.BranchID(req.BranchID),
-            cabinet.HasBmsWith(batterymodel.Model(req.Model)),
+            cabinet.HasModelsWith(batterymodel.Model(req.Model)),
         ).
         All(s.ctx)
     return items

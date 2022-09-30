@@ -45,8 +45,8 @@ const (
 	FieldDesc = "desc"
 	// FieldParentID holds the string denoting the parent_id field in the database.
 	FieldParentID = "parent_id"
-	// EdgePms holds the string denoting the pms edge name in mutations.
-	EdgePms = "pms"
+	// EdgeModels holds the string denoting the models edge name in mutations.
+	EdgeModels = "models"
 	// EdgeCities holds the string denoting the cities edge name in mutations.
 	EdgeCities = "cities"
 	// EdgeParent holds the string denoting the parent edge name in mutations.
@@ -57,11 +57,11 @@ const (
 	EdgeCoupons = "coupons"
 	// Table holds the table name of the plan in the database.
 	Table = "plan"
-	// PmsTable is the table that holds the pms relation/edge. The primary key declared below.
-	PmsTable = "plan_pms"
-	// PmsInverseTable is the table name for the BatteryModel entity.
+	// ModelsTable is the table that holds the models relation/edge. The primary key declared below.
+	ModelsTable = "plan_models"
+	// ModelsInverseTable is the table name for the BatteryModel entity.
 	// It exists in this package in order to avoid circular dependency with the "batterymodel" package.
-	PmsInverseTable = "battery_model"
+	ModelsInverseTable = "battery_model"
 	// CitiesTable is the table that holds the cities relation/edge. The primary key declared below.
 	CitiesTable = "plan_cities"
 	// CitiesInverseTable is the table name for the City entity.
@@ -104,9 +104,9 @@ var Columns = []string{
 }
 
 var (
-	// PmsPrimaryKey and PmsColumn2 are the table columns denoting the
-	// primary key for the pms relation (M2M).
-	PmsPrimaryKey = []string{"plan_id", "battery_model_id"}
+	// ModelsPrimaryKey and ModelsColumn2 are the table columns denoting the
+	// primary key for the models relation (M2M).
+	ModelsPrimaryKey = []string{"plan_id", "battery_model_id"}
 	// CitiesPrimaryKey and CitiesColumn2 are the table columns denoting the
 	// primary key for the cities relation (M2M).
 	CitiesPrimaryKey = []string{"plan_id", "city_id"}

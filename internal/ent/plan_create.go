@@ -178,19 +178,19 @@ func (pc *PlanCreate) SetNillableParentID(u *uint64) *PlanCreate {
 	return pc
 }
 
-// AddPmIDs adds the "pms" edge to the BatteryModel entity by IDs.
-func (pc *PlanCreate) AddPmIDs(ids ...uint64) *PlanCreate {
-	pc.mutation.AddPmIDs(ids...)
+// AddModelIDs adds the "models" edge to the BatteryModel entity by IDs.
+func (pc *PlanCreate) AddModelIDs(ids ...uint64) *PlanCreate {
+	pc.mutation.AddModelIDs(ids...)
 	return pc
 }
 
-// AddPms adds the "pms" edges to the BatteryModel entity.
-func (pc *PlanCreate) AddPms(b ...*BatteryModel) *PlanCreate {
+// AddModels adds the "models" edges to the BatteryModel entity.
+func (pc *PlanCreate) AddModels(b ...*BatteryModel) *PlanCreate {
 	ids := make([]uint64, len(b))
 	for i := range b {
 		ids[i] = b[i].ID
 	}
-	return pc.AddPmIDs(ids...)
+	return pc.AddModelIDs(ids...)
 }
 
 // AddCityIDs adds the "cities" edge to the City entity by IDs.
@@ -516,12 +516,12 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 		})
 		_node.Desc = value
 	}
-	if nodes := pc.mutation.PmsIDs(); len(nodes) > 0 {
+	if nodes := pc.mutation.ModelsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   plan.PmsTable,
-			Columns: plan.PmsPrimaryKey,
+			Table:   plan.ModelsTable,
+			Columns: plan.ModelsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

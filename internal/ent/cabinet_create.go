@@ -345,19 +345,19 @@ func (cc *CabinetCreate) SetBranch(b *Branch) *CabinetCreate {
 	return cc.SetBranchID(b.ID)
 }
 
-// AddBmIDs adds the "bms" edge to the BatteryModel entity by IDs.
-func (cc *CabinetCreate) AddBmIDs(ids ...uint64) *CabinetCreate {
-	cc.mutation.AddBmIDs(ids...)
+// AddModelIDs adds the "models" edge to the BatteryModel entity by IDs.
+func (cc *CabinetCreate) AddModelIDs(ids ...uint64) *CabinetCreate {
+	cc.mutation.AddModelIDs(ids...)
 	return cc
 }
 
-// AddBms adds the "bms" edges to the BatteryModel entity.
-func (cc *CabinetCreate) AddBms(b ...*BatteryModel) *CabinetCreate {
+// AddModels adds the "models" edges to the BatteryModel entity.
+func (cc *CabinetCreate) AddModels(b ...*BatteryModel) *CabinetCreate {
 	ids := make([]uint64, len(b))
 	for i := range b {
 		ids[i] = b[i].ID
 	}
-	return cc.AddBmIDs(ids...)
+	return cc.AddModelIDs(ids...)
 }
 
 // AddFaultIDs adds the "faults" edge to the CabinetFault entity by IDs.
@@ -844,12 +844,12 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 		_node.BranchID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := cc.mutation.BmsIDs(); len(nodes) > 0 {
+	if nodes := cc.mutation.ModelsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   cabinet.BmsTable,
-			Columns: cabinet.BmsPrimaryKey,
+			Table:   cabinet.ModelsTable,
+			Columns: cabinet.ModelsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

@@ -121,7 +121,7 @@ func (s *branchService) List(req *model.BranchListReq) *model.PaginationRes {
             sq.Where(store.DeletedAtIsNil())
         }).
         WithCabinets(func(cq *ent.CabinetQuery) {
-            cq.Where(cabinet.DeletedAtIsNil()).WithBms()
+            cq.Where(cabinet.DeletedAtIsNil()).WithModels()
         }).
         WithContracts(func(query *ent.BranchContractQuery) {
             query.Order(ent.Desc(branchcontract.FieldID))
@@ -157,7 +157,7 @@ func (s *branchService) List(req *model.BranchListReq) *model.PaginationRes {
             }
             r.StoreTotal = len(item.Edges.Stores)
             for _, c := range item.Edges.Cabinets {
-                bms := c.Edges.Bms
+                bms := c.Edges.Models
                 if len(bms) > 0 {
                     cm := bms[0]
                     str := strings.ToUpper(cm.Model)
@@ -248,7 +248,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (temps 
     }
 
     stores = ent.Database.Store.QueryNotDeleted().Where(store.BranchIDIn(ids...)).AllX(s.ctx)
-    cabinets = ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.BranchIDIn(ids...)).WithBms().AllX(s.ctx)
+    cabinets = ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.BranchIDIn(ids...)).WithModels().AllX(s.ctx)
     return
 }
 
@@ -313,7 +313,7 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
         for _, cab := range cabinets {
             if strings.Contains(cab.Name, req.Name) {
                 var inside bool
-                for _, bm := range cab.Edges.Bms {
+                for _, bm := range cab.Edges.Models {
                     if strings.HasPrefix(bm.Model, mt) {
                         inside = true
                         break
@@ -442,7 +442,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
                 }
             }
 
-            bms := c.Edges.Bms
+            bms := c.Edges.Models
             if len(bms) < 1 {
                 continue
             }
@@ -538,7 +538,7 @@ func (s *branchService) DecodeFacility(fid string) (b *ent.Branch, sto *ent.Stor
         break
     case 2:
         cab, _ := ent.Database.Cabinet.QueryNotDeleted().
-            WithBms().
+            WithModels().
             Where(cabinet.ID(uint64(arr[1]))).
             First(s.ctx)
         if cab == nil {
@@ -550,7 +550,7 @@ func (s *branchService) DecodeFacility(fid string) (b *ent.Branch, sto *ent.Stor
         }
         // 查询其他电柜信息
         items, _ := ent.Database.Cabinet.QueryNotDeleted().
-            WithBms().
+            WithModels().
             Where(
                 cabinet.BranchID(b.ID),
                 cabinet.IDNEQ(cab.ID),
@@ -607,7 +607,7 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
         // 设施详情 - 电柜
         data.Type = "cabinet"
         for _, cab := range cabs {
-            bms := cab.Edges.Bms
+            bms := cab.Edges.Models
             if len(bms) == 0 {
                 continue
             }

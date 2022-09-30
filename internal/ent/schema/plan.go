@@ -73,7 +73,7 @@ func (Plan) Fields() []ent.Field {
 // Edges of the Plan.
 func (Plan) Edges() []ent.Edge {
     return []ent.Edge{
-        edge.To("pms", BatteryModel.Type),
+        edge.To("models", BatteryModel.Type),
         edge.To("cities", City.Type),
         edge.To("complexes", Plan.Type).
             From("parent").

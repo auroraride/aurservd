@@ -32,7 +32,7 @@ type CabinetQuery struct {
 	predicates    []predicate.Cabinet
 	withCity      *CityQuery
 	withBranch    *BranchQuery
-	withBms       *BatteryModelQuery
+	withModels    *BatteryModelQuery
 	withFaults    *CabinetFaultQuery
 	withExchanges *ExchangeQuery
 	withStocks    *StockQuery
@@ -117,8 +117,8 @@ func (cq *CabinetQuery) QueryBranch() *BranchQuery {
 	return query
 }
 
-// QueryBms chains the current query on the "bms" edge.
-func (cq *CabinetQuery) QueryBms() *BatteryModelQuery {
+// QueryModels chains the current query on the "models" edge.
+func (cq *CabinetQuery) QueryModels() *BatteryModelQuery {
 	query := &BatteryModelQuery{config: cq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
@@ -131,7 +131,7 @@ func (cq *CabinetQuery) QueryBms() *BatteryModelQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(cabinet.Table, cabinet.FieldID, selector),
 			sqlgraph.To(batterymodel.Table, batterymodel.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, cabinet.BmsTable, cabinet.BmsPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, false, cabinet.ModelsTable, cabinet.ModelsPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -388,7 +388,7 @@ func (cq *CabinetQuery) Clone() *CabinetQuery {
 		predicates:    append([]predicate.Cabinet{}, cq.predicates...),
 		withCity:      cq.withCity.Clone(),
 		withBranch:    cq.withBranch.Clone(),
-		withBms:       cq.withBms.Clone(),
+		withModels:    cq.withModels.Clone(),
 		withFaults:    cq.withFaults.Clone(),
 		withExchanges: cq.withExchanges.Clone(),
 		withStocks:    cq.withStocks.Clone(),
@@ -421,14 +421,14 @@ func (cq *CabinetQuery) WithBranch(opts ...func(*BranchQuery)) *CabinetQuery {
 	return cq
 }
 
-// WithBms tells the query-builder to eager-load the nodes that are connected to
-// the "bms" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *CabinetQuery) WithBms(opts ...func(*BatteryModelQuery)) *CabinetQuery {
+// WithModels tells the query-builder to eager-load the nodes that are connected to
+// the "models" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CabinetQuery) WithModels(opts ...func(*BatteryModelQuery)) *CabinetQuery {
 	query := &BatteryModelQuery{config: cq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	cq.withBms = query
+	cq.withModels = query
 	return cq
 }
 
@@ -536,7 +536,7 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 		loadedTypes = [6]bool{
 			cq.withCity != nil,
 			cq.withBranch != nil,
-			cq.withBms != nil,
+			cq.withModels != nil,
 			cq.withFaults != nil,
 			cq.withExchanges != nil,
 			cq.withStocks != nil,
@@ -575,10 +575,10 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 			return nil, err
 		}
 	}
-	if query := cq.withBms; query != nil {
-		if err := cq.loadBms(ctx, query, nodes,
-			func(n *Cabinet) { n.Edges.Bms = []*BatteryModel{} },
-			func(n *Cabinet, e *BatteryModel) { n.Edges.Bms = append(n.Edges.Bms, e) }); err != nil {
+	if query := cq.withModels; query != nil {
+		if err := cq.loadModels(ctx, query, nodes,
+			func(n *Cabinet) { n.Edges.Models = []*BatteryModel{} },
+			func(n *Cabinet, e *BatteryModel) { n.Edges.Models = append(n.Edges.Models, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -664,7 +664,7 @@ func (cq *CabinetQuery) loadBranch(ctx context.Context, query *BranchQuery, node
 	}
 	return nil
 }
-func (cq *CabinetQuery) loadBms(ctx context.Context, query *BatteryModelQuery, nodes []*Cabinet, init func(*Cabinet), assign func(*Cabinet, *BatteryModel)) error {
+func (cq *CabinetQuery) loadModels(ctx context.Context, query *BatteryModelQuery, nodes []*Cabinet, init func(*Cabinet), assign func(*Cabinet, *BatteryModel)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
 	byID := make(map[uint64]*Cabinet)
 	nids := make(map[uint64]map[*Cabinet]struct{})
@@ -676,11 +676,11 @@ func (cq *CabinetQuery) loadBms(ctx context.Context, query *BatteryModelQuery, n
 		}
 	}
 	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(cabinet.BmsTable)
-		s.Join(joinT).On(s.C(batterymodel.FieldID), joinT.C(cabinet.BmsPrimaryKey[1]))
-		s.Where(sql.InValues(joinT.C(cabinet.BmsPrimaryKey[0]), edgeIDs...))
+		joinT := sql.Table(cabinet.ModelsTable)
+		s.Join(joinT).On(s.C(batterymodel.FieldID), joinT.C(cabinet.ModelsPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(cabinet.ModelsPrimaryKey[0]), edgeIDs...))
 		columns := s.SelectedColumns()
-		s.Select(joinT.C(cabinet.BmsPrimaryKey[0]))
+		s.Select(joinT.C(cabinet.ModelsPrimaryKey[0]))
 		s.AppendSelect(columns...)
 		s.SetDistinct(false)
 	})
@@ -714,7 +714,7 @@ func (cq *CabinetQuery) loadBms(ctx context.Context, query *BatteryModelQuery, n
 	for _, n := range neighbors {
 		nodes, ok := nids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected "bms" node returned %v`, n.ID)
+			return fmt.Errorf(`unexpected "models" node returned %v`, n.ID)
 		}
 		for kn := range nodes {
 			assign(kn, n)

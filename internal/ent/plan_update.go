@@ -221,19 +221,19 @@ func (pu *PlanUpdate) ClearParentID() *PlanUpdate {
 	return pu
 }
 
-// AddPmIDs adds the "pms" edge to the BatteryModel entity by IDs.
-func (pu *PlanUpdate) AddPmIDs(ids ...uint64) *PlanUpdate {
-	pu.mutation.AddPmIDs(ids...)
+// AddModelIDs adds the "models" edge to the BatteryModel entity by IDs.
+func (pu *PlanUpdate) AddModelIDs(ids ...uint64) *PlanUpdate {
+	pu.mutation.AddModelIDs(ids...)
 	return pu
 }
 
-// AddPms adds the "pms" edges to the BatteryModel entity.
-func (pu *PlanUpdate) AddPms(b ...*BatteryModel) *PlanUpdate {
+// AddModels adds the "models" edges to the BatteryModel entity.
+func (pu *PlanUpdate) AddModels(b ...*BatteryModel) *PlanUpdate {
 	ids := make([]uint64, len(b))
 	for i := range b {
 		ids[i] = b[i].ID
 	}
-	return pu.AddPmIDs(ids...)
+	return pu.AddModelIDs(ids...)
 }
 
 // AddCityIDs adds the "cities" edge to the City entity by IDs.
@@ -291,25 +291,25 @@ func (pu *PlanUpdate) Mutation() *PlanMutation {
 	return pu.mutation
 }
 
-// ClearPms clears all "pms" edges to the BatteryModel entity.
-func (pu *PlanUpdate) ClearPms() *PlanUpdate {
-	pu.mutation.ClearPms()
+// ClearModels clears all "models" edges to the BatteryModel entity.
+func (pu *PlanUpdate) ClearModels() *PlanUpdate {
+	pu.mutation.ClearModels()
 	return pu
 }
 
-// RemovePmIDs removes the "pms" edge to BatteryModel entities by IDs.
-func (pu *PlanUpdate) RemovePmIDs(ids ...uint64) *PlanUpdate {
-	pu.mutation.RemovePmIDs(ids...)
+// RemoveModelIDs removes the "models" edge to BatteryModel entities by IDs.
+func (pu *PlanUpdate) RemoveModelIDs(ids ...uint64) *PlanUpdate {
+	pu.mutation.RemoveModelIDs(ids...)
 	return pu
 }
 
-// RemovePms removes "pms" edges to BatteryModel entities.
-func (pu *PlanUpdate) RemovePms(b ...*BatteryModel) *PlanUpdate {
+// RemoveModels removes "models" edges to BatteryModel entities.
+func (pu *PlanUpdate) RemoveModels(b ...*BatteryModel) *PlanUpdate {
 	ids := make([]uint64, len(b))
 	for i := range b {
 		ids[i] = b[i].ID
 	}
-	return pu.RemovePmIDs(ids...)
+	return pu.RemoveModelIDs(ids...)
 }
 
 // ClearCities clears all "cities" edges to the City entity.
@@ -629,12 +629,12 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: plan.FieldDesc,
 		})
 	}
-	if pu.mutation.PmsCleared() {
+	if pu.mutation.ModelsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   plan.PmsTable,
-			Columns: plan.PmsPrimaryKey,
+			Table:   plan.ModelsTable,
+			Columns: plan.ModelsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -645,12 +645,12 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := pu.mutation.RemovedPmsIDs(); len(nodes) > 0 && !pu.mutation.PmsCleared() {
+	if nodes := pu.mutation.RemovedModelsIDs(); len(nodes) > 0 && !pu.mutation.ModelsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   plan.PmsTable,
-			Columns: plan.PmsPrimaryKey,
+			Table:   plan.ModelsTable,
+			Columns: plan.ModelsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -664,12 +664,12 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := pu.mutation.PmsIDs(); len(nodes) > 0 {
+	if nodes := pu.mutation.ModelsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   plan.PmsTable,
-			Columns: plan.PmsPrimaryKey,
+			Table:   plan.ModelsTable,
+			Columns: plan.ModelsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1089,19 +1089,19 @@ func (puo *PlanUpdateOne) ClearParentID() *PlanUpdateOne {
 	return puo
 }
 
-// AddPmIDs adds the "pms" edge to the BatteryModel entity by IDs.
-func (puo *PlanUpdateOne) AddPmIDs(ids ...uint64) *PlanUpdateOne {
-	puo.mutation.AddPmIDs(ids...)
+// AddModelIDs adds the "models" edge to the BatteryModel entity by IDs.
+func (puo *PlanUpdateOne) AddModelIDs(ids ...uint64) *PlanUpdateOne {
+	puo.mutation.AddModelIDs(ids...)
 	return puo
 }
 
-// AddPms adds the "pms" edges to the BatteryModel entity.
-func (puo *PlanUpdateOne) AddPms(b ...*BatteryModel) *PlanUpdateOne {
+// AddModels adds the "models" edges to the BatteryModel entity.
+func (puo *PlanUpdateOne) AddModels(b ...*BatteryModel) *PlanUpdateOne {
 	ids := make([]uint64, len(b))
 	for i := range b {
 		ids[i] = b[i].ID
 	}
-	return puo.AddPmIDs(ids...)
+	return puo.AddModelIDs(ids...)
 }
 
 // AddCityIDs adds the "cities" edge to the City entity by IDs.
@@ -1159,25 +1159,25 @@ func (puo *PlanUpdateOne) Mutation() *PlanMutation {
 	return puo.mutation
 }
 
-// ClearPms clears all "pms" edges to the BatteryModel entity.
-func (puo *PlanUpdateOne) ClearPms() *PlanUpdateOne {
-	puo.mutation.ClearPms()
+// ClearModels clears all "models" edges to the BatteryModel entity.
+func (puo *PlanUpdateOne) ClearModels() *PlanUpdateOne {
+	puo.mutation.ClearModels()
 	return puo
 }
 
-// RemovePmIDs removes the "pms" edge to BatteryModel entities by IDs.
-func (puo *PlanUpdateOne) RemovePmIDs(ids ...uint64) *PlanUpdateOne {
-	puo.mutation.RemovePmIDs(ids...)
+// RemoveModelIDs removes the "models" edge to BatteryModel entities by IDs.
+func (puo *PlanUpdateOne) RemoveModelIDs(ids ...uint64) *PlanUpdateOne {
+	puo.mutation.RemoveModelIDs(ids...)
 	return puo
 }
 
-// RemovePms removes "pms" edges to BatteryModel entities.
-func (puo *PlanUpdateOne) RemovePms(b ...*BatteryModel) *PlanUpdateOne {
+// RemoveModels removes "models" edges to BatteryModel entities.
+func (puo *PlanUpdateOne) RemoveModels(b ...*BatteryModel) *PlanUpdateOne {
 	ids := make([]uint64, len(b))
 	for i := range b {
 		ids[i] = b[i].ID
 	}
-	return puo.RemovePmIDs(ids...)
+	return puo.RemoveModelIDs(ids...)
 }
 
 // ClearCities clears all "cities" edges to the City entity.
@@ -1527,12 +1527,12 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 			Column: plan.FieldDesc,
 		})
 	}
-	if puo.mutation.PmsCleared() {
+	if puo.mutation.ModelsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   plan.PmsTable,
-			Columns: plan.PmsPrimaryKey,
+			Table:   plan.ModelsTable,
+			Columns: plan.ModelsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1543,12 +1543,12 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := puo.mutation.RemovedPmsIDs(); len(nodes) > 0 && !puo.mutation.PmsCleared() {
+	if nodes := puo.mutation.RemovedModelsIDs(); len(nodes) > 0 && !puo.mutation.ModelsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   plan.PmsTable,
-			Columns: plan.PmsPrimaryKey,
+			Table:   plan.ModelsTable,
+			Columns: plan.ModelsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1562,12 +1562,12 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := puo.mutation.PmsIDs(); len(nodes) > 0 {
+	if nodes := puo.mutation.ModelsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   plan.PmsTable,
-			Columns: plan.PmsPrimaryKey,
+			Table:   plan.ModelsTable,
+			Columns: plan.ModelsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

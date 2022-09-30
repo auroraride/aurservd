@@ -80,7 +80,7 @@ func (s *subscribeService) QueryEdges(id uint64) (*ent.Subscribe, error) {
     return s.orm.QueryNotDeleted().
         Where(subscribe.ID(id)).
         WithPlan(func(pq *ent.PlanQuery) {
-            pq.WithPms()
+            pq.WithModels()
         }).
         WithCity().
         // 查询初始订单和对应的押金订单
@@ -115,7 +115,7 @@ func (s *subscribeService) Recent(riderID uint64, params ...uint64) *ent.Subscri
         Where(subscribe.StatusNotIn(model.SubscribeStatusCanceled)).
         Order(ent.Desc(subscribe.FieldCreatedAt)).
         WithPlan(func(pq *ent.PlanQuery) {
-            pq.WithPms()
+            pq.WithModels()
         }).
         WithCity().
         // 查询初始订单和对应的押金订单
@@ -185,7 +185,7 @@ func (s *subscribeService) Detail(sub *ent.Subscribe) *model.Subscribe {
             Days: p.Days,
         }
 
-        for _, pm := range sub.Edges.Plan.Edges.Pms {
+        for _, pm := range sub.Edges.Plan.Edges.Models {
             res.Models = append(res.Models, model.BatteryModel{
                 ID:    pm.ID,
                 Model: pm.Model,

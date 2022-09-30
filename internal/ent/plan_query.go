@@ -27,7 +27,7 @@ type PlanQuery struct {
 	order         []OrderFunc
 	fields        []string
 	predicates    []predicate.Plan
-	withPms       *BatteryModelQuery
+	withModels    *BatteryModelQuery
 	withCities    *CityQuery
 	withParent    *PlanQuery
 	withComplexes *PlanQuery
@@ -69,8 +69,8 @@ func (pq *PlanQuery) Order(o ...OrderFunc) *PlanQuery {
 	return pq
 }
 
-// QueryPms chains the current query on the "pms" edge.
-func (pq *PlanQuery) QueryPms() *BatteryModelQuery {
+// QueryModels chains the current query on the "models" edge.
+func (pq *PlanQuery) QueryModels() *BatteryModelQuery {
 	query := &BatteryModelQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := pq.prepareQuery(ctx); err != nil {
@@ -83,7 +83,7 @@ func (pq *PlanQuery) QueryPms() *BatteryModelQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(plan.Table, plan.FieldID, selector),
 			sqlgraph.To(batterymodel.Table, batterymodel.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, plan.PmsTable, plan.PmsPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, false, plan.ModelsTable, plan.ModelsPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -360,7 +360,7 @@ func (pq *PlanQuery) Clone() *PlanQuery {
 		offset:        pq.offset,
 		order:         append([]OrderFunc{}, pq.order...),
 		predicates:    append([]predicate.Plan{}, pq.predicates...),
-		withPms:       pq.withPms.Clone(),
+		withModels:    pq.withModels.Clone(),
 		withCities:    pq.withCities.Clone(),
 		withParent:    pq.withParent.Clone(),
 		withComplexes: pq.withComplexes.Clone(),
@@ -372,14 +372,14 @@ func (pq *PlanQuery) Clone() *PlanQuery {
 	}
 }
 
-// WithPms tells the query-builder to eager-load the nodes that are connected to
-// the "pms" edge. The optional arguments are used to configure the query builder of the edge.
-func (pq *PlanQuery) WithPms(opts ...func(*BatteryModelQuery)) *PlanQuery {
+// WithModels tells the query-builder to eager-load the nodes that are connected to
+// the "models" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PlanQuery) WithModels(opts ...func(*BatteryModelQuery)) *PlanQuery {
 	query := &BatteryModelQuery{config: pq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	pq.withPms = query
+	pq.withModels = query
 	return pq
 }
 
@@ -496,7 +496,7 @@ func (pq *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 		nodes       = []*Plan{}
 		_spec       = pq.querySpec()
 		loadedTypes = [5]bool{
-			pq.withPms != nil,
+			pq.withModels != nil,
 			pq.withCities != nil,
 			pq.withParent != nil,
 			pq.withComplexes != nil,
@@ -524,10 +524,10 @@ func (pq *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := pq.withPms; query != nil {
-		if err := pq.loadPms(ctx, query, nodes,
-			func(n *Plan) { n.Edges.Pms = []*BatteryModel{} },
-			func(n *Plan, e *BatteryModel) { n.Edges.Pms = append(n.Edges.Pms, e) }); err != nil {
+	if query := pq.withModels; query != nil {
+		if err := pq.loadModels(ctx, query, nodes,
+			func(n *Plan) { n.Edges.Models = []*BatteryModel{} },
+			func(n *Plan, e *BatteryModel) { n.Edges.Models = append(n.Edges.Models, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -561,7 +561,7 @@ func (pq *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 	return nodes, nil
 }
 
-func (pq *PlanQuery) loadPms(ctx context.Context, query *BatteryModelQuery, nodes []*Plan, init func(*Plan), assign func(*Plan, *BatteryModel)) error {
+func (pq *PlanQuery) loadModels(ctx context.Context, query *BatteryModelQuery, nodes []*Plan, init func(*Plan), assign func(*Plan, *BatteryModel)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
 	byID := make(map[uint64]*Plan)
 	nids := make(map[uint64]map[*Plan]struct{})
@@ -573,11 +573,11 @@ func (pq *PlanQuery) loadPms(ctx context.Context, query *BatteryModelQuery, node
 		}
 	}
 	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(plan.PmsTable)
-		s.Join(joinT).On(s.C(batterymodel.FieldID), joinT.C(plan.PmsPrimaryKey[1]))
-		s.Where(sql.InValues(joinT.C(plan.PmsPrimaryKey[0]), edgeIDs...))
+		joinT := sql.Table(plan.ModelsTable)
+		s.Join(joinT).On(s.C(batterymodel.FieldID), joinT.C(plan.ModelsPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(plan.ModelsPrimaryKey[0]), edgeIDs...))
 		columns := s.SelectedColumns()
-		s.Select(joinT.C(plan.PmsPrimaryKey[0]))
+		s.Select(joinT.C(plan.ModelsPrimaryKey[0]))
 		s.AppendSelect(columns...)
 		s.SetDistinct(false)
 	})
@@ -611,7 +611,7 @@ func (pq *PlanQuery) loadPms(ctx context.Context, query *BatteryModelQuery, node
 	for _, n := range neighbors {
 		nodes, ok := nids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected "pms" node returned %v`, n.ID)
+			return fmt.Errorf(`unexpected "models" node returned %v`, n.ID)
 		}
 		for kn := range nodes {
 			assign(kn, n)

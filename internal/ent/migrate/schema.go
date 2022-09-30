@@ -3544,26 +3544,26 @@ var (
 			},
 		},
 	}
-	// CabinetBmsColumns holds the columns for the "cabinet_bms" table.
-	CabinetBmsColumns = []*schema.Column{
+	// CabinetModelsColumns holds the columns for the "cabinet_models" table.
+	CabinetModelsColumns = []*schema.Column{
 		{Name: "cabinet_id", Type: field.TypeInt},
 		{Name: "battery_model_id", Type: field.TypeInt},
 	}
-	// CabinetBmsTable holds the schema information for the "cabinet_bms" table.
-	CabinetBmsTable = &schema.Table{
-		Name:       "cabinet_bms",
-		Columns:    CabinetBmsColumns,
-		PrimaryKey: []*schema.Column{CabinetBmsColumns[0], CabinetBmsColumns[1]},
+	// CabinetModelsTable holds the schema information for the "cabinet_models" table.
+	CabinetModelsTable = &schema.Table{
+		Name:       "cabinet_models",
+		Columns:    CabinetModelsColumns,
+		PrimaryKey: []*schema.Column{CabinetModelsColumns[0], CabinetModelsColumns[1]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "cabinet_bms_cabinet_id",
-				Columns:    []*schema.Column{CabinetBmsColumns[0]},
+				Symbol:     "cabinet_models_cabinet_id",
+				Columns:    []*schema.Column{CabinetModelsColumns[0]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
-				Symbol:     "cabinet_bms_battery_model_id",
-				Columns:    []*schema.Column{CabinetBmsColumns[1]},
+				Symbol:     "cabinet_models_battery_model_id",
+				Columns:    []*schema.Column{CabinetModelsColumns[1]},
 				RefColumns: []*schema.Column{BatteryModelColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -3619,26 +3619,26 @@ var (
 			},
 		},
 	}
-	// PlanPmsColumns holds the columns for the "plan_pms" table.
-	PlanPmsColumns = []*schema.Column{
+	// PlanModelsColumns holds the columns for the "plan_models" table.
+	PlanModelsColumns = []*schema.Column{
 		{Name: "plan_id", Type: field.TypeInt},
 		{Name: "battery_model_id", Type: field.TypeInt},
 	}
-	// PlanPmsTable holds the schema information for the "plan_pms" table.
-	PlanPmsTable = &schema.Table{
-		Name:       "plan_pms",
-		Columns:    PlanPmsColumns,
-		PrimaryKey: []*schema.Column{PlanPmsColumns[0], PlanPmsColumns[1]},
+	// PlanModelsTable holds the schema information for the "plan_models" table.
+	PlanModelsTable = &schema.Table{
+		Name:       "plan_models",
+		Columns:    PlanModelsColumns,
+		PrimaryKey: []*schema.Column{PlanModelsColumns[0], PlanModelsColumns[1]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "plan_pms_plan_id",
-				Columns:    []*schema.Column{PlanPmsColumns[0]},
+				Symbol:     "plan_models_plan_id",
+				Columns:    []*schema.Column{PlanModelsColumns[0]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
-				Symbol:     "plan_pms_battery_model_id",
-				Columns:    []*schema.Column{PlanPmsColumns[1]},
+				Symbol:     "plan_models_battery_model_id",
+				Columns:    []*schema.Column{PlanModelsColumns[1]},
 				RefColumns: []*schema.Column{BatteryModelColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -3716,10 +3716,10 @@ var (
 		SubscribePauseTable,
 		SubscribeReminderTable,
 		SubscribeSuspendTable,
-		CabinetBmsTable,
+		CabinetModelsTable,
 		CouponCitiesTable,
 		CouponPlansTable,
-		PlanPmsTable,
+		PlanModelsTable,
 		PlanCitiesTable,
 	}
 )
@@ -3984,14 +3984,14 @@ func init() {
 	SubscribeSuspendTable.Annotation = &entsql.Annotation{
 		Table: "subscribe_suspend",
 	}
-	CabinetBmsTable.ForeignKeys[0].RefTable = CabinetTable
-	CabinetBmsTable.ForeignKeys[1].RefTable = BatteryModelTable
+	CabinetModelsTable.ForeignKeys[0].RefTable = CabinetTable
+	CabinetModelsTable.ForeignKeys[1].RefTable = BatteryModelTable
 	CouponCitiesTable.ForeignKeys[0].RefTable = CouponTable
 	CouponCitiesTable.ForeignKeys[1].RefTable = CityTable
 	CouponPlansTable.ForeignKeys[0].RefTable = CouponTable
 	CouponPlansTable.ForeignKeys[1].RefTable = PlanTable
-	PlanPmsTable.ForeignKeys[0].RefTable = PlanTable
-	PlanPmsTable.ForeignKeys[1].RefTable = BatteryModelTable
+	PlanModelsTable.ForeignKeys[0].RefTable = PlanTable
+	PlanModelsTable.ForeignKeys[1].RefTable = BatteryModelTable
 	PlanCitiesTable.ForeignKeys[0].RefTable = PlanTable
 	PlanCitiesTable.ForeignKeys[1].RefTable = CityTable
 }

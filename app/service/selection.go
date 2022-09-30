@@ -45,7 +45,7 @@ func (s *selectionService) Plan(req *model.PlanSelectionReq) (items []model.Casc
             pq.Where(plan.DeletedAtIsNil())
         }).
         WithCities().
-        WithPms()
+        WithModels()
 
     if req.Effect != nil && *req.Effect != 0 {
         now := time.Now()
@@ -351,9 +351,9 @@ func (s *selectionService) WorkwxEmployee() (items []any) {
 
 // PlanModel 筛选骑行卡电池型号
 func (s *selectionService) PlanModel(req *model.SelectionPlanModelReq) []string {
-    p, _ := ent.Database.Plan.QueryNotDeleted().Where(plan.ID(req.PlanID)).WithPms().First(s.ctx)
-    items := make([]string, len(p.Edges.Pms))
-    for i, pm := range p.Edges.Pms {
+    p, _ := ent.Database.Plan.QueryNotDeleted().Where(plan.ID(req.PlanID)).WithModels().First(s.ctx)
+    items := make([]string, len(p.Edges.Models))
+    for i, pm := range p.Edges.Models {
         items[i] = pm.Model
     }
     return items
@@ -361,14 +361,14 @@ func (s *selectionService) PlanModel(req *model.SelectionPlanModelReq) []string 
 
 func (s *selectionService) CabinetModel(req *model.SelectionCabinetModelReq) (items []string) {
     cab, _ := ent.Database.Cabinet.QueryNotDeleted().
-        WithBms().
+        WithModels().
         Where(cabinet.ID(req.CabinetID)).
         First(s.ctx)
     items = make([]string, 0)
     if cab == nil {
         return
     }
-    for _, bm := range cab.Edges.Bms {
+    for _, bm := range cab.Edges.Models {
         items = append(items, bm.Model)
     }
     return
@@ -378,7 +378,7 @@ func (s *selectionService) CabinetModel(req *model.SelectionCabinetModelReq) (it
 func (s *selectionService) CabinetModelX() (items []model.CascaderOption) {
     res, _ := ent.Database.Cabinet.QueryNotDeleted().
         WithCity().
-        WithBms().
+        WithModels().
         All(s.ctx)
 
     cmap := make(map[uint64]model.CascaderOption)
@@ -398,9 +398,9 @@ func (s *selectionService) CabinetModelX() (items []model.CascaderOption) {
 
         l2c := cmap[c.ID].Children
 
-        children := make([]*model.CascaderOption, len(r.Edges.Bms))
+        children := make([]*model.CascaderOption, len(r.Edges.Models))
 
-        for k, b := range r.Edges.Bms {
+        for k, b := range r.Edges.Models {
             children[k] = &model.CascaderOption{
                 Value: b.Model,
                 Label: b.Model,
