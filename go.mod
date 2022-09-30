@@ -9,7 +9,7 @@ require (
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.18
 	github.com/alibabacloud-go/dyvmsapi-20170525/v2 v2.1.4
 	github.com/alibabacloud-go/tea v1.1.19
-	github.com/aliyun/alibaba-cloud-sdk-go v1.61.1794
+	github.com/aliyun/alibaba-cloud-sdk-go v1.61.1799
 	github.com/aliyun/aliyun-log-go-sdk v0.1.38
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.5+incompatible
 	github.com/fsnotify/fsnotify v1.5.4
@@ -51,7 +51,7 @@ require (
 	github.com/xuri/excelize/v2 v2.6.1
 	go.mongodb.org/mongo-driver v1.10.2
 	golang.org/x/crypto v0.0.0-20220926161630-eccd6366d1be
-	golang.org/x/exp v0.0.0-20220927162542-c76eaa363f9d
+	golang.org/x/exp v0.0.0-20220929160808-de9c53c655b9
 	golang.org/x/time v0.0.0-20220922220347-f3bd1da661af
 	golang.org/x/tools v0.1.13-0.20220804200503-81c7dc4e4efa
 	gopkg.in/yaml.v3 v3.0.1
@@ -155,7 +155,7 @@ require (
 	golang.org/x/image v0.0.0-20220902085622-e7cb96979f69 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
 	golang.org/x/net v0.0.0-20220927171203-f486391704dc // indirect
-	golang.org/x/sync v0.0.0-20220923202941-7f9b1623fab7 // indirect
+	golang.org/x/sync v0.0.0-20220929204114-8fcdb60fdcc0 // indirect
 	golang.org/x/sys v0.0.0-20220928140112-f11e5e49a4ec // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
@@ -166,7 +166,7 @@ require (
 )
 
 //replace github.com/swaggo/swag => /Users/liasica/Downloads/swag
-replace github.com/swaggo/swag => github.com/liasica/swag v1.8.5-0.20220818031911-525ec8e096a2
+replace github.com/swaggo/swag => github.com/liasica/swag v1.8.7-0.20220930010030-939b77c142c8
 
 //replace entgo.io/ent => github.com/CharlesGe129/ent v0.10.2-0.20220520130033-5886b54e4875
 replace entgo.io/ent => github.com/liasica/ent v0.11.3-0.20220926082554-08715525d2cf
