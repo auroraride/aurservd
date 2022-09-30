@@ -100,7 +100,7 @@ func (s *inventoryService) Delete(req *model.InventoryDelete) {
 // ListInventory 获取物资列表
 func (s *inventoryService) ListInventory(req model.InventoryListReq) (items []model.InventoryItem) {
     // 电池型号列表
-    bs := NewBattery()
+    bs := NewBatteryModel()
     for _, v := range bs.Models() {
         items = append(items, model.InventoryItem{
             Name:    v,

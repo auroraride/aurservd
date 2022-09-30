@@ -44,6 +44,8 @@ type Tx struct {
 	CouponAssembly *CouponAssemblyClient
 	// CouponTemplate is the client for interacting with the CouponTemplate builders.
 	CouponTemplate *CouponTemplateClient
+	// EbikeBrand is the client for interacting with the EbikeBrand builders.
+	EbikeBrand *EbikeBrandClient
 	// Employee is the client for interacting with the Employee builders.
 	Employee *EmployeeClient
 	// Enterprise is the client for interacting with the Enterprise builders.
@@ -78,6 +80,8 @@ type Tx struct {
 	Person *PersonClient
 	// Plan is the client for interacting with the Plan builders.
 	Plan *PlanClient
+	// PlanIntroduce is the client for interacting with the PlanIntroduce builders.
+	PlanIntroduce *PlanIntroduceClient
 	// PointLog is the client for interacting with the PointLog builders.
 	PointLog *PointLogClient
 	// Reserve is the client for interacting with the Reserve builders.
@@ -254,6 +258,7 @@ func (tx *Tx) init() {
 	tx.Coupon = NewCouponClient(tx.config)
 	tx.CouponAssembly = NewCouponAssemblyClient(tx.config)
 	tx.CouponTemplate = NewCouponTemplateClient(tx.config)
+	tx.EbikeBrand = NewEbikeBrandClient(tx.config)
 	tx.Employee = NewEmployeeClient(tx.config)
 	tx.Enterprise = NewEnterpriseClient(tx.config)
 	tx.EnterpriseBill = NewEnterpriseBillClient(tx.config)
@@ -271,6 +276,7 @@ func (tx *Tx) init() {
 	tx.OrderRefund = NewOrderRefundClient(tx.config)
 	tx.Person = NewPersonClient(tx.config)
 	tx.Plan = NewPlanClient(tx.config)
+	tx.PlanIntroduce = NewPlanIntroduceClient(tx.config)
 	tx.PointLog = NewPointLogClient(tx.config)
 	tx.Reserve = NewReserveClient(tx.config)
 	tx.Rider = NewRiderClient(tx.config)

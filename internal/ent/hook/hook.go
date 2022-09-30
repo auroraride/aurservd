@@ -204,6 +204,19 @@ func (f CouponTemplateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Val
 	return f(ctx, mv)
 }
 
+// The EbikeBrandFunc type is an adapter to allow the use of ordinary
+// function as EbikeBrand mutator.
+type EbikeBrandFunc func(context.Context, *ent.EbikeBrandMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EbikeBrandFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.EbikeBrandMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EbikeBrandMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The EmployeeFunc type is an adapter to allow the use of ordinary
 // function as Employee mutator.
 type EmployeeFunc func(context.Context, *ent.EmployeeMutation) (ent.Value, error)
@@ -421,6 +434,19 @@ func (f PlanFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 	mv, ok := m.(*ent.PlanMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PlanMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The PlanIntroduceFunc type is an adapter to allow the use of ordinary
+// function as PlanIntroduce mutator.
+type PlanIntroduceFunc func(context.Context, *ent.PlanIntroduceMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PlanIntroduceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.PlanIntroduceMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PlanIntroduceMutation", m)
 	}
 	return f(ctx, mv)
 }

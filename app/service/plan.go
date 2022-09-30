@@ -113,7 +113,7 @@ func (s *planService) getCitiesAndModels(reqCities []uint64, reqModels []string)
     if err != nil {
         snag.Panic("城市参数错误")
     }
-    pms = NewBattery().QueryModelsX(reqModels)
+    pms = NewBatteryModel().QueryModelsX(reqModels)
     return
 }
 

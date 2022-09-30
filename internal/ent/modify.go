@@ -156,6 +156,13 @@ func (c *CouponTemplateClient) ModifyOne(old *CouponTemplate, data any) *CouponT
 	return EntitySetAttributes[CouponTemplateUpdateOne, CouponTemplate](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for EbikeBrand.
+func (c *EbikeBrandClient) ModifyOne(old *EbikeBrand, data any) *EbikeBrandUpdateOne {
+	mutation := newEbikeBrandMutation(c.config, OpUpdateOne, withEbikeBrand(old))
+	up := &EbikeBrandUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[EbikeBrandUpdateOne, EbikeBrand](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Employee.
 func (c *EmployeeClient) ModifyOne(old *Employee, data any) *EmployeeUpdateOne {
 	mutation := newEmployeeMutation(c.config, OpUpdateOne, withEmployee(old))
@@ -273,6 +280,13 @@ func (c *PlanClient) ModifyOne(old *Plan, data any) *PlanUpdateOne {
 	mutation := newPlanMutation(c.config, OpUpdateOne, withPlan(old))
 	up := &PlanUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 	return EntitySetAttributes[PlanUpdateOne, Plan](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for PlanIntroduce.
+func (c *PlanIntroduceClient) ModifyOne(old *PlanIntroduce, data any) *PlanIntroduceUpdateOne {
+	mutation := newPlanIntroduceMutation(c.config, OpUpdateOne, withPlanIntroduce(old))
+	up := &PlanIntroduceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[PlanIntroduceUpdateOne, PlanIntroduce](up, old, data)
 }
 
 // ModifyOne returns an update with pointer struct builder for PointLog.

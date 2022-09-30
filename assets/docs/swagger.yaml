@@ -1069,7 +1069,7 @@ definitions:
         description: 电池型号
         type: string
     type: object
-  model.BatteryModelCreateReq:
+  model.BatteryModelReq:
     properties:
       model:
         description: 电池型号, 例如60V30AH
@@ -7227,6 +7227,32 @@ paths:
       tags:
       - '[M]管理接口'
   /manager/v1/battery/model:
+    delete:
+      consumes:
+      - application/json
+      operationId: ManagerBatteryDeleteModel
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 电池型号数据
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BatteryModelReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M4003 删除电池型号
+      tags:
+      - '[M]管理接口'
     get:
       consumes:
       - application/json
@@ -7269,7 +7295,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/model.BatteryModelCreateReq'
+          $ref: '#/definitions/model.BatteryModelReq'
       produces:
       - application/json
       responses:

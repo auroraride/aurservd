@@ -109,7 +109,7 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
     res = new(model.CabinetItem)
 
     // 查询设置电池型号
-    models := NewBattery().QueryModelsX(req.Models)
+    models := NewBatteryModel().QueryModelsX(req.Models)
     for _, bm := range models {
         res.Models = append(res.Models, bm.Model)
     }
@@ -213,7 +213,7 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
             if slices.Compare(rms, models) != 0 {
                 q.ClearModels()
                 // 查询设置电池型号
-                q.AddModels(NewBattery().QueryModelsX(*req.Models)...)
+                q.AddModels(NewBatteryModel().QueryModelsX(*req.Models)...)
             }
         }
         if req.BranchID != nil {

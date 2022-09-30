@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
@@ -518,6 +519,46 @@ func (c *ContractClient) GetNotDeleted(ctx context.Context, id uint64) (*Contrac
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *ContractClient) GetNotDeletedX(ctx context.Context, id uint64) *Contract {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for EbikeBrand.
+func (c *EbikeBrandClient) SoftDelete() *EbikeBrandUpdate {
+	mutation := newEbikeBrandMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &EbikeBrandUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *EbikeBrandClient) SoftDeleteOne(eb *EbikeBrand) *EbikeBrandUpdateOne {
+	mutation := newEbikeBrandMutation(c.config, OpUpdateOne, withEbikeBrand(eb))
+	mutation.SetDeletedAt(time.Now())
+	return &EbikeBrandUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *EbikeBrandClient) SoftDeleteOneID(id uint64) *EbikeBrandUpdateOne {
+	mutation := newEbikeBrandMutation(c.config, OpUpdateOne, withEbikeBrandID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &EbikeBrandUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for EbikeBrand.
+func (c *EbikeBrandClient) QueryNotDeleted() *EbikeBrandQuery {
+	return c.Query().Where(ebikebrand.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a EbikeBrand not deleted entity by its id.
+func (c *EbikeBrandClient) GetNotDeleted(ctx context.Context, id uint64) (*EbikeBrand, error) {
+	return c.Query().Where(ebikebrand.ID(id), ebikebrand.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *EbikeBrandClient) GetNotDeletedX(ctx context.Context, id uint64) *EbikeBrand {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

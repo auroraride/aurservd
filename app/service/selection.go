@@ -423,7 +423,7 @@ func (s *selectionService) CabinetModelX() (items []model.CascaderOption) {
 }
 
 func (s *selectionService) Models() []string {
-    return NewBattery().Models()
+    return NewBatteryModel().Models()
 }
 
 // CouponTemplate 选择优惠券模板

@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
@@ -424,6 +425,23 @@ func init() {
 	coupontemplateDescEnable := coupontemplateFields[0].Descriptor()
 	// coupontemplate.DefaultEnable holds the default value on creation for the enable field.
 	coupontemplate.DefaultEnable = coupontemplateDescEnable.Default.(bool)
+	ebikebrandMixin := schema.EbikeBrand{}.Mixin()
+	ebikebrandMixinHooks2 := ebikebrandMixin[2].Hooks()
+	ebikebrand.Hooks[0] = ebikebrandMixinHooks2[0]
+	ebikebrandMixinFields0 := ebikebrandMixin[0].Fields()
+	_ = ebikebrandMixinFields0
+	ebikebrandFields := schema.EbikeBrand{}.Fields()
+	_ = ebikebrandFields
+	// ebikebrandDescCreatedAt is the schema descriptor for created_at field.
+	ebikebrandDescCreatedAt := ebikebrandMixinFields0[0].Descriptor()
+	// ebikebrand.DefaultCreatedAt holds the default value on creation for the created_at field.
+	ebikebrand.DefaultCreatedAt = ebikebrandDescCreatedAt.Default.(func() time.Time)
+	// ebikebrandDescUpdatedAt is the schema descriptor for updated_at field.
+	ebikebrandDescUpdatedAt := ebikebrandMixinFields0[1].Descriptor()
+	// ebikebrand.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	ebikebrand.DefaultUpdatedAt = ebikebrandDescUpdatedAt.Default.(func() time.Time)
+	// ebikebrand.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	ebikebrand.UpdateDefaultUpdatedAt = ebikebrandDescUpdatedAt.UpdateDefault.(func() time.Time)
 	employeeMixin := schema.Employee{}.Mixin()
 	employeeMixinHooks2 := employeeMixin[2].Hooks()
 	employee.Hooks[0] = employeeMixinHooks2[0]

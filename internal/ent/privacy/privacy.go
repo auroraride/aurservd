@@ -510,6 +510,30 @@ func (f CouponTemplateMutationRuleFunc) EvalMutation(ctx context.Context, m ent.
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.CouponTemplateMutation", m)
 }
 
+// The EbikeBrandQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type EbikeBrandQueryRuleFunc func(context.Context, *ent.EbikeBrandQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f EbikeBrandQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.EbikeBrandQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.EbikeBrandQuery", q)
+}
+
+// The EbikeBrandMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type EbikeBrandMutationRuleFunc func(context.Context, *ent.EbikeBrandMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f EbikeBrandMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.EbikeBrandMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.EbikeBrandMutation", m)
+}
+
 // The EmployeeQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type EmployeeQueryRuleFunc func(context.Context, *ent.EmployeeQuery) error
@@ -918,6 +942,30 @@ func (f PlanMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) 
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PlanMutation", m)
 }
 
+// The PlanIntroduceQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type PlanIntroduceQueryRuleFunc func(context.Context, *ent.PlanIntroduceQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f PlanIntroduceQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.PlanIntroduceQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.PlanIntroduceQuery", q)
+}
+
+// The PlanIntroduceMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type PlanIntroduceMutationRuleFunc func(context.Context, *ent.PlanIntroduceMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f PlanIntroduceMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.PlanIntroduceMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PlanIntroduceMutation", m)
+}
+
 // The PointLogQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type PointLogQueryRuleFunc func(context.Context, *ent.PointLogQuery) error
@@ -1295,6 +1343,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.CouponTemplateQuery:
 		return q.Filter(), nil
+	case *ent.EbikeBrandQuery:
+		return q.Filter(), nil
 	case *ent.EmployeeQuery:
 		return q.Filter(), nil
 	case *ent.EnterpriseQuery:
@@ -1328,6 +1378,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 	case *ent.PersonQuery:
 		return q.Filter(), nil
 	case *ent.PlanQuery:
+		return q.Filter(), nil
+	case *ent.PlanIntroduceQuery:
 		return q.Filter(), nil
 	case *ent.PointLogQuery:
 		return q.Filter(), nil
@@ -1392,6 +1444,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 		return m.Filter(), nil
 	case *ent.CouponTemplateMutation:
 		return m.Filter(), nil
+	case *ent.EbikeBrandMutation:
+		return m.Filter(), nil
 	case *ent.EmployeeMutation:
 		return m.Filter(), nil
 	case *ent.EnterpriseMutation:
@@ -1425,6 +1479,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.PersonMutation:
 		return m.Filter(), nil
 	case *ent.PlanMutation:
+		return m.Filter(), nil
+	case *ent.PlanIntroduceMutation:
 		return m.Filter(), nil
 	case *ent.PointLogMutation:
 		return m.Filter(), nil

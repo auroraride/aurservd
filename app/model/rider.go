@@ -25,10 +25,6 @@ const (
     RiderStatusBanned                   // 黑名单
 )
 
-// RiderContext TODO 骑手上下文
-type RiderContext struct {
-}
-
 type RiderBasic struct {
     ID    uint64 `json:"id"`
     Phone string `json:"phone"` // 电话

@@ -25,6 +25,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
@@ -42,6 +43,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/planintroduce"
 	"github.com/auroraride/aurservd/internal/ent/pointlog"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -96,6 +98,8 @@ type Client struct {
 	CouponAssembly *CouponAssemblyClient
 	// CouponTemplate is the client for interacting with the CouponTemplate builders.
 	CouponTemplate *CouponTemplateClient
+	// EbikeBrand is the client for interacting with the EbikeBrand builders.
+	EbikeBrand *EbikeBrandClient
 	// Employee is the client for interacting with the Employee builders.
 	Employee *EmployeeClient
 	// Enterprise is the client for interacting with the Enterprise builders.
@@ -130,6 +134,8 @@ type Client struct {
 	Person *PersonClient
 	// Plan is the client for interacting with the Plan builders.
 	Plan *PlanClient
+	// PlanIntroduce is the client for interacting with the PlanIntroduce builders.
+	PlanIntroduce *PlanIntroduceClient
 	// PointLog is the client for interacting with the PointLog builders.
 	PointLog *PointLogClient
 	// Reserve is the client for interacting with the Reserve builders.
@@ -184,6 +190,7 @@ func (c *Client) init() {
 	c.Coupon = NewCouponClient(c.config)
 	c.CouponAssembly = NewCouponAssemblyClient(c.config)
 	c.CouponTemplate = NewCouponTemplateClient(c.config)
+	c.EbikeBrand = NewEbikeBrandClient(c.config)
 	c.Employee = NewEmployeeClient(c.config)
 	c.Enterprise = NewEnterpriseClient(c.config)
 	c.EnterpriseBill = NewEnterpriseBillClient(c.config)
@@ -201,6 +208,7 @@ func (c *Client) init() {
 	c.OrderRefund = NewOrderRefundClient(c.config)
 	c.Person = NewPersonClient(c.config)
 	c.Plan = NewPlanClient(c.config)
+	c.PlanIntroduce = NewPlanIntroduceClient(c.config)
 	c.PointLog = NewPointLogClient(c.config)
 	c.Reserve = NewReserveClient(c.config)
 	c.Rider = NewRiderClient(c.config)
@@ -262,6 +270,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Coupon:               NewCouponClient(cfg),
 		CouponAssembly:       NewCouponAssemblyClient(cfg),
 		CouponTemplate:       NewCouponTemplateClient(cfg),
+		EbikeBrand:           NewEbikeBrandClient(cfg),
 		Employee:             NewEmployeeClient(cfg),
 		Enterprise:           NewEnterpriseClient(cfg),
 		EnterpriseBill:       NewEnterpriseBillClient(cfg),
@@ -279,6 +288,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		OrderRefund:          NewOrderRefundClient(cfg),
 		Person:               NewPersonClient(cfg),
 		Plan:                 NewPlanClient(cfg),
+		PlanIntroduce:        NewPlanIntroduceClient(cfg),
 		PointLog:             NewPointLogClient(cfg),
 		Reserve:              NewReserveClient(cfg),
 		Rider:                NewRiderClient(cfg),
@@ -326,6 +336,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Coupon:               NewCouponClient(cfg),
 		CouponAssembly:       NewCouponAssemblyClient(cfg),
 		CouponTemplate:       NewCouponTemplateClient(cfg),
+		EbikeBrand:           NewEbikeBrandClient(cfg),
 		Employee:             NewEmployeeClient(cfg),
 		Enterprise:           NewEnterpriseClient(cfg),
 		EnterpriseBill:       NewEnterpriseBillClient(cfg),
@@ -343,6 +354,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		OrderRefund:          NewOrderRefundClient(cfg),
 		Person:               NewPersonClient(cfg),
 		Plan:                 NewPlanClient(cfg),
+		PlanIntroduce:        NewPlanIntroduceClient(cfg),
 		PointLog:             NewPointLogClient(cfg),
 		Reserve:              NewReserveClient(cfg),
 		Rider:                NewRiderClient(cfg),
@@ -399,6 +411,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Coupon.Use(hooks...)
 	c.CouponAssembly.Use(hooks...)
 	c.CouponTemplate.Use(hooks...)
+	c.EbikeBrand.Use(hooks...)
 	c.Employee.Use(hooks...)
 	c.Enterprise.Use(hooks...)
 	c.EnterpriseBill.Use(hooks...)
@@ -416,6 +429,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.OrderRefund.Use(hooks...)
 	c.Person.Use(hooks...)
 	c.Plan.Use(hooks...)
+	c.PlanIntroduce.Use(hooks...)
 	c.PointLog.Use(hooks...)
 	c.Reserve.Use(hooks...)
 	c.Rider.Use(hooks...)
@@ -2690,6 +2704,97 @@ func (c *CouponTemplateClient) QueryCoupons(ct *CouponTemplate) *CouponQuery {
 func (c *CouponTemplateClient) Hooks() []Hook {
 	hooks := c.hooks.CouponTemplate
 	return append(hooks[:len(hooks):len(hooks)], coupontemplate.Hooks[:]...)
+}
+
+// EbikeBrandClient is a client for the EbikeBrand schema.
+type EbikeBrandClient struct {
+	config
+}
+
+// NewEbikeBrandClient returns a client for the EbikeBrand from the given config.
+func NewEbikeBrandClient(c config) *EbikeBrandClient {
+	return &EbikeBrandClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `ebikebrand.Hooks(f(g(h())))`.
+func (c *EbikeBrandClient) Use(hooks ...Hook) {
+	c.hooks.EbikeBrand = append(c.hooks.EbikeBrand, hooks...)
+}
+
+// Create returns a builder for creating a EbikeBrand entity.
+func (c *EbikeBrandClient) Create() *EbikeBrandCreate {
+	mutation := newEbikeBrandMutation(c.config, OpCreate)
+	return &EbikeBrandCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EbikeBrand entities.
+func (c *EbikeBrandClient) CreateBulk(builders ...*EbikeBrandCreate) *EbikeBrandCreateBulk {
+	return &EbikeBrandCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EbikeBrand.
+func (c *EbikeBrandClient) Update() *EbikeBrandUpdate {
+	mutation := newEbikeBrandMutation(c.config, OpUpdate)
+	return &EbikeBrandUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EbikeBrandClient) UpdateOne(eb *EbikeBrand) *EbikeBrandUpdateOne {
+	mutation := newEbikeBrandMutation(c.config, OpUpdateOne, withEbikeBrand(eb))
+	return &EbikeBrandUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EbikeBrandClient) UpdateOneID(id uint64) *EbikeBrandUpdateOne {
+	mutation := newEbikeBrandMutation(c.config, OpUpdateOne, withEbikeBrandID(id))
+	return &EbikeBrandUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EbikeBrand.
+func (c *EbikeBrandClient) Delete() *EbikeBrandDelete {
+	mutation := newEbikeBrandMutation(c.config, OpDelete)
+	return &EbikeBrandDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *EbikeBrandClient) DeleteOne(eb *EbikeBrand) *EbikeBrandDeleteOne {
+	return c.DeleteOneID(eb.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *EbikeBrandClient) DeleteOneID(id uint64) *EbikeBrandDeleteOne {
+	builder := c.Delete().Where(ebikebrand.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EbikeBrandDeleteOne{builder}
+}
+
+// Query returns a query builder for EbikeBrand.
+func (c *EbikeBrandClient) Query() *EbikeBrandQuery {
+	return &EbikeBrandQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a EbikeBrand entity by its id.
+func (c *EbikeBrandClient) Get(ctx context.Context, id uint64) (*EbikeBrand, error) {
+	return c.Query().Where(ebikebrand.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EbikeBrandClient) GetX(ctx context.Context, id uint64) *EbikeBrand {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *EbikeBrandClient) Hooks() []Hook {
+	hooks := c.hooks.EbikeBrand
+	return append(hooks[:len(hooks):len(hooks)], ebikebrand.Hooks[:]...)
 }
 
 // EmployeeClient is a client for the Employee schema.
@@ -5148,6 +5253,128 @@ func (c *PlanClient) QueryCoupons(pl *Plan) *CouponQuery {
 func (c *PlanClient) Hooks() []Hook {
 	hooks := c.hooks.Plan
 	return append(hooks[:len(hooks):len(hooks)], plan.Hooks[:]...)
+}
+
+// PlanIntroduceClient is a client for the PlanIntroduce schema.
+type PlanIntroduceClient struct {
+	config
+}
+
+// NewPlanIntroduceClient returns a client for the PlanIntroduce from the given config.
+func NewPlanIntroduceClient(c config) *PlanIntroduceClient {
+	return &PlanIntroduceClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `planintroduce.Hooks(f(g(h())))`.
+func (c *PlanIntroduceClient) Use(hooks ...Hook) {
+	c.hooks.PlanIntroduce = append(c.hooks.PlanIntroduce, hooks...)
+}
+
+// Create returns a builder for creating a PlanIntroduce entity.
+func (c *PlanIntroduceClient) Create() *PlanIntroduceCreate {
+	mutation := newPlanIntroduceMutation(c.config, OpCreate)
+	return &PlanIntroduceCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PlanIntroduce entities.
+func (c *PlanIntroduceClient) CreateBulk(builders ...*PlanIntroduceCreate) *PlanIntroduceCreateBulk {
+	return &PlanIntroduceCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PlanIntroduce.
+func (c *PlanIntroduceClient) Update() *PlanIntroduceUpdate {
+	mutation := newPlanIntroduceMutation(c.config, OpUpdate)
+	return &PlanIntroduceUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PlanIntroduceClient) UpdateOne(pi *PlanIntroduce) *PlanIntroduceUpdateOne {
+	mutation := newPlanIntroduceMutation(c.config, OpUpdateOne, withPlanIntroduce(pi))
+	return &PlanIntroduceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PlanIntroduceClient) UpdateOneID(id uint64) *PlanIntroduceUpdateOne {
+	mutation := newPlanIntroduceMutation(c.config, OpUpdateOne, withPlanIntroduceID(id))
+	return &PlanIntroduceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PlanIntroduce.
+func (c *PlanIntroduceClient) Delete() *PlanIntroduceDelete {
+	mutation := newPlanIntroduceMutation(c.config, OpDelete)
+	return &PlanIntroduceDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PlanIntroduceClient) DeleteOne(pi *PlanIntroduce) *PlanIntroduceDeleteOne {
+	return c.DeleteOneID(pi.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *PlanIntroduceClient) DeleteOneID(id uint64) *PlanIntroduceDeleteOne {
+	builder := c.Delete().Where(planintroduce.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PlanIntroduceDeleteOne{builder}
+}
+
+// Query returns a query builder for PlanIntroduce.
+func (c *PlanIntroduceClient) Query() *PlanIntroduceQuery {
+	return &PlanIntroduceQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a PlanIntroduce entity by its id.
+func (c *PlanIntroduceClient) Get(ctx context.Context, id uint64) (*PlanIntroduce, error) {
+	return c.Query().Where(planintroduce.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PlanIntroduceClient) GetX(ctx context.Context, id uint64) *PlanIntroduce {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryModel queries the model edge of a PlanIntroduce.
+func (c *PlanIntroduceClient) QueryModel(pi *PlanIntroduce) *BatteryModelQuery {
+	query := &BatteryModelQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pi.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(planintroduce.Table, planintroduce.FieldID, id),
+			sqlgraph.To(batterymodel.Table, batterymodel.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, planintroduce.ModelTable, planintroduce.ModelColumn),
+		)
+		fromV = sqlgraph.Neighbors(pi.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBrand queries the brand edge of a PlanIntroduce.
+func (c *PlanIntroduceClient) QueryBrand(pi *PlanIntroduce) *EbikeBrandQuery {
+	query := &EbikeBrandQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pi.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(planintroduce.Table, planintroduce.FieldID, id),
+			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, planintroduce.BrandTable, planintroduce.BrandColumn),
+		)
+		fromV = sqlgraph.Neighbors(pi.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PlanIntroduceClient) Hooks() []Hook {
+	return c.hooks.PlanIntroduce
 }
 
 // PointLogClient is a client for the PointLog schema.

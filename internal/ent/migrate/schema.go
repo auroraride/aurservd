@@ -1163,6 +1163,34 @@ var (
 			},
 		},
 	}
+	// EbikeBrandColumns holds the columns for the "ebike_brand" table.
+	EbikeBrandColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+	}
+	// EbikeBrandTable holds the schema information for the "ebike_brand" table.
+	EbikeBrandTable = &schema.Table{
+		Name:       "ebike_brand",
+		Columns:    EbikeBrandColumns,
+		PrimaryKey: []*schema.Column{EbikeBrandColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "ebikebrand_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{EbikeBrandColumns[1]},
+			},
+			{
+				Name:    "ebikebrand_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{EbikeBrandColumns[3]},
+			},
+		},
+	}
 	// EmployeeColumns holds the columns for the "employee" table.
 	EmployeeColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -2416,6 +2444,45 @@ var (
 						"postgres": "GIN",
 					},
 				},
+			},
+		},
+	}
+	// PlanIntroduceColumns holds the columns for the "plan_introduce" table.
+	PlanIntroduceColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "image", Type: field.TypeString},
+		{Name: "model_id", Type: field.TypeUint64},
+		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
+	}
+	// PlanIntroduceTable holds the schema information for the "plan_introduce" table.
+	PlanIntroduceTable = &schema.Table{
+		Name:       "plan_introduce",
+		Columns:    PlanIntroduceColumns,
+		PrimaryKey: []*schema.Column{PlanIntroduceColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "plan_introduce_battery_model_model",
+				Columns:    []*schema.Column{PlanIntroduceColumns[2]},
+				RefColumns: []*schema.Column{BatteryModelColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "plan_introduce_ebike_brand_brand",
+				Columns:    []*schema.Column{PlanIntroduceColumns[3]},
+				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "planintroduce_model_id",
+				Unique:  false,
+				Columns: []*schema.Column{PlanIntroduceColumns[2]},
+			},
+			{
+				Name:    "planintroduce_brand_id",
+				Unique:  false,
+				Columns: []*schema.Column{PlanIntroduceColumns[3]},
 			},
 		},
 	}
@@ -3686,6 +3753,7 @@ var (
 		CouponTable,
 		CouponAssemblyTable,
 		CouponTemplateTable,
+		EbikeBrandTable,
 		EmployeeTable,
 		EnterpriseTable,
 		EnterpriseBillTable,
@@ -3703,6 +3771,7 @@ var (
 		OrderRefundTable,
 		PersonTable,
 		PlanTable,
+		PlanIntroduceTable,
 		PointLogTable,
 		ReserveTable,
 		RiderTable,
@@ -3810,6 +3879,9 @@ func init() {
 	CouponTemplateTable.Annotation = &entsql.Annotation{
 		Table: "coupon_template",
 	}
+	EbikeBrandTable.Annotation = &entsql.Annotation{
+		Table: "ebike_brand",
+	}
 	EmployeeTable.ForeignKeys[0].RefTable = CityTable
 	EmployeeTable.Annotation = &entsql.Annotation{
 		Table: "employee",
@@ -3894,6 +3966,11 @@ func init() {
 	PlanTable.ForeignKeys[0].RefTable = PlanTable
 	PlanTable.Annotation = &entsql.Annotation{
 		Table: "plan",
+	}
+	PlanIntroduceTable.ForeignKeys[0].RefTable = BatteryModelTable
+	PlanIntroduceTable.ForeignKeys[1].RefTable = EbikeBrandTable
+	PlanIntroduceTable.Annotation = &entsql.Annotation{
+		Table: "plan_introduce",
 	}
 	PointLogTable.ForeignKeys[0].RefTable = RiderTable
 	PointLogTable.ForeignKeys[1].RefTable = OrderTable

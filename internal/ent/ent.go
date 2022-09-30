@@ -25,6 +25,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
@@ -42,6 +43,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/planintroduce"
 	"github.com/auroraride/aurservd/internal/ent/pointlog"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -90,6 +92,7 @@ func columnChecker(table string) func(string) error {
 		coupon.Table:               coupon.ValidColumn,
 		couponassembly.Table:       couponassembly.ValidColumn,
 		coupontemplate.Table:       coupontemplate.ValidColumn,
+		ebikebrand.Table:           ebikebrand.ValidColumn,
 		employee.Table:             employee.ValidColumn,
 		enterprise.Table:           enterprise.ValidColumn,
 		enterprisebill.Table:       enterprisebill.ValidColumn,
@@ -107,6 +110,7 @@ func columnChecker(table string) func(string) error {
 		orderrefund.Table:          orderrefund.ValidColumn,
 		person.Table:               person.ValidColumn,
 		plan.Table:                 plan.ValidColumn,
+		planintroduce.Table:        planintroduce.ValidColumn,
 		pointlog.Table:             pointlog.ValidColumn,
 		reserve.Table:              reserve.ValidColumn,
 		rider.Table:                rider.ValidColumn,

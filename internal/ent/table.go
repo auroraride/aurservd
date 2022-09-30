@@ -180,6 +180,16 @@ func (ct *CouponTemplate) GetName() string {
 	return ct.Name
 }
 
+// GetTableName returns table name for EbikeBrand.
+func (eb *EbikeBrand) GetTableName() string {
+	return "ebike_brand"
+}
+
+// GetID returns id for EbikeBrand.
+func (eb *EbikeBrand) GetID() uint64 {
+	return eb.ID
+}
+
 // GetTableName returns table name for Employee.
 func (e *Employee) GetTableName() string {
 	return "employee"
@@ -380,6 +390,16 @@ func (pl *Plan) GetID() uint64 {
 
 func (pl *Plan) GetName() string {
 	return pl.Name
+}
+
+// GetTableName returns table name for PlanIntroduce.
+func (pi *PlanIntroduce) GetTableName() string {
+	return "plan_introduce"
+}
+
+// GetID returns id for PlanIntroduce.
+func (pi *PlanIntroduce) GetID() uint64 {
+	return pi.ID
 }
 
 // GetTableName returns table name for PointLog.

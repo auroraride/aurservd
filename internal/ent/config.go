@@ -43,6 +43,7 @@ type hooks struct {
 	Coupon               []ent.Hook
 	CouponAssembly       []ent.Hook
 	CouponTemplate       []ent.Hook
+	EbikeBrand           []ent.Hook
 	Employee             []ent.Hook
 	Enterprise           []ent.Hook
 	EnterpriseBill       []ent.Hook
@@ -60,6 +61,7 @@ type hooks struct {
 	OrderRefund          []ent.Hook
 	Person               []ent.Hook
 	Plan                 []ent.Hook
+	PlanIntroduce        []ent.Hook
 	PointLog             []ent.Hook
 	Reserve              []ent.Hook
 	Rider                []ent.Hook

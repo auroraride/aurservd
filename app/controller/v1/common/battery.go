@@ -25,5 +25,5 @@ var Battery = new(battery)
 // @Success      200 {object} []string "型号列表"
 func (*battery) Model(c echo.Context) (err error) {
     ctx := app.Context(c)
-    return ctx.SendResponse(service.NewBattery().Models())
+    return ctx.SendResponse(service.NewBatteryModel().Models())
 }

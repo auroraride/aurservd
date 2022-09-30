@@ -444,6 +444,35 @@ func (ctq *CouponTemplateQuery) PaginationResult(req model.PaginationReq) model.
 	}
 }
 
+// Pagination returns pagination query builder for EbikeBrandQuery.
+func (ebq *EbikeBrandQuery) Pagination(req model.PaginationReq) *EbikeBrandQuery {
+	ebq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return ebq
+}
+
+// PaginationItems returns pagination query builder for EbikeBrandQuery.
+func (ebq *EbikeBrandQuery) PaginationItemsX(req model.PaginationReq) any {
+	return ebq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for EbikeBrandQuery.
+func (ebq *EbikeBrandQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := ebq.Clone()
+	query.order = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for EmployeeQuery.
 func (eq *EmployeeQuery) Pagination(req model.PaginationReq) *EmployeeQuery {
 	eq.Offset(req.GetOffset()).Limit(req.GetLimit())
@@ -922,6 +951,35 @@ func (pq *PlanQuery) PaginationItemsX(req model.PaginationReq) any {
 // PaginationResult returns pagination for PlanQuery.
 func (pq *PlanQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := pq.Clone()
+	query.order = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for PlanIntroduceQuery.
+func (piq *PlanIntroduceQuery) Pagination(req model.PaginationReq) *PlanIntroduceQuery {
+	piq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return piq
+}
+
+// PaginationItems returns pagination query builder for PlanIntroduceQuery.
+func (piq *PlanIntroduceQuery) PaginationItemsX(req model.PaginationReq) any {
+	return piq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for PlanIntroduceQuery.
+func (piq *PlanIntroduceQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := piq.Clone()
 	query.order = nil
 	var result []struct {
 		Count int `json:"count"`

@@ -2480,7 +2480,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.BatteryModelCreateReq"
+                            "$ref": "#/definitions/model.BatteryModelReq"
                         }
                     }
                 ],
@@ -2501,6 +2501,45 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M4003 删除电池型号",
+                "operationId": "ManagerBatteryDeleteModel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "电池型号数据",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BatteryModelReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -13086,7 +13125,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.BatteryModelCreateReq": {
+        "model.BatteryModelReq": {
             "type": "object",
             "properties": {
                 "model": {
