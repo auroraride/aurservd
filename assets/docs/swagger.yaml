@@ -2381,6 +2381,9 @@ definitions:
     type: object
   model.CouponListRes:
     properties:
+      amount:
+        description: 金额
+        type: number
       assemblyId:
         description: 发券记录ID
         type: integer
@@ -2389,6 +2392,9 @@ definitions:
         items:
           type: string
         type: array
+      code:
+        description: 券码
+        type: string
       creator:
         description: 创建者
         type: string

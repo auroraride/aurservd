@@ -303,7 +303,9 @@ func (s *couponService) List(req *model.CouponListReq) *model.PaginationRes {
         }
         res = model.CouponListRes{
             ID:         item.ID,
+            Amount:     item.Amount,
             Name:       item.Name,
+            Code:       model.CouponCode(item.Code).Humanity(),
             TemplateID: item.TemplateID,
             AssemblyID: item.AssemblyID,
             Creator:    item.Creator.Name + " - " + item.Creator.Phone,

@@ -116,6 +116,8 @@ type CouponListReq struct {
 
 type CouponListRes struct {
     ID         uint64       `json:"id"`
+    Amount     float64      `json:"amount"`               // 金额
+    Code       string       `json:"code"`                 // 券码
     Name       string       `json:"name"`                 // 名称
     Rider      string       `json:"rider,omitempty"`      // 骑手
     Phone      string       `json:"phone,omitempty"`      // 骑手电话

@@ -15099,6 +15099,10 @@ const docTemplate = `{
         "model.CouponListRes": {
             "type": "object",
             "properties": {
+                "amount": {
+                    "description": "金额",
+                    "type": "number"
+                },
                 "assemblyId": {
                     "description": "发券记录ID",
                     "type": "integer"
@@ -15109,6 +15113,10 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "code": {
+                    "description": "券码",
+                    "type": "string"
                 },
                 "creator": {
                     "description": "创建者",
