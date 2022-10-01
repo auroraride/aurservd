@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
@@ -176,6 +177,20 @@ func (sc *SubscribeCreate) SetCabinetID(u uint64) *SubscribeCreate {
 func (sc *SubscribeCreate) SetNillableCabinetID(u *uint64) *SubscribeCreate {
 	if u != nil {
 		sc.SetCabinetID(*u)
+	}
+	return sc
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (sc *SubscribeCreate) SetEbikeID(u uint64) *SubscribeCreate {
+	sc.mutation.SetEbikeID(u)
+	return sc
+}
+
+// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableEbikeID(u *uint64) *SubscribeCreate {
+	if u != nil {
+		sc.SetEbikeID(*u)
 	}
 	return sc
 }
@@ -514,6 +529,11 @@ func (sc *SubscribeCreate) SetStore(s *Store) *SubscribeCreate {
 // SetCabinet sets the "cabinet" edge to the Cabinet entity.
 func (sc *SubscribeCreate) SetCabinet(c *Cabinet) *SubscribeCreate {
 	return sc.SetCabinetID(c.ID)
+}
+
+// SetEbike sets the "ebike" edge to the Ebike entity.
+func (sc *SubscribeCreate) SetEbike(e *Ebike) *SubscribeCreate {
+	return sc.SetEbikeID(e.ID)
 }
 
 // SetRider sets the "rider" edge to the Rider entity.
@@ -1144,6 +1164,26 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 		_node.CabinetID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := sc.mutation.EbikeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.EbikeTable,
+			Columns: []string{subscribe.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebike.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.EbikeID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := sc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1516,6 +1556,24 @@ func (u *SubscribeUpsert) UpdateCabinetID() *SubscribeUpsert {
 // ClearCabinetID clears the value of the "cabinet_id" field.
 func (u *SubscribeUpsert) ClearCabinetID() *SubscribeUpsert {
 	u.SetNull(subscribe.FieldCabinetID)
+	return u
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (u *SubscribeUpsert) SetEbikeID(v uint64) *SubscribeUpsert {
+	u.Set(subscribe.FieldEbikeID, v)
+	return u
+}
+
+// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateEbikeID() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldEbikeID)
+	return u
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (u *SubscribeUpsert) ClearEbikeID() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldEbikeID)
 	return u
 }
 
@@ -2147,6 +2205,27 @@ func (u *SubscribeUpsertOne) UpdateCabinetID() *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) ClearCabinetID() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearCabinetID()
+	})
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (u *SubscribeUpsertOne) SetEbikeID(v uint64) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetEbikeID(v)
+	})
+}
+
+// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateEbikeID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateEbikeID()
+	})
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (u *SubscribeUpsertOne) ClearEbikeID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearEbikeID()
 	})
 }
 
@@ -3004,6 +3083,27 @@ func (u *SubscribeUpsertBulk) UpdateCabinetID() *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) ClearCabinetID() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearCabinetID()
+	})
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (u *SubscribeUpsertBulk) SetEbikeID(v uint64) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetEbikeID(v)
+	})
+}
+
+// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateEbikeID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateEbikeID()
+	})
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (u *SubscribeUpsertBulk) ClearEbikeID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearEbikeID()
 	})
 }
 

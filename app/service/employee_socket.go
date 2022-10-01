@@ -14,7 +14,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/assistance"
     "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/pkg/cache"
-    "github.com/auroraride/aurservd/pkg/tools"
+    "github.com/auroraride/aurservd/pkg/silk"
 )
 
 type employeeSocketService struct {
@@ -43,7 +43,7 @@ func (s *employeeSocketService) Connect(hub *socket.WebsocketHub, token string) 
     if ass != nil {
         hub.SendMessage(&model.EmployeeSocketMessage{
             Speech:       "您有一条救援任务正在进行中",
-            AssistanceID: tools.Pointer(ass.ID),
+            AssistanceID: silk.Pointer(ass.ID),
         })
     }
 

@@ -10,6 +10,7 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/internal/ent/city"
+    "github.com/auroraride/aurservd/internal/ent/ebike"
     "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/internal/ent/enterprise"
     "github.com/auroraride/aurservd/internal/ent/plan"
@@ -54,6 +55,10 @@ func (s *Store) GetExportInfo() string {
     return s.Name
 }
 
+func (e *Ebike) GetExportInfo() string {
+    return e.Sn
+}
+
 type ExportInfo struct {
     id    uint64
     table string
@@ -72,25 +77,20 @@ func (ei *ExportInfo) GetExportInfoData() string {
     switch ei.table {
     case rider.Table:
         m, _ = Database.Rider.QueryNotDeleted().Where(rider.ID(ei.id)).WithPerson().First(ctx)
-        break
     case city.Table:
         m, _ = Database.City.QueryNotDeleted().Where(city.ID(ei.id)).First(ctx)
-        break
     case employee.Table:
         m, _ = Database.Employee.QueryNotDeleted().Where(employee.ID(ei.id)).First(ctx)
-        break
     case plan.Table:
         m, _ = Database.Plan.QueryNotDeleted().Where(plan.ID(ei.id)).First(ctx)
-        break
     case enterprise.Table:
         m, _ = Database.Enterprise.QueryNotDeleted().Where(enterprise.ID(ei.id)).First(ctx)
-        break
     case cabinet.Table:
         m, _ = Database.Cabinet.QueryNotDeleted().Where(cabinet.ID(ei.id)).First(ctx)
-        break
     case store.Table:
         m, _ = Database.Store.QueryNotDeleted().Where(store.ID(ei.id)).First(ctx)
-        break
+    case ebike.Table:
+        m, _ = Database.Ebike.Query().Where(ebike.ID(ei.id)).First(ctx)
     }
     if m == nil {
         return ""

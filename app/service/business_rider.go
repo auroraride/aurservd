@@ -17,6 +17,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/contract"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
+    "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
@@ -221,7 +222,7 @@ func (s *businessRiderService) preprocess(typ business.Type, sub *ent.Subscribe)
         }
     }
 
-    s.subscribeID = tools.Pointer(sub.ID)
+    s.subscribeID = silk.Pointer(sub.ID)
 
     r := sub.Edges.Rider
     if r == nil {
@@ -243,11 +244,11 @@ func (s *businessRiderService) preprocess(typ business.Type, sub *ent.Subscribe)
     s.rider = r
 
     if s.store != nil {
-        s.storeID = tools.Pointer(s.store.ID)
+        s.storeID = silk.Pointer(s.store.ID)
     }
 
     if s.cabinet != nil {
-        s.cabinetID = tools.Pointer(s.cabinet.ID)
+        s.cabinetID = silk.Pointer(s.cabinet.ID)
     }
 
     if s.store == nil && s.cabinet == nil {
@@ -255,7 +256,7 @@ func (s *businessRiderService) preprocess(typ business.Type, sub *ent.Subscribe)
     }
 
     if s.employee != nil {
-        s.employeeID = tools.Pointer(s.employee.ID)
+        s.employeeID = silk.Pointer(s.employee.ID)
     }
 
     if s.employee == nil && s.modifier == nil && s.cabinet == nil {
@@ -384,7 +385,7 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
     revStatus := model.ReserveStatusFail
     if b != nil {
         revStatus = model.ReserveStatusSuccess
-        bussinessID = tools.Pointer(b.ID)
+        bussinessID = silk.Pointer(b.ID)
     }
 
     // 更新预约
@@ -423,7 +424,7 @@ func (s *businessRiderService) Active(info *model.SubscribeActiveInfo, sub *ent.
         var aend *time.Time
         // 如果是代理商, 计算骑士卡代理商结束时间
         if info.Enterprise != nil && info.Enterprise.Agent {
-            aend = tools.Pointer(tools.NewTime().WillEnd(time.Now(), sub.InitialDays))
+            aend = silk.Pointer(tools.NewTime().WillEnd(time.Now(), sub.InitialDays))
         }
 
         // 激活

@@ -13,6 +13,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/internal/ent/subscribealter"
+    "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
@@ -92,7 +93,7 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
         case model.SubscribeStatusUsing:
             // 计算剩余日期
             if sub.AgentEndAt != nil {
-                res.Remaining = tools.Pointer(tools.NewTime().LastDays(*sub.AgentEndAt, today))
+                res.Remaining = silk.Pointer(tools.NewTime().LastDays(*sub.AgentEndAt, today))
                 // 判定当前状态
                 if sub.AgentEndAt.After(today) {
                     // 若代理商处到期日期晚于今天, 则是使用中

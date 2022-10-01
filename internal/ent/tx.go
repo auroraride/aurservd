@@ -44,6 +44,8 @@ type Tx struct {
 	CouponAssembly *CouponAssemblyClient
 	// CouponTemplate is the client for interacting with the CouponTemplate builders.
 	CouponTemplate *CouponTemplateClient
+	// Ebike is the client for interacting with the Ebike builders.
+	Ebike *EbikeClient
 	// EbikeBrand is the client for interacting with the EbikeBrand builders.
 	EbikeBrand *EbikeBrandClient
 	// Employee is the client for interacting with the Employee builders.
@@ -258,6 +260,7 @@ func (tx *Tx) init() {
 	tx.Coupon = NewCouponClient(tx.config)
 	tx.CouponAssembly = NewCouponAssemblyClient(tx.config)
 	tx.CouponTemplate = NewCouponTemplateClient(tx.config)
+	tx.Ebike = NewEbikeClient(tx.config)
 	tx.EbikeBrand = NewEbikeBrandClient(tx.config)
 	tx.Employee = NewEmployeeClient(tx.config)
 	tx.Enterprise = NewEnterpriseClient(tx.config)

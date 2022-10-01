@@ -43,6 +43,7 @@ type hooks struct {
 	Coupon               []ent.Hook
 	CouponAssembly       []ent.Hook
 	CouponTemplate       []ent.Hook
+	Ebike                []ent.Hook
 	EbikeBrand           []ent.Hook
 	Employee             []ent.Hook
 	Enterprise           []ent.Hook

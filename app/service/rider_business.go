@@ -14,8 +14,8 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/business"
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
+    "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
-    "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     log "github.com/sirupsen/logrus"
     "time"
@@ -158,8 +158,8 @@ func (s *riderBusinessService) open(bin *ec.BinInfo, remark string) (status bool
     operation := model.CabinetDoorOperateOpen
 
     status, err = NewCabinet().DoorOperate(&model.CabinetDoorOperateReq{
-        ID:        tools.NewPointer().UInt64(s.cabinet.ID),
-        Index:     tools.Pointer(bin.Index),
+        ID:        silk.UInt64(s.cabinet.ID),
+        Index:     silk.Pointer(bin.Index),
         Remark:    fmt.Sprintf("%s - %s", s.task.Job.Label(), remark),
         Operation: &operation,
     }, model.CabinetDoorOperator{

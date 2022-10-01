@@ -41,6 +41,8 @@ type StockMutation struct {
 	clearedcity      bool
 	subscribe        *uint64
 	clearedsubscribe bool
+	ebike            *uint64
+	clearedebike     bool
 	store            *uint64
 	clearedstore     bool
 	cabinet          *uint64
@@ -518,6 +520,55 @@ func (m *StockMutation) SubscribeIDCleared() bool {
 func (m *StockMutation) ResetSubscribeID() {
 	m.subscribe = nil
 	delete(m.clearedFields, stock.FieldSubscribeID)
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (m *StockMutation) SetEbikeID(u uint64) {
+	m.ebike = &u
+}
+
+// EbikeID returns the value of the "ebike_id" field in the mutation.
+func (m *StockMutation) EbikeID() (r uint64, exists bool) {
+	v := m.ebike
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEbikeID returns the old "ebike_id" field's value of the Stock entity.
+// If the Stock object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StockMutation) OldEbikeID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEbikeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEbikeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEbikeID: %w", err)
+	}
+	return oldValue.EbikeID, nil
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (m *StockMutation) ClearEbikeID() {
+	m.ebike = nil
+	m.clearedFields[stock.FieldEbikeID] = struct{}{}
+}
+
+// EbikeIDCleared returns if the "ebike_id" field was cleared in this mutation.
+func (m *StockMutation) EbikeIDCleared() bool {
+	_, ok := m.clearedFields[stock.FieldEbikeID]
+	return ok
+}
+
+// ResetEbikeID resets all changes to the "ebike_id" field.
+func (m *StockMutation) ResetEbikeID() {
+	m.ebike = nil
+	delete(m.clearedFields, stock.FieldEbikeID)
 }
 
 // SetSn sets the "sn" field.
@@ -1037,6 +1088,32 @@ func (m *StockMutation) ResetSubscribe() {
 	m.clearedsubscribe = false
 }
 
+// ClearEbike clears the "ebike" edge to the Ebike entity.
+func (m *StockMutation) ClearEbike() {
+	m.clearedebike = true
+}
+
+// EbikeCleared reports if the "ebike" edge to the Ebike entity was cleared.
+func (m *StockMutation) EbikeCleared() bool {
+	return m.EbikeIDCleared() || m.clearedebike
+}
+
+// EbikeIDs returns the "ebike" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EbikeID instead. It exists only for internal usage by the builders.
+func (m *StockMutation) EbikeIDs() (ids []uint64) {
+	if id := m.ebike; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEbike resets all changes to the "ebike" edge.
+func (m *StockMutation) ResetEbike() {
+	m.ebike = nil
+	m.clearedebike = false
+}
+
 // ClearStore clears the "store" edge to the Store entity.
 func (m *StockMutation) ClearStore() {
 	m.clearedstore = true
@@ -1199,7 +1276,7 @@ func (m *StockMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StockMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, stock.FieldCreatedAt)
 	}
@@ -1223,6 +1300,9 @@ func (m *StockMutation) Fields() []string {
 	}
 	if m.subscribe != nil {
 		fields = append(fields, stock.FieldSubscribeID)
+	}
+	if m.ebike != nil {
+		fields = append(fields, stock.FieldEbikeID)
 	}
 	if m.sn != nil {
 		fields = append(fields, stock.FieldSn)
@@ -1278,6 +1358,8 @@ func (m *StockMutation) Field(name string) (ent.Value, bool) {
 		return m.CityID()
 	case stock.FieldSubscribeID:
 		return m.SubscribeID()
+	case stock.FieldEbikeID:
+		return m.EbikeID()
 	case stock.FieldSn:
 		return m.Sn()
 	case stock.FieldType:
@@ -1323,6 +1405,8 @@ func (m *StockMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldCityID(ctx)
 	case stock.FieldSubscribeID:
 		return m.OldSubscribeID(ctx)
+	case stock.FieldEbikeID:
+		return m.OldEbikeID(ctx)
 	case stock.FieldSn:
 		return m.OldSn(ctx)
 	case stock.FieldType:
@@ -1407,6 +1491,13 @@ func (m *StockMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSubscribeID(v)
+		return nil
+	case stock.FieldEbikeID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEbikeID(v)
 		return nil
 	case stock.FieldSn:
 		v, ok := value.(string)
@@ -1553,6 +1644,9 @@ func (m *StockMutation) ClearedFields() []string {
 	if m.FieldCleared(stock.FieldSubscribeID) {
 		fields = append(fields, stock.FieldSubscribeID)
 	}
+	if m.FieldCleared(stock.FieldEbikeID) {
+		fields = append(fields, stock.FieldEbikeID)
+	}
 	if m.FieldCleared(stock.FieldStoreID) {
 		fields = append(fields, stock.FieldStoreID)
 	}
@@ -1599,6 +1693,9 @@ func (m *StockMutation) ClearField(name string) error {
 		return nil
 	case stock.FieldSubscribeID:
 		m.ClearSubscribeID()
+		return nil
+	case stock.FieldEbikeID:
+		m.ClearEbikeID()
 		return nil
 	case stock.FieldStoreID:
 		m.ClearStoreID()
@@ -1647,6 +1744,9 @@ func (m *StockMutation) ResetField(name string) error {
 	case stock.FieldSubscribeID:
 		m.ResetSubscribeID()
 		return nil
+	case stock.FieldEbikeID:
+		m.ResetEbikeID()
+		return nil
 	case stock.FieldSn:
 		m.ResetSn()
 		return nil
@@ -1683,12 +1783,15 @@ func (m *StockMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *StockMutation) AddedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.city != nil {
 		edges = append(edges, stock.EdgeCity)
 	}
 	if m.subscribe != nil {
 		edges = append(edges, stock.EdgeSubscribe)
+	}
+	if m.ebike != nil {
+		edges = append(edges, stock.EdgeEbike)
 	}
 	if m.store != nil {
 		edges = append(edges, stock.EdgeStore)
@@ -1720,6 +1823,10 @@ func (m *StockMutation) AddedIDs(name string) []ent.Value {
 		if id := m.subscribe; id != nil {
 			return []ent.Value{*id}
 		}
+	case stock.EdgeEbike:
+		if id := m.ebike; id != nil {
+			return []ent.Value{*id}
+		}
 	case stock.EdgeStore:
 		if id := m.store; id != nil {
 			return []ent.Value{*id}
@@ -1746,7 +1853,7 @@ func (m *StockMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *StockMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	return edges
 }
 
@@ -1760,12 +1867,15 @@ func (m *StockMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *StockMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.clearedcity {
 		edges = append(edges, stock.EdgeCity)
 	}
 	if m.clearedsubscribe {
 		edges = append(edges, stock.EdgeSubscribe)
+	}
+	if m.clearedebike {
+		edges = append(edges, stock.EdgeEbike)
 	}
 	if m.clearedstore {
 		edges = append(edges, stock.EdgeStore)
@@ -1793,6 +1903,8 @@ func (m *StockMutation) EdgeCleared(name string) bool {
 		return m.clearedcity
 	case stock.EdgeSubscribe:
 		return m.clearedsubscribe
+	case stock.EdgeEbike:
+		return m.clearedebike
 	case stock.EdgeStore:
 		return m.clearedstore
 	case stock.EdgeCabinet:
@@ -1816,6 +1928,9 @@ func (m *StockMutation) ClearEdge(name string) error {
 		return nil
 	case stock.EdgeSubscribe:
 		m.ClearSubscribe()
+		return nil
+	case stock.EdgeEbike:
+		m.ClearEbike()
 		return nil
 	case stock.EdgeStore:
 		m.ClearStore()
@@ -1845,6 +1960,9 @@ func (m *StockMutation) ResetEdge(name string) error {
 		return nil
 	case stock.EdgeSubscribe:
 		m.ResetSubscribe()
+		return nil
+	case stock.EdgeEbike:
+		m.ResetEbike()
 		return nil
 	case stock.EdgeStore:
 		m.ResetStore()

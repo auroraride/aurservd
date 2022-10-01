@@ -22,6 +22,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/internal/payment"
     "github.com/auroraride/aurservd/pkg/cache"
+    "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
@@ -92,7 +93,7 @@ func (s *orderService) PreconditionNewly(sub *ent.Subscribe) (state uint, past *
     }
     // 距离上次订阅过去的时间(从退订的第二天0点开始计算,不满一天算0天)
     if sub.EndAt != nil {
-        past = tools.NewPointer().Int(int(carbon.Time2Carbon(*sub.EndAt).AddDay().DiffInDays(carbon.Now())))
+        past = silk.Int(int(carbon.Time2Carbon(*sub.EndAt).AddDay().DiffInDays(carbon.Now())))
         // 判定退订时间是否超出设置天数
         if model.NewRecentSubscribePastDays(*past).Commission() {
             state = model.OrderTypeNewly
@@ -166,8 +167,8 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
         if sub.Remaining < 0 && int(op.Days)+sub.Remaining < 0 {
             snag.Panic("无法继续, 逾期天数大于套餐天数")
         }
-        subID = tools.NewPointer().UInt64(sub.ID)
-        orderID = tools.NewPointer().UInt64(sub.InitialOrderID)
+        subID = silk.UInt64(sub.ID)
+        orderID = silk.UInt64(sub.InitialOrderID)
         req.Model = sub.Model
         req.CityID = sub.CityID
         break

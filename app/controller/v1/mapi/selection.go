@@ -217,3 +217,17 @@ func (*selection) CouponTemplate(c echo.Context) (err error) {
     ctx := app.Context(c)
     return ctx.SendResponse(service.NewSelection().CouponTemplate())
 }
+
+// EbikeBrand
+// @ID           ManagerSelectionEbikeBrand
+// @Router       /manager/v1/selection/ebike/brand [GET]
+// @Summary      MB015 车辆型号列表
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Success      200  {object}  []model.SelectOption  "请求成功"
+func (*selection) EbikeBrand(c echo.Context) (err error) {
+    ctx := app.Context(c)
+    return ctx.SendResponse(service.NewSelection().EbikeBrand())
+}

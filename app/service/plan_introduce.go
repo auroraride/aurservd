@@ -11,8 +11,8 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/planintroduce"
+    "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
-    "github.com/auroraride/aurservd/pkg/tools"
     "sort"
     "strings"
 )
@@ -77,7 +77,7 @@ func (s *planIntroduceService) Notset() (res []model.PlanIntroduceOption) {
     for _, bm := range models {
         m[bm] = bm
         for _, brand := range brands {
-            m[s.Key(bm, tools.NewPointer().UInt64(brand.ID))] = model.PlanIntroduceEbike{
+            m[s.Key(bm, silk.UInt64(brand.ID))] = model.PlanIntroduceEbike{
                 Model: bm,
                 Name:  brand.Name,
                 ID:    brand.ID,

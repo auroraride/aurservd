@@ -15,6 +15,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
     "github.com/auroraride/aurservd/internal/ent/subscribesuspend"
+    "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
@@ -71,7 +72,7 @@ func (s *suspendService) Suspend(req *model.SuspendReq) {
             if beginning.After(pause.StartAt) {
                 now = beginning
             }
-            pauseID = tools.Pointer(pause.ID)
+            pauseID = silk.Pointer(pause.ID)
         }
         _, err = tx.SubscribeSuspend.Create().SetStartAt(time.Now()).SetRemark(req.Remark).SetStartAt(now).SetSubscribeID(sub.ID).SetCityID(sub.CityID).SetRiderID(sub.RiderID).SetNillablePauseID(pauseID).Save(s.ctx)
         if err != nil {

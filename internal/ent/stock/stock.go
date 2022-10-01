@@ -30,6 +30,8 @@ const (
 	FieldCityID = "city_id"
 	// FieldSubscribeID holds the string denoting the subscribe_id field in the database.
 	FieldSubscribeID = "subscribe_id"
+	// FieldEbikeID holds the string denoting the ebike_id field in the database.
+	FieldEbikeID = "ebike_id"
 	// FieldSn holds the string denoting the sn field in the database.
 	FieldSn = "sn"
 	// FieldType holds the string denoting the type field in the database.
@@ -54,6 +56,8 @@ const (
 	EdgeCity = "city"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
 	EdgeSubscribe = "subscribe"
+	// EdgeEbike holds the string denoting the ebike edge name in mutations.
+	EdgeEbike = "ebike"
 	// EdgeStore holds the string denoting the store edge name in mutations.
 	EdgeStore = "store"
 	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
@@ -80,6 +84,13 @@ const (
 	SubscribeInverseTable = "subscribe"
 	// SubscribeColumn is the table column denoting the subscribe relation/edge.
 	SubscribeColumn = "subscribe_id"
+	// EbikeTable is the table that holds the ebike relation/edge.
+	EbikeTable = "stock"
+	// EbikeInverseTable is the table name for the Ebike entity.
+	// It exists in this package in order to avoid circular dependency with the "ebike" package.
+	EbikeInverseTable = "ebike"
+	// EbikeColumn is the table column denoting the ebike relation/edge.
+	EbikeColumn = "ebike_id"
 	// StoreTable is the table that holds the store relation/edge.
 	StoreTable = "stock"
 	// StoreInverseTable is the table name for the Store entity.
@@ -125,6 +136,7 @@ var Columns = []string{
 	FieldRemark,
 	FieldCityID,
 	FieldSubscribeID,
+	FieldEbikeID,
 	FieldSn,
 	FieldType,
 	FieldStoreID,

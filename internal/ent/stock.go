@@ -12,6 +12,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -40,6 +41,8 @@ type Stock struct {
 	CityID *uint64 `json:"city_id,omitempty"`
 	// SubscribeID holds the value of the "subscribe_id" field.
 	SubscribeID *uint64 `json:"subscribe_id,omitempty"`
+	// EbikeID holds the value of the "ebike_id" field.
+	EbikeID *uint64 `json:"ebike_id,omitempty"`
 	// 调拨编号
 	Sn string `json:"sn,omitempty"`
 	// 类型 0:调拨 1:领取电池 2:寄存电池 3:结束寄存 4:归还电池
@@ -72,6 +75,8 @@ type StockEdges struct {
 	City *City `json:"city,omitempty"`
 	// Subscribe holds the value of the subscribe edge.
 	Subscribe *Subscribe `json:"subscribe,omitempty"`
+	// Ebike holds the value of the ebike edge.
+	Ebike *Ebike `json:"ebike,omitempty"`
 	// Store holds the value of the store edge.
 	Store *Store `json:"store,omitempty"`
 	// Cabinet holds the value of the cabinet edge.
@@ -84,7 +89,7 @@ type StockEdges struct {
 	Spouse *Stock `json:"spouse,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [7]bool
+	loadedTypes [8]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -113,10 +118,23 @@ func (e StockEdges) SubscribeOrErr() (*Subscribe, error) {
 	return nil, &NotLoadedError{edge: "subscribe"}
 }
 
+// EbikeOrErr returns the Ebike value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e StockEdges) EbikeOrErr() (*Ebike, error) {
+	if e.loadedTypes[2] {
+		if e.Ebike == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: ebike.Label}
+		}
+		return e.Ebike, nil
+	}
+	return nil, &NotLoadedError{edge: "ebike"}
+}
+
 // StoreOrErr returns the Store value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockEdges) StoreOrErr() (*Store, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		if e.Store == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: store.Label}
@@ -129,7 +147,7 @@ func (e StockEdges) StoreOrErr() (*Store, error) {
 // CabinetOrErr returns the Cabinet value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockEdges) CabinetOrErr() (*Cabinet, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		if e.Cabinet == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: cabinet.Label}
@@ -142,7 +160,7 @@ func (e StockEdges) CabinetOrErr() (*Cabinet, error) {
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[5] {
 		if e.Rider == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: rider.Label}
@@ -155,7 +173,7 @@ func (e StockEdges) RiderOrErr() (*Rider, error) {
 // EmployeeOrErr returns the Employee value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockEdges) EmployeeOrErr() (*Employee, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[6] {
 		if e.Employee == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: employee.Label}
@@ -168,7 +186,7 @@ func (e StockEdges) EmployeeOrErr() (*Employee, error) {
 // SpouseOrErr returns the Spouse value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockEdges) SpouseOrErr() (*Stock, error) {
-	if e.loadedTypes[6] {
+	if e.loadedTypes[7] {
 		if e.Spouse == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: stock.Label}
@@ -185,7 +203,7 @@ func (*Stock) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case stock.FieldCreator, stock.FieldLastModifier:
 			values[i] = new([]byte)
-		case stock.FieldID, stock.FieldCityID, stock.FieldSubscribeID, stock.FieldType, stock.FieldStoreID, stock.FieldCabinetID, stock.FieldRiderID, stock.FieldEmployeeID, stock.FieldNum:
+		case stock.FieldID, stock.FieldCityID, stock.FieldSubscribeID, stock.FieldEbikeID, stock.FieldType, stock.FieldStoreID, stock.FieldCabinetID, stock.FieldRiderID, stock.FieldEmployeeID, stock.FieldNum:
 			values[i] = new(sql.NullInt64)
 		case stock.FieldRemark, stock.FieldSn, stock.FieldName, stock.FieldModel, stock.FieldMaterial:
 			values[i] = new(sql.NullString)
@@ -268,6 +286,13 @@ func (s *Stock) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.SubscribeID = new(uint64)
 				*s.SubscribeID = uint64(value.Int64)
+			}
+		case stock.FieldEbikeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field ebike_id", values[i])
+			} else if value.Valid {
+				s.EbikeID = new(uint64)
+				*s.EbikeID = uint64(value.Int64)
 			}
 		case stock.FieldSn:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -356,6 +381,11 @@ func (s *Stock) QuerySubscribe() *SubscribeQuery {
 	return (&StockClient{config: s.config}).QuerySubscribe(s)
 }
 
+// QueryEbike queries the "ebike" edge of the Stock entity.
+func (s *Stock) QueryEbike() *EbikeQuery {
+	return (&StockClient{config: s.config}).QueryEbike(s)
+}
+
 // QueryStore queries the "store" edge of the Stock entity.
 func (s *Stock) QueryStore() *StoreQuery {
 	return (&StockClient{config: s.config}).QueryStore(s)
@@ -431,6 +461,11 @@ func (s *Stock) String() string {
 	builder.WriteString(", ")
 	if v := s.SubscribeID; v != nil {
 		builder.WriteString("subscribe_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := s.EbikeID; v != nil {
+		builder.WriteString("ebike_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

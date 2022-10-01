@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
@@ -204,6 +205,26 @@ func (su *SubscribeUpdate) SetNillableCabinetID(u *uint64) *SubscribeUpdate {
 // ClearCabinetID clears the value of the "cabinet_id" field.
 func (su *SubscribeUpdate) ClearCabinetID() *SubscribeUpdate {
 	su.mutation.ClearCabinetID()
+	return su
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (su *SubscribeUpdate) SetEbikeID(u uint64) *SubscribeUpdate {
+	su.mutation.SetEbikeID(u)
+	return su
+}
+
+// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableEbikeID(u *uint64) *SubscribeUpdate {
+	if u != nil {
+		su.SetEbikeID(*u)
+	}
+	return su
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (su *SubscribeUpdate) ClearEbikeID() *SubscribeUpdate {
+	su.mutation.ClearEbikeID()
 	return su
 }
 
@@ -657,6 +678,11 @@ func (su *SubscribeUpdate) SetCabinet(c *Cabinet) *SubscribeUpdate {
 	return su.SetCabinetID(c.ID)
 }
 
+// SetEbike sets the "ebike" edge to the Ebike entity.
+func (su *SubscribeUpdate) SetEbike(e *Ebike) *SubscribeUpdate {
+	return su.SetEbikeID(e.ID)
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (su *SubscribeUpdate) SetRider(r *Rider) *SubscribeUpdate {
 	return su.SetRiderID(r.ID)
@@ -785,6 +811,12 @@ func (su *SubscribeUpdate) ClearStore() *SubscribeUpdate {
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (su *SubscribeUpdate) ClearCabinet() *SubscribeUpdate {
 	su.mutation.ClearCabinet()
+	return su
+}
+
+// ClearEbike clears the "ebike" edge to the Ebike entity.
+func (su *SubscribeUpdate) ClearEbike() *SubscribeUpdate {
+	su.mutation.ClearEbike()
 	return su
 }
 
@@ -1532,6 +1564,41 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if su.mutation.EbikeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.EbikeTable,
+			Columns: []string{subscribe.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebike.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.EbikeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.EbikeTable,
+			Columns: []string{subscribe.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebike.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if su.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -2092,6 +2159,26 @@ func (suo *SubscribeUpdateOne) ClearCabinetID() *SubscribeUpdateOne {
 	return suo
 }
 
+// SetEbikeID sets the "ebike_id" field.
+func (suo *SubscribeUpdateOne) SetEbikeID(u uint64) *SubscribeUpdateOne {
+	suo.mutation.SetEbikeID(u)
+	return suo
+}
+
+// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableEbikeID(u *uint64) *SubscribeUpdateOne {
+	if u != nil {
+		suo.SetEbikeID(*u)
+	}
+	return suo
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (suo *SubscribeUpdateOne) ClearEbikeID() *SubscribeUpdateOne {
+	suo.mutation.ClearEbikeID()
+	return suo
+}
+
 // SetRiderID sets the "rider_id" field.
 func (suo *SubscribeUpdateOne) SetRiderID(u uint64) *SubscribeUpdateOne {
 	suo.mutation.SetRiderID(u)
@@ -2542,6 +2629,11 @@ func (suo *SubscribeUpdateOne) SetCabinet(c *Cabinet) *SubscribeUpdateOne {
 	return suo.SetCabinetID(c.ID)
 }
 
+// SetEbike sets the "ebike" edge to the Ebike entity.
+func (suo *SubscribeUpdateOne) SetEbike(e *Ebike) *SubscribeUpdateOne {
+	return suo.SetEbikeID(e.ID)
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (suo *SubscribeUpdateOne) SetRider(r *Rider) *SubscribeUpdateOne {
 	return suo.SetRiderID(r.ID)
@@ -2670,6 +2762,12 @@ func (suo *SubscribeUpdateOne) ClearStore() *SubscribeUpdateOne {
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (suo *SubscribeUpdateOne) ClearCabinet() *SubscribeUpdateOne {
 	suo.mutation.ClearCabinet()
+	return suo
+}
+
+// ClearEbike clears the "ebike" edge to the Ebike entity.
+func (suo *SubscribeUpdateOne) ClearEbike() *SubscribeUpdateOne {
+	suo.mutation.ClearEbike()
 	return suo
 }
 
@@ -3439,6 +3537,41 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: cabinet.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.EbikeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.EbikeTable,
+			Columns: []string{subscribe.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebike.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.EbikeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.EbikeTable,
+			Columns: []string{subscribe.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebike.FieldID,
 				},
 			},
 		}

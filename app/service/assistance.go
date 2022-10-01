@@ -22,6 +22,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/internal/payment"
     "github.com/auroraride/aurservd/pkg/cache"
+    "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
@@ -228,7 +229,7 @@ func (s *assistanceService) Detail(id uint64) model.AssistanceDetail {
         FailReason:        item.FailReason,
     }
     if item.PayAt != nil {
-        res.PayAt = tools.NewPointer().String(item.PayAt.Format(carbon.DateTimeLayout))
+        res.PayAt = silk.Pointer(item.PayAt.Format(carbon.DateTimeLayout))
     }
 
     return res

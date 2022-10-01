@@ -62,3 +62,65 @@ func (*ebike) BrandModify(c echo.Context) (err error) {
     service.NewEbikeBrand(ctx.Modifier).Modify(req)
     return ctx.SendResponse()
 }
+
+// List
+// @ID           ManagerEbikeList
+// @Router       /manager/v1/ebike [GET]
+// @Summary      MI004 电车列表
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query   model.EbikeListReq  false  "筛选条件"
+// @Success      200  {object}  model.PaginationRes{item=[]model.EbikeListRes}  "请求成功"
+func (*ebike) List(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.EbikeListReq](c)
+    return ctx.SendResponse(service.NewEbike(ctx.Modifier).List(req))
+}
+
+// Create
+// @ID           ManagerEbikeCreate
+// @Router       /manager/v1/ebike [POST]
+// @Summary      MI005 添加电车
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body     model.EbikeCreateReq  true  "电车信息"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*ebike) Create(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.EbikeCreateReq](c)
+    service.NewEbike(ctx.Modifier).Create(req)
+    return ctx.SendResponse()
+}
+
+// Modify
+// @ID           ManagerEbikeModify
+// @Router       /manager/v1/ebike/:id [PUT]
+// @Summary      MI006 修改电车
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body     model.EbikeModifyReq  true  "电车信息"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*ebike) Modify(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.EbikeModifyReq](c)
+    service.NewEbike(ctx.Modifier).Modify(req)
+    return ctx.SendResponse()
+}
+
+// BatchCreate
+// @ID           ManagerEbikeBatchCreate
+// @Router       /manager/v1/ebike/batch [POST]
+// @Summary      MI007 批量导入电车
+// @Tags         [M]管理接口
+// @Accept       mpfd
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        file  formData  file  true  "电车信息"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*ebike) BatchCreate(c echo.Context) (err error) {
+    ctx := app.Context(c)
+    return ctx.SendResponse()
+}

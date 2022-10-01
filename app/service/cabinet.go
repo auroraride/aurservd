@@ -25,6 +25,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/internal/ent/stock"
     "github.com/auroraride/aurservd/pkg/cache"
+    "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
@@ -131,7 +132,7 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
     q := s.orm.QueryNotDeleted().WithCity().WithModels()
 
     if s.modifier != nil && s.modifier.Phone == "15537112255" {
-        req.CityID = tools.NewPointer().UInt64(410100)
+        req.CityID = silk.UInt64(410100)
     }
 
     if req.Serial != nil {
@@ -650,7 +651,7 @@ func (s *cabinetService) Transfer(req *model.CabinetTransferReq) {
         InboundID:     cab.ID,
         InboundTarget: model.StockTargetCabinet,
         Force:         true,
-        Remark:        tools.Pointer("电柜初始化"),
+        Remark:        silk.Pointer("电柜初始化"),
     })
     _, _ = cab.Update().SetTransferred(true).Save(s.ctx)
     return

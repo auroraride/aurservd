@@ -30,6 +30,7 @@ const (
 	TypeCoupon               = "Coupon"
 	TypeCouponAssembly       = "CouponAssembly"
 	TypeCouponTemplate       = "CouponTemplate"
+	TypeEbike                = "Ebike"
 	TypeEbikeBrand           = "EbikeBrand"
 	TypeEmployee             = "Employee"
 	TypeEnterprise           = "Enterprise"

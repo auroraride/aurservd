@@ -15,6 +15,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/exchange"
     "github.com/auroraride/aurservd/pkg/cache"
+    "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     log "github.com/sirupsen/logrus"
@@ -454,7 +455,7 @@ func (s *riderExchangeService) ProcessOpenBin() *riderExchangeService {
 
     operation := model.CabinetDoorOperateOpen
     id := s.cabinet.ID
-    index := tools.Pointer(bin.Index)
+    index := silk.Pointer(bin.Index)
 
     status, err := NewCabinet().DoorOperate(&model.CabinetDoorOperateReq{
         ID:        &id,
@@ -490,7 +491,7 @@ func (s *riderExchangeService) ProcessOpenBin() *riderExchangeService {
             ID:        &id,
             Index:     index,
             Remark:    fmt.Sprintf("换电仓门处理失败自动锁仓 - %s", s.rider.Phone),
-            Operation: tools.Pointer(model.CabinetDoorOperateLock),
+            Operation: silk.Pointer(model.CabinetDoorOperateLock),
         }, operator)
     })
 

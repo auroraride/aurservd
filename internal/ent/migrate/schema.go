@@ -1163,6 +1163,84 @@ var (
 			},
 		},
 	}
+	// EbikeColumns holds the columns for the "ebike" table.
+	EbikeColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "status", Type: field.TypeOther, Comment: "状态", SchemaType: map[string]string{"postgres": "smallint"}},
+		{Name: "enable", Type: field.TypeBool, Comment: "是否启用", Default: true},
+		{Name: "sn", Type: field.TypeString, Unique: true, Comment: "车架号"},
+		{Name: "plate", Type: field.TypeString, Unique: true, Comment: "车牌号", Nullable: true},
+		{Name: "machine", Type: field.TypeString, Unique: true, Comment: "终端编号", Nullable: true},
+		{Name: "sim", Type: field.TypeString, Unique: true, Comment: "SIM卡号", Nullable: true},
+		{Name: "color", Type: field.TypeString, Comment: "颜色", Default: "橘黄"},
+		{Name: "ex_factory", Type: field.TypeString, Comment: "生产批次(出厂日期)"},
+		{Name: "brand_id", Type: field.TypeUint64},
+		{Name: "rider_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
+	}
+	// EbikeTable holds the schema information for the "ebike" table.
+	EbikeTable = &schema.Table{
+		Name:       "ebike",
+		Columns:    EbikeColumns,
+		PrimaryKey: []*schema.Column{EbikeColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "ebike_ebike_brand_brand",
+				Columns:    []*schema.Column{EbikeColumns[14]},
+				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "ebike_rider_rider",
+				Columns:    []*schema.Column{EbikeColumns[15]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "ebike_store_store",
+				Columns:    []*schema.Column{EbikeColumns[16]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "ebike_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{EbikeColumns[1]},
+			},
+			{
+				Name:    "ebike_brand_id",
+				Unique:  false,
+				Columns: []*schema.Column{EbikeColumns[14]},
+			},
+			{
+				Name:    "ebike_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{EbikeColumns[15]},
+			},
+			{
+				Name:    "ebike_store_id",
+				Unique:  false,
+				Columns: []*schema.Column{EbikeColumns[16]},
+			},
+			{
+				Name:    "ebike_status",
+				Unique:  false,
+				Columns: []*schema.Column{EbikeColumns[6]},
+			},
+			{
+				Name:    "ebike_ex_factory",
+				Unique:  false,
+				Columns: []*schema.Column{EbikeColumns[13]},
+			},
+		},
+	}
 	// EbikeBrandColumns holds the columns for the "ebike_brand" table.
 	EbikeBrandColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -2871,6 +2949,7 @@ var (
 		{Name: "rider_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "ebike_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "stock_spouse", Type: field.TypeUint64, Unique: true, Nullable: true},
 		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
 	}
@@ -2911,14 +2990,20 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "stock_stock_spouse",
+				Symbol:     "stock_ebike_ebike",
 				Columns:    []*schema.Column{StockColumns[18]},
+				RefColumns: []*schema.Column{EbikeColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "stock_stock_spouse",
+				Columns:    []*schema.Column{StockColumns[19]},
 				RefColumns: []*schema.Column{StockColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "stock_store_stocks",
-				Columns:    []*schema.Column{StockColumns[19]},
+				Columns:    []*schema.Column{StockColumns[20]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2955,9 +3040,14 @@ var (
 				Columns: []*schema.Column{StockColumns[17]},
 			},
 			{
+				Name:    "stock_ebike_id",
+				Unique:  false,
+				Columns: []*schema.Column{StockColumns[18]},
+			},
+			{
 				Name:    "stock_store_id",
 				Unique:  false,
-				Columns: []*schema.Column{StockColumns[19]},
+				Columns: []*schema.Column{StockColumns[20]},
 			},
 			{
 				Name:    "stock_cabinet_id",
@@ -3115,6 +3205,7 @@ var (
 		{Name: "station_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "ebike_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "initial_order_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// SubscribeTable holds the schema information for the "subscribe" table.
@@ -3172,8 +3263,14 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "subscribe_order_initial_order",
+				Symbol:     "subscribe_ebike_ebike",
 				Columns:    []*schema.Column{SubscribeColumns[35]},
+				RefColumns: []*schema.Column{EbikeColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "subscribe_order_initial_order",
+				Columns:    []*schema.Column{SubscribeColumns[36]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -3218,6 +3315,11 @@ var (
 				Name:    "subscribe_cabinet_id",
 				Unique:  false,
 				Columns: []*schema.Column{SubscribeColumns[34]},
+			},
+			{
+				Name:    "subscribe_ebike_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeColumns[35]},
 			},
 			{
 				Name:    "subscribe_rider_id",
@@ -3768,6 +3870,7 @@ var (
 		CouponTable,
 		CouponAssemblyTable,
 		CouponTemplateTable,
+		EbikeTable,
 		EbikeBrandTable,
 		EmployeeTable,
 		EnterpriseTable,
@@ -3893,6 +3996,12 @@ func init() {
 	}
 	CouponTemplateTable.Annotation = &entsql.Annotation{
 		Table: "coupon_template",
+	}
+	EbikeTable.ForeignKeys[0].RefTable = EbikeBrandTable
+	EbikeTable.ForeignKeys[1].RefTable = RiderTable
+	EbikeTable.ForeignKeys[2].RefTable = StoreTable
+	EbikeTable.Annotation = &entsql.Annotation{
+		Table: "ebike",
 	}
 	EbikeBrandTable.Annotation = &entsql.Annotation{
 		Table: "ebike_brand",
@@ -4020,8 +4129,9 @@ func init() {
 	StockTable.ForeignKeys[2].RefTable = RiderTable
 	StockTable.ForeignKeys[3].RefTable = CityTable
 	StockTable.ForeignKeys[4].RefTable = SubscribeTable
-	StockTable.ForeignKeys[5].RefTable = StockTable
-	StockTable.ForeignKeys[6].RefTable = StoreTable
+	StockTable.ForeignKeys[5].RefTable = EbikeTable
+	StockTable.ForeignKeys[6].RefTable = StockTable
+	StockTable.ForeignKeys[7].RefTable = StoreTable
 	StockTable.Annotation = &entsql.Annotation{
 		Table: "stock",
 	}
@@ -4039,7 +4149,8 @@ func init() {
 	SubscribeTable.ForeignKeys[5].RefTable = EnterpriseStationTable
 	SubscribeTable.ForeignKeys[6].RefTable = StoreTable
 	SubscribeTable.ForeignKeys[7].RefTable = CabinetTable
-	SubscribeTable.ForeignKeys[8].RefTable = OrderTable
+	SubscribeTable.ForeignKeys[8].RefTable = EbikeTable
+	SubscribeTable.ForeignKeys[9].RefTable = OrderTable
 	SubscribeTable.Annotation = &entsql.Annotation{
 		Table: "subscribe",
 	}

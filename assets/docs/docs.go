@@ -4570,6 +4570,232 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/ebike": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MI004 电车列表",
+                "operationId": "ManagerEbikeList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "品牌ID",
+                        "name": "brandId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否启用, 默认` + "`" + `true` + "`" + `, 不携带为获取全部",
+                        "name": "enable",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "生产批次",
+                        "name": "exFactory",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索关键词\u003c骑手:电话/姓名, 车辆:车架号/车牌号/终端编号/SIM卡号\u003e",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "骑手ID",
+                        "name": "riderId",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3
+                        ],
+                        "type": "integer",
+                        "description": "状态, 0:库存中 1:使用中 2:维修中 3:已报废, 不携带为获取全部",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店ID",
+                        "name": "storeId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "item": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.EbikeListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MI005 添加电车",
+                "operationId": "ManagerEbikeCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "电车信息",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EbikeCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/ebike/:id": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MI006 修改电车",
+                "operationId": "ManagerEbikeModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "电车信息",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EbikeModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/ebike/batch": {
+            "post": {
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MI007 批量导入电车",
+                "operationId": "ManagerEbikeBatchCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "电车信息",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/ebike/brand": {
             "get": {
                 "consumes": [
@@ -8496,6 +8722,41 @@ const docTemplate = `{
                             "type": "array",
                             "items": {
                                 "$ref": "#/definitions/model.SelectOptionGroup"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/selection/ebike/brand": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MB015 车辆型号列表",
+                "operationId": "ManagerSelectionEbikeBrand",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOption"
                             }
                         }
                     }
@@ -15705,6 +15966,129 @@ const docTemplate = `{
                 },
                 "name": {
                     "description": "名称",
+                    "type": "string"
+                }
+            }
+        },
+        "model.EbikeCreateReq": {
+            "type": "object",
+            "required": [
+                "brandId",
+                "exFactory",
+                "sn"
+            ],
+            "properties": {
+                "brandId": {
+                    "description": "型号 关联: ` + "`" + `MB015 车辆型号列表` + "`" + `",
+                    "type": "integer"
+                },
+                "color": {
+                    "description": "颜色, 默认` + "`" + `橘黄` + "`" + `, 创建或编辑时用选择列表, 选项为: ` + "`" + `橘黄` + "`" + ` / ` + "`" + `红` + "`" + ` / ` + "`" + `白` + "`" + ` / ` + "`" + `黑` + "`" + `",
+                    "type": "string"
+                },
+                "enable": {
+                    "description": "是否启用, 默认要启用",
+                    "type": "boolean"
+                },
+                "exFactory": {
+                    "description": "生产批次 ",
+                    "type": "string"
+                },
+                "machine": {
+                    "description": "终端编号",
+                    "type": "string"
+                },
+                "plate": {
+                    "description": "车牌号",
+                    "type": "string"
+                },
+                "sim": {
+                    "description": "SIM卡号",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "车架号 ",
+                    "type": "string"
+                }
+            }
+        },
+        "model.EbikeListRes": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "description": "品牌",
+                    "type": "string"
+                },
+                "color": {
+                    "description": "颜色, 默认` + "`" + `橘黄` + "`" + `, 创建或编辑时用选择列表, 选项为: ` + "`" + `橘黄` + "`" + ` / ` + "`" + `红` + "`" + ` / ` + "`" + `白` + "`" + ` / ` + "`" + `黑` + "`" + `",
+                    "type": "string"
+                },
+                "enable": {
+                    "description": "是否启用, 默认要启用",
+                    "type": "boolean"
+                },
+                "exFactory": {
+                    "description": "生产批次",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "machine": {
+                    "description": "终端编号",
+                    "type": "string"
+                },
+                "plate": {
+                    "description": "车牌号",
+                    "type": "string"
+                },
+                "rider": {
+                    "description": "骑手",
+                    "type": "string"
+                },
+                "sim": {
+                    "description": "SIM卡号",
+                    "type": "string"
+                },
+                "store": {
+                    "description": "门店",
+                    "type": "string"
+                }
+            }
+        },
+        "model.EbikeModifyReq": {
+            "type": "object",
+            "properties": {
+                "brandId": {
+                    "description": "型号, 关联: ` + "`" + `MB015 车辆型号列表` + "`" + `",
+                    "type": "integer"
+                },
+                "color": {
+                    "description": "颜色, 默认` + "`" + `橘黄` + "`" + `, 创建或编辑时用选择列表, 选项为: ` + "`" + `橘黄` + "`" + ` / ` + "`" + `红` + "`" + ` / ` + "`" + `白` + "`" + ` / ` + "`" + `黑` + "`" + `",
+                    "type": "string"
+                },
+                "enable": {
+                    "description": "是否启用, 默认要启用",
+                    "type": "boolean"
+                },
+                "exFactory": {
+                    "description": "生产批次",
+                    "type": "string"
+                },
+                "machine": {
+                    "description": "终端编号",
+                    "type": "string"
+                },
+                "plate": {
+                    "description": "车牌号",
+                    "type": "string"
+                },
+                "sim": {
+                    "description": "SIM卡号",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "车架号",
                     "type": "string"
                 }
             }

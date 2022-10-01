@@ -25,6 +25,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
+	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -98,6 +99,8 @@ type Client struct {
 	CouponAssembly *CouponAssemblyClient
 	// CouponTemplate is the client for interacting with the CouponTemplate builders.
 	CouponTemplate *CouponTemplateClient
+	// Ebike is the client for interacting with the Ebike builders.
+	Ebike *EbikeClient
 	// EbikeBrand is the client for interacting with the EbikeBrand builders.
 	EbikeBrand *EbikeBrandClient
 	// Employee is the client for interacting with the Employee builders.
@@ -190,6 +193,7 @@ func (c *Client) init() {
 	c.Coupon = NewCouponClient(c.config)
 	c.CouponAssembly = NewCouponAssemblyClient(c.config)
 	c.CouponTemplate = NewCouponTemplateClient(c.config)
+	c.Ebike = NewEbikeClient(c.config)
 	c.EbikeBrand = NewEbikeBrandClient(c.config)
 	c.Employee = NewEmployeeClient(c.config)
 	c.Enterprise = NewEnterpriseClient(c.config)
@@ -270,6 +274,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Coupon:               NewCouponClient(cfg),
 		CouponAssembly:       NewCouponAssemblyClient(cfg),
 		CouponTemplate:       NewCouponTemplateClient(cfg),
+		Ebike:                NewEbikeClient(cfg),
 		EbikeBrand:           NewEbikeBrandClient(cfg),
 		Employee:             NewEmployeeClient(cfg),
 		Enterprise:           NewEnterpriseClient(cfg),
@@ -336,6 +341,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Coupon:               NewCouponClient(cfg),
 		CouponAssembly:       NewCouponAssemblyClient(cfg),
 		CouponTemplate:       NewCouponTemplateClient(cfg),
+		Ebike:                NewEbikeClient(cfg),
 		EbikeBrand:           NewEbikeBrandClient(cfg),
 		Employee:             NewEmployeeClient(cfg),
 		Enterprise:           NewEnterpriseClient(cfg),
@@ -411,6 +417,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Coupon.Use(hooks...)
 	c.CouponAssembly.Use(hooks...)
 	c.CouponTemplate.Use(hooks...)
+	c.Ebike.Use(hooks...)
 	c.EbikeBrand.Use(hooks...)
 	c.Employee.Use(hooks...)
 	c.Enterprise.Use(hooks...)
@@ -2704,6 +2711,145 @@ func (c *CouponTemplateClient) QueryCoupons(ct *CouponTemplate) *CouponQuery {
 func (c *CouponTemplateClient) Hooks() []Hook {
 	hooks := c.hooks.CouponTemplate
 	return append(hooks[:len(hooks):len(hooks)], coupontemplate.Hooks[:]...)
+}
+
+// EbikeClient is a client for the Ebike schema.
+type EbikeClient struct {
+	config
+}
+
+// NewEbikeClient returns a client for the Ebike from the given config.
+func NewEbikeClient(c config) *EbikeClient {
+	return &EbikeClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `ebike.Hooks(f(g(h())))`.
+func (c *EbikeClient) Use(hooks ...Hook) {
+	c.hooks.Ebike = append(c.hooks.Ebike, hooks...)
+}
+
+// Create returns a builder for creating a Ebike entity.
+func (c *EbikeClient) Create() *EbikeCreate {
+	mutation := newEbikeMutation(c.config, OpCreate)
+	return &EbikeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Ebike entities.
+func (c *EbikeClient) CreateBulk(builders ...*EbikeCreate) *EbikeCreateBulk {
+	return &EbikeCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Ebike.
+func (c *EbikeClient) Update() *EbikeUpdate {
+	mutation := newEbikeMutation(c.config, OpUpdate)
+	return &EbikeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EbikeClient) UpdateOne(e *Ebike) *EbikeUpdateOne {
+	mutation := newEbikeMutation(c.config, OpUpdateOne, withEbike(e))
+	return &EbikeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EbikeClient) UpdateOneID(id uint64) *EbikeUpdateOne {
+	mutation := newEbikeMutation(c.config, OpUpdateOne, withEbikeID(id))
+	return &EbikeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Ebike.
+func (c *EbikeClient) Delete() *EbikeDelete {
+	mutation := newEbikeMutation(c.config, OpDelete)
+	return &EbikeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *EbikeClient) DeleteOne(e *Ebike) *EbikeDeleteOne {
+	return c.DeleteOneID(e.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *EbikeClient) DeleteOneID(id uint64) *EbikeDeleteOne {
+	builder := c.Delete().Where(ebike.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EbikeDeleteOne{builder}
+}
+
+// Query returns a query builder for Ebike.
+func (c *EbikeClient) Query() *EbikeQuery {
+	return &EbikeQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Ebike entity by its id.
+func (c *EbikeClient) Get(ctx context.Context, id uint64) (*Ebike, error) {
+	return c.Query().Where(ebike.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EbikeClient) GetX(ctx context.Context, id uint64) *Ebike {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryBrand queries the brand edge of a Ebike.
+func (c *EbikeClient) QueryBrand(e *Ebike) *EbikeBrandQuery {
+	query := &EbikeBrandQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebike.Table, ebike.FieldID, id),
+			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ebike.BrandTable, ebike.BrandColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRider queries the rider edge of a Ebike.
+func (c *EbikeClient) QueryRider(e *Ebike) *RiderQuery {
+	query := &RiderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebike.Table, ebike.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ebike.RiderTable, ebike.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStore queries the store edge of a Ebike.
+func (c *EbikeClient) QueryStore(e *Ebike) *StoreQuery {
+	query := &StoreQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebike.Table, ebike.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ebike.StoreTable, ebike.StoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EbikeClient) Hooks() []Hook {
+	hooks := c.hooks.Ebike
+	return append(hooks[:len(hooks):len(hooks)], ebike.Hooks[:]...)
 }
 
 // EbikeBrandClient is a client for the EbikeBrand schema.
@@ -6327,6 +6473,22 @@ func (c *StockClient) QuerySubscribe(s *Stock) *SubscribeQuery {
 	return query
 }
 
+// QueryEbike queries the ebike edge of a Stock.
+func (c *StockClient) QueryEbike(s *Stock) *EbikeQuery {
+	query := &EbikeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(ebike.Table, ebike.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stock.EbikeTable, stock.EbikeColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryStore queries the store edge of a Stock.
 func (c *StockClient) QueryStore(s *Stock) *StoreQuery {
 	query := &StoreQuery{config: c.config}
@@ -6774,6 +6936,22 @@ func (c *SubscribeClient) QueryCabinet(s *Subscribe) *CabinetQuery {
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
 			sqlgraph.To(cabinet.Table, cabinet.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.CabinetTable, subscribe.CabinetColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEbike queries the ebike edge of a Subscribe.
+func (c *SubscribeClient) QueryEbike(s *Subscribe) *EbikeQuery {
+	query := &EbikeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
+			sqlgraph.To(ebike.Table, ebike.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.EbikeTable, subscribe.EbikeColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil

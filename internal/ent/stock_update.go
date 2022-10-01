@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -131,6 +132,26 @@ func (su *StockUpdate) SetNillableSubscribeID(u *uint64) *StockUpdate {
 // ClearSubscribeID clears the value of the "subscribe_id" field.
 func (su *StockUpdate) ClearSubscribeID() *StockUpdate {
 	su.mutation.ClearSubscribeID()
+	return su
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (su *StockUpdate) SetEbikeID(u uint64) *StockUpdate {
+	su.mutation.SetEbikeID(u)
+	return su
+}
+
+// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
+func (su *StockUpdate) SetNillableEbikeID(u *uint64) *StockUpdate {
+	if u != nil {
+		su.SetEbikeID(*u)
+	}
+	return su
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (su *StockUpdate) ClearEbikeID() *StockUpdate {
+	su.mutation.ClearEbikeID()
 	return su
 }
 
@@ -283,6 +304,11 @@ func (su *StockUpdate) SetSubscribe(s *Subscribe) *StockUpdate {
 	return su.SetSubscribeID(s.ID)
 }
 
+// SetEbike sets the "ebike" edge to the Ebike entity.
+func (su *StockUpdate) SetEbike(e *Ebike) *StockUpdate {
+	return su.SetEbikeID(e.ID)
+}
+
 // SetStore sets the "store" edge to the Store entity.
 func (su *StockUpdate) SetStore(s *Store) *StockUpdate {
 	return su.SetStoreID(s.ID)
@@ -336,6 +362,12 @@ func (su *StockUpdate) ClearCity() *StockUpdate {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (su *StockUpdate) ClearSubscribe() *StockUpdate {
 	su.mutation.ClearSubscribe()
+	return su
+}
+
+// ClearEbike clears the "ebike" edge to the Ebike entity.
+func (su *StockUpdate) ClearEbike() *StockUpdate {
+	su.mutation.ClearEbike()
 	return su
 }
 
@@ -648,6 +680,41 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if su.mutation.EbikeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.EbikeTable,
+			Columns: []string{stock.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebike.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.EbikeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.EbikeTable,
+			Columns: []string{stock.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebike.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if su.mutation.StoreCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -942,6 +1009,26 @@ func (suo *StockUpdateOne) ClearSubscribeID() *StockUpdateOne {
 	return suo
 }
 
+// SetEbikeID sets the "ebike_id" field.
+func (suo *StockUpdateOne) SetEbikeID(u uint64) *StockUpdateOne {
+	suo.mutation.SetEbikeID(u)
+	return suo
+}
+
+// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
+func (suo *StockUpdateOne) SetNillableEbikeID(u *uint64) *StockUpdateOne {
+	if u != nil {
+		suo.SetEbikeID(*u)
+	}
+	return suo
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (suo *StockUpdateOne) ClearEbikeID() *StockUpdateOne {
+	suo.mutation.ClearEbikeID()
+	return suo
+}
+
 // SetSn sets the "sn" field.
 func (suo *StockUpdateOne) SetSn(s string) *StockUpdateOne {
 	suo.mutation.SetSn(s)
@@ -1091,6 +1178,11 @@ func (suo *StockUpdateOne) SetSubscribe(s *Subscribe) *StockUpdateOne {
 	return suo.SetSubscribeID(s.ID)
 }
 
+// SetEbike sets the "ebike" edge to the Ebike entity.
+func (suo *StockUpdateOne) SetEbike(e *Ebike) *StockUpdateOne {
+	return suo.SetEbikeID(e.ID)
+}
+
 // SetStore sets the "store" edge to the Store entity.
 func (suo *StockUpdateOne) SetStore(s *Store) *StockUpdateOne {
 	return suo.SetStoreID(s.ID)
@@ -1144,6 +1236,12 @@ func (suo *StockUpdateOne) ClearCity() *StockUpdateOne {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (suo *StockUpdateOne) ClearSubscribe() *StockUpdateOne {
 	suo.mutation.ClearSubscribe()
+	return suo
+}
+
+// ClearEbike clears the "ebike" edge to the Ebike entity.
+func (suo *StockUpdateOne) ClearEbike() *StockUpdateOne {
+	suo.mutation.ClearEbike()
 	return suo
 }
 
@@ -1478,6 +1576,41 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.EbikeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.EbikeTable,
+			Columns: []string{stock.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebike.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.EbikeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.EbikeTable,
+			Columns: []string{stock.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebike.FieldID,
 				},
 			},
 		}

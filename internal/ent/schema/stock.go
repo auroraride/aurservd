@@ -63,6 +63,9 @@ func (Stock) Mixin() []ent.Mixin {
         },
         CityMixin{Optional: true},
         SubscribeMixin{Optional: true},
+
+        // 电车
+        EbikeMixin{Optional: true},
     }
 }
 

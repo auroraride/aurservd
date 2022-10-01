@@ -13,7 +13,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/internal/ent/store"
-    "github.com/auroraride/aurservd/pkg/tools"
+    "github.com/auroraride/aurservd/pkg/silk"
     log "github.com/sirupsen/logrus"
     "time"
 )
@@ -100,6 +100,6 @@ func (s *assistanceSocketService) SendRider(riderID uint64, ass *ent.Assistance)
 func (s *assistanceSocketService) SenderEmployee(employeeID uint64, ass *ent.Assistance) {
     socket.GetClientID(NewEmployeeSocket(), employeeID).SendMessage(&model.EmployeeSocketMessage{
         Speech:       "您有一条救援任务",
-        AssistanceID: tools.Pointer(ass.ID),
+        AssistanceID: silk.Pointer(ass.ID),
     })
 }

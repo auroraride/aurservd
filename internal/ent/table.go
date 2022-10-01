@@ -180,6 +180,16 @@ func (ct *CouponTemplate) GetName() string {
 	return ct.Name
 }
 
+// GetTableName returns table name for Ebike.
+func (e *Ebike) GetTableName() string {
+	return "ebike"
+}
+
+// GetID returns id for Ebike.
+func (e *Ebike) GetID() uint64 {
+	return e.ID
+}
+
 // GetTableName returns table name for EbikeBrand.
 func (eb *EbikeBrand) GetTableName() string {
 	return "ebike_brand"

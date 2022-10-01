@@ -27,6 +27,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/pkg/cache"
+    "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/auroraride/aurservd/pkg/utils"
@@ -866,7 +867,7 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device, token string)
         }
     } else {
         profile.Subscribe = subd
-        profile.OrderNotActived = tools.NewPointer().Bool(subd != nil && subd.Status == model.SubscribeStatusInactive)
+        profile.OrderNotActived = silk.Bool(subd != nil && subd.Status == model.SubscribeStatusInactive)
         profile.Deposit = s.Deposit(u.ID)
         profile.UseStore = true
     }

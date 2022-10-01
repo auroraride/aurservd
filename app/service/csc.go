@@ -11,8 +11,8 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ali"
     "github.com/auroraride/aurservd/internal/ar"
+    "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
-    "github.com/auroraride/aurservd/pkg/tools"
     "github.com/h2non/filetype"
     "github.com/h2non/filetype/matchers"
     log "github.com/sirupsen/logrus"
@@ -76,7 +76,7 @@ func (*cscService) BatchReminder(source *multipart.FileHeader) []*model.Shiguang
                 Phone:   row[1],
                 Product: row[2],
             }
-            item.Status = ali.NewVms().SendVoiceMessageByTts(tools.Pointer(item.Phone), tools.Pointer(fmt.Sprintf(`{"name":"%s","product": "%s"}`, item.Name, item.Product)), cfg.Tel, cfg.Template)
+            item.Status = ali.NewVms().SendVoiceMessageByTts(silk.Pointer(item.Phone), silk.Pointer(fmt.Sprintf(`{"name":"%s","product": "%s"}`, item.Name, item.Product)), cfg.Tel, cfg.Template)
             items[i-1] = item
         }
     }

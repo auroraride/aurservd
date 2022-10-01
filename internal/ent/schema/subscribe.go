@@ -117,6 +117,9 @@ func (Subscribe) Mixin() []ent.Mixin {
         StationMixin{Optional: true},
         StoreMixin{Optional: true},
         CabinetMixin{Optional: true},
+
+        // 电车
+        EbikeMixin{Optional: true},
     }
 }
 

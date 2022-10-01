@@ -18,6 +18,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/business"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/internal/ent/store"
+    "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/jinzhu/copier"
@@ -652,7 +653,7 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
                     // 有电池
                     if bin.Battery {
                         c.Bins[bi] = model.BranchFacilityCabinetBin{
-                            Electricity: tools.Pointer(bin.Electricity),
+                            Electricity: silk.Pointer(bin.Electricity),
                         }
                         if bin.Electricity.IsBatteryFull() {
                             // 满电

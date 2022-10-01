@@ -151,6 +151,13 @@ func CabinetID(v uint64) predicate.Subscribe {
 	})
 }
 
+// EbikeID applies equality check predicate on the "ebike_id" field. It's identical to EbikeIDEQ.
+func EbikeID(v uint64) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEbikeID), v))
+	})
+}
+
 // RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
 func RiderID(v uint64) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
@@ -942,6 +949,56 @@ func CabinetIDIsNil() predicate.Subscribe {
 func CabinetIDNotNil() predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldCabinetID)))
+	})
+}
+
+// EbikeIDEQ applies the EQ predicate on the "ebike_id" field.
+func EbikeIDEQ(v uint64) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEbikeID), v))
+	})
+}
+
+// EbikeIDNEQ applies the NEQ predicate on the "ebike_id" field.
+func EbikeIDNEQ(v uint64) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldEbikeID), v))
+	})
+}
+
+// EbikeIDIn applies the In predicate on the "ebike_id" field.
+func EbikeIDIn(vs ...uint64) predicate.Subscribe {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldEbikeID), v...))
+	})
+}
+
+// EbikeIDNotIn applies the NotIn predicate on the "ebike_id" field.
+func EbikeIDNotIn(vs ...uint64) predicate.Subscribe {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldEbikeID), v...))
+	})
+}
+
+// EbikeIDIsNil applies the IsNil predicate on the "ebike_id" field.
+func EbikeIDIsNil() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldEbikeID)))
+	})
+}
+
+// EbikeIDNotNil applies the NotNil predicate on the "ebike_id" field.
+func EbikeIDNotNil() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldEbikeID)))
 	})
 }
 
@@ -2715,6 +2772,34 @@ func HasCabinetWith(preds ...predicate.Cabinet) predicate.Subscribe {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(CabinetInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, CabinetTable, CabinetColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasEbike applies the HasEdge predicate on the "ebike" edge.
+func HasEbike() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EbikeTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, EbikeTable, EbikeColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEbikeWith applies the HasEdge predicate on the "ebike" edge with a given conditions (other predicates).
+func HasEbikeWith(preds ...predicate.Ebike) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EbikeInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, EbikeTable, EbikeColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

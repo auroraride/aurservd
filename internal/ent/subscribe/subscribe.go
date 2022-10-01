@@ -37,6 +37,8 @@ const (
 	FieldStoreID = "store_id"
 	// FieldCabinetID holds the string denoting the cabinet_id field in the database.
 	FieldCabinetID = "cabinet_id"
+	// FieldEbikeID holds the string denoting the ebike_id field in the database.
+	FieldEbikeID = "ebike_id"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
 	FieldRiderID = "rider_id"
 	// FieldInitialOrderID holds the string denoting the initial_order_id field in the database.
@@ -95,6 +97,8 @@ const (
 	EdgeStore = "store"
 	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
 	EdgeCabinet = "cabinet"
+	// EdgeEbike holds the string denoting the ebike edge name in mutations.
+	EdgeEbike = "ebike"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
@@ -155,6 +159,13 @@ const (
 	CabinetInverseTable = "cabinet"
 	// CabinetColumn is the table column denoting the cabinet relation/edge.
 	CabinetColumn = "cabinet_id"
+	// EbikeTable is the table that holds the ebike relation/edge.
+	EbikeTable = "subscribe"
+	// EbikeInverseTable is the table name for the Ebike entity.
+	// It exists in this package in order to avoid circular dependency with the "ebike" package.
+	EbikeInverseTable = "ebike"
+	// EbikeColumn is the table column denoting the ebike relation/edge.
+	EbikeColumn = "ebike_id"
 	// RiderTable is the table that holds the rider relation/edge.
 	RiderTable = "subscribe"
 	// RiderInverseTable is the table name for the Rider entity.
@@ -228,6 +239,7 @@ var Columns = []string{
 	FieldStationID,
 	FieldStoreID,
 	FieldCabinetID,
+	FieldEbikeID,
 	FieldRiderID,
 	FieldInitialOrderID,
 	FieldEnterpriseID,

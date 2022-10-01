@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -121,6 +122,20 @@ func (sc *StockCreate) SetSubscribeID(u uint64) *StockCreate {
 func (sc *StockCreate) SetNillableSubscribeID(u *uint64) *StockCreate {
 	if u != nil {
 		sc.SetSubscribeID(*u)
+	}
+	return sc
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (sc *StockCreate) SetEbikeID(u uint64) *StockCreate {
+	sc.mutation.SetEbikeID(u)
+	return sc
+}
+
+// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
+func (sc *StockCreate) SetNillableEbikeID(u *uint64) *StockCreate {
+	if u != nil {
+		sc.SetEbikeID(*u)
 	}
 	return sc
 }
@@ -241,6 +256,11 @@ func (sc *StockCreate) SetCity(c *City) *StockCreate {
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (sc *StockCreate) SetSubscribe(s *Subscribe) *StockCreate {
 	return sc.SetSubscribeID(s.ID)
+}
+
+// SetEbike sets the "ebike" edge to the Ebike entity.
+func (sc *StockCreate) SetEbike(e *Ebike) *StockCreate {
+	return sc.SetEbikeID(e.ID)
 }
 
 // SetStore sets the "store" edge to the Store entity.
@@ -574,6 +594,26 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 		_node.SubscribeID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := sc.mutation.EbikeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.EbikeTable,
+			Columns: []string{stock.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebike.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.EbikeID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := sc.mutation.StoreIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -825,6 +865,24 @@ func (u *StockUpsert) UpdateSubscribeID() *StockUpsert {
 // ClearSubscribeID clears the value of the "subscribe_id" field.
 func (u *StockUpsert) ClearSubscribeID() *StockUpsert {
 	u.SetNull(stock.FieldSubscribeID)
+	return u
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (u *StockUpsert) SetEbikeID(v uint64) *StockUpsert {
+	u.Set(stock.FieldEbikeID, v)
+	return u
+}
+
+// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
+func (u *StockUpsert) UpdateEbikeID() *StockUpsert {
+	u.SetExcluded(stock.FieldEbikeID)
+	return u
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (u *StockUpsert) ClearEbikeID() *StockUpsert {
+	u.SetNull(stock.FieldEbikeID)
 	return u
 }
 
@@ -1139,6 +1197,27 @@ func (u *StockUpsertOne) UpdateSubscribeID() *StockUpsertOne {
 func (u *StockUpsertOne) ClearSubscribeID() *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
 		s.ClearSubscribeID()
+	})
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (u *StockUpsertOne) SetEbikeID(v uint64) *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.SetEbikeID(v)
+	})
+}
+
+// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
+func (u *StockUpsertOne) UpdateEbikeID() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateEbikeID()
+	})
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (u *StockUpsertOne) ClearEbikeID() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.ClearEbikeID()
 	})
 }
 
@@ -1639,6 +1718,27 @@ func (u *StockUpsertBulk) UpdateSubscribeID() *StockUpsertBulk {
 func (u *StockUpsertBulk) ClearSubscribeID() *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
 		s.ClearSubscribeID()
+	})
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (u *StockUpsertBulk) SetEbikeID(v uint64) *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.SetEbikeID(v)
+	})
+}
+
+// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
+func (u *StockUpsertBulk) UpdateEbikeID() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateEbikeID()
+	})
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (u *StockUpsertBulk) ClearEbikeID() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.ClearEbikeID()
 	})
 }
 

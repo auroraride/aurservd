@@ -17,8 +17,8 @@ import (
     "github.com/auroraride/aurservd/internal/ent/coupontemplate"
     "github.com/auroraride/aurservd/internal/ent/plan"
     "github.com/auroraride/aurservd/internal/ent/rider"
+    "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
-    "github.com/auroraride/aurservd/pkg/tools"
     "sort"
     "strconv"
     "time"
@@ -81,7 +81,7 @@ func (s *selectionService) Plan(req *model.PlanSelectionReq) (items []model.Casc
                         Value: c.ID,
                         Label: c.Name,
                     },
-                    Children: tools.Pointer(make([]model.CascaderOptionLevel2, 0)),
+                    Children: silk.Pointer(make([]model.CascaderOptionLevel2, 0)),
                 }
             }
 
@@ -233,7 +233,7 @@ func cascaderParser[T any](res []T, cb cascaderX[T]) (items []*model.CascaderOpt
             ol = &model.CascaderOption{
                 Value:    p.Value,
                 Label:    p.Label,
-                Children: tools.Pointer(make([]*model.CascaderOption, 0)),
+                Children: silk.Pointer(make([]*model.CascaderOption, 0)),
             }
             smap[p.Value] = ol
         }
@@ -391,7 +391,7 @@ func (s *selectionService) CabinetModelX() (items []model.CascaderOption) {
             cmap[c.ID] = model.CascaderOption{
                 Value:    c.ID,
                 Label:    c.Name,
-                Children: tools.Pointer(make([]*model.CascaderOption, 0)),
+                Children: silk.Pointer(make([]*model.CascaderOption, 0)),
             }
         }
 
@@ -452,6 +452,18 @@ func (s *selectionService) CouponTemplate() (items []model.SelectOptionGroup) {
             Label:   "已禁用",
             Options: disable,
         })
+    }
+    return
+}
+
+func (s *selectionService) EbikeBrand() (items []model.SelectOption) {
+    brands := NewEbikeBrand().All()
+    items = make([]model.SelectOption, len(brands))
+    for i, b := range brands {
+        items[i] = model.SelectOption{
+            Value: b.ID,
+            Label: b.Name,
+        }
     }
     return
 }

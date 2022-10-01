@@ -164,6 +164,7 @@ func loadManagerRoutes() {
     g.GET("/selection/cabinetmodel", mapi.Selection.CabinetModel)
     g.GET("/selection/model", mapi.Selection.Model)
     g.GET("/selection/coupon/template", mapi.Selection.CouponTemplate)
+    g.GET("/selection/ebike/brand", mapi.Selection.EbikeBrand)
 
     // 救援
     g.GET("/assistance", mapi.Assistance.List)
@@ -212,4 +213,8 @@ func loadManagerRoutes() {
     g.GET("/ebike/brand", mapi.Ebike.BrandList)
     g.POST("/ebike/brand", mapi.Ebike.BrandCreate)
     g.PUT("/ebike/brand/:id", mapi.Ebike.BrandModify)
+    g.GET("/ebike", mapi.Ebike.List)
+    g.POST("/ebike", mapi.Ebike.Create)
+    g.PUT("/ebike/:id", mapi.Ebike.Modify)
+    g.POST("/ebike/batch", mapi.Ebike.BatchCreate)
 }
