@@ -10,7 +10,11 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/planintroduce"
+    "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
+    "sort"
+    "strings"
 )
 
 type planIntroduceService struct {
@@ -20,9 +24,38 @@ type planIntroduceService struct {
 
 func NewPlanIntroduce(params ...any) *planIntroduceService {
     return &planIntroduceService{
-        BaseService: NewService(params...),
+        BaseService: newService(params...),
         orm:         ent.Database.PlanIntroduce,
     }
+}
+
+func (s *planIntroduceService) Query(id uint64) (*ent.PlanIntroduce, error) {
+    q := s.orm.Query().Where(planintroduce.ID(id))
+    return q.First(s.ctx)
+}
+
+func (s *planIntroduceService) QueryX(id uint64) *ent.PlanIntroduce {
+    intro, _ := s.Query(id)
+    if intro == nil {
+        snag.Panic("未找到介绍")
+    }
+    return intro
+}
+
+func (s *planIntroduceService) QueryModelBrand(req model.PlanIntroduceQuery) (*ent.PlanIntroduce, error) {
+    q := s.orm.Query().Where(planintroduce.Model(req.Model))
+    if req.EbikeBrandID != nil {
+        q.Where(planintroduce.BrandID(*req.EbikeBrandID))
+    }
+    return q.First(s.ctx)
+}
+
+func (s *planIntroduceService) QueryModelBrandX(req model.PlanIntroduceQuery) *ent.PlanIntroduce {
+    intro, _ := s.QueryModelBrand(req)
+    if intro == nil {
+        snag.Panic("未找到介绍")
+    }
+    return intro
 }
 
 // Key 获取简介Key
@@ -65,6 +98,7 @@ func (s *planIntroduceService) Notset() (res []model.PlanIntroduceOption) {
     for _, v := range m {
         var k string
         var b *model.PlanIntroduceEbike
+
         switch o := v.(type) {
         case string:
             k = o
@@ -74,14 +108,17 @@ func (s *planIntroduceService) Notset() (res []model.PlanIntroduceOption) {
         }
         rv, ok := r[k]
         if !ok {
+            _, notSet := m[k]
             rv = &model.PlanIntroduceOption{
-                Model:  k,
-                Brands: make([]model.EbikeBrand, 0),
+                Model:       k,
+                EbikeBrands: make([]model.EbikeBrand, 0),
+                ModelSet:    !notSet,
             }
             r[k] = rv
         }
+
         if b != nil {
-            rv.Brands = append(rv.Brands, model.EbikeBrand{
+            rv.EbikeBrands = append(rv.EbikeBrands, model.EbikeBrand{
                 ID:   b.ID,
                 Name: b.Name,
             })
@@ -92,5 +129,45 @@ func (s *planIntroduceService) Notset() (res []model.PlanIntroduceOption) {
         res = append(res, *o)
     }
 
+    sort.Slice(res, func(i, j int) bool {
+        return strings.Compare(res[i].Model, res[j].Model) < 0
+    })
+
     return res
+}
+
+func (s *planIntroduceService) List() (res []model.PlanIntroduce) {
+    items, _ := s.orm.Query().WithBrand().All(s.ctx)
+    res = make([]model.PlanIntroduce, len(items))
+    for i, item := range items {
+        res[i] = model.PlanIntroduce{
+            ID:    item.ID,
+            Model: item.Model,
+            Image: item.Image,
+        }
+        b := item.Edges.Brand
+        if b != nil {
+            res[i].EbikeBrand = &model.EbikeBrand{
+                ID:   b.ID,
+                Name: b.Name,
+            }
+        }
+    }
+    return
+}
+
+func (s *planIntroduceService) Create(req *model.PlanIntroduceCreateReq) {
+    // 查找是否重复
+    b, _ := s.QueryModelBrand(model.PlanIntroduceQuery{
+        EbikeBrandID: req.EbikeBrandID,
+        Model:        req.Model,
+    })
+    if b != nil {
+        snag.Panic("此条已设置过")
+    }
+    s.orm.Create().SetNillableBrandID(req.EbikeBrandID).SetImage(req.Image).SetModel(req.Model).ExecX(s.ctx)
+}
+
+func (s *planIntroduceService) Modify(req *model.PlanIntroduceModifyReq) {
+    s.QueryX(req.ID).Update().SetImage(req.Image).ExecX(s.ctx)
 }

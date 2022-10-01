@@ -3813,9 +3813,36 @@ definitions:
     required:
     - enable
     type: object
+  model.PlanIntroduce:
+    properties:
+      ebikeBrand:
+        allOf:
+        - $ref: '#/definitions/model.EbikeBrand'
+      id:
+        type: integer
+      image:
+        type: string
+      model:
+        type: string
+    type: object
+  model.PlanIntroduceCreateReq:
+    properties:
+      ebikeBrandId:
+        description: 电车
+        type: integer
+      image:
+        description: 图片
+        type: string
+      model:
+        description: 电池型号
+        type: string
+    required:
+    - image
+    - model
+    type: object
   model.PlanIntroduceOption:
     properties:
-      brands:
+      ebikeBrands:
         description: 该电池型号未设置的电车品牌
         items:
           $ref: '#/definitions/model.EbikeBrand'
@@ -3823,6 +3850,9 @@ definitions:
       model:
         description: 未设定的电池型号
         type: string
+      modelSet:
+        description: 单电池是否设置, 仅值为`false`的时候才可设置单电
+        type: boolean
     type: object
   model.PlanWithComplexes:
     properties:
@@ -10665,10 +10695,91 @@ paths:
       summary: M6002 上下架骑士卡
       tags:
       - '[M]管理接口'
+  /manager/v1/plan/introduce:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerPlanIntroduceList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.PlanIntroduce'
+            type: array
+      summary: M6006 获取车电介绍
+      tags:
+      - '[M]管理接口'
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerPlanIntroduceCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 介绍详情
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.PlanIntroduceCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M6007 创建车电介绍
+      tags:
+      - '[M]管理接口'
+    put:
+      consumes:
+      - application/json
+      operationId: ManagerPlanIntroduceModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 介绍ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 介绍图片
+        in: body
+        name: image
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M6008 修改车电介绍
+      tags:
+      - '[M]管理接口'
   /manager/v1/plan/introduce/notset:
     get:
       consumes:
       - application/json
+      description: '介绍分两种: 1.单电 2.车电. 但无论哪种, 电池型号必选'
       operationId: ManagerPlanIntroduceNotset
       parameters:
       - description: 管理员校验token

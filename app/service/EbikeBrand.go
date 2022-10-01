@@ -19,7 +19,7 @@ type ebikeBrandService struct {
 
 func NewEbikeBrand(params ...any) *ebikeBrandService {
     return &ebikeBrandService{
-        BaseService: NewService(params...),
+        BaseService: newService(params...),
         orm:         ent.Database.EbikeBrand,
     }
 }

@@ -88,6 +88,7 @@ func (*plan) List(c echo.Context) (err error) {
 // @ID           ManagerPlanIntroduceNotset
 // @Router       /manager/v1/plan/introduce/notset [GET]
 // @Summary      M6005 获取未设定介绍的车电型号
+// @Description  介绍分两种: 1.单电 2.车电. 但无论哪种, 电池型号必选
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -96,4 +97,51 @@ func (*plan) List(c echo.Context) (err error) {
 func (*plan) IntroduceNotset(c echo.Context) (err error) {
     ctx := app.Context(c)
     return ctx.SendResponse(service.NewPlanIntroduce().Notset())
+}
+
+// IntroduceList
+// @ID           ManagerPlanIntroduceList
+// @Router       /manager/v1/plan/introduce [GET]
+// @Summary      M6006 获取车电介绍
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Success      200  {object}  []model.PlanIntroduce  "请求成功"
+func (*plan) IntroduceList(c echo.Context) (err error) {
+    ctx := app.Context(c)
+    return ctx.SendResponse(service.NewPlanIntroduce().List())
+}
+
+// IntroduceCreate
+// @ID           ManagerPlanIntroduceCreate
+// @Router       /manager/v1/plan/introduce [POST]
+// @Summary      M6007 创建车电介绍
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body     model.PlanIntroduceCreateReq  true  "介绍详情"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*plan) IntroduceCreate(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.PlanIntroduceCreateReq](c)
+    service.NewPlanIntroduce(ctx.Modifier).Create(req)
+    return ctx.SendResponse()
+}
+
+// IntroduceModify
+// @ID           ManagerPlanIntroduceModify
+// @Router       /manager/v1/plan/introduce [PUT]
+// @Summary      M6008 修改车电介绍
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        id     path  uint64  true  "介绍ID"
+// @Param        image  body  string  true  "介绍图片"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*plan) IntroduceModify(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.PlanIntroduceModifyReq](c)
+    service.NewPlanIntroduce(ctx.Modifier).Modify(req)
+    return ctx.SendResponse()
 }

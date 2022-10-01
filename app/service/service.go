@@ -18,7 +18,7 @@ type BaseService struct {
     employee *model.Employee
 }
 
-func NewService(params ...any) (bs *BaseService) {
+func newService(params ...any) (bs *BaseService) {
     bs = &BaseService{}
     ctx := context.Background()
     for _, param := range params {
