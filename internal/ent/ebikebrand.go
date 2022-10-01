@@ -32,6 +32,8 @@ type EbikeBrand struct {
 	Remark string `json:"remark,omitempty"`
 	// 名称
 	Name string `json:"name,omitempty"`
+	// 封面缩略图
+	Cover string `json:"cover,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -43,7 +45,7 @@ func (*EbikeBrand) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case ebikebrand.FieldID:
 			values[i] = new(sql.NullInt64)
-		case ebikebrand.FieldRemark, ebikebrand.FieldName:
+		case ebikebrand.FieldRemark, ebikebrand.FieldName, ebikebrand.FieldCover:
 			values[i] = new(sql.NullString)
 		case ebikebrand.FieldCreatedAt, ebikebrand.FieldUpdatedAt, ebikebrand.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -115,6 +117,12 @@ func (eb *EbikeBrand) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				eb.Name = value.String
 			}
+		case ebikebrand.FieldCover:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field cover", values[i])
+			} else if value.Valid {
+				eb.Cover = value.String
+			}
 		}
 	}
 	return nil
@@ -165,6 +173,9 @@ func (eb *EbikeBrand) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(eb.Name)
+	builder.WriteString(", ")
+	builder.WriteString("cover=")
+	builder.WriteString(eb.Cover)
 	builder.WriteByte(')')
 	return builder.String()
 }

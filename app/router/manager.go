@@ -207,4 +207,9 @@ func loadManagerRoutes() {
     g.GET("/coupon/assembly", mapi.Coupon.Assembly)
     g.GET("/coupon", mapi.Coupon.List)
     g.POST("/coupon/allocate", mapi.Coupon.Allocate)
+
+    // 电车
+    g.GET("/ebike/brand", mapi.Ebike.BrandList)
+    g.POST("/ebike/brand", mapi.Ebike.BrandCreate)
+    g.PUT("/ebike/brand/:id", mapi.Ebike.BrandModify)
 }

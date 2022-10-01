@@ -29,6 +29,7 @@ type EbikeBrandMutation struct {
 	last_modifier **model.Modifier
 	remark        *string
 	name          *string
+	cover         *string
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*EbikeBrand, error)
@@ -437,6 +438,42 @@ func (m *EbikeBrandMutation) ResetName() {
 	m.name = nil
 }
 
+// SetCover sets the "cover" field.
+func (m *EbikeBrandMutation) SetCover(s string) {
+	m.cover = &s
+}
+
+// Cover returns the value of the "cover" field in the mutation.
+func (m *EbikeBrandMutation) Cover() (r string, exists bool) {
+	v := m.cover
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCover returns the old "cover" field's value of the EbikeBrand entity.
+// If the EbikeBrand object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EbikeBrandMutation) OldCover(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCover is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCover requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCover: %w", err)
+	}
+	return oldValue.Cover, nil
+}
+
+// ResetCover resets all changes to the "cover" field.
+func (m *EbikeBrandMutation) ResetCover() {
+	m.cover = nil
+}
+
 // Where appends a list predicates to the EbikeBrandMutation builder.
 func (m *EbikeBrandMutation) Where(ps ...predicate.EbikeBrand) {
 	m.predicates = append(m.predicates, ps...)
@@ -456,7 +493,7 @@ func (m *EbikeBrandMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EbikeBrandMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, ebikebrand.FieldCreatedAt)
 	}
@@ -477,6 +514,9 @@ func (m *EbikeBrandMutation) Fields() []string {
 	}
 	if m.name != nil {
 		fields = append(fields, ebikebrand.FieldName)
+	}
+	if m.cover != nil {
+		fields = append(fields, ebikebrand.FieldCover)
 	}
 	return fields
 }
@@ -500,6 +540,8 @@ func (m *EbikeBrandMutation) Field(name string) (ent.Value, bool) {
 		return m.Remark()
 	case ebikebrand.FieldName:
 		return m.Name()
+	case ebikebrand.FieldCover:
+		return m.Cover()
 	}
 	return nil, false
 }
@@ -523,6 +565,8 @@ func (m *EbikeBrandMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldRemark(ctx)
 	case ebikebrand.FieldName:
 		return m.OldName(ctx)
+	case ebikebrand.FieldCover:
+		return m.OldCover(ctx)
 	}
 	return nil, fmt.Errorf("unknown EbikeBrand field %s", name)
 }
@@ -580,6 +624,13 @@ func (m *EbikeBrandMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case ebikebrand.FieldCover:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCover(v)
 		return nil
 	}
 	return fmt.Errorf("unknown EbikeBrand field %s", name)
@@ -677,6 +728,9 @@ func (m *EbikeBrandMutation) ResetField(name string) error {
 		return nil
 	case ebikebrand.FieldName:
 		m.ResetName()
+		return nil
+	case ebikebrand.FieldCover:
+		m.ResetCover()
 		return nil
 	}
 	return fmt.Errorf("unknown EbikeBrand field %s", name)

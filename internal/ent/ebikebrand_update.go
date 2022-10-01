@@ -94,6 +94,12 @@ func (ebu *EbikeBrandUpdate) SetName(s string) *EbikeBrandUpdate {
 	return ebu
 }
 
+// SetCover sets the "cover" field.
+func (ebu *EbikeBrandUpdate) SetCover(s string) *EbikeBrandUpdate {
+	ebu.mutation.SetCover(s)
+	return ebu
+}
+
 // Mutation returns the EbikeBrandMutation object of the builder.
 func (ebu *EbikeBrandUpdate) Mutation() *EbikeBrandMutation {
 	return ebu.mutation
@@ -251,6 +257,13 @@ func (ebu *EbikeBrandUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: ebikebrand.FieldName,
 		})
 	}
+	if value, ok := ebu.mutation.Cover(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: ebikebrand.FieldCover,
+		})
+	}
 	_spec.Modifiers = ebu.modifiers
 	if n, err = sqlgraph.UpdateNodes(ctx, ebu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -333,6 +346,12 @@ func (ebuo *EbikeBrandUpdateOne) ClearRemark() *EbikeBrandUpdateOne {
 // SetName sets the "name" field.
 func (ebuo *EbikeBrandUpdateOne) SetName(s string) *EbikeBrandUpdateOne {
 	ebuo.mutation.SetName(s)
+	return ebuo
+}
+
+// SetCover sets the "cover" field.
+func (ebuo *EbikeBrandUpdateOne) SetCover(s string) *EbikeBrandUpdateOne {
+	ebuo.mutation.SetCover(s)
 	return ebuo
 }
 
@@ -521,6 +540,13 @@ func (ebuo *EbikeBrandUpdateOne) sqlSave(ctx context.Context) (_node *EbikeBrand
 			Type:   field.TypeString,
 			Value:  value,
 			Column: ebikebrand.FieldName,
+		})
+	}
+	if value, ok := ebuo.mutation.Cover(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: ebikebrand.FieldCover,
 		})
 	}
 	_spec.Modifiers = ebuo.modifiers

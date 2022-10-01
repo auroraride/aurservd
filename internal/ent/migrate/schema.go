@@ -1172,7 +1172,8 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
-		{Name: "name", Type: field.TypeString, Comment: "名称"},
+		{Name: "name", Type: field.TypeString, Unique: true, Comment: "名称"},
+		{Name: "cover", Type: field.TypeString, Comment: "封面缩略图"},
 	}
 	// EbikeBrandTable holds the schema information for the "ebike_brand" table.
 	EbikeBrandTable = &schema.Table{
@@ -1189,16 +1190,6 @@ var (
 				Name:    "ebikebrand_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{EbikeBrandColumns[3]},
-			},
-			{
-				Name:    "ebikebrand_name",
-				Unique:  false,
-				Columns: []*schema.Column{EbikeBrandColumns[7]},
-				Annotation: &entsql.IndexAnnotation{
-					Types: map[string]string{
-						"postgres": "GIN",
-					},
-				},
 			},
 		},
 	}

@@ -2616,9 +2616,34 @@ definitions:
     type: object
   model.EbikeBrand:
     properties:
+      cover:
+        description: 封面图
+        type: string
       id:
         type: integer
       name:
+        description: 名称
+        type: string
+    type: object
+  model.EbikeBrandCreateReq:
+    properties:
+      cover:
+        description: 封面图
+        type: string
+      name:
+        description: 名称
+        type: string
+    required:
+    - cover
+    - name
+    type: object
+  model.EbikeBrandModifyReq:
+    properties:
+      cover:
+        description: 封面图
+        type: string
+      name:
+        description: 名称
         type: string
     type: object
   model.Employee:
@@ -8809,6 +8834,87 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M7009 修改押金
+      tags:
+      - '[M]管理接口'
+  /manager/v1/ebike/brand:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerEbikeBrandList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.EbikeBrand'
+            type: array
+      summary: MI001 品牌列表
+      tags:
+      - '[M]管理接口'
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerEbikeBrandCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 品牌详情
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.EbikeBrandCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: MI002 创建品牌
+      tags:
+      - '[M]管理接口'
+  /manager/v1/ebike/brand/:id:
+    put:
+      consumes:
+      - application/json
+      operationId: ManagerEbikeBrandModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 品牌ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 品牌详情
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.EbikeBrandModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: MI003 修改品牌
       tags:
       - '[M]管理接口'
   /manager/v1/emoloyee/enable:

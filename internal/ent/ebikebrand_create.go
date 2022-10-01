@@ -97,6 +97,12 @@ func (ebc *EbikeBrandCreate) SetName(s string) *EbikeBrandCreate {
 	return ebc
 }
 
+// SetCover sets the "cover" field.
+func (ebc *EbikeBrandCreate) SetCover(s string) *EbikeBrandCreate {
+	ebc.mutation.SetCover(s)
+	return ebc
+}
+
 // Mutation returns the EbikeBrandMutation object of the builder.
 func (ebc *EbikeBrandCreate) Mutation() *EbikeBrandMutation {
 	return ebc.mutation
@@ -204,6 +210,9 @@ func (ebc *EbikeBrandCreate) check() error {
 	if _, ok := ebc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "EbikeBrand.name"`)}
 	}
+	if _, ok := ebc.mutation.Cover(); !ok {
+		return &ValidationError{Name: "cover", err: errors.New(`ent: missing required field "EbikeBrand.cover"`)}
+	}
 	return nil
 }
 
@@ -287,6 +296,14 @@ func (ebc *EbikeBrandCreate) createSpec() (*EbikeBrand, *sqlgraph.CreateSpec) {
 			Column: ebikebrand.FieldName,
 		})
 		_node.Name = value
+	}
+	if value, ok := ebc.mutation.Cover(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: ebikebrand.FieldCover,
+		})
+		_node.Cover = value
 	}
 	return _node, _spec
 }
@@ -415,6 +432,18 @@ func (u *EbikeBrandUpsert) SetName(v string) *EbikeBrandUpsert {
 // UpdateName sets the "name" field to the value that was provided on create.
 func (u *EbikeBrandUpsert) UpdateName() *EbikeBrandUpsert {
 	u.SetExcluded(ebikebrand.FieldName)
+	return u
+}
+
+// SetCover sets the "cover" field.
+func (u *EbikeBrandUpsert) SetCover(v string) *EbikeBrandUpsert {
+	u.Set(ebikebrand.FieldCover, v)
+	return u
+}
+
+// UpdateCover sets the "cover" field to the value that was provided on create.
+func (u *EbikeBrandUpsert) UpdateCover() *EbikeBrandUpsert {
+	u.SetExcluded(ebikebrand.FieldCover)
 	return u
 }
 
@@ -554,6 +583,20 @@ func (u *EbikeBrandUpsertOne) SetName(v string) *EbikeBrandUpsertOne {
 func (u *EbikeBrandUpsertOne) UpdateName() *EbikeBrandUpsertOne {
 	return u.Update(func(s *EbikeBrandUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetCover sets the "cover" field.
+func (u *EbikeBrandUpsertOne) SetCover(v string) *EbikeBrandUpsertOne {
+	return u.Update(func(s *EbikeBrandUpsert) {
+		s.SetCover(v)
+	})
+}
+
+// UpdateCover sets the "cover" field to the value that was provided on create.
+func (u *EbikeBrandUpsertOne) UpdateCover() *EbikeBrandUpsertOne {
+	return u.Update(func(s *EbikeBrandUpsert) {
+		s.UpdateCover()
 	})
 }
 
@@ -855,6 +898,20 @@ func (u *EbikeBrandUpsertBulk) SetName(v string) *EbikeBrandUpsertBulk {
 func (u *EbikeBrandUpsertBulk) UpdateName() *EbikeBrandUpsertBulk {
 	return u.Update(func(s *EbikeBrandUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetCover sets the "cover" field.
+func (u *EbikeBrandUpsertBulk) SetCover(v string) *EbikeBrandUpsertBulk {
+	return u.Update(func(s *EbikeBrandUpsert) {
+		s.SetCover(v)
+	})
+}
+
+// UpdateCover sets the "cover" field to the value that was provided on create.
+func (u *EbikeBrandUpsertBulk) UpdateCover() *EbikeBrandUpsertBulk {
+	return u.Update(func(s *EbikeBrandUpsert) {
+		s.UpdateCover()
 	})
 }
 

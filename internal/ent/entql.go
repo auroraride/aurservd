@@ -512,6 +512,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			ebikebrand.FieldLastModifier: {Type: field.TypeJSON, Column: ebikebrand.FieldLastModifier},
 			ebikebrand.FieldRemark:       {Type: field.TypeString, Column: ebikebrand.FieldRemark},
 			ebikebrand.FieldName:         {Type: field.TypeString, Column: ebikebrand.FieldName},
+			ebikebrand.FieldCover:        {Type: field.TypeString, Column: ebikebrand.FieldCover},
 		},
 	}
 	graph.Nodes[16] = &sqlgraph.Node{
@@ -6186,6 +6187,11 @@ func (f *EbikeBrandFilter) WhereRemark(p entql.StringP) {
 // WhereName applies the entql string predicate on the name field.
 func (f *EbikeBrandFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(ebikebrand.FieldName))
+}
+
+// WhereCover applies the entql string predicate on the cover field.
+func (f *EbikeBrandFilter) WhereCover(p entql.StringP) {
+	f.Where(p.Field(ebikebrand.FieldCover))
 }
 
 // addPredicate implements the predicateAdder interface.

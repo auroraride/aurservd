@@ -41,9 +41,25 @@ func (s *ebikeBrandService) All() []model.EbikeBrand {
     items := make([]model.EbikeBrand, len(brands))
     for i, b := range brands {
         items[i] = model.EbikeBrand{
-            ID:   b.ID,
-            Name: b.Name,
+            ID:    b.ID,
+            Name:  b.Name,
+            Cover: b.Cover,
         }
     }
     return items
+}
+
+func (s *ebikeBrandService) Create(req *model.EbikeBrandCreateReq) {
+    s.orm.Create().SetName(req.Name).SetCover(req.Cover).ExecX(s.ctx)
+}
+
+func (s *ebikeBrandService) Modify(req *model.EbikeBrandModifyReq) {
+    updater := s.orm.Update().Where(ebikebrand.ID(req.ID))
+    if req.Name != "" {
+        updater.SetName(req.Name)
+    }
+    if req.Cover != "" {
+        updater.SetCover(req.Cover)
+    }
+    updater.ExecX(s.ctx)
 }
