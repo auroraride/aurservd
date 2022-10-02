@@ -16,6 +16,8 @@ import (
     "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/labstack/echo/v4"
+    "strings"
 )
 
 type ebikeService struct {
@@ -173,5 +175,54 @@ func (s *ebikeService) Modify(req *model.EbikeModifyReq) {
         ExecX(s.ctx)
 }
 
-func (s *ebikeService) BatchCreate() {
+func (s *ebikeService) BatchCreate(c echo.Context) (failed []string) {
+    rows := s.BaseService.GetXlsxDataX(c)
+    if len(rows) < 2 {
+        snag.Panic("至少有一条车辆信息")
+    }
+    // 获取所有型号
+    brands := NewEbikeBrand().All()
+    bm := make(map[string]uint64)
+    for _, brand := range brands {
+        bm[brand.Name] = brand.ID
+    }
+
+    s.orm.CreateBulk()
+    var bulk []*ent.EbikeCreate
+
+    // 型号:brand(需查询) 车架号:sn 生产批次:exFactory 车牌号:plate 终端编号:machine SIM卡:sim 颜色:color
+    for _, columns := range rows {
+        if len(columns) != 7 {
+            failed = append(failed, strings.Join(columns, ","))
+        }
+
+        bid, ok := bm[columns[0]]
+        if !ok {
+            failed = append(failed, strings.Join(columns, ","))
+        }
+
+        creater := s.orm.Create().SetBrandID(bid).SetSn(columns[1]).SetExFactory(columns[2]).SetRemark("批量导入")
+        if columns[3] != "" {
+            creater.SetPlate(columns[3])
+        }
+        if columns[4] != "" {
+            creater.SetMachine(columns[4])
+        }
+        if columns[5] != "" {
+            creater.SetSim(columns[5])
+        }
+        color := model.EbikeColorDefault
+        if columns[6] != "" {
+            color = columns[6]
+        }
+        creater.SetColor(color)
+
+        bulk = append(bulk, creater)
+    }
+
+    if len(failed) > 0 {
+        return
+    }
+
+    return nil
 }

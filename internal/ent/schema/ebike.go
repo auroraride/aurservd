@@ -68,7 +68,7 @@ func (Ebike) Fields() []ent.Field {
         field.String("plate").Unique().Optional().Nillable().Comment("车牌号"),
         field.String("machine").Unique().Optional().Nillable().Comment("终端编号"),
         field.String("sim").Unique().Optional().Nillable().Comment("SIM卡号"),
-        field.String("color").Default("橘黄").Comment("颜色"),
+        field.String("color").Default(model.EbikeColorDefault).Comment("颜色"),
         field.String("ex_factory").Comment("生产批次(出厂日期)"),
     }
 }

@@ -121,6 +121,6 @@ func (*ebike) Modify(c echo.Context) (err error) {
 // @Param        file  formData  file  true  "电车信息"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*ebike) BatchCreate(c echo.Context) (err error) {
-    ctx := app.Context(c)
-    return ctx.SendResponse()
+    ctx := app.ContextX[app.ManagerContext](c)
+    return ctx.SendResponse(service.NewEbike(ctx.Modifier).BatchCreate(ctx.Context))
 }

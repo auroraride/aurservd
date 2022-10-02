@@ -10,6 +10,10 @@ import (
     "github.com/auroraride/aurservd/app/model/types"
 )
 
+const (
+    EbikeColorDefault = "橘黄"
+)
+
 type EbikeStatus uint8
 
 const (
