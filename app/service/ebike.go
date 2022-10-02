@@ -114,7 +114,10 @@ func (s *ebikeService) List(req *model.EbikeListReq) *model.PaginationRes {
         er := item.Edges.Rider
         es := item.Edges.Store
         res := model.EbikeListRes{
-            ID: item.ID,
+            ID:        item.ID,
+            SN:        item.Sn,
+            BrandID:   item.BrandID,
+            ExFactory: item.ExFactory,
             EbikeAttributes: model.EbikeAttributes{
                 Enable:  silk.Pointer(item.Enable),
                 Plate:   item.Plate,
@@ -122,7 +125,6 @@ func (s *ebikeService) List(req *model.EbikeListReq) *model.PaginationRes {
                 Sim:     item.Sim,
                 Color:   silk.Pointer(item.Color),
             },
-            ExFactory: item.ExFactory,
         }
         if eb != nil {
             res.Brand = eb.Name
@@ -176,8 +178,8 @@ func (s *ebikeService) Modify(req *model.EbikeModifyReq) {
 }
 
 func (s *ebikeService) BatchCreate(c echo.Context) (failed []string) {
-    rows := s.BaseService.GetXlsxDataX(c)
-    if len(rows) < 2 {
+    xlsx := s.BaseService.GetXlsxDataX(c)
+    if len(xlsx) < 2 {
         snag.Panic("至少有一条车辆信息")
     }
     // 获取所有型号
@@ -188,41 +190,66 @@ func (s *ebikeService) BatchCreate(c echo.Context) (failed []string) {
     }
 
     s.orm.CreateBulk()
-    var bulk []*ent.EbikeCreate
+
+    failed = make([]string, 0)
+
+    // 轮询一遍去重
+    var sns []string
+    var rows [][]string
+    for _, columns := range xlsx[1:] {
+        if len(columns) < 3 {
+            failed = append(failed, fmt.Sprintf("格式错误:%s", strings.Join(columns, ",")))
+            continue
+        }
+        sns = append(sns, columns[1])
+        rows = append(rows, columns)
+    }
+
+    arr, _ := s.orm.Query().Where(ebike.SnIn(sns...)).All(s.ctx)
+    exists := make(map[string]bool)
+    for _, a := range arr {
+        exists[a.Sn] = true
+    }
 
     // 型号:brand(需查询) 车架号:sn 生产批次:exFactory 车牌号:plate 终端编号:machine SIM卡:sim 颜色:color
     for _, columns := range rows {
-        if len(columns) != 7 {
-            failed = append(failed, strings.Join(columns, ","))
-        }
 
         bid, ok := bm[columns[0]]
         if !ok {
-            failed = append(failed, strings.Join(columns, ","))
+            failed = append(failed, fmt.Sprintf("型号未找到:%s", strings.Join(columns, ",")))
+            continue
+        }
+
+        if _, ok := exists[columns[1]]; ok {
+            failed = append(failed, fmt.Sprintf("车架号重复:%s", strings.Join(columns, ",")))
+            continue
         }
 
         creater := s.orm.Create().SetBrandID(bid).SetSn(columns[1]).SetExFactory(columns[2]).SetRemark("批量导入")
-        if columns[3] != "" {
+        if len(columns) > 3 {
             creater.SetPlate(columns[3])
         }
-        if columns[4] != "" {
+        if len(columns) > 4 {
             creater.SetMachine(columns[4])
         }
-        if columns[5] != "" {
+        if len(columns) > 5 {
             creater.SetSim(columns[5])
         }
         color := model.EbikeColorDefault
-        if columns[6] != "" {
-            color = columns[6]
+        if len(columns) > 6 {
+            color = strings.ReplaceAll(columns[6], "色", "")
         }
         creater.SetColor(color)
 
-        bulk = append(bulk, creater)
+        err := creater.Exec(s.ctx)
+        if err != nil {
+            msg := "保存失败"
+            if strings.Contains(err.Error(), "duplicate key value") {
+                msg = "有重复项"
+            }
+            failed = append(failed, fmt.Sprintf("%s:%s", msg, strings.Join(columns, ",")))
+        }
     }
 
-    if len(failed) > 0 {
-        return
-    }
-
-    return nil
+    return
 }
