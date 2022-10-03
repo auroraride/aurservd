@@ -25,11 +25,10 @@ var Stock = new(stock)
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        body  body     model.StockTransferReq  true  "desc"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @Success      200  {object}  []string  "请求成功"
 func (*stock) Create(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.StockTransferReq](c)
-    service.NewStockWithModifier(ctx.Modifier).Transfer(req)
-    return ctx.SendResponse()
+    return ctx.SendResponse(service.NewStockWithModifier(ctx.Modifier).Transfer(req))
 }
 
 // BatteryOverview

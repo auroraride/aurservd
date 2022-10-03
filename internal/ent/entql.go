@@ -1201,6 +1201,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			stock.FieldModel:        {Type: field.TypeString, Column: stock.FieldModel},
 			stock.FieldNum:          {Type: field.TypeInt, Column: stock.FieldNum},
 			stock.FieldMaterial:     {Type: field.TypeEnum, Column: stock.FieldMaterial},
+			stock.FieldEbikeSn:      {Type: field.TypeString, Column: stock.FieldEbikeSn},
 		},
 	}
 	graph.Nodes[42] = &sqlgraph.Node{
@@ -10189,6 +10190,11 @@ func (f *StockFilter) WhereNum(p entql.IntP) {
 // WhereMaterial applies the entql string predicate on the material field.
 func (f *StockFilter) WhereMaterial(p entql.StringP) {
 	f.Where(p.Field(stock.FieldMaterial))
+}
+
+// WhereEbikeSn applies the entql string predicate on the ebike_sn field.
+func (f *StockFilter) WhereEbikeSn(p entql.StringP) {
+	f.Where(p.Field(stock.FieldEbikeSn))
 }
 
 // WhereHasCity applies a predicate to check if query has an edge city.

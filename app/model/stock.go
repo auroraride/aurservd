@@ -5,6 +5,19 @@
 
 package model
 
+import (
+    "errors"
+    "github.com/auroraride/aurservd/internal/ent/stock"
+    "strings"
+)
+
+const (
+    StockNameEbike = "电车"
+    // StockMaterialOthers  = "others"
+    // StockMaterialBattery = "battery"
+    // StockMaterialEbike   = "ebike"
+)
+
 const (
     StockTypeTransfer         uint8 = iota // 调拨 (出库入库)
     StockTypeRiderActive                   // 骑手领取电池 (出库)
@@ -42,11 +55,21 @@ func StockNumberOfRiderBusiness(typ uint8) (num int) {
     return
 }
 
+type StockTransferLoopper struct {
+    Message string // 错误提示消息
+
+    EbikeID *uint64 // 电车ID
+    EbikeSN *string // 车架号
+}
+
 type StockTransferReq struct {
-    Model  string  `json:"model,omitempty"`            // 电池型号 (和`物资名称`不能同时存在, 也不能同时为空)
-    Name   string  `json:"name,omitempty"`             // 物资名称 (和`电池型号`不能同时存在, 也不能同时为空)
-    Num    int     `json:"num" validate:"required"`    // 调拨数量
-    Remark *string `json:"remark" validate:"required"` // 备注
+    Model string `json:"model,omitempty"` // 电池型号 (和 `物资名称` / `车架` 不能同时存在, 也不能同时为空)
+    Name  string `json:"name,omitempty"`  // 物资名称 (和 `电池型号` / `车架` 不能同时存在, 也不能同时为空)
+    Num   int    `json:"num"`             // 调拨数量
+
+    Ebikes []string `json:"ebikes,omitempty"` // 车架编号 (和 `物资名称` / `车架` 不能同时存在, 也不能同时为空)
+
+    Remark string `json:"remark" validate:"required" trans:"备注"`
 
     OutboundID     uint64 `json:"outboundId"`                   // 调出自 0:平台
     OutboundTarget uint8  `json:"outboundTarget" enums:"0,1,2"` // 调出目标 0:平台 1:门店 2:电柜
@@ -54,6 +77,119 @@ type StockTransferReq struct {
     InboundTarget  uint8  `json:"inboundTarget" enums:"0,1,2"`  // 调入目标 0:平台 1:门店 2:电柜
 
     Force bool `swaggerignore:"true"` // 是否强制 (忽略电柜初始化)
+}
+
+func (req *StockTransferReq) IsToStore() bool {
+    return req.InboundTarget == StockTargetStore
+}
+
+func (req *StockTransferReq) IsFromStore() bool {
+    return req.OutboundTarget == StockTargetStore
+}
+
+func (req *StockTransferReq) IsToCabinet() bool {
+    return req.InboundTarget == StockTargetCabinet
+}
+
+func (req *StockTransferReq) IsFromCabinet() bool {
+    return req.OutboundTarget == StockTargetCabinet
+}
+
+func (req *StockTransferReq) IsToPlaform() bool {
+    return req.InboundTarget == StockTargetPlaform
+}
+
+func (req *StockTransferReq) IsFromPlaform() bool {
+    return req.OutboundTarget == StockTargetPlaform
+}
+
+func (req *StockTransferReq) Batchable() bool {
+    return len(req.Ebikes) == 0
+}
+
+// ParticipateCabinet 是否有电柜参与
+func (req *StockTransferReq) ParticipateCabinet() bool {
+    return req.IsFromCabinet() || req.IsToCabinet()
+}
+
+func (req *StockTransferReq) Material() stock.Material {
+    switch true {
+    case len(req.Ebikes) > 0:
+        return stock.MaterialEbike
+    case req.Model != "":
+        return stock.MaterialBattery
+    }
+    return stock.MaterialOthers
+}
+
+// RealNumber 获取实际物资数量
+func (req *StockTransferReq) RealNumber() int {
+    if len(req.Ebikes) > 0 {
+        return 1
+    }
+    return req.Num
+}
+
+func (req *StockTransferReq) RealName() string {
+    switch true {
+    case len(req.Ebikes) > 0:
+        return StockNameEbike
+    case req.Model != "":
+        return req.Model
+    }
+    return req.Name
+}
+
+// Validate 校验
+func (req *StockTransferReq) Validate() error {
+    var mm, meb, mo int
+    // 非智能电池
+    if req.Model != "" {
+        req.Model = strings.ToUpper(req.Model)
+        mm = 1
+    }
+    // 其他物资
+    if req.Name != "" {
+        mo = 1
+    }
+    // 电车
+    if len(req.Ebikes) > 0 {
+        meb = 1
+    }
+
+    // 运算判定物资是否正确(互斥不为空)
+    v := mm + meb + mo
+    if v != 1 {
+        return errors.New("物资选项错误")
+    }
+
+    // 校验电柜是否可参与
+    if req.Model == "" && req.ParticipateCabinet() {
+        return errors.New("电柜无法参与非电池物资调拨")
+    }
+
+    // 校验物资数量
+    if req.RealNumber() < 1 {
+        return errors.New("调拨物资数量计数错误")
+    }
+
+    if req.InboundID == 0 && req.OutboundID == 0 {
+        return errors.New("平台之间无法调拨物资")
+    }
+
+    if req.IsToCabinet() && req.IsFromCabinet() {
+        return errors.New("电柜之间无法调拨")
+    }
+
+    if ((req.IsToStore() || req.IsToCabinet()) && req.InboundID == 0) || (req.IsToPlaform() && req.InboundID != 0) {
+        return errors.New("调入参数错误")
+    }
+
+    if ((req.IsFromStore() || req.IsFromCabinet()) && req.OutboundID == 0) || (req.IsFromPlaform() && req.OutboundID != 0) {
+        return errors.New("调出参数错误")
+    }
+
+    return nil
 }
 
 type StockOverviewReq struct {

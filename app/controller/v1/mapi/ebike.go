@@ -119,7 +119,7 @@ func (*ebike) Modify(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        file  formData  file  true  "电车信息"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @Success      200  {object}   []string  "请求成功"
 func (*ebike) BatchCreate(c echo.Context) (err error) {
     ctx := app.ContextX[app.ManagerContext](c)
     return ctx.SendResponse(service.NewEbike(ctx.Modifier).BatchCreate(ctx.Context))

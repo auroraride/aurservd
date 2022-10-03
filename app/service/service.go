@@ -32,6 +32,9 @@ func newService(params ...any) (bs *BaseService) {
     bs = &BaseService{}
     ctx := context.Background()
     for _, param := range params {
+        if param == nil {
+            continue
+        }
         switch p := param.(type) {
         case *ent.Rider:
             bs.rider = &model.Rider{
@@ -68,7 +71,8 @@ func newService(params ...any) (bs *BaseService) {
 func (s *BaseService) GetXlsxDataX(c echo.Context) (rows [][]string) {
     source, err := c.FormFile("file")
     if err != nil {
-        snag.Panic("未获取到上传的文件")
+        log.Errorf("GetXlsxDataX error: %s", err)
+        snag.Panic("未获取到上传的文件: " + err.Error())
         return
     }
 

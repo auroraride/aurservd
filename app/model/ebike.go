@@ -86,6 +86,8 @@ type EbikeListRes struct {
     Rider     string `json:"rider,omitempty"` // 骑手
     Store     string `json:"store,omitempty"` // 门店
     Brand     string `json:"brand,omitempty"` // 品牌
+    SN        string `json:"sn"`              // 车架号
+    BrandID   uint64 `json:"brandId"`         // 品牌ID
 }
 
 type EbikeCreateReq struct {

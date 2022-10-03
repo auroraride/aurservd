@@ -36,6 +36,7 @@ type StockMutation struct {
 	num              *int
 	addnum           *int
 	material         *stock.Material
+	ebike_sn         *string
 	clearedFields    map[string]struct{}
 	city             *uint64
 	clearedcity      bool
@@ -1036,6 +1037,55 @@ func (m *StockMutation) ResetMaterial() {
 	m.material = nil
 }
 
+// SetEbikeSn sets the "ebike_sn" field.
+func (m *StockMutation) SetEbikeSn(s string) {
+	m.ebike_sn = &s
+}
+
+// EbikeSn returns the value of the "ebike_sn" field in the mutation.
+func (m *StockMutation) EbikeSn() (r string, exists bool) {
+	v := m.ebike_sn
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEbikeSn returns the old "ebike_sn" field's value of the Stock entity.
+// If the Stock object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StockMutation) OldEbikeSn(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEbikeSn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEbikeSn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEbikeSn: %w", err)
+	}
+	return oldValue.EbikeSn, nil
+}
+
+// ClearEbikeSn clears the value of the "ebike_sn" field.
+func (m *StockMutation) ClearEbikeSn() {
+	m.ebike_sn = nil
+	m.clearedFields[stock.FieldEbikeSn] = struct{}{}
+}
+
+// EbikeSnCleared returns if the "ebike_sn" field was cleared in this mutation.
+func (m *StockMutation) EbikeSnCleared() bool {
+	_, ok := m.clearedFields[stock.FieldEbikeSn]
+	return ok
+}
+
+// ResetEbikeSn resets all changes to the "ebike_sn" field.
+func (m *StockMutation) ResetEbikeSn() {
+	m.ebike_sn = nil
+	delete(m.clearedFields, stock.FieldEbikeSn)
+}
+
 // ClearCity clears the "city" edge to the City entity.
 func (m *StockMutation) ClearCity() {
 	m.clearedcity = true
@@ -1276,7 +1326,7 @@ func (m *StockMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StockMutation) Fields() []string {
-	fields := make([]string, 0, 19)
+	fields := make([]string, 0, 20)
 	if m.created_at != nil {
 		fields = append(fields, stock.FieldCreatedAt)
 	}
@@ -1334,6 +1384,9 @@ func (m *StockMutation) Fields() []string {
 	if m.material != nil {
 		fields = append(fields, stock.FieldMaterial)
 	}
+	if m.ebike_sn != nil {
+		fields = append(fields, stock.FieldEbikeSn)
+	}
 	return fields
 }
 
@@ -1380,6 +1433,8 @@ func (m *StockMutation) Field(name string) (ent.Value, bool) {
 		return m.Num()
 	case stock.FieldMaterial:
 		return m.Material()
+	case stock.FieldEbikeSn:
+		return m.EbikeSn()
 	}
 	return nil, false
 }
@@ -1427,6 +1482,8 @@ func (m *StockMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldNum(ctx)
 	case stock.FieldMaterial:
 		return m.OldMaterial(ctx)
+	case stock.FieldEbikeSn:
+		return m.OldEbikeSn(ctx)
 	}
 	return nil, fmt.Errorf("unknown Stock field %s", name)
 }
@@ -1569,6 +1626,13 @@ func (m *StockMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetMaterial(v)
 		return nil
+	case stock.FieldEbikeSn:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEbikeSn(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Stock field %s", name)
 }
@@ -1662,6 +1726,9 @@ func (m *StockMutation) ClearedFields() []string {
 	if m.FieldCleared(stock.FieldModel) {
 		fields = append(fields, stock.FieldModel)
 	}
+	if m.FieldCleared(stock.FieldEbikeSn) {
+		fields = append(fields, stock.FieldEbikeSn)
+	}
 	return fields
 }
 
@@ -1711,6 +1778,9 @@ func (m *StockMutation) ClearField(name string) error {
 		return nil
 	case stock.FieldModel:
 		m.ClearModel()
+		return nil
+	case stock.FieldEbikeSn:
+		m.ClearEbikeSn()
 		return nil
 	}
 	return fmt.Errorf("unknown Stock nullable field %s", name)
@@ -1776,6 +1846,9 @@ func (m *StockMutation) ResetField(name string) error {
 		return nil
 	case stock.FieldMaterial:
 		m.ResetMaterial()
+		return nil
+	case stock.FieldEbikeSn:
+		m.ResetEbikeSn()
 		return nil
 	}
 	return fmt.Errorf("unknown Stock field %s", name)

@@ -63,6 +63,8 @@ type Stock struct {
 	Num int `json:"num,omitempty"`
 	// 物资种类
 	Material stock.Material `json:"material,omitempty"`
+	// 电车编号
+	EbikeSn *string `json:"ebike_sn,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the StockQuery when eager-loading is set.
 	Edges        StockEdges `json:"edges"`
@@ -205,7 +207,7 @@ func (*Stock) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case stock.FieldID, stock.FieldCityID, stock.FieldSubscribeID, stock.FieldEbikeID, stock.FieldType, stock.FieldStoreID, stock.FieldCabinetID, stock.FieldRiderID, stock.FieldEmployeeID, stock.FieldNum:
 			values[i] = new(sql.NullInt64)
-		case stock.FieldRemark, stock.FieldSn, stock.FieldName, stock.FieldModel, stock.FieldMaterial:
+		case stock.FieldRemark, stock.FieldSn, stock.FieldName, stock.FieldModel, stock.FieldMaterial, stock.FieldEbikeSn:
 			values[i] = new(sql.NullString)
 		case stock.FieldCreatedAt, stock.FieldUpdatedAt, stock.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -359,6 +361,13 @@ func (s *Stock) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.Material = stock.Material(value.String)
 			}
+		case stock.FieldEbikeSn:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field ebike_sn", values[i])
+			} else if value.Valid {
+				s.EbikeSn = new(string)
+				*s.EbikeSn = value.String
+			}
 		case stock.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for edge-field stock_spouse", value)
@@ -508,6 +517,11 @@ func (s *Stock) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("material=")
 	builder.WriteString(fmt.Sprintf("%v", s.Material))
+	builder.WriteString(", ")
+	if v := s.EbikeSn; v != nil {
+		builder.WriteString("ebike_sn=")
+		builder.WriteString(*v)
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

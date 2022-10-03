@@ -225,23 +225,23 @@ func (s *ebikeService) BatchCreate(c echo.Context) (failed []string) {
             continue
         }
 
-        creater := s.orm.Create().SetBrandID(bid).SetSn(columns[1]).SetExFactory(columns[2]).SetRemark("批量导入")
+        creator := s.orm.Create().SetBrandID(bid).SetSn(columns[1]).SetExFactory(columns[2]).SetRemark("批量导入")
         if len(columns) > 3 {
-            creater.SetPlate(columns[3])
+            creator.SetPlate(columns[3])
         }
         if len(columns) > 4 {
-            creater.SetMachine(columns[4])
+            creator.SetMachine(columns[4])
         }
         if len(columns) > 5 {
-            creater.SetSim(columns[5])
+            creator.SetSim(columns[5])
         }
         color := model.EbikeColorDefault
         if len(columns) > 6 {
             color = strings.ReplaceAll(columns[6], "色", "")
         }
-        creater.SetColor(color)
+        creator.SetColor(color)
 
-        err := creater.Exec(s.ctx)
+        err := creator.Exec(s.ctx)
         if err != nil {
             msg := "保存失败"
             if strings.Contains(err.Error(), "duplicate key value") {

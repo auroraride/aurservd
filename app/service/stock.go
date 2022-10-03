@@ -218,186 +218,6 @@ func (s *stockService) calculate(items map[string]*model.StockMaterial, st *ent.
     items[name].Surplus += st.Num
 }
 
-// Fetch 获取对应物资库存
-// TODO 车架调拨另外做
-func (s *stockService) Fetch(target uint8, id uint64, name string) int {
-    var result []struct {
-        Sum       int    `json:"sum"`
-        StoreID   uint64 `json:"store_id"`
-        CabinetID uint64 `json:"cabinet_id"`
-    }
-
-    var idw predicate.Stock
-    switch target {
-    case model.StockTargetStore:
-        idw = stock.StoreID(id)
-        break
-    case model.StockTargetCabinet:
-        idw = stock.CabinetID(id)
-        break
-    }
-    q := s.orm.QueryNotDeleted().
-        Where(stock.Name(name), idw).
-        GroupBy(stock.FieldStoreID, stock.FieldCabinetID).
-        Aggregate(ent.Sum(stock.FieldNum))
-    err := q.Scan(s.ctx, &result)
-    if err != nil {
-        log.Error(err)
-        snag.Panic("物资数量获取失败")
-    }
-
-    if result == nil || len(result) < 0 {
-        return 0
-    }
-    return result[0].Sum
-}
-
-// Transfer 调拨
-func (s *stockService) Transfer(req *model.StockTransferReq) {
-    if req.Name == "" && req.Model == "" {
-        snag.Panic("电池型号和物资名称不能同时为空")
-    }
-    if req.Name != "" && req.Model != "" {
-        snag.Panic("电池型号和物资名称不能同时存在")
-    }
-    if req.Num <= 0 {
-        snag.Panic("调拨物资数量错误")
-    }
-    if req.InboundID == 0 && req.OutboundID == 0 {
-        snag.Panic("平台之间无法调拨物资")
-    }
-    if req.InboundTarget == model.StockTargetCabinet && req.OutboundTarget == model.StockTargetCabinet {
-        snag.Panic("电柜之间无法调拨")
-    }
-    if (req.InboundTarget == model.StockTargetStore && req.InboundID == 0) || (req.InboundTarget == model.StockTargetPlaform && req.InboundID != 0) {
-        snag.Panic("调入参数错误")
-    }
-    if (req.OutboundTarget == model.StockTargetStore && req.OutboundID == 0) || (req.OutboundTarget == model.StockTargetPlaform && req.OutboundID != 0) {
-        snag.Panic("调出参数错误")
-    }
-
-    name := req.Name
-    mt := stock.MaterialOthers
-    if req.Model != "" {
-        name = req.Model
-        mt = stock.MaterialBattery
-    }
-
-    var cityID uint64
-
-    // 查询电柜
-    var cab *ent.Cabinet
-    var cabID uint64
-
-    // 检查电柜是否初始化调拨过
-    if req.InboundTarget == model.StockTargetCabinet {
-        cabID = req.InboundID
-    }
-    if req.OutboundTarget == model.StockTargetCabinet {
-        cabID = req.OutboundID
-    }
-    if cabID > 0 {
-        cab = NewCabinet().QueryOne(cabID)
-        if !cab.Transferred && !req.Force {
-            snag.Panic("电柜未初始化调拨")
-        }
-        if cab.CityID != nil {
-            cityID = *cab.CityID
-        }
-    }
-
-    // 查询门店
-    var st *ent.Store
-    var stID uint64
-    if req.InboundTarget == model.StockTargetStore {
-        stID = req.InboundID
-    }
-    if req.OutboundTarget == model.StockTargetStore {
-        stID = req.OutboundID
-    }
-    if stID > 0 {
-        st = NewStore().Query(stID)
-        cityID = st.CityID
-    }
-    if cab != nil && cab.CityID != nil && st != nil && st.CityID != *cab.CityID {
-        snag.Panic("不同城市电柜和门店无法调拨")
-    }
-
-    // 调出检查
-    if req.OutboundID > 0 && s.Fetch(req.OutboundTarget, req.OutboundID, name) < req.Num {
-        snag.Panic("操作失败, 调出物资大于库存物资")
-    }
-
-    sn := tools.NewUnique().NewSN()
-
-    in := &req.InboundID
-    if req.InboundID == 0 {
-        in = nil
-    }
-
-    out := &req.OutboundID
-    if req.OutboundID == 0 {
-        out = nil
-    }
-
-    v := &req.Model
-    if req.Model == "" {
-        v = nil
-    }
-
-    err := ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
-        // 调出
-        oq := tx.Stock.Create().
-            SetName(name).
-            SetNillableModel(v).
-            SetNum(-req.Num).
-            SetCityID(cityID).
-            SetType(model.StockTypeTransfer).
-            SetMaterial(mt).
-            SetNillableRemark(req.Remark).
-            SetSn(sn)
-
-        if req.OutboundTarget == model.StockTargetStore {
-            oq.SetNillableStoreID(out)
-        } else {
-            oq.SetNillableCabinetID(out)
-        }
-
-        // 调入
-        iq := tx.Stock.Create().
-            SetName(name).
-            SetNillableModel(v).
-            SetNum(req.Num).
-            SetCityID(cityID).
-            SetType(model.StockTypeTransfer).
-            SetMaterial(mt).
-            SetNillableRemark(req.Remark).
-            SetSn(sn)
-        if req.InboundTarget == model.StockTargetStore {
-            iq.SetNillableStoreID(in)
-        } else {
-            iq.SetNillableCabinetID(in)
-        }
-
-        // 调出
-        var spouse *ent.Stock
-        spouse, err = oq.Save(s.ctx)
-        if err != nil {
-            return
-        }
-
-        // 调入
-        _, err = iq.SetSpouse(spouse).Save(s.ctx)
-        if err != nil {
-            return
-        }
-        return
-    })
-    if err != nil {
-        snag.Panic(err)
-    }
-}
-
 func (s *stockService) BatteryOverview(req *model.StockOverviewReq) (items []model.StockBatteryOverviewRes) {
     var extends []string
 
@@ -472,7 +292,7 @@ func (s *stockService) BatteryWithRider(cr *ent.StockCreate, req *model.StockBus
     // TODO 平台管理员可操作性时处理出入库逻辑
     if req.StoreID != nil {
         cr.SetStoreID(*req.StoreID)
-        if num < 0 && s.Fetch(model.StockTargetStore, *req.StoreID, req.Model) < int(math.Abs(float64(num))) {
+        if num < 0 && NewStockBatchable().Fetch(model.StockTargetStore, *req.StoreID, req.Model) < int(math.Abs(float64(num))) {
             err = errors.New("电池库存不足")
             return
         }
@@ -480,7 +300,7 @@ func (s *stockService) BatteryWithRider(cr *ent.StockCreate, req *model.StockBus
 
     if req.CabinetID != nil {
         cr.SetCabinetID(*req.CabinetID)
-        if num < 0 && s.Fetch(model.StockTargetCabinet, *req.CabinetID, req.Model) < int(math.Abs(float64(num))) {
+        if num < 0 && NewStockBatchable().Fetch(model.StockTargetCabinet, *req.CabinetID, req.Model) < int(math.Abs(float64(num))) {
             err = errors.New("电池库存不足")
             return
         }
@@ -1094,4 +914,172 @@ func (s *stockService) Export(req *model.StockDetailExportReq) model.ExportRes {
 
         tools.NewExcel(path).AddValues(rows).Done()
     })
+}
+
+// Transfer 调拨物资
+func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
+    err := req.Validate()
+    if err != nil {
+        snag.Panic(err)
+    }
+
+    failed = make([]string, 0)
+
+    var cityID uint64
+
+    // 查询电柜
+    var cab *ent.Cabinet
+    var cabID uint64
+
+    // 检查电柜是否初始化调拨过
+    if req.InboundTarget == model.StockTargetCabinet {
+        cabID = req.InboundID
+    }
+    if req.OutboundTarget == model.StockTargetCabinet {
+        cabID = req.OutboundID
+    }
+    if cabID > 0 {
+        cab = NewCabinet().QueryOne(cabID)
+        if !cab.Transferred && !req.Force {
+            snag.Panic("电柜未初始化调拨")
+        }
+        if cab.CityID != nil {
+            cityID = *cab.CityID
+        }
+    }
+
+    // 查询门店
+    var st *ent.Store
+    var stID uint64
+    if req.InboundTarget == model.StockTargetStore {
+        stID = req.InboundID
+    }
+    if req.OutboundTarget == model.StockTargetStore {
+        stID = req.OutboundID
+    }
+    if stID > 0 {
+        st = NewStore().Query(stID)
+        cityID = st.CityID
+    }
+    if cab != nil && cab.CityID != nil && st != nil && st.CityID != *cab.CityID {
+        snag.Panic("不同城市电柜和门店无法调拨")
+    }
+
+    in := &req.InboundID
+    if req.InboundID == 0 {
+        in = nil
+    }
+
+    out := &req.OutboundID
+    if req.OutboundID == 0 {
+        out = nil
+    }
+
+    batteryModel := &req.Model
+    if req.Model == "" {
+        batteryModel = nil
+    }
+
+    sn := tools.NewUnique().NewSN()
+    num := req.RealNumber()
+    name := req.RealName()
+    batchable := req.Batchable()
+
+    // 批量调拨, 调出检查
+    if req.OutboundID > 0 && NewStockBatchable().Fetch(req.OutboundTarget, req.OutboundID, name) < req.Num {
+        snag.Panic("操作失败, 调出物资大于库存物资")
+    }
+
+    outCreator := s.orm.Create().
+        SetName(name).
+        SetNillableModel(batteryModel).
+        SetNum(-num).
+        SetCityID(cityID).
+        SetType(model.StockTypeTransfer).
+        SetMaterial(req.Material()).
+        SetRemark(req.Remark).
+        SetSn(sn)
+    if req.OutboundTarget == model.StockTargetStore {
+        outCreator.SetNillableStoreID(out)
+    } else {
+        outCreator.SetNillableCabinetID(out)
+    }
+
+    inCreator := s.orm.Create().
+        SetName(name).
+        SetNillableModel(batteryModel).
+        SetNum(num).
+        SetCityID(cityID).
+        SetType(model.StockTypeTransfer).
+        SetMaterial(req.Material()).
+        SetRemark(req.Remark).
+        SetSn(sn)
+    if req.InboundTarget == model.StockTargetStore {
+        inCreator.SetNillableStoreID(in)
+    } else {
+        inCreator.SetNillableCabinetID(in)
+    }
+
+    var looppers []model.StockTransferLoopper
+
+    switch true {
+    case len(req.Ebikes) > 0:
+        // failed = append(failed, NewStockEbike(s.modifier, s.employee, s.rider).Transfer(cityID, in, out, req)...)
+        looppers, failed = NewStockEbike().Loopers(req)
+    default:
+        looppers = make([]model.StockTransferLoopper, 1)
+    }
+
+    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+        for _, l := range looppers {
+            // 调出
+            var spouse *ent.Stock
+            spouse, err = outCreator.
+                SetNillableEbikeSn(l.EbikeSN).
+                SetNillableEbikeID(l.EbikeID).
+                Save(s.ctx)
+            if err != nil {
+                log.Error(err)
+                if batchable {
+                    return
+                }
+                failed = append(failed, fmt.Sprintf("出库失败: %s", l.Message))
+                continue
+            }
+
+            // 调入
+            _, err = inCreator.
+                SetSpouse(spouse).
+                SetNillableEbikeSn(l.EbikeSN).
+                SetNillableEbikeID(l.EbikeID).
+                Save(s.ctx)
+            if err != nil {
+                log.Error(err)
+                if batchable {
+                    return
+                }
+                failed = append(failed, fmt.Sprintf("入库失败: %s", l.Message))
+                continue
+            }
+
+            // 电车调拨完成更新所属
+            if l.EbikeID != nil {
+                updater := tx.Ebike.UpdateOneID(*l.EbikeID)
+                // 调拨到门店
+                if req.IsToStore() {
+                    updater.SetNillableStoreID(in)
+                }
+                if req.IsToPlaform() {
+                    updater.ClearStoreID()
+                }
+                if updater.Exec(s.ctx) != nil {
+                    failed = append(failed, fmt.Sprintf("电车更新失败: %s", l.Message))
+                    continue
+                }
+            }
+        }
+        return nil
+    })
+
+    return
 }

@@ -294,6 +294,26 @@ func (su *StockUpdate) SetMaterial(s stock.Material) *StockUpdate {
 	return su
 }
 
+// SetEbikeSn sets the "ebike_sn" field.
+func (su *StockUpdate) SetEbikeSn(s string) *StockUpdate {
+	su.mutation.SetEbikeSn(s)
+	return su
+}
+
+// SetNillableEbikeSn sets the "ebike_sn" field if the given value is not nil.
+func (su *StockUpdate) SetNillableEbikeSn(s *string) *StockUpdate {
+	if s != nil {
+		su.SetEbikeSn(*s)
+	}
+	return su
+}
+
+// ClearEbikeSn clears the value of the "ebike_sn" field.
+func (su *StockUpdate) ClearEbikeSn() *StockUpdate {
+	su.mutation.ClearEbikeSn()
+	return su
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (su *StockUpdate) SetCity(c *City) *StockUpdate {
 	return su.SetCityID(c.ID)
@@ -608,6 +628,19 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeEnum,
 			Value:  value,
 			Column: stock.FieldMaterial,
+		})
+	}
+	if value, ok := su.mutation.EbikeSn(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: stock.FieldEbikeSn,
+		})
+	}
+	if su.mutation.EbikeSnCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: stock.FieldEbikeSn,
 		})
 	}
 	if su.mutation.CityCleared() {
@@ -1168,6 +1201,26 @@ func (suo *StockUpdateOne) SetMaterial(s stock.Material) *StockUpdateOne {
 	return suo
 }
 
+// SetEbikeSn sets the "ebike_sn" field.
+func (suo *StockUpdateOne) SetEbikeSn(s string) *StockUpdateOne {
+	suo.mutation.SetEbikeSn(s)
+	return suo
+}
+
+// SetNillableEbikeSn sets the "ebike_sn" field if the given value is not nil.
+func (suo *StockUpdateOne) SetNillableEbikeSn(s *string) *StockUpdateOne {
+	if s != nil {
+		suo.SetEbikeSn(*s)
+	}
+	return suo
+}
+
+// ClearEbikeSn clears the value of the "ebike_sn" field.
+func (suo *StockUpdateOne) ClearEbikeSn() *StockUpdateOne {
+	suo.mutation.ClearEbikeSn()
+	return suo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (suo *StockUpdateOne) SetCity(c *City) *StockUpdateOne {
 	return suo.SetCityID(c.ID)
@@ -1512,6 +1565,19 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 			Type:   field.TypeEnum,
 			Value:  value,
 			Column: stock.FieldMaterial,
+		})
+	}
+	if value, ok := suo.mutation.EbikeSn(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: stock.FieldEbikeSn,
+		})
+	}
+	if suo.mutation.EbikeSnCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: stock.FieldEbikeSn,
 		})
 	}
 	if suo.mutation.CityCleared() {

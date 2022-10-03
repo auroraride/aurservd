@@ -38,7 +38,8 @@ func (Stock) Fields() []ent.Field {
         field.String("name").Comment("物资名称"),
         field.String("model").Optional().Nillable().Comment("电池型号"),
         field.Int("num").Immutable().Comment("物资数量: 正值调入 / 负值调出"),
-        field.Enum("material").Values("battery", "frame", "others").Comment("物资种类"),
+        field.Enum("material").Values("battery", "ebike", "others").Comment("物资种类"),
+        field.String("ebike_sn").Optional().Nillable().Comment("电车编号"),
     }
 }
 

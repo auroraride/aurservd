@@ -651,7 +651,7 @@ func (s *cabinetService) Transfer(req *model.CabinetTransferReq) {
         InboundID:     cab.ID,
         InboundTarget: model.StockTargetCabinet,
         Force:         true,
-        Remark:        silk.Pointer("电柜初始化"),
+        Remark:        "电柜初始化",
     })
     _, _ = cab.Update().SetTransferred(true).Save(s.ctx)
     return

@@ -52,6 +52,8 @@ const (
 	FieldNum = "num"
 	// FieldMaterial holds the string denoting the material field in the database.
 	FieldMaterial = "material"
+	// FieldEbikeSn holds the string denoting the ebike_sn field in the database.
+	FieldEbikeSn = "ebike_sn"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
@@ -147,6 +149,7 @@ var Columns = []string{
 	FieldModel,
 	FieldNum,
 	FieldMaterial,
+	FieldEbikeSn,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "stock"
@@ -193,7 +196,7 @@ type Material string
 // Material values.
 const (
 	MaterialBattery Material = "battery"
-	MaterialFrame   Material = "frame"
+	MaterialEbike   Material = "ebike"
 	MaterialOthers  Material = "others"
 )
 
@@ -204,7 +207,7 @@ func (m Material) String() string {
 // MaterialValidator is a validator for the "material" field enum values. It is called by the builders before save.
 func MaterialValidator(m Material) error {
 	switch m {
-	case MaterialBattery, MaterialFrame, MaterialOthers:
+	case MaterialBattery, MaterialEbike, MaterialOthers:
 		return nil
 	default:
 		return fmt.Errorf("stock: invalid enum value for material field: %q", m)

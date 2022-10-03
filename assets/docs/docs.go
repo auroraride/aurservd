@@ -4790,7 +4790,10 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
@@ -9232,7 +9235,10 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
@@ -16019,6 +16025,10 @@ const docTemplate = `{
                     "description": "品牌",
                     "type": "string"
                 },
+                "brandId": {
+                    "description": "品牌ID",
+                    "type": "integer"
+                },
                 "color": {
                     "description": "颜色, 默认` + "`" + `橘黄` + "`" + `, 创建或编辑时用选择列表, 选项为: ` + "`" + `橘黄` + "`" + ` / ` + "`" + `红` + "`" + ` / ` + "`" + `白` + "`" + ` / ` + "`" + `黑` + "`" + `",
                     "type": "string"
@@ -16048,6 +16058,10 @@ const docTemplate = `{
                 },
                 "sim": {
                     "description": "SIM卡号",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "车架号",
                     "type": "string"
                 },
                 "store": {
@@ -19959,10 +19973,16 @@ const docTemplate = `{
         "model.StockTransferReq": {
             "type": "object",
             "required": [
-                "num",
                 "remark"
             ],
             "properties": {
+                "ebikes": {
+                    "description": "车架编号 (和 ` + "`" + `物资名称` + "`" + ` / ` + "`" + `车架` + "`" + ` 不能同时存在, 也不能同时为空)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "inboundId": {
                     "description": "调入至 0:平台",
                     "type": "integer"
@@ -19977,11 +19997,11 @@ const docTemplate = `{
                     ]
                 },
                 "model": {
-                    "description": "电池型号 (和` + "`" + `物资名称` + "`" + `不能同时存在, 也不能同时为空)",
+                    "description": "电池型号 (和 ` + "`" + `物资名称` + "`" + ` / ` + "`" + `车架` + "`" + ` 不能同时存在, 也不能同时为空)",
                     "type": "string"
                 },
                 "name": {
-                    "description": "物资名称 (和` + "`" + `电池型号` + "`" + `不能同时存在, 也不能同时为空)",
+                    "description": "物资名称 (和 ` + "`" + `电池型号` + "`" + ` / ` + "`" + `车架` + "`" + ` 不能同时存在, 也不能同时为空)",
                     "type": "string"
                 },
                 "num": {
@@ -20002,7 +20022,7 @@ const docTemplate = `{
                     ]
                 },
                 "remark": {
-                    "description": "备注",
+                    "description": "备注 ",
                     "type": "string"
                 }
             }

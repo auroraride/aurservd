@@ -248,6 +248,20 @@ func (sc *StockCreate) SetMaterial(s stock.Material) *StockCreate {
 	return sc
 }
 
+// SetEbikeSn sets the "ebike_sn" field.
+func (sc *StockCreate) SetEbikeSn(s string) *StockCreate {
+	sc.mutation.SetEbikeSn(s)
+	return sc
+}
+
+// SetNillableEbikeSn sets the "ebike_sn" field if the given value is not nil.
+func (sc *StockCreate) SetNillableEbikeSn(s *string) *StockCreate {
+	if s != nil {
+		sc.SetEbikeSn(*s)
+	}
+	return sc
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (sc *StockCreate) SetCity(c *City) *StockCreate {
 	return sc.SetCityID(c.ID)
@@ -553,6 +567,14 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 			Column: stock.FieldMaterial,
 		})
 		_node.Material = value
+	}
+	if value, ok := sc.mutation.EbikeSn(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: stock.FieldEbikeSn,
+		})
+		_node.EbikeSn = &value
 	}
 	if nodes := sc.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1030,6 +1052,24 @@ func (u *StockUpsert) UpdateMaterial() *StockUpsert {
 	return u
 }
 
+// SetEbikeSn sets the "ebike_sn" field.
+func (u *StockUpsert) SetEbikeSn(v string) *StockUpsert {
+	u.Set(stock.FieldEbikeSn, v)
+	return u
+}
+
+// UpdateEbikeSn sets the "ebike_sn" field to the value that was provided on create.
+func (u *StockUpsert) UpdateEbikeSn() *StockUpsert {
+	u.SetExcluded(stock.FieldEbikeSn)
+	return u
+}
+
+// ClearEbikeSn clears the value of the "ebike_sn" field.
+func (u *StockUpsert) ClearEbikeSn() *StockUpsert {
+	u.SetNull(stock.FieldEbikeSn)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1386,6 +1426,27 @@ func (u *StockUpsertOne) SetMaterial(v stock.Material) *StockUpsertOne {
 func (u *StockUpsertOne) UpdateMaterial() *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
 		s.UpdateMaterial()
+	})
+}
+
+// SetEbikeSn sets the "ebike_sn" field.
+func (u *StockUpsertOne) SetEbikeSn(v string) *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.SetEbikeSn(v)
+	})
+}
+
+// UpdateEbikeSn sets the "ebike_sn" field to the value that was provided on create.
+func (u *StockUpsertOne) UpdateEbikeSn() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateEbikeSn()
+	})
+}
+
+// ClearEbikeSn clears the value of the "ebike_sn" field.
+func (u *StockUpsertOne) ClearEbikeSn() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.ClearEbikeSn()
 	})
 }
 
@@ -1907,6 +1968,27 @@ func (u *StockUpsertBulk) SetMaterial(v stock.Material) *StockUpsertBulk {
 func (u *StockUpsertBulk) UpdateMaterial() *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
 		s.UpdateMaterial()
+	})
+}
+
+// SetEbikeSn sets the "ebike_sn" field.
+func (u *StockUpsertBulk) SetEbikeSn(v string) *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.SetEbikeSn(v)
+	})
+}
+
+// UpdateEbikeSn sets the "ebike_sn" field to the value that was provided on create.
+func (u *StockUpsertBulk) UpdateEbikeSn() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateEbikeSn()
+	})
+}
+
+// ClearEbikeSn clears the value of the "ebike_sn" field.
+func (u *StockUpsertBulk) ClearEbikeSn() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.ClearEbikeSn()
 	})
 }
 

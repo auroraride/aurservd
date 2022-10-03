@@ -21,12 +21,12 @@ type Response struct {
 
 // processParam 处理参数
 func (r *Response) processParam(param any) {
-    switch param.(type) {
+    switch v := param.(type) {
     case string:
-        r.Message = param.(string)
+        r.Message = v
         break
     case int:
-        r.Code = param.(int)
+        r.Code = v
     case nil:
         break
     default:
