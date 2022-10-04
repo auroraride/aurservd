@@ -5257,6 +5257,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/employee/offwork": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MA017 强制下班",
+                "operationId": "ManagerEmployeeOffWork",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "店员ID",
+                        "name": "id",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/employee/{id}": {
             "put": {
                 "consumes": [
@@ -16218,6 +16259,14 @@ const docTemplate = `{
                 "phone": {
                     "description": "电话",
                     "type": "string"
+                },
+                "store": {
+                    "description": "当前上班门店",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Store"
+                        }
+                    ]
                 }
             }
         },

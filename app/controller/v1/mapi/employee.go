@@ -108,3 +108,19 @@ func (*employee) Enable(c echo.Context) (err error) {
     service.NewEmployeeWithModifier(ctx.Modifier).Enable(req)
     return ctx.SendResponse()
 }
+
+// OffWork
+// @ID           ManagerEmployeeOffWork
+// @Router       /manager/v1/employee/offwork [POST]
+// @Summary      MA017 强制下班
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        id   body      uint64  true  "店员ID"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*employee) OffWork(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.IDPostReq](c)
+    service.NewEmployeeWithModifier(ctx.Modifier).OffWork(req)
+    return ctx.SendResponse()
+}

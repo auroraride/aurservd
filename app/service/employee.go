@@ -8,6 +8,7 @@ package service
 import (
     "context"
     "fmt"
+    "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -127,7 +128,8 @@ func (s *employeeService) Modify(req *model.EmployeeModifyReq) {
 
 func (s *employeeService) List(req *model.EmployeeListReq) *model.PaginationRes {
     q := s.orm.QueryNotDeleted().
-        WithCity()
+        WithCity().
+        WithStore()
 
     if req.Keyword != nil {
         q.Where(
@@ -159,6 +161,14 @@ func (s *employeeService) List(req *model.EmployeeListReq) *model.PaginationRes 
             res.City = model.City{
                 ID:   ec.ID,
                 Name: ec.Name,
+            }
+        }
+
+        sto := item.Edges.Store
+        if sto != nil {
+            res.Store = &model.Store{
+                ID:   sto.ID,
+                Name: sto.Name,
             }
         }
         return res
@@ -460,4 +470,32 @@ func (s *employeeService) NameFromID(id uint64) string {
         return "-"
     }
     return p.Name
+}
+
+// OffWork 强制下班
+func (s *employeeService) OffWork(req *model.IDPostReq) {
+    e, _ := s.orm.Query().Where(employee.ID(req.ID)).WithStore().First(s.ctx)
+
+    if e == nil {
+        snag.Panic("未找到店员")
+    }
+
+    sto := e.Edges.Store
+    if sto == nil {
+        snag.Panic("未找到上班信息")
+    }
+
+    err := sto.Update().ClearEmployeeID().Exec(s.ctx)
+    if err != nil {
+        log.Error(err)
+        snag.Panic("强制下班失败")
+    }
+
+    // 记录日志
+    go logging.NewOperateLog().
+        SetRef(e).
+        SetModifier(s.modifier).
+        SetOperate(model.OperateForceOffWork).
+        SetDiff(fmt.Sprintf("上班门店: %s", sto.Name), "下班").
+        Send()
 }

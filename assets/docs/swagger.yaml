@@ -2820,6 +2820,10 @@ definitions:
       phone:
         description: 电话
         type: string
+      store:
+        allOf:
+        - $ref: '#/definitions/model.Store'
+        description: 当前上班门店
     type: object
   model.EmployeeProfile:
     properties:
@@ -9434,6 +9438,33 @@ paths:
                   type: array
               type: object
       summary: MA016 工作流
+      tags:
+      - '[M]管理接口'
+  /manager/v1/employee/offwork:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerEmployeeOffWork
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 店员ID
+        in: body
+        name: id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: MA017 强制下班
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise:

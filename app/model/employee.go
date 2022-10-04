@@ -88,10 +88,11 @@ type EmployeeListReq struct {
 
 type EmployeeListRes struct {
     ID     uint64 `json:"id"`
-    Enable bool   `json:"enable"` // 是否启用
-    Name   string `json:"name"`   // 姓名
-    Phone  string `json:"phone"`  // 电话
-    City   City   `json:"city"`   // 城市
+    Enable bool   `json:"enable"`          // 是否启用
+    Name   string `json:"name"`            // 姓名
+    Phone  string `json:"phone"`           // 电话
+    City   City   `json:"city"`            // 城市
+    Store  *Store `json:"store,omitempty"` // 当前上班门店
 }
 
 type EmployeeEnableReq struct {

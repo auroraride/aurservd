@@ -41,6 +41,7 @@ const (
     OperateSuspend                             // 暂停扣费
     OperateResume                              // 继续扣费
     OperateRiderCreate                         // 添加骑手
+    OperateForceOffWork                        // 强制下班
 )
 
 func (o Operate) String() string {
@@ -85,6 +86,8 @@ func (o Operate) String() string {
         return "继续扣费"
     case OperateRiderCreate:
         return "添加骑手"
+    case OperateForceOffWork:
+        return "强制下班"
     default:
         return "未知操作"
     }
