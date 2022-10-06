@@ -39,6 +39,9 @@ func ({{ $receiver }} *{{ $builder }}) PaginationItemsX(req model.PaginationReq)
 func ({{ $receiver }} *{{ $builder }}) PaginationResult(req model.PaginationReq) model.Pagination {
     query := {{ $receiver }}.Clone()
     query.order = nil
+    query.order = nil
+    query.limit = nil
+    query.offset = nil
     var result []struct{
         Count int `json:"count"`
     }

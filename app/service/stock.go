@@ -990,13 +990,23 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
         snag.Panic("操作失败, 调出物资大于库存物资")
     }
 
+    material := func(req *model.StockTransferReq) stock.Material {
+        switch true {
+        case len(req.Ebikes) > 0:
+            return stock.MaterialEbike
+        case req.Model != "":
+            return stock.MaterialBattery
+        }
+        return stock.MaterialOthers
+    }(req)
+
     outCreator := s.orm.Create().
         SetName(name).
         SetNillableModel(batteryModel).
         SetNum(-num).
         SetCityID(cityID).
         SetType(model.StockTypeTransfer).
-        SetMaterial(req.Material()).
+        SetMaterial(material).
         SetRemark(req.Remark).
         SetSn(sn)
     if req.OutboundTarget == model.StockTargetStore {
@@ -1011,7 +1021,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
         SetNum(num).
         SetCityID(cityID).
         SetType(model.StockTypeTransfer).
-        SetMaterial(req.Material()).
+        SetMaterial(material).
         SetRemark(req.Remark).
         SetSn(sn)
     if req.InboundTarget == model.StockTargetStore {

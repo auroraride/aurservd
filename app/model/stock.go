@@ -7,15 +7,11 @@ package model
 
 import (
     "errors"
-    "github.com/auroraride/aurservd/internal/ent/stock"
     "strings"
 )
 
 const (
     StockNameEbike = "电车"
-    // StockMaterialOthers  = "others"
-    // StockMaterialBattery = "battery"
-    // StockMaterialEbike   = "ebike"
 )
 
 const (
@@ -110,16 +106,6 @@ func (req *StockTransferReq) Batchable() bool {
 // ParticipateCabinet 是否有电柜参与
 func (req *StockTransferReq) ParticipateCabinet() bool {
     return req.IsFromCabinet() || req.IsToCabinet()
-}
-
-func (req *StockTransferReq) Material() stock.Material {
-    switch true {
-    case len(req.Ebikes) > 0:
-        return stock.MaterialEbike
-    case req.Model != "":
-        return stock.MaterialBattery
-    }
-    return stock.MaterialOthers
 }
 
 // RealNumber 获取实际物资数量
