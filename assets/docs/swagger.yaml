@@ -4012,8 +4012,37 @@ definitions:
         description: 开始日期
         type: string
     type: object
+  model.PointBatchReq:
+    properties:
+      phones:
+        description: '电话 '
+        items:
+          type: string
+        minItems: 1
+        type: array
+      points:
+        description: '积分 '
+        type: integer
+      reason:
+        description: '原因 '
+        type: string
+      type:
+        description: 类别 类别 1:消费 2:奖励
+        enum:
+        - 1
+        - 2
+        type: integer
+    required:
+    - phones
+    - points
+    - reason
+    - type
+    type: object
   model.PointLogListRes:
     properties:
+      after:
+        description: 变动后
+        type: integer
       id:
         type: integer
       modifier:
@@ -8788,9 +8817,11 @@ paths:
       - application/json
       responses:
         "200":
-          description: 请求成功
+          description: 失败列表
           schema:
-            $ref: '#/definitions/model.StatusResponse'
+            items:
+              type: string
+            type: array
       summary: MH004 生成优惠券
       tags:
       - '[M]管理接口'
@@ -11184,6 +11215,35 @@ paths:
               $ref: '#/definitions/model.PlanIntroduceOption'
             type: array
       summary: M6005 获取未设定介绍的车电型号
+      tags:
+      - '[M]管理接口'
+  /manager/v1/point/batch:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerPointBatch
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.PointBatchReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 失败列表
+          schema:
+            items:
+              type: string
+            type: array
+      summary: M7018 批量变动积分
       tags:
       - '[M]管理接口'
   /manager/v1/point/log:

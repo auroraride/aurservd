@@ -4329,9 +4329,12 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "请求成功",
+                        "description": "失败列表",
                         "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
@@ -7976,6 +7979,50 @@
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/point/batch": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M7018 批量变动积分",
+                "operationId": "ManagerPointBatch",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.PointBatchReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "失败列表",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
@@ -17939,9 +17986,48 @@
                 }
             }
         },
+        "model.PointBatchReq": {
+            "type": "object",
+            "required": [
+                "phones",
+                "points",
+                "reason",
+                "type"
+            ],
+            "properties": {
+                "phones": {
+                    "description": "电话 ",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "points": {
+                    "description": "积分 ",
+                    "type": "integer"
+                },
+                "reason": {
+                    "description": "原因 ",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "类别 类别 1:消费 2:奖励",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                }
+            }
+        },
         "model.PointLogListRes": {
             "type": "object",
             "properties": {
+                "after": {
+                    "description": "变动后",
+                    "type": "integer"
+                },
                 "id": {
                     "type": "integer"
                 },

@@ -59,6 +59,14 @@ type PointLogListRes struct {
     Type     string  `json:"type"`               // 类别
     Plan     string  `json:"plan,omitempty"`     // 订单骑士卡
     Points   int64   `json:"points"`             // 积分
+    After    int64   `json:"after"`              // 变动后
     Reason   *string `json:"reason,omitempty"`   // 原因
     Modifier string  `json:"modifier,omitempty"` // 操作人
+}
+
+type PointBatchReq struct {
+    Phones []string     `json:"phones" validate:"required,min=1" trans:"电话"`
+    Points int64        `json:"points" validate:"required" trans:"积分"`
+    Reason string       `json:"reason" validate:"required" trans:"原因"`
+    Type   PointLogType `json:"type" validate:"required,enum" trans:"类别" enums:"1,2"` // 1:消费 2:奖励
 }

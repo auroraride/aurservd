@@ -72,11 +72,10 @@ func (*coupon) TemplateStatus(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        body  body     model.CouponGenerateReq  true  "优惠券信息"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @Success      200  {object}  []string  "失败列表"
 func (*coupon) Generate(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CouponGenerateReq](c)
-    service.NewCouponWithModifier(ctx.Modifier).Generate(req)
-    return ctx.SendResponse()
+    return ctx.SendResponse(service.NewCouponWithModifier(ctx.Modifier).Generate(req))
 }
 
 // Assembly

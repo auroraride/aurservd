@@ -941,3 +941,26 @@ func (s *riderService) NameFromID(id uint64) string {
     }
     return str
 }
+
+func (s *riderService) QueryPhones(phones []string) (riders []*ent.Rider, ids []uint64, notfound []string) {
+    notfound = make([]string, 0)
+    m := make(map[string]struct{})
+    for _, phone := range phones {
+        m[phone] = struct{}{}
+    }
+    // 查询骑手
+    riders, _ = ent.Database.Rider.QueryNotDeleted().Where(rider.PhoneIn(phones...)).All(s.ctx)
+    if len(riders) == 0 {
+        snag.Panic("全部骑手查询失败")
+    }
+    // 找到的手机号
+    for _, r := range riders {
+        delete(m, r.Phone)
+        ids = append(ids, r.ID)
+    }
+    // 未找到的手机号
+    for k := range m {
+        notfound = append(notfound, k)
+    }
+    return
+}

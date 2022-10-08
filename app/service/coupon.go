@@ -91,7 +91,7 @@ func (s *couponService) HexNumber(n uint64) string {
     return fmt.Sprintf("%02s", strings.ToUpper(strconv.FormatUint(n, 36)))
 }
 
-func (s *couponService) Generate(req *model.CouponGenerateReq) {
+func (s *couponService) Generate(req *model.CouponGenerateReq) (phones []string) {
     if req.Amount < 0 {
         snag.Panic("金额至少为0.01")
     }
@@ -99,30 +99,12 @@ func (s *couponService) Generate(req *model.CouponGenerateReq) {
     ct := NewCouponTemplate().QueryEnableX(req.TemplateID)
 
     var (
-        n      = req.Number
-        phones []string
-        ids    []uint64
+        n   = req.Number
+        ids []uint64
     )
 
     if len(req.Phones) > 0 {
-        m := make(map[string]struct{})
-        for _, phone := range req.Phones {
-            m[phone] = struct{}{}
-        }
-        // 查询骑手
-        riders, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.PhoneIn(req.Phones...)).All(s.ctx)
-        if len(riders) == 0 {
-            snag.Panic("全部骑手查询失败")
-        }
-        // 找到的手机号
-        for _, r := range riders {
-            delete(m, r.Phone)
-            ids = append(ids, r.ID)
-        }
-        // 未找到的手机号
-        for k := range m {
-            phones = append(phones, k)
-        }
+        _, ids, phones = NewRider().QueryPhones(req.Phones)
         n = len(ids)
     }
 
@@ -186,6 +168,8 @@ func (s *couponService) Generate(req *model.CouponGenerateReq) {
     })
 
     couponTaskBusy.Store(false)
+
+    return
 }
 
 // GenerateCDKeys 生成一定数量的券码

@@ -7,12 +7,12 @@ package service
 
 import (
     "context"
+    "errors"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/pointlog"
     "github.com/auroraride/aurservd/internal/ent/rider"
-    "github.com/auroraride/aurservd/pkg/snag"
 )
 
 type pointService struct {
@@ -60,13 +60,13 @@ func NewPointWithEmployee(e *ent.Employee) *pointService {
 }
 
 // Modify 修改积分
-func (s *pointService) Modify(req *model.PointModifyReq) {
+func (s *pointService) Modify(req *model.PointModifyReq) error {
     r := NewRider().Query(req.RiderID)
     after := r.Points + req.Points
     if after < 0 {
-        snag.Panic("积分余额不能小于0")
+        return errors.New("积分余额不能小于0")
     }
-    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+    return ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
         err = tx.Rider.UpdateOne(r).SetPoints(after).Exec(s.ctx)
         if err != nil {
             return
@@ -106,7 +106,31 @@ func (s *pointService) LogList(req *model.PointLogListReq) *model.PaginationRes 
             Plan:     mp,
             Points:   item.Points,
             Reason:   item.Reason,
+            After:    item.After,
             Modifier: mm,
         }
     })
+}
+
+// Batch 批量发放积分
+func (s *pointService) Batch(req *model.PointBatchReq) []string {
+    riders, _, notfound := NewRider().QueryPhones(req.Phones)
+
+    for i, p := range notfound {
+        notfound[i] = fmt.Sprintf("未找到: %s", p)
+    }
+
+    for _, r := range riders {
+        err := s.Modify(&model.PointModifyReq{
+            RiderID: r.ID,
+            Points:  req.Points,
+            Reason:  req.Reason,
+            Type:    req.Type,
+        })
+        if err != nil {
+            notfound = append(notfound, fmt.Sprintf("%v: %s", err, r.Phone))
+        }
+    }
+
+    return notfound
 }
