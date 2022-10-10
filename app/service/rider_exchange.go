@@ -60,6 +60,13 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
     cs := NewCabinet()
     cab := cs.QueryOneSerialX(req.Serial)
 
+    // 更新一次电柜状态
+    err := cs.UpdateStatus(cab)
+    if err != nil {
+        log.Error(err)
+        snag.Panic("电柜状态获取失败")
+    }
+
     // 检查可用电池型号
     if !cs.ModelInclude(cab, sub.Model) {
         snag.Panic("电池型号不兼容")
@@ -69,13 +76,6 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
     NewCabinet().BusinessableX(cab)
 
     ec.BusyX(cab.Serial)
-
-    // 更新一次电柜状态
-    err := cs.UpdateStatus(cab)
-    if err != nil {
-        log.Error(err)
-        snag.Panic("电柜状态获取失败")
-    }
 
     info := cs.Usable(cab)
     if info.EmptyBin == nil || (info.FullBin == nil && info.Alternative == nil) {
@@ -176,6 +176,13 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     var be model.BatteryElectricity
     if task.Exchange.Alternative && !req.Alternative {
         snag.Panic("非满电换电取消")
+    }
+
+    // 更新一次电柜状态
+    err := NewCabinet().UpdateStatus(cab)
+    if err != nil {
+        log.Error(err)
+        snag.Panic("电柜状态获取失败")
     }
 
     // 检查电柜是否繁忙

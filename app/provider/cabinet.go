@@ -50,12 +50,14 @@ func (s *updater) cloneCabinet() *ent.Cabinet {
     return item
 }
 
-func (s *updater) DoUpdate() (err error) {
+func (s *updater) DoUpdate() (crr error) {
     // 获取电柜当前执行的任务
     s.task = ec.Obtain(ec.ObtainReq{Serial: s.cab.Serial})
     var bins model.CabinetBins
     var online bool
-    online, bins, err = s.provider.FetchStatus(s.cab.Serial)
+
+    online, bins, crr = s.provider.FetchStatus(s.cab.Serial)
+    err := crr
 
     // 设置是否离线
     setOfflineTime(s.cab.Serial, online)
