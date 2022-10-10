@@ -997,6 +997,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			plan.FieldCreator:      {Type: field.TypeJSON, Column: plan.FieldCreator},
 			plan.FieldLastModifier: {Type: field.TypeJSON, Column: plan.FieldLastModifier},
 			plan.FieldRemark:       {Type: field.TypeString, Column: plan.FieldRemark},
+			plan.FieldModel:        {Type: field.TypeString, Column: plan.FieldModel},
 			plan.FieldEnable:       {Type: field.TypeBool, Column: plan.FieldEnable},
 			plan.FieldName:         {Type: field.TypeString, Column: plan.FieldName},
 			plan.FieldStart:        {Type: field.TypeTime, Column: plan.FieldStart},
@@ -9020,6 +9021,11 @@ func (f *PlanFilter) WhereLastModifier(p entql.BytesP) {
 // WhereRemark applies the entql string predicate on the remark field.
 func (f *PlanFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(plan.FieldRemark))
+}
+
+// WhereModel applies the entql string predicate on the model field.
+func (f *PlanFilter) WhereModel(p entql.StringP) {
+	f.Where(p.Field(plan.FieldModel))
 }
 
 // WhereEnable applies the entql bool predicate on the enable field.

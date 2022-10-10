@@ -57,6 +57,7 @@ func (Plan) Annotations() []schema.Annotation {
 // Fields of the Plan.
 func (Plan) Fields() []ent.Field {
     return []ent.Field{
+        field.String("model").Optional().Comment("电池型号"),
         field.Bool("enable").Comment("是否启用"),
         field.String("name").Comment("骑士卡名称"),
         field.Time("start").Comment("有效期开始日期"),

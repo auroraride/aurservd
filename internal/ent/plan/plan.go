@@ -25,6 +25,8 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
+	// FieldModel holds the string denoting the model field in the database.
+	FieldModel = "model"
 	// FieldEnable holds the string denoting the enable field in the database.
 	FieldEnable = "enable"
 	// FieldName holds the string denoting the name field in the database.
@@ -91,6 +93,7 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
+	FieldModel,
 	FieldEnable,
 	FieldName,
 	FieldStart,

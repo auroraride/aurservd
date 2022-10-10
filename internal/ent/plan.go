@@ -30,6 +30,8 @@ type Plan struct {
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
+	// 电池型号
+	Model string `json:"model,omitempty"`
 	// 是否启用
 	Enable bool `json:"enable,omitempty"`
 	// 骑士卡名称
@@ -134,7 +136,7 @@ func (*Plan) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullFloat64)
 		case plan.FieldID, plan.FieldDays, plan.FieldParentID:
 			values[i] = new(sql.NullInt64)
-		case plan.FieldRemark, plan.FieldName, plan.FieldDesc:
+		case plan.FieldRemark, plan.FieldModel, plan.FieldName, plan.FieldDesc:
 			values[i] = new(sql.NullString)
 		case plan.FieldCreatedAt, plan.FieldUpdatedAt, plan.FieldDeletedAt, plan.FieldStart, plan.FieldEnd:
 			values[i] = new(sql.NullTime)
@@ -199,6 +201,12 @@ func (pl *Plan) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field remark", values[i])
 			} else if value.Valid {
 				pl.Remark = value.String
+			}
+		case plan.FieldModel:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field model", values[i])
+			} else if value.Valid {
+				pl.Model = value.String
 			}
 		case plan.FieldEnable:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -333,6 +341,9 @@ func (pl *Plan) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("remark=")
 	builder.WriteString(pl.Remark)
+	builder.WriteString(", ")
+	builder.WriteString("model=")
+	builder.WriteString(pl.Model)
 	builder.WriteString(", ")
 	builder.WriteString("enable=")
 	builder.WriteString(fmt.Sprintf("%v", pl.Enable))

@@ -28,6 +28,7 @@ type PlanMutation struct {
 	creator          **model.Modifier
 	last_modifier    **model.Modifier
 	remark           *string
+	model            *string
 	enable           *bool
 	name             *string
 	start            *time.Time
@@ -425,6 +426,55 @@ func (m *PlanMutation) RemarkCleared() bool {
 func (m *PlanMutation) ResetRemark() {
 	m.remark = nil
 	delete(m.clearedFields, plan.FieldRemark)
+}
+
+// SetModel sets the "model" field.
+func (m *PlanMutation) SetModel(s string) {
+	m.model = &s
+}
+
+// Model returns the value of the "model" field in the mutation.
+func (m *PlanMutation) Model() (r string, exists bool) {
+	v := m.model
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldModel returns the old "model" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldModel(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldModel is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldModel requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldModel: %w", err)
+	}
+	return oldValue.Model, nil
+}
+
+// ClearModel clears the value of the "model" field.
+func (m *PlanMutation) ClearModel() {
+	m.model = nil
+	m.clearedFields[plan.FieldModel] = struct{}{}
+}
+
+// ModelCleared returns if the "model" field was cleared in this mutation.
+func (m *PlanMutation) ModelCleared() bool {
+	_, ok := m.clearedFields[plan.FieldModel]
+	return ok
+}
+
+// ResetModel resets all changes to the "model" field.
+func (m *PlanMutation) ResetModel() {
+	m.model = nil
+	delete(m.clearedFields, plan.FieldModel)
 }
 
 // SetEnable sets the "enable" field.
@@ -1168,7 +1218,7 @@ func (m *PlanMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlanMutation) Fields() []string {
-	fields := make([]string, 0, 16)
+	fields := make([]string, 0, 17)
 	if m.created_at != nil {
 		fields = append(fields, plan.FieldCreatedAt)
 	}
@@ -1186,6 +1236,9 @@ func (m *PlanMutation) Fields() []string {
 	}
 	if m.remark != nil {
 		fields = append(fields, plan.FieldRemark)
+	}
+	if m.model != nil {
+		fields = append(fields, plan.FieldModel)
 	}
 	if m.enable != nil {
 		fields = append(fields, plan.FieldEnable)
@@ -1237,6 +1290,8 @@ func (m *PlanMutation) Field(name string) (ent.Value, bool) {
 		return m.LastModifier()
 	case plan.FieldRemark:
 		return m.Remark()
+	case plan.FieldModel:
+		return m.Model()
 	case plan.FieldEnable:
 		return m.Enable()
 	case plan.FieldName:
@@ -1278,6 +1333,8 @@ func (m *PlanMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldLastModifier(ctx)
 	case plan.FieldRemark:
 		return m.OldRemark(ctx)
+	case plan.FieldModel:
+		return m.OldModel(ctx)
 	case plan.FieldEnable:
 		return m.OldEnable(ctx)
 	case plan.FieldName:
@@ -1348,6 +1405,13 @@ func (m *PlanMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRemark(v)
+		return nil
+	case plan.FieldModel:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetModel(v)
 		return nil
 	case plan.FieldEnable:
 		v, ok := value.(bool)
@@ -1512,6 +1576,9 @@ func (m *PlanMutation) ClearedFields() []string {
 	if m.FieldCleared(plan.FieldRemark) {
 		fields = append(fields, plan.FieldRemark)
 	}
+	if m.FieldCleared(plan.FieldModel) {
+		fields = append(fields, plan.FieldModel)
+	}
 	if m.FieldCleared(plan.FieldOriginal) {
 		fields = append(fields, plan.FieldOriginal)
 	}
@@ -1547,6 +1614,9 @@ func (m *PlanMutation) ClearField(name string) error {
 	case plan.FieldRemark:
 		m.ClearRemark()
 		return nil
+	case plan.FieldModel:
+		m.ClearModel()
+		return nil
 	case plan.FieldOriginal:
 		m.ClearOriginal()
 		return nil
@@ -1581,6 +1651,9 @@ func (m *PlanMutation) ResetField(name string) error {
 		return nil
 	case plan.FieldRemark:
 		m.ResetRemark()
+		return nil
+	case plan.FieldModel:
+		m.ResetModel()
 		return nil
 	case plan.FieldEnable:
 		m.ResetEnable()

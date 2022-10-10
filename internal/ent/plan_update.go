@@ -91,6 +91,26 @@ func (pu *PlanUpdate) ClearRemark() *PlanUpdate {
 	return pu
 }
 
+// SetModel sets the "model" field.
+func (pu *PlanUpdate) SetModel(s string) *PlanUpdate {
+	pu.mutation.SetModel(s)
+	return pu
+}
+
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableModel(s *string) *PlanUpdate {
+	if s != nil {
+		pu.SetModel(*s)
+	}
+	return pu
+}
+
+// ClearModel clears the value of the "model" field.
+func (pu *PlanUpdate) ClearModel() *PlanUpdate {
+	pu.mutation.ClearModel()
+	return pu
+}
+
 // SetEnable sets the "enable" field.
 func (pu *PlanUpdate) SetEnable(b bool) *PlanUpdate {
 	pu.mutation.SetEnable(b)
@@ -526,6 +546,19 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: plan.FieldRemark,
 		})
 	}
+	if value, ok := pu.mutation.Model(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: plan.FieldModel,
+		})
+	}
+	if pu.mutation.ModelCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: plan.FieldModel,
+		})
+	}
 	if value, ok := pu.mutation.Enable(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
@@ -956,6 +989,26 @@ func (puo *PlanUpdateOne) SetNillableRemark(s *string) *PlanUpdateOne {
 // ClearRemark clears the value of the "remark" field.
 func (puo *PlanUpdateOne) ClearRemark() *PlanUpdateOne {
 	puo.mutation.ClearRemark()
+	return puo
+}
+
+// SetModel sets the "model" field.
+func (puo *PlanUpdateOne) SetModel(s string) *PlanUpdateOne {
+	puo.mutation.SetModel(s)
+	return puo
+}
+
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableModel(s *string) *PlanUpdateOne {
+	if s != nil {
+		puo.SetModel(*s)
+	}
+	return puo
+}
+
+// ClearModel clears the value of the "model" field.
+func (puo *PlanUpdateOne) ClearModel() *PlanUpdateOne {
+	puo.mutation.ClearModel()
 	return puo
 }
 
@@ -1422,6 +1475,19 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: plan.FieldRemark,
+		})
+	}
+	if value, ok := puo.mutation.Model(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: plan.FieldModel,
+		})
+	}
+	if puo.mutation.ModelCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: plan.FieldModel,
 		})
 	}
 	if value, ok := puo.mutation.Enable(); ok {
