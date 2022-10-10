@@ -29,6 +29,8 @@ type PlanMutation struct {
 	last_modifier    **model.Modifier
 	remark           *string
 	enable           *bool
+	_type            *uint8
+	add_type         *int8
 	name             *string
 	start            *time.Time
 	end              *time.Time
@@ -41,7 +43,11 @@ type PlanMutation struct {
 	original         *float64
 	addoriginal      *float64
 	desc             *string
+	relief_newly     *float64
+	addrelief_newly  *float64
 	clearedFields    map[string]struct{}
+	brand            *uint64
+	clearedbrand     bool
 	models           map[uint64]struct{}
 	removedmodels    map[uint64]struct{}
 	clearedmodels    bool
@@ -427,6 +433,55 @@ func (m *PlanMutation) ResetRemark() {
 	delete(m.clearedFields, plan.FieldRemark)
 }
 
+// SetBrandID sets the "brand_id" field.
+func (m *PlanMutation) SetBrandID(u uint64) {
+	m.brand = &u
+}
+
+// BrandID returns the value of the "brand_id" field in the mutation.
+func (m *PlanMutation) BrandID() (r uint64, exists bool) {
+	v := m.brand
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBrandID returns the old "brand_id" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldBrandID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBrandID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBrandID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBrandID: %w", err)
+	}
+	return oldValue.BrandID, nil
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (m *PlanMutation) ClearBrandID() {
+	m.brand = nil
+	m.clearedFields[plan.FieldBrandID] = struct{}{}
+}
+
+// BrandIDCleared returns if the "brand_id" field was cleared in this mutation.
+func (m *PlanMutation) BrandIDCleared() bool {
+	_, ok := m.clearedFields[plan.FieldBrandID]
+	return ok
+}
+
+// ResetBrandID resets all changes to the "brand_id" field.
+func (m *PlanMutation) ResetBrandID() {
+	m.brand = nil
+	delete(m.clearedFields, plan.FieldBrandID)
+}
+
 // SetEnable sets the "enable" field.
 func (m *PlanMutation) SetEnable(b bool) {
 	m.enable = &b
@@ -461,6 +516,62 @@ func (m *PlanMutation) OldEnable(ctx context.Context) (v bool, err error) {
 // ResetEnable resets all changes to the "enable" field.
 func (m *PlanMutation) ResetEnable() {
 	m.enable = nil
+}
+
+// SetType sets the "type" field.
+func (m *PlanMutation) SetType(u uint8) {
+	m._type = &u
+	m.add_type = nil
+}
+
+// GetType returns the value of the "type" field in the mutation.
+func (m *PlanMutation) GetType() (r uint8, exists bool) {
+	v := m._type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldType returns the old "type" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldType(ctx context.Context) (v uint8, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldType: %w", err)
+	}
+	return oldValue.Type, nil
+}
+
+// AddType adds u to the "type" field.
+func (m *PlanMutation) AddType(u int8) {
+	if m.add_type != nil {
+		*m.add_type += u
+	} else {
+		m.add_type = &u
+	}
+}
+
+// AddedType returns the value that was added to the "type" field in this mutation.
+func (m *PlanMutation) AddedType() (r int8, exists bool) {
+	v := m.add_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetType resets all changes to the "type" field.
+func (m *PlanMutation) ResetType() {
+	m._type = nil
+	m.add_type = nil
 }
 
 // SetName sets the "name" field.
@@ -907,6 +1018,88 @@ func (m *PlanMutation) ResetParentID() {
 	delete(m.clearedFields, plan.FieldParentID)
 }
 
+// SetReliefNewly sets the "relief_newly" field.
+func (m *PlanMutation) SetReliefNewly(f float64) {
+	m.relief_newly = &f
+	m.addrelief_newly = nil
+}
+
+// ReliefNewly returns the value of the "relief_newly" field in the mutation.
+func (m *PlanMutation) ReliefNewly() (r float64, exists bool) {
+	v := m.relief_newly
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReliefNewly returns the old "relief_newly" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldReliefNewly(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReliefNewly is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReliefNewly requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReliefNewly: %w", err)
+	}
+	return oldValue.ReliefNewly, nil
+}
+
+// AddReliefNewly adds f to the "relief_newly" field.
+func (m *PlanMutation) AddReliefNewly(f float64) {
+	if m.addrelief_newly != nil {
+		*m.addrelief_newly += f
+	} else {
+		m.addrelief_newly = &f
+	}
+}
+
+// AddedReliefNewly returns the value that was added to the "relief_newly" field in this mutation.
+func (m *PlanMutation) AddedReliefNewly() (r float64, exists bool) {
+	v := m.addrelief_newly
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetReliefNewly resets all changes to the "relief_newly" field.
+func (m *PlanMutation) ResetReliefNewly() {
+	m.relief_newly = nil
+	m.addrelief_newly = nil
+}
+
+// ClearBrand clears the "brand" edge to the EbikeBrand entity.
+func (m *PlanMutation) ClearBrand() {
+	m.clearedbrand = true
+}
+
+// BrandCleared reports if the "brand" edge to the EbikeBrand entity was cleared.
+func (m *PlanMutation) BrandCleared() bool {
+	return m.BrandIDCleared() || m.clearedbrand
+}
+
+// BrandIDs returns the "brand" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// BrandID instead. It exists only for internal usage by the builders.
+func (m *PlanMutation) BrandIDs() (ids []uint64) {
+	if id := m.brand; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetBrand resets all changes to the "brand" edge.
+func (m *PlanMutation) ResetBrand() {
+	m.brand = nil
+	m.clearedbrand = false
+}
+
 // AddModelIDs adds the "models" edge to the BatteryModel entity by ids.
 func (m *PlanMutation) AddModelIDs(ids ...uint64) {
 	if m.models == nil {
@@ -1168,7 +1361,7 @@ func (m *PlanMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlanMutation) Fields() []string {
-	fields := make([]string, 0, 16)
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, plan.FieldCreatedAt)
 	}
@@ -1187,8 +1380,14 @@ func (m *PlanMutation) Fields() []string {
 	if m.remark != nil {
 		fields = append(fields, plan.FieldRemark)
 	}
+	if m.brand != nil {
+		fields = append(fields, plan.FieldBrandID)
+	}
 	if m.enable != nil {
 		fields = append(fields, plan.FieldEnable)
+	}
+	if m._type != nil {
+		fields = append(fields, plan.FieldType)
 	}
 	if m.name != nil {
 		fields = append(fields, plan.FieldName)
@@ -1217,6 +1416,9 @@ func (m *PlanMutation) Fields() []string {
 	if m.parent != nil {
 		fields = append(fields, plan.FieldParentID)
 	}
+	if m.relief_newly != nil {
+		fields = append(fields, plan.FieldReliefNewly)
+	}
 	return fields
 }
 
@@ -1237,8 +1439,12 @@ func (m *PlanMutation) Field(name string) (ent.Value, bool) {
 		return m.LastModifier()
 	case plan.FieldRemark:
 		return m.Remark()
+	case plan.FieldBrandID:
+		return m.BrandID()
 	case plan.FieldEnable:
 		return m.Enable()
+	case plan.FieldType:
+		return m.GetType()
 	case plan.FieldName:
 		return m.Name()
 	case plan.FieldStart:
@@ -1257,6 +1463,8 @@ func (m *PlanMutation) Field(name string) (ent.Value, bool) {
 		return m.Desc()
 	case plan.FieldParentID:
 		return m.ParentID()
+	case plan.FieldReliefNewly:
+		return m.ReliefNewly()
 	}
 	return nil, false
 }
@@ -1278,8 +1486,12 @@ func (m *PlanMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldLastModifier(ctx)
 	case plan.FieldRemark:
 		return m.OldRemark(ctx)
+	case plan.FieldBrandID:
+		return m.OldBrandID(ctx)
 	case plan.FieldEnable:
 		return m.OldEnable(ctx)
+	case plan.FieldType:
+		return m.OldType(ctx)
 	case plan.FieldName:
 		return m.OldName(ctx)
 	case plan.FieldStart:
@@ -1298,6 +1510,8 @@ func (m *PlanMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldDesc(ctx)
 	case plan.FieldParentID:
 		return m.OldParentID(ctx)
+	case plan.FieldReliefNewly:
+		return m.OldReliefNewly(ctx)
 	}
 	return nil, fmt.Errorf("unknown Plan field %s", name)
 }
@@ -1349,12 +1563,26 @@ func (m *PlanMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRemark(v)
 		return nil
+	case plan.FieldBrandID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBrandID(v)
+		return nil
 	case plan.FieldEnable:
 		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEnable(v)
+		return nil
+	case plan.FieldType:
+		v, ok := value.(uint8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetType(v)
 		return nil
 	case plan.FieldName:
 		v, ok := value.(string)
@@ -1419,6 +1647,13 @@ func (m *PlanMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetParentID(v)
 		return nil
+	case plan.FieldReliefNewly:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReliefNewly(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Plan field %s", name)
 }
@@ -1427,6 +1662,9 @@ func (m *PlanMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *PlanMutation) AddedFields() []string {
 	var fields []string
+	if m.add_type != nil {
+		fields = append(fields, plan.FieldType)
+	}
 	if m.addprice != nil {
 		fields = append(fields, plan.FieldPrice)
 	}
@@ -1439,6 +1677,9 @@ func (m *PlanMutation) AddedFields() []string {
 	if m.addoriginal != nil {
 		fields = append(fields, plan.FieldOriginal)
 	}
+	if m.addrelief_newly != nil {
+		fields = append(fields, plan.FieldReliefNewly)
+	}
 	return fields
 }
 
@@ -1447,6 +1688,8 @@ func (m *PlanMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *PlanMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case plan.FieldType:
+		return m.AddedType()
 	case plan.FieldPrice:
 		return m.AddedPrice()
 	case plan.FieldDays:
@@ -1455,6 +1698,8 @@ func (m *PlanMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedCommission()
 	case plan.FieldOriginal:
 		return m.AddedOriginal()
+	case plan.FieldReliefNewly:
+		return m.AddedReliefNewly()
 	}
 	return nil, false
 }
@@ -1464,6 +1709,13 @@ func (m *PlanMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *PlanMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case plan.FieldType:
+		v, ok := value.(int8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddType(v)
+		return nil
 	case plan.FieldPrice:
 		v, ok := value.(float64)
 		if !ok {
@@ -1492,6 +1744,13 @@ func (m *PlanMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddOriginal(v)
 		return nil
+	case plan.FieldReliefNewly:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddReliefNewly(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Plan numeric field %s", name)
 }
@@ -1511,6 +1770,9 @@ func (m *PlanMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(plan.FieldRemark) {
 		fields = append(fields, plan.FieldRemark)
+	}
+	if m.FieldCleared(plan.FieldBrandID) {
+		fields = append(fields, plan.FieldBrandID)
 	}
 	if m.FieldCleared(plan.FieldOriginal) {
 		fields = append(fields, plan.FieldOriginal)
@@ -1547,6 +1809,9 @@ func (m *PlanMutation) ClearField(name string) error {
 	case plan.FieldRemark:
 		m.ClearRemark()
 		return nil
+	case plan.FieldBrandID:
+		m.ClearBrandID()
+		return nil
 	case plan.FieldOriginal:
 		m.ClearOriginal()
 		return nil
@@ -1582,8 +1847,14 @@ func (m *PlanMutation) ResetField(name string) error {
 	case plan.FieldRemark:
 		m.ResetRemark()
 		return nil
+	case plan.FieldBrandID:
+		m.ResetBrandID()
+		return nil
 	case plan.FieldEnable:
 		m.ResetEnable()
+		return nil
+	case plan.FieldType:
+		m.ResetType()
 		return nil
 	case plan.FieldName:
 		m.ResetName()
@@ -1612,13 +1883,19 @@ func (m *PlanMutation) ResetField(name string) error {
 	case plan.FieldParentID:
 		m.ResetParentID()
 		return nil
+	case plan.FieldReliefNewly:
+		m.ResetReliefNewly()
+		return nil
 	}
 	return fmt.Errorf("unknown Plan field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlanMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
+	if m.brand != nil {
+		edges = append(edges, plan.EdgeBrand)
+	}
 	if m.models != nil {
 		edges = append(edges, plan.EdgeModels)
 	}
@@ -1641,6 +1918,10 @@ func (m *PlanMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *PlanMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case plan.EdgeBrand:
+		if id := m.brand; id != nil {
+			return []ent.Value{*id}
+		}
 	case plan.EdgeModels:
 		ids := make([]ent.Value, 0, len(m.models))
 		for id := range m.models {
@@ -1675,7 +1956,7 @@ func (m *PlanMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlanMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.removedmodels != nil {
 		edges = append(edges, plan.EdgeModels)
 	}
@@ -1725,7 +2006,10 @@ func (m *PlanMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlanMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
+	if m.clearedbrand {
+		edges = append(edges, plan.EdgeBrand)
+	}
 	if m.clearedmodels {
 		edges = append(edges, plan.EdgeModels)
 	}
@@ -1748,6 +2032,8 @@ func (m *PlanMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *PlanMutation) EdgeCleared(name string) bool {
 	switch name {
+	case plan.EdgeBrand:
+		return m.clearedbrand
 	case plan.EdgeModels:
 		return m.clearedmodels
 	case plan.EdgeCities:
@@ -1766,6 +2052,9 @@ func (m *PlanMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *PlanMutation) ClearEdge(name string) error {
 	switch name {
+	case plan.EdgeBrand:
+		m.ClearBrand()
+		return nil
 	case plan.EdgeParent:
 		m.ClearParent()
 		return nil
@@ -1777,6 +2066,9 @@ func (m *PlanMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *PlanMutation) ResetEdge(name string) error {
 	switch name {
+	case plan.EdgeBrand:
+		m.ResetBrand()
+		return nil
 	case plan.EdgeModels:
 		m.ResetModels()
 		return nil

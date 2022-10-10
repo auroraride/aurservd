@@ -109,10 +109,24 @@ func Remark(v string) predicate.Plan {
 	})
 }
 
+// BrandID applies equality check predicate on the "brand_id" field. It's identical to BrandIDEQ.
+func BrandID(v uint64) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBrandID), v))
+	})
+}
+
 // Enable applies equality check predicate on the "enable" field. It's identical to EnableEQ.
 func Enable(v bool) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldEnable), v))
+	})
+}
+
+// Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
+func Type(v uint8) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldType), v))
 	})
 }
 
@@ -176,6 +190,13 @@ func Desc(v string) predicate.Plan {
 func ParentID(v uint64) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldParentID), v))
+	})
+}
+
+// ReliefNewly applies equality check predicate on the "relief_newly" field. It's identical to ReliefNewlyEQ.
+func ReliefNewly(v float64) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldReliefNewly), v))
 	})
 }
 
@@ -526,6 +547,56 @@ func RemarkContainsFold(v string) predicate.Plan {
 	})
 }
 
+// BrandIDEQ applies the EQ predicate on the "brand_id" field.
+func BrandIDEQ(v uint64) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBrandID), v))
+	})
+}
+
+// BrandIDNEQ applies the NEQ predicate on the "brand_id" field.
+func BrandIDNEQ(v uint64) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldBrandID), v))
+	})
+}
+
+// BrandIDIn applies the In predicate on the "brand_id" field.
+func BrandIDIn(vs ...uint64) predicate.Plan {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldBrandID), v...))
+	})
+}
+
+// BrandIDNotIn applies the NotIn predicate on the "brand_id" field.
+func BrandIDNotIn(vs ...uint64) predicate.Plan {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldBrandID), v...))
+	})
+}
+
+// BrandIDIsNil applies the IsNil predicate on the "brand_id" field.
+func BrandIDIsNil() predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldBrandID)))
+	})
+}
+
+// BrandIDNotNil applies the NotNil predicate on the "brand_id" field.
+func BrandIDNotNil() predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldBrandID)))
+	})
+}
+
 // EnableEQ applies the EQ predicate on the "enable" field.
 func EnableEQ(v bool) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
@@ -537,6 +608,70 @@ func EnableEQ(v bool) predicate.Plan {
 func EnableNEQ(v bool) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldEnable), v))
+	})
+}
+
+// TypeEQ applies the EQ predicate on the "type" field.
+func TypeEQ(v uint8) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldType), v))
+	})
+}
+
+// TypeNEQ applies the NEQ predicate on the "type" field.
+func TypeNEQ(v uint8) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldType), v))
+	})
+}
+
+// TypeIn applies the In predicate on the "type" field.
+func TypeIn(vs ...uint8) predicate.Plan {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldType), v...))
+	})
+}
+
+// TypeNotIn applies the NotIn predicate on the "type" field.
+func TypeNotIn(vs ...uint8) predicate.Plan {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldType), v...))
+	})
+}
+
+// TypeGT applies the GT predicate on the "type" field.
+func TypeGT(v uint8) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldType), v))
+	})
+}
+
+// TypeGTE applies the GTE predicate on the "type" field.
+func TypeGTE(v uint8) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldType), v))
+	})
+}
+
+// TypeLT applies the LT predicate on the "type" field.
+func TypeLT(v uint8) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldType), v))
+	})
+}
+
+// TypeLTE applies the LTE predicate on the "type" field.
+func TypeLTE(v uint8) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldType), v))
 	})
 }
 
@@ -1197,6 +1332,98 @@ func ParentIDIsNil() predicate.Plan {
 func ParentIDNotNil() predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldParentID)))
+	})
+}
+
+// ReliefNewlyEQ applies the EQ predicate on the "relief_newly" field.
+func ReliefNewlyEQ(v float64) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldReliefNewly), v))
+	})
+}
+
+// ReliefNewlyNEQ applies the NEQ predicate on the "relief_newly" field.
+func ReliefNewlyNEQ(v float64) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldReliefNewly), v))
+	})
+}
+
+// ReliefNewlyIn applies the In predicate on the "relief_newly" field.
+func ReliefNewlyIn(vs ...float64) predicate.Plan {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldReliefNewly), v...))
+	})
+}
+
+// ReliefNewlyNotIn applies the NotIn predicate on the "relief_newly" field.
+func ReliefNewlyNotIn(vs ...float64) predicate.Plan {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldReliefNewly), v...))
+	})
+}
+
+// ReliefNewlyGT applies the GT predicate on the "relief_newly" field.
+func ReliefNewlyGT(v float64) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldReliefNewly), v))
+	})
+}
+
+// ReliefNewlyGTE applies the GTE predicate on the "relief_newly" field.
+func ReliefNewlyGTE(v float64) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldReliefNewly), v))
+	})
+}
+
+// ReliefNewlyLT applies the LT predicate on the "relief_newly" field.
+func ReliefNewlyLT(v float64) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldReliefNewly), v))
+	})
+}
+
+// ReliefNewlyLTE applies the LTE predicate on the "relief_newly" field.
+func ReliefNewlyLTE(v float64) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldReliefNewly), v))
+	})
+}
+
+// HasBrand applies the HasEdge predicate on the "brand" edge.
+func HasBrand() predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(BrandTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, BrandTable, BrandColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasBrandWith applies the HasEdge predicate on the "brand" edge with a given conditions (other predicates).
+func HasBrandWith(preds ...predicate.EbikeBrand) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(BrandInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, BrandTable, BrandColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 

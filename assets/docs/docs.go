@@ -17791,7 +17791,8 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "days",
-                "price"
+                "price",
+                "type"
             ],
             "properties": {
                 "commission": {
@@ -17808,7 +17809,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "description": "子项ID (可为空, 编辑的时候需要携带此字段)",
+                    "description": "ID (可为空, 编辑的时候需要携带此字段)",
                     "type": "integer"
                 },
                 "original": {
@@ -17818,6 +17819,13 @@ const docTemplate = `{
                 "price": {
                     "description": "价格 ",
                     "type": "number"
+                },
+                "reliefNewly": {
+                    "description": "新签减免",
+                    "type": "number"
+                },
+                "type": {
+                    "type": "integer"
                 }
             }
         },
@@ -17867,6 +17875,13 @@ const docTemplate = `{
                 "name": {
                     "description": "骑士卡名称 ",
                     "type": "string"
+                },
+                "notes": {
+                    "description": "购买须知",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "start": {
                     "description": "开始日期 ",

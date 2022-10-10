@@ -2466,6 +2466,7 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "enable", Type: field.TypeBool, Comment: "是否启用"},
+		{Name: "type", Type: field.TypeUint8, Comment: "骑士卡类别 1:单电 2:车加电", Default: 1},
 		{Name: "name", Type: field.TypeString, Comment: "骑士卡名称"},
 		{Name: "start", Type: field.TypeTime, Comment: "有效期开始日期"},
 		{Name: "end", Type: field.TypeTime, Comment: "有效期结束日期"},
@@ -2474,6 +2475,8 @@ var (
 		{Name: "commission", Type: field.TypeFloat64, Comment: "提成"},
 		{Name: "original", Type: field.TypeFloat64, Comment: "原价", Nullable: true},
 		{Name: "desc", Type: field.TypeString, Comment: "优惠信息", Nullable: true},
+		{Name: "relief_newly", Type: field.TypeFloat64, Comment: "新签减免", Default: 0},
+		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "parent_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// PlanTable holds the schema information for the "plan" table.
@@ -2483,8 +2486,14 @@ var (
 		PrimaryKey: []*schema.Column{PlanColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
+				Symbol:     "plan_ebike_brand_brand",
+				Columns:    []*schema.Column{PlanColumns[18]},
+				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
 				Symbol:     "plan_plan_complexes",
-				Columns:    []*schema.Column{PlanColumns[16]},
+				Columns:    []*schema.Column{PlanColumns[19]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2501,9 +2510,14 @@ var (
 				Columns: []*schema.Column{PlanColumns[3]},
 			},
 			{
+				Name:    "plan_brand_id",
+				Unique:  false,
+				Columns: []*schema.Column{PlanColumns[18]},
+			},
+			{
 				Name:    "plan_days",
 				Unique:  false,
-				Columns: []*schema.Column{PlanColumns[12]},
+				Columns: []*schema.Column{PlanColumns[13]},
 			},
 			{
 				Name:    "plan_enable",
@@ -2513,12 +2527,12 @@ var (
 			{
 				Name:    "plan_start_end",
 				Unique:  false,
-				Columns: []*schema.Column{PlanColumns[9], PlanColumns[10]},
+				Columns: []*schema.Column{PlanColumns[10], PlanColumns[11]},
 			},
 			{
 				Name:    "plan_name",
 				Unique:  false,
-				Columns: []*schema.Column{PlanColumns[8]},
+				Columns: []*schema.Column{PlanColumns[9]},
 				Annotation: &entsql.IndexAnnotation{
 					Types: map[string]string{
 						"postgres": "GIN",
@@ -4088,7 +4102,8 @@ func init() {
 	PersonTable.Annotation = &entsql.Annotation{
 		Table: "person",
 	}
-	PlanTable.ForeignKeys[0].RefTable = PlanTable
+	PlanTable.ForeignKeys[0].RefTable = EbikeBrandTable
+	PlanTable.ForeignKeys[1].RefTable = PlanTable
 	PlanTable.Annotation = &entsql.Annotation{
 		Table: "plan",
 	}

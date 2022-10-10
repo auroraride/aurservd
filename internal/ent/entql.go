@@ -997,7 +997,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			plan.FieldCreator:      {Type: field.TypeJSON, Column: plan.FieldCreator},
 			plan.FieldLastModifier: {Type: field.TypeJSON, Column: plan.FieldLastModifier},
 			plan.FieldRemark:       {Type: field.TypeString, Column: plan.FieldRemark},
+			plan.FieldBrandID:      {Type: field.TypeUint64, Column: plan.FieldBrandID},
 			plan.FieldEnable:       {Type: field.TypeBool, Column: plan.FieldEnable},
+			plan.FieldType:         {Type: field.TypeUint8, Column: plan.FieldType},
 			plan.FieldName:         {Type: field.TypeString, Column: plan.FieldName},
 			plan.FieldStart:        {Type: field.TypeTime, Column: plan.FieldStart},
 			plan.FieldEnd:          {Type: field.TypeTime, Column: plan.FieldEnd},
@@ -1007,6 +1009,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			plan.FieldOriginal:     {Type: field.TypeFloat64, Column: plan.FieldOriginal},
 			plan.FieldDesc:         {Type: field.TypeString, Column: plan.FieldDesc},
 			plan.FieldParentID:     {Type: field.TypeUint64, Column: plan.FieldParentID},
+			plan.FieldReliefNewly:  {Type: field.TypeFloat64, Column: plan.FieldReliefNewly},
 		},
 	}
 	graph.Nodes[34] = &sqlgraph.Node{
@@ -2723,6 +2726,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Person",
 		"Rider",
+	)
+	graph.MustAddE(
+		"brand",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   plan.BrandTable,
+			Columns: []string{plan.BrandColumn},
+			Bidi:    false,
+		},
+		"Plan",
+		"EbikeBrand",
 	)
 	graph.MustAddE(
 		"models",
@@ -9022,9 +9037,19 @@ func (f *PlanFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(plan.FieldRemark))
 }
 
+// WhereBrandID applies the entql uint64 predicate on the brand_id field.
+func (f *PlanFilter) WhereBrandID(p entql.Uint64P) {
+	f.Where(p.Field(plan.FieldBrandID))
+}
+
 // WhereEnable applies the entql bool predicate on the enable field.
 func (f *PlanFilter) WhereEnable(p entql.BoolP) {
 	f.Where(p.Field(plan.FieldEnable))
+}
+
+// WhereType applies the entql uint8 predicate on the type field.
+func (f *PlanFilter) WhereType(p entql.Uint8P) {
+	f.Where(p.Field(plan.FieldType))
 }
 
 // WhereName applies the entql string predicate on the name field.
@@ -9070,6 +9095,25 @@ func (f *PlanFilter) WhereDesc(p entql.StringP) {
 // WhereParentID applies the entql uint64 predicate on the parent_id field.
 func (f *PlanFilter) WhereParentID(p entql.Uint64P) {
 	f.Where(p.Field(plan.FieldParentID))
+}
+
+// WhereReliefNewly applies the entql float64 predicate on the relief_newly field.
+func (f *PlanFilter) WhereReliefNewly(p entql.Float64P) {
+	f.Where(p.Field(plan.FieldReliefNewly))
+}
+
+// WhereHasBrand applies a predicate to check if query has an edge brand.
+func (f *PlanFilter) WhereHasBrand() {
+	f.Where(entql.HasEdge("brand"))
+}
+
+// WhereHasBrandWith applies a predicate to check if query has an edge brand with a given conditions (other predicates).
+func (f *PlanFilter) WhereHasBrandWith(preds ...predicate.EbikeBrand) {
+	f.Where(entql.HasEdgeWith("brand", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }
 
 // WhereHasModels applies a predicate to check if query has an edge models.

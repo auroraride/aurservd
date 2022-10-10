@@ -25,8 +25,12 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
+	// FieldBrandID holds the string denoting the brand_id field in the database.
+	FieldBrandID = "brand_id"
 	// FieldEnable holds the string denoting the enable field in the database.
 	FieldEnable = "enable"
+	// FieldType holds the string denoting the type field in the database.
+	FieldType = "type"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldStart holds the string denoting the start field in the database.
@@ -45,6 +49,10 @@ const (
 	FieldDesc = "desc"
 	// FieldParentID holds the string denoting the parent_id field in the database.
 	FieldParentID = "parent_id"
+	// FieldReliefNewly holds the string denoting the relief_newly field in the database.
+	FieldReliefNewly = "relief_newly"
+	// EdgeBrand holds the string denoting the brand edge name in mutations.
+	EdgeBrand = "brand"
 	// EdgeModels holds the string denoting the models edge name in mutations.
 	EdgeModels = "models"
 	// EdgeCities holds the string denoting the cities edge name in mutations.
@@ -57,6 +65,13 @@ const (
 	EdgeCoupons = "coupons"
 	// Table holds the table name of the plan in the database.
 	Table = "plan"
+	// BrandTable is the table that holds the brand relation/edge.
+	BrandTable = "plan"
+	// BrandInverseTable is the table name for the EbikeBrand entity.
+	// It exists in this package in order to avoid circular dependency with the "ebikebrand" package.
+	BrandInverseTable = "ebike_brand"
+	// BrandColumn is the table column denoting the brand relation/edge.
+	BrandColumn = "brand_id"
 	// ModelsTable is the table that holds the models relation/edge. The primary key declared below.
 	ModelsTable = "plan_models"
 	// ModelsInverseTable is the table name for the BatteryModel entity.
@@ -91,7 +106,9 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
+	FieldBrandID,
 	FieldEnable,
+	FieldType,
 	FieldName,
 	FieldStart,
 	FieldEnd,
@@ -101,6 +118,7 @@ var Columns = []string{
 	FieldOriginal,
 	FieldDesc,
 	FieldParentID,
+	FieldReliefNewly,
 }
 
 var (
@@ -138,4 +156,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultType holds the default value on creation for the "type" field.
+	DefaultType uint8
+	// DefaultReliefNewly holds the default value on creation for the "relief_newly" field.
+	DefaultReliefNewly float64
 )

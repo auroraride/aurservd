@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -27,6 +28,7 @@ type PlanQuery struct {
 	order         []OrderFunc
 	fields        []string
 	predicates    []predicate.Plan
+	withBrand     *EbikeBrandQuery
 	withModels    *BatteryModelQuery
 	withCities    *CityQuery
 	withParent    *PlanQuery
@@ -67,6 +69,28 @@ func (pq *PlanQuery) Unique(unique bool) *PlanQuery {
 func (pq *PlanQuery) Order(o ...OrderFunc) *PlanQuery {
 	pq.order = append(pq.order, o...)
 	return pq
+}
+
+// QueryBrand chains the current query on the "brand" edge.
+func (pq *PlanQuery) QueryBrand() *EbikeBrandQuery {
+	query := &EbikeBrandQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plan.Table, plan.FieldID, selector),
+			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, plan.BrandTable, plan.BrandColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryModels chains the current query on the "models" edge.
@@ -360,6 +384,7 @@ func (pq *PlanQuery) Clone() *PlanQuery {
 		offset:        pq.offset,
 		order:         append([]OrderFunc{}, pq.order...),
 		predicates:    append([]predicate.Plan{}, pq.predicates...),
+		withBrand:     pq.withBrand.Clone(),
 		withModels:    pq.withModels.Clone(),
 		withCities:    pq.withCities.Clone(),
 		withParent:    pq.withParent.Clone(),
@@ -370,6 +395,17 @@ func (pq *PlanQuery) Clone() *PlanQuery {
 		path:   pq.path,
 		unique: pq.unique,
 	}
+}
+
+// WithBrand tells the query-builder to eager-load the nodes that are connected to
+// the "brand" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PlanQuery) WithBrand(opts ...func(*EbikeBrandQuery)) *PlanQuery {
+	query := &EbikeBrandQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withBrand = query
+	return pq
 }
 
 // WithModels tells the query-builder to eager-load the nodes that are connected to
@@ -495,7 +531,8 @@ func (pq *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 	var (
 		nodes       = []*Plan{}
 		_spec       = pq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
+			pq.withBrand != nil,
 			pq.withModels != nil,
 			pq.withCities != nil,
 			pq.withParent != nil,
@@ -523,6 +560,12 @@ func (pq *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
+	}
+	if query := pq.withBrand; query != nil {
+		if err := pq.loadBrand(ctx, query, nodes, nil,
+			func(n *Plan, e *EbikeBrand) { n.Edges.Brand = e }); err != nil {
+			return nil, err
+		}
 	}
 	if query := pq.withModels; query != nil {
 		if err := pq.loadModels(ctx, query, nodes,
@@ -561,6 +604,35 @@ func (pq *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 	return nodes, nil
 }
 
+func (pq *PlanQuery) loadBrand(ctx context.Context, query *EbikeBrandQuery, nodes []*Plan, init func(*Plan), assign func(*Plan, *EbikeBrand)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Plan)
+	for i := range nodes {
+		if nodes[i].BrandID == nil {
+			continue
+		}
+		fk := *nodes[i].BrandID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(ebikebrand.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "brand_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 func (pq *PlanQuery) loadModels(ctx context.Context, query *BatteryModelQuery, nodes []*Plan, init func(*Plan), assign func(*Plan, *BatteryModel)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
 	byID := make(map[uint64]*Plan)

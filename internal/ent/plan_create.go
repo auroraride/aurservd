@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 )
 
@@ -94,9 +95,37 @@ func (pc *PlanCreate) SetNillableRemark(s *string) *PlanCreate {
 	return pc
 }
 
+// SetBrandID sets the "brand_id" field.
+func (pc *PlanCreate) SetBrandID(u uint64) *PlanCreate {
+	pc.mutation.SetBrandID(u)
+	return pc
+}
+
+// SetNillableBrandID sets the "brand_id" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableBrandID(u *uint64) *PlanCreate {
+	if u != nil {
+		pc.SetBrandID(*u)
+	}
+	return pc
+}
+
 // SetEnable sets the "enable" field.
 func (pc *PlanCreate) SetEnable(b bool) *PlanCreate {
 	pc.mutation.SetEnable(b)
+	return pc
+}
+
+// SetType sets the "type" field.
+func (pc *PlanCreate) SetType(u uint8) *PlanCreate {
+	pc.mutation.SetType(u)
+	return pc
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableType(u *uint8) *PlanCreate {
+	if u != nil {
+		pc.SetType(*u)
+	}
 	return pc
 }
 
@@ -176,6 +205,25 @@ func (pc *PlanCreate) SetNillableParentID(u *uint64) *PlanCreate {
 		pc.SetParentID(*u)
 	}
 	return pc
+}
+
+// SetReliefNewly sets the "relief_newly" field.
+func (pc *PlanCreate) SetReliefNewly(f float64) *PlanCreate {
+	pc.mutation.SetReliefNewly(f)
+	return pc
+}
+
+// SetNillableReliefNewly sets the "relief_newly" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableReliefNewly(f *float64) *PlanCreate {
+	if f != nil {
+		pc.SetReliefNewly(*f)
+	}
+	return pc
+}
+
+// SetBrand sets the "brand" edge to the EbikeBrand entity.
+func (pc *PlanCreate) SetBrand(e *EbikeBrand) *PlanCreate {
+	return pc.SetBrandID(e.ID)
 }
 
 // AddModelIDs adds the "models" edge to the BatteryModel entity by IDs.
@@ -336,6 +384,14 @@ func (pc *PlanCreate) defaults() error {
 		v := plan.DefaultUpdatedAt()
 		pc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := pc.mutation.GetType(); !ok {
+		v := plan.DefaultType
+		pc.mutation.SetType(v)
+	}
+	if _, ok := pc.mutation.ReliefNewly(); !ok {
+		v := plan.DefaultReliefNewly
+		pc.mutation.SetReliefNewly(v)
+	}
 	return nil
 }
 
@@ -349,6 +405,9 @@ func (pc *PlanCreate) check() error {
 	}
 	if _, ok := pc.mutation.Enable(); !ok {
 		return &ValidationError{Name: "enable", err: errors.New(`ent: missing required field "Plan.enable"`)}
+	}
+	if _, ok := pc.mutation.GetType(); !ok {
+		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Plan.type"`)}
 	}
 	if _, ok := pc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Plan.name"`)}
@@ -367,6 +426,9 @@ func (pc *PlanCreate) check() error {
 	}
 	if _, ok := pc.mutation.Commission(); !ok {
 		return &ValidationError{Name: "commission", err: errors.New(`ent: missing required field "Plan.commission"`)}
+	}
+	if _, ok := pc.mutation.ReliefNewly(); !ok {
+		return &ValidationError{Name: "relief_newly", err: errors.New(`ent: missing required field "Plan.relief_newly"`)}
 	}
 	return nil
 }
@@ -452,6 +514,14 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 		})
 		_node.Enable = value
 	}
+	if value, ok := pc.mutation.GetType(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: plan.FieldType,
+		})
+		_node.Type = value
+	}
 	if value, ok := pc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -515,6 +585,34 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 			Column: plan.FieldDesc,
 		})
 		_node.Desc = value
+	}
+	if value, ok := pc.mutation.ReliefNewly(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: plan.FieldReliefNewly,
+		})
+		_node.ReliefNewly = value
+	}
+	if nodes := pc.mutation.BrandIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   plan.BrandTable,
+			Columns: []string{plan.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebikebrand.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.BrandID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := pc.mutation.ModelsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -730,6 +828,24 @@ func (u *PlanUpsert) ClearRemark() *PlanUpsert {
 	return u
 }
 
+// SetBrandID sets the "brand_id" field.
+func (u *PlanUpsert) SetBrandID(v uint64) *PlanUpsert {
+	u.Set(plan.FieldBrandID, v)
+	return u
+}
+
+// UpdateBrandID sets the "brand_id" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateBrandID() *PlanUpsert {
+	u.SetExcluded(plan.FieldBrandID)
+	return u
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (u *PlanUpsert) ClearBrandID() *PlanUpsert {
+	u.SetNull(plan.FieldBrandID)
+	return u
+}
+
 // SetEnable sets the "enable" field.
 func (u *PlanUpsert) SetEnable(v bool) *PlanUpsert {
 	u.Set(plan.FieldEnable, v)
@@ -739,6 +855,24 @@ func (u *PlanUpsert) SetEnable(v bool) *PlanUpsert {
 // UpdateEnable sets the "enable" field to the value that was provided on create.
 func (u *PlanUpsert) UpdateEnable() *PlanUpsert {
 	u.SetExcluded(plan.FieldEnable)
+	return u
+}
+
+// SetType sets the "type" field.
+func (u *PlanUpsert) SetType(v uint8) *PlanUpsert {
+	u.Set(plan.FieldType, v)
+	return u
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateType() *PlanUpsert {
+	u.SetExcluded(plan.FieldType)
+	return u
+}
+
+// AddType adds v to the "type" field.
+func (u *PlanUpsert) AddType(v uint8) *PlanUpsert {
+	u.Add(plan.FieldType, v)
 	return u
 }
 
@@ -892,6 +1026,24 @@ func (u *PlanUpsert) ClearParentID() *PlanUpsert {
 	return u
 }
 
+// SetReliefNewly sets the "relief_newly" field.
+func (u *PlanUpsert) SetReliefNewly(v float64) *PlanUpsert {
+	u.Set(plan.FieldReliefNewly, v)
+	return u
+}
+
+// UpdateReliefNewly sets the "relief_newly" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateReliefNewly() *PlanUpsert {
+	u.SetExcluded(plan.FieldReliefNewly)
+	return u
+}
+
+// AddReliefNewly adds v to the "relief_newly" field.
+func (u *PlanUpsert) AddReliefNewly(v float64) *PlanUpsert {
+	u.Add(plan.FieldReliefNewly, v)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1017,6 +1169,27 @@ func (u *PlanUpsertOne) ClearRemark() *PlanUpsertOne {
 	})
 }
 
+// SetBrandID sets the "brand_id" field.
+func (u *PlanUpsertOne) SetBrandID(v uint64) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetBrandID(v)
+	})
+}
+
+// UpdateBrandID sets the "brand_id" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateBrandID() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateBrandID()
+	})
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (u *PlanUpsertOne) ClearBrandID() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearBrandID()
+	})
+}
+
 // SetEnable sets the "enable" field.
 func (u *PlanUpsertOne) SetEnable(v bool) *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
@@ -1028,6 +1201,27 @@ func (u *PlanUpsertOne) SetEnable(v bool) *PlanUpsertOne {
 func (u *PlanUpsertOne) UpdateEnable() *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.UpdateEnable()
+	})
+}
+
+// SetType sets the "type" field.
+func (u *PlanUpsertOne) SetType(v uint8) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetType(v)
+	})
+}
+
+// AddType adds v to the "type" field.
+func (u *PlanUpsertOne) AddType(v uint8) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.AddType(v)
+	})
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateType() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateType()
 	})
 }
 
@@ -1203,6 +1397,27 @@ func (u *PlanUpsertOne) UpdateParentID() *PlanUpsertOne {
 func (u *PlanUpsertOne) ClearParentID() *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.ClearParentID()
+	})
+}
+
+// SetReliefNewly sets the "relief_newly" field.
+func (u *PlanUpsertOne) SetReliefNewly(v float64) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetReliefNewly(v)
+	})
+}
+
+// AddReliefNewly adds v to the "relief_newly" field.
+func (u *PlanUpsertOne) AddReliefNewly(v float64) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.AddReliefNewly(v)
+	})
+}
+
+// UpdateReliefNewly sets the "relief_newly" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateReliefNewly() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateReliefNewly()
 	})
 }
 
@@ -1493,6 +1708,27 @@ func (u *PlanUpsertBulk) ClearRemark() *PlanUpsertBulk {
 	})
 }
 
+// SetBrandID sets the "brand_id" field.
+func (u *PlanUpsertBulk) SetBrandID(v uint64) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetBrandID(v)
+	})
+}
+
+// UpdateBrandID sets the "brand_id" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateBrandID() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateBrandID()
+	})
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (u *PlanUpsertBulk) ClearBrandID() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearBrandID()
+	})
+}
+
 // SetEnable sets the "enable" field.
 func (u *PlanUpsertBulk) SetEnable(v bool) *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
@@ -1504,6 +1740,27 @@ func (u *PlanUpsertBulk) SetEnable(v bool) *PlanUpsertBulk {
 func (u *PlanUpsertBulk) UpdateEnable() *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.UpdateEnable()
+	})
+}
+
+// SetType sets the "type" field.
+func (u *PlanUpsertBulk) SetType(v uint8) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetType(v)
+	})
+}
+
+// AddType adds v to the "type" field.
+func (u *PlanUpsertBulk) AddType(v uint8) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.AddType(v)
+	})
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateType() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateType()
 	})
 }
 
@@ -1679,6 +1936,27 @@ func (u *PlanUpsertBulk) UpdateParentID() *PlanUpsertBulk {
 func (u *PlanUpsertBulk) ClearParentID() *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.ClearParentID()
+	})
+}
+
+// SetReliefNewly sets the "relief_newly" field.
+func (u *PlanUpsertBulk) SetReliefNewly(v float64) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetReliefNewly(v)
+	})
+}
+
+// AddReliefNewly adds v to the "relief_newly" field.
+func (u *PlanUpsertBulk) AddReliefNewly(v float64) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.AddReliefNewly(v)
+	})
+}
+
+// UpdateReliefNewly sets the "relief_newly" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateReliefNewly() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateReliefNewly()
 	})
 }
 

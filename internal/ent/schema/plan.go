@@ -9,6 +9,7 @@ import (
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -58,6 +59,7 @@ func (Plan) Annotations() []schema.Annotation {
 func (Plan) Fields() []ent.Field {
     return []ent.Field{
         field.Bool("enable").Comment("是否启用"),
+        field.Uint8("type").Default(model.PlanTypeBattery.Value()).Comment("骑士卡类别 1:单电 2:车加电"),
         field.String("name").Comment("骑士卡名称"),
         field.Time("start").Comment("有效期开始日期"),
         field.Time("end").Comment("有效期结束日期"),
@@ -67,6 +69,8 @@ func (Plan) Fields() []ent.Field {
         field.Float("original").Optional().Comment("原价"),
         field.String("desc").Optional().Comment("优惠信息"),
         field.Uint64("parent_id").Optional().Nillable().Comment("父级"),
+        field.Float("relief_newly").Default(0).Comment("新签减免"),
+        field.Strings("notes").Optional().Comment("购买须知"),
     }
 }
 
@@ -75,10 +79,7 @@ func (Plan) Edges() []ent.Edge {
     return []ent.Edge{
         edge.To("models", BatteryModel.Type),
         edge.To("cities", City.Type),
-        edge.To("complexes", Plan.Type).
-            From("parent").
-            Field("parent_id").
-            Unique(),
+        edge.To("complexes", Plan.Type).From("parent").Field("parent_id").Unique(),
         edge.From("coupons", Coupon.Type).Ref("plans"),
     }
 }
@@ -88,6 +89,7 @@ func (Plan) Mixin() []ent.Mixin {
         internal.TimeMixin{},
         internal.DeleteMixin{},
         internal.Modifier{},
+        EbikeBrandMixin{Optional: true},
     }
 }
 

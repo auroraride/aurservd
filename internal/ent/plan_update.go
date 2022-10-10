@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -91,9 +92,50 @@ func (pu *PlanUpdate) ClearRemark() *PlanUpdate {
 	return pu
 }
 
+// SetBrandID sets the "brand_id" field.
+func (pu *PlanUpdate) SetBrandID(u uint64) *PlanUpdate {
+	pu.mutation.SetBrandID(u)
+	return pu
+}
+
+// SetNillableBrandID sets the "brand_id" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableBrandID(u *uint64) *PlanUpdate {
+	if u != nil {
+		pu.SetBrandID(*u)
+	}
+	return pu
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (pu *PlanUpdate) ClearBrandID() *PlanUpdate {
+	pu.mutation.ClearBrandID()
+	return pu
+}
+
 // SetEnable sets the "enable" field.
 func (pu *PlanUpdate) SetEnable(b bool) *PlanUpdate {
 	pu.mutation.SetEnable(b)
+	return pu
+}
+
+// SetType sets the "type" field.
+func (pu *PlanUpdate) SetType(u uint8) *PlanUpdate {
+	pu.mutation.ResetType()
+	pu.mutation.SetType(u)
+	return pu
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableType(u *uint8) *PlanUpdate {
+	if u != nil {
+		pu.SetType(*u)
+	}
+	return pu
+}
+
+// AddType adds u to the "type" field.
+func (pu *PlanUpdate) AddType(u int8) *PlanUpdate {
+	pu.mutation.AddType(u)
 	return pu
 }
 
@@ -221,6 +263,32 @@ func (pu *PlanUpdate) ClearParentID() *PlanUpdate {
 	return pu
 }
 
+// SetReliefNewly sets the "relief_newly" field.
+func (pu *PlanUpdate) SetReliefNewly(f float64) *PlanUpdate {
+	pu.mutation.ResetReliefNewly()
+	pu.mutation.SetReliefNewly(f)
+	return pu
+}
+
+// SetNillableReliefNewly sets the "relief_newly" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableReliefNewly(f *float64) *PlanUpdate {
+	if f != nil {
+		pu.SetReliefNewly(*f)
+	}
+	return pu
+}
+
+// AddReliefNewly adds f to the "relief_newly" field.
+func (pu *PlanUpdate) AddReliefNewly(f float64) *PlanUpdate {
+	pu.mutation.AddReliefNewly(f)
+	return pu
+}
+
+// SetBrand sets the "brand" edge to the EbikeBrand entity.
+func (pu *PlanUpdate) SetBrand(e *EbikeBrand) *PlanUpdate {
+	return pu.SetBrandID(e.ID)
+}
+
 // AddModelIDs adds the "models" edge to the BatteryModel entity by IDs.
 func (pu *PlanUpdate) AddModelIDs(ids ...uint64) *PlanUpdate {
 	pu.mutation.AddModelIDs(ids...)
@@ -289,6 +357,12 @@ func (pu *PlanUpdate) AddCoupons(c ...*Coupon) *PlanUpdate {
 // Mutation returns the PlanMutation object of the builder.
 func (pu *PlanUpdate) Mutation() *PlanMutation {
 	return pu.mutation
+}
+
+// ClearBrand clears the "brand" edge to the EbikeBrand entity.
+func (pu *PlanUpdate) ClearBrand() *PlanUpdate {
+	pu.mutation.ClearBrand()
+	return pu
 }
 
 // ClearModels clears all "models" edges to the BatteryModel entity.
@@ -533,6 +607,20 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: plan.FieldEnable,
 		})
 	}
+	if value, ok := pu.mutation.GetType(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: plan.FieldType,
+		})
+	}
+	if value, ok := pu.mutation.AddedType(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: plan.FieldType,
+		})
+	}
 	if value, ok := pu.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -628,6 +716,55 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Column: plan.FieldDesc,
 		})
+	}
+	if value, ok := pu.mutation.ReliefNewly(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: plan.FieldReliefNewly,
+		})
+	}
+	if value, ok := pu.mutation.AddedReliefNewly(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: plan.FieldReliefNewly,
+		})
+	}
+	if pu.mutation.BrandCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   plan.BrandTable,
+			Columns: []string{plan.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebikebrand.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.BrandIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   plan.BrandTable,
+			Columns: []string{plan.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebikebrand.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if pu.mutation.ModelsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -959,9 +1096,50 @@ func (puo *PlanUpdateOne) ClearRemark() *PlanUpdateOne {
 	return puo
 }
 
+// SetBrandID sets the "brand_id" field.
+func (puo *PlanUpdateOne) SetBrandID(u uint64) *PlanUpdateOne {
+	puo.mutation.SetBrandID(u)
+	return puo
+}
+
+// SetNillableBrandID sets the "brand_id" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableBrandID(u *uint64) *PlanUpdateOne {
+	if u != nil {
+		puo.SetBrandID(*u)
+	}
+	return puo
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (puo *PlanUpdateOne) ClearBrandID() *PlanUpdateOne {
+	puo.mutation.ClearBrandID()
+	return puo
+}
+
 // SetEnable sets the "enable" field.
 func (puo *PlanUpdateOne) SetEnable(b bool) *PlanUpdateOne {
 	puo.mutation.SetEnable(b)
+	return puo
+}
+
+// SetType sets the "type" field.
+func (puo *PlanUpdateOne) SetType(u uint8) *PlanUpdateOne {
+	puo.mutation.ResetType()
+	puo.mutation.SetType(u)
+	return puo
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableType(u *uint8) *PlanUpdateOne {
+	if u != nil {
+		puo.SetType(*u)
+	}
+	return puo
+}
+
+// AddType adds u to the "type" field.
+func (puo *PlanUpdateOne) AddType(u int8) *PlanUpdateOne {
+	puo.mutation.AddType(u)
 	return puo
 }
 
@@ -1089,6 +1267,32 @@ func (puo *PlanUpdateOne) ClearParentID() *PlanUpdateOne {
 	return puo
 }
 
+// SetReliefNewly sets the "relief_newly" field.
+func (puo *PlanUpdateOne) SetReliefNewly(f float64) *PlanUpdateOne {
+	puo.mutation.ResetReliefNewly()
+	puo.mutation.SetReliefNewly(f)
+	return puo
+}
+
+// SetNillableReliefNewly sets the "relief_newly" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableReliefNewly(f *float64) *PlanUpdateOne {
+	if f != nil {
+		puo.SetReliefNewly(*f)
+	}
+	return puo
+}
+
+// AddReliefNewly adds f to the "relief_newly" field.
+func (puo *PlanUpdateOne) AddReliefNewly(f float64) *PlanUpdateOne {
+	puo.mutation.AddReliefNewly(f)
+	return puo
+}
+
+// SetBrand sets the "brand" edge to the EbikeBrand entity.
+func (puo *PlanUpdateOne) SetBrand(e *EbikeBrand) *PlanUpdateOne {
+	return puo.SetBrandID(e.ID)
+}
+
 // AddModelIDs adds the "models" edge to the BatteryModel entity by IDs.
 func (puo *PlanUpdateOne) AddModelIDs(ids ...uint64) *PlanUpdateOne {
 	puo.mutation.AddModelIDs(ids...)
@@ -1157,6 +1361,12 @@ func (puo *PlanUpdateOne) AddCoupons(c ...*Coupon) *PlanUpdateOne {
 // Mutation returns the PlanMutation object of the builder.
 func (puo *PlanUpdateOne) Mutation() *PlanMutation {
 	return puo.mutation
+}
+
+// ClearBrand clears the "brand" edge to the EbikeBrand entity.
+func (puo *PlanUpdateOne) ClearBrand() *PlanUpdateOne {
+	puo.mutation.ClearBrand()
+	return puo
 }
 
 // ClearModels clears all "models" edges to the BatteryModel entity.
@@ -1431,6 +1641,20 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 			Column: plan.FieldEnable,
 		})
 	}
+	if value, ok := puo.mutation.GetType(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: plan.FieldType,
+		})
+	}
+	if value, ok := puo.mutation.AddedType(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: plan.FieldType,
+		})
+	}
 	if value, ok := puo.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -1526,6 +1750,55 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 			Type:   field.TypeString,
 			Column: plan.FieldDesc,
 		})
+	}
+	if value, ok := puo.mutation.ReliefNewly(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: plan.FieldReliefNewly,
+		})
+	}
+	if value, ok := puo.mutation.AddedReliefNewly(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: plan.FieldReliefNewly,
+		})
+	}
+	if puo.mutation.BrandCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   plan.BrandTable,
+			Columns: []string{plan.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebikebrand.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.BrandIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   plan.BrandTable,
+			Columns: []string{plan.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebikebrand.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if puo.mutation.ModelsCleared() {
 		edge := &sqlgraph.EdgeSpec{

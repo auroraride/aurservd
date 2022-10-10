@@ -5,6 +5,27 @@
 
 package model
 
+import "golang.org/x/exp/slices"
+
+type PlanType uint8
+
+const (
+    PlanTypeBattery          PlanType = 1 + iota // 单电
+    PlanTypeEbikeWithBattery                     // 车加电
+)
+
+func (t PlanType) Value() uint8 {
+    return uint8(t)
+}
+
+func (t PlanType) IsValid() bool {
+    return slices.Contains(PlanTypes, t)
+}
+
+var (
+    PlanTypes = []PlanType{PlanTypeBattery, PlanTypeEbikeWithBattery}
+)
+
 // Plan 骑士卡基础信息
 type Plan struct {
     ID   uint64 `json:"id"`   // 骑士卡ID
@@ -12,23 +33,37 @@ type Plan struct {
     Days uint   `json:"days"` // 骑士卡天数
 }
 
+type PlanEbikeComplex struct {
+    Model string `json:"model" validate:"required" validate:"电池型号"`
+}
+
 type PlanComplex struct {
-    ID         uint64  `json:"id,omitempty"` // 子项ID (可为空, 编辑的时候需要携带此字段)
-    Price      float64 `json:"price" validate:"required" trans:"价格"`
-    Days       uint    `json:"days" validate:"required,min=1" trans:"有效天数"`
-    Original   float64 `json:"original"`   // 原价
-    Desc       string  `json:"desc"`       // 优惠信息
-    Commission float64 `json:"commission"` // 提成
+    ID uint64 `json:"id,omitempty"` // ID (可为空, 编辑的时候需要携带此字段)
+
+    Price float64 `json:"price" validate:"required" trans:"价格"`
+    Days  uint    `json:"days" validate:"required,min=1" trans:"有效天数"`
+
+    Original    float64 `json:"original"`    // 原价
+    Desc        string  `json:"desc"`        // 优惠信息
+    Commission  float64 `json:"commission"`  // 提成
+    ReliefNewly float64 `json:"reliefNewly"` // 新签减免
+
+    Model string `json:"model"` // 电池型号, 车加电必填
 }
 
 type PlanCreateReq struct {
+    Type PlanType `json:"type" validate:"required,enum" validate:"骑士卡类别"`
+
     Name      string        `json:"name" validate:"required" trans:"骑士卡名称"`
     Enable    bool          `json:"enable"` // 是否启用
     Start     string        `json:"start" validate:"required,datetime=2006-01-02" trans:"开始日期"`
     End       string        `json:"end" validate:"required,datetime=2006-01-02" trans:"结束日期"`
     Cities    []uint64      `json:"cities" validate:"required,min=1" trans:"启用城市"`
-    Models    []string      `json:"models" validate:"required,min=1" trans:"电池型号"`
     Complexes []PlanComplex `json:"complexes" validate:"required,min=1" trans:"骑士卡详细信息"`
+    Notes     []string      `json:"notes"` // 购买须知
+
+    Models  []string `json:"models" validate:"required_if=Type 1" trans:"电池型号"`  // 单电必填, 车加电必不填
+    BrandID uint64   `json:"brandID" validate:"required_if=Type 2" trans:"电车型号"` // 车加电必填, 单电必不填
 }
 
 type PlanModifyReq struct {
@@ -42,7 +77,7 @@ type PlanEnableModifyReq struct {
     Enable *bool  `json:"enable" validate:"required"`        // 启用或禁用
 }
 
-// PlanListReq 列表请求
+// PlanListReq 列表筛选
 type PlanListReq struct {
     PaginationReq
 

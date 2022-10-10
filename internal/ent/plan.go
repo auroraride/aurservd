@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 )
 
@@ -30,8 +31,12 @@ type Plan struct {
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
+	// BrandID holds the value of the "brand_id" field.
+	BrandID *uint64 `json:"brand_id,omitempty"`
 	// 是否启用
 	Enable bool `json:"enable,omitempty"`
+	// 骑士卡类别 1:单电 2:车加电
+	Type uint8 `json:"type,omitempty"`
 	// 骑士卡名称
 	Name string `json:"name,omitempty"`
 	// 有效期开始日期
@@ -50,6 +55,8 @@ type Plan struct {
 	Desc string `json:"desc,omitempty"`
 	// 父级
 	ParentID *uint64 `json:"parent_id,omitempty"`
+	// 新签减免
+	ReliefNewly float64 `json:"relief_newly,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlanQuery when eager-loading is set.
 	Edges PlanEdges `json:"edges"`
@@ -57,6 +64,8 @@ type Plan struct {
 
 // PlanEdges holds the relations/edges for other nodes in the graph.
 type PlanEdges struct {
+	// Brand holds the value of the brand edge.
+	Brand *EbikeBrand `json:"brand,omitempty"`
 	// Models holds the value of the models edge.
 	Models []*BatteryModel `json:"models,omitempty"`
 	// Cities holds the value of the cities edge.
@@ -69,13 +78,26 @@ type PlanEdges struct {
 	Coupons []*Coupon `json:"coupons,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
+}
+
+// BrandOrErr returns the Brand value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PlanEdges) BrandOrErr() (*EbikeBrand, error) {
+	if e.loadedTypes[0] {
+		if e.Brand == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: ebikebrand.Label}
+		}
+		return e.Brand, nil
+	}
+	return nil, &NotLoadedError{edge: "brand"}
 }
 
 // ModelsOrErr returns the Models value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlanEdges) ModelsOrErr() ([]*BatteryModel, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		return e.Models, nil
 	}
 	return nil, &NotLoadedError{edge: "models"}
@@ -84,7 +106,7 @@ func (e PlanEdges) ModelsOrErr() ([]*BatteryModel, error) {
 // CitiesOrErr returns the Cities value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlanEdges) CitiesOrErr() ([]*City, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		return e.Cities, nil
 	}
 	return nil, &NotLoadedError{edge: "cities"}
@@ -93,7 +115,7 @@ func (e PlanEdges) CitiesOrErr() ([]*City, error) {
 // ParentOrErr returns the Parent value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PlanEdges) ParentOrErr() (*Plan, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		if e.Parent == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: plan.Label}
@@ -106,7 +128,7 @@ func (e PlanEdges) ParentOrErr() (*Plan, error) {
 // ComplexesOrErr returns the Complexes value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlanEdges) ComplexesOrErr() ([]*Plan, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		return e.Complexes, nil
 	}
 	return nil, &NotLoadedError{edge: "complexes"}
@@ -115,7 +137,7 @@ func (e PlanEdges) ComplexesOrErr() ([]*Plan, error) {
 // CouponsOrErr returns the Coupons value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlanEdges) CouponsOrErr() ([]*Coupon, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[5] {
 		return e.Coupons, nil
 	}
 	return nil, &NotLoadedError{edge: "coupons"}
@@ -130,9 +152,9 @@ func (*Plan) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case plan.FieldEnable:
 			values[i] = new(sql.NullBool)
-		case plan.FieldPrice, plan.FieldCommission, plan.FieldOriginal:
+		case plan.FieldPrice, plan.FieldCommission, plan.FieldOriginal, plan.FieldReliefNewly:
 			values[i] = new(sql.NullFloat64)
-		case plan.FieldID, plan.FieldDays, plan.FieldParentID:
+		case plan.FieldID, plan.FieldBrandID, plan.FieldType, plan.FieldDays, plan.FieldParentID:
 			values[i] = new(sql.NullInt64)
 		case plan.FieldRemark, plan.FieldName, plan.FieldDesc:
 			values[i] = new(sql.NullString)
@@ -200,11 +222,24 @@ func (pl *Plan) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pl.Remark = value.String
 			}
+		case plan.FieldBrandID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field brand_id", values[i])
+			} else if value.Valid {
+				pl.BrandID = new(uint64)
+				*pl.BrandID = uint64(value.Int64)
+			}
 		case plan.FieldEnable:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field enable", values[i])
 			} else if value.Valid {
 				pl.Enable = value.Bool
+			}
+		case plan.FieldType:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field type", values[i])
+			} else if value.Valid {
+				pl.Type = uint8(value.Int64)
 			}
 		case plan.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -261,9 +296,20 @@ func (pl *Plan) assignValues(columns []string, values []any) error {
 				pl.ParentID = new(uint64)
 				*pl.ParentID = uint64(value.Int64)
 			}
+		case plan.FieldReliefNewly:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field relief_newly", values[i])
+			} else if value.Valid {
+				pl.ReliefNewly = value.Float64
+			}
 		}
 	}
 	return nil
+}
+
+// QueryBrand queries the "brand" edge of the Plan entity.
+func (pl *Plan) QueryBrand() *EbikeBrandQuery {
+	return (&PlanClient{config: pl.config}).QueryBrand(pl)
 }
 
 // QueryModels queries the "models" edge of the Plan entity.
@@ -334,8 +380,16 @@ func (pl *Plan) String() string {
 	builder.WriteString("remark=")
 	builder.WriteString(pl.Remark)
 	builder.WriteString(", ")
+	if v := pl.BrandID; v != nil {
+		builder.WriteString("brand_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
 	builder.WriteString("enable=")
 	builder.WriteString(fmt.Sprintf("%v", pl.Enable))
+	builder.WriteString(", ")
+	builder.WriteString("type=")
+	builder.WriteString(fmt.Sprintf("%v", pl.Type))
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(pl.Name)
@@ -365,6 +419,9 @@ func (pl *Plan) String() string {
 		builder.WriteString("parent_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
+	builder.WriteString(", ")
+	builder.WriteString("relief_newly=")
+	builder.WriteString(fmt.Sprintf("%v", pl.ReliefNewly))
 	builder.WriteByte(')')
 	return builder.String()
 }

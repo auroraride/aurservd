@@ -77,28 +77,29 @@ func (s *planService) QueryEffectiveWithID(id uint64) *ent.Plan {
 }
 
 // checkDuplicate 查询骑士卡是否冲突
-func (s *planService) checkDuplicate(cities []uint64, models []string, start, end time.Time, parentID ...uint64) {
-    for _, cityID := range cities {
-        for _, rm := range models {
-            q := s.orm.QueryNotDeleted().
-                Where(
-                    plan.Enable(true),
-                    plan.HasCitiesWith(city.ID(cityID)),
-                    plan.HasModelsWith(batterymodel.Model(rm)),
-                    plan.StartLTE(end),
-                    plan.EndGTE(start),
-                )
-            if len(parentID) > 0 {
-                id := parentID[0]
-                q.Where(
-                    plan.IDNEQ(id),
-                    plan.ParentIDNEQ(id),
-                )
-            }
-            if exists, _ := q.Exist(s.ctx); exists {
-                snag.Panic("骑士卡冲突")
-            }
-        }
+// TODO 需要考虑电车
+func (s *planService) checkDuplicate(brandID uint64, cities []uint64, models []string, start, end time.Time, params ...uint64) {
+    q := s.orm.QueryNotDeleted().
+        Where(
+            plan.Enable(true),
+            plan.HasCitiesWith(city.IDIn(cities...)),
+            plan.HasModelsWith(batterymodel.ModelIn(models...)),
+            plan.StartLTE(end),
+            plan.EndGTE(start),
+        )
+    if len(params) > 0 {
+        parentID := params[0]
+        q.Where(
+            plan.IDNEQ(parentID),
+            plan.ParentIDNEQ(parentID),
+        )
+    }
+    if brandID > 0 {
+        q.Where(plan.BrandID(brandID))
+    }
+
+    if exists, _ := q.Exist(s.ctx); exists {
+        snag.Panic("骑士卡冲突")
     }
 }
 
@@ -124,8 +125,20 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanWithComplexes {
     start := carbon.ParseByLayout(req.Start, carbon.DateLayout).Carbon2Time()
     end := carbon.ParseByLayout(req.End, carbon.DateLayout).Carbon2Time()
 
+    var bms []string
+    if req.Type == model.PlanTypeEbikeWithBattery {
+        for _, c := range req.Complexes {
+            if c.Model == "" {
+                snag.Panic("电车必须选择电池")
+            }
+            bms = append(bms, c.Model)
+        }
+    } else {
+        bms = req.Models
+    }
+
     // 查询是否重复
-    s.checkDuplicate(req.Cities, req.Models, start, end)
+    s.checkDuplicate(req.BrandID, req.Cities, bms, start, end)
 
     // 排序
     sort.Slice(req.Complexes, func(i, j int) bool {
