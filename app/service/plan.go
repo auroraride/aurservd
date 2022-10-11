@@ -9,9 +9,9 @@ import (
     "context"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
-    "github.com/auroraride/aurservd/internal/ent/batterymodel"
     "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/plan"
+    "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
     log "github.com/sirupsen/logrus"
@@ -67,7 +67,6 @@ func (s *planService) QueryEffectiveWithID(id uint64) *ent.Plan {
             plan.StartLTE(today),
             plan.EndGTE(today),
         ).
-        WithModels().
         Only(s.ctx)
     if err != nil || item == nil {
         log.Error(err)
@@ -83,9 +82,9 @@ func (s *planService) checkDuplicate(brandID uint64, cities []uint64, models []s
         Where(
             plan.Enable(true),
             plan.HasCitiesWith(city.IDIn(cities...)),
-            plan.HasModelsWith(batterymodel.ModelIn(models...)),
             plan.StartLTE(end),
             plan.EndGTE(start),
+            plan.ModelIn(models...),
         )
     if len(params) > 0 {
         parentID := params[0]
@@ -98,44 +97,45 @@ func (s *planService) checkDuplicate(brandID uint64, cities []uint64, models []s
         q.Where(plan.BrandID(brandID))
     }
 
-    if exists, _ := q.Exist(s.ctx); exists {
+    exists, _ := q.Exist(s.ctx)
+    if exists {
         snag.Panic("骑士卡冲突")
     }
 }
 
-func (s *planService) cloneCreator(creator *ent.PlanCreate) *ent.PlanCreate {
-    c := *creator
-    return &c
-}
-
-func (s *planService) getCitiesAndModels(reqCities []uint64, reqModels []string) (cities ent.Cities, pms ent.BatteryModels) {
-    var err error
-    cities, err = ent.Database.City.QueryNotDeleted().Where(city.IDIn(reqCities...)).All(s.ctx)
-    if err != nil {
-        snag.Panic("城市参数错误")
-    }
-    pms = NewBatteryModel().QueryModelsX(reqModels)
-    return
-}
-
 // Create 创建骑士卡
-func (s *planService) Create(req *model.PlanCreateReq) model.PlanWithComplexes {
-    cities, pms := s.getCitiesAndModels(req.Cities, req.Models)
+func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
+    cities, _ := NewCity().QueryIDs(req.Cities)
+
+    if len(cities) != len(req.Cities) {
+        snag.Panic("城市选择错误")
+    }
+
+    // 验证车辆型号
+    var brandID *uint64
+    var brand *ent.EbikeBrand
+    if req.BrandID > 0 {
+        brand = NewEbikeBrand().QueryX(req.BrandID)
+        brandID = silk.Pointer(brand.ID)
+    }
 
     start := carbon.ParseByLayout(req.Start, carbon.DateLayout).Carbon2Time()
     end := carbon.ParseByLayout(req.End, carbon.DateLayout).Carbon2Time()
 
+    // 获取型号列表
     var bms []string
-    if req.Type == model.PlanTypeEbikeWithBattery {
-        for _, c := range req.Complexes {
-            if c.Model == "" {
-                snag.Panic("电车必须选择电池")
-            }
-            bms = append(bms, c.Model)
+    mms := make(map[string]bool)
+    for _, c := range req.Complexes {
+        if c.Model == "" {
+            snag.Panic("电池型号必选")
         }
-    } else {
-        bms = req.Models
+        if !mms[c.Model] {
+            bms = append(bms, c.Model)
+            mms[c.Model] = true
+        }
     }
+
+    NewBatteryModel().QueryModelsX(bms)
 
     // 查询是否重复
     s.checkDuplicate(req.BrandID, req.Cities, bms, start, end)
@@ -152,17 +152,20 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanWithComplexes {
             SetName(strings.TrimSpace(req.Name)).
             SetEnable(req.Enable).
             AddCityIDs(req.Cities...).
-            AddModels(pms...).
             SetStart(start).
-            SetEnd(end)
+            SetEnd(end).
+            SetNotes(req.Notes).
+            SetNillableBrandID(brandID)
 
         for i, cl := range req.Complexes {
-            c := s.cloneCreator(creator).
+            c := creator.Clone().
+                SetModel(strings.ToUpper(cl.Model)).
                 SetPrice(cl.Price).
                 SetOriginal(cl.Original).
                 SetCommission(cl.Commission).
                 SetDesc(cl.Desc).
-                SetDays(cl.Days)
+                SetDays(cl.Days).
+                SetReliefNewly(cl.ReliefNewly)
             if i > 0 {
                 c.SetParent(parent)
             }
@@ -174,9 +177,9 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanWithComplexes {
             if i == 0 {
                 parent = r
                 parent.Edges.Cities = cities
-                parent.Edges.Models = pms
                 parent.Edges.Complexes = make([]*ent.Plan, len(req.Complexes))
                 parent.Edges.Complexes[i] = r
+                parent.Edges.Brand = brand
             } else {
                 parent.Edges.Complexes[i] = r
             }
@@ -246,22 +249,33 @@ func (s *planService) Delete(req *model.IDParamReq) {
 }
 
 // PlanWithComplexes 骑士卡详情
-func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanWithComplexes) {
+func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanListRes) {
     sort.Slice(item.Edges.Complexes, func(i, j int) bool {
         return item.Edges.Complexes[i].Days < item.Edges.Complexes[j].Days
     })
 
-    res = model.PlanWithComplexes{
+    res = model.PlanListRes{
         ID:        item.ID,
+        Type:      model.PlanType(item.Type),
         Name:      item.Name,
         Enable:    item.Enable,
         Start:     item.Start.Format(carbon.DateLayout),
         End:       item.End.Format(carbon.DateLayout),
         Cities:    make([]model.City, len(item.Edges.Cities)),
-        Models:    make([]model.BatteryModel, len(item.Edges.Models)),
-        Complexes: make([]model.PlanComplex, len(item.Edges.Complexes)+1),
+        Complexes: make([]*model.PlanComplexes, 0),
+        Notes:     item.Notes,
     }
 
+    // 电车型号
+    eb := item.Edges.Brand
+    if eb != nil {
+        res.Brand = &model.EbikeBrand{
+            ID:   eb.ID,
+            Name: eb.Name,
+        }
+    }
+
+    // 可用城市
     for i, c := range item.Edges.Cities {
         res.Cities[i] = model.City{
             ID:   c.ID,
@@ -269,32 +283,33 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanWithCompl
         }
     }
 
-    for i, pm := range item.Edges.Models {
-        res.Models[i] = model.BatteryModel{
-            ID:    pm.ID,
-            Model: pm.Model,
+    children := []*ent.Plan{
+        item,
+    }
+    children = append(children, item.Edges.Complexes...)
+
+    m := make(map[string]*model.PlanComplexes)
+    for _, child := range children {
+        r, ok := m[child.Model]
+        if !ok {
+            r = &model.PlanComplexes{}
+            m[child.Model] = r
         }
-    }
-
-    res.Complexes[0] = model.PlanComplex{
-        ID:         item.ID,
-        Price:      item.Price,
-        Days:       item.Days,
-        Original:   item.Original,
-        Desc:       item.Desc,
-        Commission: item.Commission,
-    }
-
-    for i, child := range item.Edges.Complexes {
-        res.Complexes[i+1] = model.PlanComplex{
+        *r = append(*r, model.PlanComplex{
             ID:         child.ID,
             Price:      child.Price,
             Days:       child.Days,
             Original:   child.Original,
             Desc:       child.Desc,
             Commission: child.Commission,
-        }
+            Model:      child.Model,
+        })
     }
+
+    for _, v := range m {
+        res.Complexes = append(res.Complexes, v)
+    }
+
     return
 }
 
@@ -306,7 +321,7 @@ func (s *planService) List(req *model.PlanListReq) *model.PaginationRes {
             pq.Where(plan.DeletedAtIsNil())
         }).
         WithCities().
-        WithModels().
+        WithBrand().
         Order(ent.Desc(plan.FieldStart), ent.Asc(plan.FieldEnd))
 
     if req.CityID != nil {
@@ -318,51 +333,60 @@ func (s *planService) List(req *model.PlanListReq) *model.PaginationRes {
     if req.Enable != nil {
         q.Where(plan.Enable(*req.Enable))
     }
+    if req.Model != nil {
+        q.Where(plan.Model(*req.Model))
+    }
+    if req.Type != nil {
+        q.Where(plan.Type(req.Type.Value()))
+    }
+    if req.BrandID != nil {
+        q.Where(plan.BrandID(*req.BrandID))
+    }
 
     return model.ParsePaginationResponse(
         q,
         req.PaginationReq,
-        func(item *ent.Plan) model.PlanWithComplexes {
+        func(item *ent.Plan) model.PlanListRes {
             return s.PlanWithComplexes(item)
         },
     )
 }
 
+// CityList TODO 重新根据车型调整
 func (s *planService) CityList(req *model.PlanListRiderReq) map[string]*[]model.RiderPlanItem {
     rmap := make(map[string]*[]model.RiderPlanItem)
-    today := carbon.Now().StartOfDay().Carbon2Time()
+    // today := carbon.Now().StartOfDay().Carbon2Time()
+    //
+    // items := s.orm.QueryNotDeleted().
+    //     Where(
+    //         plan.Enable(true),
+    //         plan.StartLTE(today),
+    //         plan.EndGTE(today),
+    //         plan.DaysGTE(req.Min),
+    //         plan.HasCitiesWith(
+    //             city.ID(req.CityID),
+    //         ),
+    //     ).
+    //     Order(ent.Asc(plan.FieldDays)).
+    //     AllX(s.ctx)
 
-    items := s.orm.QueryNotDeleted().
-        Where(
-            plan.Enable(true),
-            plan.StartLTE(today),
-            plan.EndGTE(today),
-            plan.DaysGTE(req.Min),
-            plan.HasCitiesWith(
-                city.ID(req.CityID),
-            ),
-        ).
-        WithModels().
-        Order(ent.Asc(plan.FieldDays)).
-        AllX(s.ctx)
-
-    for _, item := range items {
-        for _, pm := range item.Edges.Models {
-            list, ok := rmap[pm.Model]
-            if !ok {
-                list = new([]model.RiderPlanItem)
-                rmap[pm.Model] = list
-            }
-            *list = append(*list, model.RiderPlanItem{
-                ID:       item.ID,
-                Name:     item.Name,
-                Price:    item.Price,
-                Days:     item.Days,
-                Original: item.Original,
-                Desc:     item.Desc,
-            })
-        }
-    }
+    // for _, item := range items {
+    //     for _, pm := range item.Edges.Models {
+    //         list, ok := rmap[pm.Model]
+    //         if !ok {
+    //             list = new([]model.RiderPlanItem)
+    //             rmap[pm.Model] = list
+    //         }
+    //         *list = append(*list, model.RiderPlanItem{
+    //             ID:       item.ID,
+    //             Name:     item.Name,
+    //             Price:    item.Price,
+    //             Days:     item.Days,
+    //             Original: item.Original,
+    //             Desc:     item.Desc,
+    //         })
+    //     }
+    // }
 
     return rmap
 }

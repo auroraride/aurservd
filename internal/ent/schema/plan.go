@@ -58,6 +58,7 @@ func (Plan) Annotations() []schema.Annotation {
 // Fields of the Plan.
 func (Plan) Fields() []ent.Field {
     return []ent.Field{
+        field.String("model").Optional().Comment("电池型号"),
         field.Bool("enable").Comment("是否启用"),
         field.Uint8("type").Default(model.PlanTypeBattery.Value()).Comment("骑士卡类别 1:单电 2:车加电"),
         field.String("name").Comment("骑士卡名称"),
@@ -77,7 +78,6 @@ func (Plan) Fields() []ent.Field {
 // Edges of the Plan.
 func (Plan) Edges() []ent.Edge {
     return []ent.Edge{
-        edge.To("models", BatteryModel.Type),
         edge.To("cities", City.Type),
         edge.To("complexes", Plan.Type).From("parent").Field("parent_id").Unique(),
         edge.From("coupons", Coupon.Type).Ref("plans"),
@@ -95,6 +95,7 @@ func (Plan) Mixin() []ent.Mixin {
 
 func (Plan) Indexes() []ent.Index {
     return []ent.Index{
+        index.Fields("model"),
         index.Fields("days"),
         index.Fields("enable"),
         index.Fields("start", "end"),

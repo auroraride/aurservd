@@ -150,11 +150,15 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
     case model.OrderTypeNewly, model.OrderTypeAgain:
         // 新签/重签判定
         var m string
-        for _, pm := range op.Edges.Models {
-            if strings.ToUpper(req.Model) == strings.ToUpper(pm.Model) {
-                m = pm.Model
-            }
+        if strings.ToUpper(req.Model) == op.Model {
+            m = op.Model
         }
+        // var m string
+        // for _, pm := range op.Edges.Models {
+        //     if strings.ToUpper(req.Model) == strings.ToUpper(pm.Model) {
+        //         m = pm.Model
+        //     }
+        // }
         if m == "" || req.CityID == 0 {
             snag.Panic("请求参数错误")
         }

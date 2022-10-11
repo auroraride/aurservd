@@ -2465,6 +2465,7 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "model", Type: field.TypeString, Comment: "电池型号", Nullable: true},
 		{Name: "enable", Type: field.TypeBool, Comment: "是否启用"},
 		{Name: "type", Type: field.TypeUint8, Comment: "骑士卡类别 1:单电 2:车加电", Default: 1},
 		{Name: "name", Type: field.TypeString, Comment: "骑士卡名称"},
@@ -2476,6 +2477,7 @@ var (
 		{Name: "original", Type: field.TypeFloat64, Comment: "原价", Nullable: true},
 		{Name: "desc", Type: field.TypeString, Comment: "优惠信息", Nullable: true},
 		{Name: "relief_newly", Type: field.TypeFloat64, Comment: "新签减免", Default: 0},
+		{Name: "notes", Type: field.TypeJSON, Comment: "购买须知", Nullable: true},
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "parent_id", Type: field.TypeUint64, Nullable: true},
 	}
@@ -2487,13 +2489,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "plan_ebike_brand_brand",
-				Columns:    []*schema.Column{PlanColumns[18]},
+				Columns:    []*schema.Column{PlanColumns[20]},
 				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "plan_plan_complexes",
-				Columns:    []*schema.Column{PlanColumns[19]},
+				Columns:    []*schema.Column{PlanColumns[21]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2512,27 +2514,27 @@ var (
 			{
 				Name:    "plan_brand_id",
 				Unique:  false,
-				Columns: []*schema.Column{PlanColumns[18]},
+				Columns: []*schema.Column{PlanColumns[20]},
 			},
 			{
 				Name:    "plan_days",
 				Unique:  false,
-				Columns: []*schema.Column{PlanColumns[13]},
+				Columns: []*schema.Column{PlanColumns[14]},
 			},
 			{
 				Name:    "plan_enable",
 				Unique:  false,
-				Columns: []*schema.Column{PlanColumns[7]},
+				Columns: []*schema.Column{PlanColumns[8]},
 			},
 			{
 				Name:    "plan_start_end",
 				Unique:  false,
-				Columns: []*schema.Column{PlanColumns[10], PlanColumns[11]},
+				Columns: []*schema.Column{PlanColumns[11], PlanColumns[12]},
 			},
 			{
 				Name:    "plan_name",
 				Unique:  false,
-				Columns: []*schema.Column{PlanColumns[9]},
+				Columns: []*schema.Column{PlanColumns[10]},
 				Annotation: &entsql.IndexAnnotation{
 					Types: map[string]string{
 						"postgres": "GIN",
@@ -3818,31 +3820,6 @@ var (
 			},
 		},
 	}
-	// PlanModelsColumns holds the columns for the "plan_models" table.
-	PlanModelsColumns = []*schema.Column{
-		{Name: "plan_id", Type: field.TypeInt},
-		{Name: "battery_model_id", Type: field.TypeInt},
-	}
-	// PlanModelsTable holds the schema information for the "plan_models" table.
-	PlanModelsTable = &schema.Table{
-		Name:       "plan_models",
-		Columns:    PlanModelsColumns,
-		PrimaryKey: []*schema.Column{PlanModelsColumns[0], PlanModelsColumns[1]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "plan_models_plan_id",
-				Columns:    []*schema.Column{PlanModelsColumns[0]},
-				RefColumns: []*schema.Column{PlanColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-			{
-				Symbol:     "plan_models_battery_model_id",
-				Columns:    []*schema.Column{PlanModelsColumns[1]},
-				RefColumns: []*schema.Column{BatteryModelColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-		},
-	}
 	// PlanCitiesColumns holds the columns for the "plan_cities" table.
 	PlanCitiesColumns = []*schema.Column{
 		{Name: "plan_id", Type: field.TypeInt},
@@ -3921,7 +3898,6 @@ var (
 		CabinetModelsTable,
 		CouponCitiesTable,
 		CouponPlansTable,
-		PlanModelsTable,
 		PlanCitiesTable,
 	}
 )
@@ -4208,8 +4184,6 @@ func init() {
 	CouponCitiesTable.ForeignKeys[1].RefTable = CityTable
 	CouponPlansTable.ForeignKeys[0].RefTable = CouponTable
 	CouponPlansTable.ForeignKeys[1].RefTable = PlanTable
-	PlanModelsTable.ForeignKeys[0].RefTable = PlanTable
-	PlanModelsTable.ForeignKeys[1].RefTable = BatteryModelTable
 	PlanCitiesTable.ForeignKeys[0].RefTable = PlanTable
 	PlanCitiesTable.ForeignKeys[1].RefTable = CityTable
 }

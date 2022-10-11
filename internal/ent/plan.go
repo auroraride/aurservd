@@ -33,6 +33,8 @@ type Plan struct {
 	Remark string `json:"remark,omitempty"`
 	// BrandID holds the value of the "brand_id" field.
 	BrandID *uint64 `json:"brand_id,omitempty"`
+	// 电池型号
+	Model string `json:"model,omitempty"`
 	// 是否启用
 	Enable bool `json:"enable,omitempty"`
 	// 骑士卡类别 1:单电 2:车加电
@@ -57,6 +59,8 @@ type Plan struct {
 	ParentID *uint64 `json:"parent_id,omitempty"`
 	// 新签减免
 	ReliefNewly float64 `json:"relief_newly,omitempty"`
+	// 购买须知
+	Notes []string `json:"notes,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlanQuery when eager-loading is set.
 	Edges PlanEdges `json:"edges"`
@@ -66,8 +70,6 @@ type Plan struct {
 type PlanEdges struct {
 	// Brand holds the value of the brand edge.
 	Brand *EbikeBrand `json:"brand,omitempty"`
-	// Models holds the value of the models edge.
-	Models []*BatteryModel `json:"models,omitempty"`
 	// Cities holds the value of the cities edge.
 	Cities []*City `json:"cities,omitempty"`
 	// Parent holds the value of the parent edge.
@@ -78,7 +80,7 @@ type PlanEdges struct {
 	Coupons []*Coupon `json:"coupons,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [5]bool
 }
 
 // BrandOrErr returns the Brand value or an error if the edge
@@ -94,19 +96,10 @@ func (e PlanEdges) BrandOrErr() (*EbikeBrand, error) {
 	return nil, &NotLoadedError{edge: "brand"}
 }
 
-// ModelsOrErr returns the Models value or an error if the edge
-// was not loaded in eager-loading.
-func (e PlanEdges) ModelsOrErr() ([]*BatteryModel, error) {
-	if e.loadedTypes[1] {
-		return e.Models, nil
-	}
-	return nil, &NotLoadedError{edge: "models"}
-}
-
 // CitiesOrErr returns the Cities value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlanEdges) CitiesOrErr() ([]*City, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[1] {
 		return e.Cities, nil
 	}
 	return nil, &NotLoadedError{edge: "cities"}
@@ -115,7 +108,7 @@ func (e PlanEdges) CitiesOrErr() ([]*City, error) {
 // ParentOrErr returns the Parent value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PlanEdges) ParentOrErr() (*Plan, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[2] {
 		if e.Parent == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: plan.Label}
@@ -128,7 +121,7 @@ func (e PlanEdges) ParentOrErr() (*Plan, error) {
 // ComplexesOrErr returns the Complexes value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlanEdges) ComplexesOrErr() ([]*Plan, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[3] {
 		return e.Complexes, nil
 	}
 	return nil, &NotLoadedError{edge: "complexes"}
@@ -137,7 +130,7 @@ func (e PlanEdges) ComplexesOrErr() ([]*Plan, error) {
 // CouponsOrErr returns the Coupons value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlanEdges) CouponsOrErr() ([]*Coupon, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[4] {
 		return e.Coupons, nil
 	}
 	return nil, &NotLoadedError{edge: "coupons"}
@@ -148,7 +141,7 @@ func (*Plan) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case plan.FieldCreator, plan.FieldLastModifier:
+		case plan.FieldCreator, plan.FieldLastModifier, plan.FieldNotes:
 			values[i] = new([]byte)
 		case plan.FieldEnable:
 			values[i] = new(sql.NullBool)
@@ -156,7 +149,7 @@ func (*Plan) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullFloat64)
 		case plan.FieldID, plan.FieldBrandID, plan.FieldType, plan.FieldDays, plan.FieldParentID:
 			values[i] = new(sql.NullInt64)
-		case plan.FieldRemark, plan.FieldName, plan.FieldDesc:
+		case plan.FieldRemark, plan.FieldModel, plan.FieldName, plan.FieldDesc:
 			values[i] = new(sql.NullString)
 		case plan.FieldCreatedAt, plan.FieldUpdatedAt, plan.FieldDeletedAt, plan.FieldStart, plan.FieldEnd:
 			values[i] = new(sql.NullTime)
@@ -228,6 +221,12 @@ func (pl *Plan) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pl.BrandID = new(uint64)
 				*pl.BrandID = uint64(value.Int64)
+			}
+		case plan.FieldModel:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field model", values[i])
+			} else if value.Valid {
+				pl.Model = value.String
 			}
 		case plan.FieldEnable:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -302,6 +301,14 @@ func (pl *Plan) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pl.ReliefNewly = value.Float64
 			}
+		case plan.FieldNotes:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field notes", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pl.Notes); err != nil {
+					return fmt.Errorf("unmarshal field notes: %w", err)
+				}
+			}
 		}
 	}
 	return nil
@@ -310,11 +317,6 @@ func (pl *Plan) assignValues(columns []string, values []any) error {
 // QueryBrand queries the "brand" edge of the Plan entity.
 func (pl *Plan) QueryBrand() *EbikeBrandQuery {
 	return (&PlanClient{config: pl.config}).QueryBrand(pl)
-}
-
-// QueryModels queries the "models" edge of the Plan entity.
-func (pl *Plan) QueryModels() *BatteryModelQuery {
-	return (&PlanClient{config: pl.config}).QueryModels(pl)
 }
 
 // QueryCities queries the "cities" edge of the Plan entity.
@@ -385,6 +387,9 @@ func (pl *Plan) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
+	builder.WriteString("model=")
+	builder.WriteString(pl.Model)
+	builder.WriteString(", ")
 	builder.WriteString("enable=")
 	builder.WriteString(fmt.Sprintf("%v", pl.Enable))
 	builder.WriteString(", ")
@@ -422,6 +427,9 @@ func (pl *Plan) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("relief_newly=")
 	builder.WriteString(fmt.Sprintf("%v", pl.ReliefNewly))
+	builder.WriteString(", ")
+	builder.WriteString("notes=")
+	builder.WriteString(fmt.Sprintf("%v", pl.Notes))
 	builder.WriteByte(')')
 	return builder.String()
 }

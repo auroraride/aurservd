@@ -970,22 +970,6 @@ func (c *BatteryModelClient) QueryCabinets(bm *BatteryModel) *CabinetQuery {
 	return query
 }
 
-// QueryPlans queries the plans edge of a BatteryModel.
-func (c *BatteryModelClient) QueryPlans(bm *BatteryModel) *PlanQuery {
-	query := &PlanQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := bm.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(batterymodel.Table, batterymodel.FieldID, id),
-			sqlgraph.To(plan.Table, plan.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, batterymodel.PlansTable, batterymodel.PlansPrimaryKey...),
-		)
-		fromV = sqlgraph.Neighbors(bm.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // Hooks returns the client hooks.
 func (c *BatteryModelClient) Hooks() []Hook {
 	hooks := c.hooks.BatteryModel
@@ -5324,22 +5308,6 @@ func (c *PlanClient) QueryBrand(pl *Plan) *EbikeBrandQuery {
 			sqlgraph.From(plan.Table, plan.FieldID, id),
 			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, plan.BrandTable, plan.BrandColumn),
-		)
-		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryModels queries the models edge of a Plan.
-func (c *PlanClient) QueryModels(pl *Plan) *BatteryModelQuery {
-	query := &BatteryModelQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := pl.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(plan.Table, plan.FieldID, id),
-			sqlgraph.To(batterymodel.Table, batterymodel.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, plan.ModelsTable, plan.ModelsPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
 		return fromV, nil

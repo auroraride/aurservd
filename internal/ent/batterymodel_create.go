@@ -14,7 +14,6 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
-	"github.com/auroraride/aurservd/internal/ent/plan"
 )
 
 // BatteryModelCreate is the builder for creating a BatteryModel entity.
@@ -126,21 +125,6 @@ func (bmc *BatteryModelCreate) AddCabinets(c ...*Cabinet) *BatteryModelCreate {
 		ids[i] = c[i].ID
 	}
 	return bmc.AddCabinetIDs(ids...)
-}
-
-// AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
-func (bmc *BatteryModelCreate) AddPlanIDs(ids ...uint64) *BatteryModelCreate {
-	bmc.mutation.AddPlanIDs(ids...)
-	return bmc
-}
-
-// AddPlans adds the "plans" edges to the Plan entity.
-func (bmc *BatteryModelCreate) AddPlans(p ...*Plan) *BatteryModelCreate {
-	ids := make([]uint64, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return bmc.AddPlanIDs(ids...)
 }
 
 // Mutation returns the BatteryModelMutation object of the builder.
@@ -360,25 +344,6 @@ func (bmc *BatteryModelCreate) createSpec() (*BatteryModel, *sqlgraph.CreateSpec
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: cabinet.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := bmc.mutation.PlansIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   batterymodel.PlansTable,
-			Columns: batterymodel.PlansPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: plan.FieldID,
 				},
 			},
 		}

@@ -44,7 +44,7 @@ func (s *selectionService) Plan(req *model.PlanSelectionReq) (items []model.Casc
             pq.Where(plan.DeletedAtIsNil())
         }).
         WithCities().
-        WithModels()
+        WithBrand()
 
     if req.Effect != nil && *req.Effect != 0 {
         now := time.Now()
@@ -88,12 +88,14 @@ func (s *selectionService) Plan(req *model.PlanSelectionReq) (items []model.Casc
             l2c := cmap[c.ID].Children
 
             p := NewPlan().PlanWithComplexes(r)
-            children := make([]model.SelectOption, len(p.Complexes))
+            children := make([]model.SelectOption, 0)
 
-            for k, cl := range p.Complexes {
-                children[k] = model.SelectOption{
-                    Value: cl.ID,
-                    Label: strconv.Itoa(int(cl.Days)),
+            for _, arr := range p.Complexes {
+                for _, cl := range *arr {
+                    children = append(children, model.SelectOption{
+                        Value: cl.ID,
+                        Label: strconv.Itoa(int(cl.Days)),
+                    })
                 }
             }
 
@@ -350,12 +352,8 @@ func (s *selectionService) WorkwxEmployee() (items []any) {
 
 // PlanModel 筛选骑行卡电池型号
 func (s *selectionService) PlanModel(req *model.SelectionPlanModelReq) []string {
-    p, _ := ent.Database.Plan.QueryNotDeleted().Where(plan.ID(req.PlanID)).WithModels().First(s.ctx)
-    items := make([]string, len(p.Edges.Models))
-    for i, pm := range p.Edges.Models {
-        items[i] = pm.Model
-    }
-    return items
+    p, _ := ent.Database.Plan.QueryNotDeleted().Where(plan.ID(req.PlanID)).First(s.ctx)
+    return []string{p.Model}
 }
 
 func (s *selectionService) CabinetModel(req *model.SelectionCabinetModelReq) (items []string) {

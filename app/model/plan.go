@@ -33,9 +33,7 @@ type Plan struct {
     Days uint   `json:"days"` // 骑士卡天数
 }
 
-type PlanEbikeComplex struct {
-    Model string `json:"model" validate:"required" validate:"电池型号"`
-}
+type PlanComplexes []PlanComplex
 
 type PlanComplex struct {
     ID uint64 `json:"id,omitempty"` // ID (可为空, 编辑的时候需要携带此字段)
@@ -48,22 +46,21 @@ type PlanComplex struct {
     Commission  float64 `json:"commission"`  // 提成
     ReliefNewly float64 `json:"reliefNewly"` // 新签减免
 
-    Model string `json:"model"` // 电池型号, 车加电必填
+    Model string `json:"model" validate:"required"` // 电池型号, 单电需要每一项都补充此字段
 }
 
 type PlanCreateReq struct {
-    Type PlanType `json:"type" validate:"required,enum" validate:"骑士卡类别"`
+    Type      PlanType       `json:"type" validate:"required,enum" trans:"骑士卡类别"`
+    Name      string         `json:"name" validate:"required" trans:"骑士卡名称"`
+    Start     string         `json:"start" validate:"required,datetime=2006-01-02" trans:"开始日期"`
+    End       string         `json:"end" validate:"required,datetime=2006-01-02" trans:"结束日期"`
+    Cities    []uint64       `json:"cities" validate:"required,min=1" trans:"启用城市"`
+    Complexes []*PlanComplex `json:"complexes" validate:"required,min=1" trans:"骑士卡详细信息"`
 
-    Name      string        `json:"name" validate:"required" trans:"骑士卡名称"`
-    Enable    bool          `json:"enable"` // 是否启用
-    Start     string        `json:"start" validate:"required,datetime=2006-01-02" trans:"开始日期"`
-    End       string        `json:"end" validate:"required,datetime=2006-01-02" trans:"结束日期"`
-    Cities    []uint64      `json:"cities" validate:"required,min=1" trans:"启用城市"`
-    Complexes []PlanComplex `json:"complexes" validate:"required,min=1" trans:"骑士卡详细信息"`
-    Notes     []string      `json:"notes"` // 购买须知
+    BrandID uint64 `json:"brandId" validate:"required_if=Type 2" trans:"电车型号"` // 车加电必填
 
-    Models  []string `json:"models" validate:"required_if=Type 1" trans:"电池型号"`  // 单电必填, 车加电必不填
-    BrandID uint64   `json:"brandID" validate:"required_if=Type 2" trans:"电车型号"` // 车加电必填, 单电必不填
+    Enable bool     `json:"enable"` // 是否启用
+    Notes  []string `json:"notes"`  // 购买须知
 }
 
 type PlanModifyReq struct {
@@ -81,20 +78,26 @@ type PlanEnableModifyReq struct {
 type PlanListReq struct {
     PaginationReq
 
-    CityID *uint64 `json:"cityId" query:"cityId"` // 城市ID
-    Name   *string `json:"name" query:"name"`     // 骑士卡名称
-    Enable *bool   `json:"enable" query:"enable"` // 启用状态
+    CityID  *uint64   `json:"cityId" query:"cityId"`         // 城市ID
+    Name    *string   `json:"name" query:"name"`             // 骑士卡名称
+    Enable  *bool     `json:"enable" query:"enable"`         // 启用状态
+    Model   *string   `json:"model" query:"model"`           // 电池型号
+    Type    *PlanType `json:"type" query:"type" enums:"1,2"` // 骑士卡类别, 不携带字段为全部, 1:单电 2:车加电
+    BrandID *uint64   `json:"brandId" query:"brandId"`       // 电车型号
 }
 
-type PlanWithComplexes struct {
-    ID        uint64         `json:"id"`        // 骑士卡ID
-    Name      string         `json:"name"`      // 骑士卡名称
-    Enable    bool           `json:"enable"`    // 是否启用
-    Start     string         `json:"start"`     // 开始日期
-    End       string         `json:"end"`       // 结束日期
-    Cities    []City         `json:"cities"`    // 可用城市
-    Models    []BatteryModel `json:"models"`    // 可用型号
-    Complexes []PlanComplex  `json:"complexes"` // 详情集合
+type PlanListRes struct {
+    ID        uint64           `json:"id"`
+    Type      PlanType         `json:"type"`      // 类别
+    Name      string           `json:"name"`      // 名称
+    Enable    bool             `json:"enable"`    // 是否启用
+    Start     string           `json:"start"`     // 开始日期
+    End       string           `json:"end"`       // 结束日期
+    Cities    []City           `json:"cities"`    // 可用城市
+    Complexes []*PlanComplexes `json:"complexes"` // 详情集合(按电池型号分组)
+
+    Brand *EbikeBrand `json:"brand,omitempty"` // 电车型号
+    Notes []string    `json:"notes,omitempty"` // 购买须知
 }
 
 // PlanListRiderReq 骑士卡列表请求

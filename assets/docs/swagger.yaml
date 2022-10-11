@@ -3880,6 +3880,9 @@ definitions:
       id:
         description: ID (可为空, 编辑的时候需要携带此字段)
         type: integer
+      model:
+        description: 电池型号, 单电需要每一项都补充此字段
+        type: string
       original:
         description: 原价
         type: number
@@ -3889,15 +3892,16 @@ definitions:
       reliefNewly:
         description: 新签减免
         type: number
-      type:
-        type: integer
     required:
     - days
+    - model
     - price
-    - type
     type: object
   model.PlanCreateReq:
     properties:
+      brandId:
+        description: 电车型号 车加电必填
+        type: integer
       cities:
         description: '启用城市 '
         items:
@@ -3916,12 +3920,6 @@ definitions:
       end:
         description: '结束日期 '
         type: string
-      models:
-        description: '电池型号 '
-        items:
-          type: string
-        minItems: 1
-        type: array
       name:
         description: '骑士卡名称 '
         type: string
@@ -3933,13 +3931,16 @@ definitions:
       start:
         description: '开始日期 '
         type: string
+      type:
+        description: '骑士卡类别 '
+        type: integer
     required:
     - cities
     - complexes
     - end
-    - models
     - name
     - start
+    - type
     type: object
   model.PlanEnableModifyReq:
     properties:
@@ -3990,17 +3991,23 @@ definitions:
         description: 单电池是否设置, 仅值为`false`的时候才可设置单电
         type: boolean
     type: object
-  model.PlanWithComplexes:
+  model.PlanListRes:
     properties:
+      brand:
+        allOf:
+        - $ref: '#/definitions/model.EbikeBrand'
+        description: 电车型号
       cities:
         description: 可用城市
         items:
           $ref: '#/definitions/model.City'
         type: array
       complexes:
-        description: 详情集合
+        description: 详情集合(按电池型号分组)
         items:
-          $ref: '#/definitions/model.PlanComplex'
+          items:
+            $ref: '#/definitions/model.PlanComplex'
+          type: array
         type: array
       enable:
         description: 是否启用
@@ -4009,19 +4016,21 @@ definitions:
         description: 结束日期
         type: string
       id:
-        description: 骑士卡ID
         type: integer
-      models:
-        description: 可用型号
-        items:
-          $ref: '#/definitions/model.BatteryModel'
-        type: array
       name:
-        description: 骑士卡名称
+        description: 名称
         type: string
+      notes:
+        description: 购买须知
+        items:
+          type: string
+        type: array
       start:
         description: 开始日期
         type: string
+      type:
+        description: '骑士卡类别 '
+        type: integer
     type: object
   model.PointBatchReq:
     properties:
@@ -11004,6 +11013,10 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
+      - description: 电车型号
+        in: query
+        name: brandId
+        type: integer
       - description: 城市ID
         in: query
         name: cityId
@@ -11016,6 +11029,10 @@ paths:
         in: query
         name: enable
         type: boolean
+      - description: 电池型号
+        in: query
+        name: model
+        type: string
       - description: 骑士卡名称
         in: query
         name: name
@@ -11023,6 +11040,13 @@ paths:
       - description: 每页数据, 默认20
         in: query
         name: pageSize
+        type: integer
+      - description: '骑士卡类别 '
+        enum:
+        - 1
+        - 2
+        in: query
+        name: type
         type: integer
       produces:
       - application/json
@@ -11035,7 +11059,7 @@ paths:
             - properties:
                 items:
                   items:
-                    $ref: '#/definitions/model.PlanWithComplexes'
+                    $ref: '#/definitions/model.PlanListRes'
                   type: array
               type: object
       summary: M6004 列举骑士卡
@@ -11063,7 +11087,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.PlanWithComplexes'
+            $ref: '#/definitions/model.PlanListRes'
       summary: M6001 创建骑士卡
       tags:
       - '[M]管理接口'

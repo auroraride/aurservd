@@ -31,8 +31,6 @@ const (
 	FieldEnable = "enable"
 	// EdgeCabinets holds the string denoting the cabinets edge name in mutations.
 	EdgeCabinets = "cabinets"
-	// EdgePlans holds the string denoting the plans edge name in mutations.
-	EdgePlans = "plans"
 	// Table holds the table name of the batterymodel in the database.
 	Table = "battery_model"
 	// CabinetsTable is the table that holds the cabinets relation/edge. The primary key declared below.
@@ -40,11 +38,6 @@ const (
 	// CabinetsInverseTable is the table name for the Cabinet entity.
 	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
 	CabinetsInverseTable = "cabinet"
-	// PlansTable is the table that holds the plans relation/edge. The primary key declared below.
-	PlansTable = "plan_models"
-	// PlansInverseTable is the table name for the Plan entity.
-	// It exists in this package in order to avoid circular dependency with the "plan" package.
-	PlansInverseTable = "plan"
 )
 
 // Columns holds all SQL columns for batterymodel fields.
@@ -64,9 +57,6 @@ var (
 	// CabinetsPrimaryKey and CabinetsColumn2 are the table columns denoting the
 	// primary key for the cabinets relation (M2M).
 	CabinetsPrimaryKey = []string{"cabinet_id", "battery_model_id"}
-	// PlansPrimaryKey and PlansColumn2 are the table columns denoting the
-	// primary key for the plans relation (M2M).
-	PlansPrimaryKey = []string{"plan_id", "battery_model_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).

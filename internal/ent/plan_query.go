@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
@@ -29,7 +28,6 @@ type PlanQuery struct {
 	fields        []string
 	predicates    []predicate.Plan
 	withBrand     *EbikeBrandQuery
-	withModels    *BatteryModelQuery
 	withCities    *CityQuery
 	withParent    *PlanQuery
 	withComplexes *PlanQuery
@@ -86,28 +84,6 @@ func (pq *PlanQuery) QueryBrand() *EbikeBrandQuery {
 			sqlgraph.From(plan.Table, plan.FieldID, selector),
 			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, plan.BrandTable, plan.BrandColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryModels chains the current query on the "models" edge.
-func (pq *PlanQuery) QueryModels() *BatteryModelQuery {
-	query := &BatteryModelQuery{config: pq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := pq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := pq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(plan.Table, plan.FieldID, selector),
-			sqlgraph.To(batterymodel.Table, batterymodel.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, plan.ModelsTable, plan.ModelsPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -385,7 +361,6 @@ func (pq *PlanQuery) Clone() *PlanQuery {
 		order:         append([]OrderFunc{}, pq.order...),
 		predicates:    append([]predicate.Plan{}, pq.predicates...),
 		withBrand:     pq.withBrand.Clone(),
-		withModels:    pq.withModels.Clone(),
 		withCities:    pq.withCities.Clone(),
 		withParent:    pq.withParent.Clone(),
 		withComplexes: pq.withComplexes.Clone(),
@@ -405,17 +380,6 @@ func (pq *PlanQuery) WithBrand(opts ...func(*EbikeBrandQuery)) *PlanQuery {
 		opt(query)
 	}
 	pq.withBrand = query
-	return pq
-}
-
-// WithModels tells the query-builder to eager-load the nodes that are connected to
-// the "models" edge. The optional arguments are used to configure the query builder of the edge.
-func (pq *PlanQuery) WithModels(opts ...func(*BatteryModelQuery)) *PlanQuery {
-	query := &BatteryModelQuery{config: pq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	pq.withModels = query
 	return pq
 }
 
@@ -531,9 +495,8 @@ func (pq *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 	var (
 		nodes       = []*Plan{}
 		_spec       = pq.querySpec()
-		loadedTypes = [6]bool{
+		loadedTypes = [5]bool{
 			pq.withBrand != nil,
-			pq.withModels != nil,
 			pq.withCities != nil,
 			pq.withParent != nil,
 			pq.withComplexes != nil,
@@ -564,13 +527,6 @@ func (pq *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 	if query := pq.withBrand; query != nil {
 		if err := pq.loadBrand(ctx, query, nodes, nil,
 			func(n *Plan, e *EbikeBrand) { n.Edges.Brand = e }); err != nil {
-			return nil, err
-		}
-	}
-	if query := pq.withModels; query != nil {
-		if err := pq.loadModels(ctx, query, nodes,
-			func(n *Plan) { n.Edges.Models = []*BatteryModel{} },
-			func(n *Plan, e *BatteryModel) { n.Edges.Models = append(n.Edges.Models, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -629,64 +585,6 @@ func (pq *PlanQuery) loadBrand(ctx context.Context, query *EbikeBrandQuery, node
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
-func (pq *PlanQuery) loadModels(ctx context.Context, query *BatteryModelQuery, nodes []*Plan, init func(*Plan), assign func(*Plan, *BatteryModel)) error {
-	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[uint64]*Plan)
-	nids := make(map[uint64]map[*Plan]struct{})
-	for i, node := range nodes {
-		edgeIDs[i] = node.ID
-		byID[node.ID] = node
-		if init != nil {
-			init(node)
-		}
-	}
-	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(plan.ModelsTable)
-		s.Join(joinT).On(s.C(batterymodel.FieldID), joinT.C(plan.ModelsPrimaryKey[1]))
-		s.Where(sql.InValues(joinT.C(plan.ModelsPrimaryKey[0]), edgeIDs...))
-		columns := s.SelectedColumns()
-		s.Select(joinT.C(plan.ModelsPrimaryKey[0]))
-		s.AppendSelect(columns...)
-		s.SetDistinct(false)
-	})
-	if err := query.prepareQuery(ctx); err != nil {
-		return err
-	}
-	neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
-		assign := spec.Assign
-		values := spec.ScanValues
-		spec.ScanValues = func(columns []string) ([]any, error) {
-			values, err := values(columns[1:])
-			if err != nil {
-				return nil, err
-			}
-			return append([]any{new(sql.NullInt64)}, values...), nil
-		}
-		spec.Assign = func(columns []string, values []any) error {
-			outValue := uint64(values[0].(*sql.NullInt64).Int64)
-			inValue := uint64(values[1].(*sql.NullInt64).Int64)
-			if nids[inValue] == nil {
-				nids[inValue] = map[*Plan]struct{}{byID[outValue]: struct{}{}}
-				return assign(columns[1:], values[1:])
-			}
-			nids[inValue][byID[outValue]] = struct{}{}
-			return nil
-		}
-	})
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected "models" node returned %v`, n.ID)
-		}
-		for kn := range nodes {
-			assign(kn, n)
 		}
 	}
 	return nil

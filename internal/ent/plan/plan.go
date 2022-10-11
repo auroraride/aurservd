@@ -27,6 +27,8 @@ const (
 	FieldRemark = "remark"
 	// FieldBrandID holds the string denoting the brand_id field in the database.
 	FieldBrandID = "brand_id"
+	// FieldModel holds the string denoting the model field in the database.
+	FieldModel = "model"
 	// FieldEnable holds the string denoting the enable field in the database.
 	FieldEnable = "enable"
 	// FieldType holds the string denoting the type field in the database.
@@ -51,10 +53,10 @@ const (
 	FieldParentID = "parent_id"
 	// FieldReliefNewly holds the string denoting the relief_newly field in the database.
 	FieldReliefNewly = "relief_newly"
+	// FieldNotes holds the string denoting the notes field in the database.
+	FieldNotes = "notes"
 	// EdgeBrand holds the string denoting the brand edge name in mutations.
 	EdgeBrand = "brand"
-	// EdgeModels holds the string denoting the models edge name in mutations.
-	EdgeModels = "models"
 	// EdgeCities holds the string denoting the cities edge name in mutations.
 	EdgeCities = "cities"
 	// EdgeParent holds the string denoting the parent edge name in mutations.
@@ -72,11 +74,6 @@ const (
 	BrandInverseTable = "ebike_brand"
 	// BrandColumn is the table column denoting the brand relation/edge.
 	BrandColumn = "brand_id"
-	// ModelsTable is the table that holds the models relation/edge. The primary key declared below.
-	ModelsTable = "plan_models"
-	// ModelsInverseTable is the table name for the BatteryModel entity.
-	// It exists in this package in order to avoid circular dependency with the "batterymodel" package.
-	ModelsInverseTable = "battery_model"
 	// CitiesTable is the table that holds the cities relation/edge. The primary key declared below.
 	CitiesTable = "plan_cities"
 	// CitiesInverseTable is the table name for the City entity.
@@ -107,6 +104,7 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldBrandID,
+	FieldModel,
 	FieldEnable,
 	FieldType,
 	FieldName,
@@ -119,12 +117,10 @@ var Columns = []string{
 	FieldDesc,
 	FieldParentID,
 	FieldReliefNewly,
+	FieldNotes,
 }
 
 var (
-	// ModelsPrimaryKey and ModelsColumn2 are the table columns denoting the
-	// primary key for the models relation (M2M).
-	ModelsPrimaryKey = []string{"plan_id", "battery_model_id"}
 	// CitiesPrimaryKey and CitiesColumn2 are the table columns denoting the
 	// primary key for the cities relation (M2M).
 	CitiesPrimaryKey = []string{"plan_id", "city_id"}

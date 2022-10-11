@@ -998,6 +998,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			plan.FieldLastModifier: {Type: field.TypeJSON, Column: plan.FieldLastModifier},
 			plan.FieldRemark:       {Type: field.TypeString, Column: plan.FieldRemark},
 			plan.FieldBrandID:      {Type: field.TypeUint64, Column: plan.FieldBrandID},
+			plan.FieldModel:        {Type: field.TypeString, Column: plan.FieldModel},
 			plan.FieldEnable:       {Type: field.TypeBool, Column: plan.FieldEnable},
 			plan.FieldType:         {Type: field.TypeUint8, Column: plan.FieldType},
 			plan.FieldName:         {Type: field.TypeString, Column: plan.FieldName},
@@ -1010,6 +1011,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			plan.FieldDesc:         {Type: field.TypeString, Column: plan.FieldDesc},
 			plan.FieldParentID:     {Type: field.TypeUint64, Column: plan.FieldParentID},
 			plan.FieldReliefNewly:  {Type: field.TypeFloat64, Column: plan.FieldReliefNewly},
+			plan.FieldNotes:        {Type: field.TypeJSON, Column: plan.FieldNotes},
 		},
 	}
 	graph.Nodes[34] = &sqlgraph.Node{
@@ -1514,18 +1516,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"BatteryModel",
 		"Cabinet",
-	)
-	graph.MustAddE(
-		"plans",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   batterymodel.PlansTable,
-			Columns: batterymodel.PlansPrimaryKey,
-			Bidi:    false,
-		},
-		"BatteryModel",
-		"Plan",
 	)
 	graph.MustAddE(
 		"city",
@@ -2738,18 +2728,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Plan",
 		"EbikeBrand",
-	)
-	graph.MustAddE(
-		"models",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   plan.ModelsTable,
-			Columns: plan.ModelsPrimaryKey,
-			Bidi:    false,
-		},
-		"Plan",
-		"BatteryModel",
 	)
 	graph.MustAddE(
 		"cities",
@@ -4292,20 +4270,6 @@ func (f *BatteryModelFilter) WhereHasCabinets() {
 // WhereHasCabinetsWith applies a predicate to check if query has an edge cabinets with a given conditions (other predicates).
 func (f *BatteryModelFilter) WhereHasCabinetsWith(preds ...predicate.Cabinet) {
 	f.Where(entql.HasEdgeWith("cabinets", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasPlans applies a predicate to check if query has an edge plans.
-func (f *BatteryModelFilter) WhereHasPlans() {
-	f.Where(entql.HasEdge("plans"))
-}
-
-// WhereHasPlansWith applies a predicate to check if query has an edge plans with a given conditions (other predicates).
-func (f *BatteryModelFilter) WhereHasPlansWith(preds ...predicate.Plan) {
-	f.Where(entql.HasEdgeWith("plans", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -9042,6 +9006,11 @@ func (f *PlanFilter) WhereBrandID(p entql.Uint64P) {
 	f.Where(p.Field(plan.FieldBrandID))
 }
 
+// WhereModel applies the entql string predicate on the model field.
+func (f *PlanFilter) WhereModel(p entql.StringP) {
+	f.Where(p.Field(plan.FieldModel))
+}
+
 // WhereEnable applies the entql bool predicate on the enable field.
 func (f *PlanFilter) WhereEnable(p entql.BoolP) {
 	f.Where(p.Field(plan.FieldEnable))
@@ -9102,6 +9071,11 @@ func (f *PlanFilter) WhereReliefNewly(p entql.Float64P) {
 	f.Where(p.Field(plan.FieldReliefNewly))
 }
 
+// WhereNotes applies the entql json.RawMessage predicate on the notes field.
+func (f *PlanFilter) WhereNotes(p entql.BytesP) {
+	f.Where(p.Field(plan.FieldNotes))
+}
+
 // WhereHasBrand applies a predicate to check if query has an edge brand.
 func (f *PlanFilter) WhereHasBrand() {
 	f.Where(entql.HasEdge("brand"))
@@ -9110,20 +9084,6 @@ func (f *PlanFilter) WhereHasBrand() {
 // WhereHasBrandWith applies a predicate to check if query has an edge brand with a given conditions (other predicates).
 func (f *PlanFilter) WhereHasBrandWith(preds ...predicate.EbikeBrand) {
 	f.Where(entql.HasEdgeWith("brand", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasModels applies a predicate to check if query has an edge models.
-func (f *PlanFilter) WhereHasModels() {
-	f.Where(entql.HasEdge("models"))
-}
-
-// WhereHasModelsWith applies a predicate to check if query has an edge models with a given conditions (other predicates).
-func (f *PlanFilter) WhereHasModelsWith(preds ...predicate.BatteryModel) {
-	f.Where(entql.HasEdgeWith("models", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

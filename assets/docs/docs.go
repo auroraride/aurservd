@@ -7658,6 +7658,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "电车型号",
+                        "name": "brandId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "城市ID",
                         "name": "cityId",
                         "in": "query"
@@ -7676,6 +7682,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "电池型号",
+                        "name": "model",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "骑士卡名称",
                         "name": "name",
                         "in": "query"
@@ -7684,6 +7696,16 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "骑士卡类别 ",
+                        "name": "type",
                         "in": "query"
                     }
                 ],
@@ -7701,7 +7723,7 @@ const docTemplate = `{
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.PlanWithComplexes"
+                                                "$ref": "#/definitions/model.PlanListRes"
                                             }
                                         }
                                     }
@@ -7745,7 +7767,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.PlanWithComplexes"
+                            "$ref": "#/definitions/model.PlanListRes"
                         }
                     }
                 }
@@ -17791,8 +17813,8 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "days",
-                "price",
-                "type"
+                "model",
+                "price"
             ],
             "properties": {
                 "commission": {
@@ -17812,6 +17834,10 @@ const docTemplate = `{
                     "description": "ID (可为空, 编辑的时候需要携带此字段)",
                     "type": "integer"
                 },
+                "model": {
+                    "description": "电池型号, 单电需要每一项都补充此字段",
+                    "type": "string"
+                },
                 "original": {
                     "description": "原价",
                     "type": "number"
@@ -17823,9 +17849,6 @@ const docTemplate = `{
                 "reliefNewly": {
                     "description": "新签减免",
                     "type": "number"
-                },
-                "type": {
-                    "type": "integer"
                 }
             }
         },
@@ -17835,11 +17858,15 @@ const docTemplate = `{
                 "cities",
                 "complexes",
                 "end",
-                "models",
                 "name",
-                "start"
+                "start",
+                "type"
             ],
             "properties": {
+                "brandId": {
+                    "description": "电车型号 车加电必填",
+                    "type": "integer"
+                },
                 "cities": {
                     "description": "启用城市 ",
                     "type": "array",
@@ -17864,14 +17891,6 @@ const docTemplate = `{
                     "description": "结束日期 ",
                     "type": "string"
                 },
-                "models": {
-                    "description": "电池型号 ",
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "name": {
                     "description": "骑士卡名称 ",
                     "type": "string"
@@ -17886,6 +17905,10 @@ const docTemplate = `{
                 "start": {
                     "description": "开始日期 ",
                     "type": "string"
+                },
+                "type": {
+                    "description": "骑士卡类别 ",
+                    "type": "integer"
                 }
             }
         },
@@ -17963,9 +17986,17 @@ const docTemplate = `{
                 }
             }
         },
-        "model.PlanWithComplexes": {
+        "model.PlanListRes": {
             "type": "object",
             "properties": {
+                "brand": {
+                    "description": "电车型号",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EbikeBrand"
+                        }
+                    ]
+                },
                 "cities": {
                     "description": "可用城市",
                     "type": "array",
@@ -17974,10 +18005,13 @@ const docTemplate = `{
                     }
                 },
                 "complexes": {
-                    "description": "详情集合",
+                    "description": "详情集合(按电池型号分组)",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.PlanComplex"
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/model.PlanComplex"
+                        }
                     }
                 },
                 "enable": {
@@ -17989,23 +18023,26 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "description": "骑士卡ID",
                     "type": "integer"
                 },
-                "models": {
-                    "description": "可用型号",
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
+                "notes": {
+                    "description": "购买须知",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.BatteryModel"
+                        "type": "string"
                     }
-                },
-                "name": {
-                    "description": "骑士卡名称",
-                    "type": "string"
                 },
                 "start": {
                     "description": "开始日期",
                     "type": "string"
+                },
+                "type": {
+                    "description": "骑士卡类别 ",
+                    "type": "integer"
                 }
             }
         },

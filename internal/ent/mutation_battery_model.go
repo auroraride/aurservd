@@ -34,9 +34,6 @@ type BatteryModelMutation struct {
 	cabinets        map[uint64]struct{}
 	removedcabinets map[uint64]struct{}
 	clearedcabinets bool
-	plans           map[uint64]struct{}
-	removedplans    map[uint64]struct{}
-	clearedplans    bool
 	done            bool
 	oldValue        func(context.Context) (*BatteryModel, error)
 	predicates      []predicate.BatteryModel
@@ -534,60 +531,6 @@ func (m *BatteryModelMutation) ResetCabinets() {
 	m.removedcabinets = nil
 }
 
-// AddPlanIDs adds the "plans" edge to the Plan entity by ids.
-func (m *BatteryModelMutation) AddPlanIDs(ids ...uint64) {
-	if m.plans == nil {
-		m.plans = make(map[uint64]struct{})
-	}
-	for i := range ids {
-		m.plans[ids[i]] = struct{}{}
-	}
-}
-
-// ClearPlans clears the "plans" edge to the Plan entity.
-func (m *BatteryModelMutation) ClearPlans() {
-	m.clearedplans = true
-}
-
-// PlansCleared reports if the "plans" edge to the Plan entity was cleared.
-func (m *BatteryModelMutation) PlansCleared() bool {
-	return m.clearedplans
-}
-
-// RemovePlanIDs removes the "plans" edge to the Plan entity by IDs.
-func (m *BatteryModelMutation) RemovePlanIDs(ids ...uint64) {
-	if m.removedplans == nil {
-		m.removedplans = make(map[uint64]struct{})
-	}
-	for i := range ids {
-		delete(m.plans, ids[i])
-		m.removedplans[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedPlans returns the removed IDs of the "plans" edge to the Plan entity.
-func (m *BatteryModelMutation) RemovedPlansIDs() (ids []uint64) {
-	for id := range m.removedplans {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// PlansIDs returns the "plans" edge IDs in the mutation.
-func (m *BatteryModelMutation) PlansIDs() (ids []uint64) {
-	for id := range m.plans {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetPlans resets all changes to the "plans" edge.
-func (m *BatteryModelMutation) ResetPlans() {
-	m.plans = nil
-	m.clearedplans = false
-	m.removedplans = nil
-}
-
 // Where appends a list predicates to the BatteryModelMutation builder.
 func (m *BatteryModelMutation) Where(ps ...predicate.BatteryModel) {
 	m.predicates = append(m.predicates, ps...)
@@ -852,12 +795,9 @@ func (m *BatteryModelMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *BatteryModelMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 1)
 	if m.cabinets != nil {
 		edges = append(edges, batterymodel.EdgeCabinets)
-	}
-	if m.plans != nil {
-		edges = append(edges, batterymodel.EdgePlans)
 	}
 	return edges
 }
@@ -872,24 +812,15 @@ func (m *BatteryModelMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case batterymodel.EdgePlans:
-		ids := make([]ent.Value, 0, len(m.plans))
-		for id := range m.plans {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *BatteryModelMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 1)
 	if m.removedcabinets != nil {
 		edges = append(edges, batterymodel.EdgeCabinets)
-	}
-	if m.removedplans != nil {
-		edges = append(edges, batterymodel.EdgePlans)
 	}
 	return edges
 }
@@ -904,24 +835,15 @@ func (m *BatteryModelMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case batterymodel.EdgePlans:
-		ids := make([]ent.Value, 0, len(m.removedplans))
-		for id := range m.removedplans {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *BatteryModelMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 1)
 	if m.clearedcabinets {
 		edges = append(edges, batterymodel.EdgeCabinets)
-	}
-	if m.clearedplans {
-		edges = append(edges, batterymodel.EdgePlans)
 	}
 	return edges
 }
@@ -932,8 +854,6 @@ func (m *BatteryModelMutation) EdgeCleared(name string) bool {
 	switch name {
 	case batterymodel.EdgeCabinets:
 		return m.clearedcabinets
-	case batterymodel.EdgePlans:
-		return m.clearedplans
 	}
 	return false
 }
@@ -952,9 +872,6 @@ func (m *BatteryModelMutation) ResetEdge(name string) error {
 	switch name {
 	case batterymodel.EdgeCabinets:
 		m.ResetCabinets()
-		return nil
-	case batterymodel.EdgePlans:
-		m.ResetPlans()
 		return nil
 	}
 	return fmt.Errorf("unknown BatteryModel edge %s", name)

@@ -28,6 +28,7 @@ type PlanMutation struct {
 	creator          **model.Modifier
 	last_modifier    **model.Modifier
 	remark           *string
+	model            *string
 	enable           *bool
 	_type            *uint8
 	add_type         *int8
@@ -45,12 +46,10 @@ type PlanMutation struct {
 	desc             *string
 	relief_newly     *float64
 	addrelief_newly  *float64
+	notes            *[]string
 	clearedFields    map[string]struct{}
 	brand            *uint64
 	clearedbrand     bool
-	models           map[uint64]struct{}
-	removedmodels    map[uint64]struct{}
-	clearedmodels    bool
 	cities           map[uint64]struct{}
 	removedcities    map[uint64]struct{}
 	clearedcities    bool
@@ -480,6 +479,55 @@ func (m *PlanMutation) BrandIDCleared() bool {
 func (m *PlanMutation) ResetBrandID() {
 	m.brand = nil
 	delete(m.clearedFields, plan.FieldBrandID)
+}
+
+// SetModel sets the "model" field.
+func (m *PlanMutation) SetModel(s string) {
+	m.model = &s
+}
+
+// Model returns the value of the "model" field in the mutation.
+func (m *PlanMutation) Model() (r string, exists bool) {
+	v := m.model
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldModel returns the old "model" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldModel(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldModel is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldModel requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldModel: %w", err)
+	}
+	return oldValue.Model, nil
+}
+
+// ClearModel clears the value of the "model" field.
+func (m *PlanMutation) ClearModel() {
+	m.model = nil
+	m.clearedFields[plan.FieldModel] = struct{}{}
+}
+
+// ModelCleared returns if the "model" field was cleared in this mutation.
+func (m *PlanMutation) ModelCleared() bool {
+	_, ok := m.clearedFields[plan.FieldModel]
+	return ok
+}
+
+// ResetModel resets all changes to the "model" field.
+func (m *PlanMutation) ResetModel() {
+	m.model = nil
+	delete(m.clearedFields, plan.FieldModel)
 }
 
 // SetEnable sets the "enable" field.
@@ -1074,6 +1122,55 @@ func (m *PlanMutation) ResetReliefNewly() {
 	m.addrelief_newly = nil
 }
 
+// SetNotes sets the "notes" field.
+func (m *PlanMutation) SetNotes(s []string) {
+	m.notes = &s
+}
+
+// Notes returns the value of the "notes" field in the mutation.
+func (m *PlanMutation) Notes() (r []string, exists bool) {
+	v := m.notes
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNotes returns the old "notes" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldNotes(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNotes is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNotes requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNotes: %w", err)
+	}
+	return oldValue.Notes, nil
+}
+
+// ClearNotes clears the value of the "notes" field.
+func (m *PlanMutation) ClearNotes() {
+	m.notes = nil
+	m.clearedFields[plan.FieldNotes] = struct{}{}
+}
+
+// NotesCleared returns if the "notes" field was cleared in this mutation.
+func (m *PlanMutation) NotesCleared() bool {
+	_, ok := m.clearedFields[plan.FieldNotes]
+	return ok
+}
+
+// ResetNotes resets all changes to the "notes" field.
+func (m *PlanMutation) ResetNotes() {
+	m.notes = nil
+	delete(m.clearedFields, plan.FieldNotes)
+}
+
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (m *PlanMutation) ClearBrand() {
 	m.clearedbrand = true
@@ -1098,60 +1195,6 @@ func (m *PlanMutation) BrandIDs() (ids []uint64) {
 func (m *PlanMutation) ResetBrand() {
 	m.brand = nil
 	m.clearedbrand = false
-}
-
-// AddModelIDs adds the "models" edge to the BatteryModel entity by ids.
-func (m *PlanMutation) AddModelIDs(ids ...uint64) {
-	if m.models == nil {
-		m.models = make(map[uint64]struct{})
-	}
-	for i := range ids {
-		m.models[ids[i]] = struct{}{}
-	}
-}
-
-// ClearModels clears the "models" edge to the BatteryModel entity.
-func (m *PlanMutation) ClearModels() {
-	m.clearedmodels = true
-}
-
-// ModelsCleared reports if the "models" edge to the BatteryModel entity was cleared.
-func (m *PlanMutation) ModelsCleared() bool {
-	return m.clearedmodels
-}
-
-// RemoveModelIDs removes the "models" edge to the BatteryModel entity by IDs.
-func (m *PlanMutation) RemoveModelIDs(ids ...uint64) {
-	if m.removedmodels == nil {
-		m.removedmodels = make(map[uint64]struct{})
-	}
-	for i := range ids {
-		delete(m.models, ids[i])
-		m.removedmodels[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedModels returns the removed IDs of the "models" edge to the BatteryModel entity.
-func (m *PlanMutation) RemovedModelsIDs() (ids []uint64) {
-	for id := range m.removedmodels {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ModelsIDs returns the "models" edge IDs in the mutation.
-func (m *PlanMutation) ModelsIDs() (ids []uint64) {
-	for id := range m.models {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetModels resets all changes to the "models" edge.
-func (m *PlanMutation) ResetModels() {
-	m.models = nil
-	m.clearedmodels = false
-	m.removedmodels = nil
 }
 
 // AddCityIDs adds the "cities" edge to the City entity by ids.
@@ -1361,7 +1404,7 @@ func (m *PlanMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlanMutation) Fields() []string {
-	fields := make([]string, 0, 19)
+	fields := make([]string, 0, 21)
 	if m.created_at != nil {
 		fields = append(fields, plan.FieldCreatedAt)
 	}
@@ -1382,6 +1425,9 @@ func (m *PlanMutation) Fields() []string {
 	}
 	if m.brand != nil {
 		fields = append(fields, plan.FieldBrandID)
+	}
+	if m.model != nil {
+		fields = append(fields, plan.FieldModel)
 	}
 	if m.enable != nil {
 		fields = append(fields, plan.FieldEnable)
@@ -1419,6 +1465,9 @@ func (m *PlanMutation) Fields() []string {
 	if m.relief_newly != nil {
 		fields = append(fields, plan.FieldReliefNewly)
 	}
+	if m.notes != nil {
+		fields = append(fields, plan.FieldNotes)
+	}
 	return fields
 }
 
@@ -1441,6 +1490,8 @@ func (m *PlanMutation) Field(name string) (ent.Value, bool) {
 		return m.Remark()
 	case plan.FieldBrandID:
 		return m.BrandID()
+	case plan.FieldModel:
+		return m.Model()
 	case plan.FieldEnable:
 		return m.Enable()
 	case plan.FieldType:
@@ -1465,6 +1516,8 @@ func (m *PlanMutation) Field(name string) (ent.Value, bool) {
 		return m.ParentID()
 	case plan.FieldReliefNewly:
 		return m.ReliefNewly()
+	case plan.FieldNotes:
+		return m.Notes()
 	}
 	return nil, false
 }
@@ -1488,6 +1541,8 @@ func (m *PlanMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldRemark(ctx)
 	case plan.FieldBrandID:
 		return m.OldBrandID(ctx)
+	case plan.FieldModel:
+		return m.OldModel(ctx)
 	case plan.FieldEnable:
 		return m.OldEnable(ctx)
 	case plan.FieldType:
@@ -1512,6 +1567,8 @@ func (m *PlanMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldParentID(ctx)
 	case plan.FieldReliefNewly:
 		return m.OldReliefNewly(ctx)
+	case plan.FieldNotes:
+		return m.OldNotes(ctx)
 	}
 	return nil, fmt.Errorf("unknown Plan field %s", name)
 }
@@ -1569,6 +1626,13 @@ func (m *PlanMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetBrandID(v)
+		return nil
+	case plan.FieldModel:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetModel(v)
 		return nil
 	case plan.FieldEnable:
 		v, ok := value.(bool)
@@ -1653,6 +1717,13 @@ func (m *PlanMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetReliefNewly(v)
+		return nil
+	case plan.FieldNotes:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNotes(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Plan field %s", name)
@@ -1774,6 +1845,9 @@ func (m *PlanMutation) ClearedFields() []string {
 	if m.FieldCleared(plan.FieldBrandID) {
 		fields = append(fields, plan.FieldBrandID)
 	}
+	if m.FieldCleared(plan.FieldModel) {
+		fields = append(fields, plan.FieldModel)
+	}
 	if m.FieldCleared(plan.FieldOriginal) {
 		fields = append(fields, plan.FieldOriginal)
 	}
@@ -1782,6 +1856,9 @@ func (m *PlanMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(plan.FieldParentID) {
 		fields = append(fields, plan.FieldParentID)
+	}
+	if m.FieldCleared(plan.FieldNotes) {
+		fields = append(fields, plan.FieldNotes)
 	}
 	return fields
 }
@@ -1812,6 +1889,9 @@ func (m *PlanMutation) ClearField(name string) error {
 	case plan.FieldBrandID:
 		m.ClearBrandID()
 		return nil
+	case plan.FieldModel:
+		m.ClearModel()
+		return nil
 	case plan.FieldOriginal:
 		m.ClearOriginal()
 		return nil
@@ -1820,6 +1900,9 @@ func (m *PlanMutation) ClearField(name string) error {
 		return nil
 	case plan.FieldParentID:
 		m.ClearParentID()
+		return nil
+	case plan.FieldNotes:
+		m.ClearNotes()
 		return nil
 	}
 	return fmt.Errorf("unknown Plan nullable field %s", name)
@@ -1849,6 +1932,9 @@ func (m *PlanMutation) ResetField(name string) error {
 		return nil
 	case plan.FieldBrandID:
 		m.ResetBrandID()
+		return nil
+	case plan.FieldModel:
+		m.ResetModel()
 		return nil
 	case plan.FieldEnable:
 		m.ResetEnable()
@@ -1886,18 +1972,18 @@ func (m *PlanMutation) ResetField(name string) error {
 	case plan.FieldReliefNewly:
 		m.ResetReliefNewly()
 		return nil
+	case plan.FieldNotes:
+		m.ResetNotes()
+		return nil
 	}
 	return fmt.Errorf("unknown Plan field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlanMutation) AddedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 5)
 	if m.brand != nil {
 		edges = append(edges, plan.EdgeBrand)
-	}
-	if m.models != nil {
-		edges = append(edges, plan.EdgeModels)
 	}
 	if m.cities != nil {
 		edges = append(edges, plan.EdgeCities)
@@ -1922,12 +2008,6 @@ func (m *PlanMutation) AddedIDs(name string) []ent.Value {
 		if id := m.brand; id != nil {
 			return []ent.Value{*id}
 		}
-	case plan.EdgeModels:
-		ids := make([]ent.Value, 0, len(m.models))
-		for id := range m.models {
-			ids = append(ids, id)
-		}
-		return ids
 	case plan.EdgeCities:
 		ids := make([]ent.Value, 0, len(m.cities))
 		for id := range m.cities {
@@ -1956,10 +2036,7 @@ func (m *PlanMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlanMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 6)
-	if m.removedmodels != nil {
-		edges = append(edges, plan.EdgeModels)
-	}
+	edges := make([]string, 0, 5)
 	if m.removedcities != nil {
 		edges = append(edges, plan.EdgeCities)
 	}
@@ -1976,12 +2053,6 @@ func (m *PlanMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *PlanMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case plan.EdgeModels:
-		ids := make([]ent.Value, 0, len(m.removedmodels))
-		for id := range m.removedmodels {
-			ids = append(ids, id)
-		}
-		return ids
 	case plan.EdgeCities:
 		ids := make([]ent.Value, 0, len(m.removedcities))
 		for id := range m.removedcities {
@@ -2006,12 +2077,9 @@ func (m *PlanMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlanMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 5)
 	if m.clearedbrand {
 		edges = append(edges, plan.EdgeBrand)
-	}
-	if m.clearedmodels {
-		edges = append(edges, plan.EdgeModels)
 	}
 	if m.clearedcities {
 		edges = append(edges, plan.EdgeCities)
@@ -2034,8 +2102,6 @@ func (m *PlanMutation) EdgeCleared(name string) bool {
 	switch name {
 	case plan.EdgeBrand:
 		return m.clearedbrand
-	case plan.EdgeModels:
-		return m.clearedmodels
 	case plan.EdgeCities:
 		return m.clearedcities
 	case plan.EdgeParent:
@@ -2068,9 +2134,6 @@ func (m *PlanMutation) ResetEdge(name string) error {
 	switch name {
 	case plan.EdgeBrand:
 		m.ResetBrand()
-		return nil
-	case plan.EdgeModels:
-		m.ResetModels()
 		return nil
 	case plan.EdgeCities:
 		m.ResetCities()

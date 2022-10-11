@@ -12,7 +12,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
@@ -105,6 +104,20 @@ func (pc *PlanCreate) SetBrandID(u uint64) *PlanCreate {
 func (pc *PlanCreate) SetNillableBrandID(u *uint64) *PlanCreate {
 	if u != nil {
 		pc.SetBrandID(*u)
+	}
+	return pc
+}
+
+// SetModel sets the "model" field.
+func (pc *PlanCreate) SetModel(s string) *PlanCreate {
+	pc.mutation.SetModel(s)
+	return pc
+}
+
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableModel(s *string) *PlanCreate {
+	if s != nil {
+		pc.SetModel(*s)
 	}
 	return pc
 }
@@ -221,24 +234,15 @@ func (pc *PlanCreate) SetNillableReliefNewly(f *float64) *PlanCreate {
 	return pc
 }
 
-// SetBrand sets the "brand" edge to the EbikeBrand entity.
-func (pc *PlanCreate) SetBrand(e *EbikeBrand) *PlanCreate {
-	return pc.SetBrandID(e.ID)
-}
-
-// AddModelIDs adds the "models" edge to the BatteryModel entity by IDs.
-func (pc *PlanCreate) AddModelIDs(ids ...uint64) *PlanCreate {
-	pc.mutation.AddModelIDs(ids...)
+// SetNotes sets the "notes" field.
+func (pc *PlanCreate) SetNotes(s []string) *PlanCreate {
+	pc.mutation.SetNotes(s)
 	return pc
 }
 
-// AddModels adds the "models" edges to the BatteryModel entity.
-func (pc *PlanCreate) AddModels(b ...*BatteryModel) *PlanCreate {
-	ids := make([]uint64, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return pc.AddModelIDs(ids...)
+// SetBrand sets the "brand" edge to the EbikeBrand entity.
+func (pc *PlanCreate) SetBrand(e *EbikeBrand) *PlanCreate {
+	return pc.SetBrandID(e.ID)
 }
 
 // AddCityIDs adds the "cities" edge to the City entity by IDs.
@@ -506,6 +510,14 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 		})
 		_node.Remark = value
 	}
+	if value, ok := pc.mutation.Model(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: plan.FieldModel,
+		})
+		_node.Model = value
+	}
 	if value, ok := pc.mutation.Enable(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
@@ -594,6 +606,14 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 		})
 		_node.ReliefNewly = value
 	}
+	if value, ok := pc.mutation.Notes(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: plan.FieldNotes,
+		})
+		_node.Notes = value
+	}
 	if nodes := pc.mutation.BrandIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -612,25 +632,6 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.BrandID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := pc.mutation.ModelsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   plan.ModelsTable,
-			Columns: plan.ModelsPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: batterymodel.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := pc.mutation.CitiesIDs(); len(nodes) > 0 {
@@ -846,6 +847,24 @@ func (u *PlanUpsert) ClearBrandID() *PlanUpsert {
 	return u
 }
 
+// SetModel sets the "model" field.
+func (u *PlanUpsert) SetModel(v string) *PlanUpsert {
+	u.Set(plan.FieldModel, v)
+	return u
+}
+
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateModel() *PlanUpsert {
+	u.SetExcluded(plan.FieldModel)
+	return u
+}
+
+// ClearModel clears the value of the "model" field.
+func (u *PlanUpsert) ClearModel() *PlanUpsert {
+	u.SetNull(plan.FieldModel)
+	return u
+}
+
 // SetEnable sets the "enable" field.
 func (u *PlanUpsert) SetEnable(v bool) *PlanUpsert {
 	u.Set(plan.FieldEnable, v)
@@ -1044,6 +1063,24 @@ func (u *PlanUpsert) AddReliefNewly(v float64) *PlanUpsert {
 	return u
 }
 
+// SetNotes sets the "notes" field.
+func (u *PlanUpsert) SetNotes(v []string) *PlanUpsert {
+	u.Set(plan.FieldNotes, v)
+	return u
+}
+
+// UpdateNotes sets the "notes" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateNotes() *PlanUpsert {
+	u.SetExcluded(plan.FieldNotes)
+	return u
+}
+
+// ClearNotes clears the value of the "notes" field.
+func (u *PlanUpsert) ClearNotes() *PlanUpsert {
+	u.SetNull(plan.FieldNotes)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1187,6 +1224,27 @@ func (u *PlanUpsertOne) UpdateBrandID() *PlanUpsertOne {
 func (u *PlanUpsertOne) ClearBrandID() *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.ClearBrandID()
+	})
+}
+
+// SetModel sets the "model" field.
+func (u *PlanUpsertOne) SetModel(v string) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetModel(v)
+	})
+}
+
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateModel() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateModel()
+	})
+}
+
+// ClearModel clears the value of the "model" field.
+func (u *PlanUpsertOne) ClearModel() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearModel()
 	})
 }
 
@@ -1418,6 +1476,27 @@ func (u *PlanUpsertOne) AddReliefNewly(v float64) *PlanUpsertOne {
 func (u *PlanUpsertOne) UpdateReliefNewly() *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.UpdateReliefNewly()
+	})
+}
+
+// SetNotes sets the "notes" field.
+func (u *PlanUpsertOne) SetNotes(v []string) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetNotes(v)
+	})
+}
+
+// UpdateNotes sets the "notes" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateNotes() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateNotes()
+	})
+}
+
+// ClearNotes clears the value of the "notes" field.
+func (u *PlanUpsertOne) ClearNotes() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearNotes()
 	})
 }
 
@@ -1729,6 +1808,27 @@ func (u *PlanUpsertBulk) ClearBrandID() *PlanUpsertBulk {
 	})
 }
 
+// SetModel sets the "model" field.
+func (u *PlanUpsertBulk) SetModel(v string) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetModel(v)
+	})
+}
+
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateModel() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateModel()
+	})
+}
+
+// ClearModel clears the value of the "model" field.
+func (u *PlanUpsertBulk) ClearModel() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearModel()
+	})
+}
+
 // SetEnable sets the "enable" field.
 func (u *PlanUpsertBulk) SetEnable(v bool) *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
@@ -1957,6 +2057,27 @@ func (u *PlanUpsertBulk) AddReliefNewly(v float64) *PlanUpsertBulk {
 func (u *PlanUpsertBulk) UpdateReliefNewly() *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.UpdateReliefNewly()
+	})
+}
+
+// SetNotes sets the "notes" field.
+func (u *PlanUpsertBulk) SetNotes(v []string) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetNotes(v)
+	})
+}
+
+// UpdateNotes sets the "notes" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateNotes() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateNotes()
+	})
+}
+
+// ClearNotes clears the value of the "notes" field.
+func (u *PlanUpsertBulk) ClearNotes() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearNotes()
 	})
 }
 

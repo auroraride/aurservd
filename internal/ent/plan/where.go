@@ -116,6 +116,13 @@ func BrandID(v uint64) predicate.Plan {
 	})
 }
 
+// Model applies equality check predicate on the "model" field. It's identical to ModelEQ.
+func Model(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldModel), v))
+	})
+}
+
 // Enable applies equality check predicate on the "enable" field. It's identical to EnableEQ.
 func Enable(v bool) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
@@ -594,6 +601,119 @@ func BrandIDIsNil() predicate.Plan {
 func BrandIDNotNil() predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldBrandID)))
+	})
+}
+
+// ModelEQ applies the EQ predicate on the "model" field.
+func ModelEQ(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldModel), v))
+	})
+}
+
+// ModelNEQ applies the NEQ predicate on the "model" field.
+func ModelNEQ(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldModel), v))
+	})
+}
+
+// ModelIn applies the In predicate on the "model" field.
+func ModelIn(vs ...string) predicate.Plan {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldModel), v...))
+	})
+}
+
+// ModelNotIn applies the NotIn predicate on the "model" field.
+func ModelNotIn(vs ...string) predicate.Plan {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldModel), v...))
+	})
+}
+
+// ModelGT applies the GT predicate on the "model" field.
+func ModelGT(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldModel), v))
+	})
+}
+
+// ModelGTE applies the GTE predicate on the "model" field.
+func ModelGTE(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldModel), v))
+	})
+}
+
+// ModelLT applies the LT predicate on the "model" field.
+func ModelLT(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldModel), v))
+	})
+}
+
+// ModelLTE applies the LTE predicate on the "model" field.
+func ModelLTE(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldModel), v))
+	})
+}
+
+// ModelContains applies the Contains predicate on the "model" field.
+func ModelContains(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldModel), v))
+	})
+}
+
+// ModelHasPrefix applies the HasPrefix predicate on the "model" field.
+func ModelHasPrefix(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldModel), v))
+	})
+}
+
+// ModelHasSuffix applies the HasSuffix predicate on the "model" field.
+func ModelHasSuffix(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldModel), v))
+	})
+}
+
+// ModelIsNil applies the IsNil predicate on the "model" field.
+func ModelIsNil() predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldModel)))
+	})
+}
+
+// ModelNotNil applies the NotNil predicate on the "model" field.
+func ModelNotNil() predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldModel)))
+	})
+}
+
+// ModelEqualFold applies the EqualFold predicate on the "model" field.
+func ModelEqualFold(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldModel), v))
+	})
+}
+
+// ModelContainsFold applies the ContainsFold predicate on the "model" field.
+func ModelContainsFold(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldModel), v))
 	})
 }
 
@@ -1399,6 +1519,20 @@ func ReliefNewlyLTE(v float64) predicate.Plan {
 	})
 }
 
+// NotesIsNil applies the IsNil predicate on the "notes" field.
+func NotesIsNil() predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldNotes)))
+	})
+}
+
+// NotesNotNil applies the NotNil predicate on the "notes" field.
+func NotesNotNil() predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldNotes)))
+	})
+}
+
 // HasBrand applies the HasEdge predicate on the "brand" edge.
 func HasBrand() predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
@@ -1418,34 +1552,6 @@ func HasBrandWith(preds ...predicate.EbikeBrand) predicate.Plan {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(BrandInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, BrandTable, BrandColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasModels applies the HasEdge predicate on the "models" edge.
-func HasModels() predicate.Plan {
-	return predicate.Plan(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ModelsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, ModelsTable, ModelsPrimaryKey...),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasModelsWith applies the HasEdge predicate on the "models" edge with a given conditions (other predicates).
-func HasModelsWith(preds ...predicate.BatteryModel) predicate.Plan {
-	return predicate.Plan(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ModelsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, ModelsTable, ModelsPrimaryKey...),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

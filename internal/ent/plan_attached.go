@@ -18,3 +18,14 @@ func (pl *Plan) OverdueFee(remaining int) (fee float64, formula string) {
     formula = fmt.Sprintf("(上次购买骑士卡价格 %.2f元 ÷ 天数 %d天) × 逾期天数 %d天 × 1.24 = 逾期费用 %.2f元", pl.Price, pl.Days, remaining, fee)
     return
 }
+
+func (pc *PlanCreate) Clone() (creator *PlanCreate) {
+    mutation := new(PlanMutation)
+    *mutation = *pc.mutation
+    return &PlanCreate{
+        config:   pc.config,
+        mutation: mutation,
+        hooks:    pc.hooks,
+        conflict: pc.conflict,
+    }
+}

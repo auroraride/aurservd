@@ -112,3 +112,7 @@ func (s *cityService) NameFromID(id uint64) string {
     }
     return p.Name
 }
+
+func (s *cityService) QueryIDs(ids []uint64) ([]*ent.City, error) {
+    return s.orm.QueryNotDeleted().Where(city.IDIn(ids...)).All(s.ctx)
+}

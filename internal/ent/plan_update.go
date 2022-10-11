@@ -12,7 +12,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
@@ -109,6 +108,26 @@ func (pu *PlanUpdate) SetNillableBrandID(u *uint64) *PlanUpdate {
 // ClearBrandID clears the value of the "brand_id" field.
 func (pu *PlanUpdate) ClearBrandID() *PlanUpdate {
 	pu.mutation.ClearBrandID()
+	return pu
+}
+
+// SetModel sets the "model" field.
+func (pu *PlanUpdate) SetModel(s string) *PlanUpdate {
+	pu.mutation.SetModel(s)
+	return pu
+}
+
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableModel(s *string) *PlanUpdate {
+	if s != nil {
+		pu.SetModel(*s)
+	}
+	return pu
+}
+
+// ClearModel clears the value of the "model" field.
+func (pu *PlanUpdate) ClearModel() *PlanUpdate {
+	pu.mutation.ClearModel()
 	return pu
 }
 
@@ -284,24 +303,21 @@ func (pu *PlanUpdate) AddReliefNewly(f float64) *PlanUpdate {
 	return pu
 }
 
-// SetBrand sets the "brand" edge to the EbikeBrand entity.
-func (pu *PlanUpdate) SetBrand(e *EbikeBrand) *PlanUpdate {
-	return pu.SetBrandID(e.ID)
-}
-
-// AddModelIDs adds the "models" edge to the BatteryModel entity by IDs.
-func (pu *PlanUpdate) AddModelIDs(ids ...uint64) *PlanUpdate {
-	pu.mutation.AddModelIDs(ids...)
+// SetNotes sets the "notes" field.
+func (pu *PlanUpdate) SetNotes(s []string) *PlanUpdate {
+	pu.mutation.SetNotes(s)
 	return pu
 }
 
-// AddModels adds the "models" edges to the BatteryModel entity.
-func (pu *PlanUpdate) AddModels(b ...*BatteryModel) *PlanUpdate {
-	ids := make([]uint64, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return pu.AddModelIDs(ids...)
+// ClearNotes clears the value of the "notes" field.
+func (pu *PlanUpdate) ClearNotes() *PlanUpdate {
+	pu.mutation.ClearNotes()
+	return pu
+}
+
+// SetBrand sets the "brand" edge to the EbikeBrand entity.
+func (pu *PlanUpdate) SetBrand(e *EbikeBrand) *PlanUpdate {
+	return pu.SetBrandID(e.ID)
 }
 
 // AddCityIDs adds the "cities" edge to the City entity by IDs.
@@ -363,27 +379,6 @@ func (pu *PlanUpdate) Mutation() *PlanMutation {
 func (pu *PlanUpdate) ClearBrand() *PlanUpdate {
 	pu.mutation.ClearBrand()
 	return pu
-}
-
-// ClearModels clears all "models" edges to the BatteryModel entity.
-func (pu *PlanUpdate) ClearModels() *PlanUpdate {
-	pu.mutation.ClearModels()
-	return pu
-}
-
-// RemoveModelIDs removes the "models" edge to BatteryModel entities by IDs.
-func (pu *PlanUpdate) RemoveModelIDs(ids ...uint64) *PlanUpdate {
-	pu.mutation.RemoveModelIDs(ids...)
-	return pu
-}
-
-// RemoveModels removes "models" edges to BatteryModel entities.
-func (pu *PlanUpdate) RemoveModels(b ...*BatteryModel) *PlanUpdate {
-	ids := make([]uint64, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return pu.RemoveModelIDs(ids...)
 }
 
 // ClearCities clears all "cities" edges to the City entity.
@@ -600,6 +595,19 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: plan.FieldRemark,
 		})
 	}
+	if value, ok := pu.mutation.Model(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: plan.FieldModel,
+		})
+	}
+	if pu.mutation.ModelCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: plan.FieldModel,
+		})
+	}
 	if value, ok := pu.mutation.Enable(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
@@ -731,6 +739,19 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: plan.FieldReliefNewly,
 		})
 	}
+	if value, ok := pu.mutation.Notes(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: plan.FieldNotes,
+		})
+	}
+	if pu.mutation.NotesCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: plan.FieldNotes,
+		})
+	}
 	if pu.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -758,60 +779,6 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: ebikebrand.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if pu.mutation.ModelsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   plan.ModelsTable,
-			Columns: plan.ModelsPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: batterymodel.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := pu.mutation.RemovedModelsIDs(); len(nodes) > 0 && !pu.mutation.ModelsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   plan.ModelsTable,
-			Columns: plan.ModelsPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: batterymodel.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := pu.mutation.ModelsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   plan.ModelsTable,
-			Columns: plan.ModelsPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: batterymodel.FieldID,
 				},
 			},
 		}
@@ -1116,6 +1083,26 @@ func (puo *PlanUpdateOne) ClearBrandID() *PlanUpdateOne {
 	return puo
 }
 
+// SetModel sets the "model" field.
+func (puo *PlanUpdateOne) SetModel(s string) *PlanUpdateOne {
+	puo.mutation.SetModel(s)
+	return puo
+}
+
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableModel(s *string) *PlanUpdateOne {
+	if s != nil {
+		puo.SetModel(*s)
+	}
+	return puo
+}
+
+// ClearModel clears the value of the "model" field.
+func (puo *PlanUpdateOne) ClearModel() *PlanUpdateOne {
+	puo.mutation.ClearModel()
+	return puo
+}
+
 // SetEnable sets the "enable" field.
 func (puo *PlanUpdateOne) SetEnable(b bool) *PlanUpdateOne {
 	puo.mutation.SetEnable(b)
@@ -1288,24 +1275,21 @@ func (puo *PlanUpdateOne) AddReliefNewly(f float64) *PlanUpdateOne {
 	return puo
 }
 
-// SetBrand sets the "brand" edge to the EbikeBrand entity.
-func (puo *PlanUpdateOne) SetBrand(e *EbikeBrand) *PlanUpdateOne {
-	return puo.SetBrandID(e.ID)
-}
-
-// AddModelIDs adds the "models" edge to the BatteryModel entity by IDs.
-func (puo *PlanUpdateOne) AddModelIDs(ids ...uint64) *PlanUpdateOne {
-	puo.mutation.AddModelIDs(ids...)
+// SetNotes sets the "notes" field.
+func (puo *PlanUpdateOne) SetNotes(s []string) *PlanUpdateOne {
+	puo.mutation.SetNotes(s)
 	return puo
 }
 
-// AddModels adds the "models" edges to the BatteryModel entity.
-func (puo *PlanUpdateOne) AddModels(b ...*BatteryModel) *PlanUpdateOne {
-	ids := make([]uint64, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return puo.AddModelIDs(ids...)
+// ClearNotes clears the value of the "notes" field.
+func (puo *PlanUpdateOne) ClearNotes() *PlanUpdateOne {
+	puo.mutation.ClearNotes()
+	return puo
+}
+
+// SetBrand sets the "brand" edge to the EbikeBrand entity.
+func (puo *PlanUpdateOne) SetBrand(e *EbikeBrand) *PlanUpdateOne {
+	return puo.SetBrandID(e.ID)
 }
 
 // AddCityIDs adds the "cities" edge to the City entity by IDs.
@@ -1367,27 +1351,6 @@ func (puo *PlanUpdateOne) Mutation() *PlanMutation {
 func (puo *PlanUpdateOne) ClearBrand() *PlanUpdateOne {
 	puo.mutation.ClearBrand()
 	return puo
-}
-
-// ClearModels clears all "models" edges to the BatteryModel entity.
-func (puo *PlanUpdateOne) ClearModels() *PlanUpdateOne {
-	puo.mutation.ClearModels()
-	return puo
-}
-
-// RemoveModelIDs removes the "models" edge to BatteryModel entities by IDs.
-func (puo *PlanUpdateOne) RemoveModelIDs(ids ...uint64) *PlanUpdateOne {
-	puo.mutation.RemoveModelIDs(ids...)
-	return puo
-}
-
-// RemoveModels removes "models" edges to BatteryModel entities.
-func (puo *PlanUpdateOne) RemoveModels(b ...*BatteryModel) *PlanUpdateOne {
-	ids := make([]uint64, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return puo.RemoveModelIDs(ids...)
 }
 
 // ClearCities clears all "cities" edges to the City entity.
@@ -1634,6 +1597,19 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 			Column: plan.FieldRemark,
 		})
 	}
+	if value, ok := puo.mutation.Model(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: plan.FieldModel,
+		})
+	}
+	if puo.mutation.ModelCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: plan.FieldModel,
+		})
+	}
 	if value, ok := puo.mutation.Enable(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
@@ -1765,6 +1741,19 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 			Column: plan.FieldReliefNewly,
 		})
 	}
+	if value, ok := puo.mutation.Notes(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: plan.FieldNotes,
+		})
+	}
+	if puo.mutation.NotesCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: plan.FieldNotes,
+		})
+	}
 	if puo.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1792,60 +1781,6 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: ebikebrand.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if puo.mutation.ModelsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   plan.ModelsTable,
-			Columns: plan.ModelsPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: batterymodel.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := puo.mutation.RemovedModelsIDs(); len(nodes) > 0 && !puo.mutation.ModelsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   plan.ModelsTable,
-			Columns: plan.ModelsPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: batterymodel.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := puo.mutation.ModelsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   plan.ModelsTable,
-			Columns: plan.ModelsPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: batterymodel.FieldID,
 				},
 			},
 		}
