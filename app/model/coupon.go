@@ -138,3 +138,11 @@ type CouponAllocateReq struct {
     ID      uint64 `json:"id" validate:"required"`      // 优惠券
     RiderID uint64 `json:"riderId" validate:"required"` // 骑手
 }
+
+type Coupon struct {
+    Useable   bool    `json:"useable"`   // 是否可使用
+    Amount    float64 `json:"amount"`    // 金额
+    Name      string  `json:"name"`      // 名称
+    ExpiredAt string  `json:"expiredAt"` // 过期时间
+    Code      string  `json:"code"`      // 券码
+}

@@ -44,7 +44,7 @@ type PlanComplex struct {
     Original    float64 `json:"original"`    // 原价
     Desc        string  `json:"desc"`        // 优惠信息
     Commission  float64 `json:"commission"`  // 提成
-    ReliefNewly float64 `json:"reliefNewly"` // 新签减免
+    ReliefNewly float64 `json:"reliefNewly"` // 新签优惠
 
     Model string `json:"model" validate:"required"` // 电池型号, 单电需要每一项都补充此字段
 }
@@ -106,20 +106,20 @@ type PlanListRiderReq struct {
     Min    uint   `json:"min" swaggerignore:"true"` // 最小天数
 }
 
+// RiderPlanItem 骑士返回数据
+type RiderPlanItem struct {
+    ID          uint64  `json:"id"`
+    Name        string  `json:"name"`        // 骑士卡名称
+    Price       float64 `json:"price"`       // 价格
+    Days        uint    `json:"days"`        // 天数
+    Original    float64 `json:"original"`    // 原价
+    ReliefNewly float64 `json:"reliefNewly"` // 新签优惠
+}
+
 type RiderPlanListRes struct {
     Model   string          `json:"model"`   // 电池型号
     Plans   []RiderPlanItem `json:"plans"`   // 套餐列表
     Deposit float64         `json:"deposit"` // 需缴纳押金
-}
-
-// RiderPlanItem 骑士返回数据
-type RiderPlanItem struct {
-    ID       uint64  `json:"id"`
-    Name     string  `json:"name"`     // 骑士卡名称
-    Price    float64 `json:"price"`    // 价格
-    Days     uint    `json:"days"`     // 天数
-    Original float64 `json:"original"` // 原价
-    Desc     string  `json:"desc"`     // 优惠信息
 }
 
 type RiderPlanRenewalRes struct {
@@ -147,4 +147,36 @@ type RiderPlanRenewalRes struct {
 type PlanSelectionReq struct {
     Effect *uint8 `json:"effect" query:"effect" enums:"0,1,2"` // 筛选生效中 0:全部(默认) 1:生效中 2:未生效
     Status *uint8 `json:"status" query:"status" enums:"0,1,2"` // 筛选状态 0:全部(默认) 1:启用 2:禁用
+}
+
+// PlanDaysPrice 骑士卡天数价格选项
+type PlanDaysPrice struct {
+    ID          uint64  `json:"id"`
+    Name        string  `json:"name"`        // 骑士卡名称
+    Price       float64 `json:"price"`       // 价格
+    Days        uint    `json:"days"`        // 天数
+    Original    float64 `json:"original"`    // 原价
+    ReliefNewly float64 `json:"reliefNewly"` // 新签优惠
+}
+
+// PlanModelOption 新签电池型号选项
+type PlanModelOption struct {
+    Children []PlanDaysPrice `json:"children"` // 天数和价格信息
+    Model    string          `json:"model"`    // 型号
+    Intro    string          `json:"intro"`    // 介绍图
+    Notes    []string        `json:"notes"`    // 购买须知
+}
+
+// PlanEbikeBrandOption 新签电车品牌选项
+type PlanEbikeBrandOption struct {
+    Children []PlanModelOption `json:"children"`        // 子项
+    Name     string            `json:"name"`            // 名称
+    Cover    string            `json:"cover,omitempty"` // 封面图
+}
+
+type PlanNewlyRes struct {
+    Brands  []PlanEbikeBrandOption `json:"brands,omitempty"` // 车电选项
+    Models  []PlanModelOption      `json:"models,omitempty"` // 单电选项
+    Points  float64                `json:"points"`           // 用户积分
+    Coupons CouponTarget
 }
