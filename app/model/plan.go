@@ -187,3 +187,9 @@ type PlanNewlyRes struct {
     Deposit   float64                 `json:"deposit"`             // 需缴纳押金
     Configure *PaymentConfigure       `json:"configure,omitempty"` // 支付配置
 }
+
+type PlanModifyTimeReq struct {
+    ID    uint64 `json:"id" validate:"required" trans:"骑士卡ID"` // 使用items[n].id
+    Start string `json:"start" validate:"required,datetime=2006-01-02" trans:"开始日期"`
+    End   string `json:"end" validate:"required,datetime=2006-01-02" trans:"结束日期"`
+}

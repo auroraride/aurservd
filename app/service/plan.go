@@ -14,6 +14,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/plan"
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     log "github.com/sirupsen/logrus"
     "sort"
@@ -120,8 +121,8 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
         brandID = silk.Pointer(brand.ID)
     }
 
-    start := carbon.ParseByLayout(req.Start, carbon.DateLayout).Carbon2Time()
-    end := carbon.ParseByLayout(req.End, carbon.DateLayout).Carbon2Time()
+    start := tools.NewTime().ParseDateStringX(req.Start)
+    end := carbon.Time2Carbon(tools.NewTime().ParseDateStringX(req.End)).EndOfDay().Carbon2Time()
 
     // 获取型号列表
     var bms []string
@@ -548,4 +549,18 @@ func (s *planService) NameFromID(id uint64) string {
         return "-"
     }
     return p.Name
+}
+
+func (s *planService) ModifyTime(req *model.PlanModifyTimeReq) {
+    s.Query(req.ID)
+    s.orm.Update().
+        Where(
+            plan.Or(
+                plan.ID(req.ID),
+                plan.ParentID(req.ID),
+            ),
+        ).
+        SetEnd(carbon.Time2Carbon(tools.NewTime().ParseDateStringX(req.End)).EndOfDay().Carbon2Time()).
+        SetStart(tools.NewTime().ParseDateStringX(req.Start)).
+        ExecX(s.ctx)
 }

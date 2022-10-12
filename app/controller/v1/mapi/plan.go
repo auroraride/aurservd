@@ -145,3 +145,19 @@ func (*plan) IntroduceModify(c echo.Context) (err error) {
     service.NewPlanIntroduce(ctx.Modifier).Modify(req)
     return ctx.SendResponse()
 }
+
+// Time
+// @ID           ManagerPlanTime
+// @Router       /manager/v1/plan/time [POST]
+// @Summary      M6009 修改骑士卡有效期
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body     model.PlanModifyTimeReq  true  "骑士卡和有效期"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*plan) Time(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.PlanModifyTimeReq](c)
+    service.NewPlanWithModifier(ctx.Modifier).ModifyTime(req)
+    return ctx.SendResponse()
+}

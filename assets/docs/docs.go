@@ -7929,6 +7929,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/plan/time": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M6009 修改骑士卡有效期",
+                "operationId": "ManagerPlanTime",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "骑士卡和有效期",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.PlanModifyTimeReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/plan/{id}": {
             "put": {
                 "consumes": [
@@ -18182,6 +18223,28 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "model.PlanModifyTimeReq": {
+            "type": "object",
+            "required": [
+                "end",
+                "id",
+                "start"
+            ],
+            "properties": {
+                "end": {
+                    "description": "结束日期 ",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "骑士卡ID 使用items[n].id",
+                    "type": "integer"
+                },
+                "start": {
+                    "description": "开始日期 ",
+                    "type": "string"
                 }
             }
         },
