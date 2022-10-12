@@ -298,13 +298,14 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanListRes) 
             m[child.Model] = r
         }
         *r = append(*r, model.PlanComplex{
-            ID:         child.ID,
-            Price:      child.Price,
-            Days:       child.Days,
-            Original:   child.Original,
-            Desc:       child.Desc,
-            Commission: child.Commission,
-            Model:      child.Model,
+            ID:          child.ID,
+            Price:       child.Price,
+            Days:        child.Days,
+            Original:    child.Original,
+            Desc:        child.Desc,
+            Commission:  child.Commission,
+            Model:       child.Model,
+            ReliefNewly: child.ReliefNewly,
         })
     }
 
