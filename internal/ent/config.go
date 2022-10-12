@@ -59,6 +59,7 @@ type hooks struct {
 	Inventory            []ent.Hook
 	Manager              []ent.Hook
 	Order                []ent.Hook
+	OrderCoupon          []ent.Hook
 	OrderRefund          []ent.Hook
 	Person               []ent.Hook
 	Plan                 []ent.Hook

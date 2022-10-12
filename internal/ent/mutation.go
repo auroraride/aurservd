@@ -46,6 +46,7 @@ const (
 	TypeInventory            = "Inventory"
 	TypeManager              = "Manager"
 	TypeOrder                = "Order"
+	TypeOrderCoupon          = "OrderCoupon"
 	TypeOrderRefund          = "OrderRefund"
 	TypePerson               = "Person"
 	TypePlan                 = "Plan"

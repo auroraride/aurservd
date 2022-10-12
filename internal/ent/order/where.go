@@ -214,6 +214,27 @@ func PastDays(v int) predicate.Order {
 	})
 }
 
+// Points applies equality check predicate on the "points" field. It's identical to PointsEQ.
+func Points(v int64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPoints), v))
+	})
+}
+
+// CouponAmount applies equality check predicate on the "coupon_amount" field. It's identical to CouponAmountEQ.
+func CouponAmount(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCouponAmount), v))
+	})
+}
+
+// ReliefNewly applies equality check predicate on the "relief_newly" field. It's identical to ReliefNewlyEQ.
+func ReliefNewly(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldReliefNewly), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
@@ -1546,6 +1567,198 @@ func PastDaysIsNil() predicate.Order {
 func PastDaysNotNil() predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldPastDays)))
+	})
+}
+
+// PointsEQ applies the EQ predicate on the "points" field.
+func PointsEQ(v int64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPoints), v))
+	})
+}
+
+// PointsNEQ applies the NEQ predicate on the "points" field.
+func PointsNEQ(v int64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPoints), v))
+	})
+}
+
+// PointsIn applies the In predicate on the "points" field.
+func PointsIn(vs ...int64) predicate.Order {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldPoints), v...))
+	})
+}
+
+// PointsNotIn applies the NotIn predicate on the "points" field.
+func PointsNotIn(vs ...int64) predicate.Order {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldPoints), v...))
+	})
+}
+
+// PointsGT applies the GT predicate on the "points" field.
+func PointsGT(v int64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldPoints), v))
+	})
+}
+
+// PointsGTE applies the GTE predicate on the "points" field.
+func PointsGTE(v int64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldPoints), v))
+	})
+}
+
+// PointsLT applies the LT predicate on the "points" field.
+func PointsLT(v int64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldPoints), v))
+	})
+}
+
+// PointsLTE applies the LTE predicate on the "points" field.
+func PointsLTE(v int64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldPoints), v))
+	})
+}
+
+// CouponAmountEQ applies the EQ predicate on the "coupon_amount" field.
+func CouponAmountEQ(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCouponAmount), v))
+	})
+}
+
+// CouponAmountNEQ applies the NEQ predicate on the "coupon_amount" field.
+func CouponAmountNEQ(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldCouponAmount), v))
+	})
+}
+
+// CouponAmountIn applies the In predicate on the "coupon_amount" field.
+func CouponAmountIn(vs ...float64) predicate.Order {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldCouponAmount), v...))
+	})
+}
+
+// CouponAmountNotIn applies the NotIn predicate on the "coupon_amount" field.
+func CouponAmountNotIn(vs ...float64) predicate.Order {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldCouponAmount), v...))
+	})
+}
+
+// CouponAmountGT applies the GT predicate on the "coupon_amount" field.
+func CouponAmountGT(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldCouponAmount), v))
+	})
+}
+
+// CouponAmountGTE applies the GTE predicate on the "coupon_amount" field.
+func CouponAmountGTE(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldCouponAmount), v))
+	})
+}
+
+// CouponAmountLT applies the LT predicate on the "coupon_amount" field.
+func CouponAmountLT(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldCouponAmount), v))
+	})
+}
+
+// CouponAmountLTE applies the LTE predicate on the "coupon_amount" field.
+func CouponAmountLTE(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldCouponAmount), v))
+	})
+}
+
+// ReliefNewlyEQ applies the EQ predicate on the "relief_newly" field.
+func ReliefNewlyEQ(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldReliefNewly), v))
+	})
+}
+
+// ReliefNewlyNEQ applies the NEQ predicate on the "relief_newly" field.
+func ReliefNewlyNEQ(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldReliefNewly), v))
+	})
+}
+
+// ReliefNewlyIn applies the In predicate on the "relief_newly" field.
+func ReliefNewlyIn(vs ...float64) predicate.Order {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldReliefNewly), v...))
+	})
+}
+
+// ReliefNewlyNotIn applies the NotIn predicate on the "relief_newly" field.
+func ReliefNewlyNotIn(vs ...float64) predicate.Order {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldReliefNewly), v...))
+	})
+}
+
+// ReliefNewlyGT applies the GT predicate on the "relief_newly" field.
+func ReliefNewlyGT(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldReliefNewly), v))
+	})
+}
+
+// ReliefNewlyGTE applies the GTE predicate on the "relief_newly" field.
+func ReliefNewlyGTE(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldReliefNewly), v))
+	})
+}
+
+// ReliefNewlyLT applies the LT predicate on the "relief_newly" field.
+func ReliefNewlyLT(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldReliefNewly), v))
+	})
+}
+
+// ReliefNewlyLTE applies the LTE predicate on the "relief_newly" field.
+func ReliefNewlyLTE(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldReliefNewly), v))
 	})
 }
 

@@ -260,6 +260,48 @@ func (oc *OrderCreate) SetNillablePastDays(i *int) *OrderCreate {
 	return oc
 }
 
+// SetPoints sets the "points" field.
+func (oc *OrderCreate) SetPoints(i int64) *OrderCreate {
+	oc.mutation.SetPoints(i)
+	return oc
+}
+
+// SetNillablePoints sets the "points" field if the given value is not nil.
+func (oc *OrderCreate) SetNillablePoints(i *int64) *OrderCreate {
+	if i != nil {
+		oc.SetPoints(*i)
+	}
+	return oc
+}
+
+// SetCouponAmount sets the "coupon_amount" field.
+func (oc *OrderCreate) SetCouponAmount(f float64) *OrderCreate {
+	oc.mutation.SetCouponAmount(f)
+	return oc
+}
+
+// SetNillableCouponAmount sets the "coupon_amount" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableCouponAmount(f *float64) *OrderCreate {
+	if f != nil {
+		oc.SetCouponAmount(*f)
+	}
+	return oc
+}
+
+// SetReliefNewly sets the "relief_newly" field.
+func (oc *OrderCreate) SetReliefNewly(f float64) *OrderCreate {
+	oc.mutation.SetReliefNewly(f)
+	return oc
+}
+
+// SetNillableReliefNewly sets the "relief_newly" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableReliefNewly(f *float64) *OrderCreate {
+	if f != nil {
+		oc.SetReliefNewly(*f)
+	}
+	return oc
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (oc *OrderCreate) SetPlan(p *Plan) *OrderCreate {
 	return oc.SetPlanID(p.ID)
@@ -458,6 +500,18 @@ func (oc *OrderCreate) defaults() error {
 		v := order.DefaultTotal
 		oc.mutation.SetTotal(v)
 	}
+	if _, ok := oc.mutation.Points(); !ok {
+		v := order.DefaultPoints
+		oc.mutation.SetPoints(v)
+	}
+	if _, ok := oc.mutation.CouponAmount(); !ok {
+		v := order.DefaultCouponAmount
+		oc.mutation.SetCouponAmount(v)
+	}
+	if _, ok := oc.mutation.ReliefNewly(); !ok {
+		v := order.DefaultReliefNewly
+		oc.mutation.SetReliefNewly(v)
+	}
 	return nil
 }
 
@@ -492,6 +546,15 @@ func (oc *OrderCreate) check() error {
 	}
 	if _, ok := oc.mutation.Total(); !ok {
 		return &ValidationError{Name: "total", err: errors.New(`ent: missing required field "Order.total"`)}
+	}
+	if _, ok := oc.mutation.Points(); !ok {
+		return &ValidationError{Name: "points", err: errors.New(`ent: missing required field "Order.points"`)}
+	}
+	if _, ok := oc.mutation.CouponAmount(); !ok {
+		return &ValidationError{Name: "coupon_amount", err: errors.New(`ent: missing required field "Order.coupon_amount"`)}
+	}
+	if _, ok := oc.mutation.ReliefNewly(); !ok {
+		return &ValidationError{Name: "relief_newly", err: errors.New(`ent: missing required field "Order.relief_newly"`)}
 	}
 	if _, ok := oc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Order.rider"`)}
@@ -651,6 +714,30 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 			Column: order.FieldPastDays,
 		})
 		_node.PastDays = value
+	}
+	if value, ok := oc.mutation.Points(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: order.FieldPoints,
+		})
+		_node.Points = value
+	}
+	if value, ok := oc.mutation.CouponAmount(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: order.FieldCouponAmount,
+		})
+		_node.CouponAmount = value
+	}
+	if value, ok := oc.mutation.ReliefNewly(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: order.FieldReliefNewly,
+		})
+		_node.ReliefNewly = value
 	}
 	if nodes := oc.mutation.PlanIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1114,6 +1201,60 @@ func (u *OrderUpsert) ClearPastDays() *OrderUpsert {
 	return u
 }
 
+// SetPoints sets the "points" field.
+func (u *OrderUpsert) SetPoints(v int64) *OrderUpsert {
+	u.Set(order.FieldPoints, v)
+	return u
+}
+
+// UpdatePoints sets the "points" field to the value that was provided on create.
+func (u *OrderUpsert) UpdatePoints() *OrderUpsert {
+	u.SetExcluded(order.FieldPoints)
+	return u
+}
+
+// AddPoints adds v to the "points" field.
+func (u *OrderUpsert) AddPoints(v int64) *OrderUpsert {
+	u.Add(order.FieldPoints, v)
+	return u
+}
+
+// SetCouponAmount sets the "coupon_amount" field.
+func (u *OrderUpsert) SetCouponAmount(v float64) *OrderUpsert {
+	u.Set(order.FieldCouponAmount, v)
+	return u
+}
+
+// UpdateCouponAmount sets the "coupon_amount" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateCouponAmount() *OrderUpsert {
+	u.SetExcluded(order.FieldCouponAmount)
+	return u
+}
+
+// AddCouponAmount adds v to the "coupon_amount" field.
+func (u *OrderUpsert) AddCouponAmount(v float64) *OrderUpsert {
+	u.Add(order.FieldCouponAmount, v)
+	return u
+}
+
+// SetReliefNewly sets the "relief_newly" field.
+func (u *OrderUpsert) SetReliefNewly(v float64) *OrderUpsert {
+	u.Set(order.FieldReliefNewly, v)
+	return u
+}
+
+// UpdateReliefNewly sets the "relief_newly" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateReliefNewly() *OrderUpsert {
+	u.SetExcluded(order.FieldReliefNewly)
+	return u
+}
+
+// AddReliefNewly adds v to the "relief_newly" field.
+func (u *OrderUpsert) AddReliefNewly(v float64) *OrderUpsert {
+	u.Add(order.FieldReliefNewly, v)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1450,6 +1591,69 @@ func (u *OrderUpsertOne) UpdatePastDays() *OrderUpsertOne {
 func (u *OrderUpsertOne) ClearPastDays() *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
 		s.ClearPastDays()
+	})
+}
+
+// SetPoints sets the "points" field.
+func (u *OrderUpsertOne) SetPoints(v int64) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetPoints(v)
+	})
+}
+
+// AddPoints adds v to the "points" field.
+func (u *OrderUpsertOne) AddPoints(v int64) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.AddPoints(v)
+	})
+}
+
+// UpdatePoints sets the "points" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdatePoints() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdatePoints()
+	})
+}
+
+// SetCouponAmount sets the "coupon_amount" field.
+func (u *OrderUpsertOne) SetCouponAmount(v float64) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetCouponAmount(v)
+	})
+}
+
+// AddCouponAmount adds v to the "coupon_amount" field.
+func (u *OrderUpsertOne) AddCouponAmount(v float64) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.AddCouponAmount(v)
+	})
+}
+
+// UpdateCouponAmount sets the "coupon_amount" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateCouponAmount() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateCouponAmount()
+	})
+}
+
+// SetReliefNewly sets the "relief_newly" field.
+func (u *OrderUpsertOne) SetReliefNewly(v float64) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetReliefNewly(v)
+	})
+}
+
+// AddReliefNewly adds v to the "relief_newly" field.
+func (u *OrderUpsertOne) AddReliefNewly(v float64) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.AddReliefNewly(v)
+	})
+}
+
+// UpdateReliefNewly sets the "relief_newly" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateReliefNewly() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateReliefNewly()
 	})
 }
 
@@ -1951,6 +2155,69 @@ func (u *OrderUpsertBulk) UpdatePastDays() *OrderUpsertBulk {
 func (u *OrderUpsertBulk) ClearPastDays() *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
 		s.ClearPastDays()
+	})
+}
+
+// SetPoints sets the "points" field.
+func (u *OrderUpsertBulk) SetPoints(v int64) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetPoints(v)
+	})
+}
+
+// AddPoints adds v to the "points" field.
+func (u *OrderUpsertBulk) AddPoints(v int64) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.AddPoints(v)
+	})
+}
+
+// UpdatePoints sets the "points" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdatePoints() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdatePoints()
+	})
+}
+
+// SetCouponAmount sets the "coupon_amount" field.
+func (u *OrderUpsertBulk) SetCouponAmount(v float64) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetCouponAmount(v)
+	})
+}
+
+// AddCouponAmount adds v to the "coupon_amount" field.
+func (u *OrderUpsertBulk) AddCouponAmount(v float64) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.AddCouponAmount(v)
+	})
+}
+
+// UpdateCouponAmount sets the "coupon_amount" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateCouponAmount() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateCouponAmount()
+	})
+}
+
+// SetReliefNewly sets the "relief_newly" field.
+func (u *OrderUpsertBulk) SetReliefNewly(v float64) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetReliefNewly(v)
+	})
+}
+
+// AddReliefNewly adds v to the "relief_newly" field.
+func (u *OrderUpsertBulk) AddReliefNewly(v float64) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.AddReliefNewly(v)
+	})
+}
+
+// UpdateReliefNewly sets the "relief_newly" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateReliefNewly() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateReliefNewly()
 	})
 }
 

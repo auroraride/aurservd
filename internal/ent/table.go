@@ -368,6 +368,16 @@ func (o *Order) GetID() uint64 {
 	return o.ID
 }
 
+// GetTableName returns table name for OrderCoupon.
+func (oc *OrderCoupon) GetTableName() string {
+	return "order_coupon"
+}
+
+// GetID returns id for OrderCoupon.
+func (oc *OrderCoupon) GetID() uint64 {
+	return oc.ID
+}
+
 // GetTableName returns table name for OrderRefund.
 func (or *OrderRefund) GetTableName() string {
 	return "order_refund"

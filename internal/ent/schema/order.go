@@ -70,6 +70,9 @@ func (Order) Fields() []ent.Field {
         field.Time("refund_at").Optional().Nillable().Comment("退款时间"),
         field.Int("initial_days").Optional().Comment("所购骑士卡天数(也可能为补缴欠费天数)"),
         field.Int("past_days").Optional().Comment("距上次退订天数"),
+        field.Int64("points").Default(0).Comment("使用积分"),
+        field.Float("coupon_amount").Default(0).Comment("优惠券金额"),
+        field.Float("relief_newly").Default(0).Comment("新签优惠"),
     }
 }
 

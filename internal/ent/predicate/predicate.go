@@ -99,6 +99,9 @@ type Manager func(*sql.Selector)
 // Order is the predicate function for order builders.
 type Order func(*sql.Selector)
 
+// OrderCoupon is the predicate function for ordercoupon builders.
+type OrderCoupon func(*sql.Selector)
+
 // OrderRefund is the predicate function for orderrefund builders.
 type OrderRefund func(*sql.Selector)
 

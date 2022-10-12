@@ -33,6 +33,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
+	"github.com/auroraride/aurservd/internal/ent/ordercoupon"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -1119,6 +1120,46 @@ func (c *OrderClient) GetNotDeleted(ctx context.Context, id uint64) (*Order, err
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *OrderClient) GetNotDeletedX(ctx context.Context, id uint64) *Order {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for OrderCoupon.
+func (c *OrderCouponClient) SoftDelete() *OrderCouponUpdate {
+	mutation := newOrderCouponMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &OrderCouponUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *OrderCouponClient) SoftDeleteOne(oc *OrderCoupon) *OrderCouponUpdateOne {
+	mutation := newOrderCouponMutation(c.config, OpUpdateOne, withOrderCoupon(oc))
+	mutation.SetDeletedAt(time.Now())
+	return &OrderCouponUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *OrderCouponClient) SoftDeleteOneID(id uint64) *OrderCouponUpdateOne {
+	mutation := newOrderCouponMutation(c.config, OpUpdateOne, withOrderCouponID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &OrderCouponUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for OrderCoupon.
+func (c *OrderCouponClient) QueryNotDeleted() *OrderCouponQuery {
+	return c.Query().Where(ordercoupon.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a OrderCoupon not deleted entity by its id.
+func (c *OrderCouponClient) GetNotDeleted(ctx context.Context, id uint64) (*OrderCoupon, error) {
+	return c.Query().Where(ordercoupon.ID(id), ordercoupon.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *OrderCouponClient) GetNotDeletedX(ctx context.Context, id uint64) *OrderCoupon {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

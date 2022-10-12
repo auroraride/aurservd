@@ -55,6 +55,12 @@ const (
 	FieldInitialDays = "initial_days"
 	// FieldPastDays holds the string denoting the past_days field in the database.
 	FieldPastDays = "past_days"
+	// FieldPoints holds the string denoting the points field in the database.
+	FieldPoints = "points"
+	// FieldCouponAmount holds the string denoting the coupon_amount field in the database.
+	FieldCouponAmount = "coupon_amount"
+	// FieldReliefNewly holds the string denoting the relief_newly field in the database.
+	FieldReliefNewly = "relief_newly"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
 	// EdgeCity holds the string denoting the city edge name in mutations.
@@ -158,6 +164,9 @@ var Columns = []string{
 	FieldRefundAt,
 	FieldInitialDays,
 	FieldPastDays,
+	FieldPoints,
+	FieldCouponAmount,
+	FieldReliefNewly,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -187,4 +196,10 @@ var (
 	DefaultStatus uint8
 	// DefaultTotal holds the default value on creation for the "total" field.
 	DefaultTotal float64
+	// DefaultPoints holds the default value on creation for the "points" field.
+	DefaultPoints int64
+	// DefaultCouponAmount holds the default value on creation for the "coupon_amount" field.
+	DefaultCouponAmount float64
+	// DefaultReliefNewly holds the default value on creation for the "relief_newly" field.
+	DefaultReliefNewly float64
 )

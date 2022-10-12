@@ -41,6 +41,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
+	"github.com/auroraride/aurservd/internal/ent/ordercoupon"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -131,6 +132,8 @@ type Client struct {
 	Manager *ManagerClient
 	// Order is the client for interacting with the Order builders.
 	Order *OrderClient
+	// OrderCoupon is the client for interacting with the OrderCoupon builders.
+	OrderCoupon *OrderCouponClient
 	// OrderRefund is the client for interacting with the OrderRefund builders.
 	OrderRefund *OrderRefundClient
 	// Person is the client for interacting with the Person builders.
@@ -209,6 +212,7 @@ func (c *Client) init() {
 	c.Inventory = NewInventoryClient(c.config)
 	c.Manager = NewManagerClient(c.config)
 	c.Order = NewOrderClient(c.config)
+	c.OrderCoupon = NewOrderCouponClient(c.config)
 	c.OrderRefund = NewOrderRefundClient(c.config)
 	c.Person = NewPersonClient(c.config)
 	c.Plan = NewPlanClient(c.config)
@@ -290,6 +294,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Inventory:            NewInventoryClient(cfg),
 		Manager:              NewManagerClient(cfg),
 		Order:                NewOrderClient(cfg),
+		OrderCoupon:          NewOrderCouponClient(cfg),
 		OrderRefund:          NewOrderRefundClient(cfg),
 		Person:               NewPersonClient(cfg),
 		Plan:                 NewPlanClient(cfg),
@@ -357,6 +362,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Inventory:            NewInventoryClient(cfg),
 		Manager:              NewManagerClient(cfg),
 		Order:                NewOrderClient(cfg),
+		OrderCoupon:          NewOrderCouponClient(cfg),
 		OrderRefund:          NewOrderRefundClient(cfg),
 		Person:               NewPersonClient(cfg),
 		Plan:                 NewPlanClient(cfg),
@@ -433,6 +439,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Inventory.Use(hooks...)
 	c.Manager.Use(hooks...)
 	c.Order.Use(hooks...)
+	c.OrderCoupon.Use(hooks...)
 	c.OrderRefund.Use(hooks...)
 	c.Person.Use(hooks...)
 	c.Plan.Use(hooks...)
@@ -4998,6 +5005,97 @@ func (c *OrderClient) QueryAssistance(o *Order) *AssistanceQuery {
 func (c *OrderClient) Hooks() []Hook {
 	hooks := c.hooks.Order
 	return append(hooks[:len(hooks):len(hooks)], order.Hooks[:]...)
+}
+
+// OrderCouponClient is a client for the OrderCoupon schema.
+type OrderCouponClient struct {
+	config
+}
+
+// NewOrderCouponClient returns a client for the OrderCoupon from the given config.
+func NewOrderCouponClient(c config) *OrderCouponClient {
+	return &OrderCouponClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `ordercoupon.Hooks(f(g(h())))`.
+func (c *OrderCouponClient) Use(hooks ...Hook) {
+	c.hooks.OrderCoupon = append(c.hooks.OrderCoupon, hooks...)
+}
+
+// Create returns a builder for creating a OrderCoupon entity.
+func (c *OrderCouponClient) Create() *OrderCouponCreate {
+	mutation := newOrderCouponMutation(c.config, OpCreate)
+	return &OrderCouponCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of OrderCoupon entities.
+func (c *OrderCouponClient) CreateBulk(builders ...*OrderCouponCreate) *OrderCouponCreateBulk {
+	return &OrderCouponCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for OrderCoupon.
+func (c *OrderCouponClient) Update() *OrderCouponUpdate {
+	mutation := newOrderCouponMutation(c.config, OpUpdate)
+	return &OrderCouponUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *OrderCouponClient) UpdateOne(oc *OrderCoupon) *OrderCouponUpdateOne {
+	mutation := newOrderCouponMutation(c.config, OpUpdateOne, withOrderCoupon(oc))
+	return &OrderCouponUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *OrderCouponClient) UpdateOneID(id uint64) *OrderCouponUpdateOne {
+	mutation := newOrderCouponMutation(c.config, OpUpdateOne, withOrderCouponID(id))
+	return &OrderCouponUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for OrderCoupon.
+func (c *OrderCouponClient) Delete() *OrderCouponDelete {
+	mutation := newOrderCouponMutation(c.config, OpDelete)
+	return &OrderCouponDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *OrderCouponClient) DeleteOne(oc *OrderCoupon) *OrderCouponDeleteOne {
+	return c.DeleteOneID(oc.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *OrderCouponClient) DeleteOneID(id uint64) *OrderCouponDeleteOne {
+	builder := c.Delete().Where(ordercoupon.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &OrderCouponDeleteOne{builder}
+}
+
+// Query returns a query builder for OrderCoupon.
+func (c *OrderCouponClient) Query() *OrderCouponQuery {
+	return &OrderCouponQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a OrderCoupon entity by its id.
+func (c *OrderCouponClient) Get(ctx context.Context, id uint64) (*OrderCoupon, error) {
+	return c.Query().Where(ordercoupon.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *OrderCouponClient) GetX(ctx context.Context, id uint64) *OrderCoupon {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *OrderCouponClient) Hooks() []Hook {
+	hooks := c.hooks.OrderCoupon
+	return append(hooks[:len(hooks):len(hooks)], ordercoupon.Hooks[:]...)
 }
 
 // OrderRefundClient is a client for the OrderRefund schema.

@@ -45,6 +45,12 @@ type OrderMutation struct {
 	addinitial_days   *int
 	past_days         *int
 	addpast_days      *int
+	points            *int64
+	addpoints         *int64
+	coupon_amount     *float64
+	addcoupon_amount  *float64
+	relief_newly      *float64
+	addrelief_newly   *float64
 	clearedFields     map[string]struct{}
 	plan              *uint64
 	clearedplan       bool
@@ -1209,6 +1215,174 @@ func (m *OrderMutation) ResetPastDays() {
 	delete(m.clearedFields, order.FieldPastDays)
 }
 
+// SetPoints sets the "points" field.
+func (m *OrderMutation) SetPoints(i int64) {
+	m.points = &i
+	m.addpoints = nil
+}
+
+// Points returns the value of the "points" field in the mutation.
+func (m *OrderMutation) Points() (r int64, exists bool) {
+	v := m.points
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPoints returns the old "points" field's value of the Order entity.
+// If the Order object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderMutation) OldPoints(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPoints is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPoints requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPoints: %w", err)
+	}
+	return oldValue.Points, nil
+}
+
+// AddPoints adds i to the "points" field.
+func (m *OrderMutation) AddPoints(i int64) {
+	if m.addpoints != nil {
+		*m.addpoints += i
+	} else {
+		m.addpoints = &i
+	}
+}
+
+// AddedPoints returns the value that was added to the "points" field in this mutation.
+func (m *OrderMutation) AddedPoints() (r int64, exists bool) {
+	v := m.addpoints
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetPoints resets all changes to the "points" field.
+func (m *OrderMutation) ResetPoints() {
+	m.points = nil
+	m.addpoints = nil
+}
+
+// SetCouponAmount sets the "coupon_amount" field.
+func (m *OrderMutation) SetCouponAmount(f float64) {
+	m.coupon_amount = &f
+	m.addcoupon_amount = nil
+}
+
+// CouponAmount returns the value of the "coupon_amount" field in the mutation.
+func (m *OrderMutation) CouponAmount() (r float64, exists bool) {
+	v := m.coupon_amount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCouponAmount returns the old "coupon_amount" field's value of the Order entity.
+// If the Order object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderMutation) OldCouponAmount(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCouponAmount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCouponAmount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCouponAmount: %w", err)
+	}
+	return oldValue.CouponAmount, nil
+}
+
+// AddCouponAmount adds f to the "coupon_amount" field.
+func (m *OrderMutation) AddCouponAmount(f float64) {
+	if m.addcoupon_amount != nil {
+		*m.addcoupon_amount += f
+	} else {
+		m.addcoupon_amount = &f
+	}
+}
+
+// AddedCouponAmount returns the value that was added to the "coupon_amount" field in this mutation.
+func (m *OrderMutation) AddedCouponAmount() (r float64, exists bool) {
+	v := m.addcoupon_amount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCouponAmount resets all changes to the "coupon_amount" field.
+func (m *OrderMutation) ResetCouponAmount() {
+	m.coupon_amount = nil
+	m.addcoupon_amount = nil
+}
+
+// SetReliefNewly sets the "relief_newly" field.
+func (m *OrderMutation) SetReliefNewly(f float64) {
+	m.relief_newly = &f
+	m.addrelief_newly = nil
+}
+
+// ReliefNewly returns the value of the "relief_newly" field in the mutation.
+func (m *OrderMutation) ReliefNewly() (r float64, exists bool) {
+	v := m.relief_newly
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReliefNewly returns the old "relief_newly" field's value of the Order entity.
+// If the Order object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderMutation) OldReliefNewly(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReliefNewly is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReliefNewly requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReliefNewly: %w", err)
+	}
+	return oldValue.ReliefNewly, nil
+}
+
+// AddReliefNewly adds f to the "relief_newly" field.
+func (m *OrderMutation) AddReliefNewly(f float64) {
+	if m.addrelief_newly != nil {
+		*m.addrelief_newly += f
+	} else {
+		m.addrelief_newly = &f
+	}
+}
+
+// AddedReliefNewly returns the value that was added to the "relief_newly" field in this mutation.
+func (m *OrderMutation) AddedReliefNewly() (r float64, exists bool) {
+	v := m.addrelief_newly
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetReliefNewly resets all changes to the "relief_newly" field.
+func (m *OrderMutation) ResetReliefNewly() {
+	m.relief_newly = nil
+	m.addrelief_newly = nil
+}
+
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *OrderMutation) ClearPlan() {
 	m.clearedplan = true
@@ -1529,7 +1703,7 @@ func (m *OrderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *OrderMutation) Fields() []string {
-	fields := make([]string, 0, 21)
+	fields := make([]string, 0, 24)
 	if m.created_at != nil {
 		fields = append(fields, order.FieldCreatedAt)
 	}
@@ -1593,6 +1767,15 @@ func (m *OrderMutation) Fields() []string {
 	if m.past_days != nil {
 		fields = append(fields, order.FieldPastDays)
 	}
+	if m.points != nil {
+		fields = append(fields, order.FieldPoints)
+	}
+	if m.coupon_amount != nil {
+		fields = append(fields, order.FieldCouponAmount)
+	}
+	if m.relief_newly != nil {
+		fields = append(fields, order.FieldReliefNewly)
+	}
 	return fields
 }
 
@@ -1643,6 +1826,12 @@ func (m *OrderMutation) Field(name string) (ent.Value, bool) {
 		return m.InitialDays()
 	case order.FieldPastDays:
 		return m.PastDays()
+	case order.FieldPoints:
+		return m.Points()
+	case order.FieldCouponAmount:
+		return m.CouponAmount()
+	case order.FieldReliefNewly:
+		return m.ReliefNewly()
 	}
 	return nil, false
 }
@@ -1694,6 +1883,12 @@ func (m *OrderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldInitialDays(ctx)
 	case order.FieldPastDays:
 		return m.OldPastDays(ctx)
+	case order.FieldPoints:
+		return m.OldPoints(ctx)
+	case order.FieldCouponAmount:
+		return m.OldCouponAmount(ctx)
+	case order.FieldReliefNewly:
+		return m.OldReliefNewly(ctx)
 	}
 	return nil, fmt.Errorf("unknown Order field %s", name)
 }
@@ -1850,6 +2045,27 @@ func (m *OrderMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPastDays(v)
 		return nil
+	case order.FieldPoints:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPoints(v)
+		return nil
+	case order.FieldCouponAmount:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCouponAmount(v)
+		return nil
+	case order.FieldReliefNewly:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReliefNewly(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Order field %s", name)
 }
@@ -1879,6 +2095,15 @@ func (m *OrderMutation) AddedFields() []string {
 	if m.addpast_days != nil {
 		fields = append(fields, order.FieldPastDays)
 	}
+	if m.addpoints != nil {
+		fields = append(fields, order.FieldPoints)
+	}
+	if m.addcoupon_amount != nil {
+		fields = append(fields, order.FieldCouponAmount)
+	}
+	if m.addrelief_newly != nil {
+		fields = append(fields, order.FieldReliefNewly)
+	}
 	return fields
 }
 
@@ -1901,6 +2126,12 @@ func (m *OrderMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedInitialDays()
 	case order.FieldPastDays:
 		return m.AddedPastDays()
+	case order.FieldPoints:
+		return m.AddedPoints()
+	case order.FieldCouponAmount:
+		return m.AddedCouponAmount()
+	case order.FieldReliefNewly:
+		return m.AddedReliefNewly()
 	}
 	return nil, false
 }
@@ -1958,6 +2189,27 @@ func (m *OrderMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddPastDays(v)
+		return nil
+	case order.FieldPoints:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPoints(v)
+		return nil
+	case order.FieldCouponAmount:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCouponAmount(v)
+		return nil
+	case order.FieldReliefNewly:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddReliefNewly(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Order numeric field %s", name)
@@ -2117,6 +2369,15 @@ func (m *OrderMutation) ResetField(name string) error {
 		return nil
 	case order.FieldPastDays:
 		m.ResetPastDays()
+		return nil
+	case order.FieldPoints:
+		m.ResetPoints()
+		return nil
+	case order.FieldCouponAmount:
+		m.ResetCouponAmount()
+		return nil
+	case order.FieldReliefNewly:
+		m.ResetReliefNewly()
 		return nil
 	}
 	return fmt.Errorf("unknown Order field %s", name)

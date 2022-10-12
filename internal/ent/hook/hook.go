@@ -412,6 +412,19 @@ func (f OrderFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	return f(ctx, mv)
 }
 
+// The OrderCouponFunc type is an adapter to allow the use of ordinary
+// function as OrderCoupon mutator.
+type OrderCouponFunc func(context.Context, *ent.OrderCouponMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OrderCouponFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.OrderCouponMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OrderCouponMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The OrderRefundFunc type is an adapter to allow the use of ordinary
 // function as OrderRefund mutator.
 type OrderRefundFunc func(context.Context, *ent.OrderRefundMutation) (ent.Value, error)

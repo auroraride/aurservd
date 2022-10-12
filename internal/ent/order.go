@@ -67,6 +67,12 @@ type Order struct {
 	InitialDays int `json:"initial_days,omitempty"`
 	// 距上次退订天数
 	PastDays int `json:"past_days,omitempty"`
+	// 使用积分
+	Points int64 `json:"points,omitempty"`
+	// 优惠券金额
+	CouponAmount float64 `json:"coupon_amount,omitempty"`
+	// 新签优惠
+	ReliefNewly float64 `json:"relief_newly,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OrderQuery when eager-loading is set.
 	Edges OrderEdges `json:"edges"`
@@ -217,9 +223,9 @@ func (*Order) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case order.FieldCreator, order.FieldLastModifier:
 			values[i] = new([]byte)
-		case order.FieldAmount, order.FieldTotal:
+		case order.FieldAmount, order.FieldTotal, order.FieldCouponAmount, order.FieldReliefNewly:
 			values[i] = new(sql.NullFloat64)
-		case order.FieldID, order.FieldPlanID, order.FieldCityID, order.FieldRiderID, order.FieldParentID, order.FieldSubscribeID, order.FieldStatus, order.FieldPayway, order.FieldType, order.FieldInitialDays, order.FieldPastDays:
+		case order.FieldID, order.FieldPlanID, order.FieldCityID, order.FieldRiderID, order.FieldParentID, order.FieldSubscribeID, order.FieldStatus, order.FieldPayway, order.FieldType, order.FieldInitialDays, order.FieldPastDays, order.FieldPoints:
 			values[i] = new(sql.NullInt64)
 		case order.FieldRemark, order.FieldOutTradeNo, order.FieldTradeNo:
 			values[i] = new(sql.NullString)
@@ -380,6 +386,24 @@ func (o *Order) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				o.PastDays = int(value.Int64)
 			}
+		case order.FieldPoints:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field points", values[i])
+			} else if value.Valid {
+				o.Points = value.Int64
+			}
+		case order.FieldCouponAmount:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field coupon_amount", values[i])
+			} else if value.Valid {
+				o.CouponAmount = value.Float64
+			}
+		case order.FieldReliefNewly:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field relief_newly", values[i])
+			} else if value.Valid {
+				o.ReliefNewly = value.Float64
+			}
 		}
 	}
 	return nil
@@ -523,6 +547,15 @@ func (o *Order) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("past_days=")
 	builder.WriteString(fmt.Sprintf("%v", o.PastDays))
+	builder.WriteString(", ")
+	builder.WriteString("points=")
+	builder.WriteString(fmt.Sprintf("%v", o.Points))
+	builder.WriteString(", ")
+	builder.WriteString("coupon_amount=")
+	builder.WriteString(fmt.Sprintf("%v", o.CouponAmount))
+	builder.WriteString(", ")
+	builder.WriteString("relief_newly=")
+	builder.WriteString(fmt.Sprintf("%v", o.ReliefNewly))
 	builder.WriteByte(')')
 	return builder.String()
 }

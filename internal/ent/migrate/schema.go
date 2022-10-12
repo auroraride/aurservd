@@ -2247,6 +2247,9 @@ var (
 		{Name: "refund_at", Type: field.TypeTime, Comment: "退款时间", Nullable: true},
 		{Name: "initial_days", Type: field.TypeInt, Comment: "所购骑士卡天数(也可能为补缴欠费天数)", Nullable: true},
 		{Name: "past_days", Type: field.TypeInt, Comment: "距上次退订天数", Nullable: true},
+		{Name: "points", Type: field.TypeInt64, Comment: "使用积分", Default: 0},
+		{Name: "coupon_amount", Type: field.TypeFloat64, Comment: "优惠券金额", Default: 0},
+		{Name: "relief_newly", Type: field.TypeFloat64, Comment: "新签优惠", Default: 0},
 		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "parent_id", Type: field.TypeUint64, Nullable: true},
@@ -2261,31 +2264,31 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "order_plan_plan",
-				Columns:    []*schema.Column{OrderColumns[17]},
+				Columns:    []*schema.Column{OrderColumns[20]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "order_city_city",
-				Columns:    []*schema.Column{OrderColumns[18]},
+				Columns:    []*schema.Column{OrderColumns[21]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "order_order_children",
-				Columns:    []*schema.Column{OrderColumns[19]},
+				Columns:    []*schema.Column{OrderColumns[22]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "order_rider_orders",
-				Columns:    []*schema.Column{OrderColumns[20]},
+				Columns:    []*schema.Column{OrderColumns[23]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "order_subscribe_orders",
-				Columns:    []*schema.Column{OrderColumns[21]},
+				Columns:    []*schema.Column{OrderColumns[24]},
 				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2304,22 +2307,22 @@ var (
 			{
 				Name:    "order_plan_id",
 				Unique:  false,
-				Columns: []*schema.Column{OrderColumns[17]},
+				Columns: []*schema.Column{OrderColumns[20]},
 			},
 			{
 				Name:    "order_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{OrderColumns[18]},
+				Columns: []*schema.Column{OrderColumns[21]},
 			},
 			{
 				Name:    "order_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{OrderColumns[20]},
+				Columns: []*schema.Column{OrderColumns[23]},
 			},
 			{
 				Name:    "order_subscribe_id",
 				Unique:  false,
-				Columns: []*schema.Column{OrderColumns[21]},
+				Columns: []*schema.Column{OrderColumns[24]},
 			},
 			{
 				Name:    "order_trade_no",
@@ -2340,6 +2343,34 @@ var (
 				Name:    "order_initial_days",
 				Unique:  false,
 				Columns: []*schema.Column{OrderColumns[15]},
+			},
+		},
+	}
+	// OrderCouponColumns holds the columns for the "order_coupon" table.
+	OrderCouponColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+	}
+	// OrderCouponTable holds the schema information for the "order_coupon" table.
+	OrderCouponTable = &schema.Table{
+		Name:       "order_coupon",
+		Columns:    OrderCouponColumns,
+		PrimaryKey: []*schema.Column{OrderCouponColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "ordercoupon_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{OrderCouponColumns[1]},
+			},
+			{
+				Name:    "ordercoupon_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{OrderCouponColumns[3]},
 			},
 		},
 	}
@@ -3888,6 +3919,7 @@ var (
 		InventoryTable,
 		ManagerTable,
 		OrderTable,
+		OrderCouponTable,
 		OrderRefundTable,
 		PersonTable,
 		PlanTable,
@@ -4080,6 +4112,9 @@ func init() {
 	OrderTable.ForeignKeys[4].RefTable = SubscribeTable
 	OrderTable.Annotation = &entsql.Annotation{
 		Table: "order",
+	}
+	OrderCouponTable.Annotation = &entsql.Annotation{
+		Table: "order_coupon",
 	}
 	OrderRefundTable.ForeignKeys[0].RefTable = OrderTable
 	OrderRefundTable.Annotation = &entsql.Annotation{

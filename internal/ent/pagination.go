@@ -1001,6 +1001,38 @@ func (oq *OrderQuery) PaginationResult(req model.PaginationReq) model.Pagination
 	}
 }
 
+// Pagination returns pagination query builder for OrderCouponQuery.
+func (ocq *OrderCouponQuery) Pagination(req model.PaginationReq) *OrderCouponQuery {
+	ocq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return ocq
+}
+
+// PaginationItems returns pagination query builder for OrderCouponQuery.
+func (ocq *OrderCouponQuery) PaginationItemsX(req model.PaginationReq) any {
+	return ocq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for OrderCouponQuery.
+func (ocq *OrderCouponQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := ocq.Clone()
+	query.order = nil
+	query.order = nil
+	query.limit = nil
+	query.offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for OrderRefundQuery.
 func (orq *OrderRefundQuery) Pagination(req model.PaginationReq) *OrderRefundQuery {
 	orq.Offset(req.GetOffset()).Limit(req.GetLimit())

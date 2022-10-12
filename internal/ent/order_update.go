@@ -276,6 +276,69 @@ func (ou *OrderUpdate) ClearPastDays() *OrderUpdate {
 	return ou
 }
 
+// SetPoints sets the "points" field.
+func (ou *OrderUpdate) SetPoints(i int64) *OrderUpdate {
+	ou.mutation.ResetPoints()
+	ou.mutation.SetPoints(i)
+	return ou
+}
+
+// SetNillablePoints sets the "points" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillablePoints(i *int64) *OrderUpdate {
+	if i != nil {
+		ou.SetPoints(*i)
+	}
+	return ou
+}
+
+// AddPoints adds i to the "points" field.
+func (ou *OrderUpdate) AddPoints(i int64) *OrderUpdate {
+	ou.mutation.AddPoints(i)
+	return ou
+}
+
+// SetCouponAmount sets the "coupon_amount" field.
+func (ou *OrderUpdate) SetCouponAmount(f float64) *OrderUpdate {
+	ou.mutation.ResetCouponAmount()
+	ou.mutation.SetCouponAmount(f)
+	return ou
+}
+
+// SetNillableCouponAmount sets the "coupon_amount" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableCouponAmount(f *float64) *OrderUpdate {
+	if f != nil {
+		ou.SetCouponAmount(*f)
+	}
+	return ou
+}
+
+// AddCouponAmount adds f to the "coupon_amount" field.
+func (ou *OrderUpdate) AddCouponAmount(f float64) *OrderUpdate {
+	ou.mutation.AddCouponAmount(f)
+	return ou
+}
+
+// SetReliefNewly sets the "relief_newly" field.
+func (ou *OrderUpdate) SetReliefNewly(f float64) *OrderUpdate {
+	ou.mutation.ResetReliefNewly()
+	ou.mutation.SetReliefNewly(f)
+	return ou
+}
+
+// SetNillableReliefNewly sets the "relief_newly" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableReliefNewly(f *float64) *OrderUpdate {
+	if f != nil {
+		ou.SetReliefNewly(*f)
+	}
+	return ou
+}
+
+// AddReliefNewly adds f to the "relief_newly" field.
+func (ou *OrderUpdate) AddReliefNewly(f float64) *OrderUpdate {
+	ou.mutation.AddReliefNewly(f)
+	return ou
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (ou *OrderUpdate) SetPlan(p *Plan) *OrderUpdate {
 	return ou.SetPlanID(p.ID)
@@ -671,6 +734,48 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Column: order.FieldPastDays,
+		})
+	}
+	if value, ok := ou.mutation.Points(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: order.FieldPoints,
+		})
+	}
+	if value, ok := ou.mutation.AddedPoints(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: order.FieldPoints,
+		})
+	}
+	if value, ok := ou.mutation.CouponAmount(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: order.FieldCouponAmount,
+		})
+	}
+	if value, ok := ou.mutation.AddedCouponAmount(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: order.FieldCouponAmount,
+		})
+	}
+	if value, ok := ou.mutation.ReliefNewly(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: order.FieldReliefNewly,
+		})
+	}
+	if value, ok := ou.mutation.AddedReliefNewly(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: order.FieldReliefNewly,
 		})
 	}
 	if ou.mutation.PlanCleared() {
@@ -1267,6 +1372,69 @@ func (ouo *OrderUpdateOne) ClearPastDays() *OrderUpdateOne {
 	return ouo
 }
 
+// SetPoints sets the "points" field.
+func (ouo *OrderUpdateOne) SetPoints(i int64) *OrderUpdateOne {
+	ouo.mutation.ResetPoints()
+	ouo.mutation.SetPoints(i)
+	return ouo
+}
+
+// SetNillablePoints sets the "points" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillablePoints(i *int64) *OrderUpdateOne {
+	if i != nil {
+		ouo.SetPoints(*i)
+	}
+	return ouo
+}
+
+// AddPoints adds i to the "points" field.
+func (ouo *OrderUpdateOne) AddPoints(i int64) *OrderUpdateOne {
+	ouo.mutation.AddPoints(i)
+	return ouo
+}
+
+// SetCouponAmount sets the "coupon_amount" field.
+func (ouo *OrderUpdateOne) SetCouponAmount(f float64) *OrderUpdateOne {
+	ouo.mutation.ResetCouponAmount()
+	ouo.mutation.SetCouponAmount(f)
+	return ouo
+}
+
+// SetNillableCouponAmount sets the "coupon_amount" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableCouponAmount(f *float64) *OrderUpdateOne {
+	if f != nil {
+		ouo.SetCouponAmount(*f)
+	}
+	return ouo
+}
+
+// AddCouponAmount adds f to the "coupon_amount" field.
+func (ouo *OrderUpdateOne) AddCouponAmount(f float64) *OrderUpdateOne {
+	ouo.mutation.AddCouponAmount(f)
+	return ouo
+}
+
+// SetReliefNewly sets the "relief_newly" field.
+func (ouo *OrderUpdateOne) SetReliefNewly(f float64) *OrderUpdateOne {
+	ouo.mutation.ResetReliefNewly()
+	ouo.mutation.SetReliefNewly(f)
+	return ouo
+}
+
+// SetNillableReliefNewly sets the "relief_newly" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableReliefNewly(f *float64) *OrderUpdateOne {
+	if f != nil {
+		ouo.SetReliefNewly(*f)
+	}
+	return ouo
+}
+
+// AddReliefNewly adds f to the "relief_newly" field.
+func (ouo *OrderUpdateOne) AddReliefNewly(f float64) *OrderUpdateOne {
+	ouo.mutation.AddReliefNewly(f)
+	return ouo
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (ouo *OrderUpdateOne) SetPlan(p *Plan) *OrderUpdateOne {
 	return ouo.SetPlanID(p.ID)
@@ -1692,6 +1860,48 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Column: order.FieldPastDays,
+		})
+	}
+	if value, ok := ouo.mutation.Points(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: order.FieldPoints,
+		})
+	}
+	if value, ok := ouo.mutation.AddedPoints(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: order.FieldPoints,
+		})
+	}
+	if value, ok := ouo.mutation.CouponAmount(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: order.FieldCouponAmount,
+		})
+	}
+	if value, ok := ouo.mutation.AddedCouponAmount(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: order.FieldCouponAmount,
+		})
+	}
+	if value, ok := ouo.mutation.ReliefNewly(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: order.FieldReliefNewly,
+		})
+	}
+	if value, ok := ouo.mutation.AddedReliefNewly(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: order.FieldReliefNewly,
 		})
 	}
 	if ouo.mutation.PlanCleared() {
