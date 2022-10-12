@@ -171,3 +171,12 @@ func (s *planIntroduceService) Create(req *model.PlanIntroduceCreateReq) {
 func (s *planIntroduceService) Modify(req *model.PlanIntroduceModifyReq) {
     s.QueryX(req.ID).Update().SetImage(req.Image).ExecX(s.ctx)
 }
+
+func (s *planIntroduceService) QueryMap() (res map[string]string) {
+    res = make(map[string]string)
+    items, _ := s.orm.Query().All(s.ctx)
+    for _, item := range items {
+        res[s.Key(item.Model, item.BrandID)] = item.Image
+    }
+    return
+}

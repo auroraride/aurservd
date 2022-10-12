@@ -134,14 +134,6 @@ func (pc *PlanCreate) SetType(u uint8) *PlanCreate {
 	return pc
 }
 
-// SetNillableType sets the "type" field if the given value is not nil.
-func (pc *PlanCreate) SetNillableType(u *uint8) *PlanCreate {
-	if u != nil {
-		pc.SetType(*u)
-	}
-	return pc
-}
-
 // SetName sets the "name" field.
 func (pc *PlanCreate) SetName(s string) *PlanCreate {
 	pc.mutation.SetName(s)
@@ -387,10 +379,6 @@ func (pc *PlanCreate) defaults() error {
 		}
 		v := plan.DefaultUpdatedAt()
 		pc.mutation.SetUpdatedAt(v)
-	}
-	if _, ok := pc.mutation.GetType(); !ok {
-		v := plan.DefaultType
-		pc.mutation.SetType(v)
 	}
 	if _, ok := pc.mutation.ReliefNewly(); !ok {
 		v := plan.DefaultReliefNewly

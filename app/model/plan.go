@@ -102,8 +102,9 @@ type PlanListRes struct {
 
 // PlanListRiderReq 骑士卡列表请求
 type PlanListRiderReq struct {
-    CityID uint64 `json:"cityId" query:"cityId" validate:"required" trans:"城市ID"`
-    Min    uint   `json:"min" swaggerignore:"true"` // 最小天数
+    Type   PlanType `json:"type" query:"type" validate:"required,enum" trans:"骑士卡类别"`
+    CityID uint64   `json:"cityId" query:"cityId" validate:"required" trans:"城市ID"`
+    Min    uint     `json:"min" swaggerignore:"true"` // 最小天数
 }
 
 // RiderPlanItem 骑士返回数据
@@ -149,8 +150,10 @@ type PlanSelectionReq struct {
     Status *uint8 `json:"status" query:"status" enums:"0,1,2"` // 筛选状态 0:全部(默认) 1:启用 2:禁用
 }
 
-// PlanDaysPrice 骑士卡天数价格选项
-type PlanDaysPrice struct {
+type PlanDaysPriceOptions []PlanDaysPriceOption
+
+// PlanDaysPriceOption 骑士卡天数价格选项
+type PlanDaysPriceOption struct {
     ID          uint64  `json:"id"`
     Name        string  `json:"name"`        // 骑士卡名称
     Price       float64 `json:"price"`       // 价格
@@ -159,24 +162,28 @@ type PlanDaysPrice struct {
     ReliefNewly float64 `json:"reliefNewly"` // 新签优惠
 }
 
+type PlanModelOptions []*PlanModelOption
+
 // PlanModelOption 新签电池型号选项
 type PlanModelOption struct {
-    Children []PlanDaysPrice `json:"children"` // 天数和价格信息
-    Model    string          `json:"model"`    // 型号
-    Intro    string          `json:"intro"`    // 介绍图
-    Notes    []string        `json:"notes"`    // 购买须知
+    Children *PlanDaysPriceOptions `json:"children"` // 天数和价格信息
+    Model    string                `json:"model"`    // 型号
+    Intro    string                `json:"intro"`    // 介绍图
+    Notes    []string              `json:"notes"`    // 购买须知
 }
+
+type PlanEbikeBrandOptions []*PlanEbikeBrandOption
 
 // PlanEbikeBrandOption 新签电车品牌选项
 type PlanEbikeBrandOption struct {
-    Children []PlanModelOption `json:"children"`        // 子项
+    Children *PlanModelOptions `json:"children"`        // 子项
     Name     string            `json:"name"`            // 名称
     Cover    string            `json:"cover,omitempty"` // 封面图
 }
 
 type PlanNewlyRes struct {
-    Brands  []PlanEbikeBrandOption `json:"brands,omitempty"` // 车电选项
-    Models  []PlanModelOption      `json:"models,omitempty"` // 单电选项
-    Points  float64                `json:"points"`           // 用户积分
-    Coupons CouponTarget
+    Brands    []*PlanEbikeBrandOption `json:"brands,omitempty"`    // 车电选项
+    Models    []*PlanModelOption      `json:"models,omitempty"`    // 单电选项
+    Deposit   float64                 `json:"deposit"`             // 需缴纳押金
+    Configure *PaymentConfigure       `json:"configure,omitempty"` // 支付配置
 }

@@ -22,10 +22,28 @@ import (
 )
 
 type BaseService struct {
-    ctx      context.Context
-    rider    *model.Rider
+    ctx context.Context
+
+    rider  *model.Rider
+    _rider *ent.Rider
+
     modifier *model.Modifier
-    employee *model.Employee
+    _manager *ent.Manager
+
+    employee  *model.Employee
+    _employee *ent.Employee
+}
+
+func (s *BaseService) Rider() *ent.Rider {
+    return s._rider
+}
+
+func (s *BaseService) Manager() *ent.Manager {
+    return s._manager
+}
+
+func (s *BaseService) Employee() *ent.Employee {
+    return s._employee
 }
 
 func newService(params ...any) (bs *BaseService) {

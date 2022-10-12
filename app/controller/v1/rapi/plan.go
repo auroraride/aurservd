@@ -25,7 +25,7 @@ var Plan = new(plan)
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
 // @Param        query  query   model.PlanListRiderReq  true  "骑士卡列表请求参数"
-// @Success      200  {object}  []model.RiderPlanListRes  "请求成功"
+// @Success      200  {object}  []model.PlanNewlyRes  "请求成功"
 func (*plan) List(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.PlanListRiderReq](c)
     return ctx.SendResponse(

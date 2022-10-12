@@ -2467,7 +2467,7 @@ var (
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "model", Type: field.TypeString, Comment: "电池型号", Nullable: true},
 		{Name: "enable", Type: field.TypeBool, Comment: "是否启用"},
-		{Name: "type", Type: field.TypeUint8, Comment: "骑士卡类别 1:单电 2:车加电", Default: 1},
+		{Name: "type", Type: field.TypeUint8, Comment: "骑士卡类别 1:单电 2:车加电"},
 		{Name: "name", Type: field.TypeString, Comment: "骑士卡名称"},
 		{Name: "start", Type: field.TypeTime, Comment: "有效期开始日期"},
 		{Name: "end", Type: field.TypeTime, Comment: "有效期结束日期"},
@@ -2515,6 +2515,16 @@ var (
 				Name:    "plan_brand_id",
 				Unique:  false,
 				Columns: []*schema.Column{PlanColumns[20]},
+			},
+			{
+				Name:    "plan_type",
+				Unique:  false,
+				Columns: []*schema.Column{PlanColumns[9]},
+			},
+			{
+				Name:    "plan_model",
+				Unique:  false,
+				Columns: []*schema.Column{PlanColumns[7]},
 			},
 			{
 				Name:    "plan_days",

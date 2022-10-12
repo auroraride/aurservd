@@ -12072,6 +12072,13 @@ const docTemplate = `{
                         "name": "cityId",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "骑士卡类别 骑士卡类别 ",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -12080,7 +12087,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.RiderPlanListRes"
+                                "$ref": "#/definitions/model.PlanNewlyRes"
                             }
                         }
                     }
@@ -15618,6 +15625,39 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Coupon": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "金额",
+                    "type": "number"
+                },
+                "cate": {
+                    "description": "类型标识",
+                    "type": "string"
+                },
+                "code": {
+                    "description": "券码",
+                    "type": "string"
+                },
+                "exclusive": {
+                    "description": "与其他类型券是否互斥",
+                    "type": "boolean"
+                },
+                "expiredAt": {
+                    "description": "过期时间",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
+                "useable": {
+                    "description": "是否可使用",
+                    "type": "boolean"
+                }
+            }
+        },
         "model.CouponAllocateReq": {
             "type": "object",
             "required": [
@@ -17758,6 +17798,30 @@ const docTemplate = `{
                 }
             }
         },
+        "model.PaymentConfigure": {
+            "type": "object",
+            "properties": {
+                "coupons": {
+                    "description": "用户优惠券",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Coupon"
+                    }
+                },
+                "maxDiscount": {
+                    "description": "最大优惠金额",
+                    "type": "number"
+                },
+                "points": {
+                    "description": "可用积分",
+                    "type": "integer"
+                },
+                "ratio": {
+                    "description": "兑换比例(实际抵扣金额 = 兑换比例 × 积分数量)",
+                    "type": "number"
+                }
+            }
+        },
         "model.Person": {
             "type": "object",
             "properties": {
@@ -17847,7 +17911,7 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "reliefNewly": {
-                    "description": "新签减免",
+                    "description": "新签优惠",
                     "type": "number"
                 }
             }
@@ -17909,6 +17973,54 @@ const docTemplate = `{
                 "type": {
                     "description": "骑士卡类别 ",
                     "type": "integer"
+                }
+            }
+        },
+        "model.PlanDaysPriceOption": {
+            "type": "object",
+            "properties": {
+                "days": {
+                    "description": "天数",
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "骑士卡名称",
+                    "type": "string"
+                },
+                "original": {
+                    "description": "原价",
+                    "type": "number"
+                },
+                "price": {
+                    "description": "价格",
+                    "type": "number"
+                },
+                "reliefNewly": {
+                    "description": "新签优惠",
+                    "type": "number"
+                }
+            }
+        },
+        "model.PlanEbikeBrandOption": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "description": "子项",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PlanModelOption"
+                    }
+                },
+                "cover": {
+                    "description": "封面图",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
                 }
             }
         },
@@ -18043,6 +18155,64 @@ const docTemplate = `{
                 "type": {
                     "description": "骑士卡类别 ",
                     "type": "integer"
+                }
+            }
+        },
+        "model.PlanModelOption": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "description": "天数和价格信息",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PlanDaysPriceOption"
+                    }
+                },
+                "intro": {
+                    "description": "介绍图",
+                    "type": "string"
+                },
+                "model": {
+                    "description": "型号",
+                    "type": "string"
+                },
+                "notes": {
+                    "description": "购买须知",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "model.PlanNewlyRes": {
+            "type": "object",
+            "properties": {
+                "brands": {
+                    "description": "车电选项",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PlanEbikeBrandOption"
+                    }
+                },
+                "configure": {
+                    "description": "支付配置",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PaymentConfigure"
+                        }
+                    ]
+                },
+                "deposit": {
+                    "description": "需缴纳押金",
+                    "type": "number"
+                },
+                "models": {
+                    "description": "单电选项",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PlanModelOption"
+                    }
                 }
             }
         },
@@ -19030,10 +19200,6 @@ const docTemplate = `{
                     "description": "天数",
                     "type": "integer"
                 },
-                "desc": {
-                    "description": "优惠信息",
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
                 },
@@ -19048,26 +19214,10 @@ const docTemplate = `{
                 "price": {
                     "description": "价格",
                     "type": "number"
-                }
-            }
-        },
-        "model.RiderPlanListRes": {
-            "type": "object",
-            "properties": {
-                "deposit": {
-                    "description": "需缴纳押金",
+                },
+                "reliefNewly": {
+                    "description": "新签优惠",
                     "type": "number"
-                },
-                "model": {
-                    "description": "电池型号",
-                    "type": "string"
-                },
-                "plans": {
-                    "description": "套餐列表",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.RiderPlanItem"
-                    }
                 }
             }
         },

@@ -7,6 +7,7 @@ package service
 
 import (
     "context"
+    "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/city"
@@ -155,7 +156,8 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
             SetStart(start).
             SetEnd(end).
             SetNotes(req.Notes).
-            SetNillableBrandID(brandID)
+            SetNillableBrandID(brandID).
+            SetType(req.Type.Value())
 
         for i, cl := range req.Complexes {
             c := creator.Clone().
@@ -392,21 +394,112 @@ func (s *planService) CityList(req *model.PlanListRiderReq) map[string]*[]model.
 }
 
 // RiderListNewly 获取新购骑士卡列表
-func (s *planService) RiderListNewly(req *model.PlanListRiderReq) []model.RiderPlanListRes {
+func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewlyRes {
+    // 判断骑手是否个签
+    if s.rider.EnterpriseID != nil {
+        snag.Panic("仅个签骑手可购买")
+    }
+
+    // 判断骑手是否可以办理业务
+    NewRider().CheckForBusiness(s.rider)
+
+    // 判断是否有生效订阅
     if sub, _ := NewSubscribe().QueryEffective(s.rider.ID); sub != nil {
         snag.Panic("骑手有生效中的订阅, 无法新购")
     }
 
+    // 需缴纳押金金额
     deposit := NewRider().Deposit(s.rider.ID)
+    today := carbon.Now().StartOfDay().Carbon2Time()
 
-    res := make([]model.RiderPlanListRes, 0)
-    rmap := s.CityList(req)
-    for m, list := range rmap {
-        res = append(res, model.RiderPlanListRes{
-            Model:   m,
-            Plans:   *list,
-            Deposit: deposit,
+    items := s.orm.QueryNotDeleted().
+        Where(
+            plan.Enable(true),
+            plan.StartLTE(today),
+            plan.EndGTE(today),
+            plan.DaysGTE(req.Min),
+            plan.HasCitiesWith(
+                city.ID(req.CityID),
+            ),
+            plan.Type(req.Type.Value()),
+        ).
+        WithBrand().
+        WithCities().
+        Order(ent.Asc(plan.FieldDays)).
+        AllX(s.ctx)
+
+    mmap := make(map[string]*model.PlanModelOption)
+    bmap := make(map[uint64]*model.PlanEbikeBrandOption)
+
+    serv := NewPlanIntroduce()
+    intro := serv.QueryMap()
+
+    for _, item := range items {
+        m, ok := mmap[item.Model]
+        if !ok {
+            // 可用城市
+            var cs []string
+            for _, c := range item.Edges.Cities {
+                cs = append(cs, c.Name)
+            }
+            // 封装电池型号
+            m = &model.PlanModelOption{
+                Children: new(model.PlanDaysPriceOptions),
+                Model:    item.Model,
+                Intro:    intro[serv.Key(item.Model, item.BrandID)],
+                Notes:    append(item.Notes, fmt.Sprintf("仅限 %s 使用", strings.Join(cs, " / "))),
+            }
+            mmap[item.Model] = m
+        }
+        *m.Children = append(*m.Children, model.PlanDaysPriceOption{
+            ID:          item.ID,
+            Name:        item.Name,
+            Price:       item.Price,
+            Days:        item.Days,
+            Original:    item.Original,
+            ReliefNewly: item.ReliefNewly,
         })
+
+        if item.BrandID != nil {
+            var b *model.PlanEbikeBrandOption
+            bid := *item.BrandID
+            b, ok = bmap[bid]
+            if !ok {
+                brand := item.Edges.Brand
+                b = &model.PlanEbikeBrandOption{
+                    Children: new(model.PlanModelOptions),
+                    Name:     brand.Name,
+                    Cover:    brand.Cover,
+                }
+                bmap[bid] = b
+            }
+
+            var exists bool
+            for _, c := range *b.Children {
+                if c.Model == item.Model {
+                    exists = true
+                }
+            }
+            if !exists {
+                *b.Children = append(*b.Children, m)
+            }
+        }
+    }
+
+    res := model.PlanNewlyRes{
+        Deposit:   deposit,
+        Configure: NewPayment(s.rider).Configure(),
+    }
+
+    switch req.Type {
+    case model.PlanTypeBattery:
+        for _, m := range mmap {
+            res.Models = append(res.Models, m)
+        }
+    case model.PlanTypeEbikeWithBattery:
+        for _, b := range bmap {
+            res.Brands = append(res.Brands, b)
+        }
     }
 
     return res

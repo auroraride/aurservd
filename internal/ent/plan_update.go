@@ -144,14 +144,6 @@ func (pu *PlanUpdate) SetType(u uint8) *PlanUpdate {
 	return pu
 }
 
-// SetNillableType sets the "type" field if the given value is not nil.
-func (pu *PlanUpdate) SetNillableType(u *uint8) *PlanUpdate {
-	if u != nil {
-		pu.SetType(*u)
-	}
-	return pu
-}
-
 // AddType adds u to the "type" field.
 func (pu *PlanUpdate) AddType(u int8) *PlanUpdate {
 	pu.mutation.AddType(u)
@@ -1113,14 +1105,6 @@ func (puo *PlanUpdateOne) SetEnable(b bool) *PlanUpdateOne {
 func (puo *PlanUpdateOne) SetType(u uint8) *PlanUpdateOne {
 	puo.mutation.ResetType()
 	puo.mutation.SetType(u)
-	return puo
-}
-
-// SetNillableType sets the "type" field if the given value is not nil.
-func (puo *PlanUpdateOne) SetNillableType(u *uint8) *PlanUpdateOne {
-	if u != nil {
-		puo.SetType(*u)
-	}
 	return puo
 }
 

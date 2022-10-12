@@ -87,6 +87,11 @@ func (s *couponService) QueryX(id uint64) *ent.Coupon {
     return c
 }
 
+func (s *couponService) QueryRiderNotUsed(riderID uint64) ent.Coupons {
+    items, _ := s.orm.Query().Where(coupon.RiderID(riderID), coupon.UsedAtIsNil()).All(s.ctx)
+    return items
+}
+
 func (s *couponService) HexNumber(n uint64) string {
     return fmt.Sprintf("%02s", strings.ToUpper(strconv.FormatUint(n, 36)))
 }

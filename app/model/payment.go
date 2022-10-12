@@ -107,3 +107,10 @@ func (pc *PaymentCache) GetPaymentArgs() (float64, string, string) {
     }
     return 0, "", ""
 }
+
+type PaymentConfigure struct {
+    Points      int64    `json:"points"`      // 可用积分
+    Ratio       float64  `json:"ratio"`       // 兑换比例(实际抵扣金额 = 兑换比例 × 积分数量)
+    Coupons     []Coupon `json:"coupons"`     // 用户优惠券
+    MaxDiscount float64  `json:"maxDiscount"` // 最大优惠金额
+}

@@ -140,9 +140,11 @@ type CouponAllocateReq struct {
 }
 
 type Coupon struct {
+    Cate      string  `json:"cate"`      // 类型标识
     Useable   bool    `json:"useable"`   // 是否可使用
     Amount    float64 `json:"amount"`    // 金额
     Name      string  `json:"name"`      // 名称
     ExpiredAt string  `json:"expiredAt"` // 过期时间
     Code      string  `json:"code"`      // 券码
+    Exclusive bool    `json:"exclusive"` // 与其他类型券是否互斥
 }
