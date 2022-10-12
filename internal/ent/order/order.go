@@ -29,6 +29,10 @@ const (
 	FieldPlanID = "plan_id"
 	// FieldCityID holds the string denoting the city_id field in the database.
 	FieldCityID = "city_id"
+	// FieldBrandID holds the string denoting the brand_id field in the database.
+	FieldBrandID = "brand_id"
+	// FieldEbikeID holds the string denoting the ebike_id field in the database.
+	FieldEbikeID = "ebike_id"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
 	FieldRiderID = "rider_id"
 	// FieldParentID holds the string denoting the parent_id field in the database.
@@ -57,6 +61,8 @@ const (
 	FieldPastDays = "past_days"
 	// FieldPoints holds the string denoting the points field in the database.
 	FieldPoints = "points"
+	// FieldPointRatio holds the string denoting the point_ratio field in the database.
+	FieldPointRatio = "point_ratio"
 	// FieldCouponAmount holds the string denoting the coupon_amount field in the database.
 	FieldCouponAmount = "coupon_amount"
 	// FieldReliefNewly holds the string denoting the relief_newly field in the database.
@@ -65,6 +71,10 @@ const (
 	EdgePlan = "plan"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
+	// EdgeBrand holds the string denoting the brand edge name in mutations.
+	EdgeBrand = "brand"
+	// EdgeEbike holds the string denoting the ebike edge name in mutations.
+	EdgeEbike = "ebike"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
@@ -79,6 +89,8 @@ const (
 	EdgeRefund = "refund"
 	// EdgeAssistance holds the string denoting the assistance edge name in mutations.
 	EdgeAssistance = "assistance"
+	// EdgeCoupons holds the string denoting the coupons edge name in mutations.
+	EdgeCoupons = "coupons"
 	// Table holds the table name of the order in the database.
 	Table = "order"
 	// PlanTable is the table that holds the plan relation/edge.
@@ -95,6 +107,20 @@ const (
 	CityInverseTable = "city"
 	// CityColumn is the table column denoting the city relation/edge.
 	CityColumn = "city_id"
+	// BrandTable is the table that holds the brand relation/edge.
+	BrandTable = "order"
+	// BrandInverseTable is the table name for the EbikeBrand entity.
+	// It exists in this package in order to avoid circular dependency with the "ebikebrand" package.
+	BrandInverseTable = "ebike_brand"
+	// BrandColumn is the table column denoting the brand relation/edge.
+	BrandColumn = "brand_id"
+	// EbikeTable is the table that holds the ebike relation/edge.
+	EbikeTable = "order"
+	// EbikeInverseTable is the table name for the Ebike entity.
+	// It exists in this package in order to avoid circular dependency with the "ebike" package.
+	EbikeInverseTable = "ebike"
+	// EbikeColumn is the table column denoting the ebike relation/edge.
+	EbikeColumn = "ebike_id"
 	// RiderTable is the table that holds the rider relation/edge.
 	RiderTable = "order"
 	// RiderInverseTable is the table name for the Rider entity.
@@ -138,6 +164,13 @@ const (
 	AssistanceInverseTable = "assistance"
 	// AssistanceColumn is the table column denoting the assistance relation/edge.
 	AssistanceColumn = "order_id"
+	// CouponsTable is the table that holds the coupons relation/edge.
+	CouponsTable = "coupon"
+	// CouponsInverseTable is the table name for the Coupon entity.
+	// It exists in this package in order to avoid circular dependency with the "coupon" package.
+	CouponsInverseTable = "coupon"
+	// CouponsColumn is the table column denoting the coupons relation/edge.
+	CouponsColumn = "order_coupons"
 )
 
 // Columns holds all SQL columns for order fields.
@@ -151,6 +184,8 @@ var Columns = []string{
 	FieldRemark,
 	FieldPlanID,
 	FieldCityID,
+	FieldBrandID,
+	FieldEbikeID,
 	FieldRiderID,
 	FieldParentID,
 	FieldSubscribeID,
@@ -165,6 +200,7 @@ var Columns = []string{
 	FieldInitialDays,
 	FieldPastDays,
 	FieldPoints,
+	FieldPointRatio,
 	FieldCouponAmount,
 	FieldReliefNewly,
 }
@@ -198,6 +234,8 @@ var (
 	DefaultTotal float64
 	// DefaultPoints holds the default value on creation for the "points" field.
 	DefaultPoints int64
+	// DefaultPointRatio holds the default value on creation for the "point_ratio" field.
+	DefaultPointRatio float64
 	// DefaultCouponAmount holds the default value on creation for the "coupon_amount" field.
 	DefaultCouponAmount float64
 	// DefaultReliefNewly holds the default value on creation for the "relief_newly" field.

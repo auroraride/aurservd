@@ -75,6 +75,7 @@ func (Coupon) Fields() []ent.Field {
 func (Coupon) Edges() []ent.Edge {
     return []ent.Edge{
         edge.From("template", CouponTemplate.Type).Required().Unique().Ref("coupons").Field("template_id"),
+        edge.From("order", Order.Type).Ref("coupons").Unique(),
 
         edge.To("cities", City.Type),
         edge.To("plans", Plan.Type),
@@ -87,7 +88,6 @@ func (Coupon) Mixin() []ent.Mixin {
         internal.Modifier{},
         RiderMixin{Optional: true},
         CouponAssemblyMixin{},
-        OrderMixin{Optional: true},
         PlanMixin{Optional: true, Comment: "实际使用骑士卡"},
     }
 }

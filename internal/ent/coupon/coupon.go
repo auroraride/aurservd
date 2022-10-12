@@ -27,8 +27,6 @@ const (
 	FieldRiderID = "rider_id"
 	// FieldAssemblyID holds the string denoting the assembly_id field in the database.
 	FieldAssemblyID = "assembly_id"
-	// FieldOrderID holds the string denoting the order_id field in the database.
-	FieldOrderID = "order_id"
 	// FieldPlanID holds the string denoting the plan_id field in the database.
 	FieldPlanID = "plan_id"
 	// FieldTemplateID holds the string denoting the template_id field in the database.
@@ -53,12 +51,12 @@ const (
 	EdgeRider = "rider"
 	// EdgeAssembly holds the string denoting the assembly edge name in mutations.
 	EdgeAssembly = "assembly"
-	// EdgeOrder holds the string denoting the order edge name in mutations.
-	EdgeOrder = "order"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
 	// EdgeTemplate holds the string denoting the template edge name in mutations.
 	EdgeTemplate = "template"
+	// EdgeOrder holds the string denoting the order edge name in mutations.
+	EdgeOrder = "order"
 	// EdgeCities holds the string denoting the cities edge name in mutations.
 	EdgeCities = "cities"
 	// EdgePlans holds the string denoting the plans edge name in mutations.
@@ -79,13 +77,6 @@ const (
 	AssemblyInverseTable = "coupon_assembly"
 	// AssemblyColumn is the table column denoting the assembly relation/edge.
 	AssemblyColumn = "assembly_id"
-	// OrderTable is the table that holds the order relation/edge.
-	OrderTable = "coupon"
-	// OrderInverseTable is the table name for the Order entity.
-	// It exists in this package in order to avoid circular dependency with the "order" package.
-	OrderInverseTable = "order"
-	// OrderColumn is the table column denoting the order relation/edge.
-	OrderColumn = "order_id"
 	// PlanTable is the table that holds the plan relation/edge.
 	PlanTable = "coupon"
 	// PlanInverseTable is the table name for the Plan entity.
@@ -100,6 +91,13 @@ const (
 	TemplateInverseTable = "coupon_template"
 	// TemplateColumn is the table column denoting the template relation/edge.
 	TemplateColumn = "template_id"
+	// OrderTable is the table that holds the order relation/edge.
+	OrderTable = "coupon"
+	// OrderInverseTable is the table name for the Order entity.
+	// It exists in this package in order to avoid circular dependency with the "order" package.
+	OrderInverseTable = "order"
+	// OrderColumn is the table column denoting the order relation/edge.
+	OrderColumn = "order_coupons"
 	// CitiesTable is the table that holds the cities relation/edge. The primary key declared below.
 	CitiesTable = "coupon_cities"
 	// CitiesInverseTable is the table name for the City entity.
@@ -122,7 +120,6 @@ var Columns = []string{
 	FieldRemark,
 	FieldRiderID,
 	FieldAssemblyID,
-	FieldOrderID,
 	FieldPlanID,
 	FieldTemplateID,
 	FieldName,
@@ -133,6 +130,12 @@ var Columns = []string{
 	FieldExpiresAt,
 	FieldUsedAt,
 	FieldDuration,
+}
+
+// ForeignKeys holds the SQL foreign-keys that are owned by the "coupon"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"order_coupons",
 }
 
 var (
@@ -148,6 +151,11 @@ var (
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}

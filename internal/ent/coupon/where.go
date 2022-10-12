@@ -116,13 +116,6 @@ func AssemblyID(v uint64) predicate.Coupon {
 	})
 }
 
-// OrderID applies equality check predicate on the "order_id" field. It's identical to OrderIDEQ.
-func OrderID(v uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldOrderID), v))
-	})
-}
-
 // PlanID applies equality check predicate on the "plan_id" field. It's identical to PlanIDEQ.
 func PlanID(v uint64) predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
@@ -538,56 +531,6 @@ func AssemblyIDNotIn(vs ...uint64) predicate.Coupon {
 	}
 	return predicate.Coupon(func(s *sql.Selector) {
 		s.Where(sql.NotIn(s.C(FieldAssemblyID), v...))
-	})
-}
-
-// OrderIDEQ applies the EQ predicate on the "order_id" field.
-func OrderIDEQ(v uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldOrderID), v))
-	})
-}
-
-// OrderIDNEQ applies the NEQ predicate on the "order_id" field.
-func OrderIDNEQ(v uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldOrderID), v))
-	})
-}
-
-// OrderIDIn applies the In predicate on the "order_id" field.
-func OrderIDIn(vs ...uint64) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldOrderID), v...))
-	})
-}
-
-// OrderIDNotIn applies the NotIn predicate on the "order_id" field.
-func OrderIDNotIn(vs ...uint64) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldOrderID), v...))
-	})
-}
-
-// OrderIDIsNil applies the IsNil predicate on the "order_id" field.
-func OrderIDIsNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldOrderID)))
-	})
-}
-
-// OrderIDNotNil applies the NotNil predicate on the "order_id" field.
-func OrderIDNotNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldOrderID)))
 	})
 }
 
@@ -1229,34 +1172,6 @@ func HasAssemblyWith(preds ...predicate.CouponAssembly) predicate.Coupon {
 	})
 }
 
-// HasOrder applies the HasEdge predicate on the "order" edge.
-func HasOrder() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(OrderTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, OrderTable, OrderColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasOrderWith applies the HasEdge predicate on the "order" edge with a given conditions (other predicates).
-func HasOrderWith(preds ...predicate.Order) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(OrderInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, OrderTable, OrderColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasPlan applies the HasEdge predicate on the "plan" edge.
 func HasPlan() predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
@@ -1304,6 +1219,34 @@ func HasTemplateWith(preds ...predicate.CouponTemplate) predicate.Coupon {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(TemplateInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, TemplateTable, TemplateColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasOrder applies the HasEdge predicate on the "order" edge.
+func HasOrder() predicate.Coupon {
+	return predicate.Coupon(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(OrderTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, OrderTable, OrderColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasOrderWith applies the HasEdge predicate on the "order" edge with a given conditions (other predicates).
+func HasOrderWith(preds ...predicate.Order) predicate.Coupon {
+	return predicate.Coupon(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(OrderInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, OrderTable, OrderColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

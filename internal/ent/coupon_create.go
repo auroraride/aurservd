@@ -103,20 +103,6 @@ func (cc *CouponCreate) SetAssemblyID(u uint64) *CouponCreate {
 	return cc
 }
 
-// SetOrderID sets the "order_id" field.
-func (cc *CouponCreate) SetOrderID(u uint64) *CouponCreate {
-	cc.mutation.SetOrderID(u)
-	return cc
-}
-
-// SetNillableOrderID sets the "order_id" field if the given value is not nil.
-func (cc *CouponCreate) SetNillableOrderID(u *uint64) *CouponCreate {
-	if u != nil {
-		cc.SetOrderID(*u)
-	}
-	return cc
-}
-
 // SetPlanID sets the "plan_id" field.
 func (cc *CouponCreate) SetPlanID(u uint64) *CouponCreate {
 	cc.mutation.SetPlanID(u)
@@ -219,11 +205,6 @@ func (cc *CouponCreate) SetAssembly(c *CouponAssembly) *CouponCreate {
 	return cc.SetAssemblyID(c.ID)
 }
 
-// SetOrder sets the "order" edge to the Order entity.
-func (cc *CouponCreate) SetOrder(o *Order) *CouponCreate {
-	return cc.SetOrderID(o.ID)
-}
-
 // SetPlan sets the "plan" edge to the Plan entity.
 func (cc *CouponCreate) SetPlan(p *Plan) *CouponCreate {
 	return cc.SetPlanID(p.ID)
@@ -232,6 +213,25 @@ func (cc *CouponCreate) SetPlan(p *Plan) *CouponCreate {
 // SetTemplate sets the "template" edge to the CouponTemplate entity.
 func (cc *CouponCreate) SetTemplate(c *CouponTemplate) *CouponCreate {
 	return cc.SetTemplateID(c.ID)
+}
+
+// SetOrderID sets the "order" edge to the Order entity by ID.
+func (cc *CouponCreate) SetOrderID(id uint64) *CouponCreate {
+	cc.mutation.SetOrderID(id)
+	return cc
+}
+
+// SetNillableOrderID sets the "order" edge to the Order entity by ID if the given value is not nil.
+func (cc *CouponCreate) SetNillableOrderID(id *uint64) *CouponCreate {
+	if id != nil {
+		cc = cc.SetOrderID(*id)
+	}
+	return cc
+}
+
+// SetOrder sets the "order" edge to the Order entity.
+func (cc *CouponCreate) SetOrder(o *Order) *CouponCreate {
+	return cc.SetOrderID(o.ID)
 }
 
 // AddCityIDs adds the "cities" edge to the City entity by IDs.
@@ -574,26 +574,6 @@ func (cc *CouponCreate) createSpec() (*Coupon, *sqlgraph.CreateSpec) {
 		_node.AssemblyID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := cc.mutation.OrderIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   coupon.OrderTable,
-			Columns: []string{coupon.OrderColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.OrderID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := cc.mutation.PlanIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -632,6 +612,26 @@ func (cc *CouponCreate) createSpec() (*Coupon, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.TemplateID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.OrderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   coupon.OrderTable,
+			Columns: []string{coupon.OrderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.order_coupons = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := cc.mutation.CitiesIDs(); len(nodes) > 0 {
@@ -799,24 +799,6 @@ func (u *CouponUpsert) SetAssemblyID(v uint64) *CouponUpsert {
 // UpdateAssemblyID sets the "assembly_id" field to the value that was provided on create.
 func (u *CouponUpsert) UpdateAssemblyID() *CouponUpsert {
 	u.SetExcluded(coupon.FieldAssemblyID)
-	return u
-}
-
-// SetOrderID sets the "order_id" field.
-func (u *CouponUpsert) SetOrderID(v uint64) *CouponUpsert {
-	u.Set(coupon.FieldOrderID, v)
-	return u
-}
-
-// UpdateOrderID sets the "order_id" field to the value that was provided on create.
-func (u *CouponUpsert) UpdateOrderID() *CouponUpsert {
-	u.SetExcluded(coupon.FieldOrderID)
-	return u
-}
-
-// ClearOrderID clears the value of the "order_id" field.
-func (u *CouponUpsert) ClearOrderID() *CouponUpsert {
-	u.SetNull(coupon.FieldOrderID)
 	return u
 }
 
@@ -1097,27 +1079,6 @@ func (u *CouponUpsertOne) SetAssemblyID(v uint64) *CouponUpsertOne {
 func (u *CouponUpsertOne) UpdateAssemblyID() *CouponUpsertOne {
 	return u.Update(func(s *CouponUpsert) {
 		s.UpdateAssemblyID()
-	})
-}
-
-// SetOrderID sets the "order_id" field.
-func (u *CouponUpsertOne) SetOrderID(v uint64) *CouponUpsertOne {
-	return u.Update(func(s *CouponUpsert) {
-		s.SetOrderID(v)
-	})
-}
-
-// UpdateOrderID sets the "order_id" field to the value that was provided on create.
-func (u *CouponUpsertOne) UpdateOrderID() *CouponUpsertOne {
-	return u.Update(func(s *CouponUpsert) {
-		s.UpdateOrderID()
-	})
-}
-
-// ClearOrderID clears the value of the "order_id" field.
-func (u *CouponUpsertOne) ClearOrderID() *CouponUpsertOne {
-	return u.Update(func(s *CouponUpsert) {
-		s.ClearOrderID()
 	})
 }
 
@@ -1583,27 +1544,6 @@ func (u *CouponUpsertBulk) SetAssemblyID(v uint64) *CouponUpsertBulk {
 func (u *CouponUpsertBulk) UpdateAssemblyID() *CouponUpsertBulk {
 	return u.Update(func(s *CouponUpsert) {
 		s.UpdateAssemblyID()
-	})
-}
-
-// SetOrderID sets the "order_id" field.
-func (u *CouponUpsertBulk) SetOrderID(v uint64) *CouponUpsertBulk {
-	return u.Update(func(s *CouponUpsert) {
-		s.SetOrderID(v)
-	})
-}
-
-// UpdateOrderID sets the "order_id" field to the value that was provided on create.
-func (u *CouponUpsertBulk) UpdateOrderID() *CouponUpsertBulk {
-	return u.Update(func(s *CouponUpsert) {
-		s.UpdateOrderID()
-	})
-}
-
-// ClearOrderID clears the value of the "order_id" field.
-func (u *CouponUpsertBulk) ClearOrderID() *CouponUpsertBulk {
-	return u.Update(func(s *CouponUpsert) {
-		s.ClearOrderID()
 	})
 }
 

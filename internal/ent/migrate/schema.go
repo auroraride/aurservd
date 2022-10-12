@@ -998,9 +998,9 @@ var (
 		{Name: "duration", Type: field.TypeJSON, Comment: "有效期规则"},
 		{Name: "rider_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "assembly_id", Type: field.TypeUint64},
-		{Name: "order_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "template_id", Type: field.TypeUint64},
+		{Name: "order_coupons", Type: field.TypeUint64, Nullable: true},
 	}
 	// CouponTable holds the schema information for the "coupon" table.
 	CouponTable = &schema.Table{
@@ -1021,22 +1021,22 @@ var (
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "coupon_order_order",
-				Columns:    []*schema.Column{CouponColumns[16]},
-				RefColumns: []*schema.Column{OrderColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
 				Symbol:     "coupon_plan_plan",
-				Columns:    []*schema.Column{CouponColumns[17]},
+				Columns:    []*schema.Column{CouponColumns[16]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "coupon_coupon_template_coupons",
-				Columns:    []*schema.Column{CouponColumns[18]},
+				Columns:    []*schema.Column{CouponColumns[17]},
 				RefColumns: []*schema.Column{CouponTemplateColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "coupon_order_coupons",
+				Columns:    []*schema.Column{CouponColumns[18]},
+				RefColumns: []*schema.Column{OrderColumns[0]},
+				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
@@ -1056,14 +1056,9 @@ var (
 				Columns: []*schema.Column{CouponColumns[15]},
 			},
 			{
-				Name:    "coupon_order_id",
-				Unique:  false,
-				Columns: []*schema.Column{CouponColumns[16]},
-			},
-			{
 				Name:    "coupon_plan_id",
 				Unique:  false,
-				Columns: []*schema.Column{CouponColumns[17]},
+				Columns: []*schema.Column{CouponColumns[16]},
 			},
 			{
 				Name:    "coupon_name",
@@ -1078,7 +1073,7 @@ var (
 			{
 				Name:    "coupon_template_id",
 				Unique:  false,
-				Columns: []*schema.Column{CouponColumns[18]},
+				Columns: []*schema.Column{CouponColumns[17]},
 			},
 			{
 				Name:    "coupon_multiple",
@@ -2248,10 +2243,13 @@ var (
 		{Name: "initial_days", Type: field.TypeInt, Comment: "所购骑士卡天数(也可能为补缴欠费天数)", Nullable: true},
 		{Name: "past_days", Type: field.TypeInt, Comment: "距上次退订天数", Nullable: true},
 		{Name: "points", Type: field.TypeInt64, Comment: "使用积分", Default: 0},
+		{Name: "point_ratio", Type: field.TypeFloat64, Comment: "积分兑换比例", Default: 0.01},
 		{Name: "coupon_amount", Type: field.TypeFloat64, Comment: "优惠券金额", Default: 0},
 		{Name: "relief_newly", Type: field.TypeFloat64, Comment: "新签优惠", Default: 0},
 		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "ebike_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "parent_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "rider_id", Type: field.TypeUint64},
 		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},
@@ -2264,31 +2262,43 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "order_plan_plan",
-				Columns:    []*schema.Column{OrderColumns[20]},
+				Columns:    []*schema.Column{OrderColumns[21]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "order_city_city",
-				Columns:    []*schema.Column{OrderColumns[21]},
+				Columns:    []*schema.Column{OrderColumns[22]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
+				Symbol:     "order_ebike_brand_brand",
+				Columns:    []*schema.Column{OrderColumns[23]},
+				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "order_ebike_ebike",
+				Columns:    []*schema.Column{OrderColumns[24]},
+				RefColumns: []*schema.Column{EbikeColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
 				Symbol:     "order_order_children",
-				Columns:    []*schema.Column{OrderColumns[22]},
+				Columns:    []*schema.Column{OrderColumns[25]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "order_rider_orders",
-				Columns:    []*schema.Column{OrderColumns[23]},
+				Columns:    []*schema.Column{OrderColumns[26]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "order_subscribe_orders",
-				Columns:    []*schema.Column{OrderColumns[24]},
+				Columns:    []*schema.Column{OrderColumns[27]},
 				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2307,22 +2317,32 @@ var (
 			{
 				Name:    "order_plan_id",
 				Unique:  false,
-				Columns: []*schema.Column{OrderColumns[20]},
+				Columns: []*schema.Column{OrderColumns[21]},
 			},
 			{
 				Name:    "order_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{OrderColumns[21]},
+				Columns: []*schema.Column{OrderColumns[22]},
 			},
 			{
-				Name:    "order_rider_id",
+				Name:    "order_brand_id",
 				Unique:  false,
 				Columns: []*schema.Column{OrderColumns[23]},
 			},
 			{
-				Name:    "order_subscribe_id",
+				Name:    "order_ebike_id",
 				Unique:  false,
 				Columns: []*schema.Column{OrderColumns[24]},
+			},
+			{
+				Name:    "order_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{OrderColumns[26]},
+			},
+			{
+				Name:    "order_subscribe_id",
+				Unique:  false,
+				Columns: []*schema.Column{OrderColumns[27]},
 			},
 			{
 				Name:    "order_trade_no",
@@ -2343,34 +2363,6 @@ var (
 				Name:    "order_initial_days",
 				Unique:  false,
 				Columns: []*schema.Column{OrderColumns[15]},
-			},
-		},
-	}
-	// OrderCouponColumns holds the columns for the "order_coupon" table.
-	OrderCouponColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUint64, Increment: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
-		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
-		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
-	}
-	// OrderCouponTable holds the schema information for the "order_coupon" table.
-	OrderCouponTable = &schema.Table{
-		Name:       "order_coupon",
-		Columns:    OrderCouponColumns,
-		PrimaryKey: []*schema.Column{OrderCouponColumns[0]},
-		Indexes: []*schema.Index{
-			{
-				Name:    "ordercoupon_created_at",
-				Unique:  false,
-				Columns: []*schema.Column{OrderCouponColumns[1]},
-			},
-			{
-				Name:    "ordercoupon_deleted_at",
-				Unique:  false,
-				Columns: []*schema.Column{OrderCouponColumns[3]},
 			},
 		},
 	}
@@ -3919,7 +3911,6 @@ var (
 		InventoryTable,
 		ManagerTable,
 		OrderTable,
-		OrderCouponTable,
 		OrderRefundTable,
 		PersonTable,
 		PlanTable,
@@ -4017,9 +4008,9 @@ func init() {
 	}
 	CouponTable.ForeignKeys[0].RefTable = RiderTable
 	CouponTable.ForeignKeys[1].RefTable = CouponAssemblyTable
-	CouponTable.ForeignKeys[2].RefTable = OrderTable
-	CouponTable.ForeignKeys[3].RefTable = PlanTable
-	CouponTable.ForeignKeys[4].RefTable = CouponTemplateTable
+	CouponTable.ForeignKeys[2].RefTable = PlanTable
+	CouponTable.ForeignKeys[3].RefTable = CouponTemplateTable
+	CouponTable.ForeignKeys[4].RefTable = OrderTable
 	CouponTable.Annotation = &entsql.Annotation{
 		Table: "coupon",
 	}
@@ -4107,14 +4098,13 @@ func init() {
 	}
 	OrderTable.ForeignKeys[0].RefTable = PlanTable
 	OrderTable.ForeignKeys[1].RefTable = CityTable
-	OrderTable.ForeignKeys[2].RefTable = OrderTable
-	OrderTable.ForeignKeys[3].RefTable = RiderTable
-	OrderTable.ForeignKeys[4].RefTable = SubscribeTable
+	OrderTable.ForeignKeys[2].RefTable = EbikeBrandTable
+	OrderTable.ForeignKeys[3].RefTable = EbikeTable
+	OrderTable.ForeignKeys[4].RefTable = OrderTable
+	OrderTable.ForeignKeys[5].RefTable = RiderTable
+	OrderTable.ForeignKeys[6].RefTable = SubscribeTable
 	OrderTable.Annotation = &entsql.Annotation{
 		Table: "order",
-	}
-	OrderCouponTable.Annotation = &entsql.Annotation{
-		Table: "order_coupon",
 	}
 	OrderRefundTable.ForeignKeys[0].RefTable = OrderTable
 	OrderRefundTable.Annotation = &entsql.Annotation{

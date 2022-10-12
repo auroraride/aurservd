@@ -268,13 +268,6 @@ func (c *OrderClient) ModifyOne(old *Order, data any) *OrderUpdateOne {
 	return EntitySetAttributes[OrderUpdateOne, Order](up, old, data)
 }
 
-// ModifyOne returns an update with pointer struct builder for OrderCoupon.
-func (c *OrderCouponClient) ModifyOne(old *OrderCoupon, data any) *OrderCouponUpdateOne {
-	mutation := newOrderCouponMutation(c.config, OpUpdateOne, withOrderCoupon(old))
-	up := &OrderCouponUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-	return EntitySetAttributes[OrderCouponUpdateOne, OrderCoupon](up, old, data)
-}
-
 // ModifyOne returns an update with pointer struct builder for OrderRefund.
 func (c *OrderRefundClient) ModifyOne(old *OrderRefund, data any) *OrderRefundUpdateOne {
 	mutation := newOrderRefundMutation(c.config, OpUpdateOne, withOrderRefund(old))

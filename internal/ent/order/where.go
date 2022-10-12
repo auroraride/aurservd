@@ -123,6 +123,20 @@ func CityID(v uint64) predicate.Order {
 	})
 }
 
+// BrandID applies equality check predicate on the "brand_id" field. It's identical to BrandIDEQ.
+func BrandID(v uint64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBrandID), v))
+	})
+}
+
+// EbikeID applies equality check predicate on the "ebike_id" field. It's identical to EbikeIDEQ.
+func EbikeID(v uint64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEbikeID), v))
+	})
+}
+
 // RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
 func RiderID(v uint64) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
@@ -218,6 +232,13 @@ func PastDays(v int) predicate.Order {
 func Points(v int64) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldPoints), v))
+	})
+}
+
+// PointRatio applies equality check predicate on the "point_ratio" field. It's identical to PointRatioEQ.
+func PointRatio(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPointRatio), v))
 	})
 }
 
@@ -679,6 +700,106 @@ func CityIDIsNil() predicate.Order {
 func CityIDNotNil() predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldCityID)))
+	})
+}
+
+// BrandIDEQ applies the EQ predicate on the "brand_id" field.
+func BrandIDEQ(v uint64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBrandID), v))
+	})
+}
+
+// BrandIDNEQ applies the NEQ predicate on the "brand_id" field.
+func BrandIDNEQ(v uint64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldBrandID), v))
+	})
+}
+
+// BrandIDIn applies the In predicate on the "brand_id" field.
+func BrandIDIn(vs ...uint64) predicate.Order {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldBrandID), v...))
+	})
+}
+
+// BrandIDNotIn applies the NotIn predicate on the "brand_id" field.
+func BrandIDNotIn(vs ...uint64) predicate.Order {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldBrandID), v...))
+	})
+}
+
+// BrandIDIsNil applies the IsNil predicate on the "brand_id" field.
+func BrandIDIsNil() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldBrandID)))
+	})
+}
+
+// BrandIDNotNil applies the NotNil predicate on the "brand_id" field.
+func BrandIDNotNil() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldBrandID)))
+	})
+}
+
+// EbikeIDEQ applies the EQ predicate on the "ebike_id" field.
+func EbikeIDEQ(v uint64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEbikeID), v))
+	})
+}
+
+// EbikeIDNEQ applies the NEQ predicate on the "ebike_id" field.
+func EbikeIDNEQ(v uint64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldEbikeID), v))
+	})
+}
+
+// EbikeIDIn applies the In predicate on the "ebike_id" field.
+func EbikeIDIn(vs ...uint64) predicate.Order {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldEbikeID), v...))
+	})
+}
+
+// EbikeIDNotIn applies the NotIn predicate on the "ebike_id" field.
+func EbikeIDNotIn(vs ...uint64) predicate.Order {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldEbikeID), v...))
+	})
+}
+
+// EbikeIDIsNil applies the IsNil predicate on the "ebike_id" field.
+func EbikeIDIsNil() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldEbikeID)))
+	})
+}
+
+// EbikeIDNotNil applies the NotNil predicate on the "ebike_id" field.
+func EbikeIDNotNil() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldEbikeID)))
 	})
 }
 
@@ -1634,6 +1755,70 @@ func PointsLTE(v int64) predicate.Order {
 	})
 }
 
+// PointRatioEQ applies the EQ predicate on the "point_ratio" field.
+func PointRatioEQ(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPointRatio), v))
+	})
+}
+
+// PointRatioNEQ applies the NEQ predicate on the "point_ratio" field.
+func PointRatioNEQ(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPointRatio), v))
+	})
+}
+
+// PointRatioIn applies the In predicate on the "point_ratio" field.
+func PointRatioIn(vs ...float64) predicate.Order {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldPointRatio), v...))
+	})
+}
+
+// PointRatioNotIn applies the NotIn predicate on the "point_ratio" field.
+func PointRatioNotIn(vs ...float64) predicate.Order {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldPointRatio), v...))
+	})
+}
+
+// PointRatioGT applies the GT predicate on the "point_ratio" field.
+func PointRatioGT(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldPointRatio), v))
+	})
+}
+
+// PointRatioGTE applies the GTE predicate on the "point_ratio" field.
+func PointRatioGTE(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldPointRatio), v))
+	})
+}
+
+// PointRatioLT applies the LT predicate on the "point_ratio" field.
+func PointRatioLT(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldPointRatio), v))
+	})
+}
+
+// PointRatioLTE applies the LTE predicate on the "point_ratio" field.
+func PointRatioLTE(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldPointRatio), v))
+	})
+}
+
 // CouponAmountEQ applies the EQ predicate on the "coupon_amount" field.
 func CouponAmountEQ(v float64) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
@@ -1809,6 +1994,62 @@ func HasCityWith(preds ...predicate.City) predicate.Order {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(CityInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasBrand applies the HasEdge predicate on the "brand" edge.
+func HasBrand() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(BrandTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, BrandTable, BrandColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasBrandWith applies the HasEdge predicate on the "brand" edge with a given conditions (other predicates).
+func HasBrandWith(preds ...predicate.EbikeBrand) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(BrandInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, BrandTable, BrandColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasEbike applies the HasEdge predicate on the "ebike" edge.
+func HasEbike() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EbikeTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, EbikeTable, EbikeColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEbikeWith applies the HasEdge predicate on the "ebike" edge with a given conditions (other predicates).
+func HasEbikeWith(preds ...predicate.Ebike) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EbikeInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, EbikeTable, EbikeColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
@@ -2005,6 +2246,34 @@ func HasAssistanceWith(preds ...predicate.Assistance) predicate.Order {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(AssistanceInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, AssistanceTable, AssistanceColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasCoupons applies the HasEdge predicate on the "coupons" edge.
+func HasCoupons() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CouponsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CouponsTable, CouponsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCouponsWith applies the HasEdge predicate on the "coupons" edge with a given conditions (other predicates).
+func HasCouponsWith(preds ...predicate.Coupon) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CouponsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CouponsTable, CouponsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

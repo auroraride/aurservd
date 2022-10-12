@@ -28,7 +28,6 @@ import (
     "github.com/golang-module/carbon/v2"
     "github.com/shopspring/decimal"
     log "github.com/sirupsen/logrus"
-    "strings"
     "time"
 )
 
@@ -121,7 +120,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
     result = new(model.OrderCreateRes)
 
     // 查询套餐是否存在
-    op := NewPlan().QueryEffectiveWithID(req.PlanID)
+    p := NewPlan().QueryEffectiveWithID(req.PlanID)
 
     // 查询是否企业骑手
     if s.rider.EnterpriseID != nil {
@@ -129,6 +128,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
     }
 
     // 查询骑手是否签约过
+    // TODO 新签约逻辑
     if !NewContract().Effective(s.rider) {
         snag.Panic("请先签约")
     }
@@ -145,35 +145,23 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
     sub := NewSubscribe().Recent(s.rider.ID, *s.rider.PersonID)
     // 判定类型条件
     var subID, orderID *uint64
-    otype := req.OrderType
-    switch otype {
+    t := req.OrderType
+    switch t {
     case model.OrderTypeNewly, model.OrderTypeAgain:
         // 新签/重签判定
-        var m string
-        if strings.ToUpper(req.Model) == op.Model {
-            m = op.Model
-        }
-        // var m string
-        // for _, pm := range op.Edges.Models {
-        //     if strings.ToUpper(req.Model) == strings.ToUpper(pm.Model) {
-        //         m = pm.Model
-        //     }
-        // }
-        if m == "" || req.CityID == 0 {
+        if req.CityID == 0 {
             snag.Panic("请求参数错误")
         }
-        req.Model = m
-        otype, past = s.PreconditionNewly(sub)
+        t, past = s.PreconditionNewly(sub)
         break
     case model.OrderTypeRenewal:
         // 续签判定
         s.PreconditionRenewal(sub)
-        if sub.Remaining < 0 && int(op.Days)+sub.Remaining < 0 {
+        if sub.Remaining < 0 && int(p.Days)+sub.Remaining < 0 {
             snag.Panic("无法继续, 逾期天数大于套餐天数")
         }
         subID = silk.UInt64(sub.ID)
         orderID = silk.UInt64(sub.InitialOrderID)
-        req.Model = sub.Model
         req.CityID = sub.CityID
         break
     default:
@@ -185,9 +173,74 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
     deposit := NewRider().Deposit(s.rider.ID)
     no := tools.NewUnique().NewSN28()
     result.OutTradeNo = no
-    // 生成订单字段
-    price := op.Price
-    // TODO DEBUG 模式支付一分钱
+
+    // 计算需要支付金额
+    // 1. 计算新签优惠
+    // 2. 计算优惠券金额
+    // 3. 计算积分抵扣
+    price := p.Price
+
+    // 计算新签优惠
+    var ramount float64
+    if t == model.OrderTypeNewly && p.ReliefNewly > 0 {
+        ramount = p.ReliefNewly
+        price = tools.NewDecimal().Sub(price, ramount)
+    }
+
+    // 获取优惠券
+    var camount float64
+    now := time.Now()
+    if len(req.Coupons) > 0 {
+        coupons := NewCoupon().QueryIDs(req.Coupons)
+        if len(req.Coupons) != len(coupons) {
+            snag.Panic("优惠券选择错误")
+        }
+        var isExclusive bool
+        var cm map[uint64]uint64
+        for _, c := range coupons {
+            // 校验有效期
+            if c.ExpiresAt.Before(now) {
+                snag.Panic("优惠券已失效")
+            }
+
+            // 是否互斥
+            if c.Rule == model.CouponRuleExclusive.Value() {
+                isExclusive = true
+            }
+
+            // 是否叠加
+            if _, ok := cm[c.TemplateID]; ok {
+                snag.Panic("优惠券无法叠加")
+            }
+            cm[c.TemplateID] = c.ID
+
+            // 累加优惠券金额
+            camount += c.Amount
+        }
+        if isExclusive && len(req.Coupons) > 0 {
+            snag.Panic("所选优惠券互斥")
+        }
+        price = tools.NewDecimal().Sub(price, camount)
+    }
+
+    // 积分抵扣
+    var points int64
+    if req.Point {
+        cents := int64(price / model.PointRatio)
+        // 若积分小于所需积分, 则全部扣除
+        if s.rider.Points < cents {
+            points = s.rider.Points
+        } else {
+            points = s.rider.Points - cents
+        }
+        price = tools.NewDecimal().Sub(price, float64(points)*model.PointRatio)
+    }
+
+    if price < 0 {
+        snag.Panic("支付金额错误")
+    }
+
+    // DEBUG 模式支付一分钱
     mode := ar.Config.App.Mode
     if mode == "debug" || mode == "next" {
         price = 0.01
@@ -195,28 +248,34 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
             deposit = 0.01
         }
     }
-    // TODO DEBUG 记得删除
 
-    total, _ := decimal.NewFromFloat(price).Add(decimal.NewFromFloat(deposit)).Float64()
+    // 总计支付金额
+    total := tools.NewDecimal().Sum(price, deposit)
 
+    // 订单字段
     prepay := &model.PaymentCache{
         CacheType: model.PaymentCacheTypePlan,
         Subscribe: &model.PaymentSubscribe{
-            CityID:      req.CityID,
-            OrderType:   otype,
-            OutTradeNo:  no,
-            RiderID:     s.rider.ID,
-            Name:        "购买" + op.Name,
-            Amount:      total,
-            Payway:      req.Payway,
-            PlanID:      op.ID,
-            Deposit:     deposit,
-            PastDays:    past,
-            Commission:  op.Commission,
-            Model:       req.Model,
-            Days:        op.Days,
-            OrderID:     orderID,
-            SubscribeID: subID,
+            CityID:       req.CityID,
+            OrderType:    t,
+            OutTradeNo:   no,
+            RiderID:      s.rider.ID,
+            Name:         "购买" + p.Name,
+            Amount:       total,
+            Payway:       req.Payway,
+            PlanID:       p.ID,
+            Deposit:      deposit,
+            PastDays:     past,
+            Commission:   p.Commission,
+            Model:        p.Model,
+            Days:         p.Days,
+            OrderID:      orderID,
+            SubscribeID:  subID,
+            Points:       points,
+            PointRatio:   model.PointRatio,
+            CouponAmount: camount,
+            Coupons:      req.Coupons,
+            ReliefNewly:  p.ReliefNewly,
         },
     }
 

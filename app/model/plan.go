@@ -156,7 +156,7 @@ type PlanDaysPriceOptions []PlanDaysPriceOption
 type PlanDaysPriceOption struct {
     ID          uint64  `json:"id"`
     Name        string  `json:"name"`        // 骑士卡名称
-    Price       float64 `json:"price"`       // 价格
+    Price       float64 `json:"price"`       // 价格, 应支付价格 = 价格 - 新签优惠
     Days        uint    `json:"days"`        // 天数
     Original    float64 `json:"original"`    // 原价
     ReliefNewly float64 `json:"reliefNewly"` // 新签优惠

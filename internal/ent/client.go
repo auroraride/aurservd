@@ -41,7 +41,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
-	"github.com/auroraride/aurservd/internal/ent/ordercoupon"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -132,8 +131,6 @@ type Client struct {
 	Manager *ManagerClient
 	// Order is the client for interacting with the Order builders.
 	Order *OrderClient
-	// OrderCoupon is the client for interacting with the OrderCoupon builders.
-	OrderCoupon *OrderCouponClient
 	// OrderRefund is the client for interacting with the OrderRefund builders.
 	OrderRefund *OrderRefundClient
 	// Person is the client for interacting with the Person builders.
@@ -212,7 +209,6 @@ func (c *Client) init() {
 	c.Inventory = NewInventoryClient(c.config)
 	c.Manager = NewManagerClient(c.config)
 	c.Order = NewOrderClient(c.config)
-	c.OrderCoupon = NewOrderCouponClient(c.config)
 	c.OrderRefund = NewOrderRefundClient(c.config)
 	c.Person = NewPersonClient(c.config)
 	c.Plan = NewPlanClient(c.config)
@@ -294,7 +290,6 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Inventory:            NewInventoryClient(cfg),
 		Manager:              NewManagerClient(cfg),
 		Order:                NewOrderClient(cfg),
-		OrderCoupon:          NewOrderCouponClient(cfg),
 		OrderRefund:          NewOrderRefundClient(cfg),
 		Person:               NewPersonClient(cfg),
 		Plan:                 NewPlanClient(cfg),
@@ -362,7 +357,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Inventory:            NewInventoryClient(cfg),
 		Manager:              NewManagerClient(cfg),
 		Order:                NewOrderClient(cfg),
-		OrderCoupon:          NewOrderCouponClient(cfg),
 		OrderRefund:          NewOrderRefundClient(cfg),
 		Person:               NewPersonClient(cfg),
 		Plan:                 NewPlanClient(cfg),
@@ -439,7 +433,6 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Inventory.Use(hooks...)
 	c.Manager.Use(hooks...)
 	c.Order.Use(hooks...)
-	c.OrderCoupon.Use(hooks...)
 	c.OrderRefund.Use(hooks...)
 	c.Person.Use(hooks...)
 	c.Plan.Use(hooks...)
@@ -2404,22 +2397,6 @@ func (c *CouponClient) QueryAssembly(co *Coupon) *CouponAssemblyQuery {
 	return query
 }
 
-// QueryOrder queries the order edge of a Coupon.
-func (c *CouponClient) QueryOrder(co *Coupon) *OrderQuery {
-	query := &OrderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := co.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(coupon.Table, coupon.FieldID, id),
-			sqlgraph.To(order.Table, order.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, coupon.OrderTable, coupon.OrderColumn),
-		)
-		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryPlan queries the plan edge of a Coupon.
 func (c *CouponClient) QueryPlan(co *Coupon) *PlanQuery {
 	query := &PlanQuery{config: c.config}
@@ -2445,6 +2422,22 @@ func (c *CouponClient) QueryTemplate(co *Coupon) *CouponTemplateQuery {
 			sqlgraph.From(coupon.Table, coupon.FieldID, id),
 			sqlgraph.To(coupontemplate.Table, coupontemplate.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, coupon.TemplateTable, coupon.TemplateColumn),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOrder queries the order edge of a Coupon.
+func (c *CouponClient) QueryOrder(co *Coupon) *OrderQuery {
+	query := &OrderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(coupon.Table, coupon.FieldID, id),
+			sqlgraph.To(order.Table, order.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, coupon.OrderTable, coupon.OrderColumn),
 		)
 		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
 		return fromV, nil
@@ -4889,6 +4882,38 @@ func (c *OrderClient) QueryCity(o *Order) *CityQuery {
 	return query
 }
 
+// QueryBrand queries the brand edge of a Order.
+func (c *OrderClient) QueryBrand(o *Order) *EbikeBrandQuery {
+	query := &EbikeBrandQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, id),
+			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, order.BrandTable, order.BrandColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEbike queries the ebike edge of a Order.
+func (c *OrderClient) QueryEbike(o *Order) *EbikeQuery {
+	query := &EbikeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, id),
+			sqlgraph.To(ebike.Table, ebike.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, order.EbikeTable, order.EbikeColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryRider queries the rider edge of a Order.
 func (c *OrderClient) QueryRider(o *Order) *RiderQuery {
 	query := &RiderQuery{config: c.config}
@@ -5001,101 +5026,26 @@ func (c *OrderClient) QueryAssistance(o *Order) *AssistanceQuery {
 	return query
 }
 
+// QueryCoupons queries the coupons edge of a Order.
+func (c *OrderClient) QueryCoupons(o *Order) *CouponQuery {
+	query := &CouponQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, id),
+			sqlgraph.To(coupon.Table, coupon.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, order.CouponsTable, order.CouponsColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *OrderClient) Hooks() []Hook {
 	hooks := c.hooks.Order
 	return append(hooks[:len(hooks):len(hooks)], order.Hooks[:]...)
-}
-
-// OrderCouponClient is a client for the OrderCoupon schema.
-type OrderCouponClient struct {
-	config
-}
-
-// NewOrderCouponClient returns a client for the OrderCoupon from the given config.
-func NewOrderCouponClient(c config) *OrderCouponClient {
-	return &OrderCouponClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `ordercoupon.Hooks(f(g(h())))`.
-func (c *OrderCouponClient) Use(hooks ...Hook) {
-	c.hooks.OrderCoupon = append(c.hooks.OrderCoupon, hooks...)
-}
-
-// Create returns a builder for creating a OrderCoupon entity.
-func (c *OrderCouponClient) Create() *OrderCouponCreate {
-	mutation := newOrderCouponMutation(c.config, OpCreate)
-	return &OrderCouponCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of OrderCoupon entities.
-func (c *OrderCouponClient) CreateBulk(builders ...*OrderCouponCreate) *OrderCouponCreateBulk {
-	return &OrderCouponCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for OrderCoupon.
-func (c *OrderCouponClient) Update() *OrderCouponUpdate {
-	mutation := newOrderCouponMutation(c.config, OpUpdate)
-	return &OrderCouponUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *OrderCouponClient) UpdateOne(oc *OrderCoupon) *OrderCouponUpdateOne {
-	mutation := newOrderCouponMutation(c.config, OpUpdateOne, withOrderCoupon(oc))
-	return &OrderCouponUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *OrderCouponClient) UpdateOneID(id uint64) *OrderCouponUpdateOne {
-	mutation := newOrderCouponMutation(c.config, OpUpdateOne, withOrderCouponID(id))
-	return &OrderCouponUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for OrderCoupon.
-func (c *OrderCouponClient) Delete() *OrderCouponDelete {
-	mutation := newOrderCouponMutation(c.config, OpDelete)
-	return &OrderCouponDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *OrderCouponClient) DeleteOne(oc *OrderCoupon) *OrderCouponDeleteOne {
-	return c.DeleteOneID(oc.ID)
-}
-
-// DeleteOne returns a builder for deleting the given entity by its id.
-func (c *OrderCouponClient) DeleteOneID(id uint64) *OrderCouponDeleteOne {
-	builder := c.Delete().Where(ordercoupon.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &OrderCouponDeleteOne{builder}
-}
-
-// Query returns a query builder for OrderCoupon.
-func (c *OrderCouponClient) Query() *OrderCouponQuery {
-	return &OrderCouponQuery{
-		config: c.config,
-	}
-}
-
-// Get returns a OrderCoupon entity by its id.
-func (c *OrderCouponClient) Get(ctx context.Context, id uint64) (*OrderCoupon, error) {
-	return c.Query().Where(ordercoupon.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *OrderCouponClient) GetX(ctx context.Context, id uint64) *OrderCoupon {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// Hooks returns the client hooks.
-func (c *OrderCouponClient) Hooks() []Hook {
-	hooks := c.hooks.OrderCoupon
-	return append(hooks[:len(hooks):len(hooks)], ordercoupon.Hooks[:]...)
 }
 
 // OrderRefundClient is a client for the OrderRefund schema.

@@ -15,6 +15,9 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
+	"github.com/auroraride/aurservd/internal/ent/coupon"
+	"github.com/auroraride/aurservd/internal/ent/ebike"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -132,6 +135,46 @@ func (ou *OrderUpdate) SetNillableCityID(u *uint64) *OrderUpdate {
 // ClearCityID clears the value of the "city_id" field.
 func (ou *OrderUpdate) ClearCityID() *OrderUpdate {
 	ou.mutation.ClearCityID()
+	return ou
+}
+
+// SetBrandID sets the "brand_id" field.
+func (ou *OrderUpdate) SetBrandID(u uint64) *OrderUpdate {
+	ou.mutation.SetBrandID(u)
+	return ou
+}
+
+// SetNillableBrandID sets the "brand_id" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableBrandID(u *uint64) *OrderUpdate {
+	if u != nil {
+		ou.SetBrandID(*u)
+	}
+	return ou
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (ou *OrderUpdate) ClearBrandID() *OrderUpdate {
+	ou.mutation.ClearBrandID()
+	return ou
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (ou *OrderUpdate) SetEbikeID(u uint64) *OrderUpdate {
+	ou.mutation.SetEbikeID(u)
+	return ou
+}
+
+// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableEbikeID(u *uint64) *OrderUpdate {
+	if u != nil {
+		ou.SetEbikeID(*u)
+	}
+	return ou
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (ou *OrderUpdate) ClearEbikeID() *OrderUpdate {
+	ou.mutation.ClearEbikeID()
 	return ou
 }
 
@@ -297,6 +340,27 @@ func (ou *OrderUpdate) AddPoints(i int64) *OrderUpdate {
 	return ou
 }
 
+// SetPointRatio sets the "point_ratio" field.
+func (ou *OrderUpdate) SetPointRatio(f float64) *OrderUpdate {
+	ou.mutation.ResetPointRatio()
+	ou.mutation.SetPointRatio(f)
+	return ou
+}
+
+// SetNillablePointRatio sets the "point_ratio" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillablePointRatio(f *float64) *OrderUpdate {
+	if f != nil {
+		ou.SetPointRatio(*f)
+	}
+	return ou
+}
+
+// AddPointRatio adds f to the "point_ratio" field.
+func (ou *OrderUpdate) AddPointRatio(f float64) *OrderUpdate {
+	ou.mutation.AddPointRatio(f)
+	return ou
+}
+
 // SetCouponAmount sets the "coupon_amount" field.
 func (ou *OrderUpdate) SetCouponAmount(f float64) *OrderUpdate {
 	ou.mutation.ResetCouponAmount()
@@ -347,6 +411,16 @@ func (ou *OrderUpdate) SetPlan(p *Plan) *OrderUpdate {
 // SetCity sets the "city" edge to the City entity.
 func (ou *OrderUpdate) SetCity(c *City) *OrderUpdate {
 	return ou.SetCityID(c.ID)
+}
+
+// SetBrand sets the "brand" edge to the EbikeBrand entity.
+func (ou *OrderUpdate) SetBrand(e *EbikeBrand) *OrderUpdate {
+	return ou.SetBrandID(e.ID)
+}
+
+// SetEbike sets the "ebike" edge to the Ebike entity.
+func (ou *OrderUpdate) SetEbike(e *Ebike) *OrderUpdate {
+	return ou.SetEbikeID(e.ID)
 }
 
 // SetRider sets the "rider" edge to the Rider entity.
@@ -436,6 +510,21 @@ func (ou *OrderUpdate) SetAssistance(a *Assistance) *OrderUpdate {
 	return ou.SetAssistanceID(a.ID)
 }
 
+// AddCouponIDs adds the "coupons" edge to the Coupon entity by IDs.
+func (ou *OrderUpdate) AddCouponIDs(ids ...uint64) *OrderUpdate {
+	ou.mutation.AddCouponIDs(ids...)
+	return ou
+}
+
+// AddCoupons adds the "coupons" edges to the Coupon entity.
+func (ou *OrderUpdate) AddCoupons(c ...*Coupon) *OrderUpdate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ou.AddCouponIDs(ids...)
+}
+
 // Mutation returns the OrderMutation object of the builder.
 func (ou *OrderUpdate) Mutation() *OrderMutation {
 	return ou.mutation
@@ -450,6 +539,18 @@ func (ou *OrderUpdate) ClearPlan() *OrderUpdate {
 // ClearCity clears the "city" edge to the City entity.
 func (ou *OrderUpdate) ClearCity() *OrderUpdate {
 	ou.mutation.ClearCity()
+	return ou
+}
+
+// ClearBrand clears the "brand" edge to the EbikeBrand entity.
+func (ou *OrderUpdate) ClearBrand() *OrderUpdate {
+	ou.mutation.ClearBrand()
+	return ou
+}
+
+// ClearEbike clears the "ebike" edge to the Ebike entity.
+func (ou *OrderUpdate) ClearEbike() *OrderUpdate {
+	ou.mutation.ClearEbike()
 	return ou
 }
 
@@ -508,6 +609,27 @@ func (ou *OrderUpdate) ClearRefund() *OrderUpdate {
 func (ou *OrderUpdate) ClearAssistance() *OrderUpdate {
 	ou.mutation.ClearAssistance()
 	return ou
+}
+
+// ClearCoupons clears all "coupons" edges to the Coupon entity.
+func (ou *OrderUpdate) ClearCoupons() *OrderUpdate {
+	ou.mutation.ClearCoupons()
+	return ou
+}
+
+// RemoveCouponIDs removes the "coupons" edge to Coupon entities by IDs.
+func (ou *OrderUpdate) RemoveCouponIDs(ids ...uint64) *OrderUpdate {
+	ou.mutation.RemoveCouponIDs(ids...)
+	return ou
+}
+
+// RemoveCoupons removes "coupons" edges to Coupon entities.
+func (ou *OrderUpdate) RemoveCoupons(c ...*Coupon) *OrderUpdate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ou.RemoveCouponIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -750,6 +872,20 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: order.FieldPoints,
 		})
 	}
+	if value, ok := ou.mutation.PointRatio(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: order.FieldPointRatio,
+		})
+	}
+	if value, ok := ou.mutation.AddedPointRatio(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: order.FieldPointRatio,
+		})
+	}
 	if value, ok := ou.mutation.CouponAmount(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
@@ -840,6 +976,76 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ou.mutation.BrandCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   order.BrandTable,
+			Columns: []string{order.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebikebrand.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ou.mutation.BrandIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   order.BrandTable,
+			Columns: []string{order.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebikebrand.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ou.mutation.EbikeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   order.EbikeTable,
+			Columns: []string{order.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebike.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ou.mutation.EbikeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   order.EbikeTable,
+			Columns: []string{order.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebike.FieldID,
 				},
 			},
 		}
@@ -1112,6 +1318,60 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ou.mutation.CouponsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.CouponsTable,
+			Columns: []string{order.CouponsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupon.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ou.mutation.RemovedCouponsIDs(); len(nodes) > 0 && !ou.mutation.CouponsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.CouponsTable,
+			Columns: []string{order.CouponsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupon.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ou.mutation.CouponsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.CouponsTable,
+			Columns: []string{order.CouponsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupon.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.Modifiers = ou.modifiers
 	if n, err = sqlgraph.UpdateNodes(ctx, ou.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -1228,6 +1488,46 @@ func (ouo *OrderUpdateOne) SetNillableCityID(u *uint64) *OrderUpdateOne {
 // ClearCityID clears the value of the "city_id" field.
 func (ouo *OrderUpdateOne) ClearCityID() *OrderUpdateOne {
 	ouo.mutation.ClearCityID()
+	return ouo
+}
+
+// SetBrandID sets the "brand_id" field.
+func (ouo *OrderUpdateOne) SetBrandID(u uint64) *OrderUpdateOne {
+	ouo.mutation.SetBrandID(u)
+	return ouo
+}
+
+// SetNillableBrandID sets the "brand_id" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableBrandID(u *uint64) *OrderUpdateOne {
+	if u != nil {
+		ouo.SetBrandID(*u)
+	}
+	return ouo
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (ouo *OrderUpdateOne) ClearBrandID() *OrderUpdateOne {
+	ouo.mutation.ClearBrandID()
+	return ouo
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (ouo *OrderUpdateOne) SetEbikeID(u uint64) *OrderUpdateOne {
+	ouo.mutation.SetEbikeID(u)
+	return ouo
+}
+
+// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableEbikeID(u *uint64) *OrderUpdateOne {
+	if u != nil {
+		ouo.SetEbikeID(*u)
+	}
+	return ouo
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (ouo *OrderUpdateOne) ClearEbikeID() *OrderUpdateOne {
+	ouo.mutation.ClearEbikeID()
 	return ouo
 }
 
@@ -1393,6 +1693,27 @@ func (ouo *OrderUpdateOne) AddPoints(i int64) *OrderUpdateOne {
 	return ouo
 }
 
+// SetPointRatio sets the "point_ratio" field.
+func (ouo *OrderUpdateOne) SetPointRatio(f float64) *OrderUpdateOne {
+	ouo.mutation.ResetPointRatio()
+	ouo.mutation.SetPointRatio(f)
+	return ouo
+}
+
+// SetNillablePointRatio sets the "point_ratio" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillablePointRatio(f *float64) *OrderUpdateOne {
+	if f != nil {
+		ouo.SetPointRatio(*f)
+	}
+	return ouo
+}
+
+// AddPointRatio adds f to the "point_ratio" field.
+func (ouo *OrderUpdateOne) AddPointRatio(f float64) *OrderUpdateOne {
+	ouo.mutation.AddPointRatio(f)
+	return ouo
+}
+
 // SetCouponAmount sets the "coupon_amount" field.
 func (ouo *OrderUpdateOne) SetCouponAmount(f float64) *OrderUpdateOne {
 	ouo.mutation.ResetCouponAmount()
@@ -1443,6 +1764,16 @@ func (ouo *OrderUpdateOne) SetPlan(p *Plan) *OrderUpdateOne {
 // SetCity sets the "city" edge to the City entity.
 func (ouo *OrderUpdateOne) SetCity(c *City) *OrderUpdateOne {
 	return ouo.SetCityID(c.ID)
+}
+
+// SetBrand sets the "brand" edge to the EbikeBrand entity.
+func (ouo *OrderUpdateOne) SetBrand(e *EbikeBrand) *OrderUpdateOne {
+	return ouo.SetBrandID(e.ID)
+}
+
+// SetEbike sets the "ebike" edge to the Ebike entity.
+func (ouo *OrderUpdateOne) SetEbike(e *Ebike) *OrderUpdateOne {
+	return ouo.SetEbikeID(e.ID)
 }
 
 // SetRider sets the "rider" edge to the Rider entity.
@@ -1532,6 +1863,21 @@ func (ouo *OrderUpdateOne) SetAssistance(a *Assistance) *OrderUpdateOne {
 	return ouo.SetAssistanceID(a.ID)
 }
 
+// AddCouponIDs adds the "coupons" edge to the Coupon entity by IDs.
+func (ouo *OrderUpdateOne) AddCouponIDs(ids ...uint64) *OrderUpdateOne {
+	ouo.mutation.AddCouponIDs(ids...)
+	return ouo
+}
+
+// AddCoupons adds the "coupons" edges to the Coupon entity.
+func (ouo *OrderUpdateOne) AddCoupons(c ...*Coupon) *OrderUpdateOne {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ouo.AddCouponIDs(ids...)
+}
+
 // Mutation returns the OrderMutation object of the builder.
 func (ouo *OrderUpdateOne) Mutation() *OrderMutation {
 	return ouo.mutation
@@ -1546,6 +1892,18 @@ func (ouo *OrderUpdateOne) ClearPlan() *OrderUpdateOne {
 // ClearCity clears the "city" edge to the City entity.
 func (ouo *OrderUpdateOne) ClearCity() *OrderUpdateOne {
 	ouo.mutation.ClearCity()
+	return ouo
+}
+
+// ClearBrand clears the "brand" edge to the EbikeBrand entity.
+func (ouo *OrderUpdateOne) ClearBrand() *OrderUpdateOne {
+	ouo.mutation.ClearBrand()
+	return ouo
+}
+
+// ClearEbike clears the "ebike" edge to the Ebike entity.
+func (ouo *OrderUpdateOne) ClearEbike() *OrderUpdateOne {
+	ouo.mutation.ClearEbike()
 	return ouo
 }
 
@@ -1604,6 +1962,27 @@ func (ouo *OrderUpdateOne) ClearRefund() *OrderUpdateOne {
 func (ouo *OrderUpdateOne) ClearAssistance() *OrderUpdateOne {
 	ouo.mutation.ClearAssistance()
 	return ouo
+}
+
+// ClearCoupons clears all "coupons" edges to the Coupon entity.
+func (ouo *OrderUpdateOne) ClearCoupons() *OrderUpdateOne {
+	ouo.mutation.ClearCoupons()
+	return ouo
+}
+
+// RemoveCouponIDs removes the "coupons" edge to Coupon entities by IDs.
+func (ouo *OrderUpdateOne) RemoveCouponIDs(ids ...uint64) *OrderUpdateOne {
+	ouo.mutation.RemoveCouponIDs(ids...)
+	return ouo
+}
+
+// RemoveCoupons removes "coupons" edges to Coupon entities.
+func (ouo *OrderUpdateOne) RemoveCoupons(c ...*Coupon) *OrderUpdateOne {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ouo.RemoveCouponIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1876,6 +2255,20 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 			Column: order.FieldPoints,
 		})
 	}
+	if value, ok := ouo.mutation.PointRatio(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: order.FieldPointRatio,
+		})
+	}
+	if value, ok := ouo.mutation.AddedPointRatio(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: order.FieldPointRatio,
+		})
+	}
 	if value, ok := ouo.mutation.CouponAmount(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
@@ -1966,6 +2359,76 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ouo.mutation.BrandCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   order.BrandTable,
+			Columns: []string{order.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebikebrand.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ouo.mutation.BrandIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   order.BrandTable,
+			Columns: []string{order.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebikebrand.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ouo.mutation.EbikeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   order.EbikeTable,
+			Columns: []string{order.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebike.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ouo.mutation.EbikeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   order.EbikeTable,
+			Columns: []string{order.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebike.FieldID,
 				},
 			},
 		}
@@ -2230,6 +2693,60 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: assistance.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ouo.mutation.CouponsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.CouponsTable,
+			Columns: []string{order.CouponsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupon.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ouo.mutation.RemovedCouponsIDs(); len(nodes) > 0 && !ouo.mutation.CouponsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.CouponsTable,
+			Columns: []string{order.CouponsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupon.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ouo.mutation.CouponsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.CouponsTable,
+			Columns: []string{order.CouponsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupon.FieldID,
 				},
 			},
 		}

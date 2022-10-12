@@ -47,6 +47,8 @@ type OrderMutation struct {
 	addpast_days      *int
 	points            *int64
 	addpoints         *int64
+	point_ratio       *float64
+	addpoint_ratio    *float64
 	coupon_amount     *float64
 	addcoupon_amount  *float64
 	relief_newly      *float64
@@ -56,6 +58,10 @@ type OrderMutation struct {
 	clearedplan       bool
 	city              *uint64
 	clearedcity       bool
+	brand             *uint64
+	clearedbrand      bool
+	ebike             *uint64
+	clearedebike      bool
 	rider             *uint64
 	clearedrider      bool
 	subscribe         *uint64
@@ -71,6 +77,9 @@ type OrderMutation struct {
 	clearedrefund     bool
 	assistance        *uint64
 	clearedassistance bool
+	coupons           map[uint64]struct{}
+	removedcoupons    map[uint64]struct{}
+	clearedcoupons    bool
 	done              bool
 	oldValue          func(context.Context) (*Order, error)
 	predicates        []predicate.Order
@@ -538,6 +547,104 @@ func (m *OrderMutation) CityIDCleared() bool {
 func (m *OrderMutation) ResetCityID() {
 	m.city = nil
 	delete(m.clearedFields, order.FieldCityID)
+}
+
+// SetBrandID sets the "brand_id" field.
+func (m *OrderMutation) SetBrandID(u uint64) {
+	m.brand = &u
+}
+
+// BrandID returns the value of the "brand_id" field in the mutation.
+func (m *OrderMutation) BrandID() (r uint64, exists bool) {
+	v := m.brand
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBrandID returns the old "brand_id" field's value of the Order entity.
+// If the Order object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderMutation) OldBrandID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBrandID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBrandID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBrandID: %w", err)
+	}
+	return oldValue.BrandID, nil
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (m *OrderMutation) ClearBrandID() {
+	m.brand = nil
+	m.clearedFields[order.FieldBrandID] = struct{}{}
+}
+
+// BrandIDCleared returns if the "brand_id" field was cleared in this mutation.
+func (m *OrderMutation) BrandIDCleared() bool {
+	_, ok := m.clearedFields[order.FieldBrandID]
+	return ok
+}
+
+// ResetBrandID resets all changes to the "brand_id" field.
+func (m *OrderMutation) ResetBrandID() {
+	m.brand = nil
+	delete(m.clearedFields, order.FieldBrandID)
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (m *OrderMutation) SetEbikeID(u uint64) {
+	m.ebike = &u
+}
+
+// EbikeID returns the value of the "ebike_id" field in the mutation.
+func (m *OrderMutation) EbikeID() (r uint64, exists bool) {
+	v := m.ebike
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEbikeID returns the old "ebike_id" field's value of the Order entity.
+// If the Order object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderMutation) OldEbikeID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEbikeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEbikeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEbikeID: %w", err)
+	}
+	return oldValue.EbikeID, nil
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (m *OrderMutation) ClearEbikeID() {
+	m.ebike = nil
+	m.clearedFields[order.FieldEbikeID] = struct{}{}
+}
+
+// EbikeIDCleared returns if the "ebike_id" field was cleared in this mutation.
+func (m *OrderMutation) EbikeIDCleared() bool {
+	_, ok := m.clearedFields[order.FieldEbikeID]
+	return ok
+}
+
+// ResetEbikeID resets all changes to the "ebike_id" field.
+func (m *OrderMutation) ResetEbikeID() {
+	m.ebike = nil
+	delete(m.clearedFields, order.FieldEbikeID)
 }
 
 // SetRiderID sets the "rider_id" field.
@@ -1271,6 +1378,62 @@ func (m *OrderMutation) ResetPoints() {
 	m.addpoints = nil
 }
 
+// SetPointRatio sets the "point_ratio" field.
+func (m *OrderMutation) SetPointRatio(f float64) {
+	m.point_ratio = &f
+	m.addpoint_ratio = nil
+}
+
+// PointRatio returns the value of the "point_ratio" field in the mutation.
+func (m *OrderMutation) PointRatio() (r float64, exists bool) {
+	v := m.point_ratio
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPointRatio returns the old "point_ratio" field's value of the Order entity.
+// If the Order object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderMutation) OldPointRatio(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPointRatio is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPointRatio requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPointRatio: %w", err)
+	}
+	return oldValue.PointRatio, nil
+}
+
+// AddPointRatio adds f to the "point_ratio" field.
+func (m *OrderMutation) AddPointRatio(f float64) {
+	if m.addpoint_ratio != nil {
+		*m.addpoint_ratio += f
+	} else {
+		m.addpoint_ratio = &f
+	}
+}
+
+// AddedPointRatio returns the value that was added to the "point_ratio" field in this mutation.
+func (m *OrderMutation) AddedPointRatio() (r float64, exists bool) {
+	v := m.addpoint_ratio
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetPointRatio resets all changes to the "point_ratio" field.
+func (m *OrderMutation) ResetPointRatio() {
+	m.point_ratio = nil
+	m.addpoint_ratio = nil
+}
+
 // SetCouponAmount sets the "coupon_amount" field.
 func (m *OrderMutation) SetCouponAmount(f float64) {
 	m.coupon_amount = &f
@@ -1433,6 +1596,58 @@ func (m *OrderMutation) CityIDs() (ids []uint64) {
 func (m *OrderMutation) ResetCity() {
 	m.city = nil
 	m.clearedcity = false
+}
+
+// ClearBrand clears the "brand" edge to the EbikeBrand entity.
+func (m *OrderMutation) ClearBrand() {
+	m.clearedbrand = true
+}
+
+// BrandCleared reports if the "brand" edge to the EbikeBrand entity was cleared.
+func (m *OrderMutation) BrandCleared() bool {
+	return m.BrandIDCleared() || m.clearedbrand
+}
+
+// BrandIDs returns the "brand" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// BrandID instead. It exists only for internal usage by the builders.
+func (m *OrderMutation) BrandIDs() (ids []uint64) {
+	if id := m.brand; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetBrand resets all changes to the "brand" edge.
+func (m *OrderMutation) ResetBrand() {
+	m.brand = nil
+	m.clearedbrand = false
+}
+
+// ClearEbike clears the "ebike" edge to the Ebike entity.
+func (m *OrderMutation) ClearEbike() {
+	m.clearedebike = true
+}
+
+// EbikeCleared reports if the "ebike" edge to the Ebike entity was cleared.
+func (m *OrderMutation) EbikeCleared() bool {
+	return m.EbikeIDCleared() || m.clearedebike
+}
+
+// EbikeIDs returns the "ebike" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EbikeID instead. It exists only for internal usage by the builders.
+func (m *OrderMutation) EbikeIDs() (ids []uint64) {
+	if id := m.ebike; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEbike resets all changes to the "ebike" edge.
+func (m *OrderMutation) ResetEbike() {
+	m.ebike = nil
+	m.clearedebike = false
 }
 
 // ClearRider clears the "rider" edge to the Rider entity.
@@ -1684,6 +1899,60 @@ func (m *OrderMutation) ResetAssistance() {
 	m.clearedassistance = false
 }
 
+// AddCouponIDs adds the "coupons" edge to the Coupon entity by ids.
+func (m *OrderMutation) AddCouponIDs(ids ...uint64) {
+	if m.coupons == nil {
+		m.coupons = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.coupons[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCoupons clears the "coupons" edge to the Coupon entity.
+func (m *OrderMutation) ClearCoupons() {
+	m.clearedcoupons = true
+}
+
+// CouponsCleared reports if the "coupons" edge to the Coupon entity was cleared.
+func (m *OrderMutation) CouponsCleared() bool {
+	return m.clearedcoupons
+}
+
+// RemoveCouponIDs removes the "coupons" edge to the Coupon entity by IDs.
+func (m *OrderMutation) RemoveCouponIDs(ids ...uint64) {
+	if m.removedcoupons == nil {
+		m.removedcoupons = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.coupons, ids[i])
+		m.removedcoupons[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCoupons returns the removed IDs of the "coupons" edge to the Coupon entity.
+func (m *OrderMutation) RemovedCouponsIDs() (ids []uint64) {
+	for id := range m.removedcoupons {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CouponsIDs returns the "coupons" edge IDs in the mutation.
+func (m *OrderMutation) CouponsIDs() (ids []uint64) {
+	for id := range m.coupons {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCoupons resets all changes to the "coupons" edge.
+func (m *OrderMutation) ResetCoupons() {
+	m.coupons = nil
+	m.clearedcoupons = false
+	m.removedcoupons = nil
+}
+
 // Where appends a list predicates to the OrderMutation builder.
 func (m *OrderMutation) Where(ps ...predicate.Order) {
 	m.predicates = append(m.predicates, ps...)
@@ -1703,7 +1972,7 @@ func (m *OrderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *OrderMutation) Fields() []string {
-	fields := make([]string, 0, 24)
+	fields := make([]string, 0, 27)
 	if m.created_at != nil {
 		fields = append(fields, order.FieldCreatedAt)
 	}
@@ -1727,6 +1996,12 @@ func (m *OrderMutation) Fields() []string {
 	}
 	if m.city != nil {
 		fields = append(fields, order.FieldCityID)
+	}
+	if m.brand != nil {
+		fields = append(fields, order.FieldBrandID)
+	}
+	if m.ebike != nil {
+		fields = append(fields, order.FieldEbikeID)
 	}
 	if m.rider != nil {
 		fields = append(fields, order.FieldRiderID)
@@ -1770,6 +2045,9 @@ func (m *OrderMutation) Fields() []string {
 	if m.points != nil {
 		fields = append(fields, order.FieldPoints)
 	}
+	if m.point_ratio != nil {
+		fields = append(fields, order.FieldPointRatio)
+	}
 	if m.coupon_amount != nil {
 		fields = append(fields, order.FieldCouponAmount)
 	}
@@ -1800,6 +2078,10 @@ func (m *OrderMutation) Field(name string) (ent.Value, bool) {
 		return m.PlanID()
 	case order.FieldCityID:
 		return m.CityID()
+	case order.FieldBrandID:
+		return m.BrandID()
+	case order.FieldEbikeID:
+		return m.EbikeID()
 	case order.FieldRiderID:
 		return m.RiderID()
 	case order.FieldParentID:
@@ -1828,6 +2110,8 @@ func (m *OrderMutation) Field(name string) (ent.Value, bool) {
 		return m.PastDays()
 	case order.FieldPoints:
 		return m.Points()
+	case order.FieldPointRatio:
+		return m.PointRatio()
 	case order.FieldCouponAmount:
 		return m.CouponAmount()
 	case order.FieldReliefNewly:
@@ -1857,6 +2141,10 @@ func (m *OrderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldPlanID(ctx)
 	case order.FieldCityID:
 		return m.OldCityID(ctx)
+	case order.FieldBrandID:
+		return m.OldBrandID(ctx)
+	case order.FieldEbikeID:
+		return m.OldEbikeID(ctx)
 	case order.FieldRiderID:
 		return m.OldRiderID(ctx)
 	case order.FieldParentID:
@@ -1885,6 +2173,8 @@ func (m *OrderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldPastDays(ctx)
 	case order.FieldPoints:
 		return m.OldPoints(ctx)
+	case order.FieldPointRatio:
+		return m.OldPointRatio(ctx)
 	case order.FieldCouponAmount:
 		return m.OldCouponAmount(ctx)
 	case order.FieldReliefNewly:
@@ -1953,6 +2243,20 @@ func (m *OrderMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCityID(v)
+		return nil
+	case order.FieldBrandID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBrandID(v)
+		return nil
+	case order.FieldEbikeID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEbikeID(v)
 		return nil
 	case order.FieldRiderID:
 		v, ok := value.(uint64)
@@ -2052,6 +2356,13 @@ func (m *OrderMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPoints(v)
 		return nil
+	case order.FieldPointRatio:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPointRatio(v)
+		return nil
 	case order.FieldCouponAmount:
 		v, ok := value.(float64)
 		if !ok {
@@ -2098,6 +2409,9 @@ func (m *OrderMutation) AddedFields() []string {
 	if m.addpoints != nil {
 		fields = append(fields, order.FieldPoints)
 	}
+	if m.addpoint_ratio != nil {
+		fields = append(fields, order.FieldPointRatio)
+	}
 	if m.addcoupon_amount != nil {
 		fields = append(fields, order.FieldCouponAmount)
 	}
@@ -2128,6 +2442,8 @@ func (m *OrderMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedPastDays()
 	case order.FieldPoints:
 		return m.AddedPoints()
+	case order.FieldPointRatio:
+		return m.AddedPointRatio()
 	case order.FieldCouponAmount:
 		return m.AddedCouponAmount()
 	case order.FieldReliefNewly:
@@ -2197,6 +2513,13 @@ func (m *OrderMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddPoints(v)
 		return nil
+	case order.FieldPointRatio:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPointRatio(v)
+		return nil
 	case order.FieldCouponAmount:
 		v, ok := value.(float64)
 		if !ok {
@@ -2236,6 +2559,12 @@ func (m *OrderMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(order.FieldCityID) {
 		fields = append(fields, order.FieldCityID)
+	}
+	if m.FieldCleared(order.FieldBrandID) {
+		fields = append(fields, order.FieldBrandID)
+	}
+	if m.FieldCleared(order.FieldEbikeID) {
+		fields = append(fields, order.FieldEbikeID)
 	}
 	if m.FieldCleared(order.FieldParentID) {
 		fields = append(fields, order.FieldParentID)
@@ -2284,6 +2613,12 @@ func (m *OrderMutation) ClearField(name string) error {
 	case order.FieldCityID:
 		m.ClearCityID()
 		return nil
+	case order.FieldBrandID:
+		m.ClearBrandID()
+		return nil
+	case order.FieldEbikeID:
+		m.ClearEbikeID()
+		return nil
 	case order.FieldParentID:
 		m.ClearParentID()
 		return nil
@@ -2331,6 +2666,12 @@ func (m *OrderMutation) ResetField(name string) error {
 	case order.FieldCityID:
 		m.ResetCityID()
 		return nil
+	case order.FieldBrandID:
+		m.ResetBrandID()
+		return nil
+	case order.FieldEbikeID:
+		m.ResetEbikeID()
+		return nil
 	case order.FieldRiderID:
 		m.ResetRiderID()
 		return nil
@@ -2373,6 +2714,9 @@ func (m *OrderMutation) ResetField(name string) error {
 	case order.FieldPoints:
 		m.ResetPoints()
 		return nil
+	case order.FieldPointRatio:
+		m.ResetPointRatio()
+		return nil
 	case order.FieldCouponAmount:
 		m.ResetCouponAmount()
 		return nil
@@ -2385,12 +2729,18 @@ func (m *OrderMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *OrderMutation) AddedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 12)
 	if m.plan != nil {
 		edges = append(edges, order.EdgePlan)
 	}
 	if m.city != nil {
 		edges = append(edges, order.EdgeCity)
+	}
+	if m.brand != nil {
+		edges = append(edges, order.EdgeBrand)
+	}
+	if m.ebike != nil {
+		edges = append(edges, order.EdgeEbike)
 	}
 	if m.rider != nil {
 		edges = append(edges, order.EdgeRider)
@@ -2413,6 +2763,9 @@ func (m *OrderMutation) AddedEdges() []string {
 	if m.assistance != nil {
 		edges = append(edges, order.EdgeAssistance)
 	}
+	if m.coupons != nil {
+		edges = append(edges, order.EdgeCoupons)
+	}
 	return edges
 }
 
@@ -2426,6 +2779,14 @@ func (m *OrderMutation) AddedIDs(name string) []ent.Value {
 		}
 	case order.EdgeCity:
 		if id := m.city; id != nil {
+			return []ent.Value{*id}
+		}
+	case order.EdgeBrand:
+		if id := m.brand; id != nil {
+			return []ent.Value{*id}
+		}
+	case order.EdgeEbike:
+		if id := m.ebike; id != nil {
 			return []ent.Value{*id}
 		}
 	case order.EdgeRider:
@@ -2458,15 +2819,24 @@ func (m *OrderMutation) AddedIDs(name string) []ent.Value {
 		if id := m.assistance; id != nil {
 			return []ent.Value{*id}
 		}
+	case order.EdgeCoupons:
+		ids := make([]ent.Value, 0, len(m.coupons))
+		for id := range m.coupons {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *OrderMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 12)
 	if m.removedchildren != nil {
 		edges = append(edges, order.EdgeChildren)
+	}
+	if m.removedcoupons != nil {
+		edges = append(edges, order.EdgeCoupons)
 	}
 	return edges
 }
@@ -2481,18 +2851,30 @@ func (m *OrderMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case order.EdgeCoupons:
+		ids := make([]ent.Value, 0, len(m.removedcoupons))
+		for id := range m.removedcoupons {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *OrderMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 12)
 	if m.clearedplan {
 		edges = append(edges, order.EdgePlan)
 	}
 	if m.clearedcity {
 		edges = append(edges, order.EdgeCity)
+	}
+	if m.clearedbrand {
+		edges = append(edges, order.EdgeBrand)
+	}
+	if m.clearedebike {
+		edges = append(edges, order.EdgeEbike)
 	}
 	if m.clearedrider {
 		edges = append(edges, order.EdgeRider)
@@ -2515,6 +2897,9 @@ func (m *OrderMutation) ClearedEdges() []string {
 	if m.clearedassistance {
 		edges = append(edges, order.EdgeAssistance)
 	}
+	if m.clearedcoupons {
+		edges = append(edges, order.EdgeCoupons)
+	}
 	return edges
 }
 
@@ -2526,6 +2911,10 @@ func (m *OrderMutation) EdgeCleared(name string) bool {
 		return m.clearedplan
 	case order.EdgeCity:
 		return m.clearedcity
+	case order.EdgeBrand:
+		return m.clearedbrand
+	case order.EdgeEbike:
+		return m.clearedebike
 	case order.EdgeRider:
 		return m.clearedrider
 	case order.EdgeSubscribe:
@@ -2540,6 +2929,8 @@ func (m *OrderMutation) EdgeCleared(name string) bool {
 		return m.clearedrefund
 	case order.EdgeAssistance:
 		return m.clearedassistance
+	case order.EdgeCoupons:
+		return m.clearedcoupons
 	}
 	return false
 }
@@ -2553,6 +2944,12 @@ func (m *OrderMutation) ClearEdge(name string) error {
 		return nil
 	case order.EdgeCity:
 		m.ClearCity()
+		return nil
+	case order.EdgeBrand:
+		m.ClearBrand()
+		return nil
+	case order.EdgeEbike:
+		m.ClearEbike()
 		return nil
 	case order.EdgeRider:
 		m.ClearRider()
@@ -2586,6 +2983,12 @@ func (m *OrderMutation) ResetEdge(name string) error {
 	case order.EdgeCity:
 		m.ResetCity()
 		return nil
+	case order.EdgeBrand:
+		m.ResetBrand()
+		return nil
+	case order.EdgeEbike:
+		m.ResetEbike()
+		return nil
 	case order.EdgeRider:
 		m.ResetRider()
 		return nil
@@ -2606,6 +3009,9 @@ func (m *OrderMutation) ResetEdge(name string) error {
 		return nil
 	case order.EdgeAssistance:
 		m.ResetAssistance()
+		return nil
+	case order.EdgeCoupons:
+		m.ResetCoupons()
 		return nil
 	}
 	return fmt.Errorf("unknown Order edge %s", name)

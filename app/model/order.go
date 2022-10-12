@@ -65,7 +65,9 @@ type OrderCreateReq struct {
     OrderType uint   `json:"orderType" validate:"required" trans:"订单类型" enums:"1,2,3,4,5,6,7"` // 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
 
     CityID uint64 `json:"cityId"` // 城市ID, 新签必填
-    Model  string `json:"model"`  // 用户所选电池型号, 新签必填
+
+    Point   bool     `json:"point"`   // 是否使用积分
+    Coupons []uint64 `json:"coupons"` // 优惠券
 }
 
 // OrderCreateRes 订单创建返回

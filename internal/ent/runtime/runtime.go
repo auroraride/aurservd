@@ -37,7 +37,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
-	"github.com/auroraride/aurservd/internal/ent/ordercoupon"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -783,31 +782,18 @@ func init() {
 	orderDescPoints := orderFields[13].Descriptor()
 	// order.DefaultPoints holds the default value on creation for the points field.
 	order.DefaultPoints = orderDescPoints.Default.(int64)
+	// orderDescPointRatio is the schema descriptor for point_ratio field.
+	orderDescPointRatio := orderFields[14].Descriptor()
+	// order.DefaultPointRatio holds the default value on creation for the point_ratio field.
+	order.DefaultPointRatio = orderDescPointRatio.Default.(float64)
 	// orderDescCouponAmount is the schema descriptor for coupon_amount field.
-	orderDescCouponAmount := orderFields[14].Descriptor()
+	orderDescCouponAmount := orderFields[15].Descriptor()
 	// order.DefaultCouponAmount holds the default value on creation for the coupon_amount field.
 	order.DefaultCouponAmount = orderDescCouponAmount.Default.(float64)
 	// orderDescReliefNewly is the schema descriptor for relief_newly field.
-	orderDescReliefNewly := orderFields[15].Descriptor()
+	orderDescReliefNewly := orderFields[16].Descriptor()
 	// order.DefaultReliefNewly holds the default value on creation for the relief_newly field.
 	order.DefaultReliefNewly = orderDescReliefNewly.Default.(float64)
-	ordercouponMixin := schema.OrderCoupon{}.Mixin()
-	ordercouponMixinHooks2 := ordercouponMixin[2].Hooks()
-	ordercoupon.Hooks[0] = ordercouponMixinHooks2[0]
-	ordercouponMixinFields0 := ordercouponMixin[0].Fields()
-	_ = ordercouponMixinFields0
-	ordercouponFields := schema.OrderCoupon{}.Fields()
-	_ = ordercouponFields
-	// ordercouponDescCreatedAt is the schema descriptor for created_at field.
-	ordercouponDescCreatedAt := ordercouponMixinFields0[0].Descriptor()
-	// ordercoupon.DefaultCreatedAt holds the default value on creation for the created_at field.
-	ordercoupon.DefaultCreatedAt = ordercouponDescCreatedAt.Default.(func() time.Time)
-	// ordercouponDescUpdatedAt is the schema descriptor for updated_at field.
-	ordercouponDescUpdatedAt := ordercouponMixinFields0[1].Descriptor()
-	// ordercoupon.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	ordercoupon.DefaultUpdatedAt = ordercouponDescUpdatedAt.Default.(func() time.Time)
-	// ordercoupon.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	ordercoupon.UpdateDefaultUpdatedAt = ordercouponDescUpdatedAt.UpdateDefault.(func() time.Time)
 	orderrefundMixin := schema.OrderRefund{}.Mixin()
 	orderrefundMixinHooks2 := orderrefundMixin[2].Hooks()
 	orderrefund.Hooks[0] = orderrefundMixinHooks2[0]

@@ -15,6 +15,9 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
+	"github.com/auroraride/aurservd/internal/ent/coupon"
+	"github.com/auroraride/aurservd/internal/ent/ebike"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -122,6 +125,34 @@ func (oc *OrderCreate) SetCityID(u uint64) *OrderCreate {
 func (oc *OrderCreate) SetNillableCityID(u *uint64) *OrderCreate {
 	if u != nil {
 		oc.SetCityID(*u)
+	}
+	return oc
+}
+
+// SetBrandID sets the "brand_id" field.
+func (oc *OrderCreate) SetBrandID(u uint64) *OrderCreate {
+	oc.mutation.SetBrandID(u)
+	return oc
+}
+
+// SetNillableBrandID sets the "brand_id" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableBrandID(u *uint64) *OrderCreate {
+	if u != nil {
+		oc.SetBrandID(*u)
+	}
+	return oc
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (oc *OrderCreate) SetEbikeID(u uint64) *OrderCreate {
+	oc.mutation.SetEbikeID(u)
+	return oc
+}
+
+// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableEbikeID(u *uint64) *OrderCreate {
+	if u != nil {
+		oc.SetEbikeID(*u)
 	}
 	return oc
 }
@@ -274,6 +305,20 @@ func (oc *OrderCreate) SetNillablePoints(i *int64) *OrderCreate {
 	return oc
 }
 
+// SetPointRatio sets the "point_ratio" field.
+func (oc *OrderCreate) SetPointRatio(f float64) *OrderCreate {
+	oc.mutation.SetPointRatio(f)
+	return oc
+}
+
+// SetNillablePointRatio sets the "point_ratio" field if the given value is not nil.
+func (oc *OrderCreate) SetNillablePointRatio(f *float64) *OrderCreate {
+	if f != nil {
+		oc.SetPointRatio(*f)
+	}
+	return oc
+}
+
 // SetCouponAmount sets the "coupon_amount" field.
 func (oc *OrderCreate) SetCouponAmount(f float64) *OrderCreate {
 	oc.mutation.SetCouponAmount(f)
@@ -310,6 +355,16 @@ func (oc *OrderCreate) SetPlan(p *Plan) *OrderCreate {
 // SetCity sets the "city" edge to the City entity.
 func (oc *OrderCreate) SetCity(c *City) *OrderCreate {
 	return oc.SetCityID(c.ID)
+}
+
+// SetBrand sets the "brand" edge to the EbikeBrand entity.
+func (oc *OrderCreate) SetBrand(e *EbikeBrand) *OrderCreate {
+	return oc.SetBrandID(e.ID)
+}
+
+// SetEbike sets the "ebike" edge to the Ebike entity.
+func (oc *OrderCreate) SetEbike(e *Ebike) *OrderCreate {
+	return oc.SetEbikeID(e.ID)
 }
 
 // SetRider sets the "rider" edge to the Rider entity.
@@ -397,6 +452,21 @@ func (oc *OrderCreate) SetNillableAssistanceID(id *uint64) *OrderCreate {
 // SetAssistance sets the "assistance" edge to the Assistance entity.
 func (oc *OrderCreate) SetAssistance(a *Assistance) *OrderCreate {
 	return oc.SetAssistanceID(a.ID)
+}
+
+// AddCouponIDs adds the "coupons" edge to the Coupon entity by IDs.
+func (oc *OrderCreate) AddCouponIDs(ids ...uint64) *OrderCreate {
+	oc.mutation.AddCouponIDs(ids...)
+	return oc
+}
+
+// AddCoupons adds the "coupons" edges to the Coupon entity.
+func (oc *OrderCreate) AddCoupons(c ...*Coupon) *OrderCreate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return oc.AddCouponIDs(ids...)
 }
 
 // Mutation returns the OrderMutation object of the builder.
@@ -504,6 +574,10 @@ func (oc *OrderCreate) defaults() error {
 		v := order.DefaultPoints
 		oc.mutation.SetPoints(v)
 	}
+	if _, ok := oc.mutation.PointRatio(); !ok {
+		v := order.DefaultPointRatio
+		oc.mutation.SetPointRatio(v)
+	}
 	if _, ok := oc.mutation.CouponAmount(); !ok {
 		v := order.DefaultCouponAmount
 		oc.mutation.SetCouponAmount(v)
@@ -549,6 +623,9 @@ func (oc *OrderCreate) check() error {
 	}
 	if _, ok := oc.mutation.Points(); !ok {
 		return &ValidationError{Name: "points", err: errors.New(`ent: missing required field "Order.points"`)}
+	}
+	if _, ok := oc.mutation.PointRatio(); !ok {
+		return &ValidationError{Name: "point_ratio", err: errors.New(`ent: missing required field "Order.point_ratio"`)}
 	}
 	if _, ok := oc.mutation.CouponAmount(); !ok {
 		return &ValidationError{Name: "coupon_amount", err: errors.New(`ent: missing required field "Order.coupon_amount"`)}
@@ -723,6 +800,14 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 		})
 		_node.Points = value
 	}
+	if value, ok := oc.mutation.PointRatio(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: order.FieldPointRatio,
+		})
+		_node.PointRatio = value
+	}
 	if value, ok := oc.mutation.CouponAmount(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
@@ -777,6 +862,46 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.CityID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := oc.mutation.BrandIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   order.BrandTable,
+			Columns: []string{order.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebikebrand.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.BrandID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := oc.mutation.EbikeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   order.EbikeTable,
+			Columns: []string{order.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebike.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.EbikeID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := oc.mutation.RiderIDs(); len(nodes) > 0 {
@@ -907,6 +1032,25 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: assistance.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := oc.mutation.CouponsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.CouponsTable,
+			Columns: []string{order.CouponsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: coupon.FieldID,
 				},
 			},
 		}
@@ -1069,6 +1213,42 @@ func (u *OrderUpsert) ClearCityID() *OrderUpsert {
 	return u
 }
 
+// SetBrandID sets the "brand_id" field.
+func (u *OrderUpsert) SetBrandID(v uint64) *OrderUpsert {
+	u.Set(order.FieldBrandID, v)
+	return u
+}
+
+// UpdateBrandID sets the "brand_id" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateBrandID() *OrderUpsert {
+	u.SetExcluded(order.FieldBrandID)
+	return u
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (u *OrderUpsert) ClearBrandID() *OrderUpsert {
+	u.SetNull(order.FieldBrandID)
+	return u
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (u *OrderUpsert) SetEbikeID(v uint64) *OrderUpsert {
+	u.Set(order.FieldEbikeID, v)
+	return u
+}
+
+// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateEbikeID() *OrderUpsert {
+	u.SetExcluded(order.FieldEbikeID)
+	return u
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (u *OrderUpsert) ClearEbikeID() *OrderUpsert {
+	u.SetNull(order.FieldEbikeID)
+	return u
+}
+
 // SetRiderID sets the "rider_id" field.
 func (u *OrderUpsert) SetRiderID(v uint64) *OrderUpsert {
 	u.Set(order.FieldRiderID, v)
@@ -1216,6 +1396,24 @@ func (u *OrderUpsert) UpdatePoints() *OrderUpsert {
 // AddPoints adds v to the "points" field.
 func (u *OrderUpsert) AddPoints(v int64) *OrderUpsert {
 	u.Add(order.FieldPoints, v)
+	return u
+}
+
+// SetPointRatio sets the "point_ratio" field.
+func (u *OrderUpsert) SetPointRatio(v float64) *OrderUpsert {
+	u.Set(order.FieldPointRatio, v)
+	return u
+}
+
+// UpdatePointRatio sets the "point_ratio" field to the value that was provided on create.
+func (u *OrderUpsert) UpdatePointRatio() *OrderUpsert {
+	u.SetExcluded(order.FieldPointRatio)
+	return u
+}
+
+// AddPointRatio adds v to the "point_ratio" field.
+func (u *OrderUpsert) AddPointRatio(v float64) *OrderUpsert {
+	u.Add(order.FieldPointRatio, v)
 	return u
 }
 
@@ -1440,6 +1638,48 @@ func (u *OrderUpsertOne) ClearCityID() *OrderUpsertOne {
 	})
 }
 
+// SetBrandID sets the "brand_id" field.
+func (u *OrderUpsertOne) SetBrandID(v uint64) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetBrandID(v)
+	})
+}
+
+// UpdateBrandID sets the "brand_id" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateBrandID() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateBrandID()
+	})
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (u *OrderUpsertOne) ClearBrandID() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearBrandID()
+	})
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (u *OrderUpsertOne) SetEbikeID(v uint64) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetEbikeID(v)
+	})
+}
+
+// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateEbikeID() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateEbikeID()
+	})
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (u *OrderUpsertOne) ClearEbikeID() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearEbikeID()
+	})
+}
+
 // SetRiderID sets the "rider_id" field.
 func (u *OrderUpsertOne) SetRiderID(v uint64) *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
@@ -1612,6 +1852,27 @@ func (u *OrderUpsertOne) AddPoints(v int64) *OrderUpsertOne {
 func (u *OrderUpsertOne) UpdatePoints() *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
 		s.UpdatePoints()
+	})
+}
+
+// SetPointRatio sets the "point_ratio" field.
+func (u *OrderUpsertOne) SetPointRatio(v float64) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetPointRatio(v)
+	})
+}
+
+// AddPointRatio adds v to the "point_ratio" field.
+func (u *OrderUpsertOne) AddPointRatio(v float64) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.AddPointRatio(v)
+	})
+}
+
+// UpdatePointRatio sets the "point_ratio" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdatePointRatio() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdatePointRatio()
 	})
 }
 
@@ -2004,6 +2265,48 @@ func (u *OrderUpsertBulk) ClearCityID() *OrderUpsertBulk {
 	})
 }
 
+// SetBrandID sets the "brand_id" field.
+func (u *OrderUpsertBulk) SetBrandID(v uint64) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetBrandID(v)
+	})
+}
+
+// UpdateBrandID sets the "brand_id" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateBrandID() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateBrandID()
+	})
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (u *OrderUpsertBulk) ClearBrandID() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearBrandID()
+	})
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (u *OrderUpsertBulk) SetEbikeID(v uint64) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetEbikeID(v)
+	})
+}
+
+// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateEbikeID() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateEbikeID()
+	})
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (u *OrderUpsertBulk) ClearEbikeID() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearEbikeID()
+	})
+}
+
 // SetRiderID sets the "rider_id" field.
 func (u *OrderUpsertBulk) SetRiderID(v uint64) *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
@@ -2176,6 +2479,27 @@ func (u *OrderUpsertBulk) AddPoints(v int64) *OrderUpsertBulk {
 func (u *OrderUpsertBulk) UpdatePoints() *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
 		s.UpdatePoints()
+	})
+}
+
+// SetPointRatio sets the "point_ratio" field.
+func (u *OrderUpsertBulk) SetPointRatio(v float64) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetPointRatio(v)
+	})
+}
+
+// AddPointRatio adds v to the "point_ratio" field.
+func (u *OrderUpsertBulk) AddPointRatio(v float64) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.AddPointRatio(v)
+	})
+}
+
+// UpdatePointRatio sets the "point_ratio" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdatePointRatio() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdatePointRatio()
 	})
 }
 

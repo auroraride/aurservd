@@ -31,7 +31,7 @@ func (s *paymentService) Configure() *model.PaymentConfigure {
 
     points := s.Rider().Points
 
-    ratio := 0.01
+    ratio := model.PointRatio
     max := ratio * float64(points)
 
     res := &model.PaymentConfigure{

@@ -42,12 +42,12 @@ type CouponMutation struct {
 	clearedrider    bool
 	assembly        *uint64
 	clearedassembly bool
-	_order          *uint64
-	cleared_order   bool
 	plan            *uint64
 	clearedplan     bool
 	template        *uint64
 	clearedtemplate bool
+	_order          *uint64
+	cleared_order   bool
 	cities          map[uint64]struct{}
 	removedcities   map[uint64]struct{}
 	clearedcities   bool
@@ -459,55 +459,6 @@ func (m *CouponMutation) OldAssemblyID(ctx context.Context) (v uint64, err error
 // ResetAssemblyID resets all changes to the "assembly_id" field.
 func (m *CouponMutation) ResetAssemblyID() {
 	m.assembly = nil
-}
-
-// SetOrderID sets the "order_id" field.
-func (m *CouponMutation) SetOrderID(u uint64) {
-	m._order = &u
-}
-
-// OrderID returns the value of the "order_id" field in the mutation.
-func (m *CouponMutation) OrderID() (r uint64, exists bool) {
-	v := m._order
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldOrderID returns the old "order_id" field's value of the Coupon entity.
-// If the Coupon object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CouponMutation) OldOrderID(ctx context.Context) (v *uint64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldOrderID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldOrderID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldOrderID: %w", err)
-	}
-	return oldValue.OrderID, nil
-}
-
-// ClearOrderID clears the value of the "order_id" field.
-func (m *CouponMutation) ClearOrderID() {
-	m._order = nil
-	m.clearedFields[coupon.FieldOrderID] = struct{}{}
-}
-
-// OrderIDCleared returns if the "order_id" field was cleared in this mutation.
-func (m *CouponMutation) OrderIDCleared() bool {
-	_, ok := m.clearedFields[coupon.FieldOrderID]
-	return ok
-}
-
-// ResetOrderID resets all changes to the "order_id" field.
-func (m *CouponMutation) ResetOrderID() {
-	m._order = nil
-	delete(m.clearedFields, coupon.FieldOrderID)
 }
 
 // SetPlanID sets the "plan_id" field.
@@ -1001,32 +952,6 @@ func (m *CouponMutation) ResetAssembly() {
 	m.clearedassembly = false
 }
 
-// ClearOrder clears the "order" edge to the Order entity.
-func (m *CouponMutation) ClearOrder() {
-	m.cleared_order = true
-}
-
-// OrderCleared reports if the "order" edge to the Order entity was cleared.
-func (m *CouponMutation) OrderCleared() bool {
-	return m.OrderIDCleared() || m.cleared_order
-}
-
-// OrderIDs returns the "order" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// OrderID instead. It exists only for internal usage by the builders.
-func (m *CouponMutation) OrderIDs() (ids []uint64) {
-	if id := m._order; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetOrder resets all changes to the "order" edge.
-func (m *CouponMutation) ResetOrder() {
-	m._order = nil
-	m.cleared_order = false
-}
-
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *CouponMutation) ClearPlan() {
 	m.clearedplan = true
@@ -1077,6 +1002,45 @@ func (m *CouponMutation) TemplateIDs() (ids []uint64) {
 func (m *CouponMutation) ResetTemplate() {
 	m.template = nil
 	m.clearedtemplate = false
+}
+
+// SetOrderID sets the "order" edge to the Order entity by id.
+func (m *CouponMutation) SetOrderID(id uint64) {
+	m._order = &id
+}
+
+// ClearOrder clears the "order" edge to the Order entity.
+func (m *CouponMutation) ClearOrder() {
+	m.cleared_order = true
+}
+
+// OrderCleared reports if the "order" edge to the Order entity was cleared.
+func (m *CouponMutation) OrderCleared() bool {
+	return m.cleared_order
+}
+
+// OrderID returns the "order" edge ID in the mutation.
+func (m *CouponMutation) OrderID() (id uint64, exists bool) {
+	if m._order != nil {
+		return *m._order, true
+	}
+	return
+}
+
+// OrderIDs returns the "order" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// OrderID instead. It exists only for internal usage by the builders.
+func (m *CouponMutation) OrderIDs() (ids []uint64) {
+	if id := m._order; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetOrder resets all changes to the "order" edge.
+func (m *CouponMutation) ResetOrder() {
+	m._order = nil
+	m.cleared_order = false
 }
 
 // AddCityIDs adds the "cities" edge to the City entity by ids.
@@ -1206,7 +1170,7 @@ func (m *CouponMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CouponMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 17)
 	if m.created_at != nil {
 		fields = append(fields, coupon.FieldCreatedAt)
 	}
@@ -1227,9 +1191,6 @@ func (m *CouponMutation) Fields() []string {
 	}
 	if m.assembly != nil {
 		fields = append(fields, coupon.FieldAssemblyID)
-	}
-	if m._order != nil {
-		fields = append(fields, coupon.FieldOrderID)
 	}
 	if m.plan != nil {
 		fields = append(fields, coupon.FieldPlanID)
@@ -1283,8 +1244,6 @@ func (m *CouponMutation) Field(name string) (ent.Value, bool) {
 		return m.RiderID()
 	case coupon.FieldAssemblyID:
 		return m.AssemblyID()
-	case coupon.FieldOrderID:
-		return m.OrderID()
 	case coupon.FieldPlanID:
 		return m.PlanID()
 	case coupon.FieldTemplateID:
@@ -1328,8 +1287,6 @@ func (m *CouponMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldRiderID(ctx)
 	case coupon.FieldAssemblyID:
 		return m.OldAssemblyID(ctx)
-	case coupon.FieldOrderID:
-		return m.OldOrderID(ctx)
 	case coupon.FieldPlanID:
 		return m.OldPlanID(ctx)
 	case coupon.FieldTemplateID:
@@ -1407,13 +1364,6 @@ func (m *CouponMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAssemblyID(v)
-		return nil
-	case coupon.FieldOrderID:
-		v, ok := value.(uint64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetOrderID(v)
 		return nil
 	case coupon.FieldPlanID:
 		v, ok := value.(uint64)
@@ -1554,9 +1504,6 @@ func (m *CouponMutation) ClearedFields() []string {
 	if m.FieldCleared(coupon.FieldRiderID) {
 		fields = append(fields, coupon.FieldRiderID)
 	}
-	if m.FieldCleared(coupon.FieldOrderID) {
-		fields = append(fields, coupon.FieldOrderID)
-	}
 	if m.FieldCleared(coupon.FieldPlanID) {
 		fields = append(fields, coupon.FieldPlanID)
 	}
@@ -1591,9 +1538,6 @@ func (m *CouponMutation) ClearField(name string) error {
 		return nil
 	case coupon.FieldRiderID:
 		m.ClearRiderID()
-		return nil
-	case coupon.FieldOrderID:
-		m.ClearOrderID()
 		return nil
 	case coupon.FieldPlanID:
 		m.ClearPlanID()
@@ -1632,9 +1576,6 @@ func (m *CouponMutation) ResetField(name string) error {
 		return nil
 	case coupon.FieldAssemblyID:
 		m.ResetAssemblyID()
-		return nil
-	case coupon.FieldOrderID:
-		m.ResetOrderID()
 		return nil
 	case coupon.FieldPlanID:
 		m.ResetPlanID()
@@ -1679,14 +1620,14 @@ func (m *CouponMutation) AddedEdges() []string {
 	if m.assembly != nil {
 		edges = append(edges, coupon.EdgeAssembly)
 	}
-	if m._order != nil {
-		edges = append(edges, coupon.EdgeOrder)
-	}
 	if m.plan != nil {
 		edges = append(edges, coupon.EdgePlan)
 	}
 	if m.template != nil {
 		edges = append(edges, coupon.EdgeTemplate)
+	}
+	if m._order != nil {
+		edges = append(edges, coupon.EdgeOrder)
 	}
 	if m.cities != nil {
 		edges = append(edges, coupon.EdgeCities)
@@ -1709,16 +1650,16 @@ func (m *CouponMutation) AddedIDs(name string) []ent.Value {
 		if id := m.assembly; id != nil {
 			return []ent.Value{*id}
 		}
-	case coupon.EdgeOrder:
-		if id := m._order; id != nil {
-			return []ent.Value{*id}
-		}
 	case coupon.EdgePlan:
 		if id := m.plan; id != nil {
 			return []ent.Value{*id}
 		}
 	case coupon.EdgeTemplate:
 		if id := m.template; id != nil {
+			return []ent.Value{*id}
+		}
+	case coupon.EdgeOrder:
+		if id := m._order; id != nil {
 			return []ent.Value{*id}
 		}
 	case coupon.EdgeCities:
@@ -1778,14 +1719,14 @@ func (m *CouponMutation) ClearedEdges() []string {
 	if m.clearedassembly {
 		edges = append(edges, coupon.EdgeAssembly)
 	}
-	if m.cleared_order {
-		edges = append(edges, coupon.EdgeOrder)
-	}
 	if m.clearedplan {
 		edges = append(edges, coupon.EdgePlan)
 	}
 	if m.clearedtemplate {
 		edges = append(edges, coupon.EdgeTemplate)
+	}
+	if m.cleared_order {
+		edges = append(edges, coupon.EdgeOrder)
 	}
 	if m.clearedcities {
 		edges = append(edges, coupon.EdgeCities)
@@ -1804,12 +1745,12 @@ func (m *CouponMutation) EdgeCleared(name string) bool {
 		return m.clearedrider
 	case coupon.EdgeAssembly:
 		return m.clearedassembly
-	case coupon.EdgeOrder:
-		return m.cleared_order
 	case coupon.EdgePlan:
 		return m.clearedplan
 	case coupon.EdgeTemplate:
 		return m.clearedtemplate
+	case coupon.EdgeOrder:
+		return m.cleared_order
 	case coupon.EdgeCities:
 		return m.clearedcities
 	case coupon.EdgePlans:
@@ -1828,14 +1769,14 @@ func (m *CouponMutation) ClearEdge(name string) error {
 	case coupon.EdgeAssembly:
 		m.ClearAssembly()
 		return nil
-	case coupon.EdgeOrder:
-		m.ClearOrder()
-		return nil
 	case coupon.EdgePlan:
 		m.ClearPlan()
 		return nil
 	case coupon.EdgeTemplate:
 		m.ClearTemplate()
+		return nil
+	case coupon.EdgeOrder:
+		m.ClearOrder()
 		return nil
 	}
 	return fmt.Errorf("unknown Coupon unique edge %s", name)
@@ -1851,14 +1792,14 @@ func (m *CouponMutation) ResetEdge(name string) error {
 	case coupon.EdgeAssembly:
 		m.ResetAssembly()
 		return nil
-	case coupon.EdgeOrder:
-		m.ResetOrder()
-		return nil
 	case coupon.EdgePlan:
 		m.ResetPlan()
 		return nil
 	case coupon.EdgeTemplate:
 		m.ResetTemplate()
+		return nil
+	case coupon.EdgeOrder:
+		m.ResetOrder()
 		return nil
 	case coupon.EdgeCities:
 		m.ResetCities()

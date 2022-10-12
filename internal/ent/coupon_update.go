@@ -100,26 +100,6 @@ func (cu *CouponUpdate) SetAssemblyID(u uint64) *CouponUpdate {
 	return cu
 }
 
-// SetOrderID sets the "order_id" field.
-func (cu *CouponUpdate) SetOrderID(u uint64) *CouponUpdate {
-	cu.mutation.SetOrderID(u)
-	return cu
-}
-
-// SetNillableOrderID sets the "order_id" field if the given value is not nil.
-func (cu *CouponUpdate) SetNillableOrderID(u *uint64) *CouponUpdate {
-	if u != nil {
-		cu.SetOrderID(*u)
-	}
-	return cu
-}
-
-// ClearOrderID clears the value of the "order_id" field.
-func (cu *CouponUpdate) ClearOrderID() *CouponUpdate {
-	cu.mutation.ClearOrderID()
-	return cu
-}
-
 // SetPlanID sets the "plan_id" field.
 func (cu *CouponUpdate) SetPlanID(u uint64) *CouponUpdate {
 	cu.mutation.SetPlanID(u)
@@ -248,11 +228,6 @@ func (cu *CouponUpdate) SetAssembly(c *CouponAssembly) *CouponUpdate {
 	return cu.SetAssemblyID(c.ID)
 }
 
-// SetOrder sets the "order" edge to the Order entity.
-func (cu *CouponUpdate) SetOrder(o *Order) *CouponUpdate {
-	return cu.SetOrderID(o.ID)
-}
-
 // SetPlan sets the "plan" edge to the Plan entity.
 func (cu *CouponUpdate) SetPlan(p *Plan) *CouponUpdate {
 	return cu.SetPlanID(p.ID)
@@ -261,6 +236,25 @@ func (cu *CouponUpdate) SetPlan(p *Plan) *CouponUpdate {
 // SetTemplate sets the "template" edge to the CouponTemplate entity.
 func (cu *CouponUpdate) SetTemplate(c *CouponTemplate) *CouponUpdate {
 	return cu.SetTemplateID(c.ID)
+}
+
+// SetOrderID sets the "order" edge to the Order entity by ID.
+func (cu *CouponUpdate) SetOrderID(id uint64) *CouponUpdate {
+	cu.mutation.SetOrderID(id)
+	return cu
+}
+
+// SetNillableOrderID sets the "order" edge to the Order entity by ID if the given value is not nil.
+func (cu *CouponUpdate) SetNillableOrderID(id *uint64) *CouponUpdate {
+	if id != nil {
+		cu = cu.SetOrderID(*id)
+	}
+	return cu
+}
+
+// SetOrder sets the "order" edge to the Order entity.
+func (cu *CouponUpdate) SetOrder(o *Order) *CouponUpdate {
+	return cu.SetOrderID(o.ID)
 }
 
 // AddCityIDs adds the "cities" edge to the City entity by IDs.
@@ -310,12 +304,6 @@ func (cu *CouponUpdate) ClearAssembly() *CouponUpdate {
 	return cu
 }
 
-// ClearOrder clears the "order" edge to the Order entity.
-func (cu *CouponUpdate) ClearOrder() *CouponUpdate {
-	cu.mutation.ClearOrder()
-	return cu
-}
-
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (cu *CouponUpdate) ClearPlan() *CouponUpdate {
 	cu.mutation.ClearPlan()
@@ -325,6 +313,12 @@ func (cu *CouponUpdate) ClearPlan() *CouponUpdate {
 // ClearTemplate clears the "template" edge to the CouponTemplate entity.
 func (cu *CouponUpdate) ClearTemplate() *CouponUpdate {
 	cu.mutation.ClearTemplate()
+	return cu
+}
+
+// ClearOrder clears the "order" edge to the Order entity.
+func (cu *CouponUpdate) ClearOrder() *CouponUpdate {
+	cu.mutation.ClearOrder()
 	return cu
 }
 
@@ -664,41 +658,6 @@ func (cu *CouponUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if cu.mutation.OrderCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   coupon.OrderTable,
-			Columns: []string{coupon.OrderColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cu.mutation.OrderIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   coupon.OrderTable,
-			Columns: []string{coupon.OrderColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if cu.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -761,6 +720,41 @@ func (cu *CouponUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: coupontemplate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cu.mutation.OrderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   coupon.OrderTable,
+			Columns: []string{coupon.OrderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.OrderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   coupon.OrderTable,
+			Columns: []string{coupon.OrderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
 				},
 			},
 		}
@@ -962,26 +956,6 @@ func (cuo *CouponUpdateOne) SetAssemblyID(u uint64) *CouponUpdateOne {
 	return cuo
 }
 
-// SetOrderID sets the "order_id" field.
-func (cuo *CouponUpdateOne) SetOrderID(u uint64) *CouponUpdateOne {
-	cuo.mutation.SetOrderID(u)
-	return cuo
-}
-
-// SetNillableOrderID sets the "order_id" field if the given value is not nil.
-func (cuo *CouponUpdateOne) SetNillableOrderID(u *uint64) *CouponUpdateOne {
-	if u != nil {
-		cuo.SetOrderID(*u)
-	}
-	return cuo
-}
-
-// ClearOrderID clears the value of the "order_id" field.
-func (cuo *CouponUpdateOne) ClearOrderID() *CouponUpdateOne {
-	cuo.mutation.ClearOrderID()
-	return cuo
-}
-
 // SetPlanID sets the "plan_id" field.
 func (cuo *CouponUpdateOne) SetPlanID(u uint64) *CouponUpdateOne {
 	cuo.mutation.SetPlanID(u)
@@ -1110,11 +1084,6 @@ func (cuo *CouponUpdateOne) SetAssembly(c *CouponAssembly) *CouponUpdateOne {
 	return cuo.SetAssemblyID(c.ID)
 }
 
-// SetOrder sets the "order" edge to the Order entity.
-func (cuo *CouponUpdateOne) SetOrder(o *Order) *CouponUpdateOne {
-	return cuo.SetOrderID(o.ID)
-}
-
 // SetPlan sets the "plan" edge to the Plan entity.
 func (cuo *CouponUpdateOne) SetPlan(p *Plan) *CouponUpdateOne {
 	return cuo.SetPlanID(p.ID)
@@ -1123,6 +1092,25 @@ func (cuo *CouponUpdateOne) SetPlan(p *Plan) *CouponUpdateOne {
 // SetTemplate sets the "template" edge to the CouponTemplate entity.
 func (cuo *CouponUpdateOne) SetTemplate(c *CouponTemplate) *CouponUpdateOne {
 	return cuo.SetTemplateID(c.ID)
+}
+
+// SetOrderID sets the "order" edge to the Order entity by ID.
+func (cuo *CouponUpdateOne) SetOrderID(id uint64) *CouponUpdateOne {
+	cuo.mutation.SetOrderID(id)
+	return cuo
+}
+
+// SetNillableOrderID sets the "order" edge to the Order entity by ID if the given value is not nil.
+func (cuo *CouponUpdateOne) SetNillableOrderID(id *uint64) *CouponUpdateOne {
+	if id != nil {
+		cuo = cuo.SetOrderID(*id)
+	}
+	return cuo
+}
+
+// SetOrder sets the "order" edge to the Order entity.
+func (cuo *CouponUpdateOne) SetOrder(o *Order) *CouponUpdateOne {
+	return cuo.SetOrderID(o.ID)
 }
 
 // AddCityIDs adds the "cities" edge to the City entity by IDs.
@@ -1172,12 +1160,6 @@ func (cuo *CouponUpdateOne) ClearAssembly() *CouponUpdateOne {
 	return cuo
 }
 
-// ClearOrder clears the "order" edge to the Order entity.
-func (cuo *CouponUpdateOne) ClearOrder() *CouponUpdateOne {
-	cuo.mutation.ClearOrder()
-	return cuo
-}
-
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (cuo *CouponUpdateOne) ClearPlan() *CouponUpdateOne {
 	cuo.mutation.ClearPlan()
@@ -1187,6 +1169,12 @@ func (cuo *CouponUpdateOne) ClearPlan() *CouponUpdateOne {
 // ClearTemplate clears the "template" edge to the CouponTemplate entity.
 func (cuo *CouponUpdateOne) ClearTemplate() *CouponUpdateOne {
 	cuo.mutation.ClearTemplate()
+	return cuo
+}
+
+// ClearOrder clears the "order" edge to the Order entity.
+func (cuo *CouponUpdateOne) ClearOrder() *CouponUpdateOne {
+	cuo.mutation.ClearOrder()
 	return cuo
 }
 
@@ -1556,41 +1544,6 @@ func (cuo *CouponUpdateOne) sqlSave(ctx context.Context) (_node *Coupon, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if cuo.mutation.OrderCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   coupon.OrderTable,
-			Columns: []string{coupon.OrderColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cuo.mutation.OrderIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   coupon.OrderTable,
-			Columns: []string{coupon.OrderColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if cuo.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1653,6 +1606,41 @@ func (cuo *CouponUpdateOne) sqlSave(ctx context.Context) (_node *Coupon, err err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: coupontemplate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.OrderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   coupon.OrderTable,
+			Columns: []string{coupon.OrderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.OrderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   coupon.OrderTable,
+			Columns: []string{coupon.OrderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
 				},
 			},
 		}

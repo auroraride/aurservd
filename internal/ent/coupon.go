@@ -37,8 +37,6 @@ type Coupon struct {
 	RiderID *uint64 `json:"rider_id,omitempty"`
 	// AssemblyID holds the value of the "assembly_id" field.
 	AssemblyID uint64 `json:"assembly_id,omitempty"`
-	// OrderID holds the value of the "order_id" field.
-	OrderID *uint64 `json:"order_id,omitempty"`
 	// 实际使用骑士卡
 	PlanID *uint64 `json:"plan_id,omitempty"`
 	// TemplateID holds the value of the "template_id" field.
@@ -61,7 +59,8 @@ type Coupon struct {
 	Duration *model.CouponDuration `json:"duration,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CouponQuery when eager-loading is set.
-	Edges CouponEdges `json:"edges"`
+	Edges         CouponEdges `json:"edges"`
+	order_coupons *uint64
 }
 
 // CouponEdges holds the relations/edges for other nodes in the graph.
@@ -70,12 +69,12 @@ type CouponEdges struct {
 	Rider *Rider `json:"rider,omitempty"`
 	// Assembly holds the value of the assembly edge.
 	Assembly *CouponAssembly `json:"assembly,omitempty"`
-	// Order holds the value of the order edge.
-	Order *Order `json:"order,omitempty"`
 	// Plan holds the value of the plan edge.
 	Plan *Plan `json:"plan,omitempty"`
 	// Template holds the value of the template edge.
 	Template *CouponTemplate `json:"template,omitempty"`
+	// Order holds the value of the order edge.
+	Order *Order `json:"order,omitempty"`
 	// Cities holds the value of the cities edge.
 	Cities []*City `json:"cities,omitempty"`
 	// Plans holds the value of the plans edge.
@@ -111,23 +110,10 @@ func (e CouponEdges) AssemblyOrErr() (*CouponAssembly, error) {
 	return nil, &NotLoadedError{edge: "assembly"}
 }
 
-// OrderOrErr returns the Order value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e CouponEdges) OrderOrErr() (*Order, error) {
-	if e.loadedTypes[2] {
-		if e.Order == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: order.Label}
-		}
-		return e.Order, nil
-	}
-	return nil, &NotLoadedError{edge: "order"}
-}
-
 // PlanOrErr returns the Plan value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CouponEdges) PlanOrErr() (*Plan, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[2] {
 		if e.Plan == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: plan.Label}
@@ -140,7 +126,7 @@ func (e CouponEdges) PlanOrErr() (*Plan, error) {
 // TemplateOrErr returns the Template value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CouponEdges) TemplateOrErr() (*CouponTemplate, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[3] {
 		if e.Template == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: coupontemplate.Label}
@@ -148,6 +134,19 @@ func (e CouponEdges) TemplateOrErr() (*CouponTemplate, error) {
 		return e.Template, nil
 	}
 	return nil, &NotLoadedError{edge: "template"}
+}
+
+// OrderOrErr returns the Order value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CouponEdges) OrderOrErr() (*Order, error) {
+	if e.loadedTypes[4] {
+		if e.Order == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: order.Label}
+		}
+		return e.Order, nil
+	}
+	return nil, &NotLoadedError{edge: "order"}
 }
 
 // CitiesOrErr returns the Cities value or an error if the edge
@@ -179,12 +178,14 @@ func (*Coupon) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case coupon.FieldAmount:
 			values[i] = new(sql.NullFloat64)
-		case coupon.FieldID, coupon.FieldRiderID, coupon.FieldAssemblyID, coupon.FieldOrderID, coupon.FieldPlanID, coupon.FieldTemplateID, coupon.FieldRule:
+		case coupon.FieldID, coupon.FieldRiderID, coupon.FieldAssemblyID, coupon.FieldPlanID, coupon.FieldTemplateID, coupon.FieldRule:
 			values[i] = new(sql.NullInt64)
 		case coupon.FieldRemark, coupon.FieldName, coupon.FieldCode:
 			values[i] = new(sql.NullString)
 		case coupon.FieldCreatedAt, coupon.FieldUpdatedAt, coupon.FieldExpiresAt, coupon.FieldUsedAt:
 			values[i] = new(sql.NullTime)
+		case coupon.ForeignKeys[0]: // order_coupons
+			values[i] = new(sql.NullInt64)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Coupon", columns[i])
 		}
@@ -253,13 +254,6 @@ func (c *Coupon) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.AssemblyID = uint64(value.Int64)
 			}
-		case coupon.FieldOrderID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field order_id", values[i])
-			} else if value.Valid {
-				c.OrderID = new(uint64)
-				*c.OrderID = uint64(value.Int64)
-			}
 		case coupon.FieldPlanID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field plan_id", values[i])
@@ -324,6 +318,13 @@ func (c *Coupon) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field duration: %w", err)
 				}
 			}
+		case coupon.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field order_coupons", value)
+			} else if value.Valid {
+				c.order_coupons = new(uint64)
+				*c.order_coupons = uint64(value.Int64)
+			}
 		}
 	}
 	return nil
@@ -339,11 +340,6 @@ func (c *Coupon) QueryAssembly() *CouponAssemblyQuery {
 	return (&CouponClient{config: c.config}).QueryAssembly(c)
 }
 
-// QueryOrder queries the "order" edge of the Coupon entity.
-func (c *Coupon) QueryOrder() *OrderQuery {
-	return (&CouponClient{config: c.config}).QueryOrder(c)
-}
-
 // QueryPlan queries the "plan" edge of the Coupon entity.
 func (c *Coupon) QueryPlan() *PlanQuery {
 	return (&CouponClient{config: c.config}).QueryPlan(c)
@@ -352,6 +348,11 @@ func (c *Coupon) QueryPlan() *PlanQuery {
 // QueryTemplate queries the "template" edge of the Coupon entity.
 func (c *Coupon) QueryTemplate() *CouponTemplateQuery {
 	return (&CouponClient{config: c.config}).QueryTemplate(c)
+}
+
+// QueryOrder queries the "order" edge of the Coupon entity.
+func (c *Coupon) QueryOrder() *OrderQuery {
+	return (&CouponClient{config: c.config}).QueryOrder(c)
 }
 
 // QueryCities queries the "cities" edge of the Coupon entity.
@@ -409,11 +410,6 @@ func (c *Coupon) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("assembly_id=")
 	builder.WriteString(fmt.Sprintf("%v", c.AssemblyID))
-	builder.WriteString(", ")
-	if v := c.OrderID; v != nil {
-		builder.WriteString("order_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
 	builder.WriteString(", ")
 	if v := c.PlanID; v != nil {
 		builder.WriteString("plan_id=")

@@ -76,8 +76,6 @@ type Tx struct {
 	Manager *ManagerClient
 	// Order is the client for interacting with the Order builders.
 	Order *OrderClient
-	// OrderCoupon is the client for interacting with the OrderCoupon builders.
-	OrderCoupon *OrderCouponClient
 	// OrderRefund is the client for interacting with the OrderRefund builders.
 	OrderRefund *OrderRefundClient
 	// Person is the client for interacting with the Person builders.
@@ -278,7 +276,6 @@ func (tx *Tx) init() {
 	tx.Inventory = NewInventoryClient(tx.config)
 	tx.Manager = NewManagerClient(tx.config)
 	tx.Order = NewOrderClient(tx.config)
-	tx.OrderCoupon = NewOrderCouponClient(tx.config)
 	tx.OrderRefund = NewOrderRefundClient(tx.config)
 	tx.Person = NewPersonClient(tx.config)
 	tx.Plan = NewPlanClient(tx.config)

@@ -8,6 +8,7 @@ import (
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -71,6 +72,7 @@ func (Order) Fields() []ent.Field {
         field.Int("initial_days").Optional().Comment("所购骑士卡天数(也可能为补缴欠费天数)"),
         field.Int("past_days").Optional().Comment("距上次退订天数"),
         field.Int64("points").Default(0).Comment("使用积分"),
+        field.Float("point_ratio").Default(model.PointRatio).Comment("积分兑换比例"),
         field.Float("coupon_amount").Default(0).Comment("优惠券金额"),
         field.Float("relief_newly").Default(0).Comment("新签优惠"),
     }
@@ -85,6 +87,7 @@ func (Order) Edges() []ent.Edge {
         edge.To("children", Order.Type).From("parent").Field("parent_id").Unique().Comment("子订单"),
         edge.To("refund", OrderRefund.Type).Unique().Comment("退款"),
         edge.To("assistance", Assistance.Type).Unique(),
+        edge.To("coupons", Coupon.Type),
     }
 }
 
@@ -96,6 +99,8 @@ func (Order) Mixin() []ent.Mixin {
 
         PlanMixin{Optional: true},
         CityMixin{Optional: true},
+        EbikeBrandMixin{Optional: true},
+        EbikeMixin{Optional: true},
     }
 }
 

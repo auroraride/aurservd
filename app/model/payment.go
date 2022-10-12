@@ -35,6 +35,12 @@ type PaymentSubscribe struct {
     Days        uint    `json:"days"`              // 骑士卡天数
     OrderID     *uint64 `json:"orderId"`           // 子订单ID
     SubscribeID *uint64 `json:"subscribeId"`       // 续费订单携带订阅ID
+
+    Points       int64    `json:"points"`       // 使用积分
+    PointRatio   float64  `json:"pointRatio"`   // 积分兑换比例
+    CouponAmount float64  `json:"couponAmount"` // 优惠券金额
+    Coupons      []uint64 `json:"coupons"`      // 使用优惠券列表
+    ReliefNewly  float64  `json:"reliefNewly"`  // 新签优惠
 }
 
 // PaymentRefund 退款详情

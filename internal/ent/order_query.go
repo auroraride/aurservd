@@ -14,6 +14,9 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
+	"github.com/auroraride/aurservd/internal/ent/coupon"
+	"github.com/auroraride/aurservd/internal/ent/ebike"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -33,6 +36,8 @@ type OrderQuery struct {
 	predicates     []predicate.Order
 	withPlan       *PlanQuery
 	withCity       *CityQuery
+	withBrand      *EbikeBrandQuery
+	withEbike      *EbikeQuery
 	withRider      *RiderQuery
 	withSubscribe  *SubscribeQuery
 	withCommission *CommissionQuery
@@ -40,6 +45,7 @@ type OrderQuery struct {
 	withChildren   *OrderQuery
 	withRefund     *OrderRefundQuery
 	withAssistance *AssistanceQuery
+	withCoupons    *CouponQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -114,6 +120,50 @@ func (oq *OrderQuery) QueryCity() *CityQuery {
 			sqlgraph.From(order.Table, order.FieldID, selector),
 			sqlgraph.To(city.Table, city.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, order.CityTable, order.CityColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(oq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryBrand chains the current query on the "brand" edge.
+func (oq *OrderQuery) QueryBrand() *EbikeBrandQuery {
+	query := &EbikeBrandQuery{config: oq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := oq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := oq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, selector),
+			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, order.BrandTable, order.BrandColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(oq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEbike chains the current query on the "ebike" edge.
+func (oq *OrderQuery) QueryEbike() *EbikeQuery {
+	query := &EbikeQuery{config: oq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := oq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := oq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, selector),
+			sqlgraph.To(ebike.Table, ebike.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, order.EbikeTable, order.EbikeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(oq.driver.Dialect(), step)
 		return fromU, nil
@@ -268,6 +318,28 @@ func (oq *OrderQuery) QueryAssistance() *AssistanceQuery {
 			sqlgraph.From(order.Table, order.FieldID, selector),
 			sqlgraph.To(assistance.Table, assistance.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, order.AssistanceTable, order.AssistanceColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(oq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCoupons chains the current query on the "coupons" edge.
+func (oq *OrderQuery) QueryCoupons() *CouponQuery {
+	query := &CouponQuery{config: oq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := oq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := oq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, selector),
+			sqlgraph.To(coupon.Table, coupon.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, order.CouponsTable, order.CouponsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(oq.driver.Dialect(), step)
 		return fromU, nil
@@ -458,6 +530,8 @@ func (oq *OrderQuery) Clone() *OrderQuery {
 		predicates:     append([]predicate.Order{}, oq.predicates...),
 		withPlan:       oq.withPlan.Clone(),
 		withCity:       oq.withCity.Clone(),
+		withBrand:      oq.withBrand.Clone(),
+		withEbike:      oq.withEbike.Clone(),
 		withRider:      oq.withRider.Clone(),
 		withSubscribe:  oq.withSubscribe.Clone(),
 		withCommission: oq.withCommission.Clone(),
@@ -465,6 +539,7 @@ func (oq *OrderQuery) Clone() *OrderQuery {
 		withChildren:   oq.withChildren.Clone(),
 		withRefund:     oq.withRefund.Clone(),
 		withAssistance: oq.withAssistance.Clone(),
+		withCoupons:    oq.withCoupons.Clone(),
 		// clone intermediate query.
 		sql:    oq.sql.Clone(),
 		path:   oq.path,
@@ -491,6 +566,28 @@ func (oq *OrderQuery) WithCity(opts ...func(*CityQuery)) *OrderQuery {
 		opt(query)
 	}
 	oq.withCity = query
+	return oq
+}
+
+// WithBrand tells the query-builder to eager-load the nodes that are connected to
+// the "brand" edge. The optional arguments are used to configure the query builder of the edge.
+func (oq *OrderQuery) WithBrand(opts ...func(*EbikeBrandQuery)) *OrderQuery {
+	query := &EbikeBrandQuery{config: oq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	oq.withBrand = query
+	return oq
+}
+
+// WithEbike tells the query-builder to eager-load the nodes that are connected to
+// the "ebike" edge. The optional arguments are used to configure the query builder of the edge.
+func (oq *OrderQuery) WithEbike(opts ...func(*EbikeQuery)) *OrderQuery {
+	query := &EbikeQuery{config: oq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	oq.withEbike = query
 	return oq
 }
 
@@ -571,6 +668,17 @@ func (oq *OrderQuery) WithAssistance(opts ...func(*AssistanceQuery)) *OrderQuery
 	return oq
 }
 
+// WithCoupons tells the query-builder to eager-load the nodes that are connected to
+// the "coupons" edge. The optional arguments are used to configure the query builder of the edge.
+func (oq *OrderQuery) WithCoupons(opts ...func(*CouponQuery)) *OrderQuery {
+	query := &CouponQuery{config: oq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	oq.withCoupons = query
+	return oq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -639,9 +747,11 @@ func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order,
 	var (
 		nodes       = []*Order{}
 		_spec       = oq.querySpec()
-		loadedTypes = [9]bool{
+		loadedTypes = [12]bool{
 			oq.withPlan != nil,
 			oq.withCity != nil,
+			oq.withBrand != nil,
+			oq.withEbike != nil,
 			oq.withRider != nil,
 			oq.withSubscribe != nil,
 			oq.withCommission != nil,
@@ -649,6 +759,7 @@ func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order,
 			oq.withChildren != nil,
 			oq.withRefund != nil,
 			oq.withAssistance != nil,
+			oq.withCoupons != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -681,6 +792,18 @@ func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order,
 	if query := oq.withCity; query != nil {
 		if err := oq.loadCity(ctx, query, nodes, nil,
 			func(n *Order, e *City) { n.Edges.City = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := oq.withBrand; query != nil {
+		if err := oq.loadBrand(ctx, query, nodes, nil,
+			func(n *Order, e *EbikeBrand) { n.Edges.Brand = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := oq.withEbike; query != nil {
+		if err := oq.loadEbike(ctx, query, nodes, nil,
+			func(n *Order, e *Ebike) { n.Edges.Ebike = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -724,6 +847,13 @@ func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order,
 	if query := oq.withAssistance; query != nil {
 		if err := oq.loadAssistance(ctx, query, nodes, nil,
 			func(n *Order, e *Assistance) { n.Edges.Assistance = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := oq.withCoupons; query != nil {
+		if err := oq.loadCoupons(ctx, query, nodes,
+			func(n *Order) { n.Edges.Coupons = []*Coupon{} },
+			func(n *Order, e *Coupon) { n.Edges.Coupons = append(n.Edges.Coupons, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -781,6 +911,64 @@ func (oq *OrderQuery) loadCity(ctx context.Context, query *CityQuery, nodes []*O
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "city_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (oq *OrderQuery) loadBrand(ctx context.Context, query *EbikeBrandQuery, nodes []*Order, init func(*Order), assign func(*Order, *EbikeBrand)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Order)
+	for i := range nodes {
+		if nodes[i].BrandID == nil {
+			continue
+		}
+		fk := *nodes[i].BrandID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(ebikebrand.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "brand_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (oq *OrderQuery) loadEbike(ctx context.Context, query *EbikeQuery, nodes []*Order, init func(*Order), assign func(*Order, *Ebike)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Order)
+	for i := range nodes {
+		if nodes[i].EbikeID == nil {
+			continue
+		}
+		fk := *nodes[i].EbikeID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(ebike.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "ebike_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -963,6 +1151,37 @@ func (oq *OrderQuery) loadAssistance(ctx context.Context, query *AssistanceQuery
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "order_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (oq *OrderQuery) loadCoupons(ctx context.Context, query *CouponQuery, nodes []*Order, init func(*Order), assign func(*Order, *Coupon)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Order)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Coupon(func(s *sql.Selector) {
+		s.Where(sql.InValues(order.CouponsColumn, fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.order_coupons
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "order_coupons" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "order_coupons" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

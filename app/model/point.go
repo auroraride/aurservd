@@ -4,3 +4,7 @@
 // Based on aurservd by liasica, magicrolan@qq.com.
 
 package model
+
+const (
+    PointRatio = 0.01 // 积分兑换比例, 1:100
+)
