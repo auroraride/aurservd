@@ -1265,6 +1265,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldStationID:         {Type: field.TypeUint64, Column: subscribe.FieldStationID},
 			subscribe.FieldStoreID:           {Type: field.TypeUint64, Column: subscribe.FieldStoreID},
 			subscribe.FieldCabinetID:         {Type: field.TypeUint64, Column: subscribe.FieldCabinetID},
+			subscribe.FieldBrandID:           {Type: field.TypeUint64, Column: subscribe.FieldBrandID},
 			subscribe.FieldEbikeID:           {Type: field.TypeUint64, Column: subscribe.FieldEbikeID},
 			subscribe.FieldRiderID:           {Type: field.TypeUint64, Column: subscribe.FieldRiderID},
 			subscribe.FieldInitialOrderID:    {Type: field.TypeUint64, Column: subscribe.FieldInitialOrderID},
@@ -1289,6 +1290,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldPauseOverdue:      {Type: field.TypeBool, Column: subscribe.FieldPauseOverdue},
 			subscribe.FieldAgentEndAt:        {Type: field.TypeTime, Column: subscribe.FieldAgentEndAt},
 			subscribe.FieldFormula:           {Type: field.TypeString, Column: subscribe.FieldFormula},
+			subscribe.FieldNeedContract:      {Type: field.TypeBool, Column: subscribe.FieldNeedContract},
 		},
 	}
 	graph.Nodes[44] = &sqlgraph.Node{
@@ -3297,6 +3299,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Subscribe",
 		"Cabinet",
+	)
+	graph.MustAddE(
+		"brand",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.BrandTable,
+			Columns: []string{subscribe.BrandColumn},
+			Bidi:    false,
+		},
+		"Subscribe",
+		"EbikeBrand",
 	)
 	graph.MustAddE(
 		"ebike",
@@ -10720,6 +10734,11 @@ func (f *SubscribeFilter) WhereCabinetID(p entql.Uint64P) {
 	f.Where(p.Field(subscribe.FieldCabinetID))
 }
 
+// WhereBrandID applies the entql uint64 predicate on the brand_id field.
+func (f *SubscribeFilter) WhereBrandID(p entql.Uint64P) {
+	f.Where(p.Field(subscribe.FieldBrandID))
+}
+
 // WhereEbikeID applies the entql uint64 predicate on the ebike_id field.
 func (f *SubscribeFilter) WhereEbikeID(p entql.Uint64P) {
 	f.Where(p.Field(subscribe.FieldEbikeID))
@@ -10840,6 +10859,11 @@ func (f *SubscribeFilter) WhereFormula(p entql.StringP) {
 	f.Where(p.Field(subscribe.FieldFormula))
 }
 
+// WhereNeedContract applies the entql bool predicate on the need_contract field.
+func (f *SubscribeFilter) WhereNeedContract(p entql.BoolP) {
+	f.Where(p.Field(subscribe.FieldNeedContract))
+}
+
 // WhereHasPlan applies a predicate to check if query has an edge plan.
 func (f *SubscribeFilter) WhereHasPlan() {
 	f.Where(entql.HasEdge("plan"))
@@ -10918,6 +10942,20 @@ func (f *SubscribeFilter) WhereHasCabinet() {
 // WhereHasCabinetWith applies a predicate to check if query has an edge cabinet with a given conditions (other predicates).
 func (f *SubscribeFilter) WhereHasCabinetWith(preds ...predicate.Cabinet) {
 	f.Where(entql.HasEdgeWith("cabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasBrand applies a predicate to check if query has an edge brand.
+func (f *SubscribeFilter) WhereHasBrand() {
+	f.Where(entql.HasEdge("brand"))
+}
+
+// WhereHasBrandWith applies a predicate to check if query has an edge brand with a given conditions (other predicates).
+func (f *SubscribeFilter) WhereHasBrandWith(preds ...predicate.EbikeBrand) {
+	f.Where(entql.HasEdgeWith("brand", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
@@ -44,6 +45,7 @@ type SubscribeQuery struct {
 	withStation      *EnterpriseStationQuery
 	withStore        *StoreQuery
 	withCabinet      *CabinetQuery
+	withBrand        *EbikeBrandQuery
 	withEbike        *EbikeQuery
 	withRider        *RiderQuery
 	withEnterprise   *EnterpriseQuery
@@ -215,6 +217,28 @@ func (sq *SubscribeQuery) QueryCabinet() *CabinetQuery {
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, selector),
 			sqlgraph.To(cabinet.Table, cabinet.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.CabinetTable, subscribe.CabinetColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryBrand chains the current query on the "brand" edge.
+func (sq *SubscribeQuery) QueryBrand() *EbikeBrandQuery {
+	query := &EbikeBrandQuery{config: sq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, selector),
+			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.BrandTable, subscribe.BrandColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -607,6 +631,7 @@ func (sq *SubscribeQuery) Clone() *SubscribeQuery {
 		withStation:      sq.withStation.Clone(),
 		withStore:        sq.withStore.Clone(),
 		withCabinet:      sq.withCabinet.Clone(),
+		withBrand:        sq.withBrand.Clone(),
 		withEbike:        sq.withEbike.Clone(),
 		withRider:        sq.withRider.Clone(),
 		withEnterprise:   sq.withEnterprise.Clone(),
@@ -686,6 +711,17 @@ func (sq *SubscribeQuery) WithCabinet(opts ...func(*CabinetQuery)) *SubscribeQue
 		opt(query)
 	}
 	sq.withCabinet = query
+	return sq
+}
+
+// WithBrand tells the query-builder to eager-load the nodes that are connected to
+// the "brand" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *SubscribeQuery) WithBrand(opts ...func(*EbikeBrandQuery)) *SubscribeQuery {
+	query := &EbikeBrandQuery{config: sq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withBrand = query
 	return sq
 }
 
@@ -856,13 +892,14 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 	var (
 		nodes       = []*Subscribe{}
 		_spec       = sq.querySpec()
-		loadedTypes = [15]bool{
+		loadedTypes = [16]bool{
 			sq.withPlan != nil,
 			sq.withEmployee != nil,
 			sq.withCity != nil,
 			sq.withStation != nil,
 			sq.withStore != nil,
 			sq.withCabinet != nil,
+			sq.withBrand != nil,
 			sq.withEbike != nil,
 			sq.withRider != nil,
 			sq.withEnterprise != nil,
@@ -928,6 +965,12 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 	if query := sq.withCabinet; query != nil {
 		if err := sq.loadCabinet(ctx, query, nodes, nil,
 			func(n *Subscribe, e *Cabinet) { n.Edges.Cabinet = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := sq.withBrand; query != nil {
+		if err := sq.loadBrand(ctx, query, nodes, nil,
+			func(n *Subscribe, e *EbikeBrand) { n.Edges.Brand = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1157,6 +1200,35 @@ func (sq *SubscribeQuery) loadCabinet(ctx context.Context, query *CabinetQuery, 
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "cabinet_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (sq *SubscribeQuery) loadBrand(ctx context.Context, query *EbikeBrandQuery, nodes []*Subscribe, init func(*Subscribe), assign func(*Subscribe, *EbikeBrand)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Subscribe)
+	for i := range nodes {
+		if nodes[i].BrandID == nil {
+			continue
+		}
+		fk := *nodes[i].BrandID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(ebikebrand.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "brand_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

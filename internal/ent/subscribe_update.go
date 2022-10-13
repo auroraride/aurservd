@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
@@ -205,6 +206,26 @@ func (su *SubscribeUpdate) SetNillableCabinetID(u *uint64) *SubscribeUpdate {
 // ClearCabinetID clears the value of the "cabinet_id" field.
 func (su *SubscribeUpdate) ClearCabinetID() *SubscribeUpdate {
 	su.mutation.ClearCabinetID()
+	return su
+}
+
+// SetBrandID sets the "brand_id" field.
+func (su *SubscribeUpdate) SetBrandID(u uint64) *SubscribeUpdate {
+	su.mutation.SetBrandID(u)
+	return su
+}
+
+// SetNillableBrandID sets the "brand_id" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableBrandID(u *uint64) *SubscribeUpdate {
+	if u != nil {
+		su.SetBrandID(*u)
+	}
+	return su
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (su *SubscribeUpdate) ClearBrandID() *SubscribeUpdate {
+	su.mutation.ClearBrandID()
 	return su
 }
 
@@ -648,6 +669,20 @@ func (su *SubscribeUpdate) ClearFormula() *SubscribeUpdate {
 	return su
 }
 
+// SetNeedContract sets the "need_contract" field.
+func (su *SubscribeUpdate) SetNeedContract(b bool) *SubscribeUpdate {
+	su.mutation.SetNeedContract(b)
+	return su
+}
+
+// SetNillableNeedContract sets the "need_contract" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableNeedContract(b *bool) *SubscribeUpdate {
+	if b != nil {
+		su.SetNeedContract(*b)
+	}
+	return su
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (su *SubscribeUpdate) SetPlan(p *Plan) *SubscribeUpdate {
 	return su.SetPlanID(p.ID)
@@ -676,6 +711,11 @@ func (su *SubscribeUpdate) SetStore(s *Store) *SubscribeUpdate {
 // SetCabinet sets the "cabinet" edge to the Cabinet entity.
 func (su *SubscribeUpdate) SetCabinet(c *Cabinet) *SubscribeUpdate {
 	return su.SetCabinetID(c.ID)
+}
+
+// SetBrand sets the "brand" edge to the EbikeBrand entity.
+func (su *SubscribeUpdate) SetBrand(e *EbikeBrand) *SubscribeUpdate {
+	return su.SetBrandID(e.ID)
 }
 
 // SetEbike sets the "ebike" edge to the Ebike entity.
@@ -811,6 +851,12 @@ func (su *SubscribeUpdate) ClearStore() *SubscribeUpdate {
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (su *SubscribeUpdate) ClearCabinet() *SubscribeUpdate {
 	su.mutation.ClearCabinet()
+	return su
+}
+
+// ClearBrand clears the "brand" edge to the EbikeBrand entity.
+func (su *SubscribeUpdate) ClearBrand() *SubscribeUpdate {
+	su.mutation.ClearBrand()
 	return su
 }
 
@@ -1354,6 +1400,13 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: subscribe.FieldFormula,
 		})
 	}
+	if value, ok := su.mutation.NeedContract(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: subscribe.FieldNeedContract,
+		})
+	}
 	if su.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1556,6 +1609,41 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: cabinet.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if su.mutation.BrandCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.BrandTable,
+			Columns: []string{subscribe.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebikebrand.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.BrandIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.BrandTable,
+			Columns: []string{subscribe.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebikebrand.FieldID,
 				},
 			},
 		}
@@ -2159,6 +2247,26 @@ func (suo *SubscribeUpdateOne) ClearCabinetID() *SubscribeUpdateOne {
 	return suo
 }
 
+// SetBrandID sets the "brand_id" field.
+func (suo *SubscribeUpdateOne) SetBrandID(u uint64) *SubscribeUpdateOne {
+	suo.mutation.SetBrandID(u)
+	return suo
+}
+
+// SetNillableBrandID sets the "brand_id" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableBrandID(u *uint64) *SubscribeUpdateOne {
+	if u != nil {
+		suo.SetBrandID(*u)
+	}
+	return suo
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (suo *SubscribeUpdateOne) ClearBrandID() *SubscribeUpdateOne {
+	suo.mutation.ClearBrandID()
+	return suo
+}
+
 // SetEbikeID sets the "ebike_id" field.
 func (suo *SubscribeUpdateOne) SetEbikeID(u uint64) *SubscribeUpdateOne {
 	suo.mutation.SetEbikeID(u)
@@ -2599,6 +2707,20 @@ func (suo *SubscribeUpdateOne) ClearFormula() *SubscribeUpdateOne {
 	return suo
 }
 
+// SetNeedContract sets the "need_contract" field.
+func (suo *SubscribeUpdateOne) SetNeedContract(b bool) *SubscribeUpdateOne {
+	suo.mutation.SetNeedContract(b)
+	return suo
+}
+
+// SetNillableNeedContract sets the "need_contract" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableNeedContract(b *bool) *SubscribeUpdateOne {
+	if b != nil {
+		suo.SetNeedContract(*b)
+	}
+	return suo
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (suo *SubscribeUpdateOne) SetPlan(p *Plan) *SubscribeUpdateOne {
 	return suo.SetPlanID(p.ID)
@@ -2627,6 +2749,11 @@ func (suo *SubscribeUpdateOne) SetStore(s *Store) *SubscribeUpdateOne {
 // SetCabinet sets the "cabinet" edge to the Cabinet entity.
 func (suo *SubscribeUpdateOne) SetCabinet(c *Cabinet) *SubscribeUpdateOne {
 	return suo.SetCabinetID(c.ID)
+}
+
+// SetBrand sets the "brand" edge to the EbikeBrand entity.
+func (suo *SubscribeUpdateOne) SetBrand(e *EbikeBrand) *SubscribeUpdateOne {
+	return suo.SetBrandID(e.ID)
 }
 
 // SetEbike sets the "ebike" edge to the Ebike entity.
@@ -2762,6 +2889,12 @@ func (suo *SubscribeUpdateOne) ClearStore() *SubscribeUpdateOne {
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (suo *SubscribeUpdateOne) ClearCabinet() *SubscribeUpdateOne {
 	suo.mutation.ClearCabinet()
+	return suo
+}
+
+// ClearBrand clears the "brand" edge to the EbikeBrand entity.
+func (suo *SubscribeUpdateOne) ClearBrand() *SubscribeUpdateOne {
+	suo.mutation.ClearBrand()
 	return suo
 }
 
@@ -3335,6 +3468,13 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 			Column: subscribe.FieldFormula,
 		})
 	}
+	if value, ok := suo.mutation.NeedContract(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: subscribe.FieldNeedContract,
+		})
+	}
 	if suo.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -3537,6 +3677,41 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: cabinet.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.BrandCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.BrandTable,
+			Columns: []string{subscribe.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebikebrand.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.BrandIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.BrandTable,
+			Columns: []string{subscribe.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebikebrand.FieldID,
 				},
 			},
 		}

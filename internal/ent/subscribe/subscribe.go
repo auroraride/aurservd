@@ -37,6 +37,8 @@ const (
 	FieldStoreID = "store_id"
 	// FieldCabinetID holds the string denoting the cabinet_id field in the database.
 	FieldCabinetID = "cabinet_id"
+	// FieldBrandID holds the string denoting the brand_id field in the database.
+	FieldBrandID = "brand_id"
 	// FieldEbikeID holds the string denoting the ebike_id field in the database.
 	FieldEbikeID = "ebike_id"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
@@ -85,6 +87,8 @@ const (
 	FieldAgentEndAt = "agent_end_at"
 	// FieldFormula holds the string denoting the formula field in the database.
 	FieldFormula = "formula"
+	// FieldNeedContract holds the string denoting the need_contract field in the database.
+	FieldNeedContract = "need_contract"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
@@ -97,6 +101,8 @@ const (
 	EdgeStore = "store"
 	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
 	EdgeCabinet = "cabinet"
+	// EdgeBrand holds the string denoting the brand edge name in mutations.
+	EdgeBrand = "brand"
 	// EdgeEbike holds the string denoting the ebike edge name in mutations.
 	EdgeEbike = "ebike"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
@@ -159,6 +165,13 @@ const (
 	CabinetInverseTable = "cabinet"
 	// CabinetColumn is the table column denoting the cabinet relation/edge.
 	CabinetColumn = "cabinet_id"
+	// BrandTable is the table that holds the brand relation/edge.
+	BrandTable = "subscribe"
+	// BrandInverseTable is the table name for the EbikeBrand entity.
+	// It exists in this package in order to avoid circular dependency with the "ebikebrand" package.
+	BrandInverseTable = "ebike_brand"
+	// BrandColumn is the table column denoting the brand relation/edge.
+	BrandColumn = "brand_id"
 	// EbikeTable is the table that holds the ebike relation/edge.
 	EbikeTable = "subscribe"
 	// EbikeInverseTable is the table name for the Ebike entity.
@@ -239,6 +252,7 @@ var Columns = []string{
 	FieldStationID,
 	FieldStoreID,
 	FieldCabinetID,
+	FieldBrandID,
 	FieldEbikeID,
 	FieldRiderID,
 	FieldInitialOrderID,
@@ -263,6 +277,7 @@ var Columns = []string{
 	FieldPauseOverdue,
 	FieldAgentEndAt,
 	FieldFormula,
+	FieldNeedContract,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -306,4 +321,6 @@ var (
 	DefaultRemaining int
 	// DefaultPauseOverdue holds the default value on creation for the "pause_overdue" field.
 	DefaultPauseOverdue bool
+	// DefaultNeedContract holds the default value on creation for the "need_contract" field.
+	DefaultNeedContract bool
 )

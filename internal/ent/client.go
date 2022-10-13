@@ -6975,6 +6975,22 @@ func (c *SubscribeClient) QueryCabinet(s *Subscribe) *CabinetQuery {
 	return query
 }
 
+// QueryBrand queries the brand edge of a Subscribe.
+func (c *SubscribeClient) QueryBrand(s *Subscribe) *EbikeBrandQuery {
+	query := &EbikeBrandQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
+			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.BrandTable, subscribe.BrandColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryEbike queries the ebike edge of a Subscribe.
 func (c *SubscribeClient) QueryEbike(s *Subscribe) *EbikeQuery {
 	query := &EbikeQuery{config: c.config}

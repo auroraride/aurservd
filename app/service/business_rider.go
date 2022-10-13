@@ -418,6 +418,10 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 
 // Active 激活订阅
 func (s *businessRiderService) Active(info *model.SubscribeActiveInfo, sub *ent.Subscribe) {
+    if !NewContract().Effective(s.rider) {
+        snag.Panic("还未签约, 请签约")
+    }
+
     s.preprocess(business.TypeActive, sub)
 
     s.do(business.TypeActive, func(tx *ent.Tx) {

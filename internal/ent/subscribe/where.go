@@ -151,6 +151,13 @@ func CabinetID(v uint64) predicate.Subscribe {
 	})
 }
 
+// BrandID applies equality check predicate on the "brand_id" field. It's identical to BrandIDEQ.
+func BrandID(v uint64) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBrandID), v))
+	})
+}
+
 // EbikeID applies equality check predicate on the "ebike_id" field. It's identical to EbikeIDEQ.
 func EbikeID(v uint64) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
@@ -316,6 +323,13 @@ func AgentEndAt(v time.Time) predicate.Subscribe {
 func Formula(v string) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldFormula), v))
+	})
+}
+
+// NeedContract applies equality check predicate on the "need_contract" field. It's identical to NeedContractEQ.
+func NeedContract(v bool) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldNeedContract), v))
 	})
 }
 
@@ -949,6 +963,56 @@ func CabinetIDIsNil() predicate.Subscribe {
 func CabinetIDNotNil() predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldCabinetID)))
+	})
+}
+
+// BrandIDEQ applies the EQ predicate on the "brand_id" field.
+func BrandIDEQ(v uint64) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBrandID), v))
+	})
+}
+
+// BrandIDNEQ applies the NEQ predicate on the "brand_id" field.
+func BrandIDNEQ(v uint64) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldBrandID), v))
+	})
+}
+
+// BrandIDIn applies the In predicate on the "brand_id" field.
+func BrandIDIn(vs ...uint64) predicate.Subscribe {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldBrandID), v...))
+	})
+}
+
+// BrandIDNotIn applies the NotIn predicate on the "brand_id" field.
+func BrandIDNotIn(vs ...uint64) predicate.Subscribe {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldBrandID), v...))
+	})
+}
+
+// BrandIDIsNil applies the IsNil predicate on the "brand_id" field.
+func BrandIDIsNil() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldBrandID)))
+	})
+}
+
+// BrandIDNotNil applies the NotNil predicate on the "brand_id" field.
+func BrandIDNotNil() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldBrandID)))
 	})
 }
 
@@ -2613,6 +2677,20 @@ func FormulaContainsFold(v string) predicate.Subscribe {
 	})
 }
 
+// NeedContractEQ applies the EQ predicate on the "need_contract" field.
+func NeedContractEQ(v bool) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldNeedContract), v))
+	})
+}
+
+// NeedContractNEQ applies the NEQ predicate on the "need_contract" field.
+func NeedContractNEQ(v bool) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldNeedContract), v))
+	})
+}
+
 // HasPlan applies the HasEdge predicate on the "plan" edge.
 func HasPlan() predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
@@ -2772,6 +2850,34 @@ func HasCabinetWith(preds ...predicate.Cabinet) predicate.Subscribe {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(CabinetInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, CabinetTable, CabinetColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasBrand applies the HasEdge predicate on the "brand" edge.
+func HasBrand() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(BrandTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, BrandTable, BrandColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasBrandWith applies the HasEdge predicate on the "brand" edge with a given conditions (other predicates).
+func HasBrandWith(preds ...predicate.EbikeBrand) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(BrandInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, BrandTable, BrandColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

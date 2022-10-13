@@ -52,20 +52,21 @@ type SubscribeOrderInfo struct {
 }
 
 type Subscribe struct {
-    ID          uint64 `json:"id"`                         // 订阅ID
-    RiderID     uint64 `json:"riderId"`                    // 骑手ID
-    Status      uint8  `json:"status" enums:"0,1,2,3,4,5"` // 状态 0未激活 1计费中 2寄存中 3已逾期 4已退订 5已取消
-    Model       string `json:"model"`                      // 可用电池型号
-    Days        int    `json:"days"`                       // 总天数 = 骑士卡天数 + 改动天数 + 暂停天数 + 续费天数 + 已缴纳逾期滞纳金天数
-    InitialDays int    `json:"initialDays"`                // 初始购买骑士卡天数
-    AlterDays   int    `json:"alterDays"`                  // 改动天数
-    PauseDays   int    `json:"pauseDays"`                  // 暂停天数
-    OverdueDays int    `json:"overdueDays"`                // 已缴纳逾期滞纳金天数
-    Remaining   int    `json:"remaining"`                  // 剩余天数 = 总天数 - 已过时间
-    StartAt     string `json:"startAt"`                    // 开始时间
-    EndAt       string `json:"endAt"`                      // 结束时间 / 预计套餐结束时间
-    Business    bool   `json:"business"`                   // 是否可办理业务
-    Suspend     bool   `json:"suspend"`                    // 是否暂停扣费
+    ID           uint64 `json:"id"`                         // 订阅ID
+    RiderID      uint64 `json:"riderId"`                    // 骑手ID
+    Status       uint8  `json:"status" enums:"0,1,2,3,4,5"` // 状态 0未激活 1计费中 2寄存中 3已逾期 4已退订 5已取消
+    Model        string `json:"model"`                      // 可用电池型号
+    Days         int    `json:"days"`                       // 总天数 = 骑士卡天数 + 改动天数 + 暂停天数 + 续费天数 + 已缴纳逾期滞纳金天数
+    InitialDays  int    `json:"initialDays"`                // 初始购买骑士卡天数
+    AlterDays    int    `json:"alterDays"`                  // 改动天数
+    PauseDays    int    `json:"pauseDays"`                  // 暂停天数
+    OverdueDays  int    `json:"overdueDays"`                // 已缴纳逾期滞纳金天数
+    Remaining    int    `json:"remaining"`                  // 剩余天数 = 总天数 - 已过时间
+    StartAt      string `json:"startAt"`                    // 开始时间
+    EndAt        string `json:"endAt"`                      // 结束时间 / 预计套餐结束时间
+    Business     bool   `json:"business"`                   // 是否可办理业务
+    Suspend      bool   `json:"suspend"`                    // 是否暂停扣费
+    NeedContract bool   `json:"needContract"`               // 是否需要签约
 
     City       *City               `json:"city,omitempty"`       // 所属城市
     Models     []BatteryModel      `json:"models,omitempty"`     // 可用电池型号

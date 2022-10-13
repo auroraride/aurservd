@@ -20653,6 +20653,10 @@ const docTemplate = `{
                         "$ref": "#/definitions/model.BatteryModel"
                     }
                 },
+                "needContract": {
+                    "description": "是否需要签约",
+                    "type": "boolean"
+                },
                 "order": {
                     "description": "订单信息",
                     "allOf": [

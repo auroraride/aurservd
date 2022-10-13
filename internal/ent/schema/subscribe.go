@@ -85,6 +85,7 @@ func (Subscribe) Fields() []ent.Field {
         field.Bool("pause_overdue").Default(false).Comment("是否超期退租"),
         field.Time("agent_end_at").Optional().Nillable().Comment("代理商处到期日期"),
         field.String("formula").Optional().Nillable().Comment("计算公式"),
+        field.Bool("need_contract").Default(false).Comment("是否需要签约"),
     }
 }
 
@@ -119,6 +120,7 @@ func (Subscribe) Mixin() []ent.Mixin {
         CabinetMixin{Optional: true},
 
         // 电车
+        EbikeBrandMixin{Optional: true},
         EbikeMixin{Optional: true},
     }
 }

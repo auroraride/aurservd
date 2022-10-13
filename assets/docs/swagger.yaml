@@ -5802,6 +5802,9 @@ definitions:
         items:
           $ref: '#/definitions/model.BatteryModel'
         type: array
+      needContract:
+        description: 是否需要签约
+        type: boolean
       order:
         allOf:
         - $ref: '#/definitions/model.SubscribeOrderInfo'

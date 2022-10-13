@@ -866,7 +866,6 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device, token string)
             }
         }
     } else {
-        profile.Subscribe = subd
         profile.OrderNotActived = silk.Bool(subd != nil && subd.Status == model.SubscribeStatusInactive)
         profile.Deposit = s.Deposit(u.ID)
         profile.UseStore = true

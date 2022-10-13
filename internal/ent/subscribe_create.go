@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
@@ -177,6 +178,20 @@ func (sc *SubscribeCreate) SetCabinetID(u uint64) *SubscribeCreate {
 func (sc *SubscribeCreate) SetNillableCabinetID(u *uint64) *SubscribeCreate {
 	if u != nil {
 		sc.SetCabinetID(*u)
+	}
+	return sc
+}
+
+// SetBrandID sets the "brand_id" field.
+func (sc *SubscribeCreate) SetBrandID(u uint64) *SubscribeCreate {
+	sc.mutation.SetBrandID(u)
+	return sc
+}
+
+// SetNillableBrandID sets the "brand_id" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableBrandID(u *uint64) *SubscribeCreate {
+	if u != nil {
+		sc.SetBrandID(*u)
 	}
 	return sc
 }
@@ -501,6 +516,20 @@ func (sc *SubscribeCreate) SetNillableFormula(s *string) *SubscribeCreate {
 	return sc
 }
 
+// SetNeedContract sets the "need_contract" field.
+func (sc *SubscribeCreate) SetNeedContract(b bool) *SubscribeCreate {
+	sc.mutation.SetNeedContract(b)
+	return sc
+}
+
+// SetNillableNeedContract sets the "need_contract" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableNeedContract(b *bool) *SubscribeCreate {
+	if b != nil {
+		sc.SetNeedContract(*b)
+	}
+	return sc
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (sc *SubscribeCreate) SetPlan(p *Plan) *SubscribeCreate {
 	return sc.SetPlanID(p.ID)
@@ -529,6 +558,11 @@ func (sc *SubscribeCreate) SetStore(s *Store) *SubscribeCreate {
 // SetCabinet sets the "cabinet" edge to the Cabinet entity.
 func (sc *SubscribeCreate) SetCabinet(c *Cabinet) *SubscribeCreate {
 	return sc.SetCabinetID(c.ID)
+}
+
+// SetBrand sets the "brand" edge to the EbikeBrand entity.
+func (sc *SubscribeCreate) SetBrand(e *EbikeBrand) *SubscribeCreate {
+	return sc.SetBrandID(e.ID)
 }
 
 // SetEbike sets the "ebike" edge to the Ebike entity.
@@ -755,6 +789,10 @@ func (sc *SubscribeCreate) defaults() error {
 		v := subscribe.DefaultPauseOverdue
 		sc.mutation.SetPauseOverdue(v)
 	}
+	if _, ok := sc.mutation.NeedContract(); !ok {
+		v := subscribe.DefaultNeedContract
+		sc.mutation.SetNeedContract(v)
+	}
 	return nil
 }
 
@@ -801,6 +839,9 @@ func (sc *SubscribeCreate) check() error {
 	}
 	if _, ok := sc.mutation.PauseOverdue(); !ok {
 		return &ValidationError{Name: "pause_overdue", err: errors.New(`ent: missing required field "Subscribe.pause_overdue"`)}
+	}
+	if _, ok := sc.mutation.NeedContract(); !ok {
+		return &ValidationError{Name: "need_contract", err: errors.New(`ent: missing required field "Subscribe.need_contract"`)}
 	}
 	if _, ok := sc.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Subscribe.city"`)}
@@ -1044,6 +1085,14 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 		})
 		_node.Formula = &value
 	}
+	if value, ok := sc.mutation.NeedContract(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: subscribe.FieldNeedContract,
+		})
+		_node.NeedContract = value
+	}
 	if nodes := sc.mutation.PlanIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1162,6 +1211,26 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.CabinetID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.BrandIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.BrandTable,
+			Columns: []string{subscribe.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebikebrand.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.BrandID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := sc.mutation.EbikeIDs(); len(nodes) > 0 {
@@ -1556,6 +1625,24 @@ func (u *SubscribeUpsert) UpdateCabinetID() *SubscribeUpsert {
 // ClearCabinetID clears the value of the "cabinet_id" field.
 func (u *SubscribeUpsert) ClearCabinetID() *SubscribeUpsert {
 	u.SetNull(subscribe.FieldCabinetID)
+	return u
+}
+
+// SetBrandID sets the "brand_id" field.
+func (u *SubscribeUpsert) SetBrandID(v uint64) *SubscribeUpsert {
+	u.Set(subscribe.FieldBrandID, v)
+	return u
+}
+
+// UpdateBrandID sets the "brand_id" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateBrandID() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldBrandID)
+	return u
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (u *SubscribeUpsert) ClearBrandID() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldBrandID)
 	return u
 }
 
@@ -1961,6 +2048,18 @@ func (u *SubscribeUpsert) ClearFormula() *SubscribeUpsert {
 	return u
 }
 
+// SetNeedContract sets the "need_contract" field.
+func (u *SubscribeUpsert) SetNeedContract(v bool) *SubscribeUpsert {
+	u.Set(subscribe.FieldNeedContract, v)
+	return u
+}
+
+// UpdateNeedContract sets the "need_contract" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateNeedContract() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldNeedContract)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -2205,6 +2304,27 @@ func (u *SubscribeUpsertOne) UpdateCabinetID() *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) ClearCabinetID() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearCabinetID()
+	})
+}
+
+// SetBrandID sets the "brand_id" field.
+func (u *SubscribeUpsertOne) SetBrandID(v uint64) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetBrandID(v)
+	})
+}
+
+// UpdateBrandID sets the "brand_id" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateBrandID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateBrandID()
+	})
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (u *SubscribeUpsertOne) ClearBrandID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearBrandID()
 	})
 }
 
@@ -2677,6 +2797,20 @@ func (u *SubscribeUpsertOne) ClearFormula() *SubscribeUpsertOne {
 	})
 }
 
+// SetNeedContract sets the "need_contract" field.
+func (u *SubscribeUpsertOne) SetNeedContract(v bool) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetNeedContract(v)
+	})
+}
+
+// UpdateNeedContract sets the "need_contract" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateNeedContract() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateNeedContract()
+	})
+}
+
 // Exec executes the query.
 func (u *SubscribeUpsertOne) Exec(ctx context.Context) error {
 	if len(u.create.conflict) == 0 {
@@ -3083,6 +3217,27 @@ func (u *SubscribeUpsertBulk) UpdateCabinetID() *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) ClearCabinetID() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearCabinetID()
+	})
+}
+
+// SetBrandID sets the "brand_id" field.
+func (u *SubscribeUpsertBulk) SetBrandID(v uint64) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetBrandID(v)
+	})
+}
+
+// UpdateBrandID sets the "brand_id" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateBrandID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateBrandID()
+	})
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (u *SubscribeUpsertBulk) ClearBrandID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearBrandID()
 	})
 }
 
@@ -3552,6 +3707,20 @@ func (u *SubscribeUpsertBulk) UpdateFormula() *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) ClearFormula() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearFormula()
+	})
+}
+
+// SetNeedContract sets the "need_contract" field.
+func (u *SubscribeUpsertBulk) SetNeedContract(v bool) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetNeedContract(v)
+	})
+}
+
+// UpdateNeedContract sets the "need_contract" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateNeedContract() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateNeedContract()
 	})
 }
 

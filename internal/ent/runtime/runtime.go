@@ -1120,6 +1120,10 @@ func init() {
 	subscribeDescPauseOverdue := subscribeFields[20].Descriptor()
 	// subscribe.DefaultPauseOverdue holds the default value on creation for the pause_overdue field.
 	subscribe.DefaultPauseOverdue = subscribeDescPauseOverdue.Default.(bool)
+	// subscribeDescNeedContract is the schema descriptor for need_contract field.
+	subscribeDescNeedContract := subscribeFields[23].Descriptor()
+	// subscribe.DefaultNeedContract holds the default value on creation for the need_contract field.
+	subscribe.DefaultNeedContract = subscribeDescNeedContract.Default.(bool)
 	subscribealterMixin := schema.SubscribeAlter{}.Mixin()
 	subscribealterMixinHooks2 := subscribealterMixin[2].Hooks()
 	subscribealter.Hooks[0] = subscribealterMixinHooks2[0]
