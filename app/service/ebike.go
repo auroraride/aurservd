@@ -44,6 +44,23 @@ func (s *ebikeService) QueryX(id uint64) *ent.Ebike {
     return e
 }
 
+func (s *ebikeService) QueryKeyword(keyword string) (*ent.Ebike, error) {
+    return s.orm.Query().Where(
+        ebike.Or(
+            ebike.Sn(keyword),
+            ebike.Plate(keyword),
+        ),
+    ).First(s.ctx)
+}
+
+func (s *ebikeService) QueryKeywordX(keyword string) *ent.Ebike {
+    result, _ := s.QueryKeyword(keyword)
+    if result == nil {
+        snag.Panic("未找到电车")
+    }
+    return result
+}
+
 func (s *ebikeService) listFilter(req model.EbikeListFilter) (q *ent.EbikeQuery, info ar.Map) {
     info = make(ar.Map)
 
@@ -252,4 +269,14 @@ func (s *ebikeService) BatchCreate(c echo.Context) (failed []string) {
     }
 
     return
+}
+
+// UnassignedInfo 获取未分配车辆信息
+func (s *ebikeService) UnassignedInfo(keyword string) any {
+    bike := s.QueryKeywordX(keyword)
+    //  || bike.Plate == nil
+    if bike.Status != model.EbikeStatusInStock || bike.RiderID != nil {
+        snag.Panic("电车状态错误")
+    }
+    return nil
 }
