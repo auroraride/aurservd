@@ -69,6 +69,7 @@ func (s *planService) QueryEffectiveWithID(id uint64) *ent.Plan {
             plan.StartLTE(today),
             plan.EndGTE(today),
         ).
+        WithBrand().
         Only(s.ctx)
     if err != nil || item == nil {
         log.Error(err)

@@ -112,6 +112,9 @@ func (s *orderService) PreconditionRenewal(sub *ent.Subscribe) {
 }
 
 // Create 创建订单
+// 仅新签和续签骑士卡可使用优惠和积分
+// 滞纳金订单无法使用优惠券和积分
+// 押金不参与任何优惠手段
 func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCreateRes) {
     if req.OrderType == model.OrderTypeFee {
         return s.CreateFee(s.rider.ID, req.Payway)
@@ -122,6 +125,10 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
     // 查询套餐是否存在
     p := NewPlan().QueryEffectiveWithID(req.PlanID)
 
+    if p.BrandID != nil && p.Edges.Brand == nil {
+        snag.Panic("骑士卡错误")
+    }
+
     // 查询是否企业骑手
     if s.rider.EnterpriseID != nil {
         snag.Panic("团签用户无法购买")
@@ -129,9 +136,9 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
 
     // 查询骑手是否签约过
     // TODO 新签约逻辑
-    if !NewContract().Effective(s.rider) {
-        snag.Panic("请先签约")
-    }
+    // if !NewContract().Effective(s.rider) {
+    //     snag.Panic("请先签约")
+    // }
 
     // 查询是否有退款中的押金
     if exists, _ := ent.Database.Order.QueryNotDeleted().Where(
@@ -225,7 +232,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
 
     // 积分抵扣
     var points int64
-    if req.Point {
+    if req.Point && price > 0 {
         cents := int64(price / model.PointRatio)
         // 若积分小于所需积分, 则全部扣除
         if s.rider.Points < cents {
@@ -276,6 +283,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
             CouponAmount: camount,
             Coupons:      req.Coupons,
             ReliefNewly:  p.ReliefNewly,
+            EbikeBrandID: p.BrandID,
         },
     }
 
@@ -284,6 +292,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
     return
 }
 
+// CreateFee 创建滞纳金订单
 func (s *orderService) CreateFee(riderID uint64, payway uint8) *model.OrderCreateRes {
     result := new(model.OrderCreateRes)
 
@@ -293,11 +302,13 @@ func (s *orderService) CreateFee(riderID uint64, payway uint8) *model.OrderCreat
     }
 
     fee, _, o := NewSubscribe().OverdueFee(riderID, sub)
-    // TODO DEBUG 模式支付一分钱
+
+    // DEBUG 模式支付一分钱
     mode := ar.Config.App.Mode
     if mode == "debug" || mode == "next" {
         fee = 0.01
     }
+
     no := tools.NewUnique().NewSN28()
     prepay := &model.PaymentCache{
         CacheType: model.PaymentCacheTypeOverdueFee,
@@ -325,6 +336,7 @@ func (s *orderService) CreateFee(riderID uint64, payway uint8) *model.OrderCreat
     return result
 }
 
+// Prepay 预支付订单
 func (s *orderService) Prepay(payway uint8, no string, prepay *model.PaymentCache, result *model.OrderCreateRes) {
     // 订单缓存
     err := cache.Set(s.ctx, no, prepay, 20*time.Minute).Err()
@@ -379,6 +391,7 @@ func (s *orderService) DoPayment(pc *model.PaymentCache) {
     }
 }
 
+// FeePaid 滞纳金支付
 func (s *orderService) FeePaid(trade *model.PaymentOverdueFee) {
 
     // 查询欠费订单是否已存在
@@ -454,7 +467,15 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
             SetInitialDays(int(trade.Days)).
             SetNillableParentID(trade.OrderID).
             SetNillableSubscribeID(trade.SubscribeID).
-            SetNillablePastDays(trade.PastDays)
+            SetNillablePastDays(trade.PastDays).
+            SetPoints(trade.Points).
+            SetPointRatio(trade.PointRatio).
+            SetCouponAmount(trade.CouponAmount).
+            SetReliefNewly(trade.ReliefNewly).
+            SetNillableBrandID(trade.EbikeBrandID)
+        if len(trade.Coupons) > 0 {
+            oc.AddCouponIDs(trade.Coupons...)
+        }
         o, err = oc.Save(s.ctx)
         if err != nil {
             log.Errorf("[ORDER PAID %s ERROR]: %s", trade.OutTradeNo, err.Error())

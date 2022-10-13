@@ -17684,9 +17684,12 @@ const docTemplate = `{
                     "description": "城市ID, 新签必填",
                     "type": "integer"
                 },
-                "model": {
-                    "description": "用户所选电池型号, 新签必填",
-                    "type": "string"
+                "coupons": {
+                    "description": "优惠券",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "orderType": {
                     "description": "订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金",
@@ -17712,6 +17715,10 @@ const docTemplate = `{
                 "planId": {
                     "description": "套餐ID ",
                     "type": "integer"
+                },
+                "point": {
+                    "description": "是否使用积分",
+                    "type": "boolean"
                 }
             }
         },
@@ -18036,7 +18043,7 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "price": {
-                    "description": "价格",
+                    "description": "价格, 应支付价格 = 价格 - 新签优惠",
                     "type": "number"
                 },
                 "reliefNewly": {
