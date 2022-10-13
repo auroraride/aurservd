@@ -112,8 +112,8 @@ func (s *updater) DoUpdate() (crr error) {
 
     var item *ent.Cabinet
     item, err = up.SetHealth(health).Save(s.ctx)
-    log.Errorf("%s更新写入失败: %v", s.cab.Serial, err)
     if err != nil {
+        log.Errorf("%s更新写入失败: %v", s.cab.Serial, err)
         return
     }
 
