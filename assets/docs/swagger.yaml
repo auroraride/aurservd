@@ -14047,9 +14047,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            items:
-              $ref: '#/definitions/model.PlanNewlyRes'
-            type: array
+            $ref: '#/definitions/model.PlanNewlyRes'
       summary: R3002 新购骑士卡
       tags:
       - '[R]骑手接口'

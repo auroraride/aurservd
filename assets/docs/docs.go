@@ -12126,10 +12126,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.PlanNewlyRes"
-                            }
+                            "$ref": "#/definitions/model.PlanNewlyRes"
                         }
                     }
                 }
