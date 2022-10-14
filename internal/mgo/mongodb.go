@@ -13,9 +13,10 @@ import (
 )
 
 var (
-    Client      *qmgo.Client
-    DB          *qmgo.Database
-    CabinetTask *qmgo.Collection
+    Client        *qmgo.Client
+    DB            *qmgo.Database
+    CabinetTask   *qmgo.Collection
+    EbikeAllocate *qmgo.Collection
 )
 
 func Connect(url, db string) {
@@ -28,7 +29,7 @@ func Connect(url, db string) {
     DB = Client.Database(db)
 
     CabinetTask = DB.Collection("cabinet_task")
-    err = CabinetTask.CreateIndexes(context.Background(), []options.IndexModel{
+    err = CabinetTask.CreateIndexes(ctx, []options.IndexModel{
         {
             Key: []string{
                 "serial",
@@ -53,4 +54,29 @@ func Connect(url, db string) {
     if err != nil {
         log.Fatalln(err)
     }
+
+    EbikeAllocate = DB.Collection("ebike_allocate")
+    err = EbikeAllocate.CreateIndexes(ctx, []options.IndexModel{
+        {
+            Key: []string{"ebike.id"},
+        },
+        {
+            Key: []string{"rider.id"},
+        },
+        {
+            Key: []string{"subscribeId"},
+        },
+        {
+            Key: []string{"status"},
+        },
+        {
+            Key: []string{"createdAt"},
+        },
+        {
+            Key: []string{"employeeId"},
+        },
+        {
+            Key: []string{"storeId"},
+        },
+    })
 }

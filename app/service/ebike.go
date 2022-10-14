@@ -14,10 +14,15 @@ import (
     "github.com/auroraride/aurservd/internal/ent/ebikebrand"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/store"
+    "github.com/auroraride/aurservd/internal/mgo"
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/golang-module/carbon/v2"
     "github.com/labstack/echo/v4"
+    "github.com/qiniu/qmgo/operator"
+    "go.mongodb.org/mongo-driver/bson"
     "strings"
+    "time"
 )
 
 type ebikeService struct {
@@ -59,6 +64,57 @@ func (s *ebikeService) QueryKeywordX(keyword string) *ent.Ebike {
         snag.Panic("未找到电车")
     }
     return result
+}
+
+// IsAllocatedPending 电车是否已分配但未激活
+func (s *ebikeService) IsAllocatedPending(id uint64) bool {
+    t := carbon.Now().SubSeconds(model.EbikeAllocateExpiration).SetLocation(time.UTC).Carbon2Time()
+    c, _ := mgo.EbikeAllocate.Find(s.ctx, bson.M{
+        "ebikeId": id,
+        "status":  model.EbikeAllocateStatussPending,
+        "createdAt": bson.M{
+            operator.Gte: t,
+        },
+    }).Count()
+    return c > 0
+}
+
+func (s *ebikeService) IsAllocatedPendingX(id uint64) {
+    if s.IsAllocatedPending(id) {
+        snag.Panic("电车已被分配")
+    }
+}
+
+// AllocatableFilter 可分配车辆查询条件(不包含门店)
+func (s *ebikeService) AllocatableFilter() *ent.EbikeQuery {
+    return s.orm.Query().Where(
+        ebike.Status(model.EbikeStatusInStock),
+        ebike.PlateNotNil(),
+        ebike.MachineNotNil(),
+        ebike.SimNotNil(),
+        ebike.RiderIDIsNil(),
+    )
+}
+
+func (s *ebikeService) QueryAllocatable(id, storeID uint64) (bike *ent.Ebike) {
+    if s.IsAllocatedPending(id) {
+        return
+    }
+    q := s.AllocatableFilter().WithBrand().Where(ebike.StoreIDNotNil(), ebike.ID(id))
+    if storeID > 0 {
+        q.Where(ebike.StoreID(storeID))
+    }
+    bike, _ = q.First(s.ctx)
+    return bike
+}
+
+func (s *ebikeService) QueryAllocatableX(id, storeID uint64) *ent.Ebike {
+    s.IsAllocatedPendingX(id)
+    bike := s.QueryAllocatable(id, storeID)
+    if bike == nil {
+        snag.Panic("未找到可分配车辆")
+    }
+    return bike
 }
 
 func (s *ebikeService) listFilter(req model.EbikeListFilter) (q *ent.EbikeQuery, info ar.Map) {
@@ -237,7 +293,7 @@ func (s *ebikeService) BatchCreate(c echo.Context) (failed []string) {
             continue
         }
 
-        if _, ok := exists[columns[1]]; ok {
+        if _, ok = exists[columns[1]]; ok {
             failed = append(failed, fmt.Sprintf("车架号重复:%s", strings.Join(columns, ",")))
             continue
         }
@@ -269,14 +325,4 @@ func (s *ebikeService) BatchCreate(c echo.Context) (failed []string) {
     }
 
     return
-}
-
-// UnassignedInfo 获取未分配车辆信息
-func (s *ebikeService) UnassignedInfo(keyword string) any {
-    bike := s.QueryKeywordX(keyword)
-    //  || bike.Plate == nil
-    if bike.Status != model.EbikeStatusInStock || bike.RiderID != nil {
-        snag.Panic("电车状态错误")
-    }
-    return nil
 }

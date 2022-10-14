@@ -120,7 +120,9 @@ func (s *subscribeService) Recent(riderID uint64, params ...uint64) *ent.Subscri
                 doq.Where(order.Type(model.OrderTypeDeposit))
             })
         }).
-        WithEnterprise()
+        WithEnterprise().
+        WithBrand().
+        WithEbike()
     if len(params) == 0 {
         q.Where(subscribe.RiderID(riderID))
     } else {
@@ -230,6 +232,25 @@ func (s *subscribeService) Detail(sub *ent.Subscribe) *model.Subscribe {
             Agent: e.Agent,
         }
         res.Business = e.Status == model.EnterpriseStatusCollaborated
+    }
+
+    brand := sub.Edges.Brand
+    if brand != nil {
+        res.EbikeBrand = &model.EbikeBrand{
+            ID:    brand.ID,
+            Name:  brand.Name,
+            Cover: brand.Cover,
+        }
+    }
+
+    bike := sub.Edges.Ebike
+    if bike != nil {
+        res.Ebike = &model.EbikeInfo{
+            ID:        bike.ID,
+            SN:        bike.Sn,
+            ExFactory: bike.ExFactory,
+            Plate:     bike.Plate,
+        }
     }
 
     return res

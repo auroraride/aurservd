@@ -118,3 +118,7 @@ type CascaderOption struct {
     Label    string             `json:"label"`              // 名
     Children *[]*CascaderOption `json:"children,omitempty"` // 子
 }
+
+type KeywordQueryReq struct {
+    Keyword string `json:"keyword" validate:"required" query:"keyword" trans:"关键词"`
+}

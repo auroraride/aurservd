@@ -1250,6 +1250,189 @@ const docTemplate = `{
                 }
             }
         },
+        "/employee/v1/ebike/allocate": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E6004 车辆分配记录",
+                "operationId": "EmployeeEbikeList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "签约状态 1:未签约 2:已签约 3:已作废",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.EbikeAllocateInfo"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E6002 分配车辆",
+                "operationId": "EmployeeEbikeAllocate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "分配请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EbikeAllocateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.EbikeAllocateRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/employee/v1/ebike/allocate/info": {
+            "get": {
+                "description": "TODO 骑手签约成功后通过socket推送门店消息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E6003 车辆分配信息",
+                "operationId": "EmployeeEbikeInfo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "分配ID",
+                        "name": "allocateId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.EbikeAllocateInfo"
+                        }
+                    }
+                }
+            }
+        },
+        "/employee/v1/ebike/unallocated": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E6001 获取未分配电车信息",
+                "operationId": "EmployeeEbikeUnallocated",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键词",
+                        "name": "keyword",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "电车信息",
+                        "schema": {
+                            "$ref": "#/definitions/model.EbikeInfo"
+                        }
+                    }
+                }
+            }
+        },
         "/employee/v1/exception": {
             "post": {
                 "consumes": [
@@ -16118,6 +16301,85 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Ebike": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "description": "品牌信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EbikeBrand"
+                        }
+                    ]
+                },
+                "exFactory": {
+                    "description": "生产批次",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "plate": {
+                    "description": "车牌号",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "车架号",
+                    "type": "string"
+                }
+            }
+        },
+        "model.EbikeAllocateInfo": {
+            "type": "object",
+            "properties": {
+                "ebike": {
+                    "description": "电车信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Ebike"
+                        }
+                    ]
+                },
+                "rider": {
+                    "description": "骑手信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Rider"
+                        }
+                    ]
+                },
+                "status": {
+                    "description": "签约状态 1:未签约 2:已签约 3:已作废",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.EbikeAllocateReq": {
+            "type": "object",
+            "required": [
+                "ebikeId",
+                "riderId"
+            ],
+            "properties": {
+                "ebikeId": {
+                    "description": "电车ID ",
+                    "type": "integer"
+                },
+                "riderId": {
+                    "description": "骑手ID ",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.EbikeAllocateRes": {
+            "type": "object",
+            "properties": {
+                "allocateId": {
+                    "description": "分配ID",
+                    "type": "string"
+                }
+            }
+        },
         "model.EbikeBrand": {
             "type": "object",
             "properties": {
@@ -16202,6 +16464,26 @@ const docTemplate = `{
                 },
                 "sn": {
                     "description": "车架号 ",
+                    "type": "string"
+                }
+            }
+        },
+        "model.EbikeInfo": {
+            "type": "object",
+            "properties": {
+                "exFactory": {
+                    "description": "生产批次",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "plate": {
+                    "description": "车牌号",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "车架号",
                     "type": "string"
                 }
             }
@@ -20618,6 +20900,22 @@ const docTemplate = `{
                 "days": {
                     "description": "总天数 = 骑士卡天数 + 改动天数 + 暂停天数 + 续费天数 + 已缴纳逾期滞纳金天数",
                     "type": "integer"
+                },
+                "ebike": {
+                    "description": "电车属性",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EbikeInfo"
+                        }
+                    ]
+                },
+                "ebikeBrand": {
+                    "description": "电车品牌",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EbikeBrand"
+                        }
+                    ]
                 },
                 "endAt": {
                     "description": "结束时间 / 预计套餐结束时间",

@@ -53,4 +53,10 @@ func loadEmployeeRoutes() {
     g.GET("/assistance/pay", eapi.Assistance.PayStatus)
     g.GET("/assistance", eapi.Assistance.List)
     g.GET("/assistance/overview", eapi.Assistance.Overview)
+
+    // 电车
+    g.GET("/ebike/unallocated", eapi.Ebike.Unallocated)
+    g.POST("/ebike/allocate", eapi.Ebike.Allocate)
+    g.GET("/ebike/allocate/info", eapi.Ebike.Info)
+    g.GET("/ebike/allocate", eapi.Ebike.List)
 }

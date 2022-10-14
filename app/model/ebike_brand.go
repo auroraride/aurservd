@@ -6,9 +6,9 @@
 package model
 
 type EbikeBrand struct {
-    ID    uint64 `json:"id"`
-    Name  string `json:"name"`            // 名称
-    Cover string `json:"cover,omitempty"` // 封面图
+    ID    uint64 `json:"id" bson:"id"`
+    Name  string `json:"name" bson:"name"`                       // 名称
+    Cover string `json:"cover,omitempty" bson:"cover,omitempty"` // 封面图
 }
 
 type EbikeBrandCreateReq struct {

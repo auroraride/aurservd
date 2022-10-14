@@ -2638,6 +2638,56 @@ definitions:
     required:
     - id
     type: object
+  model.Ebike:
+    properties:
+      brand:
+        allOf:
+        - $ref: '#/definitions/model.EbikeBrand'
+        description: 品牌信息
+      exFactory:
+        description: 生产批次
+        type: string
+      id:
+        type: integer
+      plate:
+        description: 车牌号
+        type: string
+      sn:
+        description: 车架号
+        type: string
+    type: object
+  model.EbikeAllocateInfo:
+    properties:
+      ebike:
+        allOf:
+        - $ref: '#/definitions/model.Ebike'
+        description: 电车信息
+      rider:
+        allOf:
+        - $ref: '#/definitions/model.Rider'
+        description: 骑手信息
+      status:
+        description: 签约状态 1:未签约 2:已签约 3:已作废
+        type: integer
+    type: object
+  model.EbikeAllocateReq:
+    properties:
+      ebikeId:
+        description: '电车ID '
+        type: integer
+      riderId:
+        description: '骑手ID '
+        type: integer
+    required:
+    - ebikeId
+    - riderId
+    type: object
+  model.EbikeAllocateRes:
+    properties:
+      allocateId:
+        description: 分配ID
+        type: string
+    type: object
   model.EbikeBrand:
     properties:
       cover:
@@ -2700,6 +2750,20 @@ definitions:
     - brandId
     - exFactory
     - sn
+    type: object
+  model.EbikeInfo:
+    properties:
+      exFactory:
+        description: 生产批次
+        type: string
+      id:
+        type: integer
+      plate:
+        description: 车牌号
+        type: string
+      sn:
+        description: 车架号
+        type: string
     type: object
   model.EbikeListRes:
     properties:
@@ -5781,6 +5845,14 @@ definitions:
       days:
         description: 总天数 = 骑士卡天数 + 改动天数 + 暂停天数 + 续费天数 + 已缴纳逾期滞纳金天数
         type: integer
+      ebike:
+        allOf:
+        - $ref: '#/definitions/model.EbikeInfo'
+        description: 电车属性
+      ebikeBrand:
+        allOf:
+        - $ref: '#/definitions/model.EbikeBrand'
+        description: 电车品牌
       endAt:
         description: 结束时间 / 预计套餐结束时间
         type: string
@@ -6933,6 +7005,125 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: E2006 退租
+      tags:
+      - '[E]店员接口'
+  /employee/v1/ebike/allocate:
+    get:
+      consumes:
+      - application/json
+      operationId: EmployeeEbikeList
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 签约状态 1:未签约 2:已签约 3:已作废
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.EbikeAllocateInfo'
+                  type: array
+              type: object
+      summary: E6004 车辆分配记录
+      tags:
+      - '[E]店员接口'
+    post:
+      consumes:
+      - application/json
+      operationId: EmployeeEbikeAllocate
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      - description: 分配请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.EbikeAllocateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.EbikeAllocateRes'
+      summary: E6002 分配车辆
+      tags:
+      - '[E]店员接口'
+  /employee/v1/ebike/allocate/info:
+    get:
+      consumes:
+      - application/json
+      description: TODO 骑手签约成功后通过socket推送门店消息
+      operationId: EmployeeEbikeInfo
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      - description: 分配ID
+        in: query
+        name: allocateId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.EbikeAllocateInfo'
+      summary: E6003 车辆分配信息
+      tags:
+      - '[E]店员接口'
+  /employee/v1/ebike/unallocated:
+    get:
+      consumes:
+      - application/json
+      operationId: EmployeeEbikeUnallocated
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      - description: 关键词
+        in: query
+        name: keyword
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 电车信息
+          schema:
+            $ref: '#/definitions/model.EbikeInfo'
+      summary: E6001 获取未分配电车信息
       tags:
       - '[E]店员接口'
   /employee/v1/exception:

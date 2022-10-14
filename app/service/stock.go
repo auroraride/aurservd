@@ -18,6 +18,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/internal/ent/city"
+    "github.com/auroraride/aurservd/internal/ent/ebike"
     "github.com/auroraride/aurservd/internal/ent/exception"
     "github.com/auroraride/aurservd/internal/ent/predicate"
     "github.com/auroraride/aurservd/internal/ent/stock"
@@ -1040,8 +1041,16 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
         looppers = make([]model.StockTransferLoopper, 1)
     }
 
-    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
-        for _, l := range looppers {
+    for _, l := range looppers {
+        err = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
+
+            // 电车是否可调拨检查
+            if l.EbikeID != nil {
+                if exists, _ := NewEbike().AllocatableFilter().Where(ebike.ID(*l.EbikeID)).Exist(s.ctx); !exists {
+                    return fmt.Errorf("电车无法调拨: %s", l.Message)
+                }
+            }
+
             // 调出
             var spouse *ent.Stock
             spouse, err = outCreator.
@@ -1053,8 +1062,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
                 if batchable {
                     return
                 }
-                failed = append(failed, fmt.Sprintf("出库失败: %s", l.Message))
-                continue
+                return fmt.Errorf("出库失败: %s", l.Message)
             }
 
             // 调入
@@ -1068,12 +1076,16 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
                 if batchable {
                     return
                 }
-                failed = append(failed, fmt.Sprintf("入库失败: %s", l.Message))
-                continue
+                return fmt.Errorf("入库失败: %s", l.Message)
             }
 
             // 电车调拨完成更新所属
             if l.EbikeID != nil {
+                // 是否可调拨检查
+                if exists, _ := NewEbike().AllocatableFilter().Where(ebike.ID(*l.EbikeID)).Exist(s.ctx); !exists {
+                    return fmt.Errorf("电车无法调拨: %s", l.Message)
+                }
+
                 updater := tx.Ebike.UpdateOneID(*l.EbikeID)
                 // 调拨到门店
                 if req.IsToStore() {
@@ -1083,13 +1095,16 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
                     updater.ClearStoreID()
                 }
                 if updater.Exec(s.ctx) != nil {
-                    failed = append(failed, fmt.Sprintf("电车更新失败: %s", l.Message))
-                    continue
+                    return fmt.Errorf("电车更新失败: %s", l.Message)
                 }
             }
+            return
+        })
+
+        if req.Batchable() {
+            failed = append(failed, err.Error())
         }
-        return nil
-    })
+    }
 
     return
 }

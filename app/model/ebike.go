@@ -104,3 +104,15 @@ type EbikeModifyReq struct {
     BrandID   *uint64 `json:"brandId"`   // 型号, 关联: `MB015 车辆型号列表`
     EbikeAttributes
 }
+
+type EbikeInfo struct {
+    ID        uint64  `json:"id"`
+    SN        string  `json:"sn"`              // 车架号
+    ExFactory string  `json:"exFactory"`       // 生产批次
+    Plate     *string `json:"plate,omitempty"` // 车牌号
+}
+
+type Ebike struct {
+    EbikeInfo
+    Brand EbikeBrand `json:"brand"` // 品牌信息
+}

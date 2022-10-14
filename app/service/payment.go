@@ -25,11 +25,11 @@ func NewPayment(params ...any) *paymentService {
 
 // Configure 获取支付配置
 func (s *paymentService) Configure() *model.PaymentConfigure {
-    if s.Rider() == nil {
+    if s.entRider == nil {
         return nil
     }
 
-    points := s.Rider().Points
+    points := s.entRider.Points
 
     ratio := model.PointRatio
     max := ratio * float64(points)
