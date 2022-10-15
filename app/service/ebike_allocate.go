@@ -12,6 +12,8 @@ import (
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/internal/mgo"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/golang-module/carbon/v2"
+    "github.com/qiniu/qmgo/operator"
     log "github.com/sirupsen/logrus"
     "go.mongodb.org/mongo-driver/bson"
     "go.mongodb.org/mongo-driver/bson/primitive"
@@ -53,6 +55,7 @@ func (s *ebikeAllocateService) UnallocatedInfo(keyword string) model.EbikeInfo {
         SN:        bike.Sn,
         ExFactory: bike.ExFactory,
         Plate:     bike.Plate,
+        Color:     bike.Color,
     }
 }
 
@@ -63,7 +66,7 @@ func (s *ebikeAllocateService) Allocate(req *model.EbikeAllocateReq) model.Ebike
     }
     // 查找骑手订阅
     sub, _ := ent.Database.Subscribe.QueryNotDeleted().Where(
-        subscribe.ID(req.RiderID),
+        subscribe.ID(req.SubscribeID),
         subscribe.Status(model.SubscribeStatusInactive),
     ).WithRider().First(s.ctx)
     if sub == nil {
@@ -73,6 +76,10 @@ func (s *ebikeAllocateService) Allocate(req *model.EbikeAllocateReq) model.Ebike
     if r == nil {
         snag.Panic("骑手查询失败")
     }
+    // 是否被分配过
+    if s.QueryEffectiveSubscribeID(sub.ID) != nil {
+        snag.Panic("该订阅已被分配过")
+    }
 
     // 查找电车
     bike := NewEbike().QueryAllocatableX(req.EbikeID, s.entStore.ID)
@@ -81,7 +88,7 @@ func (s *ebikeAllocateService) Allocate(req *model.EbikeAllocateReq) model.Ebike
         snag.Panic("电车型号查询失败")
     }
 
-    data := model.EbikeAllocate{
+    data := &model.EbikeAllocate{
         Rider: model.Rider{
             ID:    r.ID,
             Phone: r.Phone,
@@ -93,6 +100,7 @@ func (s *ebikeAllocateService) Allocate(req *model.EbikeAllocateReq) model.Ebike
                 SN:        bike.Sn,
                 ExFactory: bike.ExFactory,
                 Plate:     bike.Plate,
+                Color:     bike.Color,
             },
             Brand: model.EbikeBrand{
                 ID:   brand.ID,
@@ -100,19 +108,26 @@ func (s *ebikeAllocateService) Allocate(req *model.EbikeAllocateReq) model.Ebike
             },
         },
         SubscribeID: sub.ID,
-        Status:      model.EbikeAllocateStatussPending,
+        Status:      model.EbikeAllocateStatusPending,
         Model:       sub.Model,
         EmployeeID:  s.employee.ID,
         StoreID:     s.entStore.ID,
     }
+
     // 缓存电车分配情况
     result, err := mgo.EbikeAllocate.InsertOne(s.ctx, data)
     if err != nil {
         log.Error(err)
         snag.Panic("电车分配失败")
     }
+
+    objID, ok := result.InsertedID.(primitive.ObjectID)
+    if !ok || objID.IsZero() {
+        snag.Panic("电车分配失败")
+    }
+
     return model.EbikeAllocateRes{
-        AllocateID: result.InsertedID.(primitive.ObjectID).Hex(),
+        AllocateID: objID.Hex(),
     }
 }
 
@@ -127,20 +142,22 @@ func (s *ebikeAllocateService) Info(req *model.EbikeAllocateIDQueryReq) model.Eb
         Status: ea.Status,
         Rider:  ea.Rider,
         Ebike:  ea.Ebike,
+        Model:  ea.Model,
     }
 }
 
 // EmployeeList 电车分配店员列表
 func (s *ebikeAllocateService) EmployeeList(req *model.EbikeAllocateEmployeeListReq) *model.PaginationRes {
-    var items []model.EbikeAllocateInfo
+    items := make([]model.EbikeAllocateInfo, 0)
+
     q := mgo.EbikeAllocate.
         Find(s.ctx, bson.M{"employeeId": s.employee.ID}).
-        Skip(int64(req.GetOffset())).
-        Limit(int64(req.GetLimit())).
         Sort("-createdAt")
+
     t, _ := q.Count()
     total := int(t)
-    _ = q.All(&items)
+
+    _ = q.Skip(int64(req.GetOffset())).Limit(int64(req.GetLimit())).All(&items)
 
     return &model.PaginationRes{
         Pagination: model.Pagination{
@@ -150,4 +167,20 @@ func (s *ebikeAllocateService) EmployeeList(req *model.EbikeAllocateEmployeeList
         },
         Items: items,
     }
+}
+
+// QueryEffectiveSubscribeID 查询生效中的分配信息
+func (s *ebikeAllocateService) QueryEffectiveSubscribeID(subscribeID uint64) *model.EbikeAllocate {
+    var result model.EbikeAllocate
+    err := mgo.EbikeAllocate.Find(s.ctx, bson.M{
+        "subscribeId": subscribeID,
+        "status":      model.EbikeAllocateStatusPending,
+        "createAt": bson.M{
+            operator.Gte: primitive.NewDateTimeFromTime(carbon.Now().SubSeconds(model.EbikeAllocateExpiration).Carbon2Time()),
+        },
+    }).One(&result)
+    if err != nil {
+        return nil
+    }
+    return &result
 }

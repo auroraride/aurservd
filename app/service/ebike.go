@@ -21,8 +21,8 @@ import (
     "github.com/labstack/echo/v4"
     "github.com/qiniu/qmgo/operator"
     "go.mongodb.org/mongo-driver/bson"
+    "go.mongodb.org/mongo-driver/bson/primitive"
     "strings"
-    "time"
 )
 
 type ebikeService struct {
@@ -68,12 +68,11 @@ func (s *ebikeService) QueryKeywordX(keyword string) *ent.Ebike {
 
 // IsAllocatedPending 电车是否已分配但未激活
 func (s *ebikeService) IsAllocatedPending(id uint64) bool {
-    t := carbon.Now().SubSeconds(model.EbikeAllocateExpiration).SetLocation(time.UTC).Carbon2Time()
     c, _ := mgo.EbikeAllocate.Find(s.ctx, bson.M{
-        "ebikeId": id,
-        "status":  model.EbikeAllocateStatussPending,
-        "createdAt": bson.M{
-            operator.Gte: t,
+        "ebike.id": id,
+        "status":   model.EbikeAllocateStatusPending,
+        "createAt": bson.M{
+            operator.Gte: primitive.NewDateTimeFromTime(carbon.Now().SubSeconds(model.EbikeAllocateExpiration).Carbon2Time()),
         },
     }).Count()
     return c > 0
@@ -109,7 +108,6 @@ func (s *ebikeService) QueryAllocatable(id, storeID uint64) (bike *ent.Ebike) {
 }
 
 func (s *ebikeService) QueryAllocatableX(id, storeID uint64) *ent.Ebike {
-    s.IsAllocatedPendingX(id)
     bike := s.QueryAllocatable(id, storeID)
     if bike == nil {
         snag.Panic("未找到可分配车辆")

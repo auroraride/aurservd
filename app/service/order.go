@@ -228,6 +228,10 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
             snag.Panic("所选优惠券互斥")
         }
         price = tools.NewDecimal().Sub(price, camount)
+        // TODO price = 0时 直接支付成功
+        if price < 0 {
+            price = 0
+        }
     }
 
     // 积分抵扣
@@ -518,8 +522,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
                 SetCityID(trade.CityID).
                 SetInitialOrderID(o.ID).
                 AddOrders(o).
-                SetNillableBrandID(trade.EbikeBrandID).
-                SetNeedContract(true)
+                SetNillableBrandID(trade.EbikeBrandID)
             if do != nil {
                 sq.AddOrders(do)
             }

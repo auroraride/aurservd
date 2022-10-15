@@ -19,7 +19,7 @@ var Plan = new(plan)
 // List
 // @ID           RiderPlanList
 // @Router       /rider/v1/plan [GET]
-// @Summary      R3002 新购骑士卡
+// @Summary      R3001 新购骑士卡
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
@@ -36,7 +36,7 @@ func (*plan) List(c echo.Context) (err error) {
 // Renewly
 // @ID           RiderPlanRenewly
 // @Router       /rider/v1/plan/renewly [GET]
-// @Summary      R3003 续费骑士卡
+// @Summary      R3002 续费骑士卡
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json

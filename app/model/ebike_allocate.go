@@ -17,9 +17,9 @@ const (
 type EbikeAllocateStatus uint8
 
 const (
-    EbikeAllocateStatussPending EbikeAllocateStatus = iota + 1 // 未激活
-    EbikeAllocateStatussSigned                                 // 已签约
-    EbikeAllocateStatussVoid                                   // 已作废
+    EbikeAllocateStatusPending EbikeAllocateStatus = iota + 1 // 未激活
+    EbikeAllocateStatusSigned                                 // 已签约
+    EbikeAllocateStatusVoid                                   // 已作废
 )
 
 type EbikeAllocate struct {
@@ -30,13 +30,13 @@ type EbikeAllocate struct {
     Rider       Rider               `json:"rider" bson:"rider"`
     Ebike       Ebike               `json:"ebike" bson:"ebike"`
     Model       string              `json:"model" bson:"model"`
-    StoreID     uint64              `json:"storeId"`
-    EmployeeID  uint64              `json:"employeeId"`
+    StoreID     uint64              `json:"storeId" bson:"storeId"`
+    EmployeeID  uint64              `json:"employeeId" bson:"employeeId"`
 }
 
 type EbikeAllocateReq struct {
-    EbikeID uint64 `json:"ebikeId" validate:"required" trans:"电车ID"`
-    RiderID uint64 `json:"riderId" validate:"required" trans:"骑手ID"`
+    EbikeID     uint64 `json:"ebikeId" validate:"required" trans:"电车ID"`
+    SubscribeID uint64 `json:"subscribeId" validate:"required" trans:"订阅ID"`
 }
 
 type EbikeAllocateRes struct {
@@ -48,9 +48,10 @@ type EbikeAllocateIDQueryReq struct {
 }
 
 type EbikeAllocateInfo struct {
-    Status EbikeAllocateStatus `json:"status"` // 签约状态 1:未签约 2:已签约 3:已作废
-    Rider  Rider               `json:"rider"`  // 骑手信息
-    Ebike  Ebike               `json:"ebike"`  // 电车信息
+    Status EbikeAllocateStatus `json:"status" bson:"status"` // 签约状态 1:未签约 2:已签约 3:已作废
+    Rider  Rider               `json:"rider" bson:"rider"`   // 骑手信息
+    Ebike  Ebike               `json:"ebike" bson:"ebike"`   // 电车信息
+    Model  string              `json:"model" bson:"model"`   // 电池型号
 }
 
 type EbikeAllocateEmployeeListReq struct {

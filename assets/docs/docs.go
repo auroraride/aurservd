@@ -11615,6 +11615,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/constract/{sn}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R3004 合同签署结果",
+                "operationId": "RiderContractSignResult",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "合同编号",
+                        "name": "sn",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/contact": {
             "post": {
                 "consumes": [
@@ -11667,7 +11706,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R3005 签署合同",
+                "summary": "R3003 签署合同",
                 "operationId": "RiderContractSign",
                 "parameters": [
                     {
@@ -12063,7 +12102,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R3008 骑士卡购买历史",
+                "summary": "R3007 骑士卡购买历史",
                 "operationId": "RiderOrderList",
                 "parameters": [
                     {
@@ -12120,7 +12159,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R3006 支付请求",
+                "summary": "R3005 支付请求",
                 "operationId": "RiderOrderCreate",
                 "parameters": [
                     {
@@ -12161,7 +12200,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R3007 申请退款",
+                "summary": "R3006 申请退款",
                 "operationId": "RiderOrderRefund",
                 "parameters": [
                     {
@@ -12202,7 +12241,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R3010 订单支付状态",
+                "summary": "R3009 订单支付状态",
                 "operationId": "RiderOrderStatus",
                 "parameters": [
                     {
@@ -12241,7 +12280,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R3009 订单详情",
+                "summary": "R3008 订单详情",
                 "operationId": "RiderOrderDetail",
                 "parameters": [
                     {
@@ -12280,7 +12319,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R3002 新购骑士卡",
+                "summary": "R3001 新购骑士卡",
                 "operationId": "RiderPlanList",
                 "parameters": [
                     {
@@ -12326,7 +12365,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R3003 续费骑士卡",
+                "summary": "R3002 续费骑士卡",
                 "operationId": "RiderPlanRenewly",
                 "parameters": [
                     {
@@ -15811,20 +15850,11 @@ const docTemplate = `{
         "model.ContractSignReq": {
             "type": "object",
             "required": [
-                "cityId",
-                "model"
+                "subscribeId"
             ],
             "properties": {
-                "cityId": {
-                    "description": "城市ID ",
-                    "type": "integer"
-                },
-                "model": {
-                    "description": "电池型号 ",
-                    "type": "string"
-                },
-                "planId": {
-                    "description": "骑士卡ID",
+                "subscribeId": {
+                    "description": "订阅ID ",
                     "type": "integer"
                 }
             }
@@ -16312,6 +16342,10 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "color": {
+                    "description": "颜色",
+                    "type": "string"
+                },
                 "exFactory": {
                     "description": "生产批次",
                     "type": "string"
@@ -16340,6 +16374,10 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
                 "rider": {
                     "description": "骑手信息",
                     "allOf": [
@@ -16358,15 +16396,15 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "ebikeId",
-                "riderId"
+                "subscribeId"
             ],
             "properties": {
                 "ebikeId": {
                     "description": "电车ID ",
                     "type": "integer"
                 },
-                "riderId": {
-                    "description": "骑手ID ",
+                "subscribeId": {
+                    "description": "订阅ID ",
                     "type": "integer"
                 }
             }
@@ -16471,6 +16509,10 @@ const docTemplate = `{
         "model.EbikeInfo": {
             "type": "object",
             "properties": {
+                "color": {
+                    "description": "颜色",
+                    "type": "string"
+                },
                 "exFactory": {
                     "description": "生产批次",
                     "type": "string"

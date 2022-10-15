@@ -2287,18 +2287,11 @@ definitions:
     type: object
   model.ContractSignReq:
     properties:
-      cityId:
-        description: '城市ID '
-        type: integer
-      model:
-        description: '电池型号 '
-        type: string
-      planId:
-        description: 骑士卡ID
+      subscribeId:
+        description: '订阅ID '
         type: integer
     required:
-    - cityId
-    - model
+    - subscribeId
     type: object
   model.ContractSignRes:
     properties:
@@ -2644,6 +2637,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.EbikeBrand'
         description: 品牌信息
+      color:
+        description: 颜色
+        type: string
       exFactory:
         description: 生产批次
         type: string
@@ -2662,6 +2658,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.Ebike'
         description: 电车信息
+      model:
+        description: 电池型号
+        type: string
       rider:
         allOf:
         - $ref: '#/definitions/model.Rider'
@@ -2675,12 +2674,12 @@ definitions:
       ebikeId:
         description: '电车ID '
         type: integer
-      riderId:
-        description: '骑手ID '
+      subscribeId:
+        description: '订阅ID '
         type: integer
     required:
     - ebikeId
-    - riderId
+    - subscribeId
     type: object
   model.EbikeAllocateRes:
     properties:
@@ -2753,6 +2752,9 @@ definitions:
     type: object
   model.EbikeInfo:
     properties:
+      color:
+        description: 颜色
+        type: string
       exFactory:
         description: 生产批次
         type: string
@@ -13784,6 +13786,32 @@ paths:
       summary: R2003 获取已开通城市
       tags:
       - '[R]骑手接口'
+  /rider/v1/constract/{sn}:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderContractSignResult
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 合同编号
+        in: path
+        name: sn
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: R3004 合同签署结果
+      tags:
+      - '[R]骑手接口'
   /rider/v1/contact:
     post:
       consumes:
@@ -13835,7 +13863,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ContractSignRes'
-      summary: R3005 签署合同
+      summary: R3003 签署合同
       tags:
       - '[R]骑手接口'
   /rider/v1/deposit:
@@ -14103,7 +14131,7 @@ paths:
                     $ref: '#/definitions/model.RiderOrder'
                   type: array
               type: object
-      summary: R3008 骑士卡购买历史
+      summary: R3007 骑士卡购买历史
       tags:
       - '[R]骑手接口'
     post:
@@ -14129,7 +14157,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.OrderCreateRes'
-      summary: R3006 支付请求
+      summary: R3005 支付请求
       tags:
       - '[R]骑手接口'
   /rider/v1/order/{id}:
@@ -14155,7 +14183,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.RiderOrder'
-      summary: R3009 订单详情
+      summary: R3008 订单详情
       tags:
       - '[R]骑手接口'
   /rider/v1/order/refund:
@@ -14182,7 +14210,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.RefundRes'
-      summary: R3007 申请退款
+      summary: R3006 申请退款
       tags:
       - '[R]骑手接口'
   /rider/v1/order/status:
@@ -14208,7 +14236,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.OrderStatusRes'
-      summary: R3010 订单支付状态
+      summary: R3009 订单支付状态
       tags:
       - '[R]骑手接口'
   /rider/v1/plan:
@@ -14239,7 +14267,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.PlanNewlyRes'
-      summary: R3002 新购骑士卡
+      summary: R3001 新购骑士卡
       tags:
       - '[R]骑手接口'
   /rider/v1/plan/renewly:
@@ -14260,7 +14288,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.RiderPlanRenewalRes'
-      summary: R3003 续费骑士卡
+      summary: R3002 续费骑士卡
       tags:
       - '[R]骑手接口'
   /rider/v1/profile:

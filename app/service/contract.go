@@ -12,8 +12,7 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/contract"
-    "github.com/auroraride/aurservd/internal/ent/enterprise"
-    "github.com/auroraride/aurservd/internal/ent/enterprisestation"
+    "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/internal/esign"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
@@ -30,26 +29,28 @@ const (
 )
 
 type contractService struct {
-    esign *esign.Esign
-    ctx   context.Context
-    orm   *ent.ContractClient
-    now   struct {
-        year  int
-        month int
-        day   int
-    }
+    esign      *esign.Esign
+    ctx        context.Context
+    orm        *ent.ContractClient
+    rider      *ent.Rider
+    monthDays  int
+    timeLayout string
 }
 
 func NewContract() *contractService {
     s := &contractService{
-        esign: esign.New(),
-        orm:   ent.Database.Contract,
-        ctx:   context.Background(),
+        esign:      esign.New(),
+        orm:        ent.Database.Contract,
+        ctx:        context.Background(),
+        monthDays:  30,
+        timeLayout: "2006年01月02日",
     }
-    now := time.Now()
-    s.now.year = now.Year()
-    s.now.month = int(now.Month())
-    s.now.day = now.Day()
+    return s
+}
+
+func NewContractWithRider(u *ent.Rider) *contractService {
+    s := NewContract()
+    s.rider = u
     return s
 }
 
@@ -68,89 +69,113 @@ func (s *contractService) Effective(u *ent.Rider) bool {
 }
 
 // planData 个签合同数据
-func (s *contractService) planData(planID uint64, m ar.Map) {
-    p := NewPlan().QueryEffectiveWithID(planID)
-    month := math.Round(float64(p.Days) / 31.0)
+func (s *contractService) planData(sub *ent.Subscribe) *model.ContractSignUniversal {
+    p, _ := sub.QueryPlan().First(s.ctx)
+    if p == nil {
+        snag.Panic("未找到骑士卡信息")
+    }
+    month := math.Round(float64(p.Days) / float64(s.monthDays))
     price := p.Price
     if month > 1 {
         price = price / month
     }
-    // 总月数
-    m["month"] = fmt.Sprintf("%.0f", month)
-    // 首次缴纳月数
-    m["payMonth"] = fmt.Sprintf("%.0f", month)
-    // 月租金
-    m["price"] = fmt.Sprintf("%.2f", price)
-    // 总租金
-    m["amount"] = fmt.Sprintf("%.2f", p.Price)
-    // 截止年月日
-    end := tools.NewTime().WillEnd(time.Now(), int(p.Days))
-    m["endYear"] = end.Year()
-    m["endMonth"] = int(end.Month())
-    m["endDay"] = end.Day()
+
+    return &model.ContractSignUniversal{
+        Price: fmt.Sprintf("%.2f", price),
+        Month: int(month),
+        Total: fmt.Sprintf("%.2f", p.Price),
+        Stop:  tools.NewTime().WillEnd(time.Now(), int(p.Days)).Format(s.timeLayout),
+    }
 }
 
-func (s *contractService) enterpriseData(u *ent.Rider, m ar.Map, cityID uint64, bm string) {
-    e := u.Edges.Enterprise
-    if e == nil {
-        e, _ = ent.Database.Enterprise.QueryNotDeleted().Where(enterprise.ID(*u.EnterpriseID)).First(s.ctx)
-    }
-    if e == nil {
-        snag.Panic("骑手企业查找失败")
+// enterpriseData 团签合同数据
+func (s *contractService) enterpriseData(m ar.Map, sub *ent.Subscribe) *model.ContractSignUniversal {
+    if sub.BrandID != nil || sub.EbikeID != nil {
+        snag.Panic("暂不支持团签")
     }
 
-    sta := u.Edges.Station
-    if sta == nil {
-        sta, _ = ent.Database.EnterpriseStation.QueryNotDeleted().Where(enterprisestation.ID(*u.StationID)).First(s.ctx)
+    // 查询团签
+    ee, _ := sub.QueryEnterprise().First(s.ctx)
+    if ee == nil {
+        snag.Panic("团签信息查询失败")
     }
-    if sta == nil {
-        snag.Panic("骑手站点查找失败")
+
+    // 查询站点
+    es, _ := sub.QueryStation().First(s.ctx)
+    if es == nil {
+        snag.Panic("站点信息查询失败")
     }
 
     // 获取企业费用信息
     srv := NewEnterprise()
-    prices := srv.GetPriceValues(e)
-    pk := srv.PriceKey(cityID, bm)
+    prices := srv.GetPriceValues(ee)
+    pk := srv.PriceKey(sub.CityID, sub.Model)
     price, ok := prices[pk]
     if !ok {
-        snag.Panic("企业费用查询失败")
+        snag.Panic("团签费用查询失败")
     }
 
-    // entName entPhone station payerEnt
-    m["entName"] = e.CompanyName
-    // 企业联系电话
-    m["entPhone"] = e.ContactPhone
-    // 站点
-    m["station"] = sta.Name
-    // 首次缴纳月数
-    m["payMonth"] = 1
-    // 企业付款
+    // 团签公司名称
+    m["entName"] = ee.CompanyName
+    // 团签负责人及电话
+    m["entContact"] = fmt.Sprintf("%s，%s", ee.ContactName, ee.ContactPhone)
+    // 团签隶属站点
+    m["entStation"] = es.Name
+    // 团签代缴
     m["payerEnt"] = true
-    // 月租金
-    m["price"] = fmt.Sprintf("%.2f", price)
-    // 总月数
-    m["month"] = 1
-    // 总租金
-    m["amount"] = fmt.Sprintf("%.2f", price*31.0)
-    // 截止年月日
-    end := tools.NewTime().WillEnd(time.Now(), 31)
-    m["endYear"] = end.Year()
-    m["endMonth"] = int(end.Month())
-    m["endDay"] = end.Day()
+
+    stop := tools.NewTime().WillEnd(time.Now(), s.monthDays).Format(s.timeLayout)
+    month := 1
+    days := float64(s.monthDays)
+
+    // 如果是代理
+    if ee.Agent {
+        if sub.AgentEndAt == nil {
+            snag.Panic("代理团签订阅日期错误")
+        }
+        days = float64(tools.NewTime().LastDaysToNow(*sub.AgentEndAt))
+        month = int(math.Round(days / float64(s.monthDays)))
+    }
+
+    return &model.ContractSignUniversal{
+        Price: fmt.Sprintf("%.2f", price),
+        Month: month,
+        Total: fmt.Sprintf("%.2f", price*days),
+        Stop:  stop,
+    }
 }
 
 // Sign 签署合同
-func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) model.ContractSignRes {
+// 月数按s.monthDays(30)天计算, 出现小数四舍五入
+func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes {
+    u := s.rider
+    // 是否免签
     if s.Effective(u) {
         return model.ContractSignRes{Effective: true}
     }
 
+    // 是否有紧急联系人
     if u.Contact == nil {
         snag.Panic("未补充紧急联系人")
     }
 
-    ci := NewCity().Query(params.CityID)
+    // 查找订阅
+    sub, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.ID(req.SubscribeID), subscribe.Status(model.SubscribeStatusInactive)).WithCity().First(s.ctx)
+    if sub == nil {
+        snag.Panic("未找到骑士卡")
+    }
 
+    if sub.BrandID == nil && sub.EbikeID != nil {
+        snag.Panic("当前订阅错误")
+    }
+
+    // 城市
+    ec := sub.Edges.City
+    if ec == nil {
+        snag.Panic("未找到有效城市")
+    }
+
+    // 定义变量
     var (
         m            = make(ar.Map)
         sn           = tools.NewUnique().NewSN()
@@ -160,41 +185,112 @@ func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) mode
         isEnterprise = u.EnterpriseID != nil
         templateId   = cfg.Person.TemplateId
         scene        = cfg.Person.Scene
+
+        // 电池型号
+        bm = strings.ToUpper(sub.Model)
+        // 当前日期
+        now = time.Now().Format(s.timeLayout)
     )
 
+    // 填充公共变量
+    // 合同编号
     m["sn"] = sn
+    // 骑手姓名
     m["name"] = p.Name
-    m["riderName"] = p.Name
-    m["signName"] = p.Name
+    // 身份证号
     m["idcard"] = p.IDCardNumber
+    // 户口地址
     m["address"] = p.AuthResult.Address
+    // 骑手电话
     m["phone"] = u.Phone
-    m["startYear"] = s.now.year
-    m["startMonth"] = s.now.month
-    m["startDay"] = s.now.day
-    m["aurYear"] = s.now.year
-    m["aurMonth"] = s.now.month
-    m["aurDay"] = s.now.day
-    m["riderYear"] = s.now.year
-    m["riderMonth"] = s.now.month
-    m["riderDay"] = s.now.day
-    // 紧急联系人
-    m["contact"] = u.Contact.String()
-    // 勾选租赁电池
-    m["battery"] = true
-    // 电池型号
-    m["model"] = strings.ToUpper(params.Model)
     // 限制城市
-    m["city"] = ci.Name
+    m["city"] = ec.Name
+    // 骑手签字
+    m["riderSign"] = p.Name
+    // 紧急联系人
+    m["riderContact"] = u.Contact.String()
+    // 企业签署日期
+    m["aurDate"] = now
+    // 骑手签署日期
+    m["riderDate"] = now
 
-    if params.PlanID != 0 {
-        s.planData(params.PlanID, m)
-    }
+    var un *model.ContractSignUniversal
 
     if isEnterprise {
+        // 团签
         templateId = cfg.Group.TemplateId
         scene = cfg.Group.Scene
-        s.enterpriseData(u, m, params.CityID, params.Model)
+        // 设置团签字段
+        un = s.enterpriseData(m, sub)
+        // 团签代缴
+        m["payEnt"] = true
+    } else {
+        // 个签骑士卡
+        un = s.planData(sub)
+        // 骑手缴费
+        m["payRider"] = true
+    }
+
+    if un == nil {
+        snag.Panic("合同信息错误")
+    }
+
+    m["payMonth"] = un.Month
+
+    // 电车
+    if sub.BrandID != nil {
+        // 查找电车分配
+        allo := NewEbikeAllocate().QueryEffectiveSubscribeID(sub.ID)
+        if allo == nil {
+            snag.Panic("未找到分配信息")
+        }
+        bike := allo.Ebike
+        // 车加电方案
+        m["schemaEbike"] = true
+        // 车加电方案一
+        m["ebikeScheme1"] = true
+        // 车辆品牌
+        m["ebikeBrand"] = bike.Brand.Name
+        // 车辆颜色
+        m["ebikeColor"] = bike.Color
+        // 车架号
+        m["ebikeSN"] = bike.SN
+        // 车牌号
+        m["ebikePlate"] = bike.Plate
+        // 电池类型
+        m["ebikeBattery"] = "时光驹电池"
+        // 电池规格
+        m["ebikeModel"] = bm
+        // 车电方案一开始日期
+        m["ebikeScheme1Start"] = now
+        // 车电方案一截止日
+        m["ebikeScheme1Stop"] = un.Stop
+        // 车电方案一月租金
+        m["ebikeScheme1Price"] = un.Price
+        // 车电方案一首次缴纳月数
+        m["ebikeScheme1PayMonth"] = un.Month
+        // 车电方案一首次缴纳租金
+        m["ebikeScheme1PayTotal"] = un.Total
+    } else {
+        // 单电方案
+        m["schemaBattery"] = true
+        // 电池规格
+        m["batteryModel"] = bm
+        // 单电方案起租日
+        m["batteryStart"] = now
+        // 单电方案结束日
+        m["batteryStop"] = un.Stop
+        // 单电月租金
+        m["batteryPrice"] = un.Price
+        // 单电方案首次缴纳月数
+        m["batteryPayMonth"] = un.Month
+        // 单电方案首次缴纳租金
+        m["batteryPayTotal"] = un.Total
+    }
+
+    // 个签选项
+    if sub.PlanID != nil {
+        s.planData(sub)
     }
 
     // 创建 / 获取 签约个人账号
@@ -220,7 +316,7 @@ func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) mode
     s.esign.SetSn(sn)
 
     // 设置个人账户ID
-    req := esign.CreateFlowReq{
+    flow := esign.CreateFlowReq{
         Scene:           scene,
         PersonAccountId: accountId,
     }
@@ -233,14 +329,14 @@ func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) mode
             m[snKey] = sn
             break
         case aurSeal:
-            req.EntSignBean = esign.PosBean{
+            flow.EntSignBean = esign.PosBean{
                 PosPage: fmt.Sprintf("%v", com.Context.Pos.Page),
                 PosX:    com.Context.Pos.X,
                 PosY:    com.Context.Pos.Y,
             }
             break
         case riderSeal:
-            req.PsnSignBean = esign.PosBean{
+            flow.PsnSignBean = esign.PosBean{
                 PosPage: fmt.Sprintf("%v", com.Context.Pos.Page),
                 PosX:    com.Context.Pos.X,
                 PosY:    com.Context.Pos.Y,
@@ -249,14 +345,14 @@ func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) mode
     }
     // 填充内容生成PDF
     pdf := s.esign.CreateByTemplate(esign.CreateByTemplateReq{
-        Name:             fmt.Sprintf("%s-%s.pdf", req.Scene, sn), // todo 文件名
+        Name:             fmt.Sprintf("%s-%s.pdf", flow.Scene, sn), // todo 文件名
         SimpleFormFields: m,
         TemplateId:       templateId,
     })
-    req.FileId = pdf.FileId
+    flow.FileId = pdf.FileId
 
     // 发起签署，获取flowId
-    flowId := s.esign.CreateFlowOneStep(req)
+    flowId := s.esign.CreateFlowOneStep(flow)
 
     // 获取签署链接
     link := s.esign.ExecuteUrl(flowId, accountId)

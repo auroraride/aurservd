@@ -26,9 +26,9 @@ const (
 )
 
 type Rider struct {
-    ID    uint64 `json:"id"`
-    Phone string `json:"phone"` // 电话
-    Name  string `json:"name"`  // 姓名
+    ID    uint64 `json:"id" bson:"id"`
+    Phone string `json:"phone" bson:"phone"` // 电话
+    Name  string `json:"name" bson:"name"`   // 姓名
 }
 
 // RiderSignupReq 骑手登录请求数据

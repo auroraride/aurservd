@@ -250,6 +250,7 @@ func (s *subscribeService) Detail(sub *ent.Subscribe) *model.Subscribe {
             SN:        bike.Sn,
             ExFactory: bike.ExFactory,
             Plate:     bike.Plate,
+            Color:     bike.Color,
         }
     }
 

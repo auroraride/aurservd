@@ -40,9 +40,7 @@ func (s ContractStatus) String() string {
 
 // ContractSignReq 签约请求
 type ContractSignReq struct {
-    PlanID uint64 `json:"planId"` // 骑士卡ID
-    Model  string `json:"model" validate:"required" trans:"电池型号"`
-    CityID uint64 `json:"cityId" validate:"required" trans:"城市ID"`
+    SubscribeID uint64 `json:"subscribeId" validate:"required" trans:"订阅ID"`
 }
 
 // ContractSignRes 合同签订返回
@@ -55,4 +53,11 @@ type ContractSignRes struct {
 // ContractSignResultReq 合同签署结果请求
 type ContractSignResultReq struct {
     Sn string `json:"sn" param:"sn" validate:"required"`
+}
+
+type ContractSignUniversal struct {
+    Price string // 月租金
+    Month int    // 首次缴纳月数
+    Total string // 首次缴纳总计
+    Stop  string // 结束日期
 }

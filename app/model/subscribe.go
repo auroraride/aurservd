@@ -66,7 +66,7 @@ type Subscribe struct {
     EndAt        string `json:"endAt"`                      // 结束时间 / 预计套餐结束时间
     Business     bool   `json:"business"`                   // 是否可办理业务
     Suspend      bool   `json:"suspend"`                    // 是否暂停扣费
-    NeedContract bool   `json:"needContract"`               // 是否需要签约
+    NeedContract bool   `json:"needContract,omitempty"`     // 是否需要签约
 
     City       *City               `json:"city,omitempty"`       // 所属城市
     Models     []BatteryModel      `json:"models,omitempty"`     // 可用电池型号
