@@ -186,6 +186,7 @@ type PlanNewlyRes struct {
     Models    []*PlanModelOption      `json:"models,omitempty"`    // 单电选项
     Deposit   float64                 `json:"deposit"`             // 需缴纳押金
     Configure *PaymentConfigure       `json:"configure,omitempty"` // 支付配置
+    // TODO 商品介绍 / 提货方式 / 注意事项
 }
 
 type PlanModifyTimeReq struct {

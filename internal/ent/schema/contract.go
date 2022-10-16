@@ -7,6 +7,7 @@ import (
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -30,7 +31,9 @@ func (Contract) Fields() []ent.Field {
         field.String("flow_id").MaxLen(64).Unique().NotEmpty().Comment("E签宝流程ID"),
         field.String("sn").MaxLen(64).Unique().NotEmpty().Comment("合同编码"),
         field.JSON("files", []string{}).Optional().Comment("合同链接"),
-        field.Bool("effective").Default(true).Comment("是否有效"), // TODO 需要实现逻辑, 当用户退租之后触发合同失效, 需要重新签订?
+        field.Bool("effective").Default(true).Comment("是否有效"),
+        field.String("ebike_allocate_id").Optional().Nillable().Comment("电车分配ID"),
+        field.JSON("rider_info", &model.ContractRider{}).Optional().Comment("骑手信息"),
     }
 }
 
@@ -38,6 +41,7 @@ func (Contract) Fields() []ent.Field {
 func (Contract) Edges() []ent.Edge {
     return []ent.Edge{
         edge.From("rider", Rider.Type).Ref("contracts").Required().Unique().Field("rider_id"),
+        edge.To("subscribe", Subscribe.Type).Unique(),
     }
 }
 
@@ -46,6 +50,9 @@ func (Contract) Mixin() []ent.Mixin {
         internal.TimeMixin{},
         internal.DeleteMixin{},
         internal.Modifier{},
+
+        EmployeeMixin{Optional: true},
+        StoreMixin{Optional: true},
     }
 }
 

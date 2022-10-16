@@ -6,12 +6,17 @@
 package model
 
 const (
-    ContractStatusDraft ContractStatus = iota
-    ContractStatusPending
-    ContractStatusSuccess
-    ContractStatusUndo
-    ContractStatusOverdue
-    ContractStatusRefused
+    ContractExpiration = 30 // 过期时间 (分钟)
+)
+
+const (
+    ContractStatusDraft      ContractStatus = iota // 草稿
+    ContractStatusSigning                          // 签署中
+    ContractStatusSuccess                          // 已完成
+    ContractStatusRevoked                          // 已撤销
+    ContractStatusTerminated                       // 已终止
+    ContractStatusExpired                          // 已过期
+    ContractStatusDenied     ContractStatus = 7    // 已拒绝
 )
 
 type ContractStatus uint8
@@ -23,19 +28,42 @@ func (s ContractStatus) Value() uint8 {
 func (s ContractStatus) String() string {
     switch s {
     case ContractStatusDraft:
-        return "草稿"
-    case ContractStatusPending:
+        return "草稿中"
+    case ContractStatusSigning:
         return "签署中"
     case ContractStatusSuccess:
-        return "完成"
-    case ContractStatusUndo:
-        return "撤销"
-    case ContractStatusOverdue:
-        return "过期"
-    case ContractStatusRefused:
-        return "拒签"
+        return "已完成"
+    case ContractStatusRevoked:
+        return "已撤销"
+    case ContractStatusExpired:
+        return "已过期"
+    case ContractStatusTerminated:
+        return "已拒签"
+    case ContractStatusDenied:
+        return "已拒绝"
     }
     return "未知"
+}
+
+// IsSuccessed 合同签署流程是否成功
+func (s ContractStatus) IsSuccessed() bool {
+    return s == ContractStatusSuccess
+}
+
+// IsFailed 合同签署流程是否失败
+func (s ContractStatus) IsFailed() bool {
+    return s != ContractStatusDraft && s != ContractStatusSigning && s != ContractStatusSuccess
+}
+
+// IsFinished 合同签署流程是否已完成
+func (s ContractStatus) IsFinished() bool {
+    return s != ContractStatusDraft && s != ContractStatusSigning
+}
+
+type ContractRider struct {
+    Phone        string `json:"phone"`
+    Name         string `json:"name"`
+    IDCardNumber string `json:"idCardNumber"`
 }
 
 // ContractSignReq 签约请求

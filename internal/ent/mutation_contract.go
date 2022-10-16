@@ -19,27 +19,35 @@ import (
 // ContractMutation represents an operation that mutates the Contract nodes in the graph.
 type ContractMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uint64
-	created_at    *time.Time
-	updated_at    *time.Time
-	deleted_at    *time.Time
-	creator       **model.Modifier
-	last_modifier **model.Modifier
-	remark        *string
-	status        *uint8
-	addstatus     *int8
-	flow_id       *string
-	sn            *string
-	files         *[]string
-	effective     *bool
-	clearedFields map[string]struct{}
-	rider         *uint64
-	clearedrider  bool
-	done          bool
-	oldValue      func(context.Context) (*Contract, error)
-	predicates    []predicate.Contract
+	op                Op
+	typ               string
+	id                *uint64
+	created_at        *time.Time
+	updated_at        *time.Time
+	deleted_at        *time.Time
+	creator           **model.Modifier
+	last_modifier     **model.Modifier
+	remark            *string
+	status            *uint8
+	addstatus         *int8
+	flow_id           *string
+	sn                *string
+	files             *[]string
+	effective         *bool
+	ebike_allocate_id *string
+	rider_info        **model.ContractRider
+	clearedFields     map[string]struct{}
+	employee          *uint64
+	clearedemployee   bool
+	store             *uint64
+	clearedstore      bool
+	rider             *uint64
+	clearedrider      bool
+	subscribe         *uint64
+	clearedsubscribe  bool
+	done              bool
+	oldValue          func(context.Context) (*Contract, error)
+	predicates        []predicate.Contract
 }
 
 var _ ent.Mutation = (*ContractMutation)(nil)
@@ -408,6 +416,104 @@ func (m *ContractMutation) ResetRemark() {
 	delete(m.clearedFields, contract.FieldRemark)
 }
 
+// SetEmployeeID sets the "employee_id" field.
+func (m *ContractMutation) SetEmployeeID(u uint64) {
+	m.employee = &u
+}
+
+// EmployeeID returns the value of the "employee_id" field in the mutation.
+func (m *ContractMutation) EmployeeID() (r uint64, exists bool) {
+	v := m.employee
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmployeeID returns the old "employee_id" field's value of the Contract entity.
+// If the Contract object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContractMutation) OldEmployeeID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEmployeeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEmployeeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmployeeID: %w", err)
+	}
+	return oldValue.EmployeeID, nil
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (m *ContractMutation) ClearEmployeeID() {
+	m.employee = nil
+	m.clearedFields[contract.FieldEmployeeID] = struct{}{}
+}
+
+// EmployeeIDCleared returns if the "employee_id" field was cleared in this mutation.
+func (m *ContractMutation) EmployeeIDCleared() bool {
+	_, ok := m.clearedFields[contract.FieldEmployeeID]
+	return ok
+}
+
+// ResetEmployeeID resets all changes to the "employee_id" field.
+func (m *ContractMutation) ResetEmployeeID() {
+	m.employee = nil
+	delete(m.clearedFields, contract.FieldEmployeeID)
+}
+
+// SetStoreID sets the "store_id" field.
+func (m *ContractMutation) SetStoreID(u uint64) {
+	m.store = &u
+}
+
+// StoreID returns the value of the "store_id" field in the mutation.
+func (m *ContractMutation) StoreID() (r uint64, exists bool) {
+	v := m.store
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStoreID returns the old "store_id" field's value of the Contract entity.
+// If the Contract object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContractMutation) OldStoreID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStoreID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStoreID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStoreID: %w", err)
+	}
+	return oldValue.StoreID, nil
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (m *ContractMutation) ClearStoreID() {
+	m.store = nil
+	m.clearedFields[contract.FieldStoreID] = struct{}{}
+}
+
+// StoreIDCleared returns if the "store_id" field was cleared in this mutation.
+func (m *ContractMutation) StoreIDCleared() bool {
+	_, ok := m.clearedFields[contract.FieldStoreID]
+	return ok
+}
+
+// ResetStoreID resets all changes to the "store_id" field.
+func (m *ContractMutation) ResetStoreID() {
+	m.store = nil
+	delete(m.clearedFields, contract.FieldStoreID)
+}
+
 // SetStatus sets the "status" field.
 func (m *ContractMutation) SetStatus(u uint8) {
 	m.status = &u
@@ -657,6 +763,156 @@ func (m *ContractMutation) ResetEffective() {
 	m.effective = nil
 }
 
+// SetEbikeAllocateID sets the "ebike_allocate_id" field.
+func (m *ContractMutation) SetEbikeAllocateID(s string) {
+	m.ebike_allocate_id = &s
+}
+
+// EbikeAllocateID returns the value of the "ebike_allocate_id" field in the mutation.
+func (m *ContractMutation) EbikeAllocateID() (r string, exists bool) {
+	v := m.ebike_allocate_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEbikeAllocateID returns the old "ebike_allocate_id" field's value of the Contract entity.
+// If the Contract object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContractMutation) OldEbikeAllocateID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEbikeAllocateID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEbikeAllocateID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEbikeAllocateID: %w", err)
+	}
+	return oldValue.EbikeAllocateID, nil
+}
+
+// ClearEbikeAllocateID clears the value of the "ebike_allocate_id" field.
+func (m *ContractMutation) ClearEbikeAllocateID() {
+	m.ebike_allocate_id = nil
+	m.clearedFields[contract.FieldEbikeAllocateID] = struct{}{}
+}
+
+// EbikeAllocateIDCleared returns if the "ebike_allocate_id" field was cleared in this mutation.
+func (m *ContractMutation) EbikeAllocateIDCleared() bool {
+	_, ok := m.clearedFields[contract.FieldEbikeAllocateID]
+	return ok
+}
+
+// ResetEbikeAllocateID resets all changes to the "ebike_allocate_id" field.
+func (m *ContractMutation) ResetEbikeAllocateID() {
+	m.ebike_allocate_id = nil
+	delete(m.clearedFields, contract.FieldEbikeAllocateID)
+}
+
+// SetRiderInfo sets the "rider_info" field.
+func (m *ContractMutation) SetRiderInfo(mr *model.ContractRider) {
+	m.rider_info = &mr
+}
+
+// RiderInfo returns the value of the "rider_info" field in the mutation.
+func (m *ContractMutation) RiderInfo() (r *model.ContractRider, exists bool) {
+	v := m.rider_info
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRiderInfo returns the old "rider_info" field's value of the Contract entity.
+// If the Contract object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContractMutation) OldRiderInfo(ctx context.Context) (v *model.ContractRider, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRiderInfo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRiderInfo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRiderInfo: %w", err)
+	}
+	return oldValue.RiderInfo, nil
+}
+
+// ClearRiderInfo clears the value of the "rider_info" field.
+func (m *ContractMutation) ClearRiderInfo() {
+	m.rider_info = nil
+	m.clearedFields[contract.FieldRiderInfo] = struct{}{}
+}
+
+// RiderInfoCleared returns if the "rider_info" field was cleared in this mutation.
+func (m *ContractMutation) RiderInfoCleared() bool {
+	_, ok := m.clearedFields[contract.FieldRiderInfo]
+	return ok
+}
+
+// ResetRiderInfo resets all changes to the "rider_info" field.
+func (m *ContractMutation) ResetRiderInfo() {
+	m.rider_info = nil
+	delete(m.clearedFields, contract.FieldRiderInfo)
+}
+
+// ClearEmployee clears the "employee" edge to the Employee entity.
+func (m *ContractMutation) ClearEmployee() {
+	m.clearedemployee = true
+}
+
+// EmployeeCleared reports if the "employee" edge to the Employee entity was cleared.
+func (m *ContractMutation) EmployeeCleared() bool {
+	return m.EmployeeIDCleared() || m.clearedemployee
+}
+
+// EmployeeIDs returns the "employee" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EmployeeID instead. It exists only for internal usage by the builders.
+func (m *ContractMutation) EmployeeIDs() (ids []uint64) {
+	if id := m.employee; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEmployee resets all changes to the "employee" edge.
+func (m *ContractMutation) ResetEmployee() {
+	m.employee = nil
+	m.clearedemployee = false
+}
+
+// ClearStore clears the "store" edge to the Store entity.
+func (m *ContractMutation) ClearStore() {
+	m.clearedstore = true
+}
+
+// StoreCleared reports if the "store" edge to the Store entity was cleared.
+func (m *ContractMutation) StoreCleared() bool {
+	return m.StoreIDCleared() || m.clearedstore
+}
+
+// StoreIDs returns the "store" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// StoreID instead. It exists only for internal usage by the builders.
+func (m *ContractMutation) StoreIDs() (ids []uint64) {
+	if id := m.store; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetStore resets all changes to the "store" edge.
+func (m *ContractMutation) ResetStore() {
+	m.store = nil
+	m.clearedstore = false
+}
+
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *ContractMutation) ClearRider() {
 	m.clearedrider = true
@@ -683,6 +939,45 @@ func (m *ContractMutation) ResetRider() {
 	m.clearedrider = false
 }
 
+// SetSubscribeID sets the "subscribe" edge to the Subscribe entity by id.
+func (m *ContractMutation) SetSubscribeID(id uint64) {
+	m.subscribe = &id
+}
+
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (m *ContractMutation) ClearSubscribe() {
+	m.clearedsubscribe = true
+}
+
+// SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
+func (m *ContractMutation) SubscribeCleared() bool {
+	return m.clearedsubscribe
+}
+
+// SubscribeID returns the "subscribe" edge ID in the mutation.
+func (m *ContractMutation) SubscribeID() (id uint64, exists bool) {
+	if m.subscribe != nil {
+		return *m.subscribe, true
+	}
+	return
+}
+
+// SubscribeIDs returns the "subscribe" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// SubscribeID instead. It exists only for internal usage by the builders.
+func (m *ContractMutation) SubscribeIDs() (ids []uint64) {
+	if id := m.subscribe; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetSubscribe resets all changes to the "subscribe" edge.
+func (m *ContractMutation) ResetSubscribe() {
+	m.subscribe = nil
+	m.clearedsubscribe = false
+}
+
 // Where appends a list predicates to the ContractMutation builder.
 func (m *ContractMutation) Where(ps ...predicate.Contract) {
 	m.predicates = append(m.predicates, ps...)
@@ -702,7 +997,7 @@ func (m *ContractMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ContractMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 16)
 	if m.created_at != nil {
 		fields = append(fields, contract.FieldCreatedAt)
 	}
@@ -721,6 +1016,12 @@ func (m *ContractMutation) Fields() []string {
 	if m.remark != nil {
 		fields = append(fields, contract.FieldRemark)
 	}
+	if m.employee != nil {
+		fields = append(fields, contract.FieldEmployeeID)
+	}
+	if m.store != nil {
+		fields = append(fields, contract.FieldStoreID)
+	}
 	if m.status != nil {
 		fields = append(fields, contract.FieldStatus)
 	}
@@ -738,6 +1039,12 @@ func (m *ContractMutation) Fields() []string {
 	}
 	if m.effective != nil {
 		fields = append(fields, contract.FieldEffective)
+	}
+	if m.ebike_allocate_id != nil {
+		fields = append(fields, contract.FieldEbikeAllocateID)
+	}
+	if m.rider_info != nil {
+		fields = append(fields, contract.FieldRiderInfo)
 	}
 	return fields
 }
@@ -759,6 +1066,10 @@ func (m *ContractMutation) Field(name string) (ent.Value, bool) {
 		return m.LastModifier()
 	case contract.FieldRemark:
 		return m.Remark()
+	case contract.FieldEmployeeID:
+		return m.EmployeeID()
+	case contract.FieldStoreID:
+		return m.StoreID()
 	case contract.FieldStatus:
 		return m.Status()
 	case contract.FieldRiderID:
@@ -771,6 +1082,10 @@ func (m *ContractMutation) Field(name string) (ent.Value, bool) {
 		return m.Files()
 	case contract.FieldEffective:
 		return m.Effective()
+	case contract.FieldEbikeAllocateID:
+		return m.EbikeAllocateID()
+	case contract.FieldRiderInfo:
+		return m.RiderInfo()
 	}
 	return nil, false
 }
@@ -792,6 +1107,10 @@ func (m *ContractMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldLastModifier(ctx)
 	case contract.FieldRemark:
 		return m.OldRemark(ctx)
+	case contract.FieldEmployeeID:
+		return m.OldEmployeeID(ctx)
+	case contract.FieldStoreID:
+		return m.OldStoreID(ctx)
 	case contract.FieldStatus:
 		return m.OldStatus(ctx)
 	case contract.FieldRiderID:
@@ -804,6 +1123,10 @@ func (m *ContractMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldFiles(ctx)
 	case contract.FieldEffective:
 		return m.OldEffective(ctx)
+	case contract.FieldEbikeAllocateID:
+		return m.OldEbikeAllocateID(ctx)
+	case contract.FieldRiderInfo:
+		return m.OldRiderInfo(ctx)
 	}
 	return nil, fmt.Errorf("unknown Contract field %s", name)
 }
@@ -855,6 +1178,20 @@ func (m *ContractMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRemark(v)
 		return nil
+	case contract.FieldEmployeeID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmployeeID(v)
+		return nil
+	case contract.FieldStoreID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStoreID(v)
+		return nil
 	case contract.FieldStatus:
 		v, ok := value.(uint8)
 		if !ok {
@@ -896,6 +1233,20 @@ func (m *ContractMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEffective(v)
+		return nil
+	case contract.FieldEbikeAllocateID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEbikeAllocateID(v)
+		return nil
+	case contract.FieldRiderInfo:
+		v, ok := value.(*model.ContractRider)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRiderInfo(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Contract field %s", name)
@@ -954,8 +1305,20 @@ func (m *ContractMutation) ClearedFields() []string {
 	if m.FieldCleared(contract.FieldRemark) {
 		fields = append(fields, contract.FieldRemark)
 	}
+	if m.FieldCleared(contract.FieldEmployeeID) {
+		fields = append(fields, contract.FieldEmployeeID)
+	}
+	if m.FieldCleared(contract.FieldStoreID) {
+		fields = append(fields, contract.FieldStoreID)
+	}
 	if m.FieldCleared(contract.FieldFiles) {
 		fields = append(fields, contract.FieldFiles)
+	}
+	if m.FieldCleared(contract.FieldEbikeAllocateID) {
+		fields = append(fields, contract.FieldEbikeAllocateID)
+	}
+	if m.FieldCleared(contract.FieldRiderInfo) {
+		fields = append(fields, contract.FieldRiderInfo)
 	}
 	return fields
 }
@@ -983,8 +1346,20 @@ func (m *ContractMutation) ClearField(name string) error {
 	case contract.FieldRemark:
 		m.ClearRemark()
 		return nil
+	case contract.FieldEmployeeID:
+		m.ClearEmployeeID()
+		return nil
+	case contract.FieldStoreID:
+		m.ClearStoreID()
+		return nil
 	case contract.FieldFiles:
 		m.ClearFiles()
+		return nil
+	case contract.FieldEbikeAllocateID:
+		m.ClearEbikeAllocateID()
+		return nil
+	case contract.FieldRiderInfo:
+		m.ClearRiderInfo()
 		return nil
 	}
 	return fmt.Errorf("unknown Contract nullable field %s", name)
@@ -1012,6 +1387,12 @@ func (m *ContractMutation) ResetField(name string) error {
 	case contract.FieldRemark:
 		m.ResetRemark()
 		return nil
+	case contract.FieldEmployeeID:
+		m.ResetEmployeeID()
+		return nil
+	case contract.FieldStoreID:
+		m.ResetStoreID()
+		return nil
 	case contract.FieldStatus:
 		m.ResetStatus()
 		return nil
@@ -1030,15 +1411,30 @@ func (m *ContractMutation) ResetField(name string) error {
 	case contract.FieldEffective:
 		m.ResetEffective()
 		return nil
+	case contract.FieldEbikeAllocateID:
+		m.ResetEbikeAllocateID()
+		return nil
+	case contract.FieldRiderInfo:
+		m.ResetRiderInfo()
+		return nil
 	}
 	return fmt.Errorf("unknown Contract field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ContractMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 4)
+	if m.employee != nil {
+		edges = append(edges, contract.EdgeEmployee)
+	}
+	if m.store != nil {
+		edges = append(edges, contract.EdgeStore)
+	}
 	if m.rider != nil {
 		edges = append(edges, contract.EdgeRider)
+	}
+	if m.subscribe != nil {
+		edges = append(edges, contract.EdgeSubscribe)
 	}
 	return edges
 }
@@ -1047,8 +1443,20 @@ func (m *ContractMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *ContractMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case contract.EdgeEmployee:
+		if id := m.employee; id != nil {
+			return []ent.Value{*id}
+		}
+	case contract.EdgeStore:
+		if id := m.store; id != nil {
+			return []ent.Value{*id}
+		}
 	case contract.EdgeRider:
 		if id := m.rider; id != nil {
+			return []ent.Value{*id}
+		}
+	case contract.EdgeSubscribe:
+		if id := m.subscribe; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -1057,7 +1465,7 @@ func (m *ContractMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ContractMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 4)
 	return edges
 }
 
@@ -1071,9 +1479,18 @@ func (m *ContractMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ContractMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 4)
+	if m.clearedemployee {
+		edges = append(edges, contract.EdgeEmployee)
+	}
+	if m.clearedstore {
+		edges = append(edges, contract.EdgeStore)
+	}
 	if m.clearedrider {
 		edges = append(edges, contract.EdgeRider)
+	}
+	if m.clearedsubscribe {
+		edges = append(edges, contract.EdgeSubscribe)
 	}
 	return edges
 }
@@ -1082,8 +1499,14 @@ func (m *ContractMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *ContractMutation) EdgeCleared(name string) bool {
 	switch name {
+	case contract.EdgeEmployee:
+		return m.clearedemployee
+	case contract.EdgeStore:
+		return m.clearedstore
 	case contract.EdgeRider:
 		return m.clearedrider
+	case contract.EdgeSubscribe:
+		return m.clearedsubscribe
 	}
 	return false
 }
@@ -1092,8 +1515,17 @@ func (m *ContractMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *ContractMutation) ClearEdge(name string) error {
 	switch name {
+	case contract.EdgeEmployee:
+		m.ClearEmployee()
+		return nil
+	case contract.EdgeStore:
+		m.ClearStore()
+		return nil
 	case contract.EdgeRider:
 		m.ClearRider()
+		return nil
+	case contract.EdgeSubscribe:
+		m.ClearSubscribe()
 		return nil
 	}
 	return fmt.Errorf("unknown Contract unique edge %s", name)
@@ -1103,8 +1535,17 @@ func (m *ContractMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *ContractMutation) ResetEdge(name string) error {
 	switch name {
+	case contract.EdgeEmployee:
+		m.ResetEmployee()
+		return nil
+	case contract.EdgeStore:
+		m.ResetStore()
+		return nil
 	case contract.EdgeRider:
 		m.ResetRider()
+		return nil
+	case contract.EdgeSubscribe:
+		m.ResetSubscribe()
 		return nil
 	}
 	return fmt.Errorf("unknown Contract edge %s", name)

@@ -50,7 +50,7 @@ func (*ebike) Allocate(c echo.Context) (err error) {
 // @ID           EmployeeEbikeInfo
 // @Router       /employee/v1/ebike/allocate/info [GET]
 // @Summary      E6003 车辆分配信息
-// @Description  TODO 骑手签约成功后通过socket推送门店消息
+// @Description  骑手签约成功后通过socket推送门店消息
 // @Tags         [E]店员接口
 // @Accept       json
 // @Produce      json

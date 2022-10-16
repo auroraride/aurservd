@@ -13,8 +13,11 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // ContractUpdate is the builder for updating Contract entities.
@@ -89,6 +92,46 @@ func (cu *ContractUpdate) ClearRemark() *ContractUpdate {
 	return cu
 }
 
+// SetEmployeeID sets the "employee_id" field.
+func (cu *ContractUpdate) SetEmployeeID(u uint64) *ContractUpdate {
+	cu.mutation.SetEmployeeID(u)
+	return cu
+}
+
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (cu *ContractUpdate) SetNillableEmployeeID(u *uint64) *ContractUpdate {
+	if u != nil {
+		cu.SetEmployeeID(*u)
+	}
+	return cu
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (cu *ContractUpdate) ClearEmployeeID() *ContractUpdate {
+	cu.mutation.ClearEmployeeID()
+	return cu
+}
+
+// SetStoreID sets the "store_id" field.
+func (cu *ContractUpdate) SetStoreID(u uint64) *ContractUpdate {
+	cu.mutation.SetStoreID(u)
+	return cu
+}
+
+// SetNillableStoreID sets the "store_id" field if the given value is not nil.
+func (cu *ContractUpdate) SetNillableStoreID(u *uint64) *ContractUpdate {
+	if u != nil {
+		cu.SetStoreID(*u)
+	}
+	return cu
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (cu *ContractUpdate) ClearStoreID() *ContractUpdate {
+	cu.mutation.ClearStoreID()
+	return cu
+}
+
 // SetStatus sets the "status" field.
 func (cu *ContractUpdate) SetStatus(u uint8) *ContractUpdate {
 	cu.mutation.ResetStatus()
@@ -154,9 +197,70 @@ func (cu *ContractUpdate) SetNillableEffective(b *bool) *ContractUpdate {
 	return cu
 }
 
+// SetEbikeAllocateID sets the "ebike_allocate_id" field.
+func (cu *ContractUpdate) SetEbikeAllocateID(s string) *ContractUpdate {
+	cu.mutation.SetEbikeAllocateID(s)
+	return cu
+}
+
+// SetNillableEbikeAllocateID sets the "ebike_allocate_id" field if the given value is not nil.
+func (cu *ContractUpdate) SetNillableEbikeAllocateID(s *string) *ContractUpdate {
+	if s != nil {
+		cu.SetEbikeAllocateID(*s)
+	}
+	return cu
+}
+
+// ClearEbikeAllocateID clears the value of the "ebike_allocate_id" field.
+func (cu *ContractUpdate) ClearEbikeAllocateID() *ContractUpdate {
+	cu.mutation.ClearEbikeAllocateID()
+	return cu
+}
+
+// SetRiderInfo sets the "rider_info" field.
+func (cu *ContractUpdate) SetRiderInfo(mr *model.ContractRider) *ContractUpdate {
+	cu.mutation.SetRiderInfo(mr)
+	return cu
+}
+
+// ClearRiderInfo clears the value of the "rider_info" field.
+func (cu *ContractUpdate) ClearRiderInfo() *ContractUpdate {
+	cu.mutation.ClearRiderInfo()
+	return cu
+}
+
+// SetEmployee sets the "employee" edge to the Employee entity.
+func (cu *ContractUpdate) SetEmployee(e *Employee) *ContractUpdate {
+	return cu.SetEmployeeID(e.ID)
+}
+
+// SetStore sets the "store" edge to the Store entity.
+func (cu *ContractUpdate) SetStore(s *Store) *ContractUpdate {
+	return cu.SetStoreID(s.ID)
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (cu *ContractUpdate) SetRider(r *Rider) *ContractUpdate {
 	return cu.SetRiderID(r.ID)
+}
+
+// SetSubscribeID sets the "subscribe" edge to the Subscribe entity by ID.
+func (cu *ContractUpdate) SetSubscribeID(id uint64) *ContractUpdate {
+	cu.mutation.SetSubscribeID(id)
+	return cu
+}
+
+// SetNillableSubscribeID sets the "subscribe" edge to the Subscribe entity by ID if the given value is not nil.
+func (cu *ContractUpdate) SetNillableSubscribeID(id *uint64) *ContractUpdate {
+	if id != nil {
+		cu = cu.SetSubscribeID(*id)
+	}
+	return cu
+}
+
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (cu *ContractUpdate) SetSubscribe(s *Subscribe) *ContractUpdate {
+	return cu.SetSubscribeID(s.ID)
 }
 
 // Mutation returns the ContractMutation object of the builder.
@@ -164,9 +268,27 @@ func (cu *ContractUpdate) Mutation() *ContractMutation {
 	return cu.mutation
 }
 
+// ClearEmployee clears the "employee" edge to the Employee entity.
+func (cu *ContractUpdate) ClearEmployee() *ContractUpdate {
+	cu.mutation.ClearEmployee()
+	return cu
+}
+
+// ClearStore clears the "store" edge to the Store entity.
+func (cu *ContractUpdate) ClearStore() *ContractUpdate {
+	cu.mutation.ClearStore()
+	return cu
+}
+
 // ClearRider clears the "rider" edge to the Rider entity.
 func (cu *ContractUpdate) ClearRider() *ContractUpdate {
 	cu.mutation.ClearRider()
+	return cu
+}
+
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (cu *ContractUpdate) ClearSubscribe() *ContractUpdate {
+	cu.mutation.ClearSubscribe()
 	return cu
 }
 
@@ -387,6 +509,102 @@ func (cu *ContractUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: contract.FieldEffective,
 		})
 	}
+	if value, ok := cu.mutation.EbikeAllocateID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: contract.FieldEbikeAllocateID,
+		})
+	}
+	if cu.mutation.EbikeAllocateIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: contract.FieldEbikeAllocateID,
+		})
+	}
+	if value, ok := cu.mutation.RiderInfo(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: contract.FieldRiderInfo,
+		})
+	}
+	if cu.mutation.RiderInfoCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: contract.FieldRiderInfo,
+		})
+	}
+	if cu.mutation.EmployeeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   contract.EmployeeTable,
+			Columns: []string{contract.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.EmployeeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   contract.EmployeeTable,
+			Columns: []string{contract.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cu.mutation.StoreCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   contract.StoreTable,
+			Columns: []string{contract.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.StoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   contract.StoreTable,
+			Columns: []string{contract.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if cu.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -414,6 +632,41 @@ func (cu *ContractUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: rider.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cu.mutation.SubscribeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   contract.SubscribeTable,
+			Columns: []string{contract.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   contract.SubscribeTable,
+			Columns: []string{contract.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
 				},
 			},
 		}
@@ -501,6 +754,46 @@ func (cuo *ContractUpdateOne) ClearRemark() *ContractUpdateOne {
 	return cuo
 }
 
+// SetEmployeeID sets the "employee_id" field.
+func (cuo *ContractUpdateOne) SetEmployeeID(u uint64) *ContractUpdateOne {
+	cuo.mutation.SetEmployeeID(u)
+	return cuo
+}
+
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (cuo *ContractUpdateOne) SetNillableEmployeeID(u *uint64) *ContractUpdateOne {
+	if u != nil {
+		cuo.SetEmployeeID(*u)
+	}
+	return cuo
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (cuo *ContractUpdateOne) ClearEmployeeID() *ContractUpdateOne {
+	cuo.mutation.ClearEmployeeID()
+	return cuo
+}
+
+// SetStoreID sets the "store_id" field.
+func (cuo *ContractUpdateOne) SetStoreID(u uint64) *ContractUpdateOne {
+	cuo.mutation.SetStoreID(u)
+	return cuo
+}
+
+// SetNillableStoreID sets the "store_id" field if the given value is not nil.
+func (cuo *ContractUpdateOne) SetNillableStoreID(u *uint64) *ContractUpdateOne {
+	if u != nil {
+		cuo.SetStoreID(*u)
+	}
+	return cuo
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (cuo *ContractUpdateOne) ClearStoreID() *ContractUpdateOne {
+	cuo.mutation.ClearStoreID()
+	return cuo
+}
+
 // SetStatus sets the "status" field.
 func (cuo *ContractUpdateOne) SetStatus(u uint8) *ContractUpdateOne {
 	cuo.mutation.ResetStatus()
@@ -566,9 +859,70 @@ func (cuo *ContractUpdateOne) SetNillableEffective(b *bool) *ContractUpdateOne {
 	return cuo
 }
 
+// SetEbikeAllocateID sets the "ebike_allocate_id" field.
+func (cuo *ContractUpdateOne) SetEbikeAllocateID(s string) *ContractUpdateOne {
+	cuo.mutation.SetEbikeAllocateID(s)
+	return cuo
+}
+
+// SetNillableEbikeAllocateID sets the "ebike_allocate_id" field if the given value is not nil.
+func (cuo *ContractUpdateOne) SetNillableEbikeAllocateID(s *string) *ContractUpdateOne {
+	if s != nil {
+		cuo.SetEbikeAllocateID(*s)
+	}
+	return cuo
+}
+
+// ClearEbikeAllocateID clears the value of the "ebike_allocate_id" field.
+func (cuo *ContractUpdateOne) ClearEbikeAllocateID() *ContractUpdateOne {
+	cuo.mutation.ClearEbikeAllocateID()
+	return cuo
+}
+
+// SetRiderInfo sets the "rider_info" field.
+func (cuo *ContractUpdateOne) SetRiderInfo(mr *model.ContractRider) *ContractUpdateOne {
+	cuo.mutation.SetRiderInfo(mr)
+	return cuo
+}
+
+// ClearRiderInfo clears the value of the "rider_info" field.
+func (cuo *ContractUpdateOne) ClearRiderInfo() *ContractUpdateOne {
+	cuo.mutation.ClearRiderInfo()
+	return cuo
+}
+
+// SetEmployee sets the "employee" edge to the Employee entity.
+func (cuo *ContractUpdateOne) SetEmployee(e *Employee) *ContractUpdateOne {
+	return cuo.SetEmployeeID(e.ID)
+}
+
+// SetStore sets the "store" edge to the Store entity.
+func (cuo *ContractUpdateOne) SetStore(s *Store) *ContractUpdateOne {
+	return cuo.SetStoreID(s.ID)
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (cuo *ContractUpdateOne) SetRider(r *Rider) *ContractUpdateOne {
 	return cuo.SetRiderID(r.ID)
+}
+
+// SetSubscribeID sets the "subscribe" edge to the Subscribe entity by ID.
+func (cuo *ContractUpdateOne) SetSubscribeID(id uint64) *ContractUpdateOne {
+	cuo.mutation.SetSubscribeID(id)
+	return cuo
+}
+
+// SetNillableSubscribeID sets the "subscribe" edge to the Subscribe entity by ID if the given value is not nil.
+func (cuo *ContractUpdateOne) SetNillableSubscribeID(id *uint64) *ContractUpdateOne {
+	if id != nil {
+		cuo = cuo.SetSubscribeID(*id)
+	}
+	return cuo
+}
+
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (cuo *ContractUpdateOne) SetSubscribe(s *Subscribe) *ContractUpdateOne {
+	return cuo.SetSubscribeID(s.ID)
 }
 
 // Mutation returns the ContractMutation object of the builder.
@@ -576,9 +930,27 @@ func (cuo *ContractUpdateOne) Mutation() *ContractMutation {
 	return cuo.mutation
 }
 
+// ClearEmployee clears the "employee" edge to the Employee entity.
+func (cuo *ContractUpdateOne) ClearEmployee() *ContractUpdateOne {
+	cuo.mutation.ClearEmployee()
+	return cuo
+}
+
+// ClearStore clears the "store" edge to the Store entity.
+func (cuo *ContractUpdateOne) ClearStore() *ContractUpdateOne {
+	cuo.mutation.ClearStore()
+	return cuo
+}
+
 // ClearRider clears the "rider" edge to the Rider entity.
 func (cuo *ContractUpdateOne) ClearRider() *ContractUpdateOne {
 	cuo.mutation.ClearRider()
+	return cuo
+}
+
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (cuo *ContractUpdateOne) ClearSubscribe() *ContractUpdateOne {
+	cuo.mutation.ClearSubscribe()
 	return cuo
 }
 
@@ -829,6 +1201,102 @@ func (cuo *ContractUpdateOne) sqlSave(ctx context.Context) (_node *Contract, err
 			Column: contract.FieldEffective,
 		})
 	}
+	if value, ok := cuo.mutation.EbikeAllocateID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: contract.FieldEbikeAllocateID,
+		})
+	}
+	if cuo.mutation.EbikeAllocateIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: contract.FieldEbikeAllocateID,
+		})
+	}
+	if value, ok := cuo.mutation.RiderInfo(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: contract.FieldRiderInfo,
+		})
+	}
+	if cuo.mutation.RiderInfoCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: contract.FieldRiderInfo,
+		})
+	}
+	if cuo.mutation.EmployeeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   contract.EmployeeTable,
+			Columns: []string{contract.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.EmployeeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   contract.EmployeeTable,
+			Columns: []string{contract.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.StoreCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   contract.StoreTable,
+			Columns: []string{contract.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.StoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   contract.StoreTable,
+			Columns: []string{contract.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if cuo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -856,6 +1324,41 @@ func (cuo *ContractUpdateOne) sqlSave(ctx context.Context) (_node *Contract, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: rider.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.SubscribeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   contract.SubscribeTable,
+			Columns: []string{contract.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   contract.SubscribeTable,
+			Columns: []string{contract.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
 				},
 			},
 		}

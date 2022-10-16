@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
@@ -55,6 +56,7 @@ type SubscribeQuery struct {
 	withOrders       *OrderQuery
 	withInitialOrder *OrderQuery
 	withBills        *EnterpriseBillQuery
+	withContract     *ContractQuery
 	modifiers        []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -444,6 +446,28 @@ func (sq *SubscribeQuery) QueryBills() *EnterpriseBillQuery {
 	return query
 }
 
+// QueryContract chains the current query on the "contract" edge.
+func (sq *SubscribeQuery) QueryContract() *ContractQuery {
+	query := &ContractQuery{config: sq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, selector),
+			sqlgraph.To(contract.Table, contract.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, subscribe.ContractTable, subscribe.ContractColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Subscribe entity from the query.
 // Returns a *NotFoundError when no Subscribe was found.
 func (sq *SubscribeQuery) First(ctx context.Context) (*Subscribe, error) {
@@ -641,6 +665,7 @@ func (sq *SubscribeQuery) Clone() *SubscribeQuery {
 		withOrders:       sq.withOrders.Clone(),
 		withInitialOrder: sq.withInitialOrder.Clone(),
 		withBills:        sq.withBills.Clone(),
+		withContract:     sq.withContract.Clone(),
 		// clone intermediate query.
 		sql:    sq.sql.Clone(),
 		path:   sq.path,
@@ -824,6 +849,17 @@ func (sq *SubscribeQuery) WithBills(opts ...func(*EnterpriseBillQuery)) *Subscri
 	return sq
 }
 
+// WithContract tells the query-builder to eager-load the nodes that are connected to
+// the "contract" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *SubscribeQuery) WithContract(opts ...func(*ContractQuery)) *SubscribeQuery {
+	query := &ContractQuery{config: sq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withContract = query
+	return sq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -892,7 +928,7 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 	var (
 		nodes       = []*Subscribe{}
 		_spec       = sq.querySpec()
-		loadedTypes = [16]bool{
+		loadedTypes = [17]bool{
 			sq.withPlan != nil,
 			sq.withEmployee != nil,
 			sq.withCity != nil,
@@ -909,6 +945,7 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 			sq.withOrders != nil,
 			sq.withInitialOrder != nil,
 			sq.withBills != nil,
+			sq.withContract != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -1030,6 +1067,12 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 		if err := sq.loadBills(ctx, query, nodes,
 			func(n *Subscribe) { n.Edges.Bills = []*EnterpriseBill{} },
 			func(n *Subscribe, e *EnterpriseBill) { n.Edges.Bills = append(n.Edges.Bills, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := sq.withContract; query != nil {
+		if err := sq.loadContract(ctx, query, nodes, nil,
+			func(n *Subscribe, e *Contract) { n.Edges.Contract = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1478,6 +1521,32 @@ func (sq *SubscribeQuery) loadBills(ctx context.Context, query *EnterpriseBillQu
 			return fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
+	}
+	return nil
+}
+func (sq *SubscribeQuery) loadContract(ctx context.Context, query *ContractQuery, nodes []*Subscribe, init func(*Subscribe), assign func(*Subscribe, *Contract)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Subscribe)
+	for i := range nodes {
+		fk := nodes[i].ContractID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(contract.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "contract_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
 	}
 	return nil
 }

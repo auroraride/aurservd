@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
@@ -292,6 +293,26 @@ func (su *SubscribeUpdate) SetNillableEnterpriseID(u *uint64) *SubscribeUpdate {
 // ClearEnterpriseID clears the value of the "enterprise_id" field.
 func (su *SubscribeUpdate) ClearEnterpriseID() *SubscribeUpdate {
 	su.mutation.ClearEnterpriseID()
+	return su
+}
+
+// SetContractID sets the "contract_id" field.
+func (su *SubscribeUpdate) SetContractID(u uint64) *SubscribeUpdate {
+	su.mutation.SetContractID(u)
+	return su
+}
+
+// SetNillableContractID sets the "contract_id" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableContractID(u *uint64) *SubscribeUpdate {
+	if u != nil {
+		su.SetContractID(*u)
+	}
+	return su
+}
+
+// ClearContractID clears the value of the "contract_id" field.
+func (su *SubscribeUpdate) ClearContractID() *SubscribeUpdate {
+	su.mutation.ClearContractID()
 	return su
 }
 
@@ -813,6 +834,11 @@ func (su *SubscribeUpdate) AddBills(e ...*EnterpriseBill) *SubscribeUpdate {
 	return su.AddBillIDs(ids...)
 }
 
+// SetContract sets the "contract" edge to the Contract entity.
+func (su *SubscribeUpdate) SetContract(c *Contract) *SubscribeUpdate {
+	return su.SetContractID(c.ID)
+}
+
 // Mutation returns the SubscribeMutation object of the builder.
 func (su *SubscribeUpdate) Mutation() *SubscribeMutation {
 	return su.mutation
@@ -987,6 +1013,12 @@ func (su *SubscribeUpdate) RemoveBills(e ...*EnterpriseBill) *SubscribeUpdate {
 		ids[i] = e[i].ID
 	}
 	return su.RemoveBillIDs(ids...)
+}
+
+// ClearContract clears the "contract" edge to the Contract entity.
+func (su *SubscribeUpdate) ClearContract() *SubscribeUpdate {
+	su.mutation.ClearContract()
+	return su
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -2062,6 +2094,41 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if su.mutation.ContractCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   subscribe.ContractTable,
+			Columns: []string{subscribe.ContractColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: contract.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.ContractIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   subscribe.ContractTable,
+			Columns: []string{subscribe.ContractColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: contract.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.Modifiers = su.modifiers
 	if n, err = sqlgraph.UpdateNodes(ctx, su.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -2330,6 +2397,26 @@ func (suo *SubscribeUpdateOne) SetNillableEnterpriseID(u *uint64) *SubscribeUpda
 // ClearEnterpriseID clears the value of the "enterprise_id" field.
 func (suo *SubscribeUpdateOne) ClearEnterpriseID() *SubscribeUpdateOne {
 	suo.mutation.ClearEnterpriseID()
+	return suo
+}
+
+// SetContractID sets the "contract_id" field.
+func (suo *SubscribeUpdateOne) SetContractID(u uint64) *SubscribeUpdateOne {
+	suo.mutation.SetContractID(u)
+	return suo
+}
+
+// SetNillableContractID sets the "contract_id" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableContractID(u *uint64) *SubscribeUpdateOne {
+	if u != nil {
+		suo.SetContractID(*u)
+	}
+	return suo
+}
+
+// ClearContractID clears the value of the "contract_id" field.
+func (suo *SubscribeUpdateOne) ClearContractID() *SubscribeUpdateOne {
+	suo.mutation.ClearContractID()
 	return suo
 }
 
@@ -2851,6 +2938,11 @@ func (suo *SubscribeUpdateOne) AddBills(e ...*EnterpriseBill) *SubscribeUpdateOn
 	return suo.AddBillIDs(ids...)
 }
 
+// SetContract sets the "contract" edge to the Contract entity.
+func (suo *SubscribeUpdateOne) SetContract(c *Contract) *SubscribeUpdateOne {
+	return suo.SetContractID(c.ID)
+}
+
 // Mutation returns the SubscribeMutation object of the builder.
 func (suo *SubscribeUpdateOne) Mutation() *SubscribeMutation {
 	return suo.mutation
@@ -3025,6 +3117,12 @@ func (suo *SubscribeUpdateOne) RemoveBills(e ...*EnterpriseBill) *SubscribeUpdat
 		ids[i] = e[i].ID
 	}
 	return suo.RemoveBillIDs(ids...)
+}
+
+// ClearContract clears the "contract" edge to the Contract entity.
+func (suo *SubscribeUpdateOne) ClearContract() *SubscribeUpdateOne {
+	suo.mutation.ClearContract()
+	return suo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -4122,6 +4220,41 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: enterprisebill.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.ContractCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   subscribe.ContractTable,
+			Columns: []string{subscribe.ContractColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: contract.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.ContractIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   subscribe.ContractTable,
+			Columns: []string{subscribe.ContractColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: contract.FieldID,
 				},
 			},
 		}

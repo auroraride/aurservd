@@ -32,6 +32,7 @@ type EbikeAllocate struct {
     Model       string              `json:"model" bson:"model"`
     StoreID     uint64              `json:"storeId" bson:"storeId"`
     EmployeeID  uint64              `json:"employeeId" bson:"employeeId"`
+    SN          string              `json:"sn" bson:"sn"`
 }
 
 type EbikeAllocateReq struct {

@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -11,21 +12,27 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // ContractQuery is the builder for querying Contract entities.
 type ContractQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
-	order      []OrderFunc
-	fields     []string
-	predicates []predicate.Contract
-	withRider  *RiderQuery
-	modifiers  []func(*sql.Selector)
+	limit         *int
+	offset        *int
+	unique        *bool
+	order         []OrderFunc
+	fields        []string
+	predicates    []predicate.Contract
+	withEmployee  *EmployeeQuery
+	withStore     *StoreQuery
+	withRider     *RiderQuery
+	withSubscribe *SubscribeQuery
+	modifiers     []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -62,6 +69,50 @@ func (cq *ContractQuery) Order(o ...OrderFunc) *ContractQuery {
 	return cq
 }
 
+// QueryEmployee chains the current query on the "employee" edge.
+func (cq *ContractQuery) QueryEmployee() *EmployeeQuery {
+	query := &EmployeeQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(contract.Table, contract.FieldID, selector),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, contract.EmployeeTable, contract.EmployeeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryStore chains the current query on the "store" edge.
+func (cq *ContractQuery) QueryStore() *StoreQuery {
+	query := &StoreQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(contract.Table, contract.FieldID, selector),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, contract.StoreTable, contract.StoreColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // QueryRider chains the current query on the "rider" edge.
 func (cq *ContractQuery) QueryRider() *RiderQuery {
 	query := &RiderQuery{config: cq.config}
@@ -77,6 +128,28 @@ func (cq *ContractQuery) QueryRider() *RiderQuery {
 			sqlgraph.From(contract.Table, contract.FieldID, selector),
 			sqlgraph.To(rider.Table, rider.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, contract.RiderTable, contract.RiderColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySubscribe chains the current query on the "subscribe" edge.
+func (cq *ContractQuery) QuerySubscribe() *SubscribeQuery {
+	query := &SubscribeQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(contract.Table, contract.FieldID, selector),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, contract.SubscribeTable, contract.SubscribeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -260,17 +333,42 @@ func (cq *ContractQuery) Clone() *ContractQuery {
 		return nil
 	}
 	return &ContractQuery{
-		config:     cq.config,
-		limit:      cq.limit,
-		offset:     cq.offset,
-		order:      append([]OrderFunc{}, cq.order...),
-		predicates: append([]predicate.Contract{}, cq.predicates...),
-		withRider:  cq.withRider.Clone(),
+		config:        cq.config,
+		limit:         cq.limit,
+		offset:        cq.offset,
+		order:         append([]OrderFunc{}, cq.order...),
+		predicates:    append([]predicate.Contract{}, cq.predicates...),
+		withEmployee:  cq.withEmployee.Clone(),
+		withStore:     cq.withStore.Clone(),
+		withRider:     cq.withRider.Clone(),
+		withSubscribe: cq.withSubscribe.Clone(),
 		// clone intermediate query.
 		sql:    cq.sql.Clone(),
 		path:   cq.path,
 		unique: cq.unique,
 	}
+}
+
+// WithEmployee tells the query-builder to eager-load the nodes that are connected to
+// the "employee" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *ContractQuery) WithEmployee(opts ...func(*EmployeeQuery)) *ContractQuery {
+	query := &EmployeeQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withEmployee = query
+	return cq
+}
+
+// WithStore tells the query-builder to eager-load the nodes that are connected to
+// the "store" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *ContractQuery) WithStore(opts ...func(*StoreQuery)) *ContractQuery {
+	query := &StoreQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withStore = query
+	return cq
 }
 
 // WithRider tells the query-builder to eager-load the nodes that are connected to
@@ -281,6 +379,17 @@ func (cq *ContractQuery) WithRider(opts ...func(*RiderQuery)) *ContractQuery {
 		opt(query)
 	}
 	cq.withRider = query
+	return cq
+}
+
+// WithSubscribe tells the query-builder to eager-load the nodes that are connected to
+// the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *ContractQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *ContractQuery {
+	query := &SubscribeQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withSubscribe = query
 	return cq
 }
 
@@ -352,8 +461,11 @@ func (cq *ContractQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Con
 	var (
 		nodes       = []*Contract{}
 		_spec       = cq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [4]bool{
+			cq.withEmployee != nil,
+			cq.withStore != nil,
 			cq.withRider != nil,
+			cq.withSubscribe != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -377,15 +489,91 @@ func (cq *ContractQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Con
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := cq.withEmployee; query != nil {
+		if err := cq.loadEmployee(ctx, query, nodes, nil,
+			func(n *Contract, e *Employee) { n.Edges.Employee = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := cq.withStore; query != nil {
+		if err := cq.loadStore(ctx, query, nodes, nil,
+			func(n *Contract, e *Store) { n.Edges.Store = e }); err != nil {
+			return nil, err
+		}
+	}
 	if query := cq.withRider; query != nil {
 		if err := cq.loadRider(ctx, query, nodes, nil,
 			func(n *Contract, e *Rider) { n.Edges.Rider = e }); err != nil {
 			return nil, err
 		}
 	}
+	if query := cq.withSubscribe; query != nil {
+		if err := cq.loadSubscribe(ctx, query, nodes, nil,
+			func(n *Contract, e *Subscribe) { n.Edges.Subscribe = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
 }
 
+func (cq *ContractQuery) loadEmployee(ctx context.Context, query *EmployeeQuery, nodes []*Contract, init func(*Contract), assign func(*Contract, *Employee)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Contract)
+	for i := range nodes {
+		if nodes[i].EmployeeID == nil {
+			continue
+		}
+		fk := *nodes[i].EmployeeID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(employee.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "employee_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (cq *ContractQuery) loadStore(ctx context.Context, query *StoreQuery, nodes []*Contract, init func(*Contract), assign func(*Contract, *Store)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Contract)
+	for i := range nodes {
+		if nodes[i].StoreID == nil {
+			continue
+		}
+		fk := *nodes[i].StoreID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(store.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "store_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 func (cq *ContractQuery) loadRider(ctx context.Context, query *RiderQuery, nodes []*Contract, init func(*Contract), assign func(*Contract, *Rider)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*Contract)
@@ -409,6 +597,30 @@ func (cq *ContractQuery) loadRider(ctx context.Context, query *RiderQuery, nodes
 		for i := range nodes {
 			assign(nodes[i], n)
 		}
+	}
+	return nil
+}
+func (cq *ContractQuery) loadSubscribe(ctx context.Context, query *SubscribeQuery, nodes []*Contract, init func(*Contract), assign func(*Contract, *Subscribe)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Contract)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+	}
+	query.Where(predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.InValues(contract.SubscribeColumn, fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.ContractID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "contract_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
 	}
 	return nil
 }

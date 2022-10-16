@@ -25,7 +25,7 @@ type FlowInfo struct {
     InitiatorAccountId           string         `json:"initiatorAccountId,omitempty"`
     InitiatorAuthorizedAccountId string         `json:"initiatorAuthorizedAccountId,omitempty"`
     Remark                       string         `json:"remark,omitempty"`
-    SignValidity                 string         `json:"signValidity,omitempty"`
+    SignValidity                 int64          `json:"signValidity,omitempty"`
 }
 
 type FlowConfigInfo struct {

@@ -31,6 +31,37 @@ func NewEbikeAllocate(params ...any) *ebikeAllocateService {
     }
 }
 
+func (s *ebikeAllocateService) QueryIDHex(hex string) (allo *model.EbikeAllocate, err error) {
+    var id primitive.ObjectID
+    id, err = primitive.ObjectIDFromHex(hex)
+    if err != nil {
+        return
+    }
+    allo = new(model.EbikeAllocate)
+    err = mgo.EbikeAllocate.Find(s.ctx, bson.M{"_id": id}).One(allo)
+    if err != nil {
+        allo = nil
+        return
+    }
+    return
+}
+
+// QueryEffectiveSubscribeID 查询生效中的分配信息
+func (s *ebikeAllocateService) QueryEffectiveSubscribeID(subscribeID uint64) *model.EbikeAllocate {
+    var result model.EbikeAllocate
+    err := mgo.EbikeAllocate.Find(s.ctx, bson.M{
+        "subscribeId": subscribeID,
+        "status":      model.EbikeAllocateStatusPending,
+        "createAt": bson.M{
+            operator.Gte: primitive.NewDateTimeFromTime(carbon.Now().SubSeconds(model.EbikeAllocateExpiration).Carbon2Time()),
+        },
+    }).One(&result)
+    if err != nil {
+        return nil
+    }
+    return &result
+}
+
 // UnallocatedInfo 获取未分配车辆信息
 func (s *ebikeAllocateService) UnallocatedInfo(keyword string) model.EbikeInfo {
     if s.entStore == nil {
@@ -167,20 +198,4 @@ func (s *ebikeAllocateService) EmployeeList(req *model.EbikeAllocateEmployeeList
         },
         Items: items,
     }
-}
-
-// QueryEffectiveSubscribeID 查询生效中的分配信息
-func (s *ebikeAllocateService) QueryEffectiveSubscribeID(subscribeID uint64) *model.EbikeAllocate {
-    var result model.EbikeAllocate
-    err := mgo.EbikeAllocate.Find(s.ctx, bson.M{
-        "subscribeId": subscribeID,
-        "status":      model.EbikeAllocateStatusPending,
-        "createAt": bson.M{
-            operator.Gte: primitive.NewDateTimeFromTime(carbon.Now().SubSeconds(model.EbikeAllocateExpiration).Carbon2Time()),
-        },
-    }).One(&result)
-    if err != nil {
-        return nil
-    }
-    return &result
 }

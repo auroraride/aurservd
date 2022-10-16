@@ -1356,7 +1356,7 @@ const docTemplate = `{
         },
         "/employee/v1/ebike/allocate/info": {
             "get": {
-                "description": "TODO 骑手签约成功后通过socket推送门店消息",
+                "description": "骑手签约成功后通过socket推送门店消息",
                 "consumes": [
                     "application/json"
                 ],

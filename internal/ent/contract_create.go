@@ -13,7 +13,10 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // ContractCreate is the builder for creating a Contract entity.
@@ -92,6 +95,34 @@ func (cc *ContractCreate) SetNillableRemark(s *string) *ContractCreate {
 	return cc
 }
 
+// SetEmployeeID sets the "employee_id" field.
+func (cc *ContractCreate) SetEmployeeID(u uint64) *ContractCreate {
+	cc.mutation.SetEmployeeID(u)
+	return cc
+}
+
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (cc *ContractCreate) SetNillableEmployeeID(u *uint64) *ContractCreate {
+	if u != nil {
+		cc.SetEmployeeID(*u)
+	}
+	return cc
+}
+
+// SetStoreID sets the "store_id" field.
+func (cc *ContractCreate) SetStoreID(u uint64) *ContractCreate {
+	cc.mutation.SetStoreID(u)
+	return cc
+}
+
+// SetNillableStoreID sets the "store_id" field if the given value is not nil.
+func (cc *ContractCreate) SetNillableStoreID(u *uint64) *ContractCreate {
+	if u != nil {
+		cc.SetStoreID(*u)
+	}
+	return cc
+}
+
 // SetStatus sets the "status" field.
 func (cc *ContractCreate) SetStatus(u uint8) *ContractCreate {
 	cc.mutation.SetStatus(u)
@@ -144,9 +175,58 @@ func (cc *ContractCreate) SetNillableEffective(b *bool) *ContractCreate {
 	return cc
 }
 
+// SetEbikeAllocateID sets the "ebike_allocate_id" field.
+func (cc *ContractCreate) SetEbikeAllocateID(s string) *ContractCreate {
+	cc.mutation.SetEbikeAllocateID(s)
+	return cc
+}
+
+// SetNillableEbikeAllocateID sets the "ebike_allocate_id" field if the given value is not nil.
+func (cc *ContractCreate) SetNillableEbikeAllocateID(s *string) *ContractCreate {
+	if s != nil {
+		cc.SetEbikeAllocateID(*s)
+	}
+	return cc
+}
+
+// SetRiderInfo sets the "rider_info" field.
+func (cc *ContractCreate) SetRiderInfo(mr *model.ContractRider) *ContractCreate {
+	cc.mutation.SetRiderInfo(mr)
+	return cc
+}
+
+// SetEmployee sets the "employee" edge to the Employee entity.
+func (cc *ContractCreate) SetEmployee(e *Employee) *ContractCreate {
+	return cc.SetEmployeeID(e.ID)
+}
+
+// SetStore sets the "store" edge to the Store entity.
+func (cc *ContractCreate) SetStore(s *Store) *ContractCreate {
+	return cc.SetStoreID(s.ID)
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (cc *ContractCreate) SetRider(r *Rider) *ContractCreate {
 	return cc.SetRiderID(r.ID)
+}
+
+// SetSubscribeID sets the "subscribe" edge to the Subscribe entity by ID.
+func (cc *ContractCreate) SetSubscribeID(id uint64) *ContractCreate {
+	cc.mutation.SetSubscribeID(id)
+	return cc
+}
+
+// SetNillableSubscribeID sets the "subscribe" edge to the Subscribe entity by ID if the given value is not nil.
+func (cc *ContractCreate) SetNillableSubscribeID(id *uint64) *ContractCreate {
+	if id != nil {
+		cc = cc.SetSubscribeID(*id)
+	}
+	return cc
+}
+
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (cc *ContractCreate) SetSubscribe(s *Subscribe) *ContractCreate {
+	return cc.SetSubscribeID(s.ID)
 }
 
 // Mutation returns the ContractMutation object of the builder.
@@ -405,6 +485,62 @@ func (cc *ContractCreate) createSpec() (*Contract, *sqlgraph.CreateSpec) {
 		})
 		_node.Effective = value
 	}
+	if value, ok := cc.mutation.EbikeAllocateID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: contract.FieldEbikeAllocateID,
+		})
+		_node.EbikeAllocateID = &value
+	}
+	if value, ok := cc.mutation.RiderInfo(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: contract.FieldRiderInfo,
+		})
+		_node.RiderInfo = value
+	}
+	if nodes := cc.mutation.EmployeeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   contract.EmployeeTable,
+			Columns: []string{contract.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.EmployeeID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.StoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   contract.StoreTable,
+			Columns: []string{contract.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.StoreID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := cc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -423,6 +559,25 @@ func (cc *ContractCreate) createSpec() (*Contract, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.RiderID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   contract.SubscribeTable,
+			Columns: []string{contract.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -543,6 +698,42 @@ func (u *ContractUpsert) ClearRemark() *ContractUpsert {
 	return u
 }
 
+// SetEmployeeID sets the "employee_id" field.
+func (u *ContractUpsert) SetEmployeeID(v uint64) *ContractUpsert {
+	u.Set(contract.FieldEmployeeID, v)
+	return u
+}
+
+// UpdateEmployeeID sets the "employee_id" field to the value that was provided on create.
+func (u *ContractUpsert) UpdateEmployeeID() *ContractUpsert {
+	u.SetExcluded(contract.FieldEmployeeID)
+	return u
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (u *ContractUpsert) ClearEmployeeID() *ContractUpsert {
+	u.SetNull(contract.FieldEmployeeID)
+	return u
+}
+
+// SetStoreID sets the "store_id" field.
+func (u *ContractUpsert) SetStoreID(v uint64) *ContractUpsert {
+	u.Set(contract.FieldStoreID, v)
+	return u
+}
+
+// UpdateStoreID sets the "store_id" field to the value that was provided on create.
+func (u *ContractUpsert) UpdateStoreID() *ContractUpsert {
+	u.SetExcluded(contract.FieldStoreID)
+	return u
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (u *ContractUpsert) ClearStoreID() *ContractUpsert {
+	u.SetNull(contract.FieldStoreID)
+	return u
+}
+
 // SetStatus sets the "status" field.
 func (u *ContractUpsert) SetStatus(v uint8) *ContractUpsert {
 	u.Set(contract.FieldStatus, v)
@@ -624,6 +815,42 @@ func (u *ContractUpsert) SetEffective(v bool) *ContractUpsert {
 // UpdateEffective sets the "effective" field to the value that was provided on create.
 func (u *ContractUpsert) UpdateEffective() *ContractUpsert {
 	u.SetExcluded(contract.FieldEffective)
+	return u
+}
+
+// SetEbikeAllocateID sets the "ebike_allocate_id" field.
+func (u *ContractUpsert) SetEbikeAllocateID(v string) *ContractUpsert {
+	u.Set(contract.FieldEbikeAllocateID, v)
+	return u
+}
+
+// UpdateEbikeAllocateID sets the "ebike_allocate_id" field to the value that was provided on create.
+func (u *ContractUpsert) UpdateEbikeAllocateID() *ContractUpsert {
+	u.SetExcluded(contract.FieldEbikeAllocateID)
+	return u
+}
+
+// ClearEbikeAllocateID clears the value of the "ebike_allocate_id" field.
+func (u *ContractUpsert) ClearEbikeAllocateID() *ContractUpsert {
+	u.SetNull(contract.FieldEbikeAllocateID)
+	return u
+}
+
+// SetRiderInfo sets the "rider_info" field.
+func (u *ContractUpsert) SetRiderInfo(v *model.ContractRider) *ContractUpsert {
+	u.Set(contract.FieldRiderInfo, v)
+	return u
+}
+
+// UpdateRiderInfo sets the "rider_info" field to the value that was provided on create.
+func (u *ContractUpsert) UpdateRiderInfo() *ContractUpsert {
+	u.SetExcluded(contract.FieldRiderInfo)
+	return u
+}
+
+// ClearRiderInfo clears the value of the "rider_info" field.
+func (u *ContractUpsert) ClearRiderInfo() *ContractUpsert {
+	u.SetNull(contract.FieldRiderInfo)
 	return u
 }
 
@@ -752,6 +979,48 @@ func (u *ContractUpsertOne) ClearRemark() *ContractUpsertOne {
 	})
 }
 
+// SetEmployeeID sets the "employee_id" field.
+func (u *ContractUpsertOne) SetEmployeeID(v uint64) *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.SetEmployeeID(v)
+	})
+}
+
+// UpdateEmployeeID sets the "employee_id" field to the value that was provided on create.
+func (u *ContractUpsertOne) UpdateEmployeeID() *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.UpdateEmployeeID()
+	})
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (u *ContractUpsertOne) ClearEmployeeID() *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.ClearEmployeeID()
+	})
+}
+
+// SetStoreID sets the "store_id" field.
+func (u *ContractUpsertOne) SetStoreID(v uint64) *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.SetStoreID(v)
+	})
+}
+
+// UpdateStoreID sets the "store_id" field to the value that was provided on create.
+func (u *ContractUpsertOne) UpdateStoreID() *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.UpdateStoreID()
+	})
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (u *ContractUpsertOne) ClearStoreID() *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.ClearStoreID()
+	})
+}
+
 // SetStatus sets the "status" field.
 func (u *ContractUpsertOne) SetStatus(v uint8) *ContractUpsertOne {
 	return u.Update(func(s *ContractUpsert) {
@@ -847,6 +1116,48 @@ func (u *ContractUpsertOne) SetEffective(v bool) *ContractUpsertOne {
 func (u *ContractUpsertOne) UpdateEffective() *ContractUpsertOne {
 	return u.Update(func(s *ContractUpsert) {
 		s.UpdateEffective()
+	})
+}
+
+// SetEbikeAllocateID sets the "ebike_allocate_id" field.
+func (u *ContractUpsertOne) SetEbikeAllocateID(v string) *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.SetEbikeAllocateID(v)
+	})
+}
+
+// UpdateEbikeAllocateID sets the "ebike_allocate_id" field to the value that was provided on create.
+func (u *ContractUpsertOne) UpdateEbikeAllocateID() *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.UpdateEbikeAllocateID()
+	})
+}
+
+// ClearEbikeAllocateID clears the value of the "ebike_allocate_id" field.
+func (u *ContractUpsertOne) ClearEbikeAllocateID() *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.ClearEbikeAllocateID()
+	})
+}
+
+// SetRiderInfo sets the "rider_info" field.
+func (u *ContractUpsertOne) SetRiderInfo(v *model.ContractRider) *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.SetRiderInfo(v)
+	})
+}
+
+// UpdateRiderInfo sets the "rider_info" field to the value that was provided on create.
+func (u *ContractUpsertOne) UpdateRiderInfo() *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.UpdateRiderInfo()
+	})
+}
+
+// ClearRiderInfo clears the value of the "rider_info" field.
+func (u *ContractUpsertOne) ClearRiderInfo() *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.ClearRiderInfo()
 	})
 }
 
@@ -1137,6 +1448,48 @@ func (u *ContractUpsertBulk) ClearRemark() *ContractUpsertBulk {
 	})
 }
 
+// SetEmployeeID sets the "employee_id" field.
+func (u *ContractUpsertBulk) SetEmployeeID(v uint64) *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.SetEmployeeID(v)
+	})
+}
+
+// UpdateEmployeeID sets the "employee_id" field to the value that was provided on create.
+func (u *ContractUpsertBulk) UpdateEmployeeID() *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.UpdateEmployeeID()
+	})
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (u *ContractUpsertBulk) ClearEmployeeID() *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.ClearEmployeeID()
+	})
+}
+
+// SetStoreID sets the "store_id" field.
+func (u *ContractUpsertBulk) SetStoreID(v uint64) *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.SetStoreID(v)
+	})
+}
+
+// UpdateStoreID sets the "store_id" field to the value that was provided on create.
+func (u *ContractUpsertBulk) UpdateStoreID() *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.UpdateStoreID()
+	})
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (u *ContractUpsertBulk) ClearStoreID() *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.ClearStoreID()
+	})
+}
+
 // SetStatus sets the "status" field.
 func (u *ContractUpsertBulk) SetStatus(v uint8) *ContractUpsertBulk {
 	return u.Update(func(s *ContractUpsert) {
@@ -1232,6 +1585,48 @@ func (u *ContractUpsertBulk) SetEffective(v bool) *ContractUpsertBulk {
 func (u *ContractUpsertBulk) UpdateEffective() *ContractUpsertBulk {
 	return u.Update(func(s *ContractUpsert) {
 		s.UpdateEffective()
+	})
+}
+
+// SetEbikeAllocateID sets the "ebike_allocate_id" field.
+func (u *ContractUpsertBulk) SetEbikeAllocateID(v string) *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.SetEbikeAllocateID(v)
+	})
+}
+
+// UpdateEbikeAllocateID sets the "ebike_allocate_id" field to the value that was provided on create.
+func (u *ContractUpsertBulk) UpdateEbikeAllocateID() *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.UpdateEbikeAllocateID()
+	})
+}
+
+// ClearEbikeAllocateID clears the value of the "ebike_allocate_id" field.
+func (u *ContractUpsertBulk) ClearEbikeAllocateID() *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.ClearEbikeAllocateID()
+	})
+}
+
+// SetRiderInfo sets the "rider_info" field.
+func (u *ContractUpsertBulk) SetRiderInfo(v *model.ContractRider) *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.SetRiderInfo(v)
+	})
+}
+
+// UpdateRiderInfo sets the "rider_info" field to the value that was provided on create.
+func (u *ContractUpsertBulk) UpdateRiderInfo() *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.UpdateRiderInfo()
+	})
+}
+
+// ClearRiderInfo clears the value of the "rider_info" field.
+func (u *ContractUpsertBulk) ClearRiderInfo() *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.ClearRiderInfo()
 	})
 }
 

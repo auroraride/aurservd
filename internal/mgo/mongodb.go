@@ -78,5 +78,8 @@ func Connect(url, db string) {
         {
             Key: []string{"storeId"},
         },
+        {
+            Key: []string{"sn"},
+        },
     })
 }

@@ -7079,7 +7079,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: TODO 骑手签约成功后通过socket推送门店消息
+      description: 骑手签约成功后通过socket推送门店消息
       operationId: EmployeeEbikeInfo
       parameters:
       - description: 店员校验token

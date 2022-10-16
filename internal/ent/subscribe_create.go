@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
@@ -240,6 +241,20 @@ func (sc *SubscribeCreate) SetEnterpriseID(u uint64) *SubscribeCreate {
 func (sc *SubscribeCreate) SetNillableEnterpriseID(u *uint64) *SubscribeCreate {
 	if u != nil {
 		sc.SetEnterpriseID(*u)
+	}
+	return sc
+}
+
+// SetContractID sets the "contract_id" field.
+func (sc *SubscribeCreate) SetContractID(u uint64) *SubscribeCreate {
+	sc.mutation.SetContractID(u)
+	return sc
+}
+
+// SetNillableContractID sets the "contract_id" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableContractID(u *uint64) *SubscribeCreate {
+	if u != nil {
+		sc.SetContractID(*u)
 	}
 	return sc
 }
@@ -658,6 +673,11 @@ func (sc *SubscribeCreate) AddBills(e ...*EnterpriseBill) *SubscribeCreate {
 		ids[i] = e[i].ID
 	}
 	return sc.AddBillIDs(ids...)
+}
+
+// SetContract sets the "contract" edge to the Contract entity.
+func (sc *SubscribeCreate) SetContract(c *Contract) *SubscribeCreate {
+	return sc.SetContractID(c.ID)
 }
 
 // Mutation returns the SubscribeMutation object of the builder.
@@ -1408,6 +1428,26 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := sc.mutation.ContractIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   subscribe.ContractTable,
+			Columns: []string{subscribe.ContractColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: contract.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.ContractID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -1709,6 +1749,24 @@ func (u *SubscribeUpsert) UpdateEnterpriseID() *SubscribeUpsert {
 // ClearEnterpriseID clears the value of the "enterprise_id" field.
 func (u *SubscribeUpsert) ClearEnterpriseID() *SubscribeUpsert {
 	u.SetNull(subscribe.FieldEnterpriseID)
+	return u
+}
+
+// SetContractID sets the "contract_id" field.
+func (u *SubscribeUpsert) SetContractID(v uint64) *SubscribeUpsert {
+	u.Set(subscribe.FieldContractID, v)
+	return u
+}
+
+// UpdateContractID sets the "contract_id" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateContractID() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldContractID)
+	return u
+}
+
+// ClearContractID clears the value of the "contract_id" field.
+func (u *SubscribeUpsert) ClearContractID() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldContractID)
 	return u
 }
 
@@ -2402,6 +2460,27 @@ func (u *SubscribeUpsertOne) UpdateEnterpriseID() *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) ClearEnterpriseID() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearEnterpriseID()
+	})
+}
+
+// SetContractID sets the "contract_id" field.
+func (u *SubscribeUpsertOne) SetContractID(v uint64) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetContractID(v)
+	})
+}
+
+// UpdateContractID sets the "contract_id" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateContractID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateContractID()
+	})
+}
+
+// ClearContractID clears the value of the "contract_id" field.
+func (u *SubscribeUpsertOne) ClearContractID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearContractID()
 	})
 }
 
@@ -3315,6 +3394,27 @@ func (u *SubscribeUpsertBulk) UpdateEnterpriseID() *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) ClearEnterpriseID() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearEnterpriseID()
+	})
+}
+
+// SetContractID sets the "contract_id" field.
+func (u *SubscribeUpsertBulk) SetContractID(v uint64) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetContractID(v)
+	})
+}
+
+// UpdateContractID sets the "contract_id" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateContractID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateContractID()
+	})
+}
+
+// ClearContractID clears the value of the "contract_id" field.
+func (u *SubscribeUpsertBulk) ClearContractID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearContractID()
 	})
 }
 

@@ -109,6 +109,20 @@ func Remark(v string) predicate.Contract {
 	})
 }
 
+// EmployeeID applies equality check predicate on the "employee_id" field. It's identical to EmployeeIDEQ.
+func EmployeeID(v uint64) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
+	})
+}
+
+// StoreID applies equality check predicate on the "store_id" field. It's identical to StoreIDEQ.
+func StoreID(v uint64) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStoreID), v))
+	})
+}
+
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v uint8) predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
@@ -141,6 +155,13 @@ func Sn(v string) predicate.Contract {
 func Effective(v bool) predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldEffective), v))
+	})
+}
+
+// EbikeAllocateID applies equality check predicate on the "ebike_allocate_id" field. It's identical to EbikeAllocateIDEQ.
+func EbikeAllocateID(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEbikeAllocateID), v))
 	})
 }
 
@@ -491,6 +512,106 @@ func RemarkContainsFold(v string) predicate.Contract {
 	})
 }
 
+// EmployeeIDEQ applies the EQ predicate on the "employee_id" field.
+func EmployeeIDEQ(v uint64) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
+	})
+}
+
+// EmployeeIDNEQ applies the NEQ predicate on the "employee_id" field.
+func EmployeeIDNEQ(v uint64) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldEmployeeID), v))
+	})
+}
+
+// EmployeeIDIn applies the In predicate on the "employee_id" field.
+func EmployeeIDIn(vs ...uint64) predicate.Contract {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldEmployeeID), v...))
+	})
+}
+
+// EmployeeIDNotIn applies the NotIn predicate on the "employee_id" field.
+func EmployeeIDNotIn(vs ...uint64) predicate.Contract {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldEmployeeID), v...))
+	})
+}
+
+// EmployeeIDIsNil applies the IsNil predicate on the "employee_id" field.
+func EmployeeIDIsNil() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldEmployeeID)))
+	})
+}
+
+// EmployeeIDNotNil applies the NotNil predicate on the "employee_id" field.
+func EmployeeIDNotNil() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldEmployeeID)))
+	})
+}
+
+// StoreIDEQ applies the EQ predicate on the "store_id" field.
+func StoreIDEQ(v uint64) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStoreID), v))
+	})
+}
+
+// StoreIDNEQ applies the NEQ predicate on the "store_id" field.
+func StoreIDNEQ(v uint64) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldStoreID), v))
+	})
+}
+
+// StoreIDIn applies the In predicate on the "store_id" field.
+func StoreIDIn(vs ...uint64) predicate.Contract {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldStoreID), v...))
+	})
+}
+
+// StoreIDNotIn applies the NotIn predicate on the "store_id" field.
+func StoreIDNotIn(vs ...uint64) predicate.Contract {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldStoreID), v...))
+	})
+}
+
+// StoreIDIsNil applies the IsNil predicate on the "store_id" field.
+func StoreIDIsNil() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldStoreID)))
+	})
+}
+
+// StoreIDNotNil applies the NotNil predicate on the "store_id" field.
+func StoreIDNotNil() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldStoreID)))
+	})
+}
+
 // StatusEQ applies the EQ predicate on the "status" field.
 func StatusEQ(v uint8) predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
@@ -817,6 +938,189 @@ func EffectiveNEQ(v bool) predicate.Contract {
 	})
 }
 
+// EbikeAllocateIDEQ applies the EQ predicate on the "ebike_allocate_id" field.
+func EbikeAllocateIDEQ(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEbikeAllocateID), v))
+	})
+}
+
+// EbikeAllocateIDNEQ applies the NEQ predicate on the "ebike_allocate_id" field.
+func EbikeAllocateIDNEQ(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldEbikeAllocateID), v))
+	})
+}
+
+// EbikeAllocateIDIn applies the In predicate on the "ebike_allocate_id" field.
+func EbikeAllocateIDIn(vs ...string) predicate.Contract {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldEbikeAllocateID), v...))
+	})
+}
+
+// EbikeAllocateIDNotIn applies the NotIn predicate on the "ebike_allocate_id" field.
+func EbikeAllocateIDNotIn(vs ...string) predicate.Contract {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldEbikeAllocateID), v...))
+	})
+}
+
+// EbikeAllocateIDGT applies the GT predicate on the "ebike_allocate_id" field.
+func EbikeAllocateIDGT(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldEbikeAllocateID), v))
+	})
+}
+
+// EbikeAllocateIDGTE applies the GTE predicate on the "ebike_allocate_id" field.
+func EbikeAllocateIDGTE(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldEbikeAllocateID), v))
+	})
+}
+
+// EbikeAllocateIDLT applies the LT predicate on the "ebike_allocate_id" field.
+func EbikeAllocateIDLT(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldEbikeAllocateID), v))
+	})
+}
+
+// EbikeAllocateIDLTE applies the LTE predicate on the "ebike_allocate_id" field.
+func EbikeAllocateIDLTE(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldEbikeAllocateID), v))
+	})
+}
+
+// EbikeAllocateIDContains applies the Contains predicate on the "ebike_allocate_id" field.
+func EbikeAllocateIDContains(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldEbikeAllocateID), v))
+	})
+}
+
+// EbikeAllocateIDHasPrefix applies the HasPrefix predicate on the "ebike_allocate_id" field.
+func EbikeAllocateIDHasPrefix(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldEbikeAllocateID), v))
+	})
+}
+
+// EbikeAllocateIDHasSuffix applies the HasSuffix predicate on the "ebike_allocate_id" field.
+func EbikeAllocateIDHasSuffix(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldEbikeAllocateID), v))
+	})
+}
+
+// EbikeAllocateIDIsNil applies the IsNil predicate on the "ebike_allocate_id" field.
+func EbikeAllocateIDIsNil() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldEbikeAllocateID)))
+	})
+}
+
+// EbikeAllocateIDNotNil applies the NotNil predicate on the "ebike_allocate_id" field.
+func EbikeAllocateIDNotNil() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldEbikeAllocateID)))
+	})
+}
+
+// EbikeAllocateIDEqualFold applies the EqualFold predicate on the "ebike_allocate_id" field.
+func EbikeAllocateIDEqualFold(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldEbikeAllocateID), v))
+	})
+}
+
+// EbikeAllocateIDContainsFold applies the ContainsFold predicate on the "ebike_allocate_id" field.
+func EbikeAllocateIDContainsFold(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldEbikeAllocateID), v))
+	})
+}
+
+// RiderInfoIsNil applies the IsNil predicate on the "rider_info" field.
+func RiderInfoIsNil() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldRiderInfo)))
+	})
+}
+
+// RiderInfoNotNil applies the NotNil predicate on the "rider_info" field.
+func RiderInfoNotNil() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldRiderInfo)))
+	})
+}
+
+// HasEmployee applies the HasEdge predicate on the "employee" edge.
+func HasEmployee() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EmployeeTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, EmployeeTable, EmployeeColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEmployeeWith applies the HasEdge predicate on the "employee" edge with a given conditions (other predicates).
+func HasEmployeeWith(preds ...predicate.Employee) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EmployeeInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, EmployeeTable, EmployeeColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasStore applies the HasEdge predicate on the "store" edge.
+func HasStore() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(StoreTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStoreWith applies the HasEdge predicate on the "store" edge with a given conditions (other predicates).
+func HasStoreWith(preds ...predicate.Store) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(StoreInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasRider applies the HasEdge predicate on the "rider" edge.
 func HasRider() predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
@@ -836,6 +1140,34 @@ func HasRiderWith(preds ...predicate.Rider) predicate.Contract {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(RiderInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, RiderTable, RiderColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasSubscribe applies the HasEdge predicate on the "subscribe" edge.
+func HasSubscribe() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(SubscribeTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, SubscribeTable, SubscribeColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSubscribeWith applies the HasEdge predicate on the "subscribe" edge with a given conditions (other predicates).
+func HasSubscribeWith(preds ...predicate.Subscribe) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(SubscribeInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, SubscribeTable, SubscribeColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

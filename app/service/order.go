@@ -522,7 +522,8 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
                 SetCityID(trade.CityID).
                 SetInitialOrderID(o.ID).
                 AddOrders(o).
-                SetNillableBrandID(trade.EbikeBrandID)
+                SetNillableBrandID(trade.EbikeBrandID).
+                SetNeedContract(true)
             if do != nil {
                 sq.AddOrders(do)
             }

@@ -9,14 +9,20 @@ import (
     "context"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/socket"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/contract"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/internal/esign"
+    "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
+    jsoniter "github.com/json-iterator/go"
+    log "github.com/sirupsen/logrus"
+    "io"
     "math"
+    "net/http"
     "strings"
     "time"
 )
@@ -238,12 +244,18 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
     m["payMonth"] = un.Month
 
     // 电车
+    var employeeID, storeID *uint64
+    var alloID *string
     if sub.BrandID != nil {
         // 查找电车分配
         allo := NewEbikeAllocate().QueryEffectiveSubscribeID(sub.ID)
         if allo == nil {
             snag.Panic("未找到分配信息")
         }
+        employeeID = silk.UInt64(allo.EmployeeID)
+        storeID = silk.UInt64(allo.StoreID)
+        alloID = silk.String(allo.Id.Hex())
+
         bike := allo.Ebike
         // 车加电方案
         m["schemaEbike"] = true
@@ -345,7 +357,7 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
     }
     // 填充内容生成PDF
     pdf := s.esign.CreateByTemplate(esign.CreateByTemplateReq{
-        Name:             fmt.Sprintf("%s-%s.pdf", flow.Scene, sn), // todo 文件名
+        Name:             fmt.Sprintf("%s-%s.pdf", flow.Scene, sn),
         SimpleFormFields: m,
         TemplateId:       templateId,
     })
@@ -358,41 +370,180 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
     link := s.esign.ExecuteUrl(flowId, accountId)
 
     // 存储合同信息
-    err := ent.Database.Contract.Create().
-        SetFlowID(flowId).
-        SetRiderID(u.ID).
-        SetStatus(model.ContractStatusPending.Value()).
-        SetSn(sn).
-        Exec(context.Background())
-    if err != nil {
-        snag.Panic(err)
-    }
+    var c *ent.Contract
+    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+        c, err = ent.Database.Contract.Create().
+            SetFlowID(flowId).
+            SetRiderID(u.ID).
+            SetStatus(model.ContractStatusSigning.Value()).
+            SetSn(sn).
+            SetNillableStoreID(storeID).
+            SetNillableEmployeeID(employeeID).
+            SetNillableEbikeAllocateID(alloID).
+            SetRiderInfo(&model.ContractRider{
+                Phone:        u.Phone,
+                Name:         u.Name,
+                IDCardNumber: u.IDCardNumber,
+            }).
+            Save(context.Background())
+        if err != nil {
+            return
+        }
+        return sub.Update().SetContract(c).SetNillableStoreID(storeID).SetNillableEmployeeID(employeeID).Exec(s.ctx)
+    })
+
+    // 监听合同签署结果
+    go s.checkResult(c.FlowID)
+
     return model.ContractSignRes{
         Url: link,
         Sn:  sn,
     }
 }
 
+func (s *contractService) checkResult(flowID string) {
+    ticker := time.NewTicker(5 * time.Second)
+    defer ticker.Stop()
+
+    start := time.Now()
+    for {
+        select {
+        case t := <-ticker.C:
+            // 签署是否过期
+            isExpired := t.Sub(start).Minutes() > model.ContractExpiration
+            stop, _ := s.doResult(flowID, isExpired)
+            fmt.Println(stop)
+            if stop {
+                ticker.Stop()
+                return
+            }
+            if isExpired {
+                ticker.Stop()
+            }
+        }
+    }
+}
+
+func (s *contractService) doResult(flowID string, isExpired bool) (stop, success bool) {
+    defer func() {
+        if v := recover(); v != nil {
+            stop = true
+            log.Errorf("合同查询失败: %v", v)
+            return
+        }
+    }()
+
+    // 查询合同
+    c, _ := s.orm.Query().Where(contract.FlowID(flowID)).First(s.ctx)
+    if c == nil {
+        stop = true
+        return
+    }
+
+    result := model.ContractStatus(c.Status)
+
+    // 合同流程是否结束
+    if result.IsFinished() {
+        stop = true
+        success = result.IsSuccessed()
+        return
+    }
+
+    // 查询骑手信息
+    r := c.RiderInfo
+    if r == nil {
+        stop = true
+        return
+    }
+
+    // 查询合同流程状态
+    result = s.esign.Result(c.FlowID)
+    updater := s.orm.UpdateOneID(c.ID)
+
+    // 是否过期
+    if isExpired {
+        result = model.ContractStatusExpired
+        updater.SetStatus(result.Value())
+    }
+
+    // 是否成功
+    success = result.IsSuccessed()
+
+    if success {
+        // 获取合同并上传到阿里云
+        updater.SetStatus(model.ContractStatusSuccess.Value()).SetFiles(s.esign.DownloadDocument(fmt.Sprintf("%s-%s/contracts/", r.Name, r.IDCardNumber), c.FlowID))
+    }
+
+    // 流程是否终止
+    if result.IsFinished() {
+        stop = true
+        err := updater.Exec(context.Background())
+        if err != nil {
+            log.Errorf("合同更新失败: %v", err)
+            stop = true
+            return
+        }
+    }
+
+    // 成功签署合同
+    if success {
+        // TODO 若有必要, 更新电车信息
+        if c.EbikeAllocateID != nil {
+            sub, _ := c.QuerySubscribe().First(s.ctx)
+            allo, _ := NewEbikeAllocate().QueryIDHex(*c.EbikeAllocateID)
+            if sub != nil && allo != nil {
+                sub.Update()
+            } else {
+                log.Errorf("[%d] 需要更新订阅, 但是未找到订阅信息, 或电车分配信息", c.ID)
+            }
+        }
+
+        // 如有必要, 通知店员合同签署完成
+        if c.EmployeeID != nil && c.EbikeAllocateID != nil {
+            fmt.Printf("通知店员: %d\n", *c.EmployeeID)
+            socket.GetClientID(NewEmployeeSocket(), *c.EmployeeID).SendMessage(&model.EmployeeSocketMessage{
+                Speech:          "骑手已签约",
+                EbikeAllocateID: c.EbikeAllocateID,
+            })
+        }
+    }
+
+    return
+}
+
 // Result 合同签署结果
 func (s *contractService) Result(r *ent.Rider, sn string) model.StatusResponse {
-    orm := ent.Database.Contract
     // 查询合同是否存在
-    c, err := orm.QueryNotDeleted().
+    c, err := s.orm.QueryNotDeleted().
         Where(contract.Sn(sn), contract.RiderID(r.ID)).
-        Only(context.Background())
+        First(context.Background())
     if err != nil || c == nil {
         snag.Panic("合同查询失败")
     }
-    success := s.esign.Result(c.FlowID)
-    update := orm.UpdateOneID(c.ID)
-    if success {
-        // 获取合同并上传到阿里云
-        update.SetStatus(model.ContractStatusSuccess.Value()).
-            SetFiles(s.esign.DownloadDocument(fmt.Sprintf("%s-%s/contracts/", r.Name, r.IDCardNumber), c.FlowID))
+
+    return model.StatusResponse{Status: model.ContractStatus(c.Status).IsSuccessed()}
+}
+
+// Notice 签约回调
+func (s *contractService) Notice(req *http.Request) {
+    b, err := io.ReadAll(req.Body)
+    if len(b) == 0 || err != nil {
+        log.Errorf("签约回调读取失败: %v", err)
+        return
     }
-    err = update.Exec(context.Background())
+
+    // 解析回调信息
+    var result esign.Notice
+    err = jsoniter.Unmarshal(b, &result)
     if err != nil {
-        snag.Panic(err)
+        log.Errorf("签约回调解析失败: %v", err)
+        return
     }
-    return model.StatusResponse{Status: success}
+
+    switch result.Action {
+    case "SIGN_FLOW_FINISH":
+        if result.FlowId != "" {
+            s.doResult(result.FlowId, false)
+        }
+    }
 }

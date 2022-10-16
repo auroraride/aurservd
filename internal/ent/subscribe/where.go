@@ -186,6 +186,13 @@ func EnterpriseID(v uint64) predicate.Subscribe {
 	})
 }
 
+// ContractID applies equality check predicate on the "contract_id" field. It's identical to ContractIDEQ.
+func ContractID(v uint64) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldContractID), v))
+	})
+}
+
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v uint8) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
@@ -1199,6 +1206,56 @@ func EnterpriseIDIsNil() predicate.Subscribe {
 func EnterpriseIDNotNil() predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldEnterpriseID)))
+	})
+}
+
+// ContractIDEQ applies the EQ predicate on the "contract_id" field.
+func ContractIDEQ(v uint64) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldContractID), v))
+	})
+}
+
+// ContractIDNEQ applies the NEQ predicate on the "contract_id" field.
+func ContractIDNEQ(v uint64) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldContractID), v))
+	})
+}
+
+// ContractIDIn applies the In predicate on the "contract_id" field.
+func ContractIDIn(vs ...uint64) predicate.Subscribe {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldContractID), v...))
+	})
+}
+
+// ContractIDNotIn applies the NotIn predicate on the "contract_id" field.
+func ContractIDNotIn(vs ...uint64) predicate.Subscribe {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldContractID), v...))
+	})
+}
+
+// ContractIDIsNil applies the IsNil predicate on the "contract_id" field.
+func ContractIDIsNil() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldContractID)))
+	})
+}
+
+// ContractIDNotNil applies the NotNil predicate on the "contract_id" field.
+func ContractIDNotNil() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldContractID)))
 	})
 }
 
@@ -3130,6 +3187,34 @@ func HasBillsWith(preds ...predicate.EnterpriseBill) predicate.Subscribe {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(BillsInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, BillsTable, BillsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasContract applies the HasEdge predicate on the "contract" edge.
+func HasContract() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ContractTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, ContractTable, ContractColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasContractWith applies the HasEdge predicate on the "contract" edge with a given conditions (other predicates).
+func HasContractWith(preds ...predicate.Contract) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ContractInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, ContractTable, ContractColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

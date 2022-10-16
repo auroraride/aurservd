@@ -156,7 +156,7 @@ func Subscribe(sub *ent.Subscribe) {
 
 func (r *reminderTask) run() {
     if !r.running {
-        log.Error("催费任务未启动")
+        log.Info("催费任务未启动")
     }
     for {
         select {

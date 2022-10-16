@@ -33,6 +33,7 @@ func (*callback) RiderCallback(c echo.Context) error {
 
 // ESignCallback E签宝回调
 func (*callback) ESignCallback(c echo.Context) error {
+    go service.NewContract().Notice(c.Request())
     return c.JSON(http.StatusOK, map[string]int{"code": 200})
 }
 

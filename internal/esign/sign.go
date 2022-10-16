@@ -7,6 +7,7 @@ package esign
 
 import (
     "fmt"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/pkg/snag"
     "time"
 )
@@ -40,10 +41,10 @@ func (e *Esign) CreateFlowOneStep(data CreateFlowReq) string {
 
     req := CreateFlowOneStepReq{
         FlowInfo: FlowInfo{
-            AutoArchive:      true,
-            AutoInitiate:     true,
-            BusinessScene:    scene,
-            ContractValidity: time.Now().Add(24*30*time.Hour).UnixNano() / 1e6, // 30天有效期
+            AutoArchive:   true,
+            AutoInitiate:  true,
+            BusinessScene: scene,
+            SignValidity:  time.Now().Add(model.ContractExpiration * time.Minute).UnixMilli(),
             FlowConfigInfo: FlowConfigInfo{
                 RedirectDelayTime:        0,
                 NoticeDeveloperUrl:       e.Config.Callback,
@@ -144,8 +145,8 @@ type signResult struct {
 
 // Result 签署结果查询
 // @doc https://open.esign.cn/doc/detail?id=opendoc%2Fpaas_api%2Fghywlg&namespace=opendoc%2Fpaas_api
-func (e *Esign) Result(flowId string) bool {
+func (e *Esign) Result(flowId string) model.ContractStatus {
     var res = new(signResult)
     e.request(fmt.Sprintf(signResultUrl, flowId), methodGet, nil, res)
-    return res.FlowStatus == 2
+    return model.ContractStatus(res.FlowStatus)
 }
