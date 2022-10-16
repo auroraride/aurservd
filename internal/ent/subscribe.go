@@ -12,7 +12,6 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
@@ -64,8 +63,6 @@ type Subscribe struct {
 	InitialOrderID uint64 `json:"initial_order_id,omitempty"`
 	// 企业ID
 	EnterpriseID *uint64 `json:"enterprise_id,omitempty"`
-	// 合同ID
-	ContractID uint64 `json:"contract_id,omitempty"`
 	// 当前订阅状态
 	Status uint8 `json:"status,omitempty"`
 	// 订阅类型 0团签 1新签 2续签 3重签 4更改电池, 除0值外 其他值参考order.type
@@ -147,11 +144,9 @@ type SubscribeEdges struct {
 	InitialOrder *Order `json:"initial_order,omitempty"`
 	// Bills holds the value of the bills edge.
 	Bills []*EnterpriseBill `json:"bills,omitempty"`
-	// Contract holds the value of the contract edge.
-	Contract *Contract `json:"contract,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [17]bool
+	loadedTypes [16]bool
 }
 
 // PlanOrErr returns the Plan value or an error if the edge
@@ -342,19 +337,6 @@ func (e SubscribeEdges) BillsOrErr() ([]*EnterpriseBill, error) {
 	return nil, &NotLoadedError{edge: "bills"}
 }
 
-// ContractOrErr returns the Contract value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e SubscribeEdges) ContractOrErr() (*Contract, error) {
-	if e.loadedTypes[16] {
-		if e.Contract == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: contract.Label}
-		}
-		return e.Contract, nil
-	}
-	return nil, &NotLoadedError{edge: "contract"}
-}
-
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Subscribe) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -364,7 +346,7 @@ func (*Subscribe) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case subscribe.FieldPauseOverdue, subscribe.FieldNeedContract:
 			values[i] = new(sql.NullBool)
-		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldStationID, subscribe.FieldStoreID, subscribe.FieldCabinetID, subscribe.FieldBrandID, subscribe.FieldEbikeID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldEnterpriseID, subscribe.FieldContractID, subscribe.FieldStatus, subscribe.FieldType, subscribe.FieldInitialDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays, subscribe.FieldSuspendDays, subscribe.FieldRenewalDays, subscribe.FieldOverdueDays, subscribe.FieldRemaining:
+		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldStationID, subscribe.FieldStoreID, subscribe.FieldCabinetID, subscribe.FieldBrandID, subscribe.FieldEbikeID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldEnterpriseID, subscribe.FieldStatus, subscribe.FieldType, subscribe.FieldInitialDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays, subscribe.FieldSuspendDays, subscribe.FieldRenewalDays, subscribe.FieldOverdueDays, subscribe.FieldRemaining:
 			values[i] = new(sql.NullInt64)
 		case subscribe.FieldRemark, subscribe.FieldModel, subscribe.FieldUnsubscribeReason, subscribe.FieldFormula:
 			values[i] = new(sql.NullString)
@@ -505,12 +487,6 @@ func (s *Subscribe) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.EnterpriseID = new(uint64)
 				*s.EnterpriseID = uint64(value.Int64)
-			}
-		case subscribe.FieldContractID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field contract_id", values[i])
-			} else if value.Valid {
-				s.ContractID = uint64(value.Int64)
 			}
 		case subscribe.FieldStatus:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -731,11 +707,6 @@ func (s *Subscribe) QueryBills() *EnterpriseBillQuery {
 	return (&SubscribeClient{config: s.config}).QueryBills(s)
 }
 
-// QueryContract queries the "contract" edge of the Subscribe entity.
-func (s *Subscribe) QueryContract() *ContractQuery {
-	return (&SubscribeClient{config: s.config}).QueryContract(s)
-}
-
 // Update returns a builder for updating this Subscribe.
 // Note that you need to call Subscribe.Unwrap() before calling this method if this Subscribe
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -827,9 +798,6 @@ func (s *Subscribe) String() string {
 		builder.WriteString("enterprise_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
-	builder.WriteString(", ")
-	builder.WriteString("contract_id=")
-	builder.WriteString(fmt.Sprintf("%v", s.ContractID))
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", s.Status))

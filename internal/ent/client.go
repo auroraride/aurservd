@@ -26,6 +26,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
+	"github.com/auroraride/aurservd/internal/ent/ebikeallocate"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -101,6 +102,8 @@ type Client struct {
 	CouponTemplate *CouponTemplateClient
 	// Ebike is the client for interacting with the Ebike builders.
 	Ebike *EbikeClient
+	// EbikeAllocate is the client for interacting with the EbikeAllocate builders.
+	EbikeAllocate *EbikeAllocateClient
 	// EbikeBrand is the client for interacting with the EbikeBrand builders.
 	EbikeBrand *EbikeBrandClient
 	// Employee is the client for interacting with the Employee builders.
@@ -194,6 +197,7 @@ func (c *Client) init() {
 	c.CouponAssembly = NewCouponAssemblyClient(c.config)
 	c.CouponTemplate = NewCouponTemplateClient(c.config)
 	c.Ebike = NewEbikeClient(c.config)
+	c.EbikeAllocate = NewEbikeAllocateClient(c.config)
 	c.EbikeBrand = NewEbikeBrandClient(c.config)
 	c.Employee = NewEmployeeClient(c.config)
 	c.Enterprise = NewEnterpriseClient(c.config)
@@ -275,6 +279,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		CouponAssembly:       NewCouponAssemblyClient(cfg),
 		CouponTemplate:       NewCouponTemplateClient(cfg),
 		Ebike:                NewEbikeClient(cfg),
+		EbikeAllocate:        NewEbikeAllocateClient(cfg),
 		EbikeBrand:           NewEbikeBrandClient(cfg),
 		Employee:             NewEmployeeClient(cfg),
 		Enterprise:           NewEnterpriseClient(cfg),
@@ -342,6 +347,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		CouponAssembly:       NewCouponAssemblyClient(cfg),
 		CouponTemplate:       NewCouponTemplateClient(cfg),
 		Ebike:                NewEbikeClient(cfg),
+		EbikeAllocate:        NewEbikeAllocateClient(cfg),
 		EbikeBrand:           NewEbikeBrandClient(cfg),
 		Employee:             NewEmployeeClient(cfg),
 		Enterprise:           NewEnterpriseClient(cfg),
@@ -418,6 +424,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.CouponAssembly.Use(hooks...)
 	c.CouponTemplate.Use(hooks...)
 	c.Ebike.Use(hooks...)
+	c.EbikeAllocate.Use(hooks...)
 	c.EbikeBrand.Use(hooks...)
 	c.Employee.Use(hooks...)
 	c.Enterprise.Use(hooks...)
@@ -2290,6 +2297,38 @@ func (c *ContractClient) QueryStore(co *Contract) *StoreQuery {
 	return query
 }
 
+// QuerySubscribe queries the subscribe edge of a Contract.
+func (c *ContractClient) QuerySubscribe(co *Contract) *SubscribeQuery {
+	query := &SubscribeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(contract.Table, contract.FieldID, id),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, contract.SubscribeTable, contract.SubscribeColumn),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCabinet queries the cabinet edge of a Contract.
+func (c *ContractClient) QueryCabinet(co *Contract) *CabinetQuery {
+	query := &CabinetQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(contract.Table, contract.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, contract.CabinetTable, contract.CabinetColumn),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryRider queries the rider edge of a Contract.
 func (c *ContractClient) QueryRider(co *Contract) *RiderQuery {
 	query := &RiderQuery{config: c.config}
@@ -2306,15 +2345,15 @@ func (c *ContractClient) QueryRider(co *Contract) *RiderQuery {
 	return query
 }
 
-// QuerySubscribe queries the subscribe edge of a Contract.
-func (c *ContractClient) QuerySubscribe(co *Contract) *SubscribeQuery {
-	query := &SubscribeQuery{config: c.config}
+// QueryEbikeAllocate queries the ebike_allocate edge of a Contract.
+func (c *ContractClient) QueryEbikeAllocate(co *Contract) *EbikeAllocateQuery {
+	query := &EbikeAllocateQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(contract.Table, contract.FieldID, id),
-			sqlgraph.To(subscribe.Table, subscribe.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, contract.SubscribeTable, contract.SubscribeColumn),
+			sqlgraph.To(ebikeallocate.Table, ebikeallocate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, contract.EbikeAllocateTable, contract.EbikeAllocateColumn),
 		)
 		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
 		return fromV, nil
@@ -2882,6 +2921,208 @@ func (c *EbikeClient) QueryStore(e *Ebike) *StoreQuery {
 func (c *EbikeClient) Hooks() []Hook {
 	hooks := c.hooks.Ebike
 	return append(hooks[:len(hooks):len(hooks)], ebike.Hooks[:]...)
+}
+
+// EbikeAllocateClient is a client for the EbikeAllocate schema.
+type EbikeAllocateClient struct {
+	config
+}
+
+// NewEbikeAllocateClient returns a client for the EbikeAllocate from the given config.
+func NewEbikeAllocateClient(c config) *EbikeAllocateClient {
+	return &EbikeAllocateClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `ebikeallocate.Hooks(f(g(h())))`.
+func (c *EbikeAllocateClient) Use(hooks ...Hook) {
+	c.hooks.EbikeAllocate = append(c.hooks.EbikeAllocate, hooks...)
+}
+
+// Create returns a builder for creating a EbikeAllocate entity.
+func (c *EbikeAllocateClient) Create() *EbikeAllocateCreate {
+	mutation := newEbikeAllocateMutation(c.config, OpCreate)
+	return &EbikeAllocateCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EbikeAllocate entities.
+func (c *EbikeAllocateClient) CreateBulk(builders ...*EbikeAllocateCreate) *EbikeAllocateCreateBulk {
+	return &EbikeAllocateCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EbikeAllocate.
+func (c *EbikeAllocateClient) Update() *EbikeAllocateUpdate {
+	mutation := newEbikeAllocateMutation(c.config, OpUpdate)
+	return &EbikeAllocateUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EbikeAllocateClient) UpdateOne(ea *EbikeAllocate) *EbikeAllocateUpdateOne {
+	mutation := newEbikeAllocateMutation(c.config, OpUpdateOne, withEbikeAllocate(ea))
+	return &EbikeAllocateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EbikeAllocateClient) UpdateOneID(id uint64) *EbikeAllocateUpdateOne {
+	mutation := newEbikeAllocateMutation(c.config, OpUpdateOne, withEbikeAllocateID(id))
+	return &EbikeAllocateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EbikeAllocate.
+func (c *EbikeAllocateClient) Delete() *EbikeAllocateDelete {
+	mutation := newEbikeAllocateMutation(c.config, OpDelete)
+	return &EbikeAllocateDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *EbikeAllocateClient) DeleteOne(ea *EbikeAllocate) *EbikeAllocateDeleteOne {
+	return c.DeleteOneID(ea.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *EbikeAllocateClient) DeleteOneID(id uint64) *EbikeAllocateDeleteOne {
+	builder := c.Delete().Where(ebikeallocate.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EbikeAllocateDeleteOne{builder}
+}
+
+// Query returns a query builder for EbikeAllocate.
+func (c *EbikeAllocateClient) Query() *EbikeAllocateQuery {
+	return &EbikeAllocateQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a EbikeAllocate entity by its id.
+func (c *EbikeAllocateClient) Get(ctx context.Context, id uint64) (*EbikeAllocate, error) {
+	return c.Query().Where(ebikeallocate.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EbikeAllocateClient) GetX(ctx context.Context, id uint64) *EbikeAllocate {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEmployee queries the employee edge of a EbikeAllocate.
+func (c *EbikeAllocateClient) QueryEmployee(ea *EbikeAllocate) *EmployeeQuery {
+	query := &EmployeeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ea.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebikeallocate.Table, ebikeallocate.FieldID, id),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ebikeallocate.EmployeeTable, ebikeallocate.EmployeeColumn),
+		)
+		fromV = sqlgraph.Neighbors(ea.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStore queries the store edge of a EbikeAllocate.
+func (c *EbikeAllocateClient) QueryStore(ea *EbikeAllocate) *StoreQuery {
+	query := &StoreQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ea.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebikeallocate.Table, ebikeallocate.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ebikeallocate.StoreTable, ebikeallocate.StoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(ea.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEbike queries the ebike edge of a EbikeAllocate.
+func (c *EbikeAllocateClient) QueryEbike(ea *EbikeAllocate) *EbikeQuery {
+	query := &EbikeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ea.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebikeallocate.Table, ebikeallocate.FieldID, id),
+			sqlgraph.To(ebike.Table, ebike.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ebikeallocate.EbikeTable, ebikeallocate.EbikeColumn),
+		)
+		fromV = sqlgraph.Neighbors(ea.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBrand queries the brand edge of a EbikeAllocate.
+func (c *EbikeAllocateClient) QueryBrand(ea *EbikeAllocate) *EbikeBrandQuery {
+	query := &EbikeBrandQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ea.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebikeallocate.Table, ebikeallocate.FieldID, id),
+			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ebikeallocate.BrandTable, ebikeallocate.BrandColumn),
+		)
+		fromV = sqlgraph.Neighbors(ea.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySubscribe queries the subscribe edge of a EbikeAllocate.
+func (c *EbikeAllocateClient) QuerySubscribe(ea *EbikeAllocate) *SubscribeQuery {
+	query := &SubscribeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ea.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebikeallocate.Table, ebikeallocate.FieldID, id),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ebikeallocate.SubscribeTable, ebikeallocate.SubscribeColumn),
+		)
+		fromV = sqlgraph.Neighbors(ea.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRider queries the rider edge of a EbikeAllocate.
+func (c *EbikeAllocateClient) QueryRider(ea *EbikeAllocate) *RiderQuery {
+	query := &RiderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ea.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebikeallocate.Table, ebikeallocate.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ebikeallocate.RiderTable, ebikeallocate.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(ea.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryContract queries the contract edge of a EbikeAllocate.
+func (c *EbikeAllocateClient) QueryContract(ea *EbikeAllocate) *ContractQuery {
+	query := &ContractQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ea.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebikeallocate.Table, ebikeallocate.FieldID, id),
+			sqlgraph.To(contract.Table, contract.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, ebikeallocate.ContractTable, ebikeallocate.ContractColumn),
+		)
+		fromV = sqlgraph.Neighbors(ea.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EbikeAllocateClient) Hooks() []Hook {
+	return c.hooks.EbikeAllocate
 }
 
 // EbikeBrandClient is a client for the EbikeBrand schema.
@@ -6569,6 +6810,22 @@ func (c *StockClient) QueryEbike(s *Stock) *EbikeQuery {
 	return query
 }
 
+// QueryBrand queries the brand edge of a Stock.
+func (c *StockClient) QueryBrand(s *Stock) *EbikeBrandQuery {
+	query := &EbikeBrandQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stock.BrandTable, stock.BrandColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryStore queries the store edge of a Stock.
 func (c *StockClient) QueryStore(s *Stock) *StoreQuery {
 	query := &StoreQuery{config: c.config}
@@ -6642,6 +6899,38 @@ func (c *StockClient) QuerySpouse(s *Stock) *StockQuery {
 			sqlgraph.From(stock.Table, stock.FieldID, id),
 			sqlgraph.To(stock.Table, stock.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, stock.SpouseTable, stock.SpouseColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryParent queries the parent edge of a Stock.
+func (c *StockClient) QueryParent(s *Stock) *StockQuery {
+	query := &StockQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, stock.ParentTable, stock.ParentColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryChildren queries the children edge of a Stock.
+func (c *StockClient) QueryChildren(s *Stock) *StockQuery {
+	query := &StockQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, stock.ChildrenTable, stock.ChildrenColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil
@@ -7176,22 +7465,6 @@ func (c *SubscribeClient) QueryBills(s *Subscribe) *EnterpriseBillQuery {
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
 			sqlgraph.To(enterprisebill.Table, enterprisebill.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, subscribe.BillsTable, subscribe.BillsColumn),
-		)
-		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryContract queries the contract edge of a Subscribe.
-func (c *SubscribeClient) QueryContract(s *Subscribe) *ContractQuery {
-	query := &ContractQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := s.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
-			sqlgraph.To(contract.Table, contract.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, subscribe.ContractTable, subscribe.ContractColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil

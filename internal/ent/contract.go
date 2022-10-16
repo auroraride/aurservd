@@ -10,7 +10,9 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/ebikeallocate"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -38,6 +40,10 @@ type Contract struct {
 	EmployeeID *uint64 `json:"employee_id,omitempty"`
 	// 门店ID
 	StoreID *uint64 `json:"store_id,omitempty"`
+	// SubscribeID holds the value of the "subscribe_id" field.
+	SubscribeID *uint64 `json:"subscribe_id,omitempty"`
+	// 电柜ID
+	CabinetID *uint64 `json:"cabinet_id,omitempty"`
 	// 状态
 	Status uint8 `json:"status,omitempty"`
 	// 骑手
@@ -50,10 +56,10 @@ type Contract struct {
 	Files []string `json:"files,omitempty"`
 	// 是否有效
 	Effective bool `json:"effective,omitempty"`
-	// 电车分配ID
-	EbikeAllocateID *string `json:"ebike_allocate_id,omitempty"`
 	// 骑手信息
 	RiderInfo *model.ContractRider `json:"rider_info,omitempty"`
+	// 电车分配ID
+	AllocateID *uint64 `json:"allocate_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ContractQuery when eager-loading is set.
 	Edges ContractEdges `json:"edges"`
@@ -65,13 +71,17 @@ type ContractEdges struct {
 	Employee *Employee `json:"employee,omitempty"`
 	// Store holds the value of the store edge.
 	Store *Store `json:"store,omitempty"`
-	// Rider holds the value of the rider edge.
-	Rider *Rider `json:"rider,omitempty"`
 	// Subscribe holds the value of the subscribe edge.
 	Subscribe *Subscribe `json:"subscribe,omitempty"`
+	// Cabinet holds the value of the cabinet edge.
+	Cabinet *Cabinet `json:"cabinet,omitempty"`
+	// Rider holds the value of the rider edge.
+	Rider *Rider `json:"rider,omitempty"`
+	// EbikeAllocate holds the value of the ebike_allocate edge.
+	EbikeAllocate *EbikeAllocate `json:"ebike_allocate,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [6]bool
 }
 
 // EmployeeOrErr returns the Employee value or an error if the edge
@@ -100,10 +110,36 @@ func (e ContractEdges) StoreOrErr() (*Store, error) {
 	return nil, &NotLoadedError{edge: "store"}
 }
 
+// SubscribeOrErr returns the Subscribe value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ContractEdges) SubscribeOrErr() (*Subscribe, error) {
+	if e.loadedTypes[2] {
+		if e.Subscribe == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: subscribe.Label}
+		}
+		return e.Subscribe, nil
+	}
+	return nil, &NotLoadedError{edge: "subscribe"}
+}
+
+// CabinetOrErr returns the Cabinet value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ContractEdges) CabinetOrErr() (*Cabinet, error) {
+	if e.loadedTypes[3] {
+		if e.Cabinet == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: cabinet.Label}
+		}
+		return e.Cabinet, nil
+	}
+	return nil, &NotLoadedError{edge: "cabinet"}
+}
+
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ContractEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[4] {
 		if e.Rider == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: rider.Label}
@@ -113,17 +149,17 @@ func (e ContractEdges) RiderOrErr() (*Rider, error) {
 	return nil, &NotLoadedError{edge: "rider"}
 }
 
-// SubscribeOrErr returns the Subscribe value or an error if the edge
+// EbikeAllocateOrErr returns the EbikeAllocate value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e ContractEdges) SubscribeOrErr() (*Subscribe, error) {
-	if e.loadedTypes[3] {
-		if e.Subscribe == nil {
+func (e ContractEdges) EbikeAllocateOrErr() (*EbikeAllocate, error) {
+	if e.loadedTypes[5] {
+		if e.EbikeAllocate == nil {
 			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: subscribe.Label}
+			return nil, &NotFoundError{label: ebikeallocate.Label}
 		}
-		return e.Subscribe, nil
+		return e.EbikeAllocate, nil
 	}
-	return nil, &NotLoadedError{edge: "subscribe"}
+	return nil, &NotLoadedError{edge: "ebike_allocate"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -135,9 +171,9 @@ func (*Contract) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case contract.FieldEffective:
 			values[i] = new(sql.NullBool)
-		case contract.FieldID, contract.FieldEmployeeID, contract.FieldStoreID, contract.FieldStatus, contract.FieldRiderID:
+		case contract.FieldID, contract.FieldEmployeeID, contract.FieldStoreID, contract.FieldSubscribeID, contract.FieldCabinetID, contract.FieldStatus, contract.FieldRiderID, contract.FieldAllocateID:
 			values[i] = new(sql.NullInt64)
-		case contract.FieldRemark, contract.FieldFlowID, contract.FieldSn, contract.FieldEbikeAllocateID:
+		case contract.FieldRemark, contract.FieldFlowID, contract.FieldSn:
 			values[i] = new(sql.NullString)
 		case contract.FieldCreatedAt, contract.FieldUpdatedAt, contract.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -217,6 +253,20 @@ func (c *Contract) assignValues(columns []string, values []any) error {
 				c.StoreID = new(uint64)
 				*c.StoreID = uint64(value.Int64)
 			}
+		case contract.FieldSubscribeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field subscribe_id", values[i])
+			} else if value.Valid {
+				c.SubscribeID = new(uint64)
+				*c.SubscribeID = uint64(value.Int64)
+			}
+		case contract.FieldCabinetID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field cabinet_id", values[i])
+			} else if value.Valid {
+				c.CabinetID = new(uint64)
+				*c.CabinetID = uint64(value.Int64)
+			}
 		case contract.FieldStatus:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
@@ -255,13 +305,6 @@ func (c *Contract) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.Effective = value.Bool
 			}
-		case contract.FieldEbikeAllocateID:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field ebike_allocate_id", values[i])
-			} else if value.Valid {
-				c.EbikeAllocateID = new(string)
-				*c.EbikeAllocateID = value.String
-			}
 		case contract.FieldRiderInfo:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field rider_info", values[i])
@@ -269,6 +312,13 @@ func (c *Contract) assignValues(columns []string, values []any) error {
 				if err := json.Unmarshal(*value, &c.RiderInfo); err != nil {
 					return fmt.Errorf("unmarshal field rider_info: %w", err)
 				}
+			}
+		case contract.FieldAllocateID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field allocate_id", values[i])
+			} else if value.Valid {
+				c.AllocateID = new(uint64)
+				*c.AllocateID = uint64(value.Int64)
 			}
 		}
 	}
@@ -285,14 +335,24 @@ func (c *Contract) QueryStore() *StoreQuery {
 	return (&ContractClient{config: c.config}).QueryStore(c)
 }
 
+// QuerySubscribe queries the "subscribe" edge of the Contract entity.
+func (c *Contract) QuerySubscribe() *SubscribeQuery {
+	return (&ContractClient{config: c.config}).QuerySubscribe(c)
+}
+
+// QueryCabinet queries the "cabinet" edge of the Contract entity.
+func (c *Contract) QueryCabinet() *CabinetQuery {
+	return (&ContractClient{config: c.config}).QueryCabinet(c)
+}
+
 // QueryRider queries the "rider" edge of the Contract entity.
 func (c *Contract) QueryRider() *RiderQuery {
 	return (&ContractClient{config: c.config}).QueryRider(c)
 }
 
-// QuerySubscribe queries the "subscribe" edge of the Contract entity.
-func (c *Contract) QuerySubscribe() *SubscribeQuery {
-	return (&ContractClient{config: c.config}).QuerySubscribe(c)
+// QueryEbikeAllocate queries the "ebike_allocate" edge of the Contract entity.
+func (c *Contract) QueryEbikeAllocate() *EbikeAllocateQuery {
+	return (&ContractClient{config: c.config}).QueryEbikeAllocate(c)
 }
 
 // Update returns a builder for updating this Contract.
@@ -348,6 +408,16 @@ func (c *Contract) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
+	if v := c.SubscribeID; v != nil {
+		builder.WriteString("subscribe_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := c.CabinetID; v != nil {
+		builder.WriteString("cabinet_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", c.Status))
 	builder.WriteString(", ")
@@ -366,13 +436,13 @@ func (c *Contract) String() string {
 	builder.WriteString("effective=")
 	builder.WriteString(fmt.Sprintf("%v", c.Effective))
 	builder.WriteString(", ")
-	if v := c.EbikeAllocateID; v != nil {
-		builder.WriteString("ebike_allocate_id=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
 	builder.WriteString("rider_info=")
 	builder.WriteString(fmt.Sprintf("%v", c.RiderInfo))
+	builder.WriteString(", ")
+	if v := c.AllocateID; v != nil {
+		builder.WriteString("allocate_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

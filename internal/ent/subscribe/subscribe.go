@@ -47,8 +47,6 @@ const (
 	FieldInitialOrderID = "initial_order_id"
 	// FieldEnterpriseID holds the string denoting the enterprise_id field in the database.
 	FieldEnterpriseID = "enterprise_id"
-	// FieldContractID holds the string denoting the contract_id field in the database.
-	FieldContractID = "contract_id"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldType holds the string denoting the type field in the database.
@@ -123,8 +121,6 @@ const (
 	EdgeInitialOrder = "initial_order"
 	// EdgeBills holds the string denoting the bills edge name in mutations.
 	EdgeBills = "bills"
-	// EdgeContract holds the string denoting the contract edge name in mutations.
-	EdgeContract = "contract"
 	// Table holds the table name of the subscribe in the database.
 	Table = "subscribe"
 	// PlanTable is the table that holds the plan relation/edge.
@@ -239,13 +235,6 @@ const (
 	BillsInverseTable = "enterprise_bill"
 	// BillsColumn is the table column denoting the bills relation/edge.
 	BillsColumn = "subscribe_id"
-	// ContractTable is the table that holds the contract relation/edge.
-	ContractTable = "subscribe"
-	// ContractInverseTable is the table name for the Contract entity.
-	// It exists in this package in order to avoid circular dependency with the "contract" package.
-	ContractInverseTable = "contract"
-	// ContractColumn is the table column denoting the contract relation/edge.
-	ContractColumn = "contract_id"
 )
 
 // Columns holds all SQL columns for subscribe fields.
@@ -268,7 +257,6 @@ var Columns = []string{
 	FieldRiderID,
 	FieldInitialOrderID,
 	FieldEnterpriseID,
-	FieldContractID,
 	FieldStatus,
 	FieldType,
 	FieldModel,

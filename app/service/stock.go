@@ -281,18 +281,25 @@ func (s *stockService) BatteryOverview(req *model.StockOverviewReq) (items []mod
     return
 }
 
-// BatteryWithRider 和骑手交互电池出入库
-func (s *stockService) BatteryWithRider(cr *ent.StockCreate, req *model.StockBusinessReq) (sk *ent.Stock, err error) {
+// RiderBusiness 和骑手交互电池 / 电池出入库
+func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (sk *ent.Stock, err error) {
     num := model.StockNumberOfRiderBusiness(req.StockType)
+
+    if req.Ebike != nil && req.CabinetID != nil {
+        err = errors.New("车电业务无法使用电柜")
+        return
+    }
 
     if req.StoreID == nil && req.CabinetID == nil {
         err = errors.New("参数校验错误")
         return
     }
 
+    creator := tx.Stock.Create()
+
     // TODO 平台管理员可操作性时处理出入库逻辑
     if req.StoreID != nil {
-        cr.SetStoreID(*req.StoreID)
+        creator.SetStoreID(*req.StoreID)
         if num < 0 && NewStockBatchable().Fetch(model.StockTargetStore, *req.StoreID, req.Model) < int(math.Abs(float64(num))) {
             err = errors.New("电池库存不足")
             return
@@ -300,28 +307,31 @@ func (s *stockService) BatteryWithRider(cr *ent.StockCreate, req *model.StockBus
     }
 
     if req.CabinetID != nil {
-        cr.SetCabinetID(*req.CabinetID)
+        creator.SetCabinetID(*req.CabinetID)
         if num < 0 && NewStockBatchable().Fetch(model.StockTargetCabinet, *req.CabinetID, req.Model) < int(math.Abs(float64(num))) {
             err = errors.New("电池库存不足")
             return
         }
     }
 
-    cr.SetNillableEmployeeID(req.EmployeeID).
-        SetName(req.Model).
+    sn := tools.NewUnique().NewSN()
+
+    // 主出入库
+    creator.SetNillableEmployeeID(req.EmployeeID).
         SetRiderID(req.RiderID).
         SetType(req.StockType).
-        SetModel(req.Model).
         SetNum(num).
         SetCityID(req.CityID).
         SetNillableSubscribeID(req.SubscribeID).
-        SetMaterial(stock.MaterialBattery).
-        SetSn(tools.NewUnique().NewSN())
+        SetSn(sn)
 
-    sk, err = cr.Save(s.ctx)
-
+    sk, err = creator.SetName(req.Model).SetModel(req.Model).SetMaterial(stock.MaterialBattery).Save(s.ctx)
     if err != nil {
-        log.Error(err)
+        return
+    }
+
+    if req.Ebike != nil {
+        err = creator.Clone().SetParent(sk).SetEbikeID(req.Ebike.ID).SetName(req.Ebike.BrandName).SetBrandID(req.Ebike.BrandID).SetMaterial(stock.MaterialEbike).Exec(s.ctx)
     }
 
     return
@@ -1046,7 +1056,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 
             // 电车是否可调拨检查
             if l.EbikeID != nil {
-                if exists, _ := NewEbike().AllocatableFilter().Where(ebike.ID(*l.EbikeID)).Exist(s.ctx); !exists {
+                if exists, _ := NewEbike().AllocatableBaseFilter().Where(ebike.ID(*l.EbikeID)).Exist(s.ctx); !exists {
                     return fmt.Errorf("电车无法调拨: %s", l.Message)
                 }
             }
@@ -1054,7 +1064,6 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
             // 调出
             var spouse *ent.Stock
             spouse, err = outCreator.
-                SetNillableEbikeSn(l.EbikeSN).
                 SetNillableEbikeID(l.EbikeID).
                 Save(s.ctx)
             if err != nil {
@@ -1068,7 +1077,6 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
             // 调入
             _, err = inCreator.
                 SetSpouse(spouse).
-                SetNillableEbikeSn(l.EbikeSN).
                 SetNillableEbikeID(l.EbikeID).
                 Save(s.ctx)
             if err != nil {
@@ -1082,7 +1090,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
             // 电车调拨完成更新所属
             if l.EbikeID != nil {
                 // 是否可调拨检查
-                if exists, _ := NewEbike().AllocatableFilter().Where(ebike.ID(*l.EbikeID)).Exist(s.ctx); !exists {
+                if exists, _ := NewEbike().AllocatableBaseFilter().Where(ebike.ID(*l.EbikeID)).Exist(s.ctx); !exists {
                     return fmt.Errorf("电车无法调拨: %s", l.Message)
                 }
 
@@ -1101,7 +1109,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
             return
         })
 
-        if req.Batchable() {
+        if req.Batchable() && err != nil {
             failed = append(failed, err.Error())
         }
     }

@@ -1041,7 +1041,7 @@ func init() {
 	// stock.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	stock.UpdateDefaultUpdatedAt = stockDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// stockDescType is the schema descriptor for type field.
-	stockDescType := stockFields[1].Descriptor()
+	stockDescType := stockFields[2].Descriptor()
 	// stock.DefaultType holds the default value on creation for the type field.
 	stock.DefaultType = stockDescType.Default.(uint8)
 	storeMixin := schema.Store{}.Mixin()
@@ -1085,43 +1085,43 @@ func init() {
 	// subscribe.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	subscribe.UpdateDefaultUpdatedAt = subscribeDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// subscribeDescStatus is the schema descriptor for status field.
-	subscribeDescStatus := subscribeFields[4].Descriptor()
+	subscribeDescStatus := subscribeFields[3].Descriptor()
 	// subscribe.DefaultStatus holds the default value on creation for the status field.
 	subscribe.DefaultStatus = subscribeDescStatus.Default.(uint8)
 	// subscribeDescType is the schema descriptor for type field.
-	subscribeDescType := subscribeFields[5].Descriptor()
+	subscribeDescType := subscribeFields[4].Descriptor()
 	// subscribe.DefaultType holds the default value on creation for the type field.
 	subscribe.DefaultType = subscribeDescType.Default.(uint)
 	// subscribeDescAlterDays is the schema descriptor for alter_days field.
-	subscribeDescAlterDays := subscribeFields[8].Descriptor()
+	subscribeDescAlterDays := subscribeFields[7].Descriptor()
 	// subscribe.DefaultAlterDays holds the default value on creation for the alter_days field.
 	subscribe.DefaultAlterDays = subscribeDescAlterDays.Default.(int)
 	// subscribeDescPauseDays is the schema descriptor for pause_days field.
-	subscribeDescPauseDays := subscribeFields[9].Descriptor()
+	subscribeDescPauseDays := subscribeFields[8].Descriptor()
 	// subscribe.DefaultPauseDays holds the default value on creation for the pause_days field.
 	subscribe.DefaultPauseDays = subscribeDescPauseDays.Default.(int)
 	// subscribeDescSuspendDays is the schema descriptor for suspend_days field.
-	subscribeDescSuspendDays := subscribeFields[10].Descriptor()
+	subscribeDescSuspendDays := subscribeFields[9].Descriptor()
 	// subscribe.DefaultSuspendDays holds the default value on creation for the suspend_days field.
 	subscribe.DefaultSuspendDays = subscribeDescSuspendDays.Default.(int)
 	// subscribeDescRenewalDays is the schema descriptor for renewal_days field.
-	subscribeDescRenewalDays := subscribeFields[11].Descriptor()
+	subscribeDescRenewalDays := subscribeFields[10].Descriptor()
 	// subscribe.DefaultRenewalDays holds the default value on creation for the renewal_days field.
 	subscribe.DefaultRenewalDays = subscribeDescRenewalDays.Default.(int)
 	// subscribeDescOverdueDays is the schema descriptor for overdue_days field.
-	subscribeDescOverdueDays := subscribeFields[12].Descriptor()
+	subscribeDescOverdueDays := subscribeFields[11].Descriptor()
 	// subscribe.DefaultOverdueDays holds the default value on creation for the overdue_days field.
 	subscribe.DefaultOverdueDays = subscribeDescOverdueDays.Default.(int)
 	// subscribeDescRemaining is the schema descriptor for remaining field.
-	subscribeDescRemaining := subscribeFields[13].Descriptor()
+	subscribeDescRemaining := subscribeFields[12].Descriptor()
 	// subscribe.DefaultRemaining holds the default value on creation for the remaining field.
 	subscribe.DefaultRemaining = subscribeDescRemaining.Default.(int)
 	// subscribeDescPauseOverdue is the schema descriptor for pause_overdue field.
-	subscribeDescPauseOverdue := subscribeFields[21].Descriptor()
+	subscribeDescPauseOverdue := subscribeFields[20].Descriptor()
 	// subscribe.DefaultPauseOverdue holds the default value on creation for the pause_overdue field.
 	subscribe.DefaultPauseOverdue = subscribeDescPauseOverdue.Default.(bool)
 	// subscribeDescNeedContract is the schema descriptor for need_contract field.
-	subscribeDescNeedContract := subscribeFields[24].Descriptor()
+	subscribeDescNeedContract := subscribeFields[23].Descriptor()
 	// subscribe.DefaultNeedContract holds the default value on creation for the need_contract field.
 	subscribe.DefaultNeedContract = subscribeDescNeedContract.Default.(bool)
 	subscribealterMixin := schema.SubscribeAlter{}.Mixin()

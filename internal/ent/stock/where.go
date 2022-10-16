@@ -130,6 +130,20 @@ func EbikeID(v uint64) predicate.Stock {
 	})
 }
 
+// BrandID applies equality check predicate on the "brand_id" field. It's identical to BrandIDEQ.
+func BrandID(v uint64) predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBrandID), v))
+	})
+}
+
+// ParentID applies equality check predicate on the "parent_id" field. It's identical to ParentIDEQ.
+func ParentID(v uint64) predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldParentID), v))
+	})
+}
+
 // Sn applies equality check predicate on the "sn" field. It's identical to SnEQ.
 func Sn(v string) predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
@@ -190,13 +204,6 @@ func Model(v string) predicate.Stock {
 func Num(v int) predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldNum), v))
-	})
-}
-
-// EbikeSn applies equality check predicate on the "ebike_sn" field. It's identical to EbikeSnEQ.
-func EbikeSn(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEbikeSn), v))
 	})
 }
 
@@ -694,6 +701,106 @@ func EbikeIDIsNil() predicate.Stock {
 func EbikeIDNotNil() predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldEbikeID)))
+	})
+}
+
+// BrandIDEQ applies the EQ predicate on the "brand_id" field.
+func BrandIDEQ(v uint64) predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBrandID), v))
+	})
+}
+
+// BrandIDNEQ applies the NEQ predicate on the "brand_id" field.
+func BrandIDNEQ(v uint64) predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldBrandID), v))
+	})
+}
+
+// BrandIDIn applies the In predicate on the "brand_id" field.
+func BrandIDIn(vs ...uint64) predicate.Stock {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldBrandID), v...))
+	})
+}
+
+// BrandIDNotIn applies the NotIn predicate on the "brand_id" field.
+func BrandIDNotIn(vs ...uint64) predicate.Stock {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldBrandID), v...))
+	})
+}
+
+// BrandIDIsNil applies the IsNil predicate on the "brand_id" field.
+func BrandIDIsNil() predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldBrandID)))
+	})
+}
+
+// BrandIDNotNil applies the NotNil predicate on the "brand_id" field.
+func BrandIDNotNil() predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldBrandID)))
+	})
+}
+
+// ParentIDEQ applies the EQ predicate on the "parent_id" field.
+func ParentIDEQ(v uint64) predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldParentID), v))
+	})
+}
+
+// ParentIDNEQ applies the NEQ predicate on the "parent_id" field.
+func ParentIDNEQ(v uint64) predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldParentID), v))
+	})
+}
+
+// ParentIDIn applies the In predicate on the "parent_id" field.
+func ParentIDIn(vs ...uint64) predicate.Stock {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldParentID), v...))
+	})
+}
+
+// ParentIDNotIn applies the NotIn predicate on the "parent_id" field.
+func ParentIDNotIn(vs ...uint64) predicate.Stock {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldParentID), v...))
+	})
+}
+
+// ParentIDIsNil applies the IsNil predicate on the "parent_id" field.
+func ParentIDIsNil() predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldParentID)))
+	})
+}
+
+// ParentIDNotNil applies the NotNil predicate on the "parent_id" field.
+func ParentIDNotNil() predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldParentID)))
 	})
 }
 
@@ -1372,119 +1479,6 @@ func MaterialNotIn(vs ...Material) predicate.Stock {
 	})
 }
 
-// EbikeSnEQ applies the EQ predicate on the "ebike_sn" field.
-func EbikeSnEQ(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEbikeSn), v))
-	})
-}
-
-// EbikeSnNEQ applies the NEQ predicate on the "ebike_sn" field.
-func EbikeSnNEQ(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEbikeSn), v))
-	})
-}
-
-// EbikeSnIn applies the In predicate on the "ebike_sn" field.
-func EbikeSnIn(vs ...string) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEbikeSn), v...))
-	})
-}
-
-// EbikeSnNotIn applies the NotIn predicate on the "ebike_sn" field.
-func EbikeSnNotIn(vs ...string) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEbikeSn), v...))
-	})
-}
-
-// EbikeSnGT applies the GT predicate on the "ebike_sn" field.
-func EbikeSnGT(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldEbikeSn), v))
-	})
-}
-
-// EbikeSnGTE applies the GTE predicate on the "ebike_sn" field.
-func EbikeSnGTE(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldEbikeSn), v))
-	})
-}
-
-// EbikeSnLT applies the LT predicate on the "ebike_sn" field.
-func EbikeSnLT(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldEbikeSn), v))
-	})
-}
-
-// EbikeSnLTE applies the LTE predicate on the "ebike_sn" field.
-func EbikeSnLTE(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldEbikeSn), v))
-	})
-}
-
-// EbikeSnContains applies the Contains predicate on the "ebike_sn" field.
-func EbikeSnContains(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldEbikeSn), v))
-	})
-}
-
-// EbikeSnHasPrefix applies the HasPrefix predicate on the "ebike_sn" field.
-func EbikeSnHasPrefix(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldEbikeSn), v))
-	})
-}
-
-// EbikeSnHasSuffix applies the HasSuffix predicate on the "ebike_sn" field.
-func EbikeSnHasSuffix(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldEbikeSn), v))
-	})
-}
-
-// EbikeSnIsNil applies the IsNil predicate on the "ebike_sn" field.
-func EbikeSnIsNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldEbikeSn)))
-	})
-}
-
-// EbikeSnNotNil applies the NotNil predicate on the "ebike_sn" field.
-func EbikeSnNotNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldEbikeSn)))
-	})
-}
-
-// EbikeSnEqualFold applies the EqualFold predicate on the "ebike_sn" field.
-func EbikeSnEqualFold(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldEbikeSn), v))
-	})
-}
-
-// EbikeSnContainsFold applies the ContainsFold predicate on the "ebike_sn" field.
-func EbikeSnContainsFold(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldEbikeSn), v))
-	})
-}
-
 // HasCity applies the HasEdge predicate on the "city" edge.
 func HasCity() predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
@@ -1560,6 +1554,34 @@ func HasEbikeWith(preds ...predicate.Ebike) predicate.Stock {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(EbikeInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, EbikeTable, EbikeColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasBrand applies the HasEdge predicate on the "brand" edge.
+func HasBrand() predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(BrandTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, BrandTable, BrandColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasBrandWith applies the HasEdge predicate on the "brand" edge with a given conditions (other predicates).
+func HasBrandWith(preds ...predicate.EbikeBrand) predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(BrandInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, BrandTable, BrandColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
@@ -1700,6 +1722,62 @@ func HasSpouseWith(preds ...predicate.Stock) predicate.Stock {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(Table, FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, SpouseTable, SpouseColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasParent applies the HasEdge predicate on the "parent" edge.
+func HasParent() predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ParentTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasParentWith applies the HasEdge predicate on the "parent" edge with a given conditions (other predicates).
+func HasParentWith(preds ...predicate.Stock) predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasChildren applies the HasEdge predicate on the "children" edge.
+func HasChildren() predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ChildrenTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ChildrenTable, ChildrenColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasChildrenWith applies the HasEdge predicate on the "children" edge with a given conditions (other predicates).
+func HasChildrenWith(preds ...predicate.Stock) predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ChildrenTable, ChildrenColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

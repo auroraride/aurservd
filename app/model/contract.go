@@ -73,9 +73,9 @@ type ContractSignReq struct {
 
 // ContractSignRes 合同签订返回
 type ContractSignRes struct {
-    Url       string `json:"url"`       // 签署URL
-    Sn        string `json:"sn"`        // 签署识别码
-    Effective bool   `json:"effective"` // 是否存在生效中的合同
+    Url       string `json:"url,omitempty"` // 签署URL
+    Sn        string `json:"sn,omitempty"`  // 签署识别码
+    Effective bool   `json:"effective"`     // 是否存在生效中的合同
 }
 
 // ContractSignResultReq 合同签署结果请求

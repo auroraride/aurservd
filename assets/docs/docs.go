@@ -1285,7 +1285,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "签约状态 1:未签约 2:已签约 3:已作废",
+                        "description": "1:未激活 2:已签约 3:已作废",
                         "name": "status",
                         "in": "query"
                     }
@@ -1304,7 +1304,7 @@ const docTemplate = `{
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.EbikeAllocateInfo"
+                                                "$ref": "#/definitions/model.EbikeAllocateDetail"
                                             }
                                         }
                                     }
@@ -1348,13 +1348,13 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.EbikeAllocateRes"
+                            "$ref": "#/definitions/model.IDPostReq"
                         }
                     }
                 }
             }
         },
-        "/employee/v1/ebike/allocate/info": {
+        "/employee/v1/ebike/allocate/info/{id}": {
             "get": {
                 "description": "骑手签约成功后通过socket推送门店消息",
                 "consumes": [
@@ -1377,10 +1377,10 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "分配ID",
-                        "name": "allocateId",
-                        "in": "query",
+                        "name": "id",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -1388,7 +1388,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.EbikeAllocateInfo"
+                            "$ref": "#/definitions/model.EbikeAllocateDetail"
                         }
                     }
                 }
@@ -16363,7 +16363,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.EbikeAllocateInfo": {
+        "model.EbikeAllocateDetail": {
             "type": "object",
             "properties": {
                 "ebike": {
@@ -16373,6 +16373,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.Ebike"
                         }
                     ]
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "model": {
                     "description": "电池型号",
@@ -16387,8 +16390,12 @@ const docTemplate = `{
                     ]
                 },
                 "status": {
-                    "description": "签约状态 1:未签约 2:已签约 3:已作废",
+                    "description": "1:未激活 2:已签约 3:已作废",
                     "type": "integer"
+                },
+                "time": {
+                    "description": "分配时间",
+                    "type": "string"
                 }
             }
         },
@@ -16406,15 +16413,6 @@ const docTemplate = `{
                 "subscribeId": {
                     "description": "订阅ID ",
                     "type": "integer"
-                }
-            }
-        },
-        "model.EbikeAllocateRes": {
-            "type": "object",
-            "properties": {
-                "allocateId": {
-                    "description": "分配ID",
-                    "type": "string"
                 }
             }
         },

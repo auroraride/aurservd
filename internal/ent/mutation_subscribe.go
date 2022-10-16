@@ -96,8 +96,6 @@ type SubscribeMutation struct {
 	bills                map[uint64]struct{}
 	removedbills         map[uint64]struct{}
 	clearedbills         bool
-	contract             *uint64
-	clearedcontract      bool
 	done                 bool
 	oldValue             func(context.Context) (*Subscribe, error)
 	predicates           []predicate.Subscribe
@@ -980,55 +978,6 @@ func (m *SubscribeMutation) EnterpriseIDCleared() bool {
 func (m *SubscribeMutation) ResetEnterpriseID() {
 	m.enterprise = nil
 	delete(m.clearedFields, subscribe.FieldEnterpriseID)
-}
-
-// SetContractID sets the "contract_id" field.
-func (m *SubscribeMutation) SetContractID(u uint64) {
-	m.contract = &u
-}
-
-// ContractID returns the value of the "contract_id" field in the mutation.
-func (m *SubscribeMutation) ContractID() (r uint64, exists bool) {
-	v := m.contract
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldContractID returns the old "contract_id" field's value of the Subscribe entity.
-// If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SubscribeMutation) OldContractID(ctx context.Context) (v uint64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldContractID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldContractID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldContractID: %w", err)
-	}
-	return oldValue.ContractID, nil
-}
-
-// ClearContractID clears the value of the "contract_id" field.
-func (m *SubscribeMutation) ClearContractID() {
-	m.contract = nil
-	m.clearedFields[subscribe.FieldContractID] = struct{}{}
-}
-
-// ContractIDCleared returns if the "contract_id" field was cleared in this mutation.
-func (m *SubscribeMutation) ContractIDCleared() bool {
-	_, ok := m.clearedFields[subscribe.FieldContractID]
-	return ok
-}
-
-// ResetContractID resets all changes to the "contract_id" field.
-func (m *SubscribeMutation) ResetContractID() {
-	m.contract = nil
-	delete(m.clearedFields, subscribe.FieldContractID)
 }
 
 // SetStatus sets the "status" field.
@@ -2654,32 +2603,6 @@ func (m *SubscribeMutation) ResetBills() {
 	m.removedbills = nil
 }
 
-// ClearContract clears the "contract" edge to the Contract entity.
-func (m *SubscribeMutation) ClearContract() {
-	m.clearedcontract = true
-}
-
-// ContractCleared reports if the "contract" edge to the Contract entity was cleared.
-func (m *SubscribeMutation) ContractCleared() bool {
-	return m.ContractIDCleared() || m.clearedcontract
-}
-
-// ContractIDs returns the "contract" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// ContractID instead. It exists only for internal usage by the builders.
-func (m *SubscribeMutation) ContractIDs() (ids []uint64) {
-	if id := m.contract; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetContract resets all changes to the "contract" edge.
-func (m *SubscribeMutation) ResetContract() {
-	m.contract = nil
-	m.clearedcontract = false
-}
-
 // Where appends a list predicates to the SubscribeMutation builder.
 func (m *SubscribeMutation) Where(ps ...predicate.Subscribe) {
 	m.predicates = append(m.predicates, ps...)
@@ -2699,7 +2622,7 @@ func (m *SubscribeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscribeMutation) Fields() []string {
-	fields := make([]string, 0, 39)
+	fields := make([]string, 0, 38)
 	if m.created_at != nil {
 		fields = append(fields, subscribe.FieldCreatedAt)
 	}
@@ -2750,9 +2673,6 @@ func (m *SubscribeMutation) Fields() []string {
 	}
 	if m.enterprise != nil {
 		fields = append(fields, subscribe.FieldEnterpriseID)
-	}
-	if m.contract != nil {
-		fields = append(fields, subscribe.FieldContractID)
 	}
 	if m.status != nil {
 		fields = append(fields, subscribe.FieldStatus)
@@ -2859,8 +2779,6 @@ func (m *SubscribeMutation) Field(name string) (ent.Value, bool) {
 		return m.InitialOrderID()
 	case subscribe.FieldEnterpriseID:
 		return m.EnterpriseID()
-	case subscribe.FieldContractID:
-		return m.ContractID()
 	case subscribe.FieldStatus:
 		return m.Status()
 	case subscribe.FieldType:
@@ -2946,8 +2864,6 @@ func (m *SubscribeMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldInitialOrderID(ctx)
 	case subscribe.FieldEnterpriseID:
 		return m.OldEnterpriseID(ctx)
-	case subscribe.FieldContractID:
-		return m.OldContractID(ctx)
 	case subscribe.FieldStatus:
 		return m.OldStatus(ctx)
 	case subscribe.FieldType:
@@ -3117,13 +3033,6 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEnterpriseID(v)
-		return nil
-	case subscribe.FieldContractID:
-		v, ok := value.(uint64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetContractID(v)
 		return nil
 	case subscribe.FieldStatus:
 		v, ok := value.(uint8)
@@ -3452,9 +3361,6 @@ func (m *SubscribeMutation) ClearedFields() []string {
 	if m.FieldCleared(subscribe.FieldEnterpriseID) {
 		fields = append(fields, subscribe.FieldEnterpriseID)
 	}
-	if m.FieldCleared(subscribe.FieldContractID) {
-		fields = append(fields, subscribe.FieldContractID)
-	}
 	if m.FieldCleared(subscribe.FieldInitialDays) {
 		fields = append(fields, subscribe.FieldInitialDays)
 	}
@@ -3537,9 +3443,6 @@ func (m *SubscribeMutation) ClearField(name string) error {
 		return nil
 	case subscribe.FieldEnterpriseID:
 		m.ClearEnterpriseID()
-		return nil
-	case subscribe.FieldContractID:
-		m.ClearContractID()
 		return nil
 	case subscribe.FieldInitialDays:
 		m.ClearInitialDays()
@@ -3630,9 +3533,6 @@ func (m *SubscribeMutation) ResetField(name string) error {
 	case subscribe.FieldEnterpriseID:
 		m.ResetEnterpriseID()
 		return nil
-	case subscribe.FieldContractID:
-		m.ResetContractID()
-		return nil
 	case subscribe.FieldStatus:
 		m.ResetStatus()
 		return nil
@@ -3702,7 +3602,7 @@ func (m *SubscribeMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *SubscribeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 17)
+	edges := make([]string, 0, 16)
 	if m.plan != nil {
 		edges = append(edges, subscribe.EdgePlan)
 	}
@@ -3750,9 +3650,6 @@ func (m *SubscribeMutation) AddedEdges() []string {
 	}
 	if m.bills != nil {
 		edges = append(edges, subscribe.EdgeBills)
-	}
-	if m.contract != nil {
-		edges = append(edges, subscribe.EdgeContract)
 	}
 	return edges
 }
@@ -3835,17 +3732,13 @@ func (m *SubscribeMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case subscribe.EdgeContract:
-		if id := m.contract; id != nil {
-			return []ent.Value{*id}
-		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *SubscribeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 17)
+	edges := make([]string, 0, 16)
 	if m.removedpauses != nil {
 		edges = append(edges, subscribe.EdgePauses)
 	}
@@ -3904,7 +3797,7 @@ func (m *SubscribeMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *SubscribeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 17)
+	edges := make([]string, 0, 16)
 	if m.clearedplan {
 		edges = append(edges, subscribe.EdgePlan)
 	}
@@ -3953,9 +3846,6 @@ func (m *SubscribeMutation) ClearedEdges() []string {
 	if m.clearedbills {
 		edges = append(edges, subscribe.EdgeBills)
 	}
-	if m.clearedcontract {
-		edges = append(edges, subscribe.EdgeContract)
-	}
 	return edges
 }
 
@@ -3995,8 +3885,6 @@ func (m *SubscribeMutation) EdgeCleared(name string) bool {
 		return m.clearedinitial_order
 	case subscribe.EdgeBills:
 		return m.clearedbills
-	case subscribe.EdgeContract:
-		return m.clearedcontract
 	}
 	return false
 }
@@ -4037,9 +3925,6 @@ func (m *SubscribeMutation) ClearEdge(name string) error {
 		return nil
 	case subscribe.EdgeInitialOrder:
 		m.ClearInitialOrder()
-		return nil
-	case subscribe.EdgeContract:
-		m.ClearContract()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe unique edge %s", name)
@@ -4096,9 +3981,6 @@ func (m *SubscribeMutation) ResetEdge(name string) error {
 		return nil
 	case subscribe.EdgeBills:
 		m.ResetBills()
-		return nil
-	case subscribe.EdgeContract:
-		m.ResetContract()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe edge %s", name)

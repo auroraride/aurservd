@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -140,6 +141,34 @@ func (sc *StockCreate) SetNillableEbikeID(u *uint64) *StockCreate {
 	return sc
 }
 
+// SetBrandID sets the "brand_id" field.
+func (sc *StockCreate) SetBrandID(u uint64) *StockCreate {
+	sc.mutation.SetBrandID(u)
+	return sc
+}
+
+// SetNillableBrandID sets the "brand_id" field if the given value is not nil.
+func (sc *StockCreate) SetNillableBrandID(u *uint64) *StockCreate {
+	if u != nil {
+		sc.SetBrandID(*u)
+	}
+	return sc
+}
+
+// SetParentID sets the "parent_id" field.
+func (sc *StockCreate) SetParentID(u uint64) *StockCreate {
+	sc.mutation.SetParentID(u)
+	return sc
+}
+
+// SetNillableParentID sets the "parent_id" field if the given value is not nil.
+func (sc *StockCreate) SetNillableParentID(u *uint64) *StockCreate {
+	if u != nil {
+		sc.SetParentID(*u)
+	}
+	return sc
+}
+
 // SetSn sets the "sn" field.
 func (sc *StockCreate) SetSn(s string) *StockCreate {
 	sc.mutation.SetSn(s)
@@ -248,20 +277,6 @@ func (sc *StockCreate) SetMaterial(s stock.Material) *StockCreate {
 	return sc
 }
 
-// SetEbikeSn sets the "ebike_sn" field.
-func (sc *StockCreate) SetEbikeSn(s string) *StockCreate {
-	sc.mutation.SetEbikeSn(s)
-	return sc
-}
-
-// SetNillableEbikeSn sets the "ebike_sn" field if the given value is not nil.
-func (sc *StockCreate) SetNillableEbikeSn(s *string) *StockCreate {
-	if s != nil {
-		sc.SetEbikeSn(*s)
-	}
-	return sc
-}
-
 // SetCity sets the "city" edge to the City entity.
 func (sc *StockCreate) SetCity(c *City) *StockCreate {
 	return sc.SetCityID(c.ID)
@@ -275,6 +290,11 @@ func (sc *StockCreate) SetSubscribe(s *Subscribe) *StockCreate {
 // SetEbike sets the "ebike" edge to the Ebike entity.
 func (sc *StockCreate) SetEbike(e *Ebike) *StockCreate {
 	return sc.SetEbikeID(e.ID)
+}
+
+// SetBrand sets the "brand" edge to the EbikeBrand entity.
+func (sc *StockCreate) SetBrand(e *EbikeBrand) *StockCreate {
+	return sc.SetBrandID(e.ID)
 }
 
 // SetStore sets the "store" edge to the Store entity.
@@ -314,6 +334,26 @@ func (sc *StockCreate) SetNillableSpouseID(id *uint64) *StockCreate {
 // SetSpouse sets the "spouse" edge to the Stock entity.
 func (sc *StockCreate) SetSpouse(s *Stock) *StockCreate {
 	return sc.SetSpouseID(s.ID)
+}
+
+// SetParent sets the "parent" edge to the Stock entity.
+func (sc *StockCreate) SetParent(s *Stock) *StockCreate {
+	return sc.SetParentID(s.ID)
+}
+
+// AddChildIDs adds the "children" edge to the Stock entity by IDs.
+func (sc *StockCreate) AddChildIDs(ids ...uint64) *StockCreate {
+	sc.mutation.AddChildIDs(ids...)
+	return sc
+}
+
+// AddChildren adds the "children" edges to the Stock entity.
+func (sc *StockCreate) AddChildren(s ...*Stock) *StockCreate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return sc.AddChildIDs(ids...)
 }
 
 // Mutation returns the StockMutation object of the builder.
@@ -568,14 +608,6 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 		})
 		_node.Material = value
 	}
-	if value, ok := sc.mutation.EbikeSn(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: stock.FieldEbikeSn,
-		})
-		_node.EbikeSn = &value
-	}
 	if nodes := sc.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -634,6 +666,26 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.EbikeID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.BrandIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.BrandTable,
+			Columns: []string{stock.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebikebrand.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.BrandID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := sc.mutation.StoreIDs(); len(nodes) > 0 {
@@ -734,6 +786,45 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.stock_spouse = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.ParentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.ParentTable,
+			Columns: []string{stock.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.ParentID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.ChildrenIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   stock.ChildrenTable,
+			Columns: []string{stock.ChildrenColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -908,6 +999,42 @@ func (u *StockUpsert) ClearEbikeID() *StockUpsert {
 	return u
 }
 
+// SetBrandID sets the "brand_id" field.
+func (u *StockUpsert) SetBrandID(v uint64) *StockUpsert {
+	u.Set(stock.FieldBrandID, v)
+	return u
+}
+
+// UpdateBrandID sets the "brand_id" field to the value that was provided on create.
+func (u *StockUpsert) UpdateBrandID() *StockUpsert {
+	u.SetExcluded(stock.FieldBrandID)
+	return u
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (u *StockUpsert) ClearBrandID() *StockUpsert {
+	u.SetNull(stock.FieldBrandID)
+	return u
+}
+
+// SetParentID sets the "parent_id" field.
+func (u *StockUpsert) SetParentID(v uint64) *StockUpsert {
+	u.Set(stock.FieldParentID, v)
+	return u
+}
+
+// UpdateParentID sets the "parent_id" field to the value that was provided on create.
+func (u *StockUpsert) UpdateParentID() *StockUpsert {
+	u.SetExcluded(stock.FieldParentID)
+	return u
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (u *StockUpsert) ClearParentID() *StockUpsert {
+	u.SetNull(stock.FieldParentID)
+	return u
+}
+
 // SetSn sets the "sn" field.
 func (u *StockUpsert) SetSn(v string) *StockUpsert {
 	u.Set(stock.FieldSn, v)
@@ -1049,24 +1176,6 @@ func (u *StockUpsert) SetMaterial(v stock.Material) *StockUpsert {
 // UpdateMaterial sets the "material" field to the value that was provided on create.
 func (u *StockUpsert) UpdateMaterial() *StockUpsert {
 	u.SetExcluded(stock.FieldMaterial)
-	return u
-}
-
-// SetEbikeSn sets the "ebike_sn" field.
-func (u *StockUpsert) SetEbikeSn(v string) *StockUpsert {
-	u.Set(stock.FieldEbikeSn, v)
-	return u
-}
-
-// UpdateEbikeSn sets the "ebike_sn" field to the value that was provided on create.
-func (u *StockUpsert) UpdateEbikeSn() *StockUpsert {
-	u.SetExcluded(stock.FieldEbikeSn)
-	return u
-}
-
-// ClearEbikeSn clears the value of the "ebike_sn" field.
-func (u *StockUpsert) ClearEbikeSn() *StockUpsert {
-	u.SetNull(stock.FieldEbikeSn)
 	return u
 }
 
@@ -1261,6 +1370,48 @@ func (u *StockUpsertOne) ClearEbikeID() *StockUpsertOne {
 	})
 }
 
+// SetBrandID sets the "brand_id" field.
+func (u *StockUpsertOne) SetBrandID(v uint64) *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.SetBrandID(v)
+	})
+}
+
+// UpdateBrandID sets the "brand_id" field to the value that was provided on create.
+func (u *StockUpsertOne) UpdateBrandID() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateBrandID()
+	})
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (u *StockUpsertOne) ClearBrandID() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.ClearBrandID()
+	})
+}
+
+// SetParentID sets the "parent_id" field.
+func (u *StockUpsertOne) SetParentID(v uint64) *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.SetParentID(v)
+	})
+}
+
+// UpdateParentID sets the "parent_id" field to the value that was provided on create.
+func (u *StockUpsertOne) UpdateParentID() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateParentID()
+	})
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (u *StockUpsertOne) ClearParentID() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.ClearParentID()
+	})
+}
+
 // SetSn sets the "sn" field.
 func (u *StockUpsertOne) SetSn(v string) *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
@@ -1426,27 +1577,6 @@ func (u *StockUpsertOne) SetMaterial(v stock.Material) *StockUpsertOne {
 func (u *StockUpsertOne) UpdateMaterial() *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
 		s.UpdateMaterial()
-	})
-}
-
-// SetEbikeSn sets the "ebike_sn" field.
-func (u *StockUpsertOne) SetEbikeSn(v string) *StockUpsertOne {
-	return u.Update(func(s *StockUpsert) {
-		s.SetEbikeSn(v)
-	})
-}
-
-// UpdateEbikeSn sets the "ebike_sn" field to the value that was provided on create.
-func (u *StockUpsertOne) UpdateEbikeSn() *StockUpsertOne {
-	return u.Update(func(s *StockUpsert) {
-		s.UpdateEbikeSn()
-	})
-}
-
-// ClearEbikeSn clears the value of the "ebike_sn" field.
-func (u *StockUpsertOne) ClearEbikeSn() *StockUpsertOne {
-	return u.Update(func(s *StockUpsert) {
-		s.ClearEbikeSn()
 	})
 }
 
@@ -1803,6 +1933,48 @@ func (u *StockUpsertBulk) ClearEbikeID() *StockUpsertBulk {
 	})
 }
 
+// SetBrandID sets the "brand_id" field.
+func (u *StockUpsertBulk) SetBrandID(v uint64) *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.SetBrandID(v)
+	})
+}
+
+// UpdateBrandID sets the "brand_id" field to the value that was provided on create.
+func (u *StockUpsertBulk) UpdateBrandID() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateBrandID()
+	})
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (u *StockUpsertBulk) ClearBrandID() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.ClearBrandID()
+	})
+}
+
+// SetParentID sets the "parent_id" field.
+func (u *StockUpsertBulk) SetParentID(v uint64) *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.SetParentID(v)
+	})
+}
+
+// UpdateParentID sets the "parent_id" field to the value that was provided on create.
+func (u *StockUpsertBulk) UpdateParentID() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateParentID()
+	})
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (u *StockUpsertBulk) ClearParentID() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.ClearParentID()
+	})
+}
+
 // SetSn sets the "sn" field.
 func (u *StockUpsertBulk) SetSn(v string) *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
@@ -1968,27 +2140,6 @@ func (u *StockUpsertBulk) SetMaterial(v stock.Material) *StockUpsertBulk {
 func (u *StockUpsertBulk) UpdateMaterial() *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
 		s.UpdateMaterial()
-	})
-}
-
-// SetEbikeSn sets the "ebike_sn" field.
-func (u *StockUpsertBulk) SetEbikeSn(v string) *StockUpsertBulk {
-	return u.Update(func(s *StockUpsert) {
-		s.SetEbikeSn(v)
-	})
-}
-
-// UpdateEbikeSn sets the "ebike_sn" field to the value that was provided on create.
-func (u *StockUpsertBulk) UpdateEbikeSn() *StockUpsertBulk {
-	return u.Update(func(s *StockUpsert) {
-		s.UpdateEbikeSn()
-	})
-}
-
-// ClearEbikeSn clears the value of the "ebike_sn" field.
-func (u *StockUpsertBulk) ClearEbikeSn() *StockUpsertBulk {
-	return u.Update(func(s *StockUpsert) {
-		s.ClearEbikeSn()
 	})
 }
 

@@ -29,6 +29,10 @@ const (
 	FieldEmployeeID = "employee_id"
 	// FieldStoreID holds the string denoting the store_id field in the database.
 	FieldStoreID = "store_id"
+	// FieldSubscribeID holds the string denoting the subscribe_id field in the database.
+	FieldSubscribeID = "subscribe_id"
+	// FieldCabinetID holds the string denoting the cabinet_id field in the database.
+	FieldCabinetID = "cabinet_id"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
@@ -41,18 +45,22 @@ const (
 	FieldFiles = "files"
 	// FieldEffective holds the string denoting the effective field in the database.
 	FieldEffective = "effective"
-	// FieldEbikeAllocateID holds the string denoting the ebike_allocate_id field in the database.
-	FieldEbikeAllocateID = "ebike_allocate_id"
 	// FieldRiderInfo holds the string denoting the rider_info field in the database.
 	FieldRiderInfo = "rider_info"
+	// FieldAllocateID holds the string denoting the allocate_id field in the database.
+	FieldAllocateID = "allocate_id"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
 	EdgeEmployee = "employee"
 	// EdgeStore holds the string denoting the store edge name in mutations.
 	EdgeStore = "store"
-	// EdgeRider holds the string denoting the rider edge name in mutations.
-	EdgeRider = "rider"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
 	EdgeSubscribe = "subscribe"
+	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
+	EdgeCabinet = "cabinet"
+	// EdgeRider holds the string denoting the rider edge name in mutations.
+	EdgeRider = "rider"
+	// EdgeEbikeAllocate holds the string denoting the ebike_allocate edge name in mutations.
+	EdgeEbikeAllocate = "ebike_allocate"
 	// Table holds the table name of the contract in the database.
 	Table = "contract"
 	// EmployeeTable is the table that holds the employee relation/edge.
@@ -69,6 +77,20 @@ const (
 	StoreInverseTable = "store"
 	// StoreColumn is the table column denoting the store relation/edge.
 	StoreColumn = "store_id"
+	// SubscribeTable is the table that holds the subscribe relation/edge.
+	SubscribeTable = "contract"
+	// SubscribeInverseTable is the table name for the Subscribe entity.
+	// It exists in this package in order to avoid circular dependency with the "subscribe" package.
+	SubscribeInverseTable = "subscribe"
+	// SubscribeColumn is the table column denoting the subscribe relation/edge.
+	SubscribeColumn = "subscribe_id"
+	// CabinetTable is the table that holds the cabinet relation/edge.
+	CabinetTable = "contract"
+	// CabinetInverseTable is the table name for the Cabinet entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
+	CabinetInverseTable = "cabinet"
+	// CabinetColumn is the table column denoting the cabinet relation/edge.
+	CabinetColumn = "cabinet_id"
 	// RiderTable is the table that holds the rider relation/edge.
 	RiderTable = "contract"
 	// RiderInverseTable is the table name for the Rider entity.
@@ -76,13 +98,13 @@ const (
 	RiderInverseTable = "rider"
 	// RiderColumn is the table column denoting the rider relation/edge.
 	RiderColumn = "rider_id"
-	// SubscribeTable is the table that holds the subscribe relation/edge.
-	SubscribeTable = "subscribe"
-	// SubscribeInverseTable is the table name for the Subscribe entity.
-	// It exists in this package in order to avoid circular dependency with the "subscribe" package.
-	SubscribeInverseTable = "subscribe"
-	// SubscribeColumn is the table column denoting the subscribe relation/edge.
-	SubscribeColumn = "contract_id"
+	// EbikeAllocateTable is the table that holds the ebike_allocate relation/edge.
+	EbikeAllocateTable = "contract"
+	// EbikeAllocateInverseTable is the table name for the EbikeAllocate entity.
+	// It exists in this package in order to avoid circular dependency with the "ebikeallocate" package.
+	EbikeAllocateInverseTable = "ebike_allocate"
+	// EbikeAllocateColumn is the table column denoting the ebike_allocate relation/edge.
+	EbikeAllocateColumn = "allocate_id"
 )
 
 // Columns holds all SQL columns for contract fields.
@@ -96,14 +118,16 @@ var Columns = []string{
 	FieldRemark,
 	FieldEmployeeID,
 	FieldStoreID,
+	FieldSubscribeID,
+	FieldCabinetID,
 	FieldStatus,
 	FieldRiderID,
 	FieldFlowID,
 	FieldSn,
 	FieldFiles,
 	FieldEffective,
-	FieldEbikeAllocateID,
 	FieldRiderInfo,
+	FieldAllocateID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

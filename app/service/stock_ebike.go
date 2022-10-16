@@ -27,6 +27,7 @@ func NewStockEbike(params ...any) *stockEbikeService {
 }
 
 func (s *stockEbikeService) Loopers(req *model.StockTransferReq) (looppers []model.StockTransferLoopper, failed []string) {
+    failed = make([]string, 0)
     // 查询电车信息
     eq := ent.Database.Ebike.Query()
     if req.InboundTarget == model.StockTargetStore {

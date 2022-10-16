@@ -27,10 +27,10 @@ func (r *Response) processParam(param any) {
         break
     case int:
         r.Code = v
-    case nil:
-        break
     default:
-        r.Data = param
+        if v != nil {
+            r.Data = param
+        }
         break
     }
 }

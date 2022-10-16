@@ -123,6 +123,20 @@ func StoreID(v uint64) predicate.Contract {
 	})
 }
 
+// SubscribeID applies equality check predicate on the "subscribe_id" field. It's identical to SubscribeIDEQ.
+func SubscribeID(v uint64) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
+	})
+}
+
+// CabinetID applies equality check predicate on the "cabinet_id" field. It's identical to CabinetIDEQ.
+func CabinetID(v uint64) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCabinetID), v))
+	})
+}
+
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v uint8) predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
@@ -158,10 +172,10 @@ func Effective(v bool) predicate.Contract {
 	})
 }
 
-// EbikeAllocateID applies equality check predicate on the "ebike_allocate_id" field. It's identical to EbikeAllocateIDEQ.
-func EbikeAllocateID(v string) predicate.Contract {
+// AllocateID applies equality check predicate on the "allocate_id" field. It's identical to AllocateIDEQ.
+func AllocateID(v uint64) predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEbikeAllocateID), v))
+		s.Where(sql.EQ(s.C(FieldAllocateID), v))
 	})
 }
 
@@ -612,6 +626,106 @@ func StoreIDNotNil() predicate.Contract {
 	})
 }
 
+// SubscribeIDEQ applies the EQ predicate on the "subscribe_id" field.
+func SubscribeIDEQ(v uint64) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
+	})
+}
+
+// SubscribeIDNEQ applies the NEQ predicate on the "subscribe_id" field.
+func SubscribeIDNEQ(v uint64) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldSubscribeID), v))
+	})
+}
+
+// SubscribeIDIn applies the In predicate on the "subscribe_id" field.
+func SubscribeIDIn(vs ...uint64) predicate.Contract {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldSubscribeID), v...))
+	})
+}
+
+// SubscribeIDNotIn applies the NotIn predicate on the "subscribe_id" field.
+func SubscribeIDNotIn(vs ...uint64) predicate.Contract {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldSubscribeID), v...))
+	})
+}
+
+// SubscribeIDIsNil applies the IsNil predicate on the "subscribe_id" field.
+func SubscribeIDIsNil() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldSubscribeID)))
+	})
+}
+
+// SubscribeIDNotNil applies the NotNil predicate on the "subscribe_id" field.
+func SubscribeIDNotNil() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldSubscribeID)))
+	})
+}
+
+// CabinetIDEQ applies the EQ predicate on the "cabinet_id" field.
+func CabinetIDEQ(v uint64) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCabinetID), v))
+	})
+}
+
+// CabinetIDNEQ applies the NEQ predicate on the "cabinet_id" field.
+func CabinetIDNEQ(v uint64) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldCabinetID), v))
+	})
+}
+
+// CabinetIDIn applies the In predicate on the "cabinet_id" field.
+func CabinetIDIn(vs ...uint64) predicate.Contract {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldCabinetID), v...))
+	})
+}
+
+// CabinetIDNotIn applies the NotIn predicate on the "cabinet_id" field.
+func CabinetIDNotIn(vs ...uint64) predicate.Contract {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldCabinetID), v...))
+	})
+}
+
+// CabinetIDIsNil applies the IsNil predicate on the "cabinet_id" field.
+func CabinetIDIsNil() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldCabinetID)))
+	})
+}
+
+// CabinetIDNotNil applies the NotNil predicate on the "cabinet_id" field.
+func CabinetIDNotNil() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldCabinetID)))
+	})
+}
+
 // StatusEQ applies the EQ predicate on the "status" field.
 func StatusEQ(v uint8) predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
@@ -938,119 +1052,6 @@ func EffectiveNEQ(v bool) predicate.Contract {
 	})
 }
 
-// EbikeAllocateIDEQ applies the EQ predicate on the "ebike_allocate_id" field.
-func EbikeAllocateIDEQ(v string) predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEbikeAllocateID), v))
-	})
-}
-
-// EbikeAllocateIDNEQ applies the NEQ predicate on the "ebike_allocate_id" field.
-func EbikeAllocateIDNEQ(v string) predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEbikeAllocateID), v))
-	})
-}
-
-// EbikeAllocateIDIn applies the In predicate on the "ebike_allocate_id" field.
-func EbikeAllocateIDIn(vs ...string) predicate.Contract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEbikeAllocateID), v...))
-	})
-}
-
-// EbikeAllocateIDNotIn applies the NotIn predicate on the "ebike_allocate_id" field.
-func EbikeAllocateIDNotIn(vs ...string) predicate.Contract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEbikeAllocateID), v...))
-	})
-}
-
-// EbikeAllocateIDGT applies the GT predicate on the "ebike_allocate_id" field.
-func EbikeAllocateIDGT(v string) predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldEbikeAllocateID), v))
-	})
-}
-
-// EbikeAllocateIDGTE applies the GTE predicate on the "ebike_allocate_id" field.
-func EbikeAllocateIDGTE(v string) predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldEbikeAllocateID), v))
-	})
-}
-
-// EbikeAllocateIDLT applies the LT predicate on the "ebike_allocate_id" field.
-func EbikeAllocateIDLT(v string) predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldEbikeAllocateID), v))
-	})
-}
-
-// EbikeAllocateIDLTE applies the LTE predicate on the "ebike_allocate_id" field.
-func EbikeAllocateIDLTE(v string) predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldEbikeAllocateID), v))
-	})
-}
-
-// EbikeAllocateIDContains applies the Contains predicate on the "ebike_allocate_id" field.
-func EbikeAllocateIDContains(v string) predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldEbikeAllocateID), v))
-	})
-}
-
-// EbikeAllocateIDHasPrefix applies the HasPrefix predicate on the "ebike_allocate_id" field.
-func EbikeAllocateIDHasPrefix(v string) predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldEbikeAllocateID), v))
-	})
-}
-
-// EbikeAllocateIDHasSuffix applies the HasSuffix predicate on the "ebike_allocate_id" field.
-func EbikeAllocateIDHasSuffix(v string) predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldEbikeAllocateID), v))
-	})
-}
-
-// EbikeAllocateIDIsNil applies the IsNil predicate on the "ebike_allocate_id" field.
-func EbikeAllocateIDIsNil() predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldEbikeAllocateID)))
-	})
-}
-
-// EbikeAllocateIDNotNil applies the NotNil predicate on the "ebike_allocate_id" field.
-func EbikeAllocateIDNotNil() predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldEbikeAllocateID)))
-	})
-}
-
-// EbikeAllocateIDEqualFold applies the EqualFold predicate on the "ebike_allocate_id" field.
-func EbikeAllocateIDEqualFold(v string) predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldEbikeAllocateID), v))
-	})
-}
-
-// EbikeAllocateIDContainsFold applies the ContainsFold predicate on the "ebike_allocate_id" field.
-func EbikeAllocateIDContainsFold(v string) predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldEbikeAllocateID), v))
-	})
-}
-
 // RiderInfoIsNil applies the IsNil predicate on the "rider_info" field.
 func RiderInfoIsNil() predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
@@ -1062,6 +1063,56 @@ func RiderInfoIsNil() predicate.Contract {
 func RiderInfoNotNil() predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldRiderInfo)))
+	})
+}
+
+// AllocateIDEQ applies the EQ predicate on the "allocate_id" field.
+func AllocateIDEQ(v uint64) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAllocateID), v))
+	})
+}
+
+// AllocateIDNEQ applies the NEQ predicate on the "allocate_id" field.
+func AllocateIDNEQ(v uint64) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAllocateID), v))
+	})
+}
+
+// AllocateIDIn applies the In predicate on the "allocate_id" field.
+func AllocateIDIn(vs ...uint64) predicate.Contract {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldAllocateID), v...))
+	})
+}
+
+// AllocateIDNotIn applies the NotIn predicate on the "allocate_id" field.
+func AllocateIDNotIn(vs ...uint64) predicate.Contract {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldAllocateID), v...))
+	})
+}
+
+// AllocateIDIsNil applies the IsNil predicate on the "allocate_id" field.
+func AllocateIDIsNil() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAllocateID)))
+	})
+}
+
+// AllocateIDNotNil applies the NotNil predicate on the "allocate_id" field.
+func AllocateIDNotNil() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAllocateID)))
 	})
 }
 
@@ -1121,6 +1172,62 @@ func HasStoreWith(preds ...predicate.Store) predicate.Contract {
 	})
 }
 
+// HasSubscribe applies the HasEdge predicate on the "subscribe" edge.
+func HasSubscribe() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(SubscribeTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSubscribeWith applies the HasEdge predicate on the "subscribe" edge with a given conditions (other predicates).
+func HasSubscribeWith(preds ...predicate.Subscribe) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(SubscribeInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasCabinet applies the HasEdge predicate on the "cabinet" edge.
+func HasCabinet() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CabinetTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, CabinetTable, CabinetColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCabinetWith applies the HasEdge predicate on the "cabinet" edge with a given conditions (other predicates).
+func HasCabinetWith(preds ...predicate.Cabinet) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CabinetInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, CabinetTable, CabinetColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasRider applies the HasEdge predicate on the "rider" edge.
 func HasRider() predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
@@ -1149,25 +1256,25 @@ func HasRiderWith(preds ...predicate.Rider) predicate.Contract {
 	})
 }
 
-// HasSubscribe applies the HasEdge predicate on the "subscribe" edge.
-func HasSubscribe() predicate.Contract {
+// HasEbikeAllocate applies the HasEdge predicate on the "ebike_allocate" edge.
+func HasEbikeAllocate() predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SubscribeTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, SubscribeTable, SubscribeColumn),
+			sqlgraph.To(EbikeAllocateTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, EbikeAllocateTable, EbikeAllocateColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasSubscribeWith applies the HasEdge predicate on the "subscribe" edge with a given conditions (other predicates).
-func HasSubscribeWith(preds ...predicate.Subscribe) predicate.Contract {
+// HasEbikeAllocateWith applies the HasEdge predicate on the "ebike_allocate" edge with a given conditions (other predicates).
+func HasEbikeAllocateWith(preds ...predicate.EbikeAllocate) predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SubscribeInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, SubscribeTable, SubscribeColumn),
+			sqlgraph.To(EbikeAllocateInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, EbikeAllocateTable, EbikeAllocateColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

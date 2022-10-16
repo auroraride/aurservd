@@ -29,6 +29,7 @@ func (Stock) Annotations() []schema.Annotation {
 // Fields of the Stock.
 func (Stock) Fields() []ent.Field {
     return []ent.Field{
+        field.Uint64("parent_id").Optional().Nillable().Comment("父级"),
         field.String("sn").Comment("调拨编号"),
         field.Uint8("type").Default(0).Comment("类型 0:调拨 1:领取电池 2:寄存电池 3:结束寄存 4:归还电池"),
         field.Uint64("store_id").Optional().Nillable().Comment("入库至 或 出库自 门店ID"),
@@ -39,7 +40,6 @@ func (Stock) Fields() []ent.Field {
         field.String("model").Optional().Nillable().Comment("电池型号"),
         field.Int("num").Immutable().Comment("物资数量: 正值调入 / 负值调出"),
         field.Enum("material").Values("battery", "ebike", "others").Comment("物资种类"),
-        field.String("ebike_sn").Optional().Nillable().Comment("电车编号"),
     }
 }
 
@@ -52,6 +52,8 @@ func (Stock) Edges() []ent.Edge {
         edge.From("employee", Employee.Type).Unique().Ref("stocks").Field("employee_id"),
 
         edge.To("spouse", Stock.Type).Unique(),
+
+        edge.To("children", Stock.Type).From("parent").Field("parent_id").Unique(),
     }
 }
 
@@ -67,6 +69,7 @@ func (Stock) Mixin() []ent.Mixin {
 
         // 电车
         EbikeMixin{Optional: true},
+        EbikeBrandMixin{Optional: true},
     }
 }
 
@@ -79,6 +82,7 @@ func (Stock) Indexes() []ent.Index {
         index.Fields("name"),
         index.Fields("model"),
         index.Fields("sn"),
+        index.Fields("parent_id"),
     }
 }
 

@@ -7,6 +7,7 @@ package service
 
 import (
     "context"
+    "errors"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/socket"
@@ -66,7 +67,7 @@ func (s *contractService) Effective(u *ent.Rider) bool {
     if u.Contractual {
         return true
     }
-    exists, _ := s.orm.QueryNotDeleted().Where(
+    exists, _ := s.orm.Query().Where(
         contract.RiderID(u.ID),
         contract.Status(model.ContractStatusSuccess.Value()),
         contract.Effective(true),
@@ -153,6 +154,7 @@ func (s *contractService) enterpriseData(m ar.Map, sub *ent.Subscribe) *model.Co
 
 // Sign 签署合同
 // 月数按s.monthDays(30)天计算, 出现小数四舍五入
+// TODO 电柜激活电池(需要注意判定库存是否充足)
 func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes {
     u := s.rider
     // 是否免签
@@ -169,6 +171,10 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
     sub, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.ID(req.SubscribeID), subscribe.Status(model.SubscribeStatusInactive)).WithCity().First(s.ctx)
     if sub == nil {
         snag.Panic("未找到骑士卡")
+    }
+
+    if !sub.NeedContract {
+        snag.Panic("当前订阅无需签约")
     }
 
     if sub.BrandID == nil && sub.EbikeID != nil {
@@ -244,19 +250,15 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
     m["payMonth"] = un.Month
 
     // 电车
-    var employeeID, storeID *uint64
-    var alloID *string
+    var employeeID, storeID, allocateID *uint64
     if sub.BrandID != nil {
         // 查找电车分配
-        allo := NewEbikeAllocate().QueryEffectiveSubscribeID(sub.ID)
-        if allo == nil {
-            snag.Panic("未找到分配信息")
-        }
-        employeeID = silk.UInt64(allo.EmployeeID)
-        storeID = silk.UInt64(allo.StoreID)
-        alloID = silk.String(allo.Id.Hex())
+        ea := NewEbikeAllocate().QueryEffectiveSubscribeIDX(sub.ID)
+        employeeID = silk.UInt64(ea.EmployeeID)
+        storeID = silk.UInt64(ea.StoreID)
+        allocateID = silk.UInt64(ea.ID)
 
-        bike := allo.Ebike
+        bike := ea.Info.Ebike
         // 车加电方案
         m["schemaEbike"] = true
         // 车加电方案一
@@ -372,14 +374,15 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
     // 存储合同信息
     var c *ent.Contract
     ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
-        c, err = ent.Database.Contract.Create().
+        c, err = tx.Contract.Create().
             SetFlowID(flowId).
             SetRiderID(u.ID).
             SetStatus(model.ContractStatusSigning.Value()).
             SetSn(sn).
             SetNillableStoreID(storeID).
             SetNillableEmployeeID(employeeID).
-            SetNillableEbikeAllocateID(alloID).
+            SetNillableEbikeAllocateID(allocateID).
+            SetSubscribe(sub).
             SetRiderInfo(&model.ContractRider{
                 Phone:        u.Phone,
                 Name:         u.Name,
@@ -389,7 +392,7 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
         if err != nil {
             return
         }
-        return sub.Update().SetContract(c).SetNillableStoreID(storeID).SetNillableEmployeeID(employeeID).Exec(s.ctx)
+        return sub.Update().SetNillableStoreID(storeID).SetNillableEmployeeID(employeeID).Exec(s.ctx)
     })
 
     // 监听合同签署结果
@@ -434,7 +437,7 @@ func (s *contractService) doResult(flowID string, isExpired bool) (stop, success
     }()
 
     // 查询合同
-    c, _ := s.orm.Query().Where(contract.FlowID(flowID)).First(s.ctx)
+    c, _ := s.orm.Query().Where(contract.FlowID(flowID)).WithRider().First(s.ctx)
     if c == nil {
         stop = true
         return
@@ -487,23 +490,17 @@ func (s *contractService) doResult(flowID string, isExpired bool) (stop, success
 
     // 成功签署合同
     if success {
-        // TODO 若有必要, 更新电车信息
-        if c.EbikeAllocateID != nil {
-            sub, _ := c.QuerySubscribe().First(s.ctx)
-            allo, _ := NewEbikeAllocate().QueryIDHex(*c.EbikeAllocateID)
-            if sub != nil && allo != nil {
-                sub.Update()
-            } else {
-                log.Errorf("[%d] 需要更新订阅, 但是未找到订阅信息, 或电车分配信息", c.ID)
-            }
+        err := s.update(c)
+        if err != nil {
+            log.Errorf("合同更新失败 [id = %d] %v", c.ID, err)
         }
 
         // 如有必要, 通知店员合同签署完成
-        if c.EmployeeID != nil && c.EbikeAllocateID != nil {
+        if c.EmployeeID != nil && c.AllocateID != nil {
             fmt.Printf("通知店员: %d\n", *c.EmployeeID)
             socket.GetClientID(NewEmployeeSocket(), *c.EmployeeID).SendMessage(&model.EmployeeSocketMessage{
                 Speech:          "骑手已签约",
-                EbikeAllocateID: c.EbikeAllocateID,
+                EbikeAllocateID: c.AllocateID,
             })
         }
     }
@@ -511,10 +508,63 @@ func (s *contractService) doResult(flowID string, isExpired bool) (stop, success
     return
 }
 
+// 关联更新
+// 包含业务 [激活 / 业务 / 出入库]
+func (s *contractService) update(c *ent.Contract) (err error) {
+    defer func() {
+        if v := recover(); v != nil {
+            err = fmt.Errorf("%v", v)
+            return
+        }
+    }()
+
+    if c.SubscribeID == nil {
+        return errors.New("合同未关联订阅")
+    }
+
+    info, sub := NewBusinessRider(c.Edges.Rider).Inactive(*c.SubscribeID)
+    if sub == nil {
+        return errors.New("需要更新订阅, 但是未找到订阅信息")
+    }
+
+    // 激活
+    srv := NewBusinessRider(c.Edges.Rider).SetStoreID(c.StoreID).SetCabinetID(c.CabinetID)
+
+    // 查询分配信息
+    var ea *ent.EbikeAllocate
+    if c.AllocateID != nil {
+        ea, _ = c.QueryEbikeAllocate().First(s.ctx)
+        if ea == nil {
+            return errors.New("未找到分配信息")
+        }
+        // 设置门店和电车属性
+        srv.SetEbike(&model.EbikeBusinessInfo{
+            ID:        ea.EbikeID,
+            BrandID:   ea.Info.Ebike.Brand.ID,
+            BrandName: ea.Info.Ebike.Brand.Name,
+        })
+    }
+
+    srv.Active(info, sub, func(tx *ent.Tx) (err error) {
+        if c.AllocateID != nil {
+            // 更新分配
+            err = tx.EbikeAllocate.UpdateOne(ea).SetStatus(model.EbikeAllocateStatusSigned.Value()).Exec(s.ctx)
+            if err != nil {
+                return
+            }
+            // 更新电车
+            err = tx.Ebike.UpdateOneID(ea.EbikeID).SetRiderID(sub.RiderID).SetStatus(model.EbikeStatusUsing).Exec(s.ctx)
+        }
+        return
+    })
+
+    return
+}
+
 // Result 合同签署结果
 func (s *contractService) Result(r *ent.Rider, sn string) model.StatusResponse {
     // 查询合同是否存在
-    c, err := s.orm.QueryNotDeleted().
+    c, err := s.orm.Query().
         Where(contract.Sn(sn), contract.RiderID(r.ID)).
         First(context.Background())
     if err != nil || c == nil {

@@ -32,6 +32,10 @@ const (
 	FieldSubscribeID = "subscribe_id"
 	// FieldEbikeID holds the string denoting the ebike_id field in the database.
 	FieldEbikeID = "ebike_id"
+	// FieldBrandID holds the string denoting the brand_id field in the database.
+	FieldBrandID = "brand_id"
+	// FieldParentID holds the string denoting the parent_id field in the database.
+	FieldParentID = "parent_id"
 	// FieldSn holds the string denoting the sn field in the database.
 	FieldSn = "sn"
 	// FieldType holds the string denoting the type field in the database.
@@ -52,14 +56,14 @@ const (
 	FieldNum = "num"
 	// FieldMaterial holds the string denoting the material field in the database.
 	FieldMaterial = "material"
-	// FieldEbikeSn holds the string denoting the ebike_sn field in the database.
-	FieldEbikeSn = "ebike_sn"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
 	EdgeSubscribe = "subscribe"
 	// EdgeEbike holds the string denoting the ebike edge name in mutations.
 	EdgeEbike = "ebike"
+	// EdgeBrand holds the string denoting the brand edge name in mutations.
+	EdgeBrand = "brand"
 	// EdgeStore holds the string denoting the store edge name in mutations.
 	EdgeStore = "store"
 	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
@@ -70,6 +74,10 @@ const (
 	EdgeEmployee = "employee"
 	// EdgeSpouse holds the string denoting the spouse edge name in mutations.
 	EdgeSpouse = "spouse"
+	// EdgeParent holds the string denoting the parent edge name in mutations.
+	EdgeParent = "parent"
+	// EdgeChildren holds the string denoting the children edge name in mutations.
+	EdgeChildren = "children"
 	// Table holds the table name of the stock in the database.
 	Table = "stock"
 	// CityTable is the table that holds the city relation/edge.
@@ -93,6 +101,13 @@ const (
 	EbikeInverseTable = "ebike"
 	// EbikeColumn is the table column denoting the ebike relation/edge.
 	EbikeColumn = "ebike_id"
+	// BrandTable is the table that holds the brand relation/edge.
+	BrandTable = "stock"
+	// BrandInverseTable is the table name for the EbikeBrand entity.
+	// It exists in this package in order to avoid circular dependency with the "ebikebrand" package.
+	BrandInverseTable = "ebike_brand"
+	// BrandColumn is the table column denoting the brand relation/edge.
+	BrandColumn = "brand_id"
 	// StoreTable is the table that holds the store relation/edge.
 	StoreTable = "stock"
 	// StoreInverseTable is the table name for the Store entity.
@@ -125,6 +140,14 @@ const (
 	SpouseTable = "stock"
 	// SpouseColumn is the table column denoting the spouse relation/edge.
 	SpouseColumn = "stock_spouse"
+	// ParentTable is the table that holds the parent relation/edge.
+	ParentTable = "stock"
+	// ParentColumn is the table column denoting the parent relation/edge.
+	ParentColumn = "parent_id"
+	// ChildrenTable is the table that holds the children relation/edge.
+	ChildrenTable = "stock"
+	// ChildrenColumn is the table column denoting the children relation/edge.
+	ChildrenColumn = "parent_id"
 )
 
 // Columns holds all SQL columns for stock fields.
@@ -139,6 +162,8 @@ var Columns = []string{
 	FieldCityID,
 	FieldSubscribeID,
 	FieldEbikeID,
+	FieldBrandID,
+	FieldParentID,
 	FieldSn,
 	FieldType,
 	FieldStoreID,
@@ -149,7 +174,6 @@ var Columns = []string{
 	FieldModel,
 	FieldNum,
 	FieldMaterial,
-	FieldEbikeSn,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "stock"

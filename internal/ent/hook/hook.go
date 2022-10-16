@@ -217,6 +217,19 @@ func (f EbikeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	return f(ctx, mv)
 }
 
+// The EbikeAllocateFunc type is an adapter to allow the use of ordinary
+// function as EbikeAllocate mutator.
+type EbikeAllocateFunc func(context.Context, *ent.EbikeAllocateMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EbikeAllocateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.EbikeAllocateMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EbikeAllocateMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The EbikeBrandFunc type is an adapter to allow the use of ordinary
 // function as EbikeBrand mutator.
 type EbikeBrandFunc func(context.Context, *ent.EbikeBrandMutation) (ent.Value, error)

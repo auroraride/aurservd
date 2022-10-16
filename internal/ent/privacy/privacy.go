@@ -534,6 +534,30 @@ func (f EbikeMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation)
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.EbikeMutation", m)
 }
 
+// The EbikeAllocateQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type EbikeAllocateQueryRuleFunc func(context.Context, *ent.EbikeAllocateQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f EbikeAllocateQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.EbikeAllocateQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.EbikeAllocateQuery", q)
+}
+
+// The EbikeAllocateMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type EbikeAllocateMutationRuleFunc func(context.Context, *ent.EbikeAllocateMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f EbikeAllocateMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.EbikeAllocateMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.EbikeAllocateMutation", m)
+}
+
 // The EbikeBrandQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type EbikeBrandQueryRuleFunc func(context.Context, *ent.EbikeBrandQuery) error
@@ -1369,6 +1393,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.EbikeQuery:
 		return q.Filter(), nil
+	case *ent.EbikeAllocateQuery:
+		return q.Filter(), nil
 	case *ent.EbikeBrandQuery:
 		return q.Filter(), nil
 	case *ent.EmployeeQuery:
@@ -1471,6 +1497,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.CouponTemplateMutation:
 		return m.Filter(), nil
 	case *ent.EbikeMutation:
+		return m.Filter(), nil
+	case *ent.EbikeAllocateMutation:
 		return m.Filter(), nil
 	case *ent.EbikeBrandMutation:
 		return m.Filter(), nil

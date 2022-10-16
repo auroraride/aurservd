@@ -11,17 +11,13 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/ebike"
+    "github.com/auroraride/aurservd/internal/ent/ebikeallocate"
     "github.com/auroraride/aurservd/internal/ent/ebikebrand"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/store"
-    "github.com/auroraride/aurservd/internal/mgo"
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
-    "github.com/golang-module/carbon/v2"
     "github.com/labstack/echo/v4"
-    "github.com/qiniu/qmgo/operator"
-    "go.mongodb.org/mongo-driver/bson"
-    "go.mongodb.org/mongo-driver/bson/primitive"
     "strings"
 )
 
@@ -66,26 +62,8 @@ func (s *ebikeService) QueryKeywordX(keyword string) *ent.Ebike {
     return result
 }
 
-// IsAllocatedPending 电车是否已分配但未激活
-func (s *ebikeService) IsAllocatedPending(id uint64) bool {
-    c, _ := mgo.EbikeAllocate.Find(s.ctx, bson.M{
-        "ebike.id": id,
-        "status":   model.EbikeAllocateStatusPending,
-        "createAt": bson.M{
-            operator.Gte: primitive.NewDateTimeFromTime(carbon.Now().SubSeconds(model.EbikeAllocateExpiration).Carbon2Time()),
-        },
-    }).Count()
-    return c > 0
-}
-
-func (s *ebikeService) IsAllocatedPendingX(id uint64) {
-    if s.IsAllocatedPending(id) {
-        snag.Panic("电车已被分配")
-    }
-}
-
-// AllocatableFilter 可分配车辆查询条件(不包含门店)
-func (s *ebikeService) AllocatableFilter() *ent.EbikeQuery {
+// AllocatableBaseFilter 可分配车辆查询条件 (不包含门店筛选)
+func (s *ebikeService) AllocatableBaseFilter() *ent.EbikeQuery {
     return s.orm.Query().Where(
         ebike.Status(model.EbikeStatusInStock),
         ebike.PlateNotNil(),
@@ -95,11 +73,23 @@ func (s *ebikeService) AllocatableFilter() *ent.EbikeQuery {
     )
 }
 
+// IsAllocated 电车是否已分配
+func (s *ebikeService) IsAllocated(id uint64) bool {
+    exists, _ := ent.Database.EbikeAllocate.Query().Where(ebikeallocate.EbikeID(id), ebikeallocate.Status(model.EbikeAllocateStatusPending.Value())).Exist(s.ctx)
+    return exists
+}
+
+func (s *ebikeService) IsAllocatedX(id uint64) {
+    if s.IsAllocated(id) {
+        snag.Panic("电车已被分配")
+    }
+}
+
 func (s *ebikeService) QueryAllocatable(id, storeID uint64) (bike *ent.Ebike) {
-    if s.IsAllocatedPending(id) {
+    if s.IsAllocated(id) {
         return
     }
-    q := s.AllocatableFilter().WithBrand().Where(ebike.StoreIDNotNil(), ebike.ID(id))
+    q := s.AllocatableBaseFilter().WithBrand().Where(ebike.StoreIDNotNil(), ebike.ID(id))
     if storeID > 0 {
         q.Where(ebike.StoreID(storeID))
     }

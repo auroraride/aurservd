@@ -13,6 +13,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -43,6 +44,10 @@ type Stock struct {
 	SubscribeID *uint64 `json:"subscribe_id,omitempty"`
 	// EbikeID holds the value of the "ebike_id" field.
 	EbikeID *uint64 `json:"ebike_id,omitempty"`
+	// BrandID holds the value of the "brand_id" field.
+	BrandID *uint64 `json:"brand_id,omitempty"`
+	// 父级
+	ParentID *uint64 `json:"parent_id,omitempty"`
 	// 调拨编号
 	Sn string `json:"sn,omitempty"`
 	// 类型 0:调拨 1:领取电池 2:寄存电池 3:结束寄存 4:归还电池
@@ -63,8 +68,6 @@ type Stock struct {
 	Num int `json:"num,omitempty"`
 	// 物资种类
 	Material stock.Material `json:"material,omitempty"`
-	// 电车编号
-	EbikeSn *string `json:"ebike_sn,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the StockQuery when eager-loading is set.
 	Edges        StockEdges `json:"edges"`
@@ -79,6 +82,8 @@ type StockEdges struct {
 	Subscribe *Subscribe `json:"subscribe,omitempty"`
 	// Ebike holds the value of the ebike edge.
 	Ebike *Ebike `json:"ebike,omitempty"`
+	// Brand holds the value of the brand edge.
+	Brand *EbikeBrand `json:"brand,omitempty"`
 	// Store holds the value of the store edge.
 	Store *Store `json:"store,omitempty"`
 	// Cabinet holds the value of the cabinet edge.
@@ -89,9 +94,13 @@ type StockEdges struct {
 	Employee *Employee `json:"employee,omitempty"`
 	// Spouse holds the value of the spouse edge.
 	Spouse *Stock `json:"spouse,omitempty"`
+	// Parent holds the value of the parent edge.
+	Parent *Stock `json:"parent,omitempty"`
+	// Children holds the value of the children edge.
+	Children []*Stock `json:"children,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [8]bool
+	loadedTypes [11]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -133,10 +142,23 @@ func (e StockEdges) EbikeOrErr() (*Ebike, error) {
 	return nil, &NotLoadedError{edge: "ebike"}
 }
 
+// BrandOrErr returns the Brand value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e StockEdges) BrandOrErr() (*EbikeBrand, error) {
+	if e.loadedTypes[3] {
+		if e.Brand == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: ebikebrand.Label}
+		}
+		return e.Brand, nil
+	}
+	return nil, &NotLoadedError{edge: "brand"}
+}
+
 // StoreOrErr returns the Store value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockEdges) StoreOrErr() (*Store, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		if e.Store == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: store.Label}
@@ -149,7 +171,7 @@ func (e StockEdges) StoreOrErr() (*Store, error) {
 // CabinetOrErr returns the Cabinet value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockEdges) CabinetOrErr() (*Cabinet, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[5] {
 		if e.Cabinet == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: cabinet.Label}
@@ -162,7 +184,7 @@ func (e StockEdges) CabinetOrErr() (*Cabinet, error) {
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[6] {
 		if e.Rider == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: rider.Label}
@@ -175,7 +197,7 @@ func (e StockEdges) RiderOrErr() (*Rider, error) {
 // EmployeeOrErr returns the Employee value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockEdges) EmployeeOrErr() (*Employee, error) {
-	if e.loadedTypes[6] {
+	if e.loadedTypes[7] {
 		if e.Employee == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: employee.Label}
@@ -188,7 +210,7 @@ func (e StockEdges) EmployeeOrErr() (*Employee, error) {
 // SpouseOrErr returns the Spouse value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockEdges) SpouseOrErr() (*Stock, error) {
-	if e.loadedTypes[7] {
+	if e.loadedTypes[8] {
 		if e.Spouse == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: stock.Label}
@@ -198,6 +220,28 @@ func (e StockEdges) SpouseOrErr() (*Stock, error) {
 	return nil, &NotLoadedError{edge: "spouse"}
 }
 
+// ParentOrErr returns the Parent value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e StockEdges) ParentOrErr() (*Stock, error) {
+	if e.loadedTypes[9] {
+		if e.Parent == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: stock.Label}
+		}
+		return e.Parent, nil
+	}
+	return nil, &NotLoadedError{edge: "parent"}
+}
+
+// ChildrenOrErr returns the Children value or an error if the edge
+// was not loaded in eager-loading.
+func (e StockEdges) ChildrenOrErr() ([]*Stock, error) {
+	if e.loadedTypes[10] {
+		return e.Children, nil
+	}
+	return nil, &NotLoadedError{edge: "children"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Stock) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -205,9 +249,9 @@ func (*Stock) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case stock.FieldCreator, stock.FieldLastModifier:
 			values[i] = new([]byte)
-		case stock.FieldID, stock.FieldCityID, stock.FieldSubscribeID, stock.FieldEbikeID, stock.FieldType, stock.FieldStoreID, stock.FieldCabinetID, stock.FieldRiderID, stock.FieldEmployeeID, stock.FieldNum:
+		case stock.FieldID, stock.FieldCityID, stock.FieldSubscribeID, stock.FieldEbikeID, stock.FieldBrandID, stock.FieldParentID, stock.FieldType, stock.FieldStoreID, stock.FieldCabinetID, stock.FieldRiderID, stock.FieldEmployeeID, stock.FieldNum:
 			values[i] = new(sql.NullInt64)
-		case stock.FieldRemark, stock.FieldSn, stock.FieldName, stock.FieldModel, stock.FieldMaterial, stock.FieldEbikeSn:
+		case stock.FieldRemark, stock.FieldSn, stock.FieldName, stock.FieldModel, stock.FieldMaterial:
 			values[i] = new(sql.NullString)
 		case stock.FieldCreatedAt, stock.FieldUpdatedAt, stock.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -296,6 +340,20 @@ func (s *Stock) assignValues(columns []string, values []any) error {
 				s.EbikeID = new(uint64)
 				*s.EbikeID = uint64(value.Int64)
 			}
+		case stock.FieldBrandID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field brand_id", values[i])
+			} else if value.Valid {
+				s.BrandID = new(uint64)
+				*s.BrandID = uint64(value.Int64)
+			}
+		case stock.FieldParentID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field parent_id", values[i])
+			} else if value.Valid {
+				s.ParentID = new(uint64)
+				*s.ParentID = uint64(value.Int64)
+			}
 		case stock.FieldSn:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field sn", values[i])
@@ -361,13 +419,6 @@ func (s *Stock) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.Material = stock.Material(value.String)
 			}
-		case stock.FieldEbikeSn:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field ebike_sn", values[i])
-			} else if value.Valid {
-				s.EbikeSn = new(string)
-				*s.EbikeSn = value.String
-			}
 		case stock.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for edge-field stock_spouse", value)
@@ -395,6 +446,11 @@ func (s *Stock) QueryEbike() *EbikeQuery {
 	return (&StockClient{config: s.config}).QueryEbike(s)
 }
 
+// QueryBrand queries the "brand" edge of the Stock entity.
+func (s *Stock) QueryBrand() *EbikeBrandQuery {
+	return (&StockClient{config: s.config}).QueryBrand(s)
+}
+
 // QueryStore queries the "store" edge of the Stock entity.
 func (s *Stock) QueryStore() *StoreQuery {
 	return (&StockClient{config: s.config}).QueryStore(s)
@@ -418,6 +474,16 @@ func (s *Stock) QueryEmployee() *EmployeeQuery {
 // QuerySpouse queries the "spouse" edge of the Stock entity.
 func (s *Stock) QuerySpouse() *StockQuery {
 	return (&StockClient{config: s.config}).QuerySpouse(s)
+}
+
+// QueryParent queries the "parent" edge of the Stock entity.
+func (s *Stock) QueryParent() *StockQuery {
+	return (&StockClient{config: s.config}).QueryParent(s)
+}
+
+// QueryChildren queries the "children" edge of the Stock entity.
+func (s *Stock) QueryChildren() *StockQuery {
+	return (&StockClient{config: s.config}).QueryChildren(s)
 }
 
 // Update returns a builder for updating this Stock.
@@ -478,6 +544,16 @@ func (s *Stock) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
+	if v := s.BrandID; v != nil {
+		builder.WriteString("brand_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := s.ParentID; v != nil {
+		builder.WriteString("parent_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
 	builder.WriteString("sn=")
 	builder.WriteString(s.Sn)
 	builder.WriteString(", ")
@@ -517,11 +593,6 @@ func (s *Stock) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("material=")
 	builder.WriteString(fmt.Sprintf("%v", s.Material))
-	builder.WriteString(", ")
-	if v := s.EbikeSn; v != nil {
-		builder.WriteString("ebike_sn=")
-		builder.WriteString(*v)
-	}
 	builder.WriteByte(')')
 	return builder.String()
 }

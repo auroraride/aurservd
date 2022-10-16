@@ -4,14 +4,15 @@ package ent
 
 import (
 	"context"
-	"database/sql/driver"
 	"fmt"
 	"math"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/ebikeallocate"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -22,17 +23,19 @@ import (
 // ContractQuery is the builder for querying Contract entities.
 type ContractQuery struct {
 	config
-	limit         *int
-	offset        *int
-	unique        *bool
-	order         []OrderFunc
-	fields        []string
-	predicates    []predicate.Contract
-	withEmployee  *EmployeeQuery
-	withStore     *StoreQuery
-	withRider     *RiderQuery
-	withSubscribe *SubscribeQuery
-	modifiers     []func(*sql.Selector)
+	limit             *int
+	offset            *int
+	unique            *bool
+	order             []OrderFunc
+	fields            []string
+	predicates        []predicate.Contract
+	withEmployee      *EmployeeQuery
+	withStore         *StoreQuery
+	withSubscribe     *SubscribeQuery
+	withCabinet       *CabinetQuery
+	withRider         *RiderQuery
+	withEbikeAllocate *EbikeAllocateQuery
+	modifiers         []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -113,6 +116,50 @@ func (cq *ContractQuery) QueryStore() *StoreQuery {
 	return query
 }
 
+// QuerySubscribe chains the current query on the "subscribe" edge.
+func (cq *ContractQuery) QuerySubscribe() *SubscribeQuery {
+	query := &SubscribeQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(contract.Table, contract.FieldID, selector),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, contract.SubscribeTable, contract.SubscribeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCabinet chains the current query on the "cabinet" edge.
+func (cq *ContractQuery) QueryCabinet() *CabinetQuery {
+	query := &CabinetQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(contract.Table, contract.FieldID, selector),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, contract.CabinetTable, contract.CabinetColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // QueryRider chains the current query on the "rider" edge.
 func (cq *ContractQuery) QueryRider() *RiderQuery {
 	query := &RiderQuery{config: cq.config}
@@ -135,9 +182,9 @@ func (cq *ContractQuery) QueryRider() *RiderQuery {
 	return query
 }
 
-// QuerySubscribe chains the current query on the "subscribe" edge.
-func (cq *ContractQuery) QuerySubscribe() *SubscribeQuery {
-	query := &SubscribeQuery{config: cq.config}
+// QueryEbikeAllocate chains the current query on the "ebike_allocate" edge.
+func (cq *ContractQuery) QueryEbikeAllocate() *EbikeAllocateQuery {
+	query := &EbikeAllocateQuery{config: cq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -148,8 +195,8 @@ func (cq *ContractQuery) QuerySubscribe() *SubscribeQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(contract.Table, contract.FieldID, selector),
-			sqlgraph.To(subscribe.Table, subscribe.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, contract.SubscribeTable, contract.SubscribeColumn),
+			sqlgraph.To(ebikeallocate.Table, ebikeallocate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, contract.EbikeAllocateTable, contract.EbikeAllocateColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -333,15 +380,17 @@ func (cq *ContractQuery) Clone() *ContractQuery {
 		return nil
 	}
 	return &ContractQuery{
-		config:        cq.config,
-		limit:         cq.limit,
-		offset:        cq.offset,
-		order:         append([]OrderFunc{}, cq.order...),
-		predicates:    append([]predicate.Contract{}, cq.predicates...),
-		withEmployee:  cq.withEmployee.Clone(),
-		withStore:     cq.withStore.Clone(),
-		withRider:     cq.withRider.Clone(),
-		withSubscribe: cq.withSubscribe.Clone(),
+		config:            cq.config,
+		limit:             cq.limit,
+		offset:            cq.offset,
+		order:             append([]OrderFunc{}, cq.order...),
+		predicates:        append([]predicate.Contract{}, cq.predicates...),
+		withEmployee:      cq.withEmployee.Clone(),
+		withStore:         cq.withStore.Clone(),
+		withSubscribe:     cq.withSubscribe.Clone(),
+		withCabinet:       cq.withCabinet.Clone(),
+		withRider:         cq.withRider.Clone(),
+		withEbikeAllocate: cq.withEbikeAllocate.Clone(),
 		// clone intermediate query.
 		sql:    cq.sql.Clone(),
 		path:   cq.path,
@@ -371,6 +420,28 @@ func (cq *ContractQuery) WithStore(opts ...func(*StoreQuery)) *ContractQuery {
 	return cq
 }
 
+// WithSubscribe tells the query-builder to eager-load the nodes that are connected to
+// the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *ContractQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *ContractQuery {
+	query := &SubscribeQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withSubscribe = query
+	return cq
+}
+
+// WithCabinet tells the query-builder to eager-load the nodes that are connected to
+// the "cabinet" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *ContractQuery) WithCabinet(opts ...func(*CabinetQuery)) *ContractQuery {
+	query := &CabinetQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withCabinet = query
+	return cq
+}
+
 // WithRider tells the query-builder to eager-load the nodes that are connected to
 // the "rider" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *ContractQuery) WithRider(opts ...func(*RiderQuery)) *ContractQuery {
@@ -382,14 +453,14 @@ func (cq *ContractQuery) WithRider(opts ...func(*RiderQuery)) *ContractQuery {
 	return cq
 }
 
-// WithSubscribe tells the query-builder to eager-load the nodes that are connected to
-// the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *ContractQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *ContractQuery {
-	query := &SubscribeQuery{config: cq.config}
+// WithEbikeAllocate tells the query-builder to eager-load the nodes that are connected to
+// the "ebike_allocate" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *ContractQuery) WithEbikeAllocate(opts ...func(*EbikeAllocateQuery)) *ContractQuery {
+	query := &EbikeAllocateQuery{config: cq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	cq.withSubscribe = query
+	cq.withEbikeAllocate = query
 	return cq
 }
 
@@ -461,11 +532,13 @@ func (cq *ContractQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Con
 	var (
 		nodes       = []*Contract{}
 		_spec       = cq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [6]bool{
 			cq.withEmployee != nil,
 			cq.withStore != nil,
-			cq.withRider != nil,
 			cq.withSubscribe != nil,
+			cq.withCabinet != nil,
+			cq.withRider != nil,
+			cq.withEbikeAllocate != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -501,15 +574,27 @@ func (cq *ContractQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Con
 			return nil, err
 		}
 	}
+	if query := cq.withSubscribe; query != nil {
+		if err := cq.loadSubscribe(ctx, query, nodes, nil,
+			func(n *Contract, e *Subscribe) { n.Edges.Subscribe = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := cq.withCabinet; query != nil {
+		if err := cq.loadCabinet(ctx, query, nodes, nil,
+			func(n *Contract, e *Cabinet) { n.Edges.Cabinet = e }); err != nil {
+			return nil, err
+		}
+	}
 	if query := cq.withRider; query != nil {
 		if err := cq.loadRider(ctx, query, nodes, nil,
 			func(n *Contract, e *Rider) { n.Edges.Rider = e }); err != nil {
 			return nil, err
 		}
 	}
-	if query := cq.withSubscribe; query != nil {
-		if err := cq.loadSubscribe(ctx, query, nodes, nil,
-			func(n *Contract, e *Subscribe) { n.Edges.Subscribe = e }); err != nil {
+	if query := cq.withEbikeAllocate; query != nil {
+		if err := cq.loadEbikeAllocate(ctx, query, nodes, nil,
+			func(n *Contract, e *EbikeAllocate) { n.Edges.EbikeAllocate = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -574,6 +659,64 @@ func (cq *ContractQuery) loadStore(ctx context.Context, query *StoreQuery, nodes
 	}
 	return nil
 }
+func (cq *ContractQuery) loadSubscribe(ctx context.Context, query *SubscribeQuery, nodes []*Contract, init func(*Contract), assign func(*Contract, *Subscribe)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Contract)
+	for i := range nodes {
+		if nodes[i].SubscribeID == nil {
+			continue
+		}
+		fk := *nodes[i].SubscribeID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(subscribe.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (cq *ContractQuery) loadCabinet(ctx context.Context, query *CabinetQuery, nodes []*Contract, init func(*Contract), assign func(*Contract, *Cabinet)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Contract)
+	for i := range nodes {
+		if nodes[i].CabinetID == nil {
+			continue
+		}
+		fk := *nodes[i].CabinetID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(cabinet.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "cabinet_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 func (cq *ContractQuery) loadRider(ctx context.Context, query *RiderQuery, nodes []*Contract, init func(*Contract), assign func(*Contract, *Rider)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*Contract)
@@ -600,27 +743,32 @@ func (cq *ContractQuery) loadRider(ctx context.Context, query *RiderQuery, nodes
 	}
 	return nil
 }
-func (cq *ContractQuery) loadSubscribe(ctx context.Context, query *SubscribeQuery, nodes []*Contract, init func(*Contract), assign func(*Contract, *Subscribe)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uint64]*Contract)
+func (cq *ContractQuery) loadEbikeAllocate(ctx context.Context, query *EbikeAllocateQuery, nodes []*Contract, init func(*Contract), assign func(*Contract, *EbikeAllocate)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Contract)
 	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
+		if nodes[i].AllocateID == nil {
+			continue
+		}
+		fk := *nodes[i].AllocateID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
-	query.Where(predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.InValues(contract.SubscribeColumn, fks...))
-	}))
+	query.Where(ebikeallocate.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.ContractID
-		node, ok := nodeids[fk]
+		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "contract_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "allocate_id" returned %v`, n.ID)
 		}
-		assign(node, n)
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
 	}
 	return nil
 }

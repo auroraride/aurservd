@@ -19,12 +19,16 @@ type SubscribeMixin struct {
     mixin.Schema
     DisableIndex bool
     Optional     bool
+    Unique       bool
 }
 
 func (m SubscribeMixin) Fields() []ent.Field {
     f := field.Uint64("subscribe_id")
     if m.Optional {
         f.Optional().Nillable()
+    }
+    if m.Unique {
+        f.Unique()
     }
     return []ent.Field{f}
 }
@@ -39,7 +43,11 @@ func (m SubscribeMixin) Edges() []ent.Edge {
 
 func (m SubscribeMixin) Indexes() (arr []ent.Index) {
     if !m.DisableIndex {
-        arr = append(arr, index.Fields("subscribe_id"))
+        i := index.Fields("subscribe_id")
+        if m.Unique {
+            i.Unique()
+        }
+        arr = append(arr, i)
     }
     return
 }
@@ -64,7 +72,6 @@ func (Subscribe) Fields() []ent.Field {
         field.Uint64("rider_id").Comment("骑手ID"),
         field.Uint64("initial_order_id").Optional().Comment("初始订单ID(开通订阅的初始订单), 团签用户无此字段"),
         field.Uint64("enterprise_id").Optional().Nillable().Comment("企业ID"),
-        field.Uint64("contract_id").Optional().Comment("合同ID"),
         field.Uint8("status").Default(model.SubscribeStatusInactive).Comment("当前订阅状态"),
         field.Uint("type").Default(0).Immutable().Comment("订阅类型 0团签 1新签 2续签 3重签 4更改电池, 除0值外 其他值参考order.type"),
         field.String("model").Comment("电池型号"),
@@ -104,8 +111,6 @@ func (Subscribe) Edges() []ent.Edge {
         edge.To("initial_order", Order.Type).Unique().Field("initial_order_id").Comment("对应初始订单"),
 
         edge.To("bills", EnterpriseBill.Type),
-
-        edge.From("contract", Contract.Type).Ref("subscribe").Unique().Field("contract_id"),
     }
 }
 
@@ -135,7 +140,6 @@ func (Subscribe) Indexes() []ent.Index {
         index.Fields("paused_at"),
         index.Fields("last_bill_date"),
         index.Fields("start_at", "end_at"),
-        index.Fields("contract_id"),
     }
 }
 

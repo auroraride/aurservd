@@ -2652,12 +2652,14 @@ definitions:
         description: 车架号
         type: string
     type: object
-  model.EbikeAllocateInfo:
+  model.EbikeAllocateDetail:
     properties:
       ebike:
         allOf:
         - $ref: '#/definitions/model.Ebike'
         description: 电车信息
+      id:
+        type: integer
       model:
         description: 电池型号
         type: string
@@ -2666,8 +2668,11 @@ definitions:
         - $ref: '#/definitions/model.Rider'
         description: 骑手信息
       status:
-        description: 签约状态 1:未签约 2:已签约 3:已作废
+        description: 1:未激活 2:已签约 3:已作废
         type: integer
+      time:
+        description: 分配时间
+        type: string
     type: object
   model.EbikeAllocateReq:
     properties:
@@ -2680,12 +2685,6 @@ definitions:
     required:
     - ebikeId
     - subscribeId
-    type: object
-  model.EbikeAllocateRes:
-    properties:
-      allocateId:
-        description: 分配ID
-        type: string
     type: object
   model.EbikeBrand:
     properties:
@@ -7028,7 +7027,7 @@ paths:
         in: query
         name: pageSize
         type: integer
-      - description: 签约状态 1:未签约 2:已签约 3:已作废
+      - description: 1:未激活 2:已签约 3:已作废
         in: query
         name: status
         type: integer
@@ -7043,7 +7042,7 @@ paths:
             - properties:
                 items:
                   items:
-                    $ref: '#/definitions/model.EbikeAllocateInfo'
+                    $ref: '#/definitions/model.EbikeAllocateDetail'
                   type: array
               type: object
       summary: E6004 车辆分配记录
@@ -7071,11 +7070,11 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.EbikeAllocateRes'
+            $ref: '#/definitions/model.IDPostReq'
       summary: E6002 分配车辆
       tags:
       - '[E]店员接口'
-  /employee/v1/ebike/allocate/info:
+  /employee/v1/ebike/allocate/info/{id}:
     get:
       consumes:
       - application/json
@@ -7088,17 +7087,17 @@ paths:
         required: true
         type: string
       - description: 分配ID
-        in: query
-        name: allocateId
+        in: path
+        name: id
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.EbikeAllocateInfo'
+            $ref: '#/definitions/model.EbikeAllocateDetail'
       summary: E6003 车辆分配信息
       tags:
       - '[E]店员接口'

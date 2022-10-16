@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -152,6 +153,46 @@ func (su *StockUpdate) SetNillableEbikeID(u *uint64) *StockUpdate {
 // ClearEbikeID clears the value of the "ebike_id" field.
 func (su *StockUpdate) ClearEbikeID() *StockUpdate {
 	su.mutation.ClearEbikeID()
+	return su
+}
+
+// SetBrandID sets the "brand_id" field.
+func (su *StockUpdate) SetBrandID(u uint64) *StockUpdate {
+	su.mutation.SetBrandID(u)
+	return su
+}
+
+// SetNillableBrandID sets the "brand_id" field if the given value is not nil.
+func (su *StockUpdate) SetNillableBrandID(u *uint64) *StockUpdate {
+	if u != nil {
+		su.SetBrandID(*u)
+	}
+	return su
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (su *StockUpdate) ClearBrandID() *StockUpdate {
+	su.mutation.ClearBrandID()
+	return su
+}
+
+// SetParentID sets the "parent_id" field.
+func (su *StockUpdate) SetParentID(u uint64) *StockUpdate {
+	su.mutation.SetParentID(u)
+	return su
+}
+
+// SetNillableParentID sets the "parent_id" field if the given value is not nil.
+func (su *StockUpdate) SetNillableParentID(u *uint64) *StockUpdate {
+	if u != nil {
+		su.SetParentID(*u)
+	}
+	return su
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (su *StockUpdate) ClearParentID() *StockUpdate {
+	su.mutation.ClearParentID()
 	return su
 }
 
@@ -294,26 +335,6 @@ func (su *StockUpdate) SetMaterial(s stock.Material) *StockUpdate {
 	return su
 }
 
-// SetEbikeSn sets the "ebike_sn" field.
-func (su *StockUpdate) SetEbikeSn(s string) *StockUpdate {
-	su.mutation.SetEbikeSn(s)
-	return su
-}
-
-// SetNillableEbikeSn sets the "ebike_sn" field if the given value is not nil.
-func (su *StockUpdate) SetNillableEbikeSn(s *string) *StockUpdate {
-	if s != nil {
-		su.SetEbikeSn(*s)
-	}
-	return su
-}
-
-// ClearEbikeSn clears the value of the "ebike_sn" field.
-func (su *StockUpdate) ClearEbikeSn() *StockUpdate {
-	su.mutation.ClearEbikeSn()
-	return su
-}
-
 // SetCity sets the "city" edge to the City entity.
 func (su *StockUpdate) SetCity(c *City) *StockUpdate {
 	return su.SetCityID(c.ID)
@@ -327,6 +348,11 @@ func (su *StockUpdate) SetSubscribe(s *Subscribe) *StockUpdate {
 // SetEbike sets the "ebike" edge to the Ebike entity.
 func (su *StockUpdate) SetEbike(e *Ebike) *StockUpdate {
 	return su.SetEbikeID(e.ID)
+}
+
+// SetBrand sets the "brand" edge to the EbikeBrand entity.
+func (su *StockUpdate) SetBrand(e *EbikeBrand) *StockUpdate {
+	return su.SetBrandID(e.ID)
 }
 
 // SetStore sets the "store" edge to the Store entity.
@@ -368,6 +394,26 @@ func (su *StockUpdate) SetSpouse(s *Stock) *StockUpdate {
 	return su.SetSpouseID(s.ID)
 }
 
+// SetParent sets the "parent" edge to the Stock entity.
+func (su *StockUpdate) SetParent(s *Stock) *StockUpdate {
+	return su.SetParentID(s.ID)
+}
+
+// AddChildIDs adds the "children" edge to the Stock entity by IDs.
+func (su *StockUpdate) AddChildIDs(ids ...uint64) *StockUpdate {
+	su.mutation.AddChildIDs(ids...)
+	return su
+}
+
+// AddChildren adds the "children" edges to the Stock entity.
+func (su *StockUpdate) AddChildren(s ...*Stock) *StockUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return su.AddChildIDs(ids...)
+}
+
 // Mutation returns the StockMutation object of the builder.
 func (su *StockUpdate) Mutation() *StockMutation {
 	return su.mutation
@@ -388,6 +434,12 @@ func (su *StockUpdate) ClearSubscribe() *StockUpdate {
 // ClearEbike clears the "ebike" edge to the Ebike entity.
 func (su *StockUpdate) ClearEbike() *StockUpdate {
 	su.mutation.ClearEbike()
+	return su
+}
+
+// ClearBrand clears the "brand" edge to the EbikeBrand entity.
+func (su *StockUpdate) ClearBrand() *StockUpdate {
+	su.mutation.ClearBrand()
 	return su
 }
 
@@ -419,6 +471,33 @@ func (su *StockUpdate) ClearEmployee() *StockUpdate {
 func (su *StockUpdate) ClearSpouse() *StockUpdate {
 	su.mutation.ClearSpouse()
 	return su
+}
+
+// ClearParent clears the "parent" edge to the Stock entity.
+func (su *StockUpdate) ClearParent() *StockUpdate {
+	su.mutation.ClearParent()
+	return su
+}
+
+// ClearChildren clears all "children" edges to the Stock entity.
+func (su *StockUpdate) ClearChildren() *StockUpdate {
+	su.mutation.ClearChildren()
+	return su
+}
+
+// RemoveChildIDs removes the "children" edge to Stock entities by IDs.
+func (su *StockUpdate) RemoveChildIDs(ids ...uint64) *StockUpdate {
+	su.mutation.RemoveChildIDs(ids...)
+	return su
+}
+
+// RemoveChildren removes "children" edges to Stock entities.
+func (su *StockUpdate) RemoveChildren(s ...*Stock) *StockUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return su.RemoveChildIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -630,19 +709,6 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: stock.FieldMaterial,
 		})
 	}
-	if value, ok := su.mutation.EbikeSn(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: stock.FieldEbikeSn,
-		})
-	}
-	if su.mutation.EbikeSnCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: stock.FieldEbikeSn,
-		})
-	}
 	if su.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -740,6 +806,41 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: ebike.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if su.mutation.BrandCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.BrandTable,
+			Columns: []string{stock.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebikebrand.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.BrandIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.BrandTable,
+			Columns: []string{stock.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebikebrand.FieldID,
 				},
 			},
 		}
@@ -923,6 +1024,95 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if su.mutation.ParentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.ParentTable,
+			Columns: []string{stock.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.ParentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.ParentTable,
+			Columns: []string{stock.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if su.mutation.ChildrenCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   stock.ChildrenTable,
+			Columns: []string{stock.ChildrenColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.RemovedChildrenIDs(); len(nodes) > 0 && !su.mutation.ChildrenCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   stock.ChildrenTable,
+			Columns: []string{stock.ChildrenColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.ChildrenIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   stock.ChildrenTable,
+			Columns: []string{stock.ChildrenColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.Modifiers = su.modifiers
 	if n, err = sqlgraph.UpdateNodes(ctx, su.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -1059,6 +1249,46 @@ func (suo *StockUpdateOne) SetNillableEbikeID(u *uint64) *StockUpdateOne {
 // ClearEbikeID clears the value of the "ebike_id" field.
 func (suo *StockUpdateOne) ClearEbikeID() *StockUpdateOne {
 	suo.mutation.ClearEbikeID()
+	return suo
+}
+
+// SetBrandID sets the "brand_id" field.
+func (suo *StockUpdateOne) SetBrandID(u uint64) *StockUpdateOne {
+	suo.mutation.SetBrandID(u)
+	return suo
+}
+
+// SetNillableBrandID sets the "brand_id" field if the given value is not nil.
+func (suo *StockUpdateOne) SetNillableBrandID(u *uint64) *StockUpdateOne {
+	if u != nil {
+		suo.SetBrandID(*u)
+	}
+	return suo
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (suo *StockUpdateOne) ClearBrandID() *StockUpdateOne {
+	suo.mutation.ClearBrandID()
+	return suo
+}
+
+// SetParentID sets the "parent_id" field.
+func (suo *StockUpdateOne) SetParentID(u uint64) *StockUpdateOne {
+	suo.mutation.SetParentID(u)
+	return suo
+}
+
+// SetNillableParentID sets the "parent_id" field if the given value is not nil.
+func (suo *StockUpdateOne) SetNillableParentID(u *uint64) *StockUpdateOne {
+	if u != nil {
+		suo.SetParentID(*u)
+	}
+	return suo
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (suo *StockUpdateOne) ClearParentID() *StockUpdateOne {
+	suo.mutation.ClearParentID()
 	return suo
 }
 
@@ -1201,26 +1431,6 @@ func (suo *StockUpdateOne) SetMaterial(s stock.Material) *StockUpdateOne {
 	return suo
 }
 
-// SetEbikeSn sets the "ebike_sn" field.
-func (suo *StockUpdateOne) SetEbikeSn(s string) *StockUpdateOne {
-	suo.mutation.SetEbikeSn(s)
-	return suo
-}
-
-// SetNillableEbikeSn sets the "ebike_sn" field if the given value is not nil.
-func (suo *StockUpdateOne) SetNillableEbikeSn(s *string) *StockUpdateOne {
-	if s != nil {
-		suo.SetEbikeSn(*s)
-	}
-	return suo
-}
-
-// ClearEbikeSn clears the value of the "ebike_sn" field.
-func (suo *StockUpdateOne) ClearEbikeSn() *StockUpdateOne {
-	suo.mutation.ClearEbikeSn()
-	return suo
-}
-
 // SetCity sets the "city" edge to the City entity.
 func (suo *StockUpdateOne) SetCity(c *City) *StockUpdateOne {
 	return suo.SetCityID(c.ID)
@@ -1234,6 +1444,11 @@ func (suo *StockUpdateOne) SetSubscribe(s *Subscribe) *StockUpdateOne {
 // SetEbike sets the "ebike" edge to the Ebike entity.
 func (suo *StockUpdateOne) SetEbike(e *Ebike) *StockUpdateOne {
 	return suo.SetEbikeID(e.ID)
+}
+
+// SetBrand sets the "brand" edge to the EbikeBrand entity.
+func (suo *StockUpdateOne) SetBrand(e *EbikeBrand) *StockUpdateOne {
+	return suo.SetBrandID(e.ID)
 }
 
 // SetStore sets the "store" edge to the Store entity.
@@ -1275,6 +1490,26 @@ func (suo *StockUpdateOne) SetSpouse(s *Stock) *StockUpdateOne {
 	return suo.SetSpouseID(s.ID)
 }
 
+// SetParent sets the "parent" edge to the Stock entity.
+func (suo *StockUpdateOne) SetParent(s *Stock) *StockUpdateOne {
+	return suo.SetParentID(s.ID)
+}
+
+// AddChildIDs adds the "children" edge to the Stock entity by IDs.
+func (suo *StockUpdateOne) AddChildIDs(ids ...uint64) *StockUpdateOne {
+	suo.mutation.AddChildIDs(ids...)
+	return suo
+}
+
+// AddChildren adds the "children" edges to the Stock entity.
+func (suo *StockUpdateOne) AddChildren(s ...*Stock) *StockUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return suo.AddChildIDs(ids...)
+}
+
 // Mutation returns the StockMutation object of the builder.
 func (suo *StockUpdateOne) Mutation() *StockMutation {
 	return suo.mutation
@@ -1295,6 +1530,12 @@ func (suo *StockUpdateOne) ClearSubscribe() *StockUpdateOne {
 // ClearEbike clears the "ebike" edge to the Ebike entity.
 func (suo *StockUpdateOne) ClearEbike() *StockUpdateOne {
 	suo.mutation.ClearEbike()
+	return suo
+}
+
+// ClearBrand clears the "brand" edge to the EbikeBrand entity.
+func (suo *StockUpdateOne) ClearBrand() *StockUpdateOne {
+	suo.mutation.ClearBrand()
 	return suo
 }
 
@@ -1326,6 +1567,33 @@ func (suo *StockUpdateOne) ClearEmployee() *StockUpdateOne {
 func (suo *StockUpdateOne) ClearSpouse() *StockUpdateOne {
 	suo.mutation.ClearSpouse()
 	return suo
+}
+
+// ClearParent clears the "parent" edge to the Stock entity.
+func (suo *StockUpdateOne) ClearParent() *StockUpdateOne {
+	suo.mutation.ClearParent()
+	return suo
+}
+
+// ClearChildren clears all "children" edges to the Stock entity.
+func (suo *StockUpdateOne) ClearChildren() *StockUpdateOne {
+	suo.mutation.ClearChildren()
+	return suo
+}
+
+// RemoveChildIDs removes the "children" edge to Stock entities by IDs.
+func (suo *StockUpdateOne) RemoveChildIDs(ids ...uint64) *StockUpdateOne {
+	suo.mutation.RemoveChildIDs(ids...)
+	return suo
+}
+
+// RemoveChildren removes "children" edges to Stock entities.
+func (suo *StockUpdateOne) RemoveChildren(s ...*Stock) *StockUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return suo.RemoveChildIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1567,19 +1835,6 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 			Column: stock.FieldMaterial,
 		})
 	}
-	if value, ok := suo.mutation.EbikeSn(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: stock.FieldEbikeSn,
-		})
-	}
-	if suo.mutation.EbikeSnCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: stock.FieldEbikeSn,
-		})
-	}
 	if suo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1677,6 +1932,41 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: ebike.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.BrandCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.BrandTable,
+			Columns: []string{stock.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebikebrand.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.BrandIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.BrandTable,
+			Columns: []string{stock.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: ebikebrand.FieldID,
 				},
 			},
 		}
@@ -1848,6 +2138,95 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 			Table:   stock.SpouseTable,
 			Columns: []string{stock.SpouseColumn},
 			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.ParentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.ParentTable,
+			Columns: []string{stock.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.ParentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.ParentTable,
+			Columns: []string{stock.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.ChildrenCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   stock.ChildrenTable,
+			Columns: []string{stock.ChildrenColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.RemovedChildrenIDs(); len(nodes) > 0 && !suo.mutation.ChildrenCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   stock.ChildrenTable,
+			Columns: []string{stock.ChildrenColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.ChildrenIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   stock.ChildrenTable,
+			Columns: []string{stock.ChildrenColumn},
+			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,

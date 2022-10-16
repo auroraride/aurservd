@@ -57,6 +57,6 @@ func loadEmployeeRoutes() {
     // 电车
     g.GET("/ebike/unallocated", eapi.Ebike.Unallocated)
     g.POST("/ebike/allocate", eapi.Ebike.Allocate)
-    g.GET("/ebike/allocate/info", eapi.Ebike.Info)
+    g.GET("/ebike/allocate/info/:id", eapi.Ebike.Info)
     g.GET("/ebike/allocate", eapi.Ebike.List)
 }

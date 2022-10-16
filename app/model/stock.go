@@ -250,6 +250,8 @@ type StockBusinessReq struct {
     EmployeeID  *uint64 `json:"employeeId"`  // 店员ID
     CabinetID   *uint64 `json:"cabinetId"`   // 电柜ID
     SubscribeID *uint64 `json:"subscribeId"` // 订阅ID
+
+    Ebike *EbikeBusinessInfo `json:"ebike"` // 电车信息
 }
 
 type StockEmployeeOverviewBattery struct {

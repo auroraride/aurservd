@@ -190,6 +190,16 @@ func (e *Ebike) GetID() uint64 {
 	return e.ID
 }
 
+// GetTableName returns table name for EbikeAllocate.
+func (ea *EbikeAllocate) GetTableName() string {
+	return "ebike_allocate"
+}
+
+// GetID returns id for EbikeAllocate.
+func (ea *EbikeAllocate) GetID() uint64 {
+	return ea.ID
+}
+
 // GetTableName returns table name for EbikeBrand.
 func (eb *EbikeBrand) GetTableName() string {
 	return "ebike_brand"

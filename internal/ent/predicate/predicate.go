@@ -54,6 +54,9 @@ type CouponTemplate func(*sql.Selector)
 // Ebike is the predicate function for ebike builders.
 type Ebike func(*sql.Selector)
 
+// EbikeAllocate is the predicate function for ebikeallocate builders.
+type EbikeAllocate func(*sql.Selector)
+
 // EbikeBrand is the predicate function for ebikebrand builders.
 type EbikeBrand func(*sql.Selector)
 

@@ -52,7 +52,9 @@ func autoMigrate(c *Client) {
     }
 }
 
-func WithTx(ctx context.Context, fn func(tx *Tx) error) error {
+type TxFunc func(tx *Tx) (err error)
+
+func WithTx(ctx context.Context, fn TxFunc) error {
     tx, err := Database.Tx(ctx)
     if err != nil {
         return err
@@ -75,7 +77,7 @@ func WithTx(ctx context.Context, fn func(tx *Tx) error) error {
     return nil
 }
 
-func WithTxPanic(ctx context.Context, fn func(tx *Tx) (err error)) {
+func WithTxPanic(ctx context.Context, fn TxFunc) {
     err := WithTx(ctx, fn)
     if err != nil {
         snag.Panic(err)

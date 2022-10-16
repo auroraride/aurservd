@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -13,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -33,11 +35,14 @@ type StockQuery struct {
 	withCity      *CityQuery
 	withSubscribe *SubscribeQuery
 	withEbike     *EbikeQuery
+	withBrand     *EbikeBrandQuery
 	withStore     *StoreQuery
 	withCabinet   *CabinetQuery
 	withRider     *RiderQuery
 	withEmployee  *EmployeeQuery
 	withSpouse    *StockQuery
+	withParent    *StockQuery
+	withChildren  *StockQuery
 	withFKs       bool
 	modifiers     []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -135,6 +140,28 @@ func (sq *StockQuery) QueryEbike() *EbikeQuery {
 			sqlgraph.From(stock.Table, stock.FieldID, selector),
 			sqlgraph.To(ebike.Table, ebike.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, stock.EbikeTable, stock.EbikeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryBrand chains the current query on the "brand" edge.
+func (sq *StockQuery) QueryBrand() *EbikeBrandQuery {
+	query := &EbikeBrandQuery{config: sq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, selector),
+			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stock.BrandTable, stock.BrandColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -245,6 +272,50 @@ func (sq *StockQuery) QuerySpouse() *StockQuery {
 			sqlgraph.From(stock.Table, stock.FieldID, selector),
 			sqlgraph.To(stock.Table, stock.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, stock.SpouseTable, stock.SpouseColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryParent chains the current query on the "parent" edge.
+func (sq *StockQuery) QueryParent() *StockQuery {
+	query := &StockQuery{config: sq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, selector),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, stock.ParentTable, stock.ParentColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryChildren chains the current query on the "children" edge.
+func (sq *StockQuery) QueryChildren() *StockQuery {
+	query := &StockQuery{config: sq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, selector),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, stock.ChildrenTable, stock.ChildrenColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -436,11 +507,14 @@ func (sq *StockQuery) Clone() *StockQuery {
 		withCity:      sq.withCity.Clone(),
 		withSubscribe: sq.withSubscribe.Clone(),
 		withEbike:     sq.withEbike.Clone(),
+		withBrand:     sq.withBrand.Clone(),
 		withStore:     sq.withStore.Clone(),
 		withCabinet:   sq.withCabinet.Clone(),
 		withRider:     sq.withRider.Clone(),
 		withEmployee:  sq.withEmployee.Clone(),
 		withSpouse:    sq.withSpouse.Clone(),
+		withParent:    sq.withParent.Clone(),
+		withChildren:  sq.withChildren.Clone(),
 		// clone intermediate query.
 		sql:    sq.sql.Clone(),
 		path:   sq.path,
@@ -478,6 +552,17 @@ func (sq *StockQuery) WithEbike(opts ...func(*EbikeQuery)) *StockQuery {
 		opt(query)
 	}
 	sq.withEbike = query
+	return sq
+}
+
+// WithBrand tells the query-builder to eager-load the nodes that are connected to
+// the "brand" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *StockQuery) WithBrand(opts ...func(*EbikeBrandQuery)) *StockQuery {
+	query := &EbikeBrandQuery{config: sq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withBrand = query
 	return sq
 }
 
@@ -533,6 +618,28 @@ func (sq *StockQuery) WithSpouse(opts ...func(*StockQuery)) *StockQuery {
 		opt(query)
 	}
 	sq.withSpouse = query
+	return sq
+}
+
+// WithParent tells the query-builder to eager-load the nodes that are connected to
+// the "parent" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *StockQuery) WithParent(opts ...func(*StockQuery)) *StockQuery {
+	query := &StockQuery{config: sq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withParent = query
+	return sq
+}
+
+// WithChildren tells the query-builder to eager-load the nodes that are connected to
+// the "children" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *StockQuery) WithChildren(opts ...func(*StockQuery)) *StockQuery {
+	query := &StockQuery{config: sq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withChildren = query
 	return sq
 }
 
@@ -605,18 +712,21 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 		nodes       = []*Stock{}
 		withFKs     = sq.withFKs
 		_spec       = sq.querySpec()
-		loadedTypes = [8]bool{
+		loadedTypes = [11]bool{
 			sq.withCity != nil,
 			sq.withSubscribe != nil,
 			sq.withEbike != nil,
+			sq.withBrand != nil,
 			sq.withStore != nil,
 			sq.withCabinet != nil,
 			sq.withRider != nil,
 			sq.withEmployee != nil,
 			sq.withSpouse != nil,
+			sq.withParent != nil,
+			sq.withChildren != nil,
 		}
 	)
-	if sq.withCity != nil || sq.withSubscribe != nil || sq.withEbike != nil || sq.withStore != nil || sq.withCabinet != nil || sq.withRider != nil || sq.withEmployee != nil || sq.withSpouse != nil {
+	if sq.withCity != nil || sq.withSubscribe != nil || sq.withEbike != nil || sq.withBrand != nil || sq.withStore != nil || sq.withCabinet != nil || sq.withRider != nil || sq.withEmployee != nil || sq.withSpouse != nil || sq.withParent != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -661,6 +771,12 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 			return nil, err
 		}
 	}
+	if query := sq.withBrand; query != nil {
+		if err := sq.loadBrand(ctx, query, nodes, nil,
+			func(n *Stock, e *EbikeBrand) { n.Edges.Brand = e }); err != nil {
+			return nil, err
+		}
+	}
 	if query := sq.withStore; query != nil {
 		if err := sq.loadStore(ctx, query, nodes, nil,
 			func(n *Stock, e *Store) { n.Edges.Store = e }); err != nil {
@@ -688,6 +804,19 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 	if query := sq.withSpouse; query != nil {
 		if err := sq.loadSpouse(ctx, query, nodes, nil,
 			func(n *Stock, e *Stock) { n.Edges.Spouse = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := sq.withParent; query != nil {
+		if err := sq.loadParent(ctx, query, nodes, nil,
+			func(n *Stock, e *Stock) { n.Edges.Parent = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := sq.withChildren; query != nil {
+		if err := sq.loadChildren(ctx, query, nodes,
+			func(n *Stock) { n.Edges.Children = []*Stock{} },
+			func(n *Stock, e *Stock) { n.Edges.Children = append(n.Edges.Children, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -774,6 +903,35 @@ func (sq *StockQuery) loadEbike(ctx context.Context, query *EbikeQuery, nodes []
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "ebike_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (sq *StockQuery) loadBrand(ctx context.Context, query *EbikeBrandQuery, nodes []*Stock, init func(*Stock), assign func(*Stock, *EbikeBrand)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Stock)
+	for i := range nodes {
+		if nodes[i].BrandID == nil {
+			continue
+		}
+		fk := *nodes[i].BrandID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(ebikebrand.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "brand_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -923,6 +1081,66 @@ func (sq *StockQuery) loadSpouse(ctx context.Context, query *StockQuery, nodes [
 		for i := range nodes {
 			assign(nodes[i], n)
 		}
+	}
+	return nil
+}
+func (sq *StockQuery) loadParent(ctx context.Context, query *StockQuery, nodes []*Stock, init func(*Stock), assign func(*Stock, *Stock)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Stock)
+	for i := range nodes {
+		if nodes[i].ParentID == nil {
+			continue
+		}
+		fk := *nodes[i].ParentID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(stock.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "parent_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (sq *StockQuery) loadChildren(ctx context.Context, query *StockQuery, nodes []*Stock, init func(*Stock), assign func(*Stock, *Stock)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Stock)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.InValues(stock.ChildrenColumn, fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.ParentID
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "parent_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "parent_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
 	}
 	return nil
 }

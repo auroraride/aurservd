@@ -8,7 +8,7 @@ fi
 
 echo "同步数据库: $TARGET"
 
-ssh root@39.106.77.239 "export PGPASSWORD=$PASSWORD; pg_dump -U postgres -d $TARGET -f /root/auroraride.sql; rm -rf auroraride.sql.zip; zip auroraride.sql.zip auroraride.sql"
+ssh root@39.106.77.239 "export PGPASSWORD='$PASSWORD'; pg_dump -U postgres -d $TARGET -f /root/auroraride.sql; rm -rf auroraride.sql.zip; zip auroraride.sql.zip auroraride.sql"
 scp root@39.106.77.239:/root/auroraride.sql.zip ~/Downloads/_sql/
 cd ~/Downloads/_sql/ || return
 rm -rf auroraride.sql

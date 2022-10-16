@@ -31,6 +31,7 @@ const (
 	TypeCouponAssembly       = "CouponAssembly"
 	TypeCouponTemplate       = "CouponTemplate"
 	TypeEbike                = "Ebike"
+	TypeEbikeAllocate        = "EbikeAllocate"
 	TypeEbikeBrand           = "EbikeBrand"
 	TypeEmployee             = "Employee"
 	TypeEnterprise           = "Enterprise"

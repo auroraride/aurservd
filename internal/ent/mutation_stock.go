@@ -36,7 +36,6 @@ type StockMutation struct {
 	num              *int
 	addnum           *int
 	material         *stock.Material
-	ebike_sn         *string
 	clearedFields    map[string]struct{}
 	city             *uint64
 	clearedcity      bool
@@ -44,6 +43,8 @@ type StockMutation struct {
 	clearedsubscribe bool
 	ebike            *uint64
 	clearedebike     bool
+	brand            *uint64
+	clearedbrand     bool
 	store            *uint64
 	clearedstore     bool
 	cabinet          *uint64
@@ -54,6 +55,11 @@ type StockMutation struct {
 	clearedemployee  bool
 	spouse           *uint64
 	clearedspouse    bool
+	parent           *uint64
+	clearedparent    bool
+	children         map[uint64]struct{}
+	removedchildren  map[uint64]struct{}
+	clearedchildren  bool
 	done             bool
 	oldValue         func(context.Context) (*Stock, error)
 	predicates       []predicate.Stock
@@ -572,6 +578,104 @@ func (m *StockMutation) ResetEbikeID() {
 	delete(m.clearedFields, stock.FieldEbikeID)
 }
 
+// SetBrandID sets the "brand_id" field.
+func (m *StockMutation) SetBrandID(u uint64) {
+	m.brand = &u
+}
+
+// BrandID returns the value of the "brand_id" field in the mutation.
+func (m *StockMutation) BrandID() (r uint64, exists bool) {
+	v := m.brand
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBrandID returns the old "brand_id" field's value of the Stock entity.
+// If the Stock object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StockMutation) OldBrandID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBrandID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBrandID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBrandID: %w", err)
+	}
+	return oldValue.BrandID, nil
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (m *StockMutation) ClearBrandID() {
+	m.brand = nil
+	m.clearedFields[stock.FieldBrandID] = struct{}{}
+}
+
+// BrandIDCleared returns if the "brand_id" field was cleared in this mutation.
+func (m *StockMutation) BrandIDCleared() bool {
+	_, ok := m.clearedFields[stock.FieldBrandID]
+	return ok
+}
+
+// ResetBrandID resets all changes to the "brand_id" field.
+func (m *StockMutation) ResetBrandID() {
+	m.brand = nil
+	delete(m.clearedFields, stock.FieldBrandID)
+}
+
+// SetParentID sets the "parent_id" field.
+func (m *StockMutation) SetParentID(u uint64) {
+	m.parent = &u
+}
+
+// ParentID returns the value of the "parent_id" field in the mutation.
+func (m *StockMutation) ParentID() (r uint64, exists bool) {
+	v := m.parent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldParentID returns the old "parent_id" field's value of the Stock entity.
+// If the Stock object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StockMutation) OldParentID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldParentID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldParentID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldParentID: %w", err)
+	}
+	return oldValue.ParentID, nil
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (m *StockMutation) ClearParentID() {
+	m.parent = nil
+	m.clearedFields[stock.FieldParentID] = struct{}{}
+}
+
+// ParentIDCleared returns if the "parent_id" field was cleared in this mutation.
+func (m *StockMutation) ParentIDCleared() bool {
+	_, ok := m.clearedFields[stock.FieldParentID]
+	return ok
+}
+
+// ResetParentID resets all changes to the "parent_id" field.
+func (m *StockMutation) ResetParentID() {
+	m.parent = nil
+	delete(m.clearedFields, stock.FieldParentID)
+}
+
 // SetSn sets the "sn" field.
 func (m *StockMutation) SetSn(s string) {
 	m.sn = &s
@@ -1037,55 +1141,6 @@ func (m *StockMutation) ResetMaterial() {
 	m.material = nil
 }
 
-// SetEbikeSn sets the "ebike_sn" field.
-func (m *StockMutation) SetEbikeSn(s string) {
-	m.ebike_sn = &s
-}
-
-// EbikeSn returns the value of the "ebike_sn" field in the mutation.
-func (m *StockMutation) EbikeSn() (r string, exists bool) {
-	v := m.ebike_sn
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldEbikeSn returns the old "ebike_sn" field's value of the Stock entity.
-// If the Stock object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StockMutation) OldEbikeSn(ctx context.Context) (v *string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldEbikeSn is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldEbikeSn requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldEbikeSn: %w", err)
-	}
-	return oldValue.EbikeSn, nil
-}
-
-// ClearEbikeSn clears the value of the "ebike_sn" field.
-func (m *StockMutation) ClearEbikeSn() {
-	m.ebike_sn = nil
-	m.clearedFields[stock.FieldEbikeSn] = struct{}{}
-}
-
-// EbikeSnCleared returns if the "ebike_sn" field was cleared in this mutation.
-func (m *StockMutation) EbikeSnCleared() bool {
-	_, ok := m.clearedFields[stock.FieldEbikeSn]
-	return ok
-}
-
-// ResetEbikeSn resets all changes to the "ebike_sn" field.
-func (m *StockMutation) ResetEbikeSn() {
-	m.ebike_sn = nil
-	delete(m.clearedFields, stock.FieldEbikeSn)
-}
-
 // ClearCity clears the "city" edge to the City entity.
 func (m *StockMutation) ClearCity() {
 	m.clearedcity = true
@@ -1162,6 +1217,32 @@ func (m *StockMutation) EbikeIDs() (ids []uint64) {
 func (m *StockMutation) ResetEbike() {
 	m.ebike = nil
 	m.clearedebike = false
+}
+
+// ClearBrand clears the "brand" edge to the EbikeBrand entity.
+func (m *StockMutation) ClearBrand() {
+	m.clearedbrand = true
+}
+
+// BrandCleared reports if the "brand" edge to the EbikeBrand entity was cleared.
+func (m *StockMutation) BrandCleared() bool {
+	return m.BrandIDCleared() || m.clearedbrand
+}
+
+// BrandIDs returns the "brand" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// BrandID instead. It exists only for internal usage by the builders.
+func (m *StockMutation) BrandIDs() (ids []uint64) {
+	if id := m.brand; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetBrand resets all changes to the "brand" edge.
+func (m *StockMutation) ResetBrand() {
+	m.brand = nil
+	m.clearedbrand = false
 }
 
 // ClearStore clears the "store" edge to the Store entity.
@@ -1307,6 +1388,86 @@ func (m *StockMutation) ResetSpouse() {
 	m.clearedspouse = false
 }
 
+// ClearParent clears the "parent" edge to the Stock entity.
+func (m *StockMutation) ClearParent() {
+	m.clearedparent = true
+}
+
+// ParentCleared reports if the "parent" edge to the Stock entity was cleared.
+func (m *StockMutation) ParentCleared() bool {
+	return m.ParentIDCleared() || m.clearedparent
+}
+
+// ParentIDs returns the "parent" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ParentID instead. It exists only for internal usage by the builders.
+func (m *StockMutation) ParentIDs() (ids []uint64) {
+	if id := m.parent; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetParent resets all changes to the "parent" edge.
+func (m *StockMutation) ResetParent() {
+	m.parent = nil
+	m.clearedparent = false
+}
+
+// AddChildIDs adds the "children" edge to the Stock entity by ids.
+func (m *StockMutation) AddChildIDs(ids ...uint64) {
+	if m.children == nil {
+		m.children = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.children[ids[i]] = struct{}{}
+	}
+}
+
+// ClearChildren clears the "children" edge to the Stock entity.
+func (m *StockMutation) ClearChildren() {
+	m.clearedchildren = true
+}
+
+// ChildrenCleared reports if the "children" edge to the Stock entity was cleared.
+func (m *StockMutation) ChildrenCleared() bool {
+	return m.clearedchildren
+}
+
+// RemoveChildIDs removes the "children" edge to the Stock entity by IDs.
+func (m *StockMutation) RemoveChildIDs(ids ...uint64) {
+	if m.removedchildren == nil {
+		m.removedchildren = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.children, ids[i])
+		m.removedchildren[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedChildren returns the removed IDs of the "children" edge to the Stock entity.
+func (m *StockMutation) RemovedChildrenIDs() (ids []uint64) {
+	for id := range m.removedchildren {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ChildrenIDs returns the "children" edge IDs in the mutation.
+func (m *StockMutation) ChildrenIDs() (ids []uint64) {
+	for id := range m.children {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetChildren resets all changes to the "children" edge.
+func (m *StockMutation) ResetChildren() {
+	m.children = nil
+	m.clearedchildren = false
+	m.removedchildren = nil
+}
+
 // Where appends a list predicates to the StockMutation builder.
 func (m *StockMutation) Where(ps ...predicate.Stock) {
 	m.predicates = append(m.predicates, ps...)
@@ -1326,7 +1487,7 @@ func (m *StockMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StockMutation) Fields() []string {
-	fields := make([]string, 0, 20)
+	fields := make([]string, 0, 21)
 	if m.created_at != nil {
 		fields = append(fields, stock.FieldCreatedAt)
 	}
@@ -1353,6 +1514,12 @@ func (m *StockMutation) Fields() []string {
 	}
 	if m.ebike != nil {
 		fields = append(fields, stock.FieldEbikeID)
+	}
+	if m.brand != nil {
+		fields = append(fields, stock.FieldBrandID)
+	}
+	if m.parent != nil {
+		fields = append(fields, stock.FieldParentID)
 	}
 	if m.sn != nil {
 		fields = append(fields, stock.FieldSn)
@@ -1384,9 +1551,6 @@ func (m *StockMutation) Fields() []string {
 	if m.material != nil {
 		fields = append(fields, stock.FieldMaterial)
 	}
-	if m.ebike_sn != nil {
-		fields = append(fields, stock.FieldEbikeSn)
-	}
 	return fields
 }
 
@@ -1413,6 +1577,10 @@ func (m *StockMutation) Field(name string) (ent.Value, bool) {
 		return m.SubscribeID()
 	case stock.FieldEbikeID:
 		return m.EbikeID()
+	case stock.FieldBrandID:
+		return m.BrandID()
+	case stock.FieldParentID:
+		return m.ParentID()
 	case stock.FieldSn:
 		return m.Sn()
 	case stock.FieldType:
@@ -1433,8 +1601,6 @@ func (m *StockMutation) Field(name string) (ent.Value, bool) {
 		return m.Num()
 	case stock.FieldMaterial:
 		return m.Material()
-	case stock.FieldEbikeSn:
-		return m.EbikeSn()
 	}
 	return nil, false
 }
@@ -1462,6 +1628,10 @@ func (m *StockMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldSubscribeID(ctx)
 	case stock.FieldEbikeID:
 		return m.OldEbikeID(ctx)
+	case stock.FieldBrandID:
+		return m.OldBrandID(ctx)
+	case stock.FieldParentID:
+		return m.OldParentID(ctx)
 	case stock.FieldSn:
 		return m.OldSn(ctx)
 	case stock.FieldType:
@@ -1482,8 +1652,6 @@ func (m *StockMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldNum(ctx)
 	case stock.FieldMaterial:
 		return m.OldMaterial(ctx)
-	case stock.FieldEbikeSn:
-		return m.OldEbikeSn(ctx)
 	}
 	return nil, fmt.Errorf("unknown Stock field %s", name)
 }
@@ -1556,6 +1724,20 @@ func (m *StockMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetEbikeID(v)
 		return nil
+	case stock.FieldBrandID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBrandID(v)
+		return nil
+	case stock.FieldParentID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetParentID(v)
+		return nil
 	case stock.FieldSn:
 		v, ok := value.(string)
 		if !ok {
@@ -1625,13 +1807,6 @@ func (m *StockMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetMaterial(v)
-		return nil
-	case stock.FieldEbikeSn:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetEbikeSn(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Stock field %s", name)
@@ -1711,6 +1886,12 @@ func (m *StockMutation) ClearedFields() []string {
 	if m.FieldCleared(stock.FieldEbikeID) {
 		fields = append(fields, stock.FieldEbikeID)
 	}
+	if m.FieldCleared(stock.FieldBrandID) {
+		fields = append(fields, stock.FieldBrandID)
+	}
+	if m.FieldCleared(stock.FieldParentID) {
+		fields = append(fields, stock.FieldParentID)
+	}
 	if m.FieldCleared(stock.FieldStoreID) {
 		fields = append(fields, stock.FieldStoreID)
 	}
@@ -1725,9 +1906,6 @@ func (m *StockMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(stock.FieldModel) {
 		fields = append(fields, stock.FieldModel)
-	}
-	if m.FieldCleared(stock.FieldEbikeSn) {
-		fields = append(fields, stock.FieldEbikeSn)
 	}
 	return fields
 }
@@ -1764,6 +1942,12 @@ func (m *StockMutation) ClearField(name string) error {
 	case stock.FieldEbikeID:
 		m.ClearEbikeID()
 		return nil
+	case stock.FieldBrandID:
+		m.ClearBrandID()
+		return nil
+	case stock.FieldParentID:
+		m.ClearParentID()
+		return nil
 	case stock.FieldStoreID:
 		m.ClearStoreID()
 		return nil
@@ -1778,9 +1962,6 @@ func (m *StockMutation) ClearField(name string) error {
 		return nil
 	case stock.FieldModel:
 		m.ClearModel()
-		return nil
-	case stock.FieldEbikeSn:
-		m.ClearEbikeSn()
 		return nil
 	}
 	return fmt.Errorf("unknown Stock nullable field %s", name)
@@ -1817,6 +1998,12 @@ func (m *StockMutation) ResetField(name string) error {
 	case stock.FieldEbikeID:
 		m.ResetEbikeID()
 		return nil
+	case stock.FieldBrandID:
+		m.ResetBrandID()
+		return nil
+	case stock.FieldParentID:
+		m.ResetParentID()
+		return nil
 	case stock.FieldSn:
 		m.ResetSn()
 		return nil
@@ -1847,16 +2034,13 @@ func (m *StockMutation) ResetField(name string) error {
 	case stock.FieldMaterial:
 		m.ResetMaterial()
 		return nil
-	case stock.FieldEbikeSn:
-		m.ResetEbikeSn()
-		return nil
 	}
 	return fmt.Errorf("unknown Stock field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *StockMutation) AddedEdges() []string {
-	edges := make([]string, 0, 8)
+	edges := make([]string, 0, 11)
 	if m.city != nil {
 		edges = append(edges, stock.EdgeCity)
 	}
@@ -1865,6 +2049,9 @@ func (m *StockMutation) AddedEdges() []string {
 	}
 	if m.ebike != nil {
 		edges = append(edges, stock.EdgeEbike)
+	}
+	if m.brand != nil {
+		edges = append(edges, stock.EdgeBrand)
 	}
 	if m.store != nil {
 		edges = append(edges, stock.EdgeStore)
@@ -1880,6 +2067,12 @@ func (m *StockMutation) AddedEdges() []string {
 	}
 	if m.spouse != nil {
 		edges = append(edges, stock.EdgeSpouse)
+	}
+	if m.parent != nil {
+		edges = append(edges, stock.EdgeParent)
+	}
+	if m.children != nil {
+		edges = append(edges, stock.EdgeChildren)
 	}
 	return edges
 }
@@ -1898,6 +2091,10 @@ func (m *StockMutation) AddedIDs(name string) []ent.Value {
 		}
 	case stock.EdgeEbike:
 		if id := m.ebike; id != nil {
+			return []ent.Value{*id}
+		}
+	case stock.EdgeBrand:
+		if id := m.brand; id != nil {
 			return []ent.Value{*id}
 		}
 	case stock.EdgeStore:
@@ -1920,13 +2117,26 @@ func (m *StockMutation) AddedIDs(name string) []ent.Value {
 		if id := m.spouse; id != nil {
 			return []ent.Value{*id}
 		}
+	case stock.EdgeParent:
+		if id := m.parent; id != nil {
+			return []ent.Value{*id}
+		}
+	case stock.EdgeChildren:
+		ids := make([]ent.Value, 0, len(m.children))
+		for id := range m.children {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *StockMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 8)
+	edges := make([]string, 0, 11)
+	if m.removedchildren != nil {
+		edges = append(edges, stock.EdgeChildren)
+	}
 	return edges
 }
 
@@ -1934,13 +2144,19 @@ func (m *StockMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *StockMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
+	case stock.EdgeChildren:
+		ids := make([]ent.Value, 0, len(m.removedchildren))
+		for id := range m.removedchildren {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *StockMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 8)
+	edges := make([]string, 0, 11)
 	if m.clearedcity {
 		edges = append(edges, stock.EdgeCity)
 	}
@@ -1949,6 +2165,9 @@ func (m *StockMutation) ClearedEdges() []string {
 	}
 	if m.clearedebike {
 		edges = append(edges, stock.EdgeEbike)
+	}
+	if m.clearedbrand {
+		edges = append(edges, stock.EdgeBrand)
 	}
 	if m.clearedstore {
 		edges = append(edges, stock.EdgeStore)
@@ -1965,6 +2184,12 @@ func (m *StockMutation) ClearedEdges() []string {
 	if m.clearedspouse {
 		edges = append(edges, stock.EdgeSpouse)
 	}
+	if m.clearedparent {
+		edges = append(edges, stock.EdgeParent)
+	}
+	if m.clearedchildren {
+		edges = append(edges, stock.EdgeChildren)
+	}
 	return edges
 }
 
@@ -1978,6 +2203,8 @@ func (m *StockMutation) EdgeCleared(name string) bool {
 		return m.clearedsubscribe
 	case stock.EdgeEbike:
 		return m.clearedebike
+	case stock.EdgeBrand:
+		return m.clearedbrand
 	case stock.EdgeStore:
 		return m.clearedstore
 	case stock.EdgeCabinet:
@@ -1988,6 +2215,10 @@ func (m *StockMutation) EdgeCleared(name string) bool {
 		return m.clearedemployee
 	case stock.EdgeSpouse:
 		return m.clearedspouse
+	case stock.EdgeParent:
+		return m.clearedparent
+	case stock.EdgeChildren:
+		return m.clearedchildren
 	}
 	return false
 }
@@ -2005,6 +2236,9 @@ func (m *StockMutation) ClearEdge(name string) error {
 	case stock.EdgeEbike:
 		m.ClearEbike()
 		return nil
+	case stock.EdgeBrand:
+		m.ClearBrand()
+		return nil
 	case stock.EdgeStore:
 		m.ClearStore()
 		return nil
@@ -2019,6 +2253,9 @@ func (m *StockMutation) ClearEdge(name string) error {
 		return nil
 	case stock.EdgeSpouse:
 		m.ClearSpouse()
+		return nil
+	case stock.EdgeParent:
+		m.ClearParent()
 		return nil
 	}
 	return fmt.Errorf("unknown Stock unique edge %s", name)
@@ -2037,6 +2274,9 @@ func (m *StockMutation) ResetEdge(name string) error {
 	case stock.EdgeEbike:
 		m.ResetEbike()
 		return nil
+	case stock.EdgeBrand:
+		m.ResetBrand()
+		return nil
 	case stock.EdgeStore:
 		m.ResetStore()
 		return nil
@@ -2051,6 +2291,12 @@ func (m *StockMutation) ResetEdge(name string) error {
 		return nil
 	case stock.EdgeSpouse:
 		m.ResetSpouse()
+		return nil
+	case stock.EdgeParent:
+		m.ResetParent()
+		return nil
+	case stock.EdgeChildren:
+		m.ResetChildren()
 		return nil
 	}
 	return fmt.Errorf("unknown Stock edge %s", name)

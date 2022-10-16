@@ -13,10 +13,9 @@ import (
 )
 
 var (
-    Client        *qmgo.Client
-    DB            *qmgo.Database
-    CabinetTask   *qmgo.Collection
-    EbikeAllocate *qmgo.Collection
+    Client      *qmgo.Client
+    DB          *qmgo.Database
+    CabinetTask *qmgo.Collection
 )
 
 func Connect(url, db string) {
@@ -54,32 +53,4 @@ func Connect(url, db string) {
     if err != nil {
         log.Fatalln(err)
     }
-
-    EbikeAllocate = DB.Collection("ebike_allocate")
-    err = EbikeAllocate.CreateIndexes(ctx, []options.IndexModel{
-        {
-            Key: []string{"ebike.id"},
-        },
-        {
-            Key: []string{"rider.id"},
-        },
-        {
-            Key: []string{"subscribeId"},
-        },
-        {
-            Key: []string{"status"},
-        },
-        {
-            Key: []string{"createdAt"},
-        },
-        {
-            Key: []string{"employeeId"},
-        },
-        {
-            Key: []string{"storeId"},
-        },
-        {
-            Key: []string{"sn"},
-        },
-    })
 }

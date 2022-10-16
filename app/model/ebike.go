@@ -117,3 +117,9 @@ type Ebike struct {
     EbikeInfo `bson:",inline"`
     Brand     EbikeBrand `json:"brand" bson:"brand"` // 品牌信息
 }
+
+type EbikeBusinessInfo struct {
+    ID        uint64 `json:"id"`
+    BrandID   uint64 `json:"brandId"`
+    BrandName string `json:"brandName"`
+}

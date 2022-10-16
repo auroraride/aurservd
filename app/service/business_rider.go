@@ -15,6 +15,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/business"
     "github.com/auroraride/aurservd/internal/ent/commission"
     "github.com/auroraride/aurservd/internal/ent/contract"
+    "github.com/auroraride/aurservd/internal/ent/ebike"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
     "github.com/auroraride/aurservd/pkg/silk"
@@ -40,6 +41,9 @@ type businessRiderService struct {
     task func() *ec.BinInfo // 电柜任务
 
     storeID, employeeID, cabinetID, subscribeID *uint64
+
+    // 电车信息
+    ebikeInfo *model.EbikeBusinessInfo
 }
 
 func NewBusinessRider(r *ent.Rider) *businessRiderService {
@@ -56,6 +60,7 @@ func NewBusinessRiderWithModifier(m *model.Modifier) *businessRiderService {
     return s
 }
 
+// SetCabinet 设置电柜
 func (s *businessRiderService) SetCabinet(cab *ent.Cabinet) *businessRiderService {
     if cab != nil {
         s.cabinet = cab
@@ -69,6 +74,7 @@ func (s *businessRiderService) SetCabinet(cab *ent.Cabinet) *businessRiderServic
     return s
 }
 
+// SetCabinetID 设置电柜
 func (s *businessRiderService) SetCabinetID(id *uint64) *businessRiderService {
     if id != nil {
         s.SetCabinet(NewCabinet().QueryOne(*id))
@@ -76,6 +82,7 @@ func (s *businessRiderService) SetCabinetID(id *uint64) *businessRiderService {
     return s
 }
 
+// SetStoreID 设置门店
 func (s *businessRiderService) SetStoreID(id *uint64) *businessRiderService {
     if id != nil {
         s.store = NewStore().Query(*id)
@@ -83,6 +90,27 @@ func (s *businessRiderService) SetStoreID(id *uint64) *businessRiderService {
             s.employee = s.store.Edges.Employee
         }
     }
+    return s
+}
+
+// SetEbikeID 设置电车
+func (s *businessRiderService) SetEbikeID(ebikeID uint64) *businessRiderService {
+    bike, _ := ent.Database.Ebike.Query().Where(ebike.ID(ebikeID)).WithBrand().First(s.ctx)
+    if bike == nil || bike.Edges.Brand == nil {
+        snag.Panic("电车信息查询失败")
+    }
+    brand := bike.Edges.Brand
+    s.ebikeInfo = &model.EbikeBusinessInfo{
+        ID:        bike.ID,
+        BrandID:   brand.ID,
+        BrandName: brand.Name,
+    }
+
+    return s
+}
+
+func (s *businessRiderService) SetEbike(info *model.EbikeBusinessInfo) *businessRiderService {
+    s.ebikeInfo = info
     return s
 }
 
@@ -204,7 +232,7 @@ func (s *businessRiderService) Inactive(id uint64) (*model.SubscribeActiveInfo, 
 }
 
 // preprocess 预处理数据
-func (s *businessRiderService) preprocess(typ business.Type, sub *ent.Subscribe) {
+func (s *businessRiderService) preprocess(bt business.Type, sub *ent.Subscribe) {
     s.subscribe = sub
 
     if sub.EnterpriseID != nil {
@@ -213,7 +241,7 @@ func (s *businessRiderService) preprocess(typ business.Type, sub *ent.Subscribe)
             snag.Panic("未找到团签信息")
         }
         // 判定是否寄存或取消寄存业务
-        if typ == business.TypePause || typ == business.TypeContinue {
+        if bt == business.TypePause || bt == business.TypeContinue {
             snag.Panic("团签用户无法办理")
         }
         // 判定代理是否可使用门店
@@ -234,7 +262,7 @@ func (s *businessRiderService) preprocess(typ business.Type, sub *ent.Subscribe)
     }
 
     // 骑士卡状态
-    if !NewRiderBusiness(r).Executable(sub, typ) {
+    if !NewRiderBusiness(r).Executable(sub, bt) {
         snag.Panic("骑士卡状态错误")
     }
 
@@ -269,10 +297,19 @@ func (s *businessRiderService) preprocess(typ business.Type, sub *ent.Subscribe)
         NewBusinessWithEmployee(s.employee).CheckCity(s.subscribe.CityID, s.store)
     }
 
+    // 车电套餐检查
+    if s.ebikeInfo != nil {
+        // 车电套餐无法办理寄存业务
+        // 车电套餐无法使用电柜
+        if bt == business.TypePause || bt == business.TypeContinue || s.cabinetID != nil {
+            snag.Panic("车电订阅无法办理此业务")
+        }
+    }
+
     // 预约检查
     rev := NewReserveWithRider(r).RiderUnfinished(r.ID)
     if rev != nil {
-        if s.cabinet == nil || s.cabinet.ID != rev.CabinetID || typ.String() != rev.Type {
+        if s.cabinet == nil || s.cabinet.ID != rev.CabinetID || bt.String() != rev.Type {
             _, _ = rev.Update().SetStatus(model.ReserveStatusInvalid.Value()).Save(s.ctx)
         } else {
             // 预约处理中
@@ -345,8 +382,8 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
     ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
         cb(tx)
 
-        sk, err = NewStockWithModifier(s.modifier).BatteryWithRider(
-            tx.Stock.Create(),
+        sk, err = NewStockWithModifier(s.modifier).RiderBusiness(
+            tx,
             &model.StockBusinessReq{
                 RiderID:   s.subscribe.RiderID,
                 Model:     s.subscribe.Model,
@@ -357,8 +394,14 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
                 EmployeeID:  s.employeeID,
                 CabinetID:   s.cabinetID,
                 SubscribeID: s.subscribeID,
+
+                Ebike: s.ebikeInfo,
             },
         )
+
+        if err != nil {
+            log.Errorf("骑手业务出入库失败: %v", err)
+        }
 
         return err
     })
@@ -417,7 +460,8 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 }
 
 // Active 激活订阅
-func (s *businessRiderService) Active(info *model.SubscribeActiveInfo, sub *ent.Subscribe) {
+// TODO 电柜激活电池
+func (s *businessRiderService) Active(info *model.SubscribeActiveInfo, sub *ent.Subscribe, cbs ...ent.TxFunc) {
     if !NewContract().Effective(s.rider) {
         if s.rider != nil {
             // 返回签约URL
@@ -429,22 +473,32 @@ func (s *businessRiderService) Active(info *model.SubscribeActiveInfo, sub *ent.
     s.preprocess(business.TypeActive, sub)
 
     s.do(business.TypeActive, func(tx *ent.Tx) {
+        var err error
+        if len(cbs) > 0 {
+            err = cbs[0](tx)
+            snag.PanicIfError(err)
+        }
+
         var aend *time.Time
         // 如果是代理商, 计算骑士卡代理商结束时间
         if info.Enterprise != nil && info.Enterprise.Agent {
             aend = silk.Pointer(tools.NewTime().WillEnd(time.Now(), sub.InitialDays))
         }
 
-        // 激活
-        var err error
-        s.subscribe, err = tx.Subscribe.UpdateOneID(info.ID).
+        updater := tx.Subscribe.UpdateOneID(info.ID).
             SetStatus(model.SubscribeStatusUsing).
             SetStartAt(time.Now()).
             SetNillableEmployeeID(s.employeeID).
             SetNillableStoreID(s.storeID).
             SetNillableCabinetID(s.cabinetID).
             SetNillableAgentEndAt(aend).
-            Save(s.ctx)
+            SetNeedContract(false)
+        if s.ebikeInfo != nil {
+            updater.SetEbikeID(s.ebikeInfo.ID).SetBrandID(s.ebikeInfo.BrandID)
+        }
+
+        // 激活
+        s.subscribe, err = updater.Save(s.ctx)
         snag.PanicIfError(err)
     })
 

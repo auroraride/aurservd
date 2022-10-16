@@ -9,57 +9,54 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/ebike"
+    "github.com/auroraride/aurservd/internal/ent/ebikeallocate"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
-    "github.com/auroraride/aurservd/internal/mgo"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
-    "github.com/qiniu/qmgo/operator"
     log "github.com/sirupsen/logrus"
-    "go.mongodb.org/mongo-driver/bson"
-    "go.mongodb.org/mongo-driver/bson/primitive"
+    "time"
 )
 
 type ebikeAllocateService struct {
     *BaseService
-    orm *ent.EbikeClient
+    orm *ent.EbikeAllocateClient
 }
 
 func NewEbikeAllocate(params ...any) *ebikeAllocateService {
     return &ebikeAllocateService{
         BaseService: newService(params...),
-        orm:         ent.Database.Ebike,
+        orm:         ent.Database.EbikeAllocate,
     }
 }
 
-func (s *ebikeAllocateService) QueryIDHex(hex string) (allo *model.EbikeAllocate, err error) {
-    var id primitive.ObjectID
-    id, err = primitive.ObjectIDFromHex(hex)
-    if err != nil {
-        return
+func (s *ebikeAllocateService) QueryID(id uint64) (*ent.EbikeAllocate, error) {
+    return s.orm.Query().Where(ebikeallocate.ID(id)).First(s.ctx)
+}
+
+func (s *ebikeAllocateService) QueryIDX(id uint64) *ent.EbikeAllocate {
+    ea, _ := s.QueryID(id)
+    if ea == nil {
+        snag.Panic("未找到信息")
     }
-    allo = new(model.EbikeAllocate)
-    err = mgo.EbikeAllocate.Find(s.ctx, bson.M{"_id": id}).One(allo)
-    if err != nil {
-        allo = nil
-        return
-    }
-    return
+    return ea
 }
 
 // QueryEffectiveSubscribeID 查询生效中的分配信息
-func (s *ebikeAllocateService) QueryEffectiveSubscribeID(subscribeID uint64) *model.EbikeAllocate {
-    var result model.EbikeAllocate
-    err := mgo.EbikeAllocate.Find(s.ctx, bson.M{
-        "subscribeId": subscribeID,
-        "status":      model.EbikeAllocateStatusPending,
-        "createAt": bson.M{
-            operator.Gte: primitive.NewDateTimeFromTime(carbon.Now().SubSeconds(model.EbikeAllocateExpiration).Carbon2Time()),
-        },
-    }).One(&result)
-    if err != nil {
-        return nil
+func (s *ebikeAllocateService) QueryEffectiveSubscribeID(subscribeID uint64) (*ent.EbikeAllocate, error) {
+    return s.orm.Query().
+        Where(
+            ebikeallocate.SubscribeID(subscribeID),
+            ebikeallocate.TimeGTE(carbon.Now().SubSeconds(model.EbikeAllocateExpiration).Carbon2Time()),
+        ).
+        First(s.ctx)
+}
+
+func (s *ebikeAllocateService) QueryEffectiveSubscribeIDX(subscribeID uint64) *ent.EbikeAllocate {
+    ea, _ := s.QueryEffectiveSubscribeID(subscribeID)
+    if ea == nil {
+        snag.Panic("未找到有效分配信息")
     }
-    return &result
+    return ea
 }
 
 // UnallocatedInfo 获取未分配车辆信息
@@ -68,7 +65,7 @@ func (s *ebikeAllocateService) UnallocatedInfo(keyword string) model.EbikeInfo {
         snag.Panic("店员未上班")
     }
 
-    bike, _ := NewEbike().AllocatableFilter().Where(
+    bike, _ := NewEbike().AllocatableBaseFilter().Where(
         ebike.Or(
             ebike.Sn(keyword),
             ebike.Plate(keyword),
@@ -79,7 +76,7 @@ func (s *ebikeAllocateService) UnallocatedInfo(keyword string) model.EbikeInfo {
     }
 
     // 查询是否已被分配
-    NewEbike().IsAllocatedPendingX(bike.ID)
+    NewEbike().IsAllocatedX(bike.ID)
 
     return model.EbikeInfo{
         ID:        bike.ID,
@@ -91,25 +88,43 @@ func (s *ebikeAllocateService) UnallocatedInfo(keyword string) model.EbikeInfo {
 }
 
 // Allocate 分配车辆
-func (s *ebikeAllocateService) Allocate(req *model.EbikeAllocateReq) model.EbikeAllocateRes {
+func (s *ebikeAllocateService) Allocate(req *model.EbikeAllocateReq) model.IDPostReq {
+    if s.entEmployee == nil {
+        snag.Panic("需要店员操作")
+    }
+
     if s.entStore == nil {
         snag.Panic("店员未上班")
     }
-    // 查找骑手订阅
+
+    // 查找订阅
     sub, _ := ent.Database.Subscribe.QueryNotDeleted().Where(
         subscribe.ID(req.SubscribeID),
         subscribe.Status(model.SubscribeStatusInactive),
+        subscribe.NeedContract(true),
+        subscribe.EbikeIDIsNil(),
     ).WithRider().First(s.ctx)
+
     if sub == nil {
-        snag.Panic("未找到骑手订阅信息")
+        snag.Panic("未找到订阅信息")
     }
+
+    if sub.CityID != s.entStore.CityID {
+        snag.Panic("无法跨城市操作")
+    }
+
+    // 查找骑手
     r := sub.Edges.Rider
     if r == nil {
         snag.Panic("骑手查询失败")
     }
+
     // 是否被分配过
-    if s.QueryEffectiveSubscribeID(sub.ID) != nil {
-        snag.Panic("该订阅已被分配过")
+    ea, _ := s.orm.Query().Where(ebikeallocate.SubscribeID(req.SubscribeID)).First(s.ctx)
+    if ea != nil {
+        if ea.Time.After(carbon.Now().SubSeconds(model.EbikeAllocateExpiration).Carbon2Time()) {
+            snag.Panic("已被分配过")
+        }
     }
 
     // 查找电车
@@ -119,7 +134,12 @@ func (s *ebikeAllocateService) Allocate(req *model.EbikeAllocateReq) model.Ebike
         snag.Panic("电车型号查询失败")
     }
 
-    data := &model.EbikeAllocate{
+    // 判定库存
+    if NewStockBatchable().Fetch(model.StockTargetStore, s.entStore.ID, sub.Model) < 1 {
+        snag.Panic("电池库存不足")
+    }
+
+    info := &model.EbikeAllocate{
         Rider: model.Rider{
             ID:    r.ID,
             Phone: r.Phone,
@@ -138,64 +158,53 @@ func (s *ebikeAllocateService) Allocate(req *model.EbikeAllocateReq) model.Ebike
                 Name: brand.Name,
             },
         },
-        SubscribeID: sub.ID,
-        Status:      model.EbikeAllocateStatusPending,
-        Model:       sub.Model,
-        EmployeeID:  s.employee.ID,
-        StoreID:     s.entStore.ID,
+        Model: sub.Model,
     }
 
-    // 缓存电车分配情况
-    result, err := mgo.EbikeAllocate.InsertOne(s.ctx, data)
+    // 存储分配信息
+    id, err := s.orm.Create().
+        SetEmployee(s.entEmployee).
+        SetStore(s.entStore).
+        SetEbike(bike).
+        SetBrand(brand).
+        SetSubscribe(sub).
+        SetRider(r).
+        SetStatus(model.EbikeAllocateStatusPending.Value()).
+        SetInfo(info).
+        SetTime(time.Now()).
+        OnConflictColumns(ebikeallocate.FieldSubscribeID).
+        UpdateNewValues().
+        ID(s.ctx)
+
     if err != nil {
-        log.Error(err)
-        snag.Panic("电车分配失败")
+        log.Errorf("分配失败: %v", err)
+        snag.Panic("分配失败")
     }
 
-    objID, ok := result.InsertedID.(primitive.ObjectID)
-    if !ok || objID.IsZero() {
-        snag.Panic("电车分配失败")
+    return model.IDPostReq{
+        ID: id,
     }
+}
 
-    return model.EbikeAllocateRes{
-        AllocateID: objID.Hex(),
+func (s *ebikeAllocateService) detail(ea *ent.EbikeAllocate) model.EbikeAllocateDetail {
+    return model.EbikeAllocateDetail{
+        Status:        model.EbikeAllocateStatus(ea.Status),
+        Time:          ea.Time.Format(carbon.DateTimeLayout),
+        ID:            ea.ID,
+        EbikeAllocate: ea.Info,
     }
 }
 
 // Info 电车分配信息
-func (s *ebikeAllocateService) Info(req *model.EbikeAllocateIDQueryReq) model.EbikeAllocateInfo {
-    var ea model.EbikeAllocate
-    err := mgo.EbikeAllocate.Find(s.ctx, bson.M{"_id": req.AllocateID}).One(&ea)
-    if err != nil {
-        snag.Panic("电车分配信息查询失败")
-    }
-    return model.EbikeAllocateInfo{
-        Status: ea.Status,
-        Rider:  ea.Rider,
-        Ebike:  ea.Ebike,
-        Model:  ea.Model,
-    }
+func (s *ebikeAllocateService) Info(req *model.IDParamReq) model.EbikeAllocateDetail {
+    ea := s.QueryIDX(req.ID)
+    return s.detail(ea)
 }
 
 // EmployeeList 电车分配店员列表
 func (s *ebikeAllocateService) EmployeeList(req *model.EbikeAllocateEmployeeListReq) *model.PaginationRes {
-    items := make([]model.EbikeAllocateInfo, 0)
-
-    q := mgo.EbikeAllocate.
-        Find(s.ctx, bson.M{"employeeId": s.employee.ID}).
-        Sort("-createdAt")
-
-    t, _ := q.Count()
-    total := int(t)
-
-    _ = q.Skip(int64(req.GetOffset())).Limit(int64(req.GetLimit())).All(&items)
-
-    return &model.PaginationRes{
-        Pagination: model.Pagination{
-            Current: req.Current,
-            Pages:   req.GetPages(total),
-            Total:   total,
-        },
-        Items: items,
-    }
+    q := s.orm.Query().Where(ebikeallocate.EmployeeID(s.employee.ID)).Order(ent.Desc(ebikeallocate.FieldTime))
+    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.EbikeAllocate) model.EbikeAllocateDetail {
+        return s.detail(item)
+    })
 }
