@@ -1166,7 +1166,6 @@ func (oq *OrderQuery) loadCoupons(ctx context.Context, query *CouponQuery, nodes
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
 	query.Where(predicate.Coupon(func(s *sql.Selector) {
 		s.Where(sql.InValues(order.CouponsColumn, fks...))
 	}))
@@ -1175,13 +1174,13 @@ func (oq *OrderQuery) loadCoupons(ctx context.Context, query *CouponQuery, nodes
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.order_coupons
+		fk := n.OrderID
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "order_coupons" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "order_id" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "order_coupons" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "order_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

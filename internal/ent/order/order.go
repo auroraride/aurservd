@@ -170,7 +170,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "coupon" package.
 	CouponsInverseTable = "coupon"
 	// CouponsColumn is the table column denoting the coupons relation/edge.
-	CouponsColumn = "order_coupons"
+	CouponsColumn = "order_id"
 )
 
 // Columns holds all SQL columns for order fields.

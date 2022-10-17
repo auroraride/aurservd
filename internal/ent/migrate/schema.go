@@ -1056,7 +1056,7 @@ var (
 		{Name: "assembly_id", Type: field.TypeUint64},
 		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "template_id", Type: field.TypeUint64},
-		{Name: "order_coupons", Type: field.TypeUint64, Nullable: true},
+		{Name: "order_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// CouponTable holds the schema information for the "coupon" table.
 	CouponTable = &schema.Table{
@@ -1125,6 +1125,11 @@ var (
 						"postgres": "GIN",
 					},
 				},
+			},
+			{
+				Name:    "coupon_order_id",
+				Unique:  false,
+				Columns: []*schema.Column{CouponColumns[18]},
 			},
 			{
 				Name:    "coupon_template_id",

@@ -546,6 +546,55 @@ func (m *CouponMutation) ResetTemplateID() {
 	m.template = nil
 }
 
+// SetOrderID sets the "order_id" field.
+func (m *CouponMutation) SetOrderID(u uint64) {
+	m._order = &u
+}
+
+// OrderID returns the value of the "order_id" field in the mutation.
+func (m *CouponMutation) OrderID() (r uint64, exists bool) {
+	v := m._order
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOrderID returns the old "order_id" field's value of the Coupon entity.
+// If the Coupon object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CouponMutation) OldOrderID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOrderID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOrderID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOrderID: %w", err)
+	}
+	return oldValue.OrderID, nil
+}
+
+// ClearOrderID clears the value of the "order_id" field.
+func (m *CouponMutation) ClearOrderID() {
+	m._order = nil
+	m.clearedFields[coupon.FieldOrderID] = struct{}{}
+}
+
+// OrderIDCleared returns if the "order_id" field was cleared in this mutation.
+func (m *CouponMutation) OrderIDCleared() bool {
+	_, ok := m.clearedFields[coupon.FieldOrderID]
+	return ok
+}
+
+// ResetOrderID resets all changes to the "order_id" field.
+func (m *CouponMutation) ResetOrderID() {
+	m._order = nil
+	delete(m.clearedFields, coupon.FieldOrderID)
+}
+
 // SetName sets the "name" field.
 func (m *CouponMutation) SetName(s string) {
 	m.name = &s
@@ -1004,11 +1053,6 @@ func (m *CouponMutation) ResetTemplate() {
 	m.clearedtemplate = false
 }
 
-// SetOrderID sets the "order" edge to the Order entity by id.
-func (m *CouponMutation) SetOrderID(id uint64) {
-	m._order = &id
-}
-
 // ClearOrder clears the "order" edge to the Order entity.
 func (m *CouponMutation) ClearOrder() {
 	m.cleared_order = true
@@ -1016,15 +1060,7 @@ func (m *CouponMutation) ClearOrder() {
 
 // OrderCleared reports if the "order" edge to the Order entity was cleared.
 func (m *CouponMutation) OrderCleared() bool {
-	return m.cleared_order
-}
-
-// OrderID returns the "order" edge ID in the mutation.
-func (m *CouponMutation) OrderID() (id uint64, exists bool) {
-	if m._order != nil {
-		return *m._order, true
-	}
-	return
+	return m.OrderIDCleared() || m.cleared_order
 }
 
 // OrderIDs returns the "order" edge IDs in the mutation.
@@ -1170,7 +1206,7 @@ func (m *CouponMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CouponMutation) Fields() []string {
-	fields := make([]string, 0, 17)
+	fields := make([]string, 0, 18)
 	if m.created_at != nil {
 		fields = append(fields, coupon.FieldCreatedAt)
 	}
@@ -1197,6 +1233,9 @@ func (m *CouponMutation) Fields() []string {
 	}
 	if m.template != nil {
 		fields = append(fields, coupon.FieldTemplateID)
+	}
+	if m._order != nil {
+		fields = append(fields, coupon.FieldOrderID)
 	}
 	if m.name != nil {
 		fields = append(fields, coupon.FieldName)
@@ -1248,6 +1287,8 @@ func (m *CouponMutation) Field(name string) (ent.Value, bool) {
 		return m.PlanID()
 	case coupon.FieldTemplateID:
 		return m.TemplateID()
+	case coupon.FieldOrderID:
+		return m.OrderID()
 	case coupon.FieldName:
 		return m.Name()
 	case coupon.FieldRule:
@@ -1291,6 +1332,8 @@ func (m *CouponMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldPlanID(ctx)
 	case coupon.FieldTemplateID:
 		return m.OldTemplateID(ctx)
+	case coupon.FieldOrderID:
+		return m.OldOrderID(ctx)
 	case coupon.FieldName:
 		return m.OldName(ctx)
 	case coupon.FieldRule:
@@ -1378,6 +1421,13 @@ func (m *CouponMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTemplateID(v)
+		return nil
+	case coupon.FieldOrderID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOrderID(v)
 		return nil
 	case coupon.FieldName:
 		v, ok := value.(string)
@@ -1507,6 +1557,9 @@ func (m *CouponMutation) ClearedFields() []string {
 	if m.FieldCleared(coupon.FieldPlanID) {
 		fields = append(fields, coupon.FieldPlanID)
 	}
+	if m.FieldCleared(coupon.FieldOrderID) {
+		fields = append(fields, coupon.FieldOrderID)
+	}
 	if m.FieldCleared(coupon.FieldExpiresAt) {
 		fields = append(fields, coupon.FieldExpiresAt)
 	}
@@ -1541,6 +1594,9 @@ func (m *CouponMutation) ClearField(name string) error {
 		return nil
 	case coupon.FieldPlanID:
 		m.ClearPlanID()
+		return nil
+	case coupon.FieldOrderID:
+		m.ClearOrderID()
 		return nil
 	case coupon.FieldExpiresAt:
 		m.ClearExpiresAt()
@@ -1582,6 +1638,9 @@ func (m *CouponMutation) ResetField(name string) error {
 		return nil
 	case coupon.FieldTemplateID:
 		m.ResetTemplateID()
+		return nil
+	case coupon.FieldOrderID:
+		m.ResetOrderID()
 		return nil
 	case coupon.FieldName:
 		m.ResetName()

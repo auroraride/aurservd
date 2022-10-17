@@ -123,6 +123,20 @@ func (cc *CouponCreate) SetTemplateID(u uint64) *CouponCreate {
 	return cc
 }
 
+// SetOrderID sets the "order_id" field.
+func (cc *CouponCreate) SetOrderID(u uint64) *CouponCreate {
+	cc.mutation.SetOrderID(u)
+	return cc
+}
+
+// SetNillableOrderID sets the "order_id" field if the given value is not nil.
+func (cc *CouponCreate) SetNillableOrderID(u *uint64) *CouponCreate {
+	if u != nil {
+		cc.SetOrderID(*u)
+	}
+	return cc
+}
+
 // SetName sets the "name" field.
 func (cc *CouponCreate) SetName(s string) *CouponCreate {
 	cc.mutation.SetName(s)
@@ -213,20 +227,6 @@ func (cc *CouponCreate) SetPlan(p *Plan) *CouponCreate {
 // SetTemplate sets the "template" edge to the CouponTemplate entity.
 func (cc *CouponCreate) SetTemplate(c *CouponTemplate) *CouponCreate {
 	return cc.SetTemplateID(c.ID)
-}
-
-// SetOrderID sets the "order" edge to the Order entity by ID.
-func (cc *CouponCreate) SetOrderID(id uint64) *CouponCreate {
-	cc.mutation.SetOrderID(id)
-	return cc
-}
-
-// SetNillableOrderID sets the "order" edge to the Order entity by ID if the given value is not nil.
-func (cc *CouponCreate) SetNillableOrderID(id *uint64) *CouponCreate {
-	if id != nil {
-		cc = cc.SetOrderID(*id)
-	}
-	return cc
 }
 
 // SetOrder sets the "order" edge to the Order entity.
@@ -631,7 +631,7 @@ func (cc *CouponCreate) createSpec() (*Coupon, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.order_coupons = &nodes[0]
+		_node.OrderID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := cc.mutation.CitiesIDs(); len(nodes) > 0 {
@@ -829,6 +829,24 @@ func (u *CouponUpsert) SetTemplateID(v uint64) *CouponUpsert {
 // UpdateTemplateID sets the "template_id" field to the value that was provided on create.
 func (u *CouponUpsert) UpdateTemplateID() *CouponUpsert {
 	u.SetExcluded(coupon.FieldTemplateID)
+	return u
+}
+
+// SetOrderID sets the "order_id" field.
+func (u *CouponUpsert) SetOrderID(v uint64) *CouponUpsert {
+	u.Set(coupon.FieldOrderID, v)
+	return u
+}
+
+// UpdateOrderID sets the "order_id" field to the value that was provided on create.
+func (u *CouponUpsert) UpdateOrderID() *CouponUpsert {
+	u.SetExcluded(coupon.FieldOrderID)
+	return u
+}
+
+// ClearOrderID clears the value of the "order_id" field.
+func (u *CouponUpsert) ClearOrderID() *CouponUpsert {
+	u.SetNull(coupon.FieldOrderID)
 	return u
 }
 
@@ -1114,6 +1132,27 @@ func (u *CouponUpsertOne) SetTemplateID(v uint64) *CouponUpsertOne {
 func (u *CouponUpsertOne) UpdateTemplateID() *CouponUpsertOne {
 	return u.Update(func(s *CouponUpsert) {
 		s.UpdateTemplateID()
+	})
+}
+
+// SetOrderID sets the "order_id" field.
+func (u *CouponUpsertOne) SetOrderID(v uint64) *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.SetOrderID(v)
+	})
+}
+
+// UpdateOrderID sets the "order_id" field to the value that was provided on create.
+func (u *CouponUpsertOne) UpdateOrderID() *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.UpdateOrderID()
+	})
+}
+
+// ClearOrderID clears the value of the "order_id" field.
+func (u *CouponUpsertOne) ClearOrderID() *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.ClearOrderID()
 	})
 }
 
@@ -1579,6 +1618,27 @@ func (u *CouponUpsertBulk) SetTemplateID(v uint64) *CouponUpsertBulk {
 func (u *CouponUpsertBulk) UpdateTemplateID() *CouponUpsertBulk {
 	return u.Update(func(s *CouponUpsert) {
 		s.UpdateTemplateID()
+	})
+}
+
+// SetOrderID sets the "order_id" field.
+func (u *CouponUpsertBulk) SetOrderID(v uint64) *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.SetOrderID(v)
+	})
+}
+
+// UpdateOrderID sets the "order_id" field to the value that was provided on create.
+func (u *CouponUpsertBulk) UpdateOrderID() *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.UpdateOrderID()
+	})
+}
+
+// ClearOrderID clears the value of the "order_id" field.
+func (u *CouponUpsertBulk) ClearOrderID() *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.ClearOrderID()
 	})
 }
 

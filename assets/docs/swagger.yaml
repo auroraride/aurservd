@@ -2462,6 +2462,21 @@ definitions:
         description: 使用时间
         type: string
     type: object
+  model.CouponRiderListRes:
+    properties:
+      amount:
+        description: 金额
+        type: number
+      code:
+        description: 券码
+        type: string
+      expiredAt:
+        description: 到期日期
+        type: string
+      name:
+        description: 名称
+        type: string
+    type: object
   model.CouponTemplateCreateReq:
     properties:
       cityIds:
@@ -14529,6 +14544,37 @@ paths:
           schema:
             $ref: '#/definitions/model.RiderSigninRes'
       summary: R1001 登录或注册
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/wallet/coupons:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderWalletCoupons
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 查询类别 0:可使用 1:已使用 2:已过期
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: type
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CouponRiderListRes'
+            type: array
+      summary: R9004 优惠券列表
       tags:
       - '[R]骑手接口'
   /rider/v1/wallet/overview:

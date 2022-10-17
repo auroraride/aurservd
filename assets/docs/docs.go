@@ -12663,6 +12663,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/wallet/coupons": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R9004 优惠券列表",
+                "operationId": "RiderWalletCoupons",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "查询类别 0:可使用 1:已使用 2:已过期",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CouponRiderListRes"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/wallet/overview": {
             "get": {
                 "consumes": [
@@ -16285,6 +16331,27 @@ const docTemplate = `{
                 },
                 "usedAt": {
                     "description": "使用时间",
+                    "type": "string"
+                }
+            }
+        },
+        "model.CouponRiderListRes": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "金额",
+                    "type": "number"
+                },
+                "code": {
+                    "description": "券码",
+                    "type": "string"
+                },
+                "expiredAt": {
+                    "description": "到期日期",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "名称",
                     "type": "string"
                 }
             }

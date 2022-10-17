@@ -60,6 +60,7 @@ func (Coupon) Annotations() []schema.Annotation {
 func (Coupon) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("template_id"),
+        field.Uint64("order_id").Optional().Nillable().Comment("订单ID"),
         field.String("name").Immutable().Comment("名称"),
         field.Uint8("rule").Comment("使用规则"),
         field.Bool("multiple").Default(false).Comment("该券是否可叠加"),
@@ -75,7 +76,7 @@ func (Coupon) Fields() []ent.Field {
 func (Coupon) Edges() []ent.Edge {
     return []ent.Edge{
         edge.From("template", CouponTemplate.Type).Required().Unique().Ref("coupons").Field("template_id"),
-        edge.From("order", Order.Type).Ref("coupons").Unique(),
+        edge.From("order", Order.Type).Ref("coupons").Unique().Field("order_id"),
 
         edge.To("cities", City.Type),
         edge.To("plans", Plan.Type),
@@ -86,6 +87,7 @@ func (Coupon) Mixin() []ent.Mixin {
     return []ent.Mixin{
         internal.TimeMixin{},
         internal.Modifier{},
+
         RiderMixin{Optional: true},
         CouponAssemblyMixin{},
         PlanMixin{Optional: true, Comment: "实际使用骑士卡"},
@@ -99,6 +101,7 @@ func (Coupon) Indexes() []ent.Index {
                 dialect.Postgres: "GIN",
             }),
         ),
+        index.Fields("order_id"),
         index.Fields("template_id"),
         index.Fields("multiple"),
         index.Fields("expires_at"),

@@ -398,7 +398,6 @@ func (ctq *CouponTemplateQuery) loadCoupons(ctx context.Context, query *CouponQu
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
 	query.Where(predicate.Coupon(func(s *sql.Selector) {
 		s.Where(sql.InValues(coupontemplate.CouponsColumn, fks...))
 	}))

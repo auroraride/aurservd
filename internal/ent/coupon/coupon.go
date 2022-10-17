@@ -31,6 +31,8 @@ const (
 	FieldPlanID = "plan_id"
 	// FieldTemplateID holds the string denoting the template_id field in the database.
 	FieldTemplateID = "template_id"
+	// FieldOrderID holds the string denoting the order_id field in the database.
+	FieldOrderID = "order_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldRule holds the string denoting the rule field in the database.
@@ -97,7 +99,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "order" package.
 	OrderInverseTable = "order"
 	// OrderColumn is the table column denoting the order relation/edge.
-	OrderColumn = "order_coupons"
+	OrderColumn = "order_id"
 	// CitiesTable is the table that holds the cities relation/edge. The primary key declared below.
 	CitiesTable = "coupon_cities"
 	// CitiesInverseTable is the table name for the City entity.
@@ -122,6 +124,7 @@ var Columns = []string{
 	FieldAssemblyID,
 	FieldPlanID,
 	FieldTemplateID,
+	FieldOrderID,
 	FieldName,
 	FieldRule,
 	FieldMultiple,
@@ -130,12 +133,6 @@ var Columns = []string{
 	FieldExpiresAt,
 	FieldUsedAt,
 	FieldDuration,
-}
-
-// ForeignKeys holds the SQL foreign-keys that are owned by the "coupon"
-// table and are not defined as standalone fields in the schema.
-var ForeignKeys = []string{
-	"order_coupons",
 }
 
 var (
@@ -151,11 +148,6 @@ var (
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
-			return true
-		}
-	}
-	for i := range ForeignKeys {
-		if column == ForeignKeys[i] {
 			return true
 		}
 	}

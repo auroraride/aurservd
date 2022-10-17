@@ -61,3 +61,18 @@ func (*wallet) Points(c echo.Context) (err error) {
     ctx := app.ContextX[app.RiderContext](c)
     return ctx.SendResponse(service.NewPoint().Detail(ctx.Rider))
 }
+
+// Coupons
+// @ID           RiderWalletCoupons
+// @Router       /rider/v1/wallet/coupons [GET]
+// @Summary      R9004 优惠券列表
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token header string true "骑手校验token"
+// @Param        query query  model.CouponRiderListReq  false  "筛选条件"
+// @Success      200 {object} []model.CouponRiderListRes "请求成功"
+func (*wallet) Coupons(c echo.Context) (err error) {
+    ctx, req := app.RiderContextAndBinding[model.CouponRiderListReq](c)
+    return ctx.SendResponse(service.NewCouponWithRider(ctx.Rider).RiderList(req))
+}

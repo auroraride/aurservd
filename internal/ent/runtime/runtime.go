@@ -387,7 +387,7 @@ func init() {
 	// coupon.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	coupon.UpdateDefaultUpdatedAt = couponDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// couponDescMultiple is the schema descriptor for multiple field.
-	couponDescMultiple := couponFields[3].Descriptor()
+	couponDescMultiple := couponFields[4].Descriptor()
 	// coupon.DefaultMultiple holds the default value on creation for the multiple field.
 	coupon.DefaultMultiple = couponDescMultiple.Default.(bool)
 	couponassemblyMixin := schema.CouponAssembly{}.Mixin()

@@ -126,6 +126,26 @@ func (cu *CouponUpdate) SetTemplateID(u uint64) *CouponUpdate {
 	return cu
 }
 
+// SetOrderID sets the "order_id" field.
+func (cu *CouponUpdate) SetOrderID(u uint64) *CouponUpdate {
+	cu.mutation.SetOrderID(u)
+	return cu
+}
+
+// SetNillableOrderID sets the "order_id" field if the given value is not nil.
+func (cu *CouponUpdate) SetNillableOrderID(u *uint64) *CouponUpdate {
+	if u != nil {
+		cu.SetOrderID(*u)
+	}
+	return cu
+}
+
+// ClearOrderID clears the value of the "order_id" field.
+func (cu *CouponUpdate) ClearOrderID() *CouponUpdate {
+	cu.mutation.ClearOrderID()
+	return cu
+}
+
 // SetRule sets the "rule" field.
 func (cu *CouponUpdate) SetRule(u uint8) *CouponUpdate {
 	cu.mutation.ResetRule()
@@ -236,20 +256,6 @@ func (cu *CouponUpdate) SetPlan(p *Plan) *CouponUpdate {
 // SetTemplate sets the "template" edge to the CouponTemplate entity.
 func (cu *CouponUpdate) SetTemplate(c *CouponTemplate) *CouponUpdate {
 	return cu.SetTemplateID(c.ID)
-}
-
-// SetOrderID sets the "order" edge to the Order entity by ID.
-func (cu *CouponUpdate) SetOrderID(id uint64) *CouponUpdate {
-	cu.mutation.SetOrderID(id)
-	return cu
-}
-
-// SetNillableOrderID sets the "order" edge to the Order entity by ID if the given value is not nil.
-func (cu *CouponUpdate) SetNillableOrderID(id *uint64) *CouponUpdate {
-	if id != nil {
-		cu = cu.SetOrderID(*id)
-	}
-	return cu
 }
 
 // SetOrder sets the "order" edge to the Order entity.
@@ -982,6 +988,26 @@ func (cuo *CouponUpdateOne) SetTemplateID(u uint64) *CouponUpdateOne {
 	return cuo
 }
 
+// SetOrderID sets the "order_id" field.
+func (cuo *CouponUpdateOne) SetOrderID(u uint64) *CouponUpdateOne {
+	cuo.mutation.SetOrderID(u)
+	return cuo
+}
+
+// SetNillableOrderID sets the "order_id" field if the given value is not nil.
+func (cuo *CouponUpdateOne) SetNillableOrderID(u *uint64) *CouponUpdateOne {
+	if u != nil {
+		cuo.SetOrderID(*u)
+	}
+	return cuo
+}
+
+// ClearOrderID clears the value of the "order_id" field.
+func (cuo *CouponUpdateOne) ClearOrderID() *CouponUpdateOne {
+	cuo.mutation.ClearOrderID()
+	return cuo
+}
+
 // SetRule sets the "rule" field.
 func (cuo *CouponUpdateOne) SetRule(u uint8) *CouponUpdateOne {
 	cuo.mutation.ResetRule()
@@ -1092,20 +1118,6 @@ func (cuo *CouponUpdateOne) SetPlan(p *Plan) *CouponUpdateOne {
 // SetTemplate sets the "template" edge to the CouponTemplate entity.
 func (cuo *CouponUpdateOne) SetTemplate(c *CouponTemplate) *CouponUpdateOne {
 	return cuo.SetTemplateID(c.ID)
-}
-
-// SetOrderID sets the "order" edge to the Order entity by ID.
-func (cuo *CouponUpdateOne) SetOrderID(id uint64) *CouponUpdateOne {
-	cuo.mutation.SetOrderID(id)
-	return cuo
-}
-
-// SetNillableOrderID sets the "order" edge to the Order entity by ID if the given value is not nil.
-func (cuo *CouponUpdateOne) SetNillableOrderID(id *uint64) *CouponUpdateOne {
-	if id != nil {
-		cuo = cuo.SetOrderID(*id)
-	}
-	return cuo
 }
 
 // SetOrder sets the "order" edge to the Order entity.

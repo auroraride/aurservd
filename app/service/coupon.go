@@ -331,3 +331,35 @@ func (s *couponService) Allocate(req *model.CouponAllocateReq) {
     }
     s.orm.UpdateOne(c).SetRiderID(req.RiderID).ExecX(s.ctx)
 }
+
+func (s *couponService) RiderList(req *model.CouponRiderListReq) (res []model.CouponRiderListRes) {
+    q := s.orm.Query().Where(coupon.RiderID(s.rider.ID)).Order(ent.Desc(coupon.FieldCreatedAt))
+    switch req.Type {
+    case 0:
+        q.Where(
+            coupon.ExpiresAtGT(time.Now()),
+            coupon.OrderIDIsNil(),
+        )
+    case 1:
+        q.Where(coupon.OrderIDNotNil())
+    case 2:
+        q.Where(
+            coupon.ExpiresAtLTE(time.Now()),
+            coupon.OrderIDIsNil(),
+        )
+    }
+
+    items, _ := q.All(s.ctx)
+    res = make([]model.CouponRiderListRes, len(items))
+
+    for i, item := range items {
+        res[i] = model.CouponRiderListRes{
+            Name:      item.Name,
+            ExpiredAt: item.ExpiresAt.Format("2006.1.2"),
+            Amount:    item.Amount,
+            Code:      model.CouponCode(item.Code).Humanity(),
+        }
+    }
+
+    return
+}

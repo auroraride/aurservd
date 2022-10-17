@@ -41,6 +41,8 @@ type Coupon struct {
 	PlanID *uint64 `json:"plan_id,omitempty"`
 	// TemplateID holds the value of the "template_id" field.
 	TemplateID uint64 `json:"template_id,omitempty"`
+	// 订单ID
+	OrderID *uint64 `json:"order_id,omitempty"`
 	// 名称
 	Name string `json:"name,omitempty"`
 	// 使用规则
@@ -59,8 +61,7 @@ type Coupon struct {
 	Duration *model.CouponDuration `json:"duration,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CouponQuery when eager-loading is set.
-	Edges         CouponEdges `json:"edges"`
-	order_coupons *uint64
+	Edges CouponEdges `json:"edges"`
 }
 
 // CouponEdges holds the relations/edges for other nodes in the graph.
@@ -178,14 +179,12 @@ func (*Coupon) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case coupon.FieldAmount:
 			values[i] = new(sql.NullFloat64)
-		case coupon.FieldID, coupon.FieldRiderID, coupon.FieldAssemblyID, coupon.FieldPlanID, coupon.FieldTemplateID, coupon.FieldRule:
+		case coupon.FieldID, coupon.FieldRiderID, coupon.FieldAssemblyID, coupon.FieldPlanID, coupon.FieldTemplateID, coupon.FieldOrderID, coupon.FieldRule:
 			values[i] = new(sql.NullInt64)
 		case coupon.FieldRemark, coupon.FieldName, coupon.FieldCode:
 			values[i] = new(sql.NullString)
 		case coupon.FieldCreatedAt, coupon.FieldUpdatedAt, coupon.FieldExpiresAt, coupon.FieldUsedAt:
 			values[i] = new(sql.NullTime)
-		case coupon.ForeignKeys[0]: // order_coupons
-			values[i] = new(sql.NullInt64)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Coupon", columns[i])
 		}
@@ -267,6 +266,13 @@ func (c *Coupon) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.TemplateID = uint64(value.Int64)
 			}
+		case coupon.FieldOrderID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field order_id", values[i])
+			} else if value.Valid {
+				c.OrderID = new(uint64)
+				*c.OrderID = uint64(value.Int64)
+			}
 		case coupon.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -317,13 +323,6 @@ func (c *Coupon) assignValues(columns []string, values []any) error {
 				if err := json.Unmarshal(*value, &c.Duration); err != nil {
 					return fmt.Errorf("unmarshal field duration: %w", err)
 				}
-			}
-		case coupon.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field order_coupons", value)
-			} else if value.Valid {
-				c.order_coupons = new(uint64)
-				*c.order_coupons = uint64(value.Int64)
 			}
 		}
 	}
@@ -418,6 +417,11 @@ func (c *Coupon) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("template_id=")
 	builder.WriteString(fmt.Sprintf("%v", c.TemplateID))
+	builder.WriteString(", ")
+	if v := c.OrderID; v != nil {
+		builder.WriteString("order_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(c.Name)

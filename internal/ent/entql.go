@@ -446,6 +446,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			coupon.FieldAssemblyID:   {Type: field.TypeUint64, Column: coupon.FieldAssemblyID},
 			coupon.FieldPlanID:       {Type: field.TypeUint64, Column: coupon.FieldPlanID},
 			coupon.FieldTemplateID:   {Type: field.TypeUint64, Column: coupon.FieldTemplateID},
+			coupon.FieldOrderID:      {Type: field.TypeUint64, Column: coupon.FieldOrderID},
 			coupon.FieldName:         {Type: field.TypeString, Column: coupon.FieldName},
 			coupon.FieldRule:         {Type: field.TypeUint8, Column: coupon.FieldRule},
 			coupon.FieldMultiple:     {Type: field.TypeBool, Column: coupon.FieldMultiple},
@@ -6203,6 +6204,11 @@ func (f *CouponFilter) WherePlanID(p entql.Uint64P) {
 // WhereTemplateID applies the entql uint64 predicate on the template_id field.
 func (f *CouponFilter) WhereTemplateID(p entql.Uint64P) {
 	f.Where(p.Field(coupon.FieldTemplateID))
+}
+
+// WhereOrderID applies the entql uint64 predicate on the order_id field.
+func (f *CouponFilter) WhereOrderID(p entql.Uint64P) {
+	f.Where(p.Field(coupon.FieldOrderID))
 }
 
 // WhereName applies the entql string predicate on the name field.

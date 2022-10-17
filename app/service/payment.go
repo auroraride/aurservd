@@ -47,17 +47,17 @@ func (s *paymentService) Configure() *model.PaymentConfigure {
     // 计算优惠券
     var exclusive, stackable float64
     stackables := make(map[string]float64)
-    for _, coupon := range coupons {
-        isExclusive := coupon.Rule == model.CouponRuleExclusive.Value()
-        cate := utils.Md5String(fmt.Sprintf("%d", coupon.TemplateID))
-        amount := coupon.Amount
+    for _, c := range coupons {
+        isExclusive := c.Rule == model.CouponRuleExclusive.Value()
+        cate := utils.Md5String(fmt.Sprintf("%d", c.TemplateID))
+        amount := c.Amount
         res.Coupons = append(res.Coupons, model.Coupon{
             Cate:      cate,
-            Useable:   coupon.ExpiresAt.After(now),
+            Useable:   c.ExpiresAt.After(now),
             Amount:    amount,
-            Name:      coupon.Name,
-            ExpiredAt: coupon.ExpiresAt.Format("2006.1.2"),
-            Code:      coupon.Code,
+            Name:      c.Name,
+            ExpiredAt: c.ExpiresAt.Format("2006.1.2"),
+            Code:      c.Code,
             Exclusive: isExclusive,
         })
         // 可叠加券

@@ -37,7 +37,6 @@ type CouponQuery struct {
 	withOrder    *OrderQuery
 	withCities   *CityQuery
 	withPlans    *PlanQuery
-	withFKs      bool
 	modifiers    []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -568,7 +567,6 @@ func (cq *CouponQuery) prepareQuery(ctx context.Context) error {
 func (cq *CouponQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Coupon, error) {
 	var (
 		nodes       = []*Coupon{}
-		withFKs     = cq.withFKs
 		_spec       = cq.querySpec()
 		loadedTypes = [7]bool{
 			cq.withRider != nil,
@@ -580,12 +578,6 @@ func (cq *CouponQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Coupo
 			cq.withPlans != nil,
 		}
 	)
-	if cq.withRider != nil || cq.withAssembly != nil || cq.withPlan != nil || cq.withTemplate != nil || cq.withOrder != nil {
-		withFKs = true
-	}
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, coupon.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Coupon).scanValues(nil, columns)
 	}
@@ -768,10 +760,10 @@ func (cq *CouponQuery) loadOrder(ctx context.Context, query *OrderQuery, nodes [
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*Coupon)
 	for i := range nodes {
-		if nodes[i].order_coupons == nil {
+		if nodes[i].OrderID == nil {
 			continue
 		}
-		fk := *nodes[i].order_coupons
+		fk := *nodes[i].OrderID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -785,7 +777,7 @@ func (cq *CouponQuery) loadOrder(ctx context.Context, query *OrderQuery, nodes [
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "order_coupons" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "order_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
