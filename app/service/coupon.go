@@ -87,8 +87,12 @@ func (s *couponService) QueryX(id uint64) *ent.Coupon {
     return c
 }
 
-func (s *couponService) QueryRiderNotUsed(riderID uint64) ent.Coupons {
-    items, _ := s.orm.Query().Where(coupon.RiderID(riderID), coupon.UsedAtIsNil()).All(s.ctx)
+func (s *couponService) QueryEffective(riderID uint64) ent.Coupons {
+    items, _ := s.orm.Query().Where(
+        coupon.RiderID(riderID),
+        coupon.UsedAtIsNil(),
+        coupon.ExpiresAtGT(time.Now()),
+    ).All(s.ctx)
     return items
 }
 

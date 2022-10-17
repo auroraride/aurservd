@@ -42,7 +42,7 @@ func (s *paymentService) Configure() *model.PaymentConfigure {
 
     // 获取骑手优惠券
     now := time.Now()
-    coupons := NewCoupon().QueryRiderNotUsed(s.rider.ID)
+    coupons := NewCoupon().QueryEffective(s.rider.ID)
 
     // 计算优惠券
     var exclusive, stackable float64

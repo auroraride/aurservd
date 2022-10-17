@@ -113,4 +113,7 @@ func loadRideRoutes() {
     g.GET("/reserve", rapi.Reserve.Unfinished)
     g.POST("/reserve", rapi.Reserve.Create)
     g.DELETE("/reserve/:id", rapi.Reserve.Cancel)
+
+    // 钱包
+    g.GET("/wallet/overview", rapi.Wallet.Overview)
 }

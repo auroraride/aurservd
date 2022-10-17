@@ -12593,6 +12593,38 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/rider/v1/wallet/overview": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R9001 钱包概览",
+                "operationId": "RiderWalletOverview",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.WalletOverview"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -19886,7 +19918,7 @@ const docTemplate = `{
                     "description": "注意事项",
                     "type": "string"
                 },
-                "bannaer": {
+                "banner": {
                     "description": "banner图",
                     "type": "string"
                 },
@@ -21318,6 +21350,27 @@ const docTemplate = `{
                 "remark": {
                     "description": "备注 ",
                     "type": "string"
+                }
+            }
+        },
+        "model.WalletOverview": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "description": "账户余额",
+                    "type": "number"
+                },
+                "coupons": {
+                    "description": "可使用优惠券数量",
+                    "type": "integer"
+                },
+                "deposit": {
+                    "description": "已缴纳押金",
+                    "type": "number"
+                },
+                "points": {
+                    "description": "积分数量",
+                    "type": "integer"
                 }
             }
         },

@@ -120,7 +120,7 @@ type SettingRiderApp struct {
 }
 
 type SettingPlanDescription struct {
-    Bannaer   string `json:"bannaer"`   // banner图
+    Banner    string `json:"banner"`    // banner图
     Product   string `json:"product"`   // 商品介绍
     Pickup    string `json:"pickup"`    // 提货方式
     Attention string `json:"attention"` // 注意事项
