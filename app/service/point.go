@@ -13,6 +13,8 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/pointlog"
     "github.com/auroraride/aurservd/internal/ent/rider"
+    "github.com/auroraride/aurservd/pkg/cache"
+    "time"
 )
 
 type pointService struct {
@@ -75,9 +77,9 @@ func (s *pointService) Modify(req *model.PointModifyReq) error {
     })
 }
 
-// LogList 积分变动日志
-func (s *pointService) LogList(req *model.PointLogListReq) *model.PaginationRes {
-    q := s.orm.Query()
+// List 积分变动日志
+func (s *pointService) List(req *model.PointLogListReq) *model.PaginationRes {
+    q := s.orm.Query().Order(ent.Desc(pointlog.FieldCreatedAt))
     if req.RiderID == 0 {
         if req.Keyword != "" {
             q.Where(
@@ -133,4 +135,50 @@ func (s *pointService) Batch(req *model.PointBatchReq) []string {
     }
 
     return notfound
+}
+
+// Real 获取真实积分余额
+// 真实积分 = 账户积分 - 预消耗
+func (s *pointService) Real(r *ent.Rider) int64 {
+    points := r.Points
+    // 从缓存中获取
+    x, _ := cache.Get(s.ctx, fmt.Sprintf("POINTS_%d", r.ID)).Int64()
+    return points - x
+}
+
+// PreConsume 预消耗积分
+func (s *pointService) PreConsume(r *ent.Rider, v int64) (last int64, err error) {
+    points := r.Points
+    // 从缓存中获取
+    key := fmt.Sprintf("POINTS_%d", r.ID)
+    x, _ := cache.Get(s.ctx, key).Int64()
+    x += v
+    if points-x < 0 {
+        err = errors.New("积分余额不能为负")
+        return
+    }
+    last = points - x
+    err = cache.Set(s.ctx, key, last, 20*time.Minute).Err()
+    return
+}
+
+// RemovePreConsume 移除预消耗的积分
+func (s *pointService) RemovePreConsume(r *ent.Rider, v int64) {
+    key := fmt.Sprintf("POINTS_%d", r.ID)
+    x, _ := cache.Get(s.ctx, key).Int64()
+    if x < v {
+        return
+    }
+    x -= v
+    ttl, _ := cache.TTL(s.ctx, key).Result()
+    cache.Set(s.ctx, key, x, ttl)
+}
+
+func (s *pointService) Detail(r *ent.Rider) model.PointRes {
+    points := r.Points
+    x, _ := cache.Get(s.ctx, fmt.Sprintf("POINTS_%d", r.ID)).Int64()
+    return model.PointRes{
+        Points: points,
+        Locked: x,
+    }
 }

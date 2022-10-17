@@ -25,6 +25,8 @@ var (
     HGetAll func(ctx context.Context, key string) *redis.StringStringMapCmd
 
     Expire func(ctx context.Context, key string, expiration time.Duration) *redis.BoolCmd
+
+    TTL func(ctx context.Context, key string) *redis.DurationCmd
 )
 
 func CreateClient(addr, password string, db int) {
@@ -44,6 +46,8 @@ func CreateClient(addr, password string, db int) {
     HGetAll = client.HGetAll
 
     Expire = client.Expire
+
+    TTL = client.TTL
 }
 
 func Float64(key string) float64 {

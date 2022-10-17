@@ -1,5 +1,8 @@
 # 极光出行
 
+## 注意
+- 积分消耗: 若不支付, 预消耗20分钟后释放
+
 ## 调试
 ```shell
 dlv debug --headless --listen=:2345 --api-version=2 --accept-multiclient attach $PID

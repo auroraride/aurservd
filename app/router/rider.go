@@ -117,4 +117,6 @@ func loadRideRoutes() {
 
     // 钱包
     g.GET("/wallet/overview", rapi.Wallet.Overview)
+    g.GET("/wallet/pointlog", rapi.Wallet.PointLog)
+    g.GET("/wallet/points", rapi.Wallet.Points)
 }

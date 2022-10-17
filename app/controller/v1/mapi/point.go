@@ -44,10 +44,11 @@ func (*point) Modify(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query   model.PointLogListReq  false  "筛选选项"
 // @Success      200  {object}  model.PaginationRes{items=[]model.PointLogListRes}  "请求成功"
 func (*point) Log(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.PointLogListReq](c)
-    return ctx.SendResponse(service.NewPointWithModifier(ctx.Modifier).LogList(req))
+    return ctx.SendResponse(service.NewPointWithModifier(ctx.Modifier).List(req))
 }
 
 // Batch

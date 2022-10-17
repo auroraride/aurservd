@@ -4318,6 +4318,15 @@ definitions:
     - riderId
     - type
     type: object
+  model.PointRes:
+    properties:
+      locked:
+        description: 锁定积分
+        type: integer
+      points:
+        description: 剩余积分
+        type: integer
+    type: object
   model.PrepaymentListRes:
     properties:
       amount:
@@ -11684,6 +11693,29 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 骑手姓名或电话
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 骑手
+        in: query
+        name: riderId
+        type: integer
+      - description: 类别 1:消费 2:奖励
+        enum:
+        - 1
+        - 2
+        in: query
+        name: type
+        type: integer
       produces:
       - application/json
       responses:
@@ -14518,6 +14550,63 @@ paths:
           schema:
             $ref: '#/definitions/model.WalletOverview'
       summary: R9001 钱包概览
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/wallet/pointlog:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderWalletPointLog
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.PointLogListRes'
+                  type: array
+              type: object
+      summary: R9002 积分日志
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/wallet/points:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderWalletPoints
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.PointRes'
+      summary: R9003 积分详情
       tags:
       - '[R]骑手接口'
 swagger: "2.0"

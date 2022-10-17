@@ -231,14 +231,22 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
     // 积分抵扣
     var points int64
     if req.Point && price > 0 {
-        cents := int64(price / model.PointRatio)
-        // 若积分小于所需积分, 则全部扣除
-        if s.rider.Points < cents {
-            points = s.rider.Points
-        } else {
-            points = s.rider.Points - cents
+        pointServ := NewPoint()
+        realPoints := pointServ.Real(s.rider)
+        if realPoints > 0 {
+            cents := int64(price / model.PointRatio)
+            // 若积分小于所需积分, 则全部扣除
+            if realPoints < cents {
+                points = realPoints
+            } else {
+                points = realPoints - cents
+            }
+            price = tools.NewDecimal().Sub(price, float64(points)*model.PointRatio)
+            _, err := pointServ.PreConsume(s.rider, points)
+            if err != nil {
+                snag.Panic("订单创建失败: %v", err)
+            }
         }
-        price = tools.NewDecimal().Sub(price, float64(points)*model.PointRatio)
     }
 
     if price < 0 {
@@ -478,6 +486,31 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
         if err != nil {
             log.Errorf("[ORDER PAID %s ERROR]: %s", trade.OutTradeNo, err.Error())
             return
+        }
+
+        // 更新积分
+        if trade.Points > 0 {
+            var r *ent.Rider
+            r, err = tx.Rider.UpdateOneID(trade.RiderID).AddPoints(-trade.Points).Save(s.ctx)
+            if err != nil {
+                log.Errorf("[ORDER PAID POINT UPDATE %s ERROR]: %s", trade.OutTradeNo, err.Error())
+                return
+            }
+
+            err = tx.PointLog.Create().
+                SetPoints(trade.Points).
+                SetRiderID(trade.RiderID).
+                SetReason("订阅骑士卡").
+                SetType(model.PointLogTypeConsume.Value()).
+                SetAfter(r.Points).
+                SetOrder(o).
+                Exec(s.ctx)
+            if err != nil {
+                log.Errorf("[ORDER PAID POINT LOG %s ERROR]: %s", trade.OutTradeNo, err.Error())
+                return
+            }
+
+            NewPoint().RemovePreConsume(r, trade.Points)
         }
 
         // 如果有押金, 创建押金订单
