@@ -14,6 +14,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/pointlog"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/pkg/cache"
+    "github.com/golang-module/carbon/v2"
     "time"
 )
 
@@ -110,6 +111,7 @@ func (s *pointService) List(req *model.PointLogListReq) *model.PaginationRes {
             Reason:   item.Reason,
             After:    item.After,
             Modifier: mm,
+            Time:     item.CreatedAt.Format(carbon.DateTimeLayout),
         }
     })
 }

@@ -62,6 +62,7 @@ type PointLogListRes struct {
     After    int64   `json:"after"`              // 变动后
     Reason   *string `json:"reason,omitempty"`   // 原因
     Modifier string  `json:"modifier,omitempty"` // 操作人
+    Time     string  `json:"time"`               // 时间
 }
 
 type PointBatchReq struct {

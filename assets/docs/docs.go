@@ -18949,6 +18949,10 @@ const docTemplate = `{
                     "description": "原因",
                     "type": "string"
                 },
+                "time": {
+                    "description": "时间",
+                    "type": "string"
+                },
                 "type": {
                     "description": "类别",
                     "type": "string"
