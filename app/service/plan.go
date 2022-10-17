@@ -7,11 +7,13 @@ package service
 
 import (
     "context"
+    "encoding/json"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/plan"
+    "github.com/auroraride/aurservd/internal/ent/setting"
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
@@ -492,6 +494,20 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
     res := model.PlanNewlyRes{
         Deposit:   deposit,
         Configure: NewPayment(s.rider).Configure(),
+    }
+
+    settings, _ := ent.Database.Setting.Query().Where(setting.KeyIn(model.SettingPlanBatteryDescription, model.SettingPlanEbikeDescription)).All(context.Background())
+    for _, sm := range settings {
+        var v model.SettingPlanDescription
+        err := json.Unmarshal([]byte(sm.Content), &v)
+        if err == nil {
+            switch sm.Key {
+            case model.SettingPlanBatteryDescription:
+                res.BatteryDescription = v
+            case model.SettingPlanEbikeDescription:
+                res.EbikeDescription = v
+            }
+        }
     }
 
     switch req.Type {

@@ -4220,6 +4220,10 @@ definitions:
     type: object
   model.PlanNewlyRes:
     properties:
+      batteryDescription:
+        allOf:
+        - $ref: '#/definitions/model.SettingPlanDescription'
+        description: 单电介绍
       brands:
         description: 车电选项
         items:
@@ -4232,6 +4236,10 @@ definitions:
       deposit:
         description: 需缴纳押金
         type: number
+      ebikeDescription:
+        allOf:
+        - $ref: '#/definitions/model.SettingPlanDescription'
+        description: 车电介绍
       models:
         description: 单电选项
         items:
@@ -5099,6 +5107,21 @@ definitions:
         items:
           $ref: '#/definitions/model.SelectOption'
         type: array
+    type: object
+  model.SettingPlanDescription:
+    properties:
+      attention:
+        description: 注意事项
+        type: string
+      bannaer:
+        description: banner图
+        type: string
+      pickup:
+        description: 提货方式
+        type: string
+      product:
+        description: 商品介绍
+        type: string
     type: object
   model.SettingReq:
     properties:
