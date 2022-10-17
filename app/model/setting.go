@@ -6,19 +6,21 @@
 package model
 
 const (
-    SettingDeposit            = "DEPOSIT"              // 押金
-    SettingRenewal            = "RENEWAL"              // 退订多久后重签计算佣金
-    SettingCabinetFault       = "CABINET_FAULT"        // 电柜故障
-    SettingRescueReason       = "RESCUE_REASON"        // 救援原因
-    SettingRescueFee          = "RESCUE_FEE"           // 救援费用
-    SettingReminder           = "REMINDER"             // 催费通知
-    SettingBatteryFull        = "BATTERY_FULL"         // 满电电量
-    SettingException          = "EXCEPTION"            // 物资异常
-    SettingPauseMaxDays       = "PAUSE_MAX_DAYS"       // 最大寄存时间
-    SettingExchangeInterval   = "EXCHANGE_INTERVAL"    // 限制换电间隔
-    SettingMaintain           = "MAINTAIN"             // 维护中
-    SettingReserveDuration    = "RESERVE_MAX_DURATION" // 最长预约时间
-    SettingExchangeMinBattery = "EXCHANGE_MIN_BATTERY" // 换电最低电量
+    SettingDeposit                = "DEPOSIT"                  // 押金
+    SettingRenewal                = "RENEWAL"                  // 退订多久后重签计算佣金
+    SettingCabinetFault           = "CABINET_FAULT"            // 电柜故障
+    SettingRescueReason           = "RESCUE_REASON"            // 救援原因
+    SettingRescueFee              = "RESCUE_FEE"               // 救援费用
+    SettingReminder               = "REMINDER"                 // 催费通知
+    SettingBatteryFull            = "BATTERY_FULL"             // 满电电量
+    SettingException              = "EXCEPTION"                // 物资异常
+    SettingPauseMaxDays           = "PAUSE_MAX_DAYS"           // 最大寄存时间
+    SettingExchangeInterval       = "EXCHANGE_INTERVAL"        // 限制换电间隔
+    SettingMaintain               = "MAINTAIN"                 // 维护中
+    SettingReserveDuration        = "RESERVE_MAX_DURATION"     // 最长预约时间
+    SettingExchangeMinBattery     = "EXCHANGE_MIN_BATTERY"     // 换电最低电量
+    SettingPlanBatteryDescription = "PLAN_BATTERY_DESCRIPTION" // 单电订阅介绍
+    SettingPlanEbikeDescription   = "PLAN_EBIKE_DESCRIPTION"   // 车电订阅介绍
 )
 
 type SettingValueConvert func(content string) any
@@ -102,9 +104,24 @@ var Settings = map[string]SettingItem{
         Desc:    "换电最低电量(%)",
         Default: "50",
     },
+    SettingPlanBatteryDescription: {
+        Desc:    "单电订阅介绍",
+        Default: SettingPlanDescription{},
+    },
+    SettingPlanEbikeDescription: {
+        Desc:    "车电订阅介绍",
+        Default: SettingPlanDescription{},
+    },
 }
 
 type SettingRiderApp struct {
     AssistanceFee   float64 `json:"assistanceFee"`   // 救援费用
     ReserveDuration int     `json:"reserveDuration"` // 预约最长时间(分钟)
+}
+
+type SettingPlanDescription struct {
+    Bannaer   string `json:"bannaer"`   // banner图
+    Product   string `json:"product"`   // 商品介绍
+    Pickup    string `json:"pickup"`    // 提货方式
+    Attention string `json:"attention"` // 注意事项
 }
