@@ -108,6 +108,7 @@ func loadRideRoutes() {
 
     // 设定
     g.GET("/setting/app", rapi.Setting.App)
+    g.GET("/setting/question", rapi.Setting.Question)
 
     // 预约
     g.GET("/reserve", rapi.Reserve.Unfinished)

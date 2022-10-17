@@ -21,6 +21,7 @@ const (
     SettingExchangeMinBattery     = "EXCHANGE_MIN_BATTERY"     // 换电最低电量
     SettingPlanBatteryDescription = "PLAN_BATTERY_DESCRIPTION" // 单电订阅介绍
     SettingPlanEbikeDescription   = "PLAN_EBIKE_DESCRIPTION"   // 车电订阅介绍
+    SettingQuestions              = "QUESTION"                 // 常见问题
 )
 
 type SettingValueConvert func(content string) any
@@ -112,6 +113,10 @@ var Settings = map[string]SettingItem{
         Desc:    "车电订阅介绍",
         Default: SettingPlanDescription{},
     },
+    SettingQuestions: {
+        Desc:    "常见问题",
+        Default: []SettingQuestion{},
+    },
 }
 
 type SettingRiderApp struct {
@@ -124,4 +129,9 @@ type SettingPlanDescription struct {
     Product   string `json:"product"`   // 商品介绍
     Pickup    string `json:"pickup"`    // 提货方式
     Attention string `json:"attention"` // 注意事项
+}
+
+type SettingQuestion struct {
+    Question string `json:"question"` // 问题
+    Answer   string `json:"answer"`   // 解答
 }

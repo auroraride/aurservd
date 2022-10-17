@@ -130,7 +130,7 @@ func (s *settingService) GetSetting(key string) (v any) {
 
 // SystemMaintain 检查是否维护中
 func (s *settingService) SystemMaintain() bool {
-    sm, _ := NewSetting().GetSetting(model.SettingMaintain).(bool)
+    sm, _ := s.GetSetting(model.SettingMaintain).(bool)
     return sm
 }
 
@@ -139,4 +139,12 @@ func (s *settingService) SystemMaintainX() {
     if s.SystemMaintain() {
         snag.Panic("正在唤醒电柜, 请稍后")
     }
+}
+
+func (s *settingService) Question() (v []model.SettingQuestion) {
+    v, _ = s.GetSetting(model.SettingQuestions).([]model.SettingQuestion)
+    if len(v) == 0 {
+        v = make([]model.SettingQuestion, 0)
+    }
+    return v
 }

@@ -5123,6 +5123,15 @@ definitions:
         description: 商品介绍
         type: string
     type: object
+  model.SettingQuestion:
+    properties:
+      answer:
+        description: 解答
+        type: string
+      question:
+        description: 问题
+        type: string
+    type: object
   model.SettingReq:
     properties:
       content:
@@ -14443,6 +14452,29 @@ paths:
           schema:
             $ref: '#/definitions/model.SettingRiderApp'
       summary: R6001 获取APP设置
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/setting/question:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderSettingQuestion
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.SettingQuestion'
+            type: array
+      summary: R6002 获取常见问题
       tags:
       - '[R]骑手接口'
   /rider/v1/signin:

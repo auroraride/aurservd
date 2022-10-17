@@ -12560,6 +12560,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/setting/question": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R6002 获取常见问题",
+                "operationId": "RiderSettingQuestion",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SettingQuestion"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/signin": {
             "post": {
                 "consumes": [
@@ -19928,6 +19963,19 @@ const docTemplate = `{
                 },
                 "product": {
                     "description": "商品介绍",
+                    "type": "string"
+                }
+            }
+        },
+        "model.SettingQuestion": {
+            "type": "object",
+            "properties": {
+                "answer": {
+                    "description": "解答",
+                    "type": "string"
+                },
+                "question": {
+                    "description": "问题",
                     "type": "string"
                 }
             }
