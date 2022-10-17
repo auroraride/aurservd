@@ -26,5 +26,5 @@ func (s *speechService) SendSpeech(employeeID uint64, message string) {
     res := &model.EmployeeSocketMessage{
         Speech: message,
     }
-    socket.GetClientID(NewEmployeeSocket(), employeeID).SendMessage(res)
+    socket.SendMessage(NewEmployeeSocket(), employeeID, res)
 }

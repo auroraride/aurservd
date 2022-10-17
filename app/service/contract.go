@@ -187,6 +187,20 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
         snag.Panic("未找到有效城市")
     }
 
+    // 判定门店或电柜库存
+    stockable := true
+    if req.CabinetID != nil {
+        // 判定电柜库存
+        stockable = NewStock().CheckCabinet(*req.CabinetID, sub.Model, 1)
+    }
+    if req.StoreID != nil {
+        // 判定门店库存
+        stockable = NewStock().CheckStore(*req.StoreID, sub.Model, 1)
+    }
+    if !stockable {
+        snag.Panic("电池库存不足")
+    }
+
     // 定义变量
     var (
         m            = make(ar.Map)
@@ -415,7 +429,6 @@ func (s *contractService) checkResult(flowID string) {
             // 签署是否过期
             isExpired := t.Sub(start).Minutes() > model.ContractExpiration
             stop, _ := s.doResult(flowID, isExpired)
-            fmt.Println(stop)
             if stop {
                 ticker.Stop()
                 return
@@ -497,8 +510,7 @@ func (s *contractService) doResult(flowID string, isExpired bool) (stop, success
 
         // 如有必要, 通知店员合同签署完成
         if c.EmployeeID != nil && c.AllocateID != nil {
-            fmt.Printf("通知店员: %d\n", *c.EmployeeID)
-            socket.GetClientID(NewEmployeeSocket(), *c.EmployeeID).SendMessage(&model.EmployeeSocketMessage{
+            socket.SendMessage(NewEmployeeSocket(), *c.EmployeeID, &model.EmployeeSocketMessage{
                 Speech:          "骑手已签约",
                 EbikeAllocateID: c.AllocateID,
             })

@@ -134,12 +134,6 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
         snag.Panic("团签用户无法购买")
     }
 
-    // 查询骑手是否签约过
-    // TODO 新签约逻辑
-    // if !NewContract().Effective(s.rider) {
-    //     snag.Panic("请先签约")
-    // }
-
     // 查询是否有退款中的押金
     if exists, _ := ent.Database.Order.QueryNotDeleted().Where(
         order.RiderID(s.rider.ID),

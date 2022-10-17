@@ -7,10 +7,12 @@ package service
 
 import (
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/socket"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/ebike"
     "github.com/auroraride/aurservd/internal/ent/ebikeallocate"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
+    "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
     log "github.com/sirupsen/logrus"
@@ -180,6 +182,12 @@ func (s *ebikeAllocateService) Allocate(req *model.EbikeAllocateReq) model.IDPos
         log.Errorf("分配失败: %v", err)
         snag.Panic("分配失败")
     }
+
+    // 推送签约消息
+    socket.SendMessage(NewRiderSocket(), r.ID, &model.RiderSocketMessage{ContractSign: &model.ContractSignReq{
+        SubscribeID: sub.ID,
+        StoreID:     silk.Pointer(s.entStore.ID),
+    }})
 
     return model.IDPostReq{
         ID: id,

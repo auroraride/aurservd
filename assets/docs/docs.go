@@ -15853,6 +15853,14 @@ const docTemplate = `{
                 "subscribeId"
             ],
             "properties": {
+                "cabinetId": {
+                    "description": "电柜ID",
+                    "type": "integer"
+                },
+                "storeId": {
+                    "description": "门店ID",
+                    "type": "integer"
+                },
                 "subscribeId": {
                     "description": "订阅ID ",
                     "type": "integer"

@@ -298,12 +298,18 @@ func (s *businessRiderService) preprocess(bt business.Type, sub *ent.Subscribe) 
     }
 
     // 车电套餐检查
-    if s.ebikeInfo != nil {
+    if s.ebikeInfo != nil || sub.EbikeID != nil {
         // 车电套餐无法办理寄存业务
         // 车电套餐无法使用电柜
-        if bt == business.TypePause || bt == business.TypeContinue || s.cabinetID != nil {
+        if bt != business.TypeActive || s.cabinetID != nil {
             snag.Panic("车电订阅无法办理此业务")
         }
+    }
+
+    // 如果是车电套餐, 设置电车信息
+    // TODO 是否有此必要
+    if sub.EbikeID != nil && s.ebikeInfo == nil {
+        s.SetEbikeID(*sub.EbikeID)
     }
 
     // 预约检查
@@ -462,15 +468,20 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 // Active 激活订阅
 // TODO 电柜激活电池
 func (s *businessRiderService) Active(info *model.SubscribeActiveInfo, sub *ent.Subscribe, cbs ...ent.TxFunc) {
+    s.preprocess(business.TypeActive, sub)
+
+    // TODO 后台强制激活越过签约
     if !NewContract().Effective(s.rider) {
         if s.rider != nil {
             // 返回签约URL
-            snag.Panic(snag.StatusRequireSign, NewContractWithRider(s.rider).Sign(&model.ContractSignReq{SubscribeID: sub.ID}))
+            snag.Panic(snag.StatusRequireSign, NewContractWithRider(s.rider).Sign(&model.ContractSignReq{
+                SubscribeID: sub.ID,
+                StoreID:     s.storeID,
+                CabinetID:   s.cabinetID,
+            }))
         }
         snag.Panic("还未签约, 请签约")
     }
-
-    s.preprocess(business.TypeActive, sub)
 
     s.do(business.TypeActive, func(tx *ent.Tx) {
         var err error

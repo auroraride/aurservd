@@ -93,12 +93,12 @@ func (s *assistanceSocketService) SendRider(riderID uint64, ass *ent.Assistance)
         return
     }
 
-    socket.GetClientID(NewRiderSocket(), riderID).SendMessage(&model.RiderSocketMessage{Assistance: message})
+    socket.SendMessage(NewRiderSocket(), riderID, &model.RiderSocketMessage{Assistance: message})
 }
 
 // SenderEmployee 发送消息给门店端
 func (s *assistanceSocketService) SenderEmployee(employeeID uint64, ass *ent.Assistance) {
-    socket.GetClientID(NewEmployeeSocket(), employeeID).SendMessage(&model.EmployeeSocketMessage{
+    socket.SendMessage(NewEmployeeSocket(), employeeID, &model.EmployeeSocketMessage{
         Speech:       "您有一条救援任务",
         AssistanceID: silk.Pointer(ass.ID),
     })

@@ -30,6 +30,13 @@ type WebsocketHub struct {
     ClientID string
 }
 
+func SendMessage(ws Websocket, id uint64, message model.SocketBinaryMessage) {
+    c := GetClientID(ws, id)
+    if c != nil {
+        c.SendMessage(message)
+    }
+}
+
 // SendMessage 发送消息
 func (hub *WebsocketHub) SendMessage(message model.SocketBinaryMessage) {
     if hub == nil {
