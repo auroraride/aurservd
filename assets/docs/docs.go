@@ -20990,15 +20990,7 @@ const docTemplate = `{
                     "description": "电车属性",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.EbikeInfo"
-                        }
-                    ]
-                },
-                "ebikeBrand": {
-                    "description": "电车品牌",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.EbikeBrand"
+                            "$ref": "#/definitions/model.Ebike"
                         }
                     ]
                 },

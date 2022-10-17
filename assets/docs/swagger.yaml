@@ -5877,12 +5877,8 @@ definitions:
         type: integer
       ebike:
         allOf:
-        - $ref: '#/definitions/model.EbikeInfo'
+        - $ref: '#/definitions/model.Ebike'
         description: 电车属性
-      ebikeBrand:
-        allOf:
-        - $ref: '#/definitions/model.EbikeBrand'
-        description: 电车品牌
       endAt:
         description: 结束时间 / 预计套餐结束时间
         type: string

@@ -74,8 +74,7 @@ type Subscribe struct {
     Order      *SubscribeOrderInfo `json:"order,omitempty"`      // 订单信息
     Enterprise *Enterprise         `json:"enterprise,omitempty"` // 企业信息
 
-    EbikeBrand *EbikeBrand `json:"ebikeBrand,omitempty"` // 电车品牌
-    Ebike      *EbikeInfo  `json:"ebike,omitempty"`      // 电车属性
+    Ebike *Ebike `json:"ebike,omitempty"` // 电车属性
 }
 
 // SubscribeAlter 订阅天数调整请求
