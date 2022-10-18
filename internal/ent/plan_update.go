@@ -274,24 +274,24 @@ func (pu *PlanUpdate) ClearParentID() *PlanUpdate {
 	return pu
 }
 
-// SetReliefNewly sets the "relief_newly" field.
-func (pu *PlanUpdate) SetReliefNewly(f float64) *PlanUpdate {
-	pu.mutation.ResetReliefNewly()
-	pu.mutation.SetReliefNewly(f)
+// SetDiscountNewly sets the "discount_newly" field.
+func (pu *PlanUpdate) SetDiscountNewly(f float64) *PlanUpdate {
+	pu.mutation.ResetDiscountNewly()
+	pu.mutation.SetDiscountNewly(f)
 	return pu
 }
 
-// SetNillableReliefNewly sets the "relief_newly" field if the given value is not nil.
-func (pu *PlanUpdate) SetNillableReliefNewly(f *float64) *PlanUpdate {
+// SetNillableDiscountNewly sets the "discount_newly" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableDiscountNewly(f *float64) *PlanUpdate {
 	if f != nil {
-		pu.SetReliefNewly(*f)
+		pu.SetDiscountNewly(*f)
 	}
 	return pu
 }
 
-// AddReliefNewly adds f to the "relief_newly" field.
-func (pu *PlanUpdate) AddReliefNewly(f float64) *PlanUpdate {
-	pu.mutation.AddReliefNewly(f)
+// AddDiscountNewly adds f to the "discount_newly" field.
+func (pu *PlanUpdate) AddDiscountNewly(f float64) *PlanUpdate {
+	pu.mutation.AddDiscountNewly(f)
 	return pu
 }
 
@@ -717,18 +717,18 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: plan.FieldDesc,
 		})
 	}
-	if value, ok := pu.mutation.ReliefNewly(); ok {
+	if value, ok := pu.mutation.DiscountNewly(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
 			Value:  value,
-			Column: plan.FieldReliefNewly,
+			Column: plan.FieldDiscountNewly,
 		})
 	}
-	if value, ok := pu.mutation.AddedReliefNewly(); ok {
+	if value, ok := pu.mutation.AddedDiscountNewly(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
 			Value:  value,
-			Column: plan.FieldReliefNewly,
+			Column: plan.FieldDiscountNewly,
 		})
 	}
 	if value, ok := pu.mutation.Notes(); ok {
@@ -1238,24 +1238,24 @@ func (puo *PlanUpdateOne) ClearParentID() *PlanUpdateOne {
 	return puo
 }
 
-// SetReliefNewly sets the "relief_newly" field.
-func (puo *PlanUpdateOne) SetReliefNewly(f float64) *PlanUpdateOne {
-	puo.mutation.ResetReliefNewly()
-	puo.mutation.SetReliefNewly(f)
+// SetDiscountNewly sets the "discount_newly" field.
+func (puo *PlanUpdateOne) SetDiscountNewly(f float64) *PlanUpdateOne {
+	puo.mutation.ResetDiscountNewly()
+	puo.mutation.SetDiscountNewly(f)
 	return puo
 }
 
-// SetNillableReliefNewly sets the "relief_newly" field if the given value is not nil.
-func (puo *PlanUpdateOne) SetNillableReliefNewly(f *float64) *PlanUpdateOne {
+// SetNillableDiscountNewly sets the "discount_newly" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableDiscountNewly(f *float64) *PlanUpdateOne {
 	if f != nil {
-		puo.SetReliefNewly(*f)
+		puo.SetDiscountNewly(*f)
 	}
 	return puo
 }
 
-// AddReliefNewly adds f to the "relief_newly" field.
-func (puo *PlanUpdateOne) AddReliefNewly(f float64) *PlanUpdateOne {
-	puo.mutation.AddReliefNewly(f)
+// AddDiscountNewly adds f to the "discount_newly" field.
+func (puo *PlanUpdateOne) AddDiscountNewly(f float64) *PlanUpdateOne {
+	puo.mutation.AddDiscountNewly(f)
 	return puo
 }
 
@@ -1711,18 +1711,18 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 			Column: plan.FieldDesc,
 		})
 	}
-	if value, ok := puo.mutation.ReliefNewly(); ok {
+	if value, ok := puo.mutation.DiscountNewly(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
 			Value:  value,
-			Column: plan.FieldReliefNewly,
+			Column: plan.FieldDiscountNewly,
 		})
 	}
-	if value, ok := puo.mutation.AddedReliefNewly(); ok {
+	if value, ok := puo.mutation.AddedDiscountNewly(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
 			Value:  value,
-			Column: plan.FieldReliefNewly,
+			Column: plan.FieldDiscountNewly,
 		})
 	}
 	if value, ok := puo.mutation.Notes(); ok {

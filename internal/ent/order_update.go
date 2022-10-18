@@ -382,24 +382,24 @@ func (ou *OrderUpdate) AddCouponAmount(f float64) *OrderUpdate {
 	return ou
 }
 
-// SetReliefNewly sets the "relief_newly" field.
-func (ou *OrderUpdate) SetReliefNewly(f float64) *OrderUpdate {
-	ou.mutation.ResetReliefNewly()
-	ou.mutation.SetReliefNewly(f)
+// SetDiscountNewly sets the "discount_newly" field.
+func (ou *OrderUpdate) SetDiscountNewly(f float64) *OrderUpdate {
+	ou.mutation.ResetDiscountNewly()
+	ou.mutation.SetDiscountNewly(f)
 	return ou
 }
 
-// SetNillableReliefNewly sets the "relief_newly" field if the given value is not nil.
-func (ou *OrderUpdate) SetNillableReliefNewly(f *float64) *OrderUpdate {
+// SetNillableDiscountNewly sets the "discount_newly" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableDiscountNewly(f *float64) *OrderUpdate {
 	if f != nil {
-		ou.SetReliefNewly(*f)
+		ou.SetDiscountNewly(*f)
 	}
 	return ou
 }
 
-// AddReliefNewly adds f to the "relief_newly" field.
-func (ou *OrderUpdate) AddReliefNewly(f float64) *OrderUpdate {
-	ou.mutation.AddReliefNewly(f)
+// AddDiscountNewly adds f to the "discount_newly" field.
+func (ou *OrderUpdate) AddDiscountNewly(f float64) *OrderUpdate {
+	ou.mutation.AddDiscountNewly(f)
 	return ou
 }
 
@@ -900,18 +900,18 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: order.FieldCouponAmount,
 		})
 	}
-	if value, ok := ou.mutation.ReliefNewly(); ok {
+	if value, ok := ou.mutation.DiscountNewly(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
 			Value:  value,
-			Column: order.FieldReliefNewly,
+			Column: order.FieldDiscountNewly,
 		})
 	}
-	if value, ok := ou.mutation.AddedReliefNewly(); ok {
+	if value, ok := ou.mutation.AddedDiscountNewly(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
 			Value:  value,
-			Column: order.FieldReliefNewly,
+			Column: order.FieldDiscountNewly,
 		})
 	}
 	if ou.mutation.PlanCleared() {
@@ -1735,24 +1735,24 @@ func (ouo *OrderUpdateOne) AddCouponAmount(f float64) *OrderUpdateOne {
 	return ouo
 }
 
-// SetReliefNewly sets the "relief_newly" field.
-func (ouo *OrderUpdateOne) SetReliefNewly(f float64) *OrderUpdateOne {
-	ouo.mutation.ResetReliefNewly()
-	ouo.mutation.SetReliefNewly(f)
+// SetDiscountNewly sets the "discount_newly" field.
+func (ouo *OrderUpdateOne) SetDiscountNewly(f float64) *OrderUpdateOne {
+	ouo.mutation.ResetDiscountNewly()
+	ouo.mutation.SetDiscountNewly(f)
 	return ouo
 }
 
-// SetNillableReliefNewly sets the "relief_newly" field if the given value is not nil.
-func (ouo *OrderUpdateOne) SetNillableReliefNewly(f *float64) *OrderUpdateOne {
+// SetNillableDiscountNewly sets the "discount_newly" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableDiscountNewly(f *float64) *OrderUpdateOne {
 	if f != nil {
-		ouo.SetReliefNewly(*f)
+		ouo.SetDiscountNewly(*f)
 	}
 	return ouo
 }
 
-// AddReliefNewly adds f to the "relief_newly" field.
-func (ouo *OrderUpdateOne) AddReliefNewly(f float64) *OrderUpdateOne {
-	ouo.mutation.AddReliefNewly(f)
+// AddDiscountNewly adds f to the "discount_newly" field.
+func (ouo *OrderUpdateOne) AddDiscountNewly(f float64) *OrderUpdateOne {
+	ouo.mutation.AddDiscountNewly(f)
 	return ouo
 }
 
@@ -2283,18 +2283,18 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 			Column: order.FieldCouponAmount,
 		})
 	}
-	if value, ok := ouo.mutation.ReliefNewly(); ok {
+	if value, ok := ouo.mutation.DiscountNewly(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
 			Value:  value,
-			Column: order.FieldReliefNewly,
+			Column: order.FieldDiscountNewly,
 		})
 	}
-	if value, ok := ouo.mutation.AddedReliefNewly(); ok {
+	if value, ok := ouo.mutation.AddedDiscountNewly(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
 			Value:  value,
-			Column: order.FieldReliefNewly,
+			Column: order.FieldDiscountNewly,
 		})
 	}
 	if ouo.mutation.PlanCleared() {

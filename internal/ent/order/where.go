@@ -249,10 +249,10 @@ func CouponAmount(v float64) predicate.Order {
 	})
 }
 
-// ReliefNewly applies equality check predicate on the "relief_newly" field. It's identical to ReliefNewlyEQ.
-func ReliefNewly(v float64) predicate.Order {
+// DiscountNewly applies equality check predicate on the "discount_newly" field. It's identical to DiscountNewlyEQ.
+func DiscountNewly(v float64) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldReliefNewly), v))
+		s.Where(sql.EQ(s.C(FieldDiscountNewly), v))
 	})
 }
 
@@ -1883,67 +1883,67 @@ func CouponAmountLTE(v float64) predicate.Order {
 	})
 }
 
-// ReliefNewlyEQ applies the EQ predicate on the "relief_newly" field.
-func ReliefNewlyEQ(v float64) predicate.Order {
+// DiscountNewlyEQ applies the EQ predicate on the "discount_newly" field.
+func DiscountNewlyEQ(v float64) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldReliefNewly), v))
+		s.Where(sql.EQ(s.C(FieldDiscountNewly), v))
 	})
 }
 
-// ReliefNewlyNEQ applies the NEQ predicate on the "relief_newly" field.
-func ReliefNewlyNEQ(v float64) predicate.Order {
+// DiscountNewlyNEQ applies the NEQ predicate on the "discount_newly" field.
+func DiscountNewlyNEQ(v float64) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldReliefNewly), v))
+		s.Where(sql.NEQ(s.C(FieldDiscountNewly), v))
 	})
 }
 
-// ReliefNewlyIn applies the In predicate on the "relief_newly" field.
-func ReliefNewlyIn(vs ...float64) predicate.Order {
+// DiscountNewlyIn applies the In predicate on the "discount_newly" field.
+func DiscountNewlyIn(vs ...float64) predicate.Order {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldReliefNewly), v...))
+		s.Where(sql.In(s.C(FieldDiscountNewly), v...))
 	})
 }
 
-// ReliefNewlyNotIn applies the NotIn predicate on the "relief_newly" field.
-func ReliefNewlyNotIn(vs ...float64) predicate.Order {
+// DiscountNewlyNotIn applies the NotIn predicate on the "discount_newly" field.
+func DiscountNewlyNotIn(vs ...float64) predicate.Order {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldReliefNewly), v...))
+		s.Where(sql.NotIn(s.C(FieldDiscountNewly), v...))
 	})
 }
 
-// ReliefNewlyGT applies the GT predicate on the "relief_newly" field.
-func ReliefNewlyGT(v float64) predicate.Order {
+// DiscountNewlyGT applies the GT predicate on the "discount_newly" field.
+func DiscountNewlyGT(v float64) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldReliefNewly), v))
+		s.Where(sql.GT(s.C(FieldDiscountNewly), v))
 	})
 }
 
-// ReliefNewlyGTE applies the GTE predicate on the "relief_newly" field.
-func ReliefNewlyGTE(v float64) predicate.Order {
+// DiscountNewlyGTE applies the GTE predicate on the "discount_newly" field.
+func DiscountNewlyGTE(v float64) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldReliefNewly), v))
+		s.Where(sql.GTE(s.C(FieldDiscountNewly), v))
 	})
 }
 
-// ReliefNewlyLT applies the LT predicate on the "relief_newly" field.
-func ReliefNewlyLT(v float64) predicate.Order {
+// DiscountNewlyLT applies the LT predicate on the "discount_newly" field.
+func DiscountNewlyLT(v float64) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldReliefNewly), v))
+		s.Where(sql.LT(s.C(FieldDiscountNewly), v))
 	})
 }
 
-// ReliefNewlyLTE applies the LTE predicate on the "relief_newly" field.
-func ReliefNewlyLTE(v float64) predicate.Order {
+// DiscountNewlyLTE applies the LTE predicate on the "discount_newly" field.
+func DiscountNewlyLTE(v float64) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldReliefNewly), v))
+		s.Where(sql.LTE(s.C(FieldDiscountNewly), v))
 	})
 }
 

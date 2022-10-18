@@ -26,7 +26,6 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
-    "github.com/shopspring/decimal"
     log "github.com/sirupsen/logrus"
     "time"
 )
@@ -183,8 +182,8 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
 
     // 计算新签优惠
     var ramount float64
-    if t == model.OrderTypeNewly && p.ReliefNewly > 0 {
-        ramount = p.ReliefNewly
+    if t == model.OrderTypeNewly && p.DiscountNewly > 0 {
+        ramount = p.DiscountNewly
         price = tools.NewDecimal().Sub(price, ramount)
     }
 
@@ -269,27 +268,27 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
     prepay := &model.PaymentCache{
         CacheType: model.PaymentCacheTypePlan,
         Subscribe: &model.PaymentSubscribe{
-            CityID:       req.CityID,
-            OrderType:    t,
-            OutTradeNo:   no,
-            RiderID:      s.rider.ID,
-            Name:         "购买" + p.Name,
-            Amount:       total,
-            Payway:       req.Payway,
-            PlanID:       p.ID,
-            Deposit:      deposit,
-            PastDays:     past,
-            Commission:   p.Commission,
-            Model:        p.Model,
-            Days:         p.Days,
-            OrderID:      orderID,
-            SubscribeID:  subID,
-            Points:       points,
-            PointRatio:   model.PointRatio,
-            CouponAmount: camount,
-            Coupons:      req.Coupons,
-            ReliefNewly:  p.ReliefNewly,
-            EbikeBrandID: p.BrandID,
+            CityID:        req.CityID,
+            OrderType:     t,
+            OutTradeNo:    no,
+            RiderID:       s.rider.ID,
+            Name:          "购买" + p.Name,
+            Amount:        total,
+            Payway:        req.Payway,
+            PlanID:        p.ID,
+            Deposit:       deposit,
+            PastDays:      past,
+            Commission:    p.Commission,
+            Model:         p.Model,
+            Days:          p.Days,
+            OrderID:       orderID,
+            SubscribeID:   subID,
+            Points:        points,
+            PointRatio:    model.PointRatio,
+            CouponAmount:  camount,
+            Coupons:       req.Coupons,
+            DiscountNewly: p.DiscountNewly,
+            EbikeBrandID:  p.BrandID,
         },
     }
 
@@ -463,7 +462,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
             SetPayway(trade.Payway).
             SetPlanID(trade.PlanID).
             SetRiderID(trade.RiderID).
-            SetAmount(decimal.NewFromFloat(trade.Amount).Sub(decimal.NewFromFloat(trade.Deposit)).InexactFloat64()).
+            SetAmount(tools.NewDecimal().Sub(trade.Amount, trade.Deposit)).
             SetTotal(trade.Amount).
             SetOutTradeNo(trade.OutTradeNo).
             SetTradeNo(trade.TradeNo).
@@ -477,7 +476,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
             SetPoints(trade.Points).
             SetPointRatio(trade.PointRatio).
             SetCouponAmount(trade.CouponAmount).
-            SetReliefNewly(trade.ReliefNewly).
+            SetDiscountNewly(trade.DiscountNewly).
             SetNillableBrandID(trade.EbikeBrandID)
         if len(trade.Coupons) > 0 {
             oc.AddCouponIDs(trade.Coupons...)
@@ -660,7 +659,8 @@ func (s *orderService) listFilter(req model.OrderListFilter) (*ent.OrderQuery, a
         WithSubscribe(func(sq *ent.SubscribeQuery) {
             sq.WithEmployee().WithStore()
         }).
-        WithRefund()
+        WithRefund().
+        WithCoupons()
     if req.Start != nil {
         info["开始日期"] = req.Start
         q.Where(order.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))

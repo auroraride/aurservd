@@ -5,7 +5,10 @@
 
 package tools
 
-import "github.com/shopspring/decimal"
+import (
+    "github.com/shopspring/decimal"
+    "math"
+)
 
 type decimalTool struct {
 }
@@ -29,5 +32,5 @@ func (*decimalTool) Sub(f1, f2 float64) float64 {
 // Mul returns f1 × f2
 func (*decimalTool) Mul(f1, f2 float64) float64 {
     f, _ := decimal.NewFromFloat(f1).Mul(decimal.NewFromFloat(f2)).Float64()
-    return f
+    return math.Round(f*100.0) / 100.0
 }

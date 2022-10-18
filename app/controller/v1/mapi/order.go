@@ -25,7 +25,7 @@ var Order = new(order)
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        query  query   model.OrderListReq  true  "desc"
-// @Success      200  {object}  model.PaginationRes{items=[]model.RiderOrder} "请求成功"
+// @Success      200  {object}  model.PaginationRes{items=[]model.Order} "请求成功"
 func (*order) List(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.OrderListReq](c)
     return ctx.SendResponse(
@@ -46,5 +46,10 @@ func (*order) List(c echo.Context) (err error) {
 func (*order) RefundAudit(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.RefundAuditReq](c)
     service.NewRefundWithModifier(ctx.Modifier).RefundAudit(req)
+    return ctx.SendResponse()
+}
+
+func (*order) Coupon(c echo.Context) (err error) {
+    ctx := app.Context(c)
     return ctx.SendResponse()
 }

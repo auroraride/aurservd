@@ -333,16 +333,16 @@ func (oc *OrderCreate) SetNillableCouponAmount(f *float64) *OrderCreate {
 	return oc
 }
 
-// SetReliefNewly sets the "relief_newly" field.
-func (oc *OrderCreate) SetReliefNewly(f float64) *OrderCreate {
-	oc.mutation.SetReliefNewly(f)
+// SetDiscountNewly sets the "discount_newly" field.
+func (oc *OrderCreate) SetDiscountNewly(f float64) *OrderCreate {
+	oc.mutation.SetDiscountNewly(f)
 	return oc
 }
 
-// SetNillableReliefNewly sets the "relief_newly" field if the given value is not nil.
-func (oc *OrderCreate) SetNillableReliefNewly(f *float64) *OrderCreate {
+// SetNillableDiscountNewly sets the "discount_newly" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableDiscountNewly(f *float64) *OrderCreate {
 	if f != nil {
-		oc.SetReliefNewly(*f)
+		oc.SetDiscountNewly(*f)
 	}
 	return oc
 }
@@ -582,9 +582,9 @@ func (oc *OrderCreate) defaults() error {
 		v := order.DefaultCouponAmount
 		oc.mutation.SetCouponAmount(v)
 	}
-	if _, ok := oc.mutation.ReliefNewly(); !ok {
-		v := order.DefaultReliefNewly
-		oc.mutation.SetReliefNewly(v)
+	if _, ok := oc.mutation.DiscountNewly(); !ok {
+		v := order.DefaultDiscountNewly
+		oc.mutation.SetDiscountNewly(v)
 	}
 	return nil
 }
@@ -630,8 +630,8 @@ func (oc *OrderCreate) check() error {
 	if _, ok := oc.mutation.CouponAmount(); !ok {
 		return &ValidationError{Name: "coupon_amount", err: errors.New(`ent: missing required field "Order.coupon_amount"`)}
 	}
-	if _, ok := oc.mutation.ReliefNewly(); !ok {
-		return &ValidationError{Name: "relief_newly", err: errors.New(`ent: missing required field "Order.relief_newly"`)}
+	if _, ok := oc.mutation.DiscountNewly(); !ok {
+		return &ValidationError{Name: "discount_newly", err: errors.New(`ent: missing required field "Order.discount_newly"`)}
 	}
 	if _, ok := oc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Order.rider"`)}
@@ -816,13 +816,13 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 		})
 		_node.CouponAmount = value
 	}
-	if value, ok := oc.mutation.ReliefNewly(); ok {
+	if value, ok := oc.mutation.DiscountNewly(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
 			Value:  value,
-			Column: order.FieldReliefNewly,
+			Column: order.FieldDiscountNewly,
 		})
-		_node.ReliefNewly = value
+		_node.DiscountNewly = value
 	}
 	if nodes := oc.mutation.PlanIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1435,21 +1435,21 @@ func (u *OrderUpsert) AddCouponAmount(v float64) *OrderUpsert {
 	return u
 }
 
-// SetReliefNewly sets the "relief_newly" field.
-func (u *OrderUpsert) SetReliefNewly(v float64) *OrderUpsert {
-	u.Set(order.FieldReliefNewly, v)
+// SetDiscountNewly sets the "discount_newly" field.
+func (u *OrderUpsert) SetDiscountNewly(v float64) *OrderUpsert {
+	u.Set(order.FieldDiscountNewly, v)
 	return u
 }
 
-// UpdateReliefNewly sets the "relief_newly" field to the value that was provided on create.
-func (u *OrderUpsert) UpdateReliefNewly() *OrderUpsert {
-	u.SetExcluded(order.FieldReliefNewly)
+// UpdateDiscountNewly sets the "discount_newly" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateDiscountNewly() *OrderUpsert {
+	u.SetExcluded(order.FieldDiscountNewly)
 	return u
 }
 
-// AddReliefNewly adds v to the "relief_newly" field.
-func (u *OrderUpsert) AddReliefNewly(v float64) *OrderUpsert {
-	u.Add(order.FieldReliefNewly, v)
+// AddDiscountNewly adds v to the "discount_newly" field.
+func (u *OrderUpsert) AddDiscountNewly(v float64) *OrderUpsert {
+	u.Add(order.FieldDiscountNewly, v)
 	return u
 }
 
@@ -1897,24 +1897,24 @@ func (u *OrderUpsertOne) UpdateCouponAmount() *OrderUpsertOne {
 	})
 }
 
-// SetReliefNewly sets the "relief_newly" field.
-func (u *OrderUpsertOne) SetReliefNewly(v float64) *OrderUpsertOne {
+// SetDiscountNewly sets the "discount_newly" field.
+func (u *OrderUpsertOne) SetDiscountNewly(v float64) *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
-		s.SetReliefNewly(v)
+		s.SetDiscountNewly(v)
 	})
 }
 
-// AddReliefNewly adds v to the "relief_newly" field.
-func (u *OrderUpsertOne) AddReliefNewly(v float64) *OrderUpsertOne {
+// AddDiscountNewly adds v to the "discount_newly" field.
+func (u *OrderUpsertOne) AddDiscountNewly(v float64) *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
-		s.AddReliefNewly(v)
+		s.AddDiscountNewly(v)
 	})
 }
 
-// UpdateReliefNewly sets the "relief_newly" field to the value that was provided on create.
-func (u *OrderUpsertOne) UpdateReliefNewly() *OrderUpsertOne {
+// UpdateDiscountNewly sets the "discount_newly" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateDiscountNewly() *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
-		s.UpdateReliefNewly()
+		s.UpdateDiscountNewly()
 	})
 }
 
@@ -2524,24 +2524,24 @@ func (u *OrderUpsertBulk) UpdateCouponAmount() *OrderUpsertBulk {
 	})
 }
 
-// SetReliefNewly sets the "relief_newly" field.
-func (u *OrderUpsertBulk) SetReliefNewly(v float64) *OrderUpsertBulk {
+// SetDiscountNewly sets the "discount_newly" field.
+func (u *OrderUpsertBulk) SetDiscountNewly(v float64) *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
-		s.SetReliefNewly(v)
+		s.SetDiscountNewly(v)
 	})
 }
 
-// AddReliefNewly adds v to the "relief_newly" field.
-func (u *OrderUpsertBulk) AddReliefNewly(v float64) *OrderUpsertBulk {
+// AddDiscountNewly adds v to the "discount_newly" field.
+func (u *OrderUpsertBulk) AddDiscountNewly(v float64) *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
-		s.AddReliefNewly(v)
+		s.AddDiscountNewly(v)
 	})
 }
 
-// UpdateReliefNewly sets the "relief_newly" field to the value that was provided on create.
-func (u *OrderUpsertBulk) UpdateReliefNewly() *OrderUpsertBulk {
+// UpdateDiscountNewly sets the "discount_newly" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateDiscountNewly() *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
-		s.UpdateReliefNewly()
+		s.UpdateDiscountNewly()
 	})
 }
 

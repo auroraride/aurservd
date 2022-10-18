@@ -332,7 +332,20 @@ func (s *couponService) Allocate(req *model.CouponAllocateReq) {
     s.orm.UpdateOne(c).SetRiderID(req.RiderID).ExecX(s.ctx)
 }
 
-func (s *couponService) RiderList(req *model.CouponRiderListReq) (res []model.CouponRiderListRes) {
+func (s *couponService) RiderDetail(item *ent.Coupon) (res model.CouponRider) {
+    res = model.CouponRider{
+        Name:      item.Name,
+        ExpiredAt: item.ExpiresAt.Format("2006.1.2 15:04:05"),
+        Amount:    item.Amount,
+        Code:      model.CouponCode(item.Code).Humanity(),
+    }
+    if item.UsedAt != nil {
+        res.UsedAt = item.UsedAt.Format("2006.1.2 15:04:05")
+    }
+    return
+}
+
+func (s *couponService) RiderList(req *model.CouponRiderListReq) (res []model.CouponRider) {
     q := s.orm.Query().Where(coupon.RiderID(s.rider.ID)).Order(ent.Desc(coupon.FieldCreatedAt))
     switch req.Type {
     case 0:
@@ -350,15 +363,10 @@ func (s *couponService) RiderList(req *model.CouponRiderListReq) (res []model.Co
     }
 
     items, _ := q.All(s.ctx)
-    res = make([]model.CouponRiderListRes, len(items))
+    res = make([]model.CouponRider, len(items))
 
     for i, item := range items {
-        res[i] = model.CouponRiderListRes{
-            Name:      item.Name,
-            ExpiredAt: item.ExpiresAt.Format("2006.1.2"),
-            Amount:    item.Amount,
-            Code:      model.CouponCode(item.Code).Humanity(),
-        }
+        res[i] = s.RiderDetail(item)
     }
 
     return

@@ -51,8 +51,8 @@ type OrderMutation struct {
 	addpoint_ratio    *float64
 	coupon_amount     *float64
 	addcoupon_amount  *float64
-	relief_newly      *float64
-	addrelief_newly   *float64
+	discount_newly    *float64
+	adddiscount_newly *float64
 	clearedFields     map[string]struct{}
 	plan              *uint64
 	clearedplan       bool
@@ -1490,60 +1490,60 @@ func (m *OrderMutation) ResetCouponAmount() {
 	m.addcoupon_amount = nil
 }
 
-// SetReliefNewly sets the "relief_newly" field.
-func (m *OrderMutation) SetReliefNewly(f float64) {
-	m.relief_newly = &f
-	m.addrelief_newly = nil
+// SetDiscountNewly sets the "discount_newly" field.
+func (m *OrderMutation) SetDiscountNewly(f float64) {
+	m.discount_newly = &f
+	m.adddiscount_newly = nil
 }
 
-// ReliefNewly returns the value of the "relief_newly" field in the mutation.
-func (m *OrderMutation) ReliefNewly() (r float64, exists bool) {
-	v := m.relief_newly
+// DiscountNewly returns the value of the "discount_newly" field in the mutation.
+func (m *OrderMutation) DiscountNewly() (r float64, exists bool) {
+	v := m.discount_newly
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldReliefNewly returns the old "relief_newly" field's value of the Order entity.
+// OldDiscountNewly returns the old "discount_newly" field's value of the Order entity.
 // If the Order object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *OrderMutation) OldReliefNewly(ctx context.Context) (v float64, err error) {
+func (m *OrderMutation) OldDiscountNewly(ctx context.Context) (v float64, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldReliefNewly is only allowed on UpdateOne operations")
+		return v, errors.New("OldDiscountNewly is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldReliefNewly requires an ID field in the mutation")
+		return v, errors.New("OldDiscountNewly requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldReliefNewly: %w", err)
+		return v, fmt.Errorf("querying old value for OldDiscountNewly: %w", err)
 	}
-	return oldValue.ReliefNewly, nil
+	return oldValue.DiscountNewly, nil
 }
 
-// AddReliefNewly adds f to the "relief_newly" field.
-func (m *OrderMutation) AddReliefNewly(f float64) {
-	if m.addrelief_newly != nil {
-		*m.addrelief_newly += f
+// AddDiscountNewly adds f to the "discount_newly" field.
+func (m *OrderMutation) AddDiscountNewly(f float64) {
+	if m.adddiscount_newly != nil {
+		*m.adddiscount_newly += f
 	} else {
-		m.addrelief_newly = &f
+		m.adddiscount_newly = &f
 	}
 }
 
-// AddedReliefNewly returns the value that was added to the "relief_newly" field in this mutation.
-func (m *OrderMutation) AddedReliefNewly() (r float64, exists bool) {
-	v := m.addrelief_newly
+// AddedDiscountNewly returns the value that was added to the "discount_newly" field in this mutation.
+func (m *OrderMutation) AddedDiscountNewly() (r float64, exists bool) {
+	v := m.adddiscount_newly
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetReliefNewly resets all changes to the "relief_newly" field.
-func (m *OrderMutation) ResetReliefNewly() {
-	m.relief_newly = nil
-	m.addrelief_newly = nil
+// ResetDiscountNewly resets all changes to the "discount_newly" field.
+func (m *OrderMutation) ResetDiscountNewly() {
+	m.discount_newly = nil
+	m.adddiscount_newly = nil
 }
 
 // ClearPlan clears the "plan" edge to the Plan entity.
@@ -2051,8 +2051,8 @@ func (m *OrderMutation) Fields() []string {
 	if m.coupon_amount != nil {
 		fields = append(fields, order.FieldCouponAmount)
 	}
-	if m.relief_newly != nil {
-		fields = append(fields, order.FieldReliefNewly)
+	if m.discount_newly != nil {
+		fields = append(fields, order.FieldDiscountNewly)
 	}
 	return fields
 }
@@ -2114,8 +2114,8 @@ func (m *OrderMutation) Field(name string) (ent.Value, bool) {
 		return m.PointRatio()
 	case order.FieldCouponAmount:
 		return m.CouponAmount()
-	case order.FieldReliefNewly:
-		return m.ReliefNewly()
+	case order.FieldDiscountNewly:
+		return m.DiscountNewly()
 	}
 	return nil, false
 }
@@ -2177,8 +2177,8 @@ func (m *OrderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldPointRatio(ctx)
 	case order.FieldCouponAmount:
 		return m.OldCouponAmount(ctx)
-	case order.FieldReliefNewly:
-		return m.OldReliefNewly(ctx)
+	case order.FieldDiscountNewly:
+		return m.OldDiscountNewly(ctx)
 	}
 	return nil, fmt.Errorf("unknown Order field %s", name)
 }
@@ -2370,12 +2370,12 @@ func (m *OrderMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetCouponAmount(v)
 		return nil
-	case order.FieldReliefNewly:
+	case order.FieldDiscountNewly:
 		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetReliefNewly(v)
+		m.SetDiscountNewly(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Order field %s", name)
@@ -2415,8 +2415,8 @@ func (m *OrderMutation) AddedFields() []string {
 	if m.addcoupon_amount != nil {
 		fields = append(fields, order.FieldCouponAmount)
 	}
-	if m.addrelief_newly != nil {
-		fields = append(fields, order.FieldReliefNewly)
+	if m.adddiscount_newly != nil {
+		fields = append(fields, order.FieldDiscountNewly)
 	}
 	return fields
 }
@@ -2446,8 +2446,8 @@ func (m *OrderMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedPointRatio()
 	case order.FieldCouponAmount:
 		return m.AddedCouponAmount()
-	case order.FieldReliefNewly:
-		return m.AddedReliefNewly()
+	case order.FieldDiscountNewly:
+		return m.AddedDiscountNewly()
 	}
 	return nil, false
 }
@@ -2527,12 +2527,12 @@ func (m *OrderMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddCouponAmount(v)
 		return nil
-	case order.FieldReliefNewly:
+	case order.FieldDiscountNewly:
 		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddReliefNewly(v)
+		m.AddDiscountNewly(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Order numeric field %s", name)
@@ -2720,8 +2720,8 @@ func (m *OrderMutation) ResetField(name string) error {
 	case order.FieldCouponAmount:
 		m.ResetCouponAmount()
 		return nil
-	case order.FieldReliefNewly:
-		m.ResetReliefNewly()
+	case order.FieldDiscountNewly:
+		m.ResetDiscountNewly()
 		return nil
 	}
 	return fmt.Errorf("unknown Order field %s", name)

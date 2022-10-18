@@ -11,6 +11,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/order"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
 )
 
@@ -59,7 +60,7 @@ func (s *riderOrderService) List(riderID uint64, req model.PaginationReq) *model
         WithSubscribe(func(sq *ent.SubscribeQuery) {
             sq.WithEmployee().WithStore()
         })
-    return model.ParsePaginationResponse[model.RiderOrder, ent.Order](
+    return model.ParsePaginationResponse[model.Order, ent.Order](
         q,
         req,
         s.Detail,
@@ -67,13 +68,13 @@ func (s *riderOrderService) List(riderID uint64, req model.PaginationReq) *model
 }
 
 // Detail 订单详情
-func (s *riderOrderService) Detail(item *ent.Order) model.RiderOrder {
+func (s *riderOrderService) Detail(item *ent.Order) model.Order {
     rc := item.Edges.City
     no := item.TradeNo
     if item.Payway == model.OrderPaywayManual {
         no = ""
     }
-    res := model.RiderOrder{
+    res := model.Order{
         ID:         item.ID,
         Type:       item.Type,
         Status:     item.Status,
@@ -86,6 +87,15 @@ func (s *riderOrderService) Detail(item *ent.Order) model.RiderOrder {
             ID:   rc.ID,
             Name: rc.Name,
         },
+        PointAmount:   tools.NewDecimal().Mul(float64(item.Points), item.PointRatio),
+        DiscountNewly: item.DiscountNewly,
+        CouponAmount:  item.CouponAmount,
+    }
+    if len(item.Edges.Coupons) > 0 {
+        res.Coupons = make([]model.CouponRider, len(item.Edges.Coupons))
+        for i, c := range item.Edges.Coupons {
+            res.Coupons[i] = NewCoupon().RiderDetail(c)
+        }
     }
     // 骑士卡订阅订单
     op := item.Edges.Plan
@@ -159,6 +169,7 @@ func (s *riderOrderService) Query(riderID, orderID uint64) *ent.Order {
             sq.WithEmployee().WithStore()
         }).
         WithRefund().
+        WithCoupons().
         First(s.ctx)
     if item == nil {
         snag.Panic("未找到订单")

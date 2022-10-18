@@ -41,10 +41,10 @@ type PlanComplex struct {
     Price float64 `json:"price" validate:"required" trans:"价格"`
     Days  uint    `json:"days" validate:"required,min=1" trans:"有效天数"`
 
-    Original    float64 `json:"original"`    // 原价
-    Desc        string  `json:"desc"`        // 优惠信息
-    Commission  float64 `json:"commission"`  // 提成
-    ReliefNewly float64 `json:"reliefNewly"` // 新签优惠
+    Original      float64 `json:"original"`      // 原价
+    Desc          string  `json:"desc"`          // 优惠信息
+    Commission    float64 `json:"commission"`    // 提成
+    DiscountNewly float64 `json:"discountNewly"` // 新签优惠
 
     Model string `json:"model" validate:"required"` // 电池型号, 单电需要每一项都补充此字段
 }
@@ -109,12 +109,12 @@ type PlanListRiderReq struct {
 
 // RiderPlanItem 骑士返回数据
 type RiderPlanItem struct {
-    ID          uint64  `json:"id"`
-    Name        string  `json:"name"`        // 骑士卡名称
-    Price       float64 `json:"price"`       // 价格
-    Days        uint    `json:"days"`        // 天数
-    Original    float64 `json:"original"`    // 原价
-    ReliefNewly float64 `json:"reliefNewly"` // 新签优惠
+    ID            uint64  `json:"id"`
+    Name          string  `json:"name"`          // 骑士卡名称
+    Price         float64 `json:"price"`         // 价格
+    Days          uint    `json:"days"`          // 天数
+    Original      float64 `json:"original"`      // 原价
+    DiscountNewly float64 `json:"discountNewly"` // 新签优惠
 }
 
 type RiderPlanListRes struct {
@@ -154,12 +154,12 @@ type PlanDaysPriceOptions []PlanDaysPriceOption
 
 // PlanDaysPriceOption 骑士卡天数价格选项
 type PlanDaysPriceOption struct {
-    ID          uint64  `json:"id"`
-    Name        string  `json:"name"`        // 骑士卡名称
-    Price       float64 `json:"price"`       // 价格, 应支付价格 = 价格 - 新签优惠
-    Days        uint    `json:"days"`        // 天数
-    Original    float64 `json:"original"`    // 原价
-    ReliefNewly float64 `json:"reliefNewly"` // 新签优惠
+    ID            uint64  `json:"id"`
+    Name          string  `json:"name"`          // 骑士卡名称
+    Price         float64 `json:"price"`         // 价格, 应支付价格 = 价格 - 新签优惠
+    Days          uint    `json:"days"`          // 天数
+    Original      float64 `json:"original"`      // 原价
+    DiscountNewly float64 `json:"discountNewly"` // 新签优惠
 }
 
 type PlanModelOptions []*PlanModelOption

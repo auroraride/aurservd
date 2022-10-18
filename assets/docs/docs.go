@@ -7572,7 +7572,7 @@ const docTemplate = `{
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.RiderOrder"
+                                                "$ref": "#/definitions/model.Order"
                                             }
                                         }
                                     }
@@ -12173,7 +12173,7 @@ const docTemplate = `{
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.RiderOrder"
+                                                "$ref": "#/definitions/model.Order"
                                             }
                                         }
                                     }
@@ -12336,7 +12336,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.RiderOrder"
+                            "$ref": "#/definitions/model.Order"
                         }
                     }
                 }
@@ -12702,7 +12702,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.CouponRiderListRes"
+                                "$ref": "#/definitions/model.CouponRider"
                             }
                         }
                     }
@@ -16335,7 +16335,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.CouponRiderListRes": {
+        "model.CouponRider": {
             "type": "object",
             "properties": {
                 "amount": {
@@ -16347,11 +16347,15 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "expiredAt": {
-                    "description": "到期日期",
+                    "description": "到期时间",
                     "type": "string"
                 },
                 "name": {
                     "description": "名称",
+                    "type": "string"
+                },
+                "usedAt": {
+                    "description": "使用时间",
                     "type": "string"
                 }
             }
@@ -18258,6 +18262,114 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Order": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "支付金额",
+                    "type": "number"
+                },
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "couponAmount": {
+                    "description": "优惠券抵扣金额",
+                    "type": "number"
+                },
+                "coupons": {
+                    "description": "使用的优惠券",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.CouponRider"
+                    }
+                },
+                "discountNewly": {
+                    "description": "新签优惠",
+                    "type": "number"
+                },
+                "employee": {
+                    "description": "店员 (可为空)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Employee"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "订单ID",
+                    "type": "integer"
+                },
+                "model": {
+                    "description": "电池型号 (可为空)",
+                    "type": "string"
+                },
+                "outTradeNo": {
+                    "description": "订单编号",
+                    "type": "string"
+                },
+                "payAt": {
+                    "description": "支付时间",
+                    "type": "string"
+                },
+                "payway": {
+                    "description": "支付方式 1支付宝 2微信",
+                    "type": "integer"
+                },
+                "plan": {
+                    "description": "骑士卡, 非骑士卡订阅订单无此字段 (可为空)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Plan"
+                        }
+                    ]
+                },
+                "pointAmount": {
+                    "description": "积分抵扣金额",
+                    "type": "number"
+                },
+                "refund": {
+                    "description": "退款详情 (可为空)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Refund"
+                        }
+                    ]
+                },
+                "rider": {
+                    "description": "骑手",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Rider"
+                        }
+                    ]
+                },
+                "status": {
+                    "description": "订单状态 0未支付 1已支付 2申请退款 3已退款 4退款被拒绝",
+                    "type": "integer"
+                },
+                "store": {
+                    "description": "门店 (可为空)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Store"
+                        }
+                    ]
+                },
+                "tradeNo": {
+                    "description": "订单编号 (支付平台)",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金",
+                    "type": "integer"
+                }
+            }
+        },
         "model.OrderCreateReq": {
             "type": "object",
             "required": [
@@ -18528,6 +18640,10 @@ const docTemplate = `{
                     "description": "优惠信息",
                     "type": "string"
                 },
+                "discountNewly": {
+                    "description": "新签优惠",
+                    "type": "number"
+                },
                 "id": {
                     "description": "ID (可为空, 编辑的时候需要携带此字段)",
                     "type": "integer"
@@ -18542,10 +18658,6 @@ const docTemplate = `{
                 },
                 "price": {
                     "description": "价格 ",
-                    "type": "number"
-                },
-                "reliefNewly": {
-                    "description": "新签优惠",
                     "type": "number"
                 }
             }
@@ -18617,6 +18729,10 @@ const docTemplate = `{
                     "description": "天数",
                     "type": "integer"
                 },
+                "discountNewly": {
+                    "description": "新签优惠",
+                    "type": "number"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -18630,10 +18746,6 @@ const docTemplate = `{
                 },
                 "price": {
                     "description": "价格, 应支付价格 = 价格 - 新签优惠",
-                    "type": "number"
-                },
-                "reliefNewly": {
-                    "description": "新签优惠",
                     "type": "number"
                 }
             }
@@ -19793,101 +19905,16 @@ const docTemplate = `{
                 }
             }
         },
-        "model.RiderOrder": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "description": "支付金额",
-                    "type": "number"
-                },
-                "city": {
-                    "description": "城市",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.City"
-                        }
-                    ]
-                },
-                "employee": {
-                    "description": "店员 (可为空)",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.Employee"
-                        }
-                    ]
-                },
-                "id": {
-                    "description": "订单ID",
-                    "type": "integer"
-                },
-                "model": {
-                    "description": "电池型号 (可为空)",
-                    "type": "string"
-                },
-                "outTradeNo": {
-                    "description": "订单编号",
-                    "type": "string"
-                },
-                "payAt": {
-                    "description": "支付时间",
-                    "type": "string"
-                },
-                "payway": {
-                    "description": "支付方式 1支付宝 2微信",
-                    "type": "integer"
-                },
-                "plan": {
-                    "description": "骑士卡, 非骑士卡订阅订单无此字段 (可为空)",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.Plan"
-                        }
-                    ]
-                },
-                "refund": {
-                    "description": "退款详情 (可为空)",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.Refund"
-                        }
-                    ]
-                },
-                "rider": {
-                    "description": "骑手",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.Rider"
-                        }
-                    ]
-                },
-                "status": {
-                    "description": "订单状态 0未支付 1已支付 2申请退款 3已退款 4退款被拒绝",
-                    "type": "integer"
-                },
-                "store": {
-                    "description": "门店 (可为空)",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.Store"
-                        }
-                    ]
-                },
-                "tradeNo": {
-                    "description": "订单编号 (支付平台)",
-                    "type": "string"
-                },
-                "type": {
-                    "description": "订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金",
-                    "type": "integer"
-                }
-            }
-        },
         "model.RiderPlanItem": {
             "type": "object",
             "properties": {
                 "days": {
                     "description": "天数",
                     "type": "integer"
+                },
+                "discountNewly": {
+                    "description": "新签优惠",
+                    "type": "number"
                 },
                 "id": {
                     "type": "integer"
@@ -19902,10 +19929,6 @@ const docTemplate = `{
                 },
                 "price": {
                     "description": "价格",
-                    "type": "number"
-                },
-                "reliefNewly": {
-                    "description": "新签优惠",
                     "type": "number"
                 }
             }

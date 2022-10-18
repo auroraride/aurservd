@@ -51,8 +51,8 @@ const (
 	FieldDesc = "desc"
 	// FieldParentID holds the string denoting the parent_id field in the database.
 	FieldParentID = "parent_id"
-	// FieldReliefNewly holds the string denoting the relief_newly field in the database.
-	FieldReliefNewly = "relief_newly"
+	// FieldDiscountNewly holds the string denoting the discount_newly field in the database.
+	FieldDiscountNewly = "discount_newly"
 	// FieldNotes holds the string denoting the notes field in the database.
 	FieldNotes = "notes"
 	// EdgeBrand holds the string denoting the brand edge name in mutations.
@@ -116,7 +116,7 @@ var Columns = []string{
 	FieldOriginal,
 	FieldDesc,
 	FieldParentID,
-	FieldReliefNewly,
+	FieldDiscountNewly,
 	FieldNotes,
 }
 
@@ -152,6 +152,6 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// DefaultReliefNewly holds the default value on creation for the "relief_newly" field.
-	DefaultReliefNewly float64
+	// DefaultDiscountNewly holds the default value on creation for the "discount_newly" field.
+	DefaultDiscountNewly float64
 )

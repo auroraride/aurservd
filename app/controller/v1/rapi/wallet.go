@@ -71,7 +71,7 @@ func (*wallet) Points(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Rider-Token header string true "骑手校验token"
 // @Param        query query  model.CouponRiderListReq  false  "筛选条件"
-// @Success      200 {object} []model.CouponRiderListRes "请求成功"
+// @Success      200 {object} []model.CouponRider "请求成功"
 func (*wallet) Coupons(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.CouponRiderListReq](c)
     return ctx.SendResponse(service.NewCouponWithRider(ctx.Rider).RiderList(req))

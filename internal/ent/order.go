@@ -80,7 +80,7 @@ type Order struct {
 	// 优惠券金额
 	CouponAmount float64 `json:"coupon_amount,omitempty"`
 	// 新签优惠
-	ReliefNewly float64 `json:"relief_newly,omitempty"`
+	DiscountNewly float64 `json:"discount_newly,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OrderQuery when eager-loading is set.
 	Edges OrderEdges `json:"edges"`
@@ -272,7 +272,7 @@ func (*Order) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case order.FieldCreator, order.FieldLastModifier:
 			values[i] = new([]byte)
-		case order.FieldAmount, order.FieldTotal, order.FieldPointRatio, order.FieldCouponAmount, order.FieldReliefNewly:
+		case order.FieldAmount, order.FieldTotal, order.FieldPointRatio, order.FieldCouponAmount, order.FieldDiscountNewly:
 			values[i] = new(sql.NullFloat64)
 		case order.FieldID, order.FieldPlanID, order.FieldCityID, order.FieldBrandID, order.FieldEbikeID, order.FieldRiderID, order.FieldParentID, order.FieldSubscribeID, order.FieldStatus, order.FieldPayway, order.FieldType, order.FieldInitialDays, order.FieldPastDays, order.FieldPoints:
 			values[i] = new(sql.NullInt64)
@@ -467,11 +467,11 @@ func (o *Order) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				o.CouponAmount = value.Float64
 			}
-		case order.FieldReliefNewly:
+		case order.FieldDiscountNewly:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field relief_newly", values[i])
+				return fmt.Errorf("unexpected type %T for field discount_newly", values[i])
 			} else if value.Valid {
-				o.ReliefNewly = value.Float64
+				o.DiscountNewly = value.Float64
 			}
 		}
 	}
@@ -651,8 +651,8 @@ func (o *Order) String() string {
 	builder.WriteString("coupon_amount=")
 	builder.WriteString(fmt.Sprintf("%v", o.CouponAmount))
 	builder.WriteString(", ")
-	builder.WriteString("relief_newly=")
-	builder.WriteString(fmt.Sprintf("%v", o.ReliefNewly))
+	builder.WriteString("discount_newly=")
+	builder.WriteString(fmt.Sprintf("%v", o.DiscountNewly))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -790,10 +790,10 @@ func init() {
 	orderDescCouponAmount := orderFields[15].Descriptor()
 	// order.DefaultCouponAmount holds the default value on creation for the coupon_amount field.
 	order.DefaultCouponAmount = orderDescCouponAmount.Default.(float64)
-	// orderDescReliefNewly is the schema descriptor for relief_newly field.
-	orderDescReliefNewly := orderFields[16].Descriptor()
-	// order.DefaultReliefNewly holds the default value on creation for the relief_newly field.
-	order.DefaultReliefNewly = orderDescReliefNewly.Default.(float64)
+	// orderDescDiscountNewly is the schema descriptor for discount_newly field.
+	orderDescDiscountNewly := orderFields[16].Descriptor()
+	// order.DefaultDiscountNewly holds the default value on creation for the discount_newly field.
+	order.DefaultDiscountNewly = orderDescDiscountNewly.Default.(float64)
 	orderrefundMixin := schema.OrderRefund{}.Mixin()
 	orderrefundMixinHooks2 := orderrefundMixin[2].Hooks()
 	orderrefund.Hooks[0] = orderrefundMixinHooks2[0]
@@ -865,10 +865,10 @@ func init() {
 	plan.DefaultUpdatedAt = planDescUpdatedAt.Default.(func() time.Time)
 	// plan.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	plan.UpdateDefaultUpdatedAt = planDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// planDescReliefNewly is the schema descriptor for relief_newly field.
-	planDescReliefNewly := planFields[12].Descriptor()
-	// plan.DefaultReliefNewly holds the default value on creation for the relief_newly field.
-	plan.DefaultReliefNewly = planDescReliefNewly.Default.(float64)
+	// planDescDiscountNewly is the schema descriptor for discount_newly field.
+	planDescDiscountNewly := planFields[12].Descriptor()
+	// plan.DefaultDiscountNewly holds the default value on creation for the discount_newly field.
+	plan.DefaultDiscountNewly = planDescDiscountNewly.Default.(float64)
 	planintroduceMixin := schema.PlanIntroduce{}.Mixin()
 	planintroduceMixinFields0 := planintroduceMixin[0].Fields()
 	_ = planintroduceMixinFields0

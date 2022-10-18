@@ -153,9 +153,10 @@ type CouponRiderListReq struct {
     Type uint8 `json:"type" enums:"0,1,2" query:"type"` // 查询类别 0:可使用 1:已使用 2:已过期
 }
 
-type CouponRiderListRes struct {
-    Name      string  `json:"name"`      // 名称
-    ExpiredAt string  `json:"expiredAt"` // 到期日期
-    Amount    float64 `json:"amount"`    // 金额
-    Code      string  `json:"code"`      // 券码
+type CouponRider struct {
+    Name      string  `json:"name"`             // 名称
+    ExpiredAt string  `json:"expiredAt"`        // 到期时间
+    Amount    float64 `json:"amount"`           // 金额
+    Code      string  `json:"code"`             // 券码
+    UsedAt    string  `json:"usedAt,omitempty"` // 使用时间
 }

@@ -65,8 +65,8 @@ const (
 	FieldPointRatio = "point_ratio"
 	// FieldCouponAmount holds the string denoting the coupon_amount field in the database.
 	FieldCouponAmount = "coupon_amount"
-	// FieldReliefNewly holds the string denoting the relief_newly field in the database.
-	FieldReliefNewly = "relief_newly"
+	// FieldDiscountNewly holds the string denoting the discount_newly field in the database.
+	FieldDiscountNewly = "discount_newly"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
 	// EdgeCity holds the string denoting the city edge name in mutations.
@@ -202,7 +202,7 @@ var Columns = []string{
 	FieldPoints,
 	FieldPointRatio,
 	FieldCouponAmount,
-	FieldReliefNewly,
+	FieldDiscountNewly,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -238,6 +238,6 @@ var (
 	DefaultPointRatio float64
 	// DefaultCouponAmount holds the default value on creation for the "coupon_amount" field.
 	DefaultCouponAmount float64
-	// DefaultReliefNewly holds the default value on creation for the "relief_newly" field.
-	DefaultReliefNewly float64
+	// DefaultDiscountNewly holds the default value on creation for the "discount_newly" field.
+	DefaultDiscountNewly float64
 )

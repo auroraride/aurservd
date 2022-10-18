@@ -58,7 +58,7 @@ type Plan struct {
 	// 父级
 	ParentID *uint64 `json:"parent_id,omitempty"`
 	// 新签减免
-	ReliefNewly float64 `json:"relief_newly,omitempty"`
+	DiscountNewly float64 `json:"discount_newly,omitempty"`
 	// 购买须知
 	Notes []string `json:"notes,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -145,7 +145,7 @@ func (*Plan) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case plan.FieldEnable:
 			values[i] = new(sql.NullBool)
-		case plan.FieldPrice, plan.FieldCommission, plan.FieldOriginal, plan.FieldReliefNewly:
+		case plan.FieldPrice, plan.FieldCommission, plan.FieldOriginal, plan.FieldDiscountNewly:
 			values[i] = new(sql.NullFloat64)
 		case plan.FieldID, plan.FieldBrandID, plan.FieldType, plan.FieldDays, plan.FieldParentID:
 			values[i] = new(sql.NullInt64)
@@ -295,11 +295,11 @@ func (pl *Plan) assignValues(columns []string, values []any) error {
 				pl.ParentID = new(uint64)
 				*pl.ParentID = uint64(value.Int64)
 			}
-		case plan.FieldReliefNewly:
+		case plan.FieldDiscountNewly:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field relief_newly", values[i])
+				return fmt.Errorf("unexpected type %T for field discount_newly", values[i])
 			} else if value.Valid {
-				pl.ReliefNewly = value.Float64
+				pl.DiscountNewly = value.Float64
 			}
 		case plan.FieldNotes:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -425,8 +425,8 @@ func (pl *Plan) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("relief_newly=")
-	builder.WriteString(fmt.Sprintf("%v", pl.ReliefNewly))
+	builder.WriteString("discount_newly=")
+	builder.WriteString(fmt.Sprintf("%v", pl.DiscountNewly))
 	builder.WriteString(", ")
 	builder.WriteString("notes=")
 	builder.WriteString(fmt.Sprintf("%v", pl.Notes))

@@ -929,33 +929,33 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Order",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			order.FieldCreatedAt:    {Type: field.TypeTime, Column: order.FieldCreatedAt},
-			order.FieldUpdatedAt:    {Type: field.TypeTime, Column: order.FieldUpdatedAt},
-			order.FieldDeletedAt:    {Type: field.TypeTime, Column: order.FieldDeletedAt},
-			order.FieldCreator:      {Type: field.TypeJSON, Column: order.FieldCreator},
-			order.FieldLastModifier: {Type: field.TypeJSON, Column: order.FieldLastModifier},
-			order.FieldRemark:       {Type: field.TypeString, Column: order.FieldRemark},
-			order.FieldPlanID:       {Type: field.TypeUint64, Column: order.FieldPlanID},
-			order.FieldCityID:       {Type: field.TypeUint64, Column: order.FieldCityID},
-			order.FieldBrandID:      {Type: field.TypeUint64, Column: order.FieldBrandID},
-			order.FieldEbikeID:      {Type: field.TypeUint64, Column: order.FieldEbikeID},
-			order.FieldRiderID:      {Type: field.TypeUint64, Column: order.FieldRiderID},
-			order.FieldParentID:     {Type: field.TypeUint64, Column: order.FieldParentID},
-			order.FieldSubscribeID:  {Type: field.TypeUint64, Column: order.FieldSubscribeID},
-			order.FieldStatus:       {Type: field.TypeUint8, Column: order.FieldStatus},
-			order.FieldPayway:       {Type: field.TypeUint8, Column: order.FieldPayway},
-			order.FieldType:         {Type: field.TypeUint, Column: order.FieldType},
-			order.FieldOutTradeNo:   {Type: field.TypeString, Column: order.FieldOutTradeNo},
-			order.FieldTradeNo:      {Type: field.TypeString, Column: order.FieldTradeNo},
-			order.FieldAmount:       {Type: field.TypeFloat64, Column: order.FieldAmount},
-			order.FieldTotal:        {Type: field.TypeFloat64, Column: order.FieldTotal},
-			order.FieldRefundAt:     {Type: field.TypeTime, Column: order.FieldRefundAt},
-			order.FieldInitialDays:  {Type: field.TypeInt, Column: order.FieldInitialDays},
-			order.FieldPastDays:     {Type: field.TypeInt, Column: order.FieldPastDays},
-			order.FieldPoints:       {Type: field.TypeInt64, Column: order.FieldPoints},
-			order.FieldPointRatio:   {Type: field.TypeFloat64, Column: order.FieldPointRatio},
-			order.FieldCouponAmount: {Type: field.TypeFloat64, Column: order.FieldCouponAmount},
-			order.FieldReliefNewly:  {Type: field.TypeFloat64, Column: order.FieldReliefNewly},
+			order.FieldCreatedAt:     {Type: field.TypeTime, Column: order.FieldCreatedAt},
+			order.FieldUpdatedAt:     {Type: field.TypeTime, Column: order.FieldUpdatedAt},
+			order.FieldDeletedAt:     {Type: field.TypeTime, Column: order.FieldDeletedAt},
+			order.FieldCreator:       {Type: field.TypeJSON, Column: order.FieldCreator},
+			order.FieldLastModifier:  {Type: field.TypeJSON, Column: order.FieldLastModifier},
+			order.FieldRemark:        {Type: field.TypeString, Column: order.FieldRemark},
+			order.FieldPlanID:        {Type: field.TypeUint64, Column: order.FieldPlanID},
+			order.FieldCityID:        {Type: field.TypeUint64, Column: order.FieldCityID},
+			order.FieldBrandID:       {Type: field.TypeUint64, Column: order.FieldBrandID},
+			order.FieldEbikeID:       {Type: field.TypeUint64, Column: order.FieldEbikeID},
+			order.FieldRiderID:       {Type: field.TypeUint64, Column: order.FieldRiderID},
+			order.FieldParentID:      {Type: field.TypeUint64, Column: order.FieldParentID},
+			order.FieldSubscribeID:   {Type: field.TypeUint64, Column: order.FieldSubscribeID},
+			order.FieldStatus:        {Type: field.TypeUint8, Column: order.FieldStatus},
+			order.FieldPayway:        {Type: field.TypeUint8, Column: order.FieldPayway},
+			order.FieldType:          {Type: field.TypeUint, Column: order.FieldType},
+			order.FieldOutTradeNo:    {Type: field.TypeString, Column: order.FieldOutTradeNo},
+			order.FieldTradeNo:       {Type: field.TypeString, Column: order.FieldTradeNo},
+			order.FieldAmount:        {Type: field.TypeFloat64, Column: order.FieldAmount},
+			order.FieldTotal:         {Type: field.TypeFloat64, Column: order.FieldTotal},
+			order.FieldRefundAt:      {Type: field.TypeTime, Column: order.FieldRefundAt},
+			order.FieldInitialDays:   {Type: field.TypeInt, Column: order.FieldInitialDays},
+			order.FieldPastDays:      {Type: field.TypeInt, Column: order.FieldPastDays},
+			order.FieldPoints:        {Type: field.TypeInt64, Column: order.FieldPoints},
+			order.FieldPointRatio:    {Type: field.TypeFloat64, Column: order.FieldPointRatio},
+			order.FieldCouponAmount:  {Type: field.TypeFloat64, Column: order.FieldCouponAmount},
+			order.FieldDiscountNewly: {Type: field.TypeFloat64, Column: order.FieldDiscountNewly},
 		},
 	}
 	graph.Nodes[32] = &sqlgraph.Node{
@@ -1026,27 +1026,27 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Plan",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			plan.FieldCreatedAt:    {Type: field.TypeTime, Column: plan.FieldCreatedAt},
-			plan.FieldUpdatedAt:    {Type: field.TypeTime, Column: plan.FieldUpdatedAt},
-			plan.FieldDeletedAt:    {Type: field.TypeTime, Column: plan.FieldDeletedAt},
-			plan.FieldCreator:      {Type: field.TypeJSON, Column: plan.FieldCreator},
-			plan.FieldLastModifier: {Type: field.TypeJSON, Column: plan.FieldLastModifier},
-			plan.FieldRemark:       {Type: field.TypeString, Column: plan.FieldRemark},
-			plan.FieldBrandID:      {Type: field.TypeUint64, Column: plan.FieldBrandID},
-			plan.FieldModel:        {Type: field.TypeString, Column: plan.FieldModel},
-			plan.FieldEnable:       {Type: field.TypeBool, Column: plan.FieldEnable},
-			plan.FieldType:         {Type: field.TypeUint8, Column: plan.FieldType},
-			plan.FieldName:         {Type: field.TypeString, Column: plan.FieldName},
-			plan.FieldStart:        {Type: field.TypeTime, Column: plan.FieldStart},
-			plan.FieldEnd:          {Type: field.TypeTime, Column: plan.FieldEnd},
-			plan.FieldPrice:        {Type: field.TypeFloat64, Column: plan.FieldPrice},
-			plan.FieldDays:         {Type: field.TypeUint, Column: plan.FieldDays},
-			plan.FieldCommission:   {Type: field.TypeFloat64, Column: plan.FieldCommission},
-			plan.FieldOriginal:     {Type: field.TypeFloat64, Column: plan.FieldOriginal},
-			plan.FieldDesc:         {Type: field.TypeString, Column: plan.FieldDesc},
-			plan.FieldParentID:     {Type: field.TypeUint64, Column: plan.FieldParentID},
-			plan.FieldReliefNewly:  {Type: field.TypeFloat64, Column: plan.FieldReliefNewly},
-			plan.FieldNotes:        {Type: field.TypeJSON, Column: plan.FieldNotes},
+			plan.FieldCreatedAt:     {Type: field.TypeTime, Column: plan.FieldCreatedAt},
+			plan.FieldUpdatedAt:     {Type: field.TypeTime, Column: plan.FieldUpdatedAt},
+			plan.FieldDeletedAt:     {Type: field.TypeTime, Column: plan.FieldDeletedAt},
+			plan.FieldCreator:       {Type: field.TypeJSON, Column: plan.FieldCreator},
+			plan.FieldLastModifier:  {Type: field.TypeJSON, Column: plan.FieldLastModifier},
+			plan.FieldRemark:        {Type: field.TypeString, Column: plan.FieldRemark},
+			plan.FieldBrandID:       {Type: field.TypeUint64, Column: plan.FieldBrandID},
+			plan.FieldModel:         {Type: field.TypeString, Column: plan.FieldModel},
+			plan.FieldEnable:        {Type: field.TypeBool, Column: plan.FieldEnable},
+			plan.FieldType:          {Type: field.TypeUint8, Column: plan.FieldType},
+			plan.FieldName:          {Type: field.TypeString, Column: plan.FieldName},
+			plan.FieldStart:         {Type: field.TypeTime, Column: plan.FieldStart},
+			plan.FieldEnd:           {Type: field.TypeTime, Column: plan.FieldEnd},
+			plan.FieldPrice:         {Type: field.TypeFloat64, Column: plan.FieldPrice},
+			plan.FieldDays:          {Type: field.TypeUint, Column: plan.FieldDays},
+			plan.FieldCommission:    {Type: field.TypeFloat64, Column: plan.FieldCommission},
+			plan.FieldOriginal:      {Type: field.TypeFloat64, Column: plan.FieldOriginal},
+			plan.FieldDesc:          {Type: field.TypeString, Column: plan.FieldDesc},
+			plan.FieldParentID:      {Type: field.TypeUint64, Column: plan.FieldParentID},
+			plan.FieldDiscountNewly: {Type: field.TypeFloat64, Column: plan.FieldDiscountNewly},
+			plan.FieldNotes:         {Type: field.TypeJSON, Column: plan.FieldNotes},
 		},
 	}
 	graph.Nodes[35] = &sqlgraph.Node{
@@ -9116,9 +9116,9 @@ func (f *OrderFilter) WhereCouponAmount(p entql.Float64P) {
 	f.Where(p.Field(order.FieldCouponAmount))
 }
 
-// WhereReliefNewly applies the entql float64 predicate on the relief_newly field.
-func (f *OrderFilter) WhereReliefNewly(p entql.Float64P) {
-	f.Where(p.Field(order.FieldReliefNewly))
+// WhereDiscountNewly applies the entql float64 predicate on the discount_newly field.
+func (f *OrderFilter) WhereDiscountNewly(p entql.Float64P) {
+	f.Where(p.Field(order.FieldDiscountNewly))
 }
 
 // WhereHasPlan applies a predicate to check if query has an edge plan.
@@ -9687,9 +9687,9 @@ func (f *PlanFilter) WhereParentID(p entql.Uint64P) {
 	f.Where(p.Field(plan.FieldParentID))
 }
 
-// WhereReliefNewly applies the entql float64 predicate on the relief_newly field.
-func (f *PlanFilter) WhereReliefNewly(p entql.Float64P) {
-	f.Where(p.Field(plan.FieldReliefNewly))
+// WhereDiscountNewly applies the entql float64 predicate on the discount_newly field.
+func (f *PlanFilter) WhereDiscountNewly(p entql.Float64P) {
+	f.Where(p.Field(plan.FieldDiscountNewly))
 }
 
 // WhereNotes applies the entql json.RawMessage predicate on the notes field.

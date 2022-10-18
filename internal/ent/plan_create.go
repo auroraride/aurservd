@@ -212,16 +212,16 @@ func (pc *PlanCreate) SetNillableParentID(u *uint64) *PlanCreate {
 	return pc
 }
 
-// SetReliefNewly sets the "relief_newly" field.
-func (pc *PlanCreate) SetReliefNewly(f float64) *PlanCreate {
-	pc.mutation.SetReliefNewly(f)
+// SetDiscountNewly sets the "discount_newly" field.
+func (pc *PlanCreate) SetDiscountNewly(f float64) *PlanCreate {
+	pc.mutation.SetDiscountNewly(f)
 	return pc
 }
 
-// SetNillableReliefNewly sets the "relief_newly" field if the given value is not nil.
-func (pc *PlanCreate) SetNillableReliefNewly(f *float64) *PlanCreate {
+// SetNillableDiscountNewly sets the "discount_newly" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableDiscountNewly(f *float64) *PlanCreate {
 	if f != nil {
-		pc.SetReliefNewly(*f)
+		pc.SetDiscountNewly(*f)
 	}
 	return pc
 }
@@ -380,9 +380,9 @@ func (pc *PlanCreate) defaults() error {
 		v := plan.DefaultUpdatedAt()
 		pc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := pc.mutation.ReliefNewly(); !ok {
-		v := plan.DefaultReliefNewly
-		pc.mutation.SetReliefNewly(v)
+	if _, ok := pc.mutation.DiscountNewly(); !ok {
+		v := plan.DefaultDiscountNewly
+		pc.mutation.SetDiscountNewly(v)
 	}
 	return nil
 }
@@ -419,8 +419,8 @@ func (pc *PlanCreate) check() error {
 	if _, ok := pc.mutation.Commission(); !ok {
 		return &ValidationError{Name: "commission", err: errors.New(`ent: missing required field "Plan.commission"`)}
 	}
-	if _, ok := pc.mutation.ReliefNewly(); !ok {
-		return &ValidationError{Name: "relief_newly", err: errors.New(`ent: missing required field "Plan.relief_newly"`)}
+	if _, ok := pc.mutation.DiscountNewly(); !ok {
+		return &ValidationError{Name: "discount_newly", err: errors.New(`ent: missing required field "Plan.discount_newly"`)}
 	}
 	return nil
 }
@@ -586,13 +586,13 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 		})
 		_node.Desc = value
 	}
-	if value, ok := pc.mutation.ReliefNewly(); ok {
+	if value, ok := pc.mutation.DiscountNewly(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
 			Value:  value,
-			Column: plan.FieldReliefNewly,
+			Column: plan.FieldDiscountNewly,
 		})
-		_node.ReliefNewly = value
+		_node.DiscountNewly = value
 	}
 	if value, ok := pc.mutation.Notes(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -1033,21 +1033,21 @@ func (u *PlanUpsert) ClearParentID() *PlanUpsert {
 	return u
 }
 
-// SetReliefNewly sets the "relief_newly" field.
-func (u *PlanUpsert) SetReliefNewly(v float64) *PlanUpsert {
-	u.Set(plan.FieldReliefNewly, v)
+// SetDiscountNewly sets the "discount_newly" field.
+func (u *PlanUpsert) SetDiscountNewly(v float64) *PlanUpsert {
+	u.Set(plan.FieldDiscountNewly, v)
 	return u
 }
 
-// UpdateReliefNewly sets the "relief_newly" field to the value that was provided on create.
-func (u *PlanUpsert) UpdateReliefNewly() *PlanUpsert {
-	u.SetExcluded(plan.FieldReliefNewly)
+// UpdateDiscountNewly sets the "discount_newly" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateDiscountNewly() *PlanUpsert {
+	u.SetExcluded(plan.FieldDiscountNewly)
 	return u
 }
 
-// AddReliefNewly adds v to the "relief_newly" field.
-func (u *PlanUpsert) AddReliefNewly(v float64) *PlanUpsert {
-	u.Add(plan.FieldReliefNewly, v)
+// AddDiscountNewly adds v to the "discount_newly" field.
+func (u *PlanUpsert) AddDiscountNewly(v float64) *PlanUpsert {
+	u.Add(plan.FieldDiscountNewly, v)
 	return u
 }
 
@@ -1446,24 +1446,24 @@ func (u *PlanUpsertOne) ClearParentID() *PlanUpsertOne {
 	})
 }
 
-// SetReliefNewly sets the "relief_newly" field.
-func (u *PlanUpsertOne) SetReliefNewly(v float64) *PlanUpsertOne {
+// SetDiscountNewly sets the "discount_newly" field.
+func (u *PlanUpsertOne) SetDiscountNewly(v float64) *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
-		s.SetReliefNewly(v)
+		s.SetDiscountNewly(v)
 	})
 }
 
-// AddReliefNewly adds v to the "relief_newly" field.
-func (u *PlanUpsertOne) AddReliefNewly(v float64) *PlanUpsertOne {
+// AddDiscountNewly adds v to the "discount_newly" field.
+func (u *PlanUpsertOne) AddDiscountNewly(v float64) *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
-		s.AddReliefNewly(v)
+		s.AddDiscountNewly(v)
 	})
 }
 
-// UpdateReliefNewly sets the "relief_newly" field to the value that was provided on create.
-func (u *PlanUpsertOne) UpdateReliefNewly() *PlanUpsertOne {
+// UpdateDiscountNewly sets the "discount_newly" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateDiscountNewly() *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
-		s.UpdateReliefNewly()
+		s.UpdateDiscountNewly()
 	})
 }
 
@@ -2027,24 +2027,24 @@ func (u *PlanUpsertBulk) ClearParentID() *PlanUpsertBulk {
 	})
 }
 
-// SetReliefNewly sets the "relief_newly" field.
-func (u *PlanUpsertBulk) SetReliefNewly(v float64) *PlanUpsertBulk {
+// SetDiscountNewly sets the "discount_newly" field.
+func (u *PlanUpsertBulk) SetDiscountNewly(v float64) *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
-		s.SetReliefNewly(v)
+		s.SetDiscountNewly(v)
 	})
 }
 
-// AddReliefNewly adds v to the "relief_newly" field.
-func (u *PlanUpsertBulk) AddReliefNewly(v float64) *PlanUpsertBulk {
+// AddDiscountNewly adds v to the "discount_newly" field.
+func (u *PlanUpsertBulk) AddDiscountNewly(v float64) *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
-		s.AddReliefNewly(v)
+		s.AddDiscountNewly(v)
 	})
 }
 
-// UpdateReliefNewly sets the "relief_newly" field to the value that was provided on create.
-func (u *PlanUpsertBulk) UpdateReliefNewly() *PlanUpsertBulk {
+// UpdateDiscountNewly sets the "discount_newly" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateDiscountNewly() *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
-		s.UpdateReliefNewly()
+		s.UpdateDiscountNewly()
 	})
 }
 

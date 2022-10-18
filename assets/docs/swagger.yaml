@@ -2462,7 +2462,7 @@ definitions:
         description: 使用时间
         type: string
     type: object
-  model.CouponRiderListRes:
+  model.CouponRider:
     properties:
       amount:
         description: 金额
@@ -2471,10 +2471,13 @@ definitions:
         description: 券码
         type: string
       expiredAt:
-        description: 到期日期
+        description: 到期时间
         type: string
       name:
         description: 名称
+        type: string
+      usedAt:
+        description: 使用时间
         type: string
     type: object
   model.CouponTemplateCreateReq:
@@ -3819,6 +3822,74 @@ definitions:
       phone:
         type: string
     type: object
+  model.Order:
+    properties:
+      amount:
+        description: 支付金额
+        type: number
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      couponAmount:
+        description: 优惠券抵扣金额
+        type: number
+      coupons:
+        description: 使用的优惠券
+        items:
+          $ref: '#/definitions/model.CouponRider'
+        type: array
+      discountNewly:
+        description: 新签优惠
+        type: number
+      employee:
+        allOf:
+        - $ref: '#/definitions/model.Employee'
+        description: 店员 (可为空)
+      id:
+        description: 订单ID
+        type: integer
+      model:
+        description: 电池型号 (可为空)
+        type: string
+      outTradeNo:
+        description: 订单编号
+        type: string
+      payAt:
+        description: 支付时间
+        type: string
+      payway:
+        description: 支付方式 1支付宝 2微信
+        type: integer
+      plan:
+        allOf:
+        - $ref: '#/definitions/model.Plan'
+        description: 骑士卡, 非骑士卡订阅订单无此字段 (可为空)
+      pointAmount:
+        description: 积分抵扣金额
+        type: number
+      refund:
+        allOf:
+        - $ref: '#/definitions/model.Refund'
+        description: 退款详情 (可为空)
+      rider:
+        allOf:
+        - $ref: '#/definitions/model.Rider'
+        description: 骑手
+      status:
+        description: 订单状态 0未支付 1已支付 2申请退款 3已退款 4退款被拒绝
+        type: integer
+      store:
+        allOf:
+        - $ref: '#/definitions/model.Store'
+        description: 门店 (可为空)
+      tradeNo:
+        description: 订单编号 (支付平台)
+        type: string
+      type:
+        description: 订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
+        type: integer
+    type: object
   model.OrderCreateReq:
     properties:
       cityId:
@@ -4009,6 +4080,9 @@ definitions:
       desc:
         description: 优惠信息
         type: string
+      discountNewly:
+        description: 新签优惠
+        type: number
       id:
         description: ID (可为空, 编辑的时候需要携带此字段)
         type: integer
@@ -4020,9 +4094,6 @@ definitions:
         type: number
       price:
         description: '价格 '
-        type: number
-      reliefNewly:
-        description: 新签优惠
         type: number
     required:
     - days
@@ -4079,6 +4150,9 @@ definitions:
       days:
         description: 天数
         type: integer
+      discountNewly:
+        description: 新签优惠
+        type: number
       id:
         type: integer
       name:
@@ -4089,9 +4163,6 @@ definitions:
         type: number
       price:
         description: 价格, 应支付价格 = 价格 - 新签优惠
-        type: number
-      reliefNewly:
-        description: 新签优惠
         type: number
     type: object
   model.PlanEbikeBrandOption:
@@ -4894,65 +4965,14 @@ definitions:
     required:
     - id
     type: object
-  model.RiderOrder:
-    properties:
-      amount:
-        description: 支付金额
-        type: number
-      city:
-        allOf:
-        - $ref: '#/definitions/model.City'
-        description: 城市
-      employee:
-        allOf:
-        - $ref: '#/definitions/model.Employee'
-        description: 店员 (可为空)
-      id:
-        description: 订单ID
-        type: integer
-      model:
-        description: 电池型号 (可为空)
-        type: string
-      outTradeNo:
-        description: 订单编号
-        type: string
-      payAt:
-        description: 支付时间
-        type: string
-      payway:
-        description: 支付方式 1支付宝 2微信
-        type: integer
-      plan:
-        allOf:
-        - $ref: '#/definitions/model.Plan'
-        description: 骑士卡, 非骑士卡订阅订单无此字段 (可为空)
-      refund:
-        allOf:
-        - $ref: '#/definitions/model.Refund'
-        description: 退款详情 (可为空)
-      rider:
-        allOf:
-        - $ref: '#/definitions/model.Rider'
-        description: 骑手
-      status:
-        description: 订单状态 0未支付 1已支付 2申请退款 3已退款 4退款被拒绝
-        type: integer
-      store:
-        allOf:
-        - $ref: '#/definitions/model.Store'
-        description: 门店 (可为空)
-      tradeNo:
-        description: 订单编号 (支付平台)
-        type: string
-      type:
-        description: 订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
-        type: integer
-    type: object
   model.RiderPlanItem:
     properties:
       days:
         description: 天数
         type: integer
+      discountNewly:
+        description: 新签优惠
+        type: number
       id:
         type: integer
       name:
@@ -4963,9 +4983,6 @@ definitions:
         type: number
       price:
         description: 价格
-        type: number
-      reliefNewly:
-        description: 新签优惠
         type: number
     type: object
   model.RiderPlanRenewalRes:
@@ -11232,7 +11249,7 @@ paths:
             - properties:
                 items:
                   items:
-                    $ref: '#/definitions/model.RiderOrder'
+                    $ref: '#/definitions/model.Order'
                   type: array
               type: object
       summary: M8001 订单列表
@@ -14226,7 +14243,7 @@ paths:
             - properties:
                 items:
                   items:
-                    $ref: '#/definitions/model.RiderOrder'
+                    $ref: '#/definitions/model.Order'
                   type: array
               type: object
       summary: R3007 骑士卡购买历史
@@ -14280,7 +14297,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.RiderOrder'
+            $ref: '#/definitions/model.Order'
       summary: R3008 订单详情
       tags:
       - '[R]骑手接口'
@@ -14575,7 +14592,7 @@ paths:
           description: 请求成功
           schema:
             items:
-              $ref: '#/definitions/model.CouponRiderListRes'
+              $ref: '#/definitions/model.CouponRider'
             type: array
       summary: R9004 优惠券列表
       tags:

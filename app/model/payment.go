@@ -36,12 +36,12 @@ type PaymentSubscribe struct {
     OrderID     *uint64 `json:"orderId"`           // 子订单ID
     SubscribeID *uint64 `json:"subscribeId"`       // 续费订单携带订阅ID
 
-    Points       int64    `json:"points"`                 // 使用积分
-    PointRatio   float64  `json:"pointRatio"`             // 积分兑换比例
-    CouponAmount float64  `json:"couponAmount"`           // 优惠券金额
-    Coupons      []uint64 `json:"coupons"`                // 使用优惠券列表
-    ReliefNewly  float64  `json:"reliefNewly"`            // 新签优惠
-    EbikeBrandID *uint64  `json:"ebikeBrandId,omitempty"` // 电车型号
+    Points        int64    `json:"points"`                 // 使用积分
+    PointRatio    float64  `json:"pointRatio"`             // 积分兑换比例
+    CouponAmount  float64  `json:"couponAmount"`           // 优惠券金额
+    Coupons       []uint64 `json:"coupons"`                // 使用优惠券列表
+    DiscountNewly float64  `json:"discountNewly"`          // 新签优惠
+    EbikeBrandID  *uint64  `json:"ebikeBrandId,omitempty"` // 电车型号
 }
 
 // PaymentRefund 退款详情

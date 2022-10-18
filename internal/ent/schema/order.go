@@ -74,7 +74,7 @@ func (Order) Fields() []ent.Field {
         field.Int64("points").Default(0).Comment("使用积分"),
         field.Float("point_ratio").Default(model.PointRatio).Comment("积分兑换比例"),
         field.Float("coupon_amount").Default(0).Comment("优惠券金额"),
-        field.Float("relief_newly").Default(0).Comment("新签优惠"),
+        field.Float("discount_newly").Default(0).Comment("新签优惠"),
     }
 }
 

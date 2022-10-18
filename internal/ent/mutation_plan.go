@@ -19,51 +19,51 @@ import (
 // PlanMutation represents an operation that mutates the Plan nodes in the graph.
 type PlanMutation struct {
 	config
-	op               Op
-	typ              string
-	id               *uint64
-	created_at       *time.Time
-	updated_at       *time.Time
-	deleted_at       *time.Time
-	creator          **model.Modifier
-	last_modifier    **model.Modifier
-	remark           *string
-	model            *string
-	enable           *bool
-	_type            *uint8
-	add_type         *int8
-	name             *string
-	start            *time.Time
-	end              *time.Time
-	price            *float64
-	addprice         *float64
-	days             *uint
-	adddays          *int
-	commission       *float64
-	addcommission    *float64
-	original         *float64
-	addoriginal      *float64
-	desc             *string
-	relief_newly     *float64
-	addrelief_newly  *float64
-	notes            *[]string
-	clearedFields    map[string]struct{}
-	brand            *uint64
-	clearedbrand     bool
-	cities           map[uint64]struct{}
-	removedcities    map[uint64]struct{}
-	clearedcities    bool
-	parent           *uint64
-	clearedparent    bool
-	complexes        map[uint64]struct{}
-	removedcomplexes map[uint64]struct{}
-	clearedcomplexes bool
-	coupons          map[uint64]struct{}
-	removedcoupons   map[uint64]struct{}
-	clearedcoupons   bool
-	done             bool
-	oldValue         func(context.Context) (*Plan, error)
-	predicates       []predicate.Plan
+	op                Op
+	typ               string
+	id                *uint64
+	created_at        *time.Time
+	updated_at        *time.Time
+	deleted_at        *time.Time
+	creator           **model.Modifier
+	last_modifier     **model.Modifier
+	remark            *string
+	model             *string
+	enable            *bool
+	_type             *uint8
+	add_type          *int8
+	name              *string
+	start             *time.Time
+	end               *time.Time
+	price             *float64
+	addprice          *float64
+	days              *uint
+	adddays           *int
+	commission        *float64
+	addcommission     *float64
+	original          *float64
+	addoriginal       *float64
+	desc              *string
+	discount_newly    *float64
+	adddiscount_newly *float64
+	notes             *[]string
+	clearedFields     map[string]struct{}
+	brand             *uint64
+	clearedbrand      bool
+	cities            map[uint64]struct{}
+	removedcities     map[uint64]struct{}
+	clearedcities     bool
+	parent            *uint64
+	clearedparent     bool
+	complexes         map[uint64]struct{}
+	removedcomplexes  map[uint64]struct{}
+	clearedcomplexes  bool
+	coupons           map[uint64]struct{}
+	removedcoupons    map[uint64]struct{}
+	clearedcoupons    bool
+	done              bool
+	oldValue          func(context.Context) (*Plan, error)
+	predicates        []predicate.Plan
 }
 
 var _ ent.Mutation = (*PlanMutation)(nil)
@@ -1066,60 +1066,60 @@ func (m *PlanMutation) ResetParentID() {
 	delete(m.clearedFields, plan.FieldParentID)
 }
 
-// SetReliefNewly sets the "relief_newly" field.
-func (m *PlanMutation) SetReliefNewly(f float64) {
-	m.relief_newly = &f
-	m.addrelief_newly = nil
+// SetDiscountNewly sets the "discount_newly" field.
+func (m *PlanMutation) SetDiscountNewly(f float64) {
+	m.discount_newly = &f
+	m.adddiscount_newly = nil
 }
 
-// ReliefNewly returns the value of the "relief_newly" field in the mutation.
-func (m *PlanMutation) ReliefNewly() (r float64, exists bool) {
-	v := m.relief_newly
+// DiscountNewly returns the value of the "discount_newly" field in the mutation.
+func (m *PlanMutation) DiscountNewly() (r float64, exists bool) {
+	v := m.discount_newly
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldReliefNewly returns the old "relief_newly" field's value of the Plan entity.
+// OldDiscountNewly returns the old "discount_newly" field's value of the Plan entity.
 // If the Plan object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PlanMutation) OldReliefNewly(ctx context.Context) (v float64, err error) {
+func (m *PlanMutation) OldDiscountNewly(ctx context.Context) (v float64, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldReliefNewly is only allowed on UpdateOne operations")
+		return v, errors.New("OldDiscountNewly is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldReliefNewly requires an ID field in the mutation")
+		return v, errors.New("OldDiscountNewly requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldReliefNewly: %w", err)
+		return v, fmt.Errorf("querying old value for OldDiscountNewly: %w", err)
 	}
-	return oldValue.ReliefNewly, nil
+	return oldValue.DiscountNewly, nil
 }
 
-// AddReliefNewly adds f to the "relief_newly" field.
-func (m *PlanMutation) AddReliefNewly(f float64) {
-	if m.addrelief_newly != nil {
-		*m.addrelief_newly += f
+// AddDiscountNewly adds f to the "discount_newly" field.
+func (m *PlanMutation) AddDiscountNewly(f float64) {
+	if m.adddiscount_newly != nil {
+		*m.adddiscount_newly += f
 	} else {
-		m.addrelief_newly = &f
+		m.adddiscount_newly = &f
 	}
 }
 
-// AddedReliefNewly returns the value that was added to the "relief_newly" field in this mutation.
-func (m *PlanMutation) AddedReliefNewly() (r float64, exists bool) {
-	v := m.addrelief_newly
+// AddedDiscountNewly returns the value that was added to the "discount_newly" field in this mutation.
+func (m *PlanMutation) AddedDiscountNewly() (r float64, exists bool) {
+	v := m.adddiscount_newly
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetReliefNewly resets all changes to the "relief_newly" field.
-func (m *PlanMutation) ResetReliefNewly() {
-	m.relief_newly = nil
-	m.addrelief_newly = nil
+// ResetDiscountNewly resets all changes to the "discount_newly" field.
+func (m *PlanMutation) ResetDiscountNewly() {
+	m.discount_newly = nil
+	m.adddiscount_newly = nil
 }
 
 // SetNotes sets the "notes" field.
@@ -1462,8 +1462,8 @@ func (m *PlanMutation) Fields() []string {
 	if m.parent != nil {
 		fields = append(fields, plan.FieldParentID)
 	}
-	if m.relief_newly != nil {
-		fields = append(fields, plan.FieldReliefNewly)
+	if m.discount_newly != nil {
+		fields = append(fields, plan.FieldDiscountNewly)
 	}
 	if m.notes != nil {
 		fields = append(fields, plan.FieldNotes)
@@ -1514,8 +1514,8 @@ func (m *PlanMutation) Field(name string) (ent.Value, bool) {
 		return m.Desc()
 	case plan.FieldParentID:
 		return m.ParentID()
-	case plan.FieldReliefNewly:
-		return m.ReliefNewly()
+	case plan.FieldDiscountNewly:
+		return m.DiscountNewly()
 	case plan.FieldNotes:
 		return m.Notes()
 	}
@@ -1565,8 +1565,8 @@ func (m *PlanMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldDesc(ctx)
 	case plan.FieldParentID:
 		return m.OldParentID(ctx)
-	case plan.FieldReliefNewly:
-		return m.OldReliefNewly(ctx)
+	case plan.FieldDiscountNewly:
+		return m.OldDiscountNewly(ctx)
 	case plan.FieldNotes:
 		return m.OldNotes(ctx)
 	}
@@ -1711,12 +1711,12 @@ func (m *PlanMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetParentID(v)
 		return nil
-	case plan.FieldReliefNewly:
+	case plan.FieldDiscountNewly:
 		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetReliefNewly(v)
+		m.SetDiscountNewly(v)
 		return nil
 	case plan.FieldNotes:
 		v, ok := value.([]string)
@@ -1748,8 +1748,8 @@ func (m *PlanMutation) AddedFields() []string {
 	if m.addoriginal != nil {
 		fields = append(fields, plan.FieldOriginal)
 	}
-	if m.addrelief_newly != nil {
-		fields = append(fields, plan.FieldReliefNewly)
+	if m.adddiscount_newly != nil {
+		fields = append(fields, plan.FieldDiscountNewly)
 	}
 	return fields
 }
@@ -1769,8 +1769,8 @@ func (m *PlanMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedCommission()
 	case plan.FieldOriginal:
 		return m.AddedOriginal()
-	case plan.FieldReliefNewly:
-		return m.AddedReliefNewly()
+	case plan.FieldDiscountNewly:
+		return m.AddedDiscountNewly()
 	}
 	return nil, false
 }
@@ -1815,12 +1815,12 @@ func (m *PlanMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddOriginal(v)
 		return nil
-	case plan.FieldReliefNewly:
+	case plan.FieldDiscountNewly:
 		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddReliefNewly(v)
+		m.AddDiscountNewly(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Plan numeric field %s", name)
@@ -1969,8 +1969,8 @@ func (m *PlanMutation) ResetField(name string) error {
 	case plan.FieldParentID:
 		m.ResetParentID()
 		return nil
-	case plan.FieldReliefNewly:
-		m.ResetReliefNewly()
+	case plan.FieldDiscountNewly:
+		m.ResetDiscountNewly()
 		return nil
 	case plan.FieldNotes:
 		m.ResetNotes()

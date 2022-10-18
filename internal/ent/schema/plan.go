@@ -69,7 +69,7 @@ func (Plan) Fields() []ent.Field {
         field.Float("original").Optional().Comment("原价"),
         field.String("desc").Optional().Comment("优惠信息"),
         field.Uint64("parent_id").Optional().Nillable().Comment("父级"),
-        field.Float("relief_newly").Default(0).Comment("新签减免"),
+        field.Float("discount_newly").Default(0).Comment("新签减免"),
         field.Strings("notes").Optional().Comment("购买须知"),
     }
 }

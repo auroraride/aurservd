@@ -171,7 +171,7 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
                 SetCommission(cl.Commission).
                 SetDesc(cl.Desc).
                 SetDays(cl.Days).
-                SetReliefNewly(cl.ReliefNewly)
+                SetDiscountNewly(cl.DiscountNewly)
             if i > 0 {
                 c.SetParent(parent)
             }
@@ -302,14 +302,14 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanListRes) 
             m[child.Model] = r
         }
         *r = append(*r, model.PlanComplex{
-            ID:          child.ID,
-            Price:       child.Price,
-            Days:        child.Days,
-            Original:    child.Original,
-            Desc:        child.Desc,
-            Commission:  child.Commission,
-            Model:       child.Model,
-            ReliefNewly: child.ReliefNewly,
+            ID:            child.ID,
+            Price:         child.Price,
+            Days:          child.Days,
+            Original:      child.Original,
+            Desc:          child.Desc,
+            Commission:    child.Commission,
+            Model:         child.Model,
+            DiscountNewly: child.DiscountNewly,
         })
     }
 
@@ -457,12 +457,12 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
             mmap[item.Model] = m
         }
         *m.Children = append(*m.Children, model.PlanDaysPriceOption{
-            ID:          item.ID,
-            Name:        item.Name,
-            Price:       item.Price,
-            Days:        item.Days,
-            Original:    item.Original,
-            ReliefNewly: item.ReliefNewly,
+            ID:            item.ID,
+            Name:          item.Name,
+            Price:         item.Price,
+            Days:          item.Days,
+            Original:      item.Original,
+            DiscountNewly: item.DiscountNewly,
         })
 
         if item.BrandID != nil {
