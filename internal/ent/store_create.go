@@ -167,6 +167,34 @@ func (sc *StoreCreate) SetAddress(s string) *StoreCreate {
 	return sc
 }
 
+// SetEbikeObtain sets the "ebike_obtain" field.
+func (sc *StoreCreate) SetEbikeObtain(b bool) *StoreCreate {
+	sc.mutation.SetEbikeObtain(b)
+	return sc
+}
+
+// SetNillableEbikeObtain sets the "ebike_obtain" field if the given value is not nil.
+func (sc *StoreCreate) SetNillableEbikeObtain(b *bool) *StoreCreate {
+	if b != nil {
+		sc.SetEbikeObtain(*b)
+	}
+	return sc
+}
+
+// SetEbikeRepair sets the "ebike_repair" field.
+func (sc *StoreCreate) SetEbikeRepair(b bool) *StoreCreate {
+	sc.mutation.SetEbikeRepair(b)
+	return sc
+}
+
+// SetNillableEbikeRepair sets the "ebike_repair" field if the given value is not nil.
+func (sc *StoreCreate) SetNillableEbikeRepair(b *bool) *StoreCreate {
+	if b != nil {
+		sc.SetEbikeRepair(*b)
+	}
+	return sc
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (sc *StoreCreate) SetCity(c *City) *StoreCreate {
 	return sc.SetCityID(c.ID)
@@ -324,6 +352,14 @@ func (sc *StoreCreate) defaults() error {
 		v := store.DefaultStatus
 		sc.mutation.SetStatus(v)
 	}
+	if _, ok := sc.mutation.EbikeObtain(); !ok {
+		v := store.DefaultEbikeObtain
+		sc.mutation.SetEbikeObtain(v)
+	}
+	if _, ok := sc.mutation.EbikeRepair(); !ok {
+		v := store.DefaultEbikeRepair
+		sc.mutation.SetEbikeRepair(v)
+	}
 	return nil
 }
 
@@ -358,6 +394,12 @@ func (sc *StoreCreate) check() error {
 	}
 	if _, ok := sc.mutation.Address(); !ok {
 		return &ValidationError{Name: "address", err: errors.New(`ent: missing required field "Store.address"`)}
+	}
+	if _, ok := sc.mutation.EbikeObtain(); !ok {
+		return &ValidationError{Name: "ebike_obtain", err: errors.New(`ent: missing required field "Store.ebike_obtain"`)}
+	}
+	if _, ok := sc.mutation.EbikeRepair(); !ok {
+		return &ValidationError{Name: "ebike_repair", err: errors.New(`ent: missing required field "Store.ebike_repair"`)}
 	}
 	if _, ok := sc.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Store.city"`)}
@@ -488,6 +530,22 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 			Column: store.FieldAddress,
 		})
 		_node.Address = value
+	}
+	if value, ok := sc.mutation.EbikeObtain(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: store.FieldEbikeObtain,
+		})
+		_node.EbikeObtain = value
+	}
+	if value, ok := sc.mutation.EbikeRepair(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: store.FieldEbikeRepair,
+		})
+		_node.EbikeRepair = value
 	}
 	if nodes := sc.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -844,6 +902,30 @@ func (u *StoreUpsert) UpdateAddress() *StoreUpsert {
 	return u
 }
 
+// SetEbikeObtain sets the "ebike_obtain" field.
+func (u *StoreUpsert) SetEbikeObtain(v bool) *StoreUpsert {
+	u.Set(store.FieldEbikeObtain, v)
+	return u
+}
+
+// UpdateEbikeObtain sets the "ebike_obtain" field to the value that was provided on create.
+func (u *StoreUpsert) UpdateEbikeObtain() *StoreUpsert {
+	u.SetExcluded(store.FieldEbikeObtain)
+	return u
+}
+
+// SetEbikeRepair sets the "ebike_repair" field.
+func (u *StoreUpsert) SetEbikeRepair(v bool) *StoreUpsert {
+	u.Set(store.FieldEbikeRepair, v)
+	return u
+}
+
+// UpdateEbikeRepair sets the "ebike_repair" field to the value that was provided on create.
+func (u *StoreUpsert) UpdateEbikeRepair() *StoreUpsert {
+	u.SetExcluded(store.FieldEbikeRepair)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1109,6 +1191,34 @@ func (u *StoreUpsertOne) SetAddress(v string) *StoreUpsertOne {
 func (u *StoreUpsertOne) UpdateAddress() *StoreUpsertOne {
 	return u.Update(func(s *StoreUpsert) {
 		s.UpdateAddress()
+	})
+}
+
+// SetEbikeObtain sets the "ebike_obtain" field.
+func (u *StoreUpsertOne) SetEbikeObtain(v bool) *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetEbikeObtain(v)
+	})
+}
+
+// UpdateEbikeObtain sets the "ebike_obtain" field to the value that was provided on create.
+func (u *StoreUpsertOne) UpdateEbikeObtain() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateEbikeObtain()
+	})
+}
+
+// SetEbikeRepair sets the "ebike_repair" field.
+func (u *StoreUpsertOne) SetEbikeRepair(v bool) *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetEbikeRepair(v)
+	})
+}
+
+// UpdateEbikeRepair sets the "ebike_repair" field to the value that was provided on create.
+func (u *StoreUpsertOne) UpdateEbikeRepair() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateEbikeRepair()
 	})
 }
 
@@ -1539,6 +1649,34 @@ func (u *StoreUpsertBulk) SetAddress(v string) *StoreUpsertBulk {
 func (u *StoreUpsertBulk) UpdateAddress() *StoreUpsertBulk {
 	return u.Update(func(s *StoreUpsert) {
 		s.UpdateAddress()
+	})
+}
+
+// SetEbikeObtain sets the "ebike_obtain" field.
+func (u *StoreUpsertBulk) SetEbikeObtain(v bool) *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetEbikeObtain(v)
+	})
+}
+
+// UpdateEbikeObtain sets the "ebike_obtain" field to the value that was provided on create.
+func (u *StoreUpsertBulk) UpdateEbikeObtain() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateEbikeObtain()
+	})
+}
+
+// SetEbikeRepair sets the "ebike_repair" field.
+func (u *StoreUpsertBulk) SetEbikeRepair(v bool) *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetEbikeRepair(v)
+	})
+}
+
+// UpdateEbikeRepair sets the "ebike_repair" field to the value that was provided on create.
+func (u *StoreUpsertBulk) UpdateEbikeRepair() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateEbikeRepair()
 	})
 }
 

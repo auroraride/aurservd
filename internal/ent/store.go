@@ -51,6 +51,10 @@ type Store struct {
 	Lat float64 `json:"lat,omitempty"`
 	// 详细地址
 	Address string `json:"address,omitempty"`
+	// 是否可以领取车辆
+	EbikeObtain bool `json:"ebike_obtain,omitempty"`
+	// 是否可以维修车辆
+	EbikeRepair bool `json:"ebike_repair,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the StoreQuery when eager-loading is set.
 	Edges StoreEdges `json:"edges"`
@@ -148,6 +152,8 @@ func (*Store) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case store.FieldCreator, store.FieldLastModifier:
 			values[i] = new([]byte)
+		case store.FieldEbikeObtain, store.FieldEbikeRepair:
+			values[i] = new(sql.NullBool)
 		case store.FieldLng, store.FieldLat:
 			values[i] = new(sql.NullFloat64)
 		case store.FieldID, store.FieldCityID, store.FieldEmployeeID, store.FieldBranchID, store.FieldStatus:
@@ -273,6 +279,18 @@ func (s *Store) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.Address = value.String
 			}
+		case store.FieldEbikeObtain:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field ebike_obtain", values[i])
+			} else if value.Valid {
+				s.EbikeObtain = value.Bool
+			}
+		case store.FieldEbikeRepair:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field ebike_repair", values[i])
+			} else if value.Valid {
+				s.EbikeRepair = value.Bool
+			}
 		}
 	}
 	return nil
@@ -379,6 +397,12 @@ func (s *Store) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("address=")
 	builder.WriteString(s.Address)
+	builder.WriteString(", ")
+	builder.WriteString("ebike_obtain=")
+	builder.WriteString(fmt.Sprintf("%v", s.EbikeObtain))
+	builder.WriteString(", ")
+	builder.WriteString("ebike_repair=")
+	builder.WriteString(fmt.Sprintf("%v", s.EbikeRepair))
 	builder.WriteByte(')')
 	return builder.String()
 }

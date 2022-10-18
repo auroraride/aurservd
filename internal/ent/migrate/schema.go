@@ -3324,6 +3324,8 @@ var (
 		{Name: "lng", Type: field.TypeFloat64, Comment: "经度"},
 		{Name: "lat", Type: field.TypeFloat64, Comment: "纬度"},
 		{Name: "address", Type: field.TypeString, Comment: "详细地址"},
+		{Name: "ebike_obtain", Type: field.TypeBool, Comment: "是否可以领取车辆", Default: false},
+		{Name: "ebike_repair", Type: field.TypeBool, Comment: "是否可以维修车辆", Default: false},
 		{Name: "branch_id", Type: field.TypeUint64},
 		{Name: "employee_id", Type: field.TypeUint64, Unique: true, Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64},
@@ -3336,19 +3338,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "store_branch_stores",
-				Columns:    []*schema.Column{StoreColumns[13]},
+				Columns:    []*schema.Column{StoreColumns[15]},
 				RefColumns: []*schema.Column{BranchColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "store_employee_store",
-				Columns:    []*schema.Column{StoreColumns[14]},
+				Columns:    []*schema.Column{StoreColumns[16]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "store_city_city",
-				Columns:    []*schema.Column{StoreColumns[15]},
+				Columns:    []*schema.Column{StoreColumns[17]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -3367,17 +3369,17 @@ var (
 			{
 				Name:    "store_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{StoreColumns[15]},
+				Columns: []*schema.Column{StoreColumns[17]},
 			},
 			{
 				Name:    "store_branch_id",
 				Unique:  false,
-				Columns: []*schema.Column{StoreColumns[13]},
+				Columns: []*schema.Column{StoreColumns[15]},
 			},
 			{
 				Name:    "store_employee_id",
 				Unique:  false,
-				Columns: []*schema.Column{StoreColumns[14]},
+				Columns: []*schema.Column{StoreColumns[16]},
 			},
 			{
 				Name:    "store_status",

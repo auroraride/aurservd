@@ -43,6 +43,10 @@ const (
 	FieldLat = "lat"
 	// FieldAddress holds the string denoting the address field in the database.
 	FieldAddress = "address"
+	// FieldEbikeObtain holds the string denoting the ebike_obtain field in the database.
+	FieldEbikeObtain = "ebike_obtain"
+	// FieldEbikeRepair holds the string denoting the ebike_repair field in the database.
+	FieldEbikeRepair = "ebike_repair"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeBranch holds the string denoting the branch edge name in mutations.
@@ -119,6 +123,8 @@ var Columns = []string{
 	FieldLng,
 	FieldLat,
 	FieldAddress,
+	FieldEbikeObtain,
+	FieldEbikeRepair,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -146,4 +152,8 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultStatus holds the default value on creation for the "status" field.
 	DefaultStatus uint8
+	// DefaultEbikeObtain holds the default value on creation for the "ebike_obtain" field.
+	DefaultEbikeObtain bool
+	// DefaultEbikeRepair holds the default value on creation for the "ebike_repair" field.
+	DefaultEbikeRepair bool
 )

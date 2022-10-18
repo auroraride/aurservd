@@ -37,6 +37,8 @@ type StoreMutation struct {
 	lat                *float64
 	addlat             *float64
 	address            *string
+	ebike_obtain       *bool
+	ebike_repair       *bool
 	clearedFields      map[string]struct{}
 	city               *uint64
 	clearedcity        bool
@@ -821,6 +823,78 @@ func (m *StoreMutation) ResetAddress() {
 	m.address = nil
 }
 
+// SetEbikeObtain sets the "ebike_obtain" field.
+func (m *StoreMutation) SetEbikeObtain(b bool) {
+	m.ebike_obtain = &b
+}
+
+// EbikeObtain returns the value of the "ebike_obtain" field in the mutation.
+func (m *StoreMutation) EbikeObtain() (r bool, exists bool) {
+	v := m.ebike_obtain
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEbikeObtain returns the old "ebike_obtain" field's value of the Store entity.
+// If the Store object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StoreMutation) OldEbikeObtain(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEbikeObtain is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEbikeObtain requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEbikeObtain: %w", err)
+	}
+	return oldValue.EbikeObtain, nil
+}
+
+// ResetEbikeObtain resets all changes to the "ebike_obtain" field.
+func (m *StoreMutation) ResetEbikeObtain() {
+	m.ebike_obtain = nil
+}
+
+// SetEbikeRepair sets the "ebike_repair" field.
+func (m *StoreMutation) SetEbikeRepair(b bool) {
+	m.ebike_repair = &b
+}
+
+// EbikeRepair returns the value of the "ebike_repair" field in the mutation.
+func (m *StoreMutation) EbikeRepair() (r bool, exists bool) {
+	v := m.ebike_repair
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEbikeRepair returns the old "ebike_repair" field's value of the Store entity.
+// If the Store object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StoreMutation) OldEbikeRepair(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEbikeRepair is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEbikeRepair requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEbikeRepair: %w", err)
+	}
+	return oldValue.EbikeRepair, nil
+}
+
+// ResetEbikeRepair resets all changes to the "ebike_repair" field.
+func (m *StoreMutation) ResetEbikeRepair() {
+	m.ebike_repair = nil
+}
+
 // ClearCity clears the "city" edge to the City entity.
 func (m *StoreMutation) ClearCity() {
 	m.clearedcity = true
@@ -1080,7 +1154,7 @@ func (m *StoreMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StoreMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 17)
 	if m.created_at != nil {
 		fields = append(fields, store.FieldCreatedAt)
 	}
@@ -1126,6 +1200,12 @@ func (m *StoreMutation) Fields() []string {
 	if m.address != nil {
 		fields = append(fields, store.FieldAddress)
 	}
+	if m.ebike_obtain != nil {
+		fields = append(fields, store.FieldEbikeObtain)
+	}
+	if m.ebike_repair != nil {
+		fields = append(fields, store.FieldEbikeRepair)
+	}
 	return fields
 }
 
@@ -1164,6 +1244,10 @@ func (m *StoreMutation) Field(name string) (ent.Value, bool) {
 		return m.Lat()
 	case store.FieldAddress:
 		return m.Address()
+	case store.FieldEbikeObtain:
+		return m.EbikeObtain()
+	case store.FieldEbikeRepair:
+		return m.EbikeRepair()
 	}
 	return nil, false
 }
@@ -1203,6 +1287,10 @@ func (m *StoreMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldLat(ctx)
 	case store.FieldAddress:
 		return m.OldAddress(ctx)
+	case store.FieldEbikeObtain:
+		return m.OldEbikeObtain(ctx)
+	case store.FieldEbikeRepair:
+		return m.OldEbikeRepair(ctx)
 	}
 	return nil, fmt.Errorf("unknown Store field %s", name)
 }
@@ -1316,6 +1404,20 @@ func (m *StoreMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAddress(v)
+		return nil
+	case store.FieldEbikeObtain:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEbikeObtain(v)
+		return nil
+	case store.FieldEbikeRepair:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEbikeRepair(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Store field %s", name)
@@ -1482,6 +1584,12 @@ func (m *StoreMutation) ResetField(name string) error {
 		return nil
 	case store.FieldAddress:
 		m.ResetAddress()
+		return nil
+	case store.FieldEbikeObtain:
+		m.ResetEbikeObtain()
+		return nil
+	case store.FieldEbikeRepair:
+		m.ResetEbikeRepair()
 		return nil
 	}
 	return fmt.Errorf("unknown Store field %s", name)

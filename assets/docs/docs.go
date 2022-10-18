@@ -10029,6 +10029,18 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "boolean",
+                        "description": "是否可以维修车辆, 不携带即为查询所有",
+                        "name": "ebikeRepair",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否可以领取车辆, 不携带即为查询所有",
+                        "name": "ebikeeObtain",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "门店名称",
                         "name": "name",
@@ -11058,6 +11070,12 @@ const docTemplate = `{
                         "type": "number",
                         "description": "距离 ",
                         "name": "distance",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "额外筛选参数",
+                        "name": "filter",
                         "in": "query"
                     },
                     {
@@ -21142,6 +21160,14 @@ const docTemplate = `{
                     "description": "网点 ",
                     "type": "integer"
                 },
+                "ebikeRepair": {
+                    "description": "是否可以维修车辆",
+                    "type": "boolean"
+                },
+                "ebikeeObtain": {
+                    "description": "是否可以领取车辆",
+                    "type": "boolean"
+                },
                 "materials": {
                     "description": "门店物资",
                     "type": "array",
@@ -21182,6 +21208,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.City"
                         }
                     ]
+                },
+                "ebikeRepair": {
+                    "description": "是否可以维修车辆",
+                    "type": "boolean"
+                },
+                "ebikeeObtain": {
+                    "description": "是否可以领取车辆",
+                    "type": "boolean"
                 },
                 "employee": {
                     "description": "店员, 有可能不存在",
@@ -21232,6 +21266,14 @@ const docTemplate = `{
                 "branchId": {
                     "description": "网点 ",
                     "type": "integer"
+                },
+                "ebikeRepair": {
+                    "description": "是否可以维修车辆",
+                    "type": "boolean"
+                },
+                "ebikeeObtain": {
+                    "description": "是否可以领取车辆",
+                    "type": "boolean"
                 },
                 "name": {
                     "description": "门店名称 ",

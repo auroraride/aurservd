@@ -5816,6 +5816,12 @@ definitions:
       branchId:
         description: '网点 '
         type: integer
+      ebikeRepair:
+        description: 是否可以维修车辆
+        type: boolean
+      ebikeeObtain:
+        description: 是否可以领取车辆
+        type: boolean
       materials:
         description: 门店物资
         items:
@@ -5848,6 +5854,12 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.City'
         description: 城市
+      ebikeRepair:
+        description: 是否可以维修车辆
+        type: boolean
+      ebikeeObtain:
+        description: 是否可以领取车辆
+        type: boolean
       employee:
         allOf:
         - $ref: '#/definitions/model.Employee'
@@ -5881,6 +5893,12 @@ definitions:
       branchId:
         description: '网点 '
         type: integer
+      ebikeRepair:
+        description: 是否可以维修车辆
+        type: boolean
+      ebikeeObtain:
+        description: 是否可以领取车辆
+        type: boolean
       name:
         description: '门店名称 '
         type: string
@@ -12865,6 +12883,14 @@ paths:
         in: query
         name: current
         type: integer
+      - description: 是否可以维修车辆, 不携带即为查询所有
+        in: query
+        name: ebikeRepair
+        type: boolean
+      - description: 是否可以领取车辆, 不携带即为查询所有
+        in: query
+        name: ebikeeObtain
+        type: boolean
       - description: 门店名称
         in: query
         name: name
@@ -13512,6 +13538,10 @@ paths:
         in: query
         name: distance
         type: number
+      - description: 额外筛选参数
+        in: query
+        name: filter
+        type: string
       - description: '纬度 '
         in: query
         name: lat

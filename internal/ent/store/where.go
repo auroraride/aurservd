@@ -172,6 +172,20 @@ func Address(v string) predicate.Store {
 	})
 }
 
+// EbikeObtain applies equality check predicate on the "ebike_obtain" field. It's identical to EbikeObtainEQ.
+func EbikeObtain(v bool) predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEbikeObtain), v))
+	})
+}
+
+// EbikeRepair applies equality check predicate on the "ebike_repair" field. It's identical to EbikeRepairEQ.
+func EbikeRepair(v bool) predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEbikeRepair), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
@@ -1127,6 +1141,34 @@ func AddressEqualFold(v string) predicate.Store {
 func AddressContainsFold(v string) predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldAddress), v))
+	})
+}
+
+// EbikeObtainEQ applies the EQ predicate on the "ebike_obtain" field.
+func EbikeObtainEQ(v bool) predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEbikeObtain), v))
+	})
+}
+
+// EbikeObtainNEQ applies the NEQ predicate on the "ebike_obtain" field.
+func EbikeObtainNEQ(v bool) predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldEbikeObtain), v))
+	})
+}
+
+// EbikeRepairEQ applies the EQ predicate on the "ebike_repair" field.
+func EbikeRepairEQ(v bool) predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEbikeRepair), v))
+	})
+}
+
+// EbikeRepairNEQ applies the NEQ predicate on the "ebike_repair" field.
+func EbikeRepairNEQ(v bool) predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldEbikeRepair), v))
 	})
 }
 

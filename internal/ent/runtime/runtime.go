@@ -1065,6 +1065,14 @@ func init() {
 	storeDescStatus := storeFields[4].Descriptor()
 	// store.DefaultStatus holds the default value on creation for the status field.
 	store.DefaultStatus = storeDescStatus.Default.(uint8)
+	// storeDescEbikeObtain is the schema descriptor for ebike_obtain field.
+	storeDescEbikeObtain := storeFields[8].Descriptor()
+	// store.DefaultEbikeObtain holds the default value on creation for the ebike_obtain field.
+	store.DefaultEbikeObtain = storeDescEbikeObtain.Default.(bool)
+	// storeDescEbikeRepair is the schema descriptor for ebike_repair field.
+	storeDescEbikeRepair := storeFields[9].Descriptor()
+	// store.DefaultEbikeRepair holds the default value on creation for the ebike_repair field.
+	store.DefaultEbikeRepair = storeDescEbikeRepair.Default.(bool)
 	subscribeMixin := schema.Subscribe{}.Mixin()
 	subscribeMixinHooks2 := subscribeMixin[2].Hooks()
 	subscribeHooks := schema.Subscribe{}.Hooks()

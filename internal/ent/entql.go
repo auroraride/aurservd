@@ -1271,6 +1271,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			store.FieldLng:          {Type: field.TypeFloat64, Column: store.FieldLng},
 			store.FieldLat:          {Type: field.TypeFloat64, Column: store.FieldLat},
 			store.FieldAddress:      {Type: field.TypeString, Column: store.FieldAddress},
+			store.FieldEbikeObtain:  {Type: field.TypeBool, Column: store.FieldEbikeObtain},
+			store.FieldEbikeRepair:  {Type: field.TypeBool, Column: store.FieldEbikeRepair},
 		},
 	}
 	graph.Nodes[44] = &sqlgraph.Node{
@@ -11094,6 +11096,16 @@ func (f *StoreFilter) WhereLat(p entql.Float64P) {
 // WhereAddress applies the entql string predicate on the address field.
 func (f *StoreFilter) WhereAddress(p entql.StringP) {
 	f.Where(p.Field(store.FieldAddress))
+}
+
+// WhereEbikeObtain applies the entql bool predicate on the ebike_obtain field.
+func (f *StoreFilter) WhereEbikeObtain(p entql.BoolP) {
+	f.Where(p.Field(store.FieldEbikeObtain))
+}
+
+// WhereEbikeRepair applies the entql bool predicate on the ebike_repair field.
+func (f *StoreFilter) WhereEbikeRepair(p entql.BoolP) {
+	f.Where(p.Field(store.FieldEbikeRepair))
 }
 
 // WhereHasCity applies a predicate to check if query has an edge city.

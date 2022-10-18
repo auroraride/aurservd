@@ -79,6 +79,8 @@ func (Store) Fields() []ent.Field {
         field.Float("lng").Comment("经度"),
         field.Float("lat").Comment("纬度"),
         field.String("address").Comment("详细地址"),
+        field.Bool("ebike_obtain").Default(false).Comment("是否可以领取车辆"),
+        field.Bool("ebike_repair").Default(false).Comment("是否可以维修车辆"),
     }
 }
 

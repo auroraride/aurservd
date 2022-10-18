@@ -16,6 +16,12 @@ const (
     BranchFacilityStateOnline              // 在线
 )
 
+const (
+    BranchFacilityFilterEbike       = "ebike"
+    BranchFacilityFilterEbikeObtain = "ebikeObtain"
+    BranchFacilityFilterEbikeRepair = "ebikeRepair"
+)
+
 // BranchListReq 后台网点列表请求
 type BranchListReq struct {
     PaginationReq
@@ -101,6 +107,7 @@ type BranchWithDistanceReq struct {
     Distance *float64 `json:"distance" query:"distance" trans:"距离"`
     CityID   *uint64  `json:"cityId" query:"cityId" trans:"城市ID"`
     Business string   `json:"business" query:"business" enums:"active,pause,continue,unsubscribe"` // 业务选项 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+    Filter   string   `json:"filter" query:"filter"`                                               // 额外筛选参数
 }
 
 type BranchDistanceListReq struct {

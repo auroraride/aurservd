@@ -185,6 +185,34 @@ func (su *StoreUpdate) SetAddress(s string) *StoreUpdate {
 	return su
 }
 
+// SetEbikeObtain sets the "ebike_obtain" field.
+func (su *StoreUpdate) SetEbikeObtain(b bool) *StoreUpdate {
+	su.mutation.SetEbikeObtain(b)
+	return su
+}
+
+// SetNillableEbikeObtain sets the "ebike_obtain" field if the given value is not nil.
+func (su *StoreUpdate) SetNillableEbikeObtain(b *bool) *StoreUpdate {
+	if b != nil {
+		su.SetEbikeObtain(*b)
+	}
+	return su
+}
+
+// SetEbikeRepair sets the "ebike_repair" field.
+func (su *StoreUpdate) SetEbikeRepair(b bool) *StoreUpdate {
+	su.mutation.SetEbikeRepair(b)
+	return su
+}
+
+// SetNillableEbikeRepair sets the "ebike_repair" field if the given value is not nil.
+func (su *StoreUpdate) SetNillableEbikeRepair(b *bool) *StoreUpdate {
+	if b != nil {
+		su.SetEbikeRepair(*b)
+	}
+	return su
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (su *StoreUpdate) SetCity(c *City) *StoreUpdate {
 	return su.SetCityID(c.ID)
@@ -547,6 +575,20 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: store.FieldAddress,
+		})
+	}
+	if value, ok := su.mutation.EbikeObtain(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: store.FieldEbikeObtain,
+		})
+	}
+	if value, ok := su.mutation.EbikeRepair(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: store.FieldEbikeRepair,
 		})
 	}
 	if su.mutation.CityCleared() {
@@ -986,6 +1028,34 @@ func (suo *StoreUpdateOne) SetAddress(s string) *StoreUpdateOne {
 	return suo
 }
 
+// SetEbikeObtain sets the "ebike_obtain" field.
+func (suo *StoreUpdateOne) SetEbikeObtain(b bool) *StoreUpdateOne {
+	suo.mutation.SetEbikeObtain(b)
+	return suo
+}
+
+// SetNillableEbikeObtain sets the "ebike_obtain" field if the given value is not nil.
+func (suo *StoreUpdateOne) SetNillableEbikeObtain(b *bool) *StoreUpdateOne {
+	if b != nil {
+		suo.SetEbikeObtain(*b)
+	}
+	return suo
+}
+
+// SetEbikeRepair sets the "ebike_repair" field.
+func (suo *StoreUpdateOne) SetEbikeRepair(b bool) *StoreUpdateOne {
+	suo.mutation.SetEbikeRepair(b)
+	return suo
+}
+
+// SetNillableEbikeRepair sets the "ebike_repair" field if the given value is not nil.
+func (suo *StoreUpdateOne) SetNillableEbikeRepair(b *bool) *StoreUpdateOne {
+	if b != nil {
+		suo.SetEbikeRepair(*b)
+	}
+	return suo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (suo *StoreUpdateOne) SetCity(c *City) *StoreUpdateOne {
 	return suo.SetCityID(c.ID)
@@ -1378,6 +1448,20 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 			Type:   field.TypeString,
 			Value:  value,
 			Column: store.FieldAddress,
+		})
+	}
+	if value, ok := suo.mutation.EbikeObtain(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: store.FieldEbikeObtain,
+		})
+	}
+	if value, ok := suo.mutation.EbikeRepair(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: store.FieldEbikeRepair,
 		})
 	}
 	if suo.mutation.CityCleared() {

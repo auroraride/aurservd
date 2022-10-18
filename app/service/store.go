@@ -86,6 +86,8 @@ func (s *storeService) Create(req *model.StoreCreateReq) model.StoreItem {
         SetLng(b.Lng).
         SetLat(b.Lat).
         SetAddress(b.Address).
+        SetEbikeRepair(req.EbikeRepair).
+        SetEbikeObtain(req.EbikeObtain).
         SaveX(s.ctx)
 
     if len(req.Materials) > 0 {
@@ -110,7 +112,7 @@ func (s *storeService) Create(req *model.StoreCreateReq) model.StoreItem {
 // Modify 修改门店
 func (s *storeService) Modify(req *model.StoreModifyReq) model.StoreItem {
     item := s.Query(req.ID)
-    q := s.orm.UpdateOne(item)
+    q := s.orm.UpdateOne(item).SetNillableEbikeObtain(req.EbikeObtain).SetNillableEbikeRepair(req.EbikeRepair)
     if req.Status != nil {
         q.SetStatus(*req.Status)
     }
@@ -141,10 +143,12 @@ func (s *storeService) Detail(id uint64) model.StoreItem {
     }
     city := item.Edges.City
     res := model.StoreItem{
-        ID:     item.ID,
-        Name:   item.Name,
-        Status: item.Status,
-        QRCode: fmt.Sprintf("STORE:%s", item.Sn),
+        ID:          item.ID,
+        Name:        item.Name,
+        Status:      item.Status,
+        QRCode:      fmt.Sprintf("STORE:%s", item.Sn),
+        EbikeRepair: item.EbikeRepair,
+        EbikeObtain: item.EbikeObtain,
         City: model.City{
             ID:   city.ID,
             Name: city.Name,
@@ -178,6 +182,14 @@ func (s *storeService) List(req *model.StoreListReq) *model.PaginationRes {
     }
     if req.Status != nil {
         q.Where(store.Status(*req.Status))
+    }
+
+    if req.EbikeObtain != nil {
+        q.Where(store.EbikeObtain(*req.EbikeObtain))
+    }
+
+    if req.EbikeRepair != nil {
+        q.Where(store.EbikeRepair(*req.EbikeRepair))
     }
 
     return model.ParsePaginationResponse[model.StoreItem, ent.Store](q, req.PaginationReq, func(item *ent.Store) (res model.StoreItem) {
