@@ -23,7 +23,7 @@ func (s EbikeAllocateStatus) Value() uint8 {
 
 type EbikeAllocate struct {
     Rider Rider  `json:"rider" bson:"rider"` // 骑手信息
-    Ebike Ebike  `json:"ebike" bson:"ebike"` // 电车信息
+    Ebike *Ebike `json:"ebike" bson:"ebike"` // 电车信息
     Model string `json:"model" bson:"model"` // 电池型号
 }
 

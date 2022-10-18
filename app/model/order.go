@@ -142,4 +142,5 @@ type Order struct {
     DiscountNewly float64       `json:"discountNewly"`      // 新签优惠
     CouponAmount  float64       `json:"couponAmount"`       // 优惠券抵扣金额
     Coupons       []CouponRider `json:"coupons,omitempty"`  // 使用的优惠券
+    Ebike         *Ebike        `json:"ebike"`              // 车辆详情
 }

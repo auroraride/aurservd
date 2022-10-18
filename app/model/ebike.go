@@ -115,7 +115,7 @@ type EbikeInfo struct {
 
 type Ebike struct {
     EbikeInfo `bson:",inline"`
-    Brand     EbikeBrand `json:"brand" bson:"brand"` // 品牌信息
+    Brand     *EbikeBrand `json:"brand,omitempty" bson:"brand,omitempty"` // 品牌信息
 }
 
 type EbikeBusinessInfo struct {

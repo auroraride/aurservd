@@ -660,7 +660,10 @@ func (s *orderService) listFilter(req model.OrderListFilter) (*ent.OrderQuery, a
             sq.WithEmployee().WithStore()
         }).
         WithRefund().
-        WithCoupons()
+        WithCoupons().
+        WithEbike(func(query *ent.EbikeQuery) {
+            query.WithBrand()
+        })
     if req.Start != nil {
         info["开始日期"] = req.Start
         q.Where(order.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))

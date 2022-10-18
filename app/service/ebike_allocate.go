@@ -147,19 +147,7 @@ func (s *ebikeAllocateService) Allocate(req *model.EbikeAllocateReq) model.IDPos
             Phone: r.Phone,
             Name:  r.Name,
         },
-        Ebike: model.Ebike{
-            EbikeInfo: model.EbikeInfo{
-                ID:        bike.ID,
-                SN:        bike.Sn,
-                ExFactory: bike.ExFactory,
-                Plate:     bike.Plate,
-                Color:     bike.Color,
-            },
-            Brand: model.EbikeBrand{
-                ID:   brand.ID,
-                Name: brand.Name,
-            },
-        },
+        Ebike: NewEbike().Detail(bike, brand),
         Model: sub.Model,
     }
 

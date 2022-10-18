@@ -18292,6 +18292,14 @@ const docTemplate = `{
                     "description": "新签优惠",
                     "type": "number"
                 },
+                "ebike": {
+                    "description": "车辆详情",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Ebike"
+                        }
+                    ]
+                },
                 "employee": {
                     "description": "店员 (可为空)",
                     "allOf": [

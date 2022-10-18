@@ -3842,6 +3842,10 @@ definitions:
       discountNewly:
         description: 新签优惠
         type: number
+      ebike:
+        allOf:
+        - $ref: '#/definitions/model.Ebike'
+        description: 车辆详情
       employee:
         allOf:
         - $ref: '#/definitions/model.Employee'

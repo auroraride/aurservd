@@ -237,22 +237,7 @@ func (s *subscribeService) Detail(sub *ent.Subscribe) *model.Subscribe {
     brand := sub.Edges.Brand
     bike := sub.Edges.Ebike
     if bike != nil {
-        res.Ebike = &model.Ebike{
-            EbikeInfo: model.EbikeInfo{
-                ID:        bike.ID,
-                SN:        bike.Sn,
-                ExFactory: bike.ExFactory,
-                Plate:     bike.Plate,
-                Color:     bike.Color,
-            },
-        }
-        if brand != nil {
-            res.Ebike.Brand = model.EbikeBrand{
-                ID:    brand.ID,
-                Name:  brand.Name,
-                Cover: brand.Cover,
-            }
-        }
+        res.Ebike = NewEbike().Detail(bike, brand)
     }
 
     return res

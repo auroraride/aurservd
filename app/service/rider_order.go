@@ -155,6 +155,12 @@ func (s *riderOrderService) Detail(item *ent.Order) model.Order {
             res.Refund.RefundAt = rf.RefundAt.Format(carbon.DateTimeLayout)
         }
     }
+
+    // ebike
+    bike := item.Edges.Ebike
+    if bike != nil {
+        res.Ebike = NewEbike().Detail(bike, bike.Edges.Brand)
+    }
     return res
 }
 

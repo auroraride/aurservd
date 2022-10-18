@@ -314,3 +314,22 @@ func (s *ebikeService) BatchCreate(c echo.Context) (failed []string) {
 
     return
 }
+
+func (s *ebikeService) Detail(bike *ent.Ebike, brand *ent.EbikeBrand) *model.Ebike {
+    res := &model.Ebike{
+        EbikeInfo: model.EbikeInfo{
+            ID:        bike.ID,
+            SN:        bike.Sn,
+            ExFactory: bike.ExFactory,
+            Plate:     bike.Plate,
+            Color:     bike.Color,
+        },
+    }
+    if brand != nil {
+        res.Brand = &model.EbikeBrand{
+            ID:   brand.ID,
+            Name: brand.Name,
+        }
+    }
+    return res
+}
