@@ -250,23 +250,9 @@ func (cc *ContractCreate) SetRider(r *Rider) *ContractCreate {
 	return cc.SetRiderID(r.ID)
 }
 
-// SetEbikeAllocateID sets the "ebike_allocate" edge to the Allocate entity by ID.
-func (cc *ContractCreate) SetEbikeAllocateID(id uint64) *ContractCreate {
-	cc.mutation.SetEbikeAllocateID(id)
-	return cc
-}
-
-// SetNillableEbikeAllocateID sets the "ebike_allocate" edge to the Allocate entity by ID if the given value is not nil.
-func (cc *ContractCreate) SetNillableEbikeAllocateID(id *uint64) *ContractCreate {
-	if id != nil {
-		cc = cc.SetEbikeAllocateID(*id)
-	}
-	return cc
-}
-
-// SetEbikeAllocate sets the "ebike_allocate" edge to the Allocate entity.
-func (cc *ContractCreate) SetEbikeAllocate(a *Allocate) *ContractCreate {
-	return cc.SetEbikeAllocateID(a.ID)
+// SetAllocate sets the "allocate" edge to the Allocate entity.
+func (cc *ContractCreate) SetAllocate(a *Allocate) *ContractCreate {
+	return cc.SetAllocateID(a.ID)
 }
 
 // Mutation returns the ContractMutation object of the builder.
@@ -633,12 +619,12 @@ func (cc *ContractCreate) createSpec() (*Contract, *sqlgraph.CreateSpec) {
 		_node.RiderID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := cc.mutation.EbikeAllocateIDs(); len(nodes) > 0 {
+	if nodes := cc.mutation.AllocateIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: true,
-			Table:   contract.EbikeAllocateTable,
-			Columns: []string{contract.EbikeAllocateColumn},
+			Table:   contract.AllocateTable,
+			Columns: []string{contract.AllocateColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

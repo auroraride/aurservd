@@ -12886,13 +12886,13 @@ paths:
         in: query
         name: current
         type: integer
+      - description: 是否可以领取车辆, 不携带即为查询所有
+        in: query
+        name: ebikeObtain
+        type: boolean
       - description: 是否可以维修车辆, 不携带即为查询所有
         in: query
         name: ebikeRepair
-        type: boolean
-      - description: 是否可以领取车辆, 不携带即为查询所有
-        in: query
-        name: ebikeeObtain
         type: boolean
       - description: 门店名称
         in: query

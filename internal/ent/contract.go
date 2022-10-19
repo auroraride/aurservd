@@ -77,8 +77,8 @@ type ContractEdges struct {
 	Cabinet *Cabinet `json:"cabinet,omitempty"`
 	// Rider holds the value of the rider edge.
 	Rider *Rider `json:"rider,omitempty"`
-	// EbikeAllocate holds the value of the ebike_allocate edge.
-	EbikeAllocate *Allocate `json:"ebike_allocate,omitempty"`
+	// Allocate holds the value of the allocate edge.
+	Allocate *Allocate `json:"allocate,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [6]bool
@@ -149,17 +149,17 @@ func (e ContractEdges) RiderOrErr() (*Rider, error) {
 	return nil, &NotLoadedError{edge: "rider"}
 }
 
-// EbikeAllocateOrErr returns the EbikeAllocate value or an error if the edge
+// AllocateOrErr returns the Allocate value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e ContractEdges) EbikeAllocateOrErr() (*Allocate, error) {
+func (e ContractEdges) AllocateOrErr() (*Allocate, error) {
 	if e.loadedTypes[5] {
-		if e.EbikeAllocate == nil {
+		if e.Allocate == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: allocate.Label}
 		}
-		return e.EbikeAllocate, nil
+		return e.Allocate, nil
 	}
-	return nil, &NotLoadedError{edge: "ebike_allocate"}
+	return nil, &NotLoadedError{edge: "allocate"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -350,9 +350,9 @@ func (c *Contract) QueryRider() *RiderQuery {
 	return (&ContractClient{config: c.config}).QueryRider(c)
 }
 
-// QueryEbikeAllocate queries the "ebike_allocate" edge of the Contract entity.
-func (c *Contract) QueryEbikeAllocate() *AllocateQuery {
-	return (&ContractClient{config: c.config}).QueryEbikeAllocate(c)
+// QueryAllocate queries the "allocate" edge of the Contract entity.
+func (c *Contract) QueryAllocate() *AllocateQuery {
+	return (&ContractClient{config: c.config}).QueryAllocate(c)
 }
 
 // Update returns a builder for updating this Contract.

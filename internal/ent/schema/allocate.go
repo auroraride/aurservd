@@ -8,7 +8,6 @@ import (
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
-    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -60,7 +59,6 @@ func (Allocate) Fields() []ent.Field {
     return []ent.Field{
         field.Enum("type").Values("battery", "ebike").Comment("分配类型"),
         field.Uint8("status").Comment("分配状态"),
-        field.JSON("info", &model.Allocate{}).Comment("分配信息"),
         field.Time("time").Comment("分配时间"),
         field.String("model").Comment("电池型号"),
     }
@@ -75,16 +73,17 @@ func (Allocate) Edges() []ent.Edge {
 
 func (Allocate) Mixin() []ent.Mixin {
     return []ent.Mixin{
-        internal.Modifier{},
-
         RiderMixin{},
+        SubscribeMixin{Unique: true},
 
+        internal.Modifier{},
         EmployeeMixin{Optional: true},
+
+        CabinetMixin{Optional: true},
         StoreMixin{Optional: true},
+
         EbikeMixin{Optional: true},
         EbikeBrandMixin{Optional: true},
-        SubscribeMixin{Unique: true},
-        CabinetMixin{Optional: true},
     }
 }
 

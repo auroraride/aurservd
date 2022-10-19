@@ -23,19 +23,19 @@ import (
 // ContractQuery is the builder for querying Contract entities.
 type ContractQuery struct {
 	config
-	limit             *int
-	offset            *int
-	unique            *bool
-	order             []OrderFunc
-	fields            []string
-	predicates        []predicate.Contract
-	withEmployee      *EmployeeQuery
-	withStore         *StoreQuery
-	withSubscribe     *SubscribeQuery
-	withCabinet       *CabinetQuery
-	withRider         *RiderQuery
-	withEbikeAllocate *AllocateQuery
-	modifiers         []func(*sql.Selector)
+	limit         *int
+	offset        *int
+	unique        *bool
+	order         []OrderFunc
+	fields        []string
+	predicates    []predicate.Contract
+	withEmployee  *EmployeeQuery
+	withStore     *StoreQuery
+	withSubscribe *SubscribeQuery
+	withCabinet   *CabinetQuery
+	withRider     *RiderQuery
+	withAllocate  *AllocateQuery
+	modifiers     []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -182,8 +182,8 @@ func (cq *ContractQuery) QueryRider() *RiderQuery {
 	return query
 }
 
-// QueryEbikeAllocate chains the current query on the "ebike_allocate" edge.
-func (cq *ContractQuery) QueryEbikeAllocate() *AllocateQuery {
+// QueryAllocate chains the current query on the "allocate" edge.
+func (cq *ContractQuery) QueryAllocate() *AllocateQuery {
 	query := &AllocateQuery{config: cq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
@@ -196,7 +196,7 @@ func (cq *ContractQuery) QueryEbikeAllocate() *AllocateQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(contract.Table, contract.FieldID, selector),
 			sqlgraph.To(allocate.Table, allocate.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, contract.EbikeAllocateTable, contract.EbikeAllocateColumn),
+			sqlgraph.Edge(sqlgraph.O2O, true, contract.AllocateTable, contract.AllocateColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -380,17 +380,17 @@ func (cq *ContractQuery) Clone() *ContractQuery {
 		return nil
 	}
 	return &ContractQuery{
-		config:            cq.config,
-		limit:             cq.limit,
-		offset:            cq.offset,
-		order:             append([]OrderFunc{}, cq.order...),
-		predicates:        append([]predicate.Contract{}, cq.predicates...),
-		withEmployee:      cq.withEmployee.Clone(),
-		withStore:         cq.withStore.Clone(),
-		withSubscribe:     cq.withSubscribe.Clone(),
-		withCabinet:       cq.withCabinet.Clone(),
-		withRider:         cq.withRider.Clone(),
-		withEbikeAllocate: cq.withEbikeAllocate.Clone(),
+		config:        cq.config,
+		limit:         cq.limit,
+		offset:        cq.offset,
+		order:         append([]OrderFunc{}, cq.order...),
+		predicates:    append([]predicate.Contract{}, cq.predicates...),
+		withEmployee:  cq.withEmployee.Clone(),
+		withStore:     cq.withStore.Clone(),
+		withSubscribe: cq.withSubscribe.Clone(),
+		withCabinet:   cq.withCabinet.Clone(),
+		withRider:     cq.withRider.Clone(),
+		withAllocate:  cq.withAllocate.Clone(),
 		// clone intermediate query.
 		sql:    cq.sql.Clone(),
 		path:   cq.path,
@@ -453,14 +453,14 @@ func (cq *ContractQuery) WithRider(opts ...func(*RiderQuery)) *ContractQuery {
 	return cq
 }
 
-// WithEbikeAllocate tells the query-builder to eager-load the nodes that are connected to
-// the "ebike_allocate" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *ContractQuery) WithEbikeAllocate(opts ...func(*AllocateQuery)) *ContractQuery {
+// WithAllocate tells the query-builder to eager-load the nodes that are connected to
+// the "allocate" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *ContractQuery) WithAllocate(opts ...func(*AllocateQuery)) *ContractQuery {
 	query := &AllocateQuery{config: cq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	cq.withEbikeAllocate = query
+	cq.withAllocate = query
 	return cq
 }
 
@@ -538,7 +538,7 @@ func (cq *ContractQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Con
 			cq.withSubscribe != nil,
 			cq.withCabinet != nil,
 			cq.withRider != nil,
-			cq.withEbikeAllocate != nil,
+			cq.withAllocate != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -592,9 +592,9 @@ func (cq *ContractQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Con
 			return nil, err
 		}
 	}
-	if query := cq.withEbikeAllocate; query != nil {
-		if err := cq.loadEbikeAllocate(ctx, query, nodes, nil,
-			func(n *Contract, e *Allocate) { n.Edges.EbikeAllocate = e }); err != nil {
+	if query := cq.withAllocate; query != nil {
+		if err := cq.loadAllocate(ctx, query, nodes, nil,
+			func(n *Contract, e *Allocate) { n.Edges.Allocate = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -743,7 +743,7 @@ func (cq *ContractQuery) loadRider(ctx context.Context, query *RiderQuery, nodes
 	}
 	return nil
 }
-func (cq *ContractQuery) loadEbikeAllocate(ctx context.Context, query *AllocateQuery, nodes []*Contract, init func(*Contract), assign func(*Contract, *Allocate)) error {
+func (cq *ContractQuery) loadAllocate(ctx context.Context, query *AllocateQuery, nodes []*Contract, init func(*Contract), assign func(*Contract, *Allocate)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*Contract)
 	for i := range nodes {

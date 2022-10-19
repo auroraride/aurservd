@@ -26,32 +26,30 @@ type Allocate struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID uint64 `json:"id,omitempty"`
+	// 骑手ID
+	RiderID uint64 `json:"rider_id,omitempty"`
+	// SubscribeID holds the value of the "subscribe_id" field.
+	SubscribeID uint64 `json:"subscribe_id,omitempty"`
 	// 创建人
 	Creator *model.Modifier `json:"creator,omitempty"`
 	// 最后修改人
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
-	// 骑手ID
-	RiderID uint64 `json:"rider_id,omitempty"`
 	// 店员ID
 	EmployeeID *uint64 `json:"employee_id,omitempty"`
+	// 电柜ID
+	CabinetID *uint64 `json:"cabinet_id,omitempty"`
 	// 门店ID
 	StoreID *uint64 `json:"store_id,omitempty"`
 	// EbikeID holds the value of the "ebike_id" field.
 	EbikeID *uint64 `json:"ebike_id,omitempty"`
 	// BrandID holds the value of the "brand_id" field.
 	BrandID *uint64 `json:"brand_id,omitempty"`
-	// SubscribeID holds the value of the "subscribe_id" field.
-	SubscribeID uint64 `json:"subscribe_id,omitempty"`
-	// 电柜ID
-	CabinetID *uint64 `json:"cabinet_id,omitempty"`
 	// 分配类型
 	Type allocate.Type `json:"type,omitempty"`
 	// 分配状态
 	Status uint8 `json:"status,omitempty"`
-	// 分配信息
-	Info *model.Allocate `json:"info,omitempty"`
 	// 分配时间
 	Time time.Time `json:"time,omitempty"`
 	// 电池型号
@@ -65,18 +63,18 @@ type Allocate struct {
 type AllocateEdges struct {
 	// 骑手
 	Rider *Rider `json:"rider,omitempty"`
+	// Subscribe holds the value of the subscribe edge.
+	Subscribe *Subscribe `json:"subscribe,omitempty"`
 	// Employee holds the value of the employee edge.
 	Employee *Employee `json:"employee,omitempty"`
+	// Cabinet holds the value of the cabinet edge.
+	Cabinet *Cabinet `json:"cabinet,omitempty"`
 	// Store holds the value of the store edge.
 	Store *Store `json:"store,omitempty"`
 	// Ebike holds the value of the ebike edge.
 	Ebike *Ebike `json:"ebike,omitempty"`
 	// Brand holds the value of the brand edge.
 	Brand *EbikeBrand `json:"brand,omitempty"`
-	// Subscribe holds the value of the subscribe edge.
-	Subscribe *Subscribe `json:"subscribe,omitempty"`
-	// Cabinet holds the value of the cabinet edge.
-	Cabinet *Cabinet `json:"cabinet,omitempty"`
 	// Contract holds the value of the contract edge.
 	Contract *Contract `json:"contract,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -97,10 +95,23 @@ func (e AllocateEdges) RiderOrErr() (*Rider, error) {
 	return nil, &NotLoadedError{edge: "rider"}
 }
 
+// SubscribeOrErr returns the Subscribe value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AllocateEdges) SubscribeOrErr() (*Subscribe, error) {
+	if e.loadedTypes[1] {
+		if e.Subscribe == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: subscribe.Label}
+		}
+		return e.Subscribe, nil
+	}
+	return nil, &NotLoadedError{edge: "subscribe"}
+}
+
 // EmployeeOrErr returns the Employee value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e AllocateEdges) EmployeeOrErr() (*Employee, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		if e.Employee == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: employee.Label}
@@ -110,10 +121,23 @@ func (e AllocateEdges) EmployeeOrErr() (*Employee, error) {
 	return nil, &NotLoadedError{edge: "employee"}
 }
 
+// CabinetOrErr returns the Cabinet value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AllocateEdges) CabinetOrErr() (*Cabinet, error) {
+	if e.loadedTypes[3] {
+		if e.Cabinet == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: cabinet.Label}
+		}
+		return e.Cabinet, nil
+	}
+	return nil, &NotLoadedError{edge: "cabinet"}
+}
+
 // StoreOrErr returns the Store value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e AllocateEdges) StoreOrErr() (*Store, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[4] {
 		if e.Store == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: store.Label}
@@ -126,7 +150,7 @@ func (e AllocateEdges) StoreOrErr() (*Store, error) {
 // EbikeOrErr returns the Ebike value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e AllocateEdges) EbikeOrErr() (*Ebike, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[5] {
 		if e.Ebike == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: ebike.Label}
@@ -139,7 +163,7 @@ func (e AllocateEdges) EbikeOrErr() (*Ebike, error) {
 // BrandOrErr returns the Brand value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e AllocateEdges) BrandOrErr() (*EbikeBrand, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[6] {
 		if e.Brand == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: ebikebrand.Label}
@@ -147,32 +171,6 @@ func (e AllocateEdges) BrandOrErr() (*EbikeBrand, error) {
 		return e.Brand, nil
 	}
 	return nil, &NotLoadedError{edge: "brand"}
-}
-
-// SubscribeOrErr returns the Subscribe value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e AllocateEdges) SubscribeOrErr() (*Subscribe, error) {
-	if e.loadedTypes[5] {
-		if e.Subscribe == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: subscribe.Label}
-		}
-		return e.Subscribe, nil
-	}
-	return nil, &NotLoadedError{edge: "subscribe"}
-}
-
-// CabinetOrErr returns the Cabinet value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e AllocateEdges) CabinetOrErr() (*Cabinet, error) {
-	if e.loadedTypes[6] {
-		if e.Cabinet == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: cabinet.Label}
-		}
-		return e.Cabinet, nil
-	}
-	return nil, &NotLoadedError{edge: "cabinet"}
 }
 
 // ContractOrErr returns the Contract value or an error if the edge
@@ -193,9 +191,9 @@ func (*Allocate) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case allocate.FieldCreator, allocate.FieldLastModifier, allocate.FieldInfo:
+		case allocate.FieldCreator, allocate.FieldLastModifier:
 			values[i] = new([]byte)
-		case allocate.FieldID, allocate.FieldRiderID, allocate.FieldEmployeeID, allocate.FieldStoreID, allocate.FieldEbikeID, allocate.FieldBrandID, allocate.FieldSubscribeID, allocate.FieldCabinetID, allocate.FieldStatus:
+		case allocate.FieldID, allocate.FieldRiderID, allocate.FieldSubscribeID, allocate.FieldEmployeeID, allocate.FieldCabinetID, allocate.FieldStoreID, allocate.FieldEbikeID, allocate.FieldBrandID, allocate.FieldStatus:
 			values[i] = new(sql.NullInt64)
 		case allocate.FieldRemark, allocate.FieldType, allocate.FieldModel:
 			values[i] = new(sql.NullString)
@@ -222,6 +220,18 @@ func (a *Allocate) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			a.ID = uint64(value.Int64)
+		case allocate.FieldRiderID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field rider_id", values[i])
+			} else if value.Valid {
+				a.RiderID = uint64(value.Int64)
+			}
+		case allocate.FieldSubscribeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field subscribe_id", values[i])
+			} else if value.Valid {
+				a.SubscribeID = uint64(value.Int64)
+			}
 		case allocate.FieldCreator:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field creator", values[i])
@@ -244,18 +254,19 @@ func (a *Allocate) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				a.Remark = value.String
 			}
-		case allocate.FieldRiderID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field rider_id", values[i])
-			} else if value.Valid {
-				a.RiderID = uint64(value.Int64)
-			}
 		case allocate.FieldEmployeeID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field employee_id", values[i])
 			} else if value.Valid {
 				a.EmployeeID = new(uint64)
 				*a.EmployeeID = uint64(value.Int64)
+			}
+		case allocate.FieldCabinetID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field cabinet_id", values[i])
+			} else if value.Valid {
+				a.CabinetID = new(uint64)
+				*a.CabinetID = uint64(value.Int64)
 			}
 		case allocate.FieldStoreID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -278,19 +289,6 @@ func (a *Allocate) assignValues(columns []string, values []any) error {
 				a.BrandID = new(uint64)
 				*a.BrandID = uint64(value.Int64)
 			}
-		case allocate.FieldSubscribeID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field subscribe_id", values[i])
-			} else if value.Valid {
-				a.SubscribeID = uint64(value.Int64)
-			}
-		case allocate.FieldCabinetID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field cabinet_id", values[i])
-			} else if value.Valid {
-				a.CabinetID = new(uint64)
-				*a.CabinetID = uint64(value.Int64)
-			}
 		case allocate.FieldType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
@@ -302,14 +300,6 @@ func (a *Allocate) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
 				a.Status = uint8(value.Int64)
-			}
-		case allocate.FieldInfo:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field info", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &a.Info); err != nil {
-					return fmt.Errorf("unmarshal field info: %w", err)
-				}
 			}
 		case allocate.FieldTime:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -333,9 +323,19 @@ func (a *Allocate) QueryRider() *RiderQuery {
 	return (&AllocateClient{config: a.config}).QueryRider(a)
 }
 
+// QuerySubscribe queries the "subscribe" edge of the Allocate entity.
+func (a *Allocate) QuerySubscribe() *SubscribeQuery {
+	return (&AllocateClient{config: a.config}).QuerySubscribe(a)
+}
+
 // QueryEmployee queries the "employee" edge of the Allocate entity.
 func (a *Allocate) QueryEmployee() *EmployeeQuery {
 	return (&AllocateClient{config: a.config}).QueryEmployee(a)
+}
+
+// QueryCabinet queries the "cabinet" edge of the Allocate entity.
+func (a *Allocate) QueryCabinet() *CabinetQuery {
+	return (&AllocateClient{config: a.config}).QueryCabinet(a)
 }
 
 // QueryStore queries the "store" edge of the Allocate entity.
@@ -351,16 +351,6 @@ func (a *Allocate) QueryEbike() *EbikeQuery {
 // QueryBrand queries the "brand" edge of the Allocate entity.
 func (a *Allocate) QueryBrand() *EbikeBrandQuery {
 	return (&AllocateClient{config: a.config}).QueryBrand(a)
-}
-
-// QuerySubscribe queries the "subscribe" edge of the Allocate entity.
-func (a *Allocate) QuerySubscribe() *SubscribeQuery {
-	return (&AllocateClient{config: a.config}).QuerySubscribe(a)
-}
-
-// QueryCabinet queries the "cabinet" edge of the Allocate entity.
-func (a *Allocate) QueryCabinet() *CabinetQuery {
-	return (&AllocateClient{config: a.config}).QueryCabinet(a)
 }
 
 // QueryContract queries the "contract" edge of the Allocate entity.
@@ -391,6 +381,12 @@ func (a *Allocate) String() string {
 	var builder strings.Builder
 	builder.WriteString("Allocate(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", a.ID))
+	builder.WriteString("rider_id=")
+	builder.WriteString(fmt.Sprintf("%v", a.RiderID))
+	builder.WriteString(", ")
+	builder.WriteString("subscribe_id=")
+	builder.WriteString(fmt.Sprintf("%v", a.SubscribeID))
+	builder.WriteString(", ")
 	builder.WriteString("creator=")
 	builder.WriteString(fmt.Sprintf("%v", a.Creator))
 	builder.WriteString(", ")
@@ -400,11 +396,13 @@ func (a *Allocate) String() string {
 	builder.WriteString("remark=")
 	builder.WriteString(a.Remark)
 	builder.WriteString(", ")
-	builder.WriteString("rider_id=")
-	builder.WriteString(fmt.Sprintf("%v", a.RiderID))
-	builder.WriteString(", ")
 	if v := a.EmployeeID; v != nil {
 		builder.WriteString("employee_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := a.CabinetID; v != nil {
+		builder.WriteString("cabinet_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
@@ -423,22 +421,11 @@ func (a *Allocate) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("subscribe_id=")
-	builder.WriteString(fmt.Sprintf("%v", a.SubscribeID))
-	builder.WriteString(", ")
-	if v := a.CabinetID; v != nil {
-		builder.WriteString("cabinet_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
 	builder.WriteString("type=")
 	builder.WriteString(fmt.Sprintf("%v", a.Type))
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", a.Status))
-	builder.WriteString(", ")
-	builder.WriteString("info=")
-	builder.WriteString(fmt.Sprintf("%v", a.Info))
 	builder.WriteString(", ")
 	builder.WriteString("time=")
 	builder.WriteString(a.Time.Format(time.ANSIC))

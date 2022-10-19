@@ -667,6 +667,22 @@ func (c *AllocateClient) QueryRider(a *Allocate) *RiderQuery {
 	return query
 }
 
+// QuerySubscribe queries the subscribe edge of a Allocate.
+func (c *AllocateClient) QuerySubscribe(a *Allocate) *SubscribeQuery {
+	query := &SubscribeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(allocate.Table, allocate.FieldID, id),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, allocate.SubscribeTable, allocate.SubscribeColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryEmployee queries the employee edge of a Allocate.
 func (c *AllocateClient) QueryEmployee(a *Allocate) *EmployeeQuery {
 	query := &EmployeeQuery{config: c.config}
@@ -676,6 +692,22 @@ func (c *AllocateClient) QueryEmployee(a *Allocate) *EmployeeQuery {
 			sqlgraph.From(allocate.Table, allocate.FieldID, id),
 			sqlgraph.To(employee.Table, employee.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, allocate.EmployeeTable, allocate.EmployeeColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCabinet queries the cabinet edge of a Allocate.
+func (c *AllocateClient) QueryCabinet(a *Allocate) *CabinetQuery {
+	query := &CabinetQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(allocate.Table, allocate.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, allocate.CabinetTable, allocate.CabinetColumn),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -724,38 +756,6 @@ func (c *AllocateClient) QueryBrand(a *Allocate) *EbikeBrandQuery {
 			sqlgraph.From(allocate.Table, allocate.FieldID, id),
 			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, allocate.BrandTable, allocate.BrandColumn),
-		)
-		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QuerySubscribe queries the subscribe edge of a Allocate.
-func (c *AllocateClient) QuerySubscribe(a *Allocate) *SubscribeQuery {
-	query := &SubscribeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := a.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(allocate.Table, allocate.FieldID, id),
-			sqlgraph.To(subscribe.Table, subscribe.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, allocate.SubscribeTable, allocate.SubscribeColumn),
-		)
-		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryCabinet queries the cabinet edge of a Allocate.
-func (c *AllocateClient) QueryCabinet(a *Allocate) *CabinetQuery {
-	query := &CabinetQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := a.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(allocate.Table, allocate.FieldID, id),
-			sqlgraph.To(cabinet.Table, cabinet.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, allocate.CabinetTable, allocate.CabinetColumn),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -2564,15 +2564,15 @@ func (c *ContractClient) QueryRider(co *Contract) *RiderQuery {
 	return query
 }
 
-// QueryEbikeAllocate queries the ebike_allocate edge of a Contract.
-func (c *ContractClient) QueryEbikeAllocate(co *Contract) *AllocateQuery {
+// QueryAllocate queries the allocate edge of a Contract.
+func (c *ContractClient) QueryAllocate(co *Contract) *AllocateQuery {
 	query := &AllocateQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(contract.Table, contract.FieldID, id),
 			sqlgraph.To(allocate.Table, allocate.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, contract.EbikeAllocateTable, contract.EbikeAllocateColumn),
+			sqlgraph.Edge(sqlgraph.O2O, true, contract.AllocateTable, contract.AllocateColumn),
 		)
 		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
 		return fromV, nil

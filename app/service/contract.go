@@ -16,7 +16,6 @@ import (
     "github.com/auroraride/aurservd/internal/ent/contract"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/internal/esign"
-    "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     jsoniter "github.com/json-iterator/go"
@@ -181,6 +180,10 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
         snag.Panic("当前订阅错误")
     }
 
+    if sub.BrandID != nil && req.StoreID == nil {
+        snag.Panic("电车必须由门店分配")
+    }
+
     // 城市
     ec := sub.Edges.City
     if ec == nil {
@@ -199,6 +202,12 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
     }
     if !stockable {
         snag.Panic("电池库存不足")
+    }
+
+    // 查找分配信息
+    ea := NewAllocate().QueryEffectiveSubscribeIDX(sub.ID)
+    if ea == nil {
+        snag.Panic("未找到有效分配")
     }
 
     // 定义变量
@@ -264,25 +273,29 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
     m["payMonth"] = un.Month
 
     // 电车
-    var employeeID, storeID, allocateID *uint64
+    var employeeID, storeID *uint64
     if sub.BrandID != nil {
         // 查找电车分配
-        ea := NewAllocate().QueryEffectiveSubscribeIDX(sub.ID)
         employeeID = ea.EmployeeID
         storeID = ea.StoreID
-        allocateID = silk.UInt64(ea.ID)
 
-        bike := ea.Info.Ebike
+        bike, _ := ea.QueryEbike().WithBrand().First(s.ctx)
+        if bike == nil || bike.Edges.Brand == nil {
+            snag.Panic("未找到电车信息")
+        }
+
+        brand := bike.Edges.Brand
+
         // 车加电方案
         m["schemaEbike"] = true
         // 车加电方案一
         m["ebikeScheme1"] = true
         // 车辆品牌
-        m["ebikeBrand"] = bike.Brand.Name
+        m["ebikeBrand"] = brand.Name
         // 车辆颜色
         m["ebikeColor"] = bike.Color
         // 车架号
-        m["ebikeSN"] = bike.SN
+        m["ebikeSN"] = bike.Sn
         // 车牌号
         m["ebikePlate"] = bike.Plate
         // 电池类型
@@ -395,7 +408,7 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
             SetSn(sn).
             SetNillableStoreID(storeID).
             SetNillableEmployeeID(employeeID).
-            SetNillableEbikeAllocateID(allocateID).
+            SetAllocateID(ea.ID).
             SetSubscribe(sub).
             SetRiderInfo(&model.ContractRider{
                 Phone:        u.Phone,
@@ -543,17 +556,23 @@ func (s *contractService) update(c *ent.Contract) (err error) {
     srv := NewBusinessRider(c.Edges.Rider).SetStoreID(c.StoreID).SetCabinetID(c.CabinetID)
 
     // 查询分配信息
-    var ea *ent.Allocate
-    if c.AllocateID != nil {
-        ea, _ = c.QueryEbikeAllocate().First(s.ctx)
-        if ea == nil || ea.EbikeID == nil {
-            return errors.New("未找到分配信息")
+    ea, _ := c.QueryAllocate().First(s.ctx)
+
+    if ea == nil {
+        return errors.New("未找到分配信息")
+    }
+
+    // 设置门店和电车属性
+    if ea.EbikeID != nil {
+        bike, _ := ea.QueryEbike().WithBrand().First(s.ctx)
+        if bike == nil || bike.Edges.Brand == nil {
+            return errors.New("未找到电车信息")
         }
-        // 设置门店和电车属性
+        brand := bike.Edges.Brand
         srv.SetEbike(&model.EbikeBusinessInfo{
-            ID:        *ea.EbikeID,
-            BrandID:   ea.Info.Ebike.Brand.ID,
-            BrandName: ea.Info.Ebike.Brand.Name,
+            ID:        bike.ID,
+            BrandID:   brand.ID,
+            BrandName: brand.Name,
         }).SetStoreID(ea.StoreID)
     }
 

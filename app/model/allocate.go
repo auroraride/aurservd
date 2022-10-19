@@ -21,23 +21,19 @@ func (s AllocateStatus) Value() uint8 {
     return uint8(s)
 }
 
-type Allocate struct {
-    Rider Rider  `json:"rider" bson:"rider"` // 骑手信息
-    Ebike *Ebike `json:"ebike" bson:"ebike"` // 电车信息
-}
-
 type AllocateEmployeeListReq struct {
     PaginationReq
     Status AllocateStatus `json:"status" query:"status"` // 签约状态 1:未签约(默认) 2:已签约
 }
 
 type AllocateDetail struct {
-    *Allocate
+    Rider  Rider          `json:"rider" bson:"rider"` // 骑手信息
     ID     uint64         `json:"id"`
     Type   string         `json:"type" enums:"battery,ebike"` // 分配类型 battery:单电 ebike:车电
     Status AllocateStatus `json:"status"`                     // 1:未激活 2:已签约 3:已作废
     Time   string         `json:"time"`                       // 分配时间
     Model  string         `json:"model" bson:"model"`         // 电池型号
+    Ebike  *Ebike         `json:"ebike" bson:"ebike"`         // 电车信息
 }
 
 type AllocateCreateReq struct {

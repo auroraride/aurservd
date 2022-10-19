@@ -28,24 +28,23 @@ type AllocateMutation struct {
 	_type            *allocate.Type
 	status           *uint8
 	addstatus        *int8
-	info             **model.Allocate
 	time             *time.Time
 	model            *string
 	clearedFields    map[string]struct{}
 	rider            *uint64
 	clearedrider     bool
+	subscribe        *uint64
+	clearedsubscribe bool
 	employee         *uint64
 	clearedemployee  bool
+	cabinet          *uint64
+	clearedcabinet   bool
 	store            *uint64
 	clearedstore     bool
 	ebike            *uint64
 	clearedebike     bool
 	brand            *uint64
 	clearedbrand     bool
-	subscribe        *uint64
-	clearedsubscribe bool
-	cabinet          *uint64
-	clearedcabinet   bool
 	contract         *uint64
 	clearedcontract  bool
 	done             bool
@@ -149,6 +148,78 @@ func (m *AllocateMutation) IDs(ctx context.Context) ([]uint64, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetRiderID sets the "rider_id" field.
+func (m *AllocateMutation) SetRiderID(u uint64) {
+	m.rider = &u
+}
+
+// RiderID returns the value of the "rider_id" field in the mutation.
+func (m *AllocateMutation) RiderID() (r uint64, exists bool) {
+	v := m.rider
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRiderID returns the old "rider_id" field's value of the Allocate entity.
+// If the Allocate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AllocateMutation) OldRiderID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRiderID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRiderID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRiderID: %w", err)
+	}
+	return oldValue.RiderID, nil
+}
+
+// ResetRiderID resets all changes to the "rider_id" field.
+func (m *AllocateMutation) ResetRiderID() {
+	m.rider = nil
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (m *AllocateMutation) SetSubscribeID(u uint64) {
+	m.subscribe = &u
+}
+
+// SubscribeID returns the value of the "subscribe_id" field in the mutation.
+func (m *AllocateMutation) SubscribeID() (r uint64, exists bool) {
+	v := m.subscribe
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSubscribeID returns the old "subscribe_id" field's value of the Allocate entity.
+// If the Allocate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AllocateMutation) OldSubscribeID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSubscribeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSubscribeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSubscribeID: %w", err)
+	}
+	return oldValue.SubscribeID, nil
+}
+
+// ResetSubscribeID resets all changes to the "subscribe_id" field.
+func (m *AllocateMutation) ResetSubscribeID() {
+	m.subscribe = nil
 }
 
 // SetCreator sets the "creator" field.
@@ -298,42 +369,6 @@ func (m *AllocateMutation) ResetRemark() {
 	delete(m.clearedFields, allocate.FieldRemark)
 }
 
-// SetRiderID sets the "rider_id" field.
-func (m *AllocateMutation) SetRiderID(u uint64) {
-	m.rider = &u
-}
-
-// RiderID returns the value of the "rider_id" field in the mutation.
-func (m *AllocateMutation) RiderID() (r uint64, exists bool) {
-	v := m.rider
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRiderID returns the old "rider_id" field's value of the Allocate entity.
-// If the Allocate object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AllocateMutation) OldRiderID(ctx context.Context) (v uint64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRiderID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRiderID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRiderID: %w", err)
-	}
-	return oldValue.RiderID, nil
-}
-
-// ResetRiderID resets all changes to the "rider_id" field.
-func (m *AllocateMutation) ResetRiderID() {
-	m.rider = nil
-}
-
 // SetEmployeeID sets the "employee_id" field.
 func (m *AllocateMutation) SetEmployeeID(u uint64) {
 	m.employee = &u
@@ -381,6 +416,55 @@ func (m *AllocateMutation) EmployeeIDCleared() bool {
 func (m *AllocateMutation) ResetEmployeeID() {
 	m.employee = nil
 	delete(m.clearedFields, allocate.FieldEmployeeID)
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (m *AllocateMutation) SetCabinetID(u uint64) {
+	m.cabinet = &u
+}
+
+// CabinetID returns the value of the "cabinet_id" field in the mutation.
+func (m *AllocateMutation) CabinetID() (r uint64, exists bool) {
+	v := m.cabinet
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCabinetID returns the old "cabinet_id" field's value of the Allocate entity.
+// If the Allocate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AllocateMutation) OldCabinetID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCabinetID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCabinetID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCabinetID: %w", err)
+	}
+	return oldValue.CabinetID, nil
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (m *AllocateMutation) ClearCabinetID() {
+	m.cabinet = nil
+	m.clearedFields[allocate.FieldCabinetID] = struct{}{}
+}
+
+// CabinetIDCleared returns if the "cabinet_id" field was cleared in this mutation.
+func (m *AllocateMutation) CabinetIDCleared() bool {
+	_, ok := m.clearedFields[allocate.FieldCabinetID]
+	return ok
+}
+
+// ResetCabinetID resets all changes to the "cabinet_id" field.
+func (m *AllocateMutation) ResetCabinetID() {
+	m.cabinet = nil
+	delete(m.clearedFields, allocate.FieldCabinetID)
 }
 
 // SetStoreID sets the "store_id" field.
@@ -530,91 +614,6 @@ func (m *AllocateMutation) ResetBrandID() {
 	delete(m.clearedFields, allocate.FieldBrandID)
 }
 
-// SetSubscribeID sets the "subscribe_id" field.
-func (m *AllocateMutation) SetSubscribeID(u uint64) {
-	m.subscribe = &u
-}
-
-// SubscribeID returns the value of the "subscribe_id" field in the mutation.
-func (m *AllocateMutation) SubscribeID() (r uint64, exists bool) {
-	v := m.subscribe
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSubscribeID returns the old "subscribe_id" field's value of the Allocate entity.
-// If the Allocate object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AllocateMutation) OldSubscribeID(ctx context.Context) (v uint64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSubscribeID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSubscribeID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSubscribeID: %w", err)
-	}
-	return oldValue.SubscribeID, nil
-}
-
-// ResetSubscribeID resets all changes to the "subscribe_id" field.
-func (m *AllocateMutation) ResetSubscribeID() {
-	m.subscribe = nil
-}
-
-// SetCabinetID sets the "cabinet_id" field.
-func (m *AllocateMutation) SetCabinetID(u uint64) {
-	m.cabinet = &u
-}
-
-// CabinetID returns the value of the "cabinet_id" field in the mutation.
-func (m *AllocateMutation) CabinetID() (r uint64, exists bool) {
-	v := m.cabinet
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCabinetID returns the old "cabinet_id" field's value of the Allocate entity.
-// If the Allocate object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AllocateMutation) OldCabinetID(ctx context.Context) (v *uint64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCabinetID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCabinetID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCabinetID: %w", err)
-	}
-	return oldValue.CabinetID, nil
-}
-
-// ClearCabinetID clears the value of the "cabinet_id" field.
-func (m *AllocateMutation) ClearCabinetID() {
-	m.cabinet = nil
-	m.clearedFields[allocate.FieldCabinetID] = struct{}{}
-}
-
-// CabinetIDCleared returns if the "cabinet_id" field was cleared in this mutation.
-func (m *AllocateMutation) CabinetIDCleared() bool {
-	_, ok := m.clearedFields[allocate.FieldCabinetID]
-	return ok
-}
-
-// ResetCabinetID resets all changes to the "cabinet_id" field.
-func (m *AllocateMutation) ResetCabinetID() {
-	m.cabinet = nil
-	delete(m.clearedFields, allocate.FieldCabinetID)
-}
-
 // SetType sets the "type" field.
 func (m *AllocateMutation) SetType(a allocate.Type) {
 	m._type = &a
@@ -705,42 +704,6 @@ func (m *AllocateMutation) AddedStatus() (r int8, exists bool) {
 func (m *AllocateMutation) ResetStatus() {
 	m.status = nil
 	m.addstatus = nil
-}
-
-// SetInfo sets the "info" field.
-func (m *AllocateMutation) SetInfo(value *model.Allocate) {
-	m.info = &value
-}
-
-// Info returns the value of the "info" field in the mutation.
-func (m *AllocateMutation) Info() (r *model.Allocate, exists bool) {
-	v := m.info
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldInfo returns the old "info" field's value of the Allocate entity.
-// If the Allocate object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AllocateMutation) OldInfo(ctx context.Context) (v *model.Allocate, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldInfo is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldInfo requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldInfo: %w", err)
-	}
-	return oldValue.Info, nil
-}
-
-// ResetInfo resets all changes to the "info" field.
-func (m *AllocateMutation) ResetInfo() {
-	m.info = nil
 }
 
 // SetTime sets the "time" field.
@@ -841,6 +804,32 @@ func (m *AllocateMutation) ResetRider() {
 	m.clearedrider = false
 }
 
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (m *AllocateMutation) ClearSubscribe() {
+	m.clearedsubscribe = true
+}
+
+// SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
+func (m *AllocateMutation) SubscribeCleared() bool {
+	return m.clearedsubscribe
+}
+
+// SubscribeIDs returns the "subscribe" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// SubscribeID instead. It exists only for internal usage by the builders.
+func (m *AllocateMutation) SubscribeIDs() (ids []uint64) {
+	if id := m.subscribe; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetSubscribe resets all changes to the "subscribe" edge.
+func (m *AllocateMutation) ResetSubscribe() {
+	m.subscribe = nil
+	m.clearedsubscribe = false
+}
+
 // ClearEmployee clears the "employee" edge to the Employee entity.
 func (m *AllocateMutation) ClearEmployee() {
 	m.clearedemployee = true
@@ -865,6 +854,32 @@ func (m *AllocateMutation) EmployeeIDs() (ids []uint64) {
 func (m *AllocateMutation) ResetEmployee() {
 	m.employee = nil
 	m.clearedemployee = false
+}
+
+// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
+func (m *AllocateMutation) ClearCabinet() {
+	m.clearedcabinet = true
+}
+
+// CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
+func (m *AllocateMutation) CabinetCleared() bool {
+	return m.CabinetIDCleared() || m.clearedcabinet
+}
+
+// CabinetIDs returns the "cabinet" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CabinetID instead. It exists only for internal usage by the builders.
+func (m *AllocateMutation) CabinetIDs() (ids []uint64) {
+	if id := m.cabinet; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCabinet resets all changes to the "cabinet" edge.
+func (m *AllocateMutation) ResetCabinet() {
+	m.cabinet = nil
+	m.clearedcabinet = false
 }
 
 // ClearStore clears the "store" edge to the Store entity.
@@ -945,58 +960,6 @@ func (m *AllocateMutation) ResetBrand() {
 	m.clearedbrand = false
 }
 
-// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
-func (m *AllocateMutation) ClearSubscribe() {
-	m.clearedsubscribe = true
-}
-
-// SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
-func (m *AllocateMutation) SubscribeCleared() bool {
-	return m.clearedsubscribe
-}
-
-// SubscribeIDs returns the "subscribe" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// SubscribeID instead. It exists only for internal usage by the builders.
-func (m *AllocateMutation) SubscribeIDs() (ids []uint64) {
-	if id := m.subscribe; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetSubscribe resets all changes to the "subscribe" edge.
-func (m *AllocateMutation) ResetSubscribe() {
-	m.subscribe = nil
-	m.clearedsubscribe = false
-}
-
-// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
-func (m *AllocateMutation) ClearCabinet() {
-	m.clearedcabinet = true
-}
-
-// CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
-func (m *AllocateMutation) CabinetCleared() bool {
-	return m.CabinetIDCleared() || m.clearedcabinet
-}
-
-// CabinetIDs returns the "cabinet" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// CabinetID instead. It exists only for internal usage by the builders.
-func (m *AllocateMutation) CabinetIDs() (ids []uint64) {
-	if id := m.cabinet; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetCabinet resets all changes to the "cabinet" edge.
-func (m *AllocateMutation) ResetCabinet() {
-	m.cabinet = nil
-	m.clearedcabinet = false
-}
-
 // SetContractID sets the "contract" edge to the Contract entity by id.
 func (m *AllocateMutation) SetContractID(id uint64) {
 	m.contract = &id
@@ -1055,7 +1018,13 @@ func (m *AllocateMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AllocateMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 14)
+	if m.rider != nil {
+		fields = append(fields, allocate.FieldRiderID)
+	}
+	if m.subscribe != nil {
+		fields = append(fields, allocate.FieldSubscribeID)
+	}
 	if m.creator != nil {
 		fields = append(fields, allocate.FieldCreator)
 	}
@@ -1065,11 +1034,11 @@ func (m *AllocateMutation) Fields() []string {
 	if m.remark != nil {
 		fields = append(fields, allocate.FieldRemark)
 	}
-	if m.rider != nil {
-		fields = append(fields, allocate.FieldRiderID)
-	}
 	if m.employee != nil {
 		fields = append(fields, allocate.FieldEmployeeID)
+	}
+	if m.cabinet != nil {
+		fields = append(fields, allocate.FieldCabinetID)
 	}
 	if m.store != nil {
 		fields = append(fields, allocate.FieldStoreID)
@@ -1080,20 +1049,11 @@ func (m *AllocateMutation) Fields() []string {
 	if m.brand != nil {
 		fields = append(fields, allocate.FieldBrandID)
 	}
-	if m.subscribe != nil {
-		fields = append(fields, allocate.FieldSubscribeID)
-	}
-	if m.cabinet != nil {
-		fields = append(fields, allocate.FieldCabinetID)
-	}
 	if m._type != nil {
 		fields = append(fields, allocate.FieldType)
 	}
 	if m.status != nil {
 		fields = append(fields, allocate.FieldStatus)
-	}
-	if m.info != nil {
-		fields = append(fields, allocate.FieldInfo)
 	}
 	if m.time != nil {
 		fields = append(fields, allocate.FieldTime)
@@ -1109,32 +1069,30 @@ func (m *AllocateMutation) Fields() []string {
 // schema.
 func (m *AllocateMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case allocate.FieldRiderID:
+		return m.RiderID()
+	case allocate.FieldSubscribeID:
+		return m.SubscribeID()
 	case allocate.FieldCreator:
 		return m.Creator()
 	case allocate.FieldLastModifier:
 		return m.LastModifier()
 	case allocate.FieldRemark:
 		return m.Remark()
-	case allocate.FieldRiderID:
-		return m.RiderID()
 	case allocate.FieldEmployeeID:
 		return m.EmployeeID()
+	case allocate.FieldCabinetID:
+		return m.CabinetID()
 	case allocate.FieldStoreID:
 		return m.StoreID()
 	case allocate.FieldEbikeID:
 		return m.EbikeID()
 	case allocate.FieldBrandID:
 		return m.BrandID()
-	case allocate.FieldSubscribeID:
-		return m.SubscribeID()
-	case allocate.FieldCabinetID:
-		return m.CabinetID()
 	case allocate.FieldType:
 		return m.GetType()
 	case allocate.FieldStatus:
 		return m.Status()
-	case allocate.FieldInfo:
-		return m.Info()
 	case allocate.FieldTime:
 		return m.Time()
 	case allocate.FieldModel:
@@ -1148,32 +1106,30 @@ func (m *AllocateMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *AllocateMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case allocate.FieldRiderID:
+		return m.OldRiderID(ctx)
+	case allocate.FieldSubscribeID:
+		return m.OldSubscribeID(ctx)
 	case allocate.FieldCreator:
 		return m.OldCreator(ctx)
 	case allocate.FieldLastModifier:
 		return m.OldLastModifier(ctx)
 	case allocate.FieldRemark:
 		return m.OldRemark(ctx)
-	case allocate.FieldRiderID:
-		return m.OldRiderID(ctx)
 	case allocate.FieldEmployeeID:
 		return m.OldEmployeeID(ctx)
+	case allocate.FieldCabinetID:
+		return m.OldCabinetID(ctx)
 	case allocate.FieldStoreID:
 		return m.OldStoreID(ctx)
 	case allocate.FieldEbikeID:
 		return m.OldEbikeID(ctx)
 	case allocate.FieldBrandID:
 		return m.OldBrandID(ctx)
-	case allocate.FieldSubscribeID:
-		return m.OldSubscribeID(ctx)
-	case allocate.FieldCabinetID:
-		return m.OldCabinetID(ctx)
 	case allocate.FieldType:
 		return m.OldType(ctx)
 	case allocate.FieldStatus:
 		return m.OldStatus(ctx)
-	case allocate.FieldInfo:
-		return m.OldInfo(ctx)
 	case allocate.FieldTime:
 		return m.OldTime(ctx)
 	case allocate.FieldModel:
@@ -1187,6 +1143,20 @@ func (m *AllocateMutation) OldField(ctx context.Context, name string) (ent.Value
 // type.
 func (m *AllocateMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case allocate.FieldRiderID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRiderID(v)
+		return nil
+	case allocate.FieldSubscribeID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSubscribeID(v)
+		return nil
 	case allocate.FieldCreator:
 		v, ok := value.(*model.Modifier)
 		if !ok {
@@ -1208,19 +1178,19 @@ func (m *AllocateMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRemark(v)
 		return nil
-	case allocate.FieldRiderID:
-		v, ok := value.(uint64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRiderID(v)
-		return nil
 	case allocate.FieldEmployeeID:
 		v, ok := value.(uint64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEmployeeID(v)
+		return nil
+	case allocate.FieldCabinetID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCabinetID(v)
 		return nil
 	case allocate.FieldStoreID:
 		v, ok := value.(uint64)
@@ -1243,20 +1213,6 @@ func (m *AllocateMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetBrandID(v)
 		return nil
-	case allocate.FieldSubscribeID:
-		v, ok := value.(uint64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSubscribeID(v)
-		return nil
-	case allocate.FieldCabinetID:
-		v, ok := value.(uint64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCabinetID(v)
-		return nil
 	case allocate.FieldType:
 		v, ok := value.(allocate.Type)
 		if !ok {
@@ -1270,13 +1226,6 @@ func (m *AllocateMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStatus(v)
-		return nil
-	case allocate.FieldInfo:
-		v, ok := value.(*model.Allocate)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetInfo(v)
 		return nil
 	case allocate.FieldTime:
 		v, ok := value.(time.Time)
@@ -1349,6 +1298,9 @@ func (m *AllocateMutation) ClearedFields() []string {
 	if m.FieldCleared(allocate.FieldEmployeeID) {
 		fields = append(fields, allocate.FieldEmployeeID)
 	}
+	if m.FieldCleared(allocate.FieldCabinetID) {
+		fields = append(fields, allocate.FieldCabinetID)
+	}
 	if m.FieldCleared(allocate.FieldStoreID) {
 		fields = append(fields, allocate.FieldStoreID)
 	}
@@ -1357,9 +1309,6 @@ func (m *AllocateMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(allocate.FieldBrandID) {
 		fields = append(fields, allocate.FieldBrandID)
-	}
-	if m.FieldCleared(allocate.FieldCabinetID) {
-		fields = append(fields, allocate.FieldCabinetID)
 	}
 	return fields
 }
@@ -1387,6 +1336,9 @@ func (m *AllocateMutation) ClearField(name string) error {
 	case allocate.FieldEmployeeID:
 		m.ClearEmployeeID()
 		return nil
+	case allocate.FieldCabinetID:
+		m.ClearCabinetID()
+		return nil
 	case allocate.FieldStoreID:
 		m.ClearStoreID()
 		return nil
@@ -1396,9 +1348,6 @@ func (m *AllocateMutation) ClearField(name string) error {
 	case allocate.FieldBrandID:
 		m.ClearBrandID()
 		return nil
-	case allocate.FieldCabinetID:
-		m.ClearCabinetID()
-		return nil
 	}
 	return fmt.Errorf("unknown Allocate nullable field %s", name)
 }
@@ -1407,6 +1356,12 @@ func (m *AllocateMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *AllocateMutation) ResetField(name string) error {
 	switch name {
+	case allocate.FieldRiderID:
+		m.ResetRiderID()
+		return nil
+	case allocate.FieldSubscribeID:
+		m.ResetSubscribeID()
+		return nil
 	case allocate.FieldCreator:
 		m.ResetCreator()
 		return nil
@@ -1416,11 +1371,11 @@ func (m *AllocateMutation) ResetField(name string) error {
 	case allocate.FieldRemark:
 		m.ResetRemark()
 		return nil
-	case allocate.FieldRiderID:
-		m.ResetRiderID()
-		return nil
 	case allocate.FieldEmployeeID:
 		m.ResetEmployeeID()
+		return nil
+	case allocate.FieldCabinetID:
+		m.ResetCabinetID()
 		return nil
 	case allocate.FieldStoreID:
 		m.ResetStoreID()
@@ -1431,20 +1386,11 @@ func (m *AllocateMutation) ResetField(name string) error {
 	case allocate.FieldBrandID:
 		m.ResetBrandID()
 		return nil
-	case allocate.FieldSubscribeID:
-		m.ResetSubscribeID()
-		return nil
-	case allocate.FieldCabinetID:
-		m.ResetCabinetID()
-		return nil
 	case allocate.FieldType:
 		m.ResetType()
 		return nil
 	case allocate.FieldStatus:
 		m.ResetStatus()
-		return nil
-	case allocate.FieldInfo:
-		m.ResetInfo()
 		return nil
 	case allocate.FieldTime:
 		m.ResetTime()
@@ -1462,8 +1408,14 @@ func (m *AllocateMutation) AddedEdges() []string {
 	if m.rider != nil {
 		edges = append(edges, allocate.EdgeRider)
 	}
+	if m.subscribe != nil {
+		edges = append(edges, allocate.EdgeSubscribe)
+	}
 	if m.employee != nil {
 		edges = append(edges, allocate.EdgeEmployee)
+	}
+	if m.cabinet != nil {
+		edges = append(edges, allocate.EdgeCabinet)
 	}
 	if m.store != nil {
 		edges = append(edges, allocate.EdgeStore)
@@ -1473,12 +1425,6 @@ func (m *AllocateMutation) AddedEdges() []string {
 	}
 	if m.brand != nil {
 		edges = append(edges, allocate.EdgeBrand)
-	}
-	if m.subscribe != nil {
-		edges = append(edges, allocate.EdgeSubscribe)
-	}
-	if m.cabinet != nil {
-		edges = append(edges, allocate.EdgeCabinet)
 	}
 	if m.contract != nil {
 		edges = append(edges, allocate.EdgeContract)
@@ -1494,8 +1440,16 @@ func (m *AllocateMutation) AddedIDs(name string) []ent.Value {
 		if id := m.rider; id != nil {
 			return []ent.Value{*id}
 		}
+	case allocate.EdgeSubscribe:
+		if id := m.subscribe; id != nil {
+			return []ent.Value{*id}
+		}
 	case allocate.EdgeEmployee:
 		if id := m.employee; id != nil {
+			return []ent.Value{*id}
+		}
+	case allocate.EdgeCabinet:
+		if id := m.cabinet; id != nil {
 			return []ent.Value{*id}
 		}
 	case allocate.EdgeStore:
@@ -1508,14 +1462,6 @@ func (m *AllocateMutation) AddedIDs(name string) []ent.Value {
 		}
 	case allocate.EdgeBrand:
 		if id := m.brand; id != nil {
-			return []ent.Value{*id}
-		}
-	case allocate.EdgeSubscribe:
-		if id := m.subscribe; id != nil {
-			return []ent.Value{*id}
-		}
-	case allocate.EdgeCabinet:
-		if id := m.cabinet; id != nil {
 			return []ent.Value{*id}
 		}
 	case allocate.EdgeContract:
@@ -1546,8 +1492,14 @@ func (m *AllocateMutation) ClearedEdges() []string {
 	if m.clearedrider {
 		edges = append(edges, allocate.EdgeRider)
 	}
+	if m.clearedsubscribe {
+		edges = append(edges, allocate.EdgeSubscribe)
+	}
 	if m.clearedemployee {
 		edges = append(edges, allocate.EdgeEmployee)
+	}
+	if m.clearedcabinet {
+		edges = append(edges, allocate.EdgeCabinet)
 	}
 	if m.clearedstore {
 		edges = append(edges, allocate.EdgeStore)
@@ -1557,12 +1509,6 @@ func (m *AllocateMutation) ClearedEdges() []string {
 	}
 	if m.clearedbrand {
 		edges = append(edges, allocate.EdgeBrand)
-	}
-	if m.clearedsubscribe {
-		edges = append(edges, allocate.EdgeSubscribe)
-	}
-	if m.clearedcabinet {
-		edges = append(edges, allocate.EdgeCabinet)
 	}
 	if m.clearedcontract {
 		edges = append(edges, allocate.EdgeContract)
@@ -1576,18 +1522,18 @@ func (m *AllocateMutation) EdgeCleared(name string) bool {
 	switch name {
 	case allocate.EdgeRider:
 		return m.clearedrider
+	case allocate.EdgeSubscribe:
+		return m.clearedsubscribe
 	case allocate.EdgeEmployee:
 		return m.clearedemployee
+	case allocate.EdgeCabinet:
+		return m.clearedcabinet
 	case allocate.EdgeStore:
 		return m.clearedstore
 	case allocate.EdgeEbike:
 		return m.clearedebike
 	case allocate.EdgeBrand:
 		return m.clearedbrand
-	case allocate.EdgeSubscribe:
-		return m.clearedsubscribe
-	case allocate.EdgeCabinet:
-		return m.clearedcabinet
 	case allocate.EdgeContract:
 		return m.clearedcontract
 	}
@@ -1601,8 +1547,14 @@ func (m *AllocateMutation) ClearEdge(name string) error {
 	case allocate.EdgeRider:
 		m.ClearRider()
 		return nil
+	case allocate.EdgeSubscribe:
+		m.ClearSubscribe()
+		return nil
 	case allocate.EdgeEmployee:
 		m.ClearEmployee()
+		return nil
+	case allocate.EdgeCabinet:
+		m.ClearCabinet()
 		return nil
 	case allocate.EdgeStore:
 		m.ClearStore()
@@ -1612,12 +1564,6 @@ func (m *AllocateMutation) ClearEdge(name string) error {
 		return nil
 	case allocate.EdgeBrand:
 		m.ClearBrand()
-		return nil
-	case allocate.EdgeSubscribe:
-		m.ClearSubscribe()
-		return nil
-	case allocate.EdgeCabinet:
-		m.ClearCabinet()
 		return nil
 	case allocate.EdgeContract:
 		m.ClearContract()
@@ -1633,8 +1579,14 @@ func (m *AllocateMutation) ResetEdge(name string) error {
 	case allocate.EdgeRider:
 		m.ResetRider()
 		return nil
+	case allocate.EdgeSubscribe:
+		m.ResetSubscribe()
+		return nil
 	case allocate.EdgeEmployee:
 		m.ResetEmployee()
+		return nil
+	case allocate.EdgeCabinet:
+		m.ResetCabinet()
 		return nil
 	case allocate.EdgeStore:
 		m.ResetStore()
@@ -1644,12 +1596,6 @@ func (m *AllocateMutation) ResetEdge(name string) error {
 		return nil
 	case allocate.EdgeBrand:
 		m.ResetBrand()
-		return nil
-	case allocate.EdgeSubscribe:
-		m.ResetSubscribe()
-		return nil
-	case allocate.EdgeCabinet:
-		m.ResetCabinet()
 		return nil
 	case allocate.EdgeContract:
 		m.ResetContract()

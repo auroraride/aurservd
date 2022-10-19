@@ -64,11 +64,11 @@ type StoreWithStatus struct {
 type StoreListReq struct {
     PaginationReq
 
-    CityID      *uint64 `json:"cityId" query:"cityId"` // 城市
-    Name        *string `json:"name" query:"name"`     // 门店名称
-    Status      *uint8  `json:"status" query:"status"` // 门店状态
-    EbikeObtain *bool   `json:"ebikeeObtain"`          // 是否可以领取车辆, 不携带即为查询所有
-    EbikeRepair *bool   `json:"ebikeRepair"`           // 是否可以维修车辆, 不携带即为查询所有
+    CityID      *uint64 `json:"cityId" query:"cityId"`           // 城市
+    Name        *string `json:"name" query:"name"`               // 门店名称
+    Status      *uint8  `json:"status" query:"status"`           // 门店状态
+    EbikeObtain *bool   `json:"ebikeObtain" query:"ebikeObtain"` // 是否可以领取车辆, 不携带即为查询所有
+    EbikeRepair *bool   `json:"ebikeRepair" query:"ebikeRepair"` // 是否可以维修车辆, 不携带即为查询所有
 }
 
 type StoreSwtichStatusReq struct {

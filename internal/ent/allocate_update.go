@@ -38,6 +38,18 @@ func (au *AllocateUpdate) Where(ps ...predicate.Allocate) *AllocateUpdate {
 	return au
 }
 
+// SetRiderID sets the "rider_id" field.
+func (au *AllocateUpdate) SetRiderID(u uint64) *AllocateUpdate {
+	au.mutation.SetRiderID(u)
+	return au
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (au *AllocateUpdate) SetSubscribeID(u uint64) *AllocateUpdate {
+	au.mutation.SetSubscribeID(u)
+	return au
+}
+
 // SetLastModifier sets the "last_modifier" field.
 func (au *AllocateUpdate) SetLastModifier(m *model.Modifier) *AllocateUpdate {
 	au.mutation.SetLastModifier(m)
@@ -70,12 +82,6 @@ func (au *AllocateUpdate) ClearRemark() *AllocateUpdate {
 	return au
 }
 
-// SetRiderID sets the "rider_id" field.
-func (au *AllocateUpdate) SetRiderID(u uint64) *AllocateUpdate {
-	au.mutation.SetRiderID(u)
-	return au
-}
-
 // SetEmployeeID sets the "employee_id" field.
 func (au *AllocateUpdate) SetEmployeeID(u uint64) *AllocateUpdate {
 	au.mutation.SetEmployeeID(u)
@@ -93,6 +99,26 @@ func (au *AllocateUpdate) SetNillableEmployeeID(u *uint64) *AllocateUpdate {
 // ClearEmployeeID clears the value of the "employee_id" field.
 func (au *AllocateUpdate) ClearEmployeeID() *AllocateUpdate {
 	au.mutation.ClearEmployeeID()
+	return au
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (au *AllocateUpdate) SetCabinetID(u uint64) *AllocateUpdate {
+	au.mutation.SetCabinetID(u)
+	return au
+}
+
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (au *AllocateUpdate) SetNillableCabinetID(u *uint64) *AllocateUpdate {
+	if u != nil {
+		au.SetCabinetID(*u)
+	}
+	return au
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (au *AllocateUpdate) ClearCabinetID() *AllocateUpdate {
+	au.mutation.ClearCabinetID()
 	return au
 }
 
@@ -156,32 +182,6 @@ func (au *AllocateUpdate) ClearBrandID() *AllocateUpdate {
 	return au
 }
 
-// SetSubscribeID sets the "subscribe_id" field.
-func (au *AllocateUpdate) SetSubscribeID(u uint64) *AllocateUpdate {
-	au.mutation.SetSubscribeID(u)
-	return au
-}
-
-// SetCabinetID sets the "cabinet_id" field.
-func (au *AllocateUpdate) SetCabinetID(u uint64) *AllocateUpdate {
-	au.mutation.SetCabinetID(u)
-	return au
-}
-
-// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
-func (au *AllocateUpdate) SetNillableCabinetID(u *uint64) *AllocateUpdate {
-	if u != nil {
-		au.SetCabinetID(*u)
-	}
-	return au
-}
-
-// ClearCabinetID clears the value of the "cabinet_id" field.
-func (au *AllocateUpdate) ClearCabinetID() *AllocateUpdate {
-	au.mutation.ClearCabinetID()
-	return au
-}
-
 // SetType sets the "type" field.
 func (au *AllocateUpdate) SetType(a allocate.Type) *AllocateUpdate {
 	au.mutation.SetType(a)
@@ -198,12 +198,6 @@ func (au *AllocateUpdate) SetStatus(u uint8) *AllocateUpdate {
 // AddStatus adds u to the "status" field.
 func (au *AllocateUpdate) AddStatus(u int8) *AllocateUpdate {
 	au.mutation.AddStatus(u)
-	return au
-}
-
-// SetInfo sets the "info" field.
-func (au *AllocateUpdate) SetInfo(m *model.Allocate) *AllocateUpdate {
-	au.mutation.SetInfo(m)
 	return au
 }
 
@@ -224,9 +218,19 @@ func (au *AllocateUpdate) SetRider(r *Rider) *AllocateUpdate {
 	return au.SetRiderID(r.ID)
 }
 
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (au *AllocateUpdate) SetSubscribe(s *Subscribe) *AllocateUpdate {
+	return au.SetSubscribeID(s.ID)
+}
+
 // SetEmployee sets the "employee" edge to the Employee entity.
 func (au *AllocateUpdate) SetEmployee(e *Employee) *AllocateUpdate {
 	return au.SetEmployeeID(e.ID)
+}
+
+// SetCabinet sets the "cabinet" edge to the Cabinet entity.
+func (au *AllocateUpdate) SetCabinet(c *Cabinet) *AllocateUpdate {
+	return au.SetCabinetID(c.ID)
 }
 
 // SetStore sets the "store" edge to the Store entity.
@@ -242,16 +246,6 @@ func (au *AllocateUpdate) SetEbike(e *Ebike) *AllocateUpdate {
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (au *AllocateUpdate) SetBrand(e *EbikeBrand) *AllocateUpdate {
 	return au.SetBrandID(e.ID)
-}
-
-// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
-func (au *AllocateUpdate) SetSubscribe(s *Subscribe) *AllocateUpdate {
-	return au.SetSubscribeID(s.ID)
-}
-
-// SetCabinet sets the "cabinet" edge to the Cabinet entity.
-func (au *AllocateUpdate) SetCabinet(c *Cabinet) *AllocateUpdate {
-	return au.SetCabinetID(c.ID)
 }
 
 // SetContractID sets the "contract" edge to the Contract entity by ID.
@@ -284,9 +278,21 @@ func (au *AllocateUpdate) ClearRider() *AllocateUpdate {
 	return au
 }
 
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (au *AllocateUpdate) ClearSubscribe() *AllocateUpdate {
+	au.mutation.ClearSubscribe()
+	return au
+}
+
 // ClearEmployee clears the "employee" edge to the Employee entity.
 func (au *AllocateUpdate) ClearEmployee() *AllocateUpdate {
 	au.mutation.ClearEmployee()
+	return au
+}
+
+// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
+func (au *AllocateUpdate) ClearCabinet() *AllocateUpdate {
+	au.mutation.ClearCabinet()
 	return au
 }
 
@@ -305,18 +311,6 @@ func (au *AllocateUpdate) ClearEbike() *AllocateUpdate {
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (au *AllocateUpdate) ClearBrand() *AllocateUpdate {
 	au.mutation.ClearBrand()
-	return au
-}
-
-// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
-func (au *AllocateUpdate) ClearSubscribe() *AllocateUpdate {
-	au.mutation.ClearSubscribe()
-	return au
-}
-
-// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
-func (au *AllocateUpdate) ClearCabinet() *AllocateUpdate {
-	au.mutation.ClearCabinet()
 	return au
 }
 
@@ -479,13 +473,6 @@ func (au *AllocateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: allocate.FieldStatus,
 		})
 	}
-	if value, ok := au.mutation.Info(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: allocate.FieldInfo,
-		})
-	}
 	if value, ok := au.mutation.Time(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -535,6 +522,41 @@ func (au *AllocateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if au.mutation.SubscribeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   allocate.SubscribeTable,
+			Columns: []string{allocate.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   allocate.SubscribeTable,
+			Columns: []string{allocate.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if au.mutation.EmployeeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -562,6 +584,41 @@ func (au *AllocateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: employee.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.CabinetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   allocate.CabinetTable,
+			Columns: []string{allocate.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.CabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   allocate.CabinetTable,
+			Columns: []string{allocate.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
 				},
 			},
 		}
@@ -675,76 +732,6 @@ func (au *AllocateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if au.mutation.SubscribeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   allocate.SubscribeTable,
-			Columns: []string{allocate.SubscribeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.SubscribeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   allocate.SubscribeTable,
-			Columns: []string{allocate.SubscribeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if au.mutation.CabinetCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   allocate.CabinetTable,
-			Columns: []string{allocate.CabinetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.CabinetIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   allocate.CabinetTable,
-			Columns: []string{allocate.CabinetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if au.mutation.ContractCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
@@ -801,6 +788,18 @@ type AllocateUpdateOne struct {
 	modifiers []func(*sql.UpdateBuilder)
 }
 
+// SetRiderID sets the "rider_id" field.
+func (auo *AllocateUpdateOne) SetRiderID(u uint64) *AllocateUpdateOne {
+	auo.mutation.SetRiderID(u)
+	return auo
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (auo *AllocateUpdateOne) SetSubscribeID(u uint64) *AllocateUpdateOne {
+	auo.mutation.SetSubscribeID(u)
+	return auo
+}
+
 // SetLastModifier sets the "last_modifier" field.
 func (auo *AllocateUpdateOne) SetLastModifier(m *model.Modifier) *AllocateUpdateOne {
 	auo.mutation.SetLastModifier(m)
@@ -833,12 +832,6 @@ func (auo *AllocateUpdateOne) ClearRemark() *AllocateUpdateOne {
 	return auo
 }
 
-// SetRiderID sets the "rider_id" field.
-func (auo *AllocateUpdateOne) SetRiderID(u uint64) *AllocateUpdateOne {
-	auo.mutation.SetRiderID(u)
-	return auo
-}
-
 // SetEmployeeID sets the "employee_id" field.
 func (auo *AllocateUpdateOne) SetEmployeeID(u uint64) *AllocateUpdateOne {
 	auo.mutation.SetEmployeeID(u)
@@ -856,6 +849,26 @@ func (auo *AllocateUpdateOne) SetNillableEmployeeID(u *uint64) *AllocateUpdateOn
 // ClearEmployeeID clears the value of the "employee_id" field.
 func (auo *AllocateUpdateOne) ClearEmployeeID() *AllocateUpdateOne {
 	auo.mutation.ClearEmployeeID()
+	return auo
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (auo *AllocateUpdateOne) SetCabinetID(u uint64) *AllocateUpdateOne {
+	auo.mutation.SetCabinetID(u)
+	return auo
+}
+
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (auo *AllocateUpdateOne) SetNillableCabinetID(u *uint64) *AllocateUpdateOne {
+	if u != nil {
+		auo.SetCabinetID(*u)
+	}
+	return auo
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (auo *AllocateUpdateOne) ClearCabinetID() *AllocateUpdateOne {
+	auo.mutation.ClearCabinetID()
 	return auo
 }
 
@@ -919,32 +932,6 @@ func (auo *AllocateUpdateOne) ClearBrandID() *AllocateUpdateOne {
 	return auo
 }
 
-// SetSubscribeID sets the "subscribe_id" field.
-func (auo *AllocateUpdateOne) SetSubscribeID(u uint64) *AllocateUpdateOne {
-	auo.mutation.SetSubscribeID(u)
-	return auo
-}
-
-// SetCabinetID sets the "cabinet_id" field.
-func (auo *AllocateUpdateOne) SetCabinetID(u uint64) *AllocateUpdateOne {
-	auo.mutation.SetCabinetID(u)
-	return auo
-}
-
-// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
-func (auo *AllocateUpdateOne) SetNillableCabinetID(u *uint64) *AllocateUpdateOne {
-	if u != nil {
-		auo.SetCabinetID(*u)
-	}
-	return auo
-}
-
-// ClearCabinetID clears the value of the "cabinet_id" field.
-func (auo *AllocateUpdateOne) ClearCabinetID() *AllocateUpdateOne {
-	auo.mutation.ClearCabinetID()
-	return auo
-}
-
 // SetType sets the "type" field.
 func (auo *AllocateUpdateOne) SetType(a allocate.Type) *AllocateUpdateOne {
 	auo.mutation.SetType(a)
@@ -961,12 +948,6 @@ func (auo *AllocateUpdateOne) SetStatus(u uint8) *AllocateUpdateOne {
 // AddStatus adds u to the "status" field.
 func (auo *AllocateUpdateOne) AddStatus(u int8) *AllocateUpdateOne {
 	auo.mutation.AddStatus(u)
-	return auo
-}
-
-// SetInfo sets the "info" field.
-func (auo *AllocateUpdateOne) SetInfo(m *model.Allocate) *AllocateUpdateOne {
-	auo.mutation.SetInfo(m)
 	return auo
 }
 
@@ -987,9 +968,19 @@ func (auo *AllocateUpdateOne) SetRider(r *Rider) *AllocateUpdateOne {
 	return auo.SetRiderID(r.ID)
 }
 
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (auo *AllocateUpdateOne) SetSubscribe(s *Subscribe) *AllocateUpdateOne {
+	return auo.SetSubscribeID(s.ID)
+}
+
 // SetEmployee sets the "employee" edge to the Employee entity.
 func (auo *AllocateUpdateOne) SetEmployee(e *Employee) *AllocateUpdateOne {
 	return auo.SetEmployeeID(e.ID)
+}
+
+// SetCabinet sets the "cabinet" edge to the Cabinet entity.
+func (auo *AllocateUpdateOne) SetCabinet(c *Cabinet) *AllocateUpdateOne {
+	return auo.SetCabinetID(c.ID)
 }
 
 // SetStore sets the "store" edge to the Store entity.
@@ -1005,16 +996,6 @@ func (auo *AllocateUpdateOne) SetEbike(e *Ebike) *AllocateUpdateOne {
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (auo *AllocateUpdateOne) SetBrand(e *EbikeBrand) *AllocateUpdateOne {
 	return auo.SetBrandID(e.ID)
-}
-
-// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
-func (auo *AllocateUpdateOne) SetSubscribe(s *Subscribe) *AllocateUpdateOne {
-	return auo.SetSubscribeID(s.ID)
-}
-
-// SetCabinet sets the "cabinet" edge to the Cabinet entity.
-func (auo *AllocateUpdateOne) SetCabinet(c *Cabinet) *AllocateUpdateOne {
-	return auo.SetCabinetID(c.ID)
 }
 
 // SetContractID sets the "contract" edge to the Contract entity by ID.
@@ -1047,9 +1028,21 @@ func (auo *AllocateUpdateOne) ClearRider() *AllocateUpdateOne {
 	return auo
 }
 
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (auo *AllocateUpdateOne) ClearSubscribe() *AllocateUpdateOne {
+	auo.mutation.ClearSubscribe()
+	return auo
+}
+
 // ClearEmployee clears the "employee" edge to the Employee entity.
 func (auo *AllocateUpdateOne) ClearEmployee() *AllocateUpdateOne {
 	auo.mutation.ClearEmployee()
+	return auo
+}
+
+// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
+func (auo *AllocateUpdateOne) ClearCabinet() *AllocateUpdateOne {
+	auo.mutation.ClearCabinet()
 	return auo
 }
 
@@ -1068,18 +1061,6 @@ func (auo *AllocateUpdateOne) ClearEbike() *AllocateUpdateOne {
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (auo *AllocateUpdateOne) ClearBrand() *AllocateUpdateOne {
 	auo.mutation.ClearBrand()
-	return auo
-}
-
-// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
-func (auo *AllocateUpdateOne) ClearSubscribe() *AllocateUpdateOne {
-	auo.mutation.ClearSubscribe()
-	return auo
-}
-
-// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
-func (auo *AllocateUpdateOne) ClearCabinet() *AllocateUpdateOne {
-	auo.mutation.ClearCabinet()
 	return auo
 }
 
@@ -1272,13 +1253,6 @@ func (auo *AllocateUpdateOne) sqlSave(ctx context.Context) (_node *Allocate, err
 			Column: allocate.FieldStatus,
 		})
 	}
-	if value, ok := auo.mutation.Info(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: allocate.FieldInfo,
-		})
-	}
 	if value, ok := auo.mutation.Time(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -1328,6 +1302,41 @@ func (auo *AllocateUpdateOne) sqlSave(ctx context.Context) (_node *Allocate, err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if auo.mutation.SubscribeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   allocate.SubscribeTable,
+			Columns: []string{allocate.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   allocate.SubscribeTable,
+			Columns: []string{allocate.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if auo.mutation.EmployeeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1355,6 +1364,41 @@ func (auo *AllocateUpdateOne) sqlSave(ctx context.Context) (_node *Allocate, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: employee.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.CabinetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   allocate.CabinetTable,
+			Columns: []string{allocate.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.CabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   allocate.CabinetTable,
+			Columns: []string{allocate.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
 				},
 			},
 		}
@@ -1460,76 +1504,6 @@ func (auo *AllocateUpdateOne) sqlSave(ctx context.Context) (_node *Allocate, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: ebikebrand.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if auo.mutation.SubscribeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   allocate.SubscribeTable,
-			Columns: []string{allocate.SubscribeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.SubscribeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   allocate.SubscribeTable,
-			Columns: []string{allocate.SubscribeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if auo.mutation.CabinetCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   allocate.CabinetTable,
-			Columns: []string{allocate.CabinetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.CabinetIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   allocate.CabinetTable,
-			Columns: []string{allocate.CabinetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
 				},
 			},
 		}

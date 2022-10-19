@@ -59,8 +59,8 @@ const (
 	EdgeCabinet = "cabinet"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
-	// EdgeEbikeAllocate holds the string denoting the ebike_allocate edge name in mutations.
-	EdgeEbikeAllocate = "ebike_allocate"
+	// EdgeAllocate holds the string denoting the allocate edge name in mutations.
+	EdgeAllocate = "allocate"
 	// Table holds the table name of the contract in the database.
 	Table = "contract"
 	// EmployeeTable is the table that holds the employee relation/edge.
@@ -98,13 +98,13 @@ const (
 	RiderInverseTable = "rider"
 	// RiderColumn is the table column denoting the rider relation/edge.
 	RiderColumn = "rider_id"
-	// EbikeAllocateTable is the table that holds the ebike_allocate relation/edge.
-	EbikeAllocateTable = "contract"
-	// EbikeAllocateInverseTable is the table name for the Allocate entity.
+	// AllocateTable is the table that holds the allocate relation/edge.
+	AllocateTable = "contract"
+	// AllocateInverseTable is the table name for the Allocate entity.
 	// It exists in this package in order to avoid circular dependency with the "allocate" package.
-	EbikeAllocateInverseTable = "allocate"
-	// EbikeAllocateColumn is the table column denoting the ebike_allocate relation/edge.
-	EbikeAllocateColumn = "allocate_id"
+	AllocateInverseTable = "allocate"
+	// AllocateColumn is the table column denoting the allocate relation/edge.
+	AllocateColumn = "allocate_id"
 )
 
 // Columns holds all SQL columns for contract fields.

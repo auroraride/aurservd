@@ -80,8 +80,8 @@ func init() {
 	// agent.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	agent.UpdateDefaultUpdatedAt = agentDescUpdatedAt.UpdateDefault.(func() time.Time)
 	allocateMixin := schema.Allocate{}.Mixin()
-	allocateMixinHooks0 := allocateMixin[0].Hooks()
-	allocate.Hooks[0] = allocateMixinHooks0[0]
+	allocateMixinHooks2 := allocateMixin[2].Hooks()
+	allocate.Hooks[0] = allocateMixinHooks2[0]
 	assistanceMixin := schema.Assistance{}.Mixin()
 	assistanceMixinHooks2 := assistanceMixin[2].Hooks()
 	assistance.Hooks[0] = assistanceMixinHooks2[0]

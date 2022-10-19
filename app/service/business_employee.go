@@ -52,11 +52,9 @@ func (s *businessEmployeeService) Inactive(qr string) (*model.SubscribeActiveInf
 
 // Active 激活订阅
 func (s *businessEmployeeService) Active(req *model.AllocateCreateReq) (res model.IDPostReq) {
-    _, sub := NewBusinessRiderWithEmployee(s.employee).Inactive(req.SubscribeID)
+    // _, sub := NewBusinessRiderWithEmployee(s.employee).Inactive(req.SubscribeID)
+    return NewAllocate(s.employee).Create(req)
     // 车电
-    if sub.BrandID != nil {
-        return NewAllocate(s.employee).AllocateEbike(req)
-    }
-    // TODO: 单电
-    return
+    // if sub.BrandID != nil {
+    // }
 }

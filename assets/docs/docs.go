@@ -10014,14 +10014,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "boolean",
-                        "description": "是否可以维修车辆, 不携带即为查询所有",
-                        "name": "ebikeRepair",
+                        "description": "是否可以领取车辆, 不携带即为查询所有",
+                        "name": "ebikeObtain",
                         "in": "query"
                     },
                     {
                         "type": "boolean",
-                        "description": "是否可以领取车辆, 不携带即为查询所有",
-                        "name": "ebikeeObtain",
+                        "description": "是否可以维修车辆, 不携带即为查询所有",
+                        "name": "ebikeRepair",
                         "in": "query"
                     },
                     {

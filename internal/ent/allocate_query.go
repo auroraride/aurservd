@@ -33,12 +33,12 @@ type AllocateQuery struct {
 	fields        []string
 	predicates    []predicate.Allocate
 	withRider     *RiderQuery
+	withSubscribe *SubscribeQuery
 	withEmployee  *EmployeeQuery
+	withCabinet   *CabinetQuery
 	withStore     *StoreQuery
 	withEbike     *EbikeQuery
 	withBrand     *EbikeBrandQuery
-	withSubscribe *SubscribeQuery
-	withCabinet   *CabinetQuery
 	withContract  *ContractQuery
 	modifiers     []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -99,6 +99,28 @@ func (aq *AllocateQuery) QueryRider() *RiderQuery {
 	return query
 }
 
+// QuerySubscribe chains the current query on the "subscribe" edge.
+func (aq *AllocateQuery) QuerySubscribe() *SubscribeQuery {
+	query := &SubscribeQuery{config: aq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(allocate.Table, allocate.FieldID, selector),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, allocate.SubscribeTable, allocate.SubscribeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // QueryEmployee chains the current query on the "employee" edge.
 func (aq *AllocateQuery) QueryEmployee() *EmployeeQuery {
 	query := &EmployeeQuery{config: aq.config}
@@ -114,6 +136,28 @@ func (aq *AllocateQuery) QueryEmployee() *EmployeeQuery {
 			sqlgraph.From(allocate.Table, allocate.FieldID, selector),
 			sqlgraph.To(employee.Table, employee.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, allocate.EmployeeTable, allocate.EmployeeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCabinet chains the current query on the "cabinet" edge.
+func (aq *AllocateQuery) QueryCabinet() *CabinetQuery {
+	query := &CabinetQuery{config: aq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(allocate.Table, allocate.FieldID, selector),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, allocate.CabinetTable, allocate.CabinetColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -180,50 +224,6 @@ func (aq *AllocateQuery) QueryBrand() *EbikeBrandQuery {
 			sqlgraph.From(allocate.Table, allocate.FieldID, selector),
 			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, allocate.BrandTable, allocate.BrandColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QuerySubscribe chains the current query on the "subscribe" edge.
-func (aq *AllocateQuery) QuerySubscribe() *SubscribeQuery {
-	query := &SubscribeQuery{config: aq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := aq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := aq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(allocate.Table, allocate.FieldID, selector),
-			sqlgraph.To(subscribe.Table, subscribe.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, allocate.SubscribeTable, allocate.SubscribeColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryCabinet chains the current query on the "cabinet" edge.
-func (aq *AllocateQuery) QueryCabinet() *CabinetQuery {
-	query := &CabinetQuery{config: aq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := aq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := aq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(allocate.Table, allocate.FieldID, selector),
-			sqlgraph.To(cabinet.Table, cabinet.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, allocate.CabinetTable, allocate.CabinetColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -435,12 +435,12 @@ func (aq *AllocateQuery) Clone() *AllocateQuery {
 		order:         append([]OrderFunc{}, aq.order...),
 		predicates:    append([]predicate.Allocate{}, aq.predicates...),
 		withRider:     aq.withRider.Clone(),
+		withSubscribe: aq.withSubscribe.Clone(),
 		withEmployee:  aq.withEmployee.Clone(),
+		withCabinet:   aq.withCabinet.Clone(),
 		withStore:     aq.withStore.Clone(),
 		withEbike:     aq.withEbike.Clone(),
 		withBrand:     aq.withBrand.Clone(),
-		withSubscribe: aq.withSubscribe.Clone(),
-		withCabinet:   aq.withCabinet.Clone(),
 		withContract:  aq.withContract.Clone(),
 		// clone intermediate query.
 		sql:    aq.sql.Clone(),
@@ -460,6 +460,17 @@ func (aq *AllocateQuery) WithRider(opts ...func(*RiderQuery)) *AllocateQuery {
 	return aq
 }
 
+// WithSubscribe tells the query-builder to eager-load the nodes that are connected to
+// the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AllocateQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *AllocateQuery {
+	query := &SubscribeQuery{config: aq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withSubscribe = query
+	return aq
+}
+
 // WithEmployee tells the query-builder to eager-load the nodes that are connected to
 // the "employee" edge. The optional arguments are used to configure the query builder of the edge.
 func (aq *AllocateQuery) WithEmployee(opts ...func(*EmployeeQuery)) *AllocateQuery {
@@ -468,6 +479,17 @@ func (aq *AllocateQuery) WithEmployee(opts ...func(*EmployeeQuery)) *AllocateQue
 		opt(query)
 	}
 	aq.withEmployee = query
+	return aq
+}
+
+// WithCabinet tells the query-builder to eager-load the nodes that are connected to
+// the "cabinet" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AllocateQuery) WithCabinet(opts ...func(*CabinetQuery)) *AllocateQuery {
+	query := &CabinetQuery{config: aq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withCabinet = query
 	return aq
 }
 
@@ -504,28 +526,6 @@ func (aq *AllocateQuery) WithBrand(opts ...func(*EbikeBrandQuery)) *AllocateQuer
 	return aq
 }
 
-// WithSubscribe tells the query-builder to eager-load the nodes that are connected to
-// the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
-func (aq *AllocateQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *AllocateQuery {
-	query := &SubscribeQuery{config: aq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	aq.withSubscribe = query
-	return aq
-}
-
-// WithCabinet tells the query-builder to eager-load the nodes that are connected to
-// the "cabinet" edge. The optional arguments are used to configure the query builder of the edge.
-func (aq *AllocateQuery) WithCabinet(opts ...func(*CabinetQuery)) *AllocateQuery {
-	query := &CabinetQuery{config: aq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	aq.withCabinet = query
-	return aq
-}
-
 // WithContract tells the query-builder to eager-load the nodes that are connected to
 // the "contract" edge. The optional arguments are used to configure the query builder of the edge.
 func (aq *AllocateQuery) WithContract(opts ...func(*ContractQuery)) *AllocateQuery {
@@ -543,12 +543,12 @@ func (aq *AllocateQuery) WithContract(opts ...func(*ContractQuery)) *AllocateQue
 // Example:
 //
 //	var v []struct {
-//		Creator *model.Modifier `json:"creator,omitempty"`
+//		RiderID uint64 `json:"rider_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Allocate.Query().
-//		GroupBy(allocate.FieldCreator).
+//		GroupBy(allocate.FieldRiderID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (aq *AllocateQuery) GroupBy(field string, fields ...string) *AllocateGroupBy {
@@ -571,11 +571,11 @@ func (aq *AllocateQuery) GroupBy(field string, fields ...string) *AllocateGroupB
 // Example:
 //
 //	var v []struct {
-//		Creator *model.Modifier `json:"creator,omitempty"`
+//		RiderID uint64 `json:"rider_id,omitempty"`
 //	}
 //
 //	client.Allocate.Query().
-//		Select(allocate.FieldCreator).
+//		Select(allocate.FieldRiderID).
 //		Scan(ctx, &v)
 func (aq *AllocateQuery) Select(fields ...string) *AllocateSelect {
 	aq.fields = append(aq.fields, fields...)
@@ -607,12 +607,12 @@ func (aq *AllocateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*All
 		_spec       = aq.querySpec()
 		loadedTypes = [8]bool{
 			aq.withRider != nil,
+			aq.withSubscribe != nil,
 			aq.withEmployee != nil,
+			aq.withCabinet != nil,
 			aq.withStore != nil,
 			aq.withEbike != nil,
 			aq.withBrand != nil,
-			aq.withSubscribe != nil,
-			aq.withCabinet != nil,
 			aq.withContract != nil,
 		}
 	)
@@ -643,9 +643,21 @@ func (aq *AllocateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*All
 			return nil, err
 		}
 	}
+	if query := aq.withSubscribe; query != nil {
+		if err := aq.loadSubscribe(ctx, query, nodes, nil,
+			func(n *Allocate, e *Subscribe) { n.Edges.Subscribe = e }); err != nil {
+			return nil, err
+		}
+	}
 	if query := aq.withEmployee; query != nil {
 		if err := aq.loadEmployee(ctx, query, nodes, nil,
 			func(n *Allocate, e *Employee) { n.Edges.Employee = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withCabinet; query != nil {
+		if err := aq.loadCabinet(ctx, query, nodes, nil,
+			func(n *Allocate, e *Cabinet) { n.Edges.Cabinet = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -664,18 +676,6 @@ func (aq *AllocateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*All
 	if query := aq.withBrand; query != nil {
 		if err := aq.loadBrand(ctx, query, nodes, nil,
 			func(n *Allocate, e *EbikeBrand) { n.Edges.Brand = e }); err != nil {
-			return nil, err
-		}
-	}
-	if query := aq.withSubscribe; query != nil {
-		if err := aq.loadSubscribe(ctx, query, nodes, nil,
-			func(n *Allocate, e *Subscribe) { n.Edges.Subscribe = e }); err != nil {
-			return nil, err
-		}
-	}
-	if query := aq.withCabinet; query != nil {
-		if err := aq.loadCabinet(ctx, query, nodes, nil,
-			func(n *Allocate, e *Cabinet) { n.Edges.Cabinet = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -714,6 +714,32 @@ func (aq *AllocateQuery) loadRider(ctx context.Context, query *RiderQuery, nodes
 	}
 	return nil
 }
+func (aq *AllocateQuery) loadSubscribe(ctx context.Context, query *SubscribeQuery, nodes []*Allocate, init func(*Allocate), assign func(*Allocate, *Subscribe)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Allocate)
+	for i := range nodes {
+		fk := nodes[i].SubscribeID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(subscribe.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 func (aq *AllocateQuery) loadEmployee(ctx context.Context, query *EmployeeQuery, nodes []*Allocate, init func(*Allocate), assign func(*Allocate, *Employee)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*Allocate)
@@ -736,6 +762,35 @@ func (aq *AllocateQuery) loadEmployee(ctx context.Context, query *EmployeeQuery,
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "employee_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (aq *AllocateQuery) loadCabinet(ctx context.Context, query *CabinetQuery, nodes []*Allocate, init func(*Allocate), assign func(*Allocate, *Cabinet)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Allocate)
+	for i := range nodes {
+		if nodes[i].CabinetID == nil {
+			continue
+		}
+		fk := *nodes[i].CabinetID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(cabinet.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "cabinet_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -823,61 +878,6 @@ func (aq *AllocateQuery) loadBrand(ctx context.Context, query *EbikeBrandQuery, 
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "brand_id" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
-func (aq *AllocateQuery) loadSubscribe(ctx context.Context, query *SubscribeQuery, nodes []*Allocate, init func(*Allocate), assign func(*Allocate, *Subscribe)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*Allocate)
-	for i := range nodes {
-		fk := nodes[i].SubscribeID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	query.Where(subscribe.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
-func (aq *AllocateQuery) loadCabinet(ctx context.Context, query *CabinetQuery, nodes []*Allocate, init func(*Allocate), assign func(*Allocate, *Cabinet)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*Allocate)
-	for i := range nodes {
-		if nodes[i].CabinetID == nil {
-			continue
-		}
-		fk := *nodes[i].CabinetID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	query.Where(cabinet.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "cabinet_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

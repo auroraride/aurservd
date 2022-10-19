@@ -170,7 +170,6 @@ func (s *businessRiderService) Inactive(id uint64) (*model.SubscribeActiveInfo, 
         WithRider().
         WithEnterprise().
         WithCity().
-        WithEbike().
         WithBrand().
         First(s.ctx)
 

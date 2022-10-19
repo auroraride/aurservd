@@ -1256,25 +1256,25 @@ func HasRiderWith(preds ...predicate.Rider) predicate.Contract {
 	})
 }
 
-// HasEbikeAllocate applies the HasEdge predicate on the "ebike_allocate" edge.
-func HasEbikeAllocate() predicate.Contract {
+// HasAllocate applies the HasEdge predicate on the "allocate" edge.
+func HasAllocate() predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EbikeAllocateTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, EbikeAllocateTable, EbikeAllocateColumn),
+			sqlgraph.To(AllocateTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, AllocateTable, AllocateColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasEbikeAllocateWith applies the HasEdge predicate on the "ebike_allocate" edge with a given conditions (other predicates).
-func HasEbikeAllocateWith(preds ...predicate.Allocate) predicate.Contract {
+// HasAllocateWith applies the HasEdge predicate on the "allocate" edge with a given conditions (other predicates).
+func HasAllocateWith(preds ...predicate.Allocate) predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EbikeAllocateInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, EbikeAllocateTable, EbikeAllocateColumn),
+			sqlgraph.To(AllocateInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, AllocateTable, AllocateColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

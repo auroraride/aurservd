@@ -19,38 +19,38 @@ import (
 // ContractMutation represents an operation that mutates the Contract nodes in the graph.
 type ContractMutation struct {
 	config
-	op                    Op
-	typ                   string
-	id                    *uint64
-	created_at            *time.Time
-	updated_at            *time.Time
-	deleted_at            *time.Time
-	creator               **model.Modifier
-	last_modifier         **model.Modifier
-	remark                *string
-	status                *uint8
-	addstatus             *int8
-	flow_id               *string
-	sn                    *string
-	files                 *[]string
-	effective             *bool
-	rider_info            **model.ContractRider
-	clearedFields         map[string]struct{}
-	employee              *uint64
-	clearedemployee       bool
-	store                 *uint64
-	clearedstore          bool
-	subscribe             *uint64
-	clearedsubscribe      bool
-	cabinet               *uint64
-	clearedcabinet        bool
-	rider                 *uint64
-	clearedrider          bool
-	ebike_allocate        *uint64
-	clearedebike_allocate bool
-	done                  bool
-	oldValue              func(context.Context) (*Contract, error)
-	predicates            []predicate.Contract
+	op               Op
+	typ              string
+	id               *uint64
+	created_at       *time.Time
+	updated_at       *time.Time
+	deleted_at       *time.Time
+	creator          **model.Modifier
+	last_modifier    **model.Modifier
+	remark           *string
+	status           *uint8
+	addstatus        *int8
+	flow_id          *string
+	sn               *string
+	files            *[]string
+	effective        *bool
+	rider_info       **model.ContractRider
+	clearedFields    map[string]struct{}
+	employee         *uint64
+	clearedemployee  bool
+	store            *uint64
+	clearedstore     bool
+	subscribe        *uint64
+	clearedsubscribe bool
+	cabinet          *uint64
+	clearedcabinet   bool
+	rider            *uint64
+	clearedrider     bool
+	allocate         *uint64
+	clearedallocate  bool
+	done             bool
+	oldValue         func(context.Context) (*Contract, error)
+	predicates       []predicate.Contract
 }
 
 var _ ent.Mutation = (*ContractMutation)(nil)
@@ -915,12 +915,12 @@ func (m *ContractMutation) ResetRiderInfo() {
 
 // SetAllocateID sets the "allocate_id" field.
 func (m *ContractMutation) SetAllocateID(u uint64) {
-	m.ebike_allocate = &u
+	m.allocate = &u
 }
 
 // AllocateID returns the value of the "allocate_id" field in the mutation.
 func (m *ContractMutation) AllocateID() (r uint64, exists bool) {
-	v := m.ebike_allocate
+	v := m.allocate
 	if v == nil {
 		return
 	}
@@ -946,7 +946,7 @@ func (m *ContractMutation) OldAllocateID(ctx context.Context) (v *uint64, err er
 
 // ClearAllocateID clears the value of the "allocate_id" field.
 func (m *ContractMutation) ClearAllocateID() {
-	m.ebike_allocate = nil
+	m.allocate = nil
 	m.clearedFields[contract.FieldAllocateID] = struct{}{}
 }
 
@@ -958,7 +958,7 @@ func (m *ContractMutation) AllocateIDCleared() bool {
 
 // ResetAllocateID resets all changes to the "allocate_id" field.
 func (m *ContractMutation) ResetAllocateID() {
-	m.ebike_allocate = nil
+	m.allocate = nil
 	delete(m.clearedFields, contract.FieldAllocateID)
 }
 
@@ -1092,43 +1092,30 @@ func (m *ContractMutation) ResetRider() {
 	m.clearedrider = false
 }
 
-// SetEbikeAllocateID sets the "ebike_allocate" edge to the Allocate entity by id.
-func (m *ContractMutation) SetEbikeAllocateID(id uint64) {
-	m.ebike_allocate = &id
+// ClearAllocate clears the "allocate" edge to the Allocate entity.
+func (m *ContractMutation) ClearAllocate() {
+	m.clearedallocate = true
 }
 
-// ClearEbikeAllocate clears the "ebike_allocate" edge to the Allocate entity.
-func (m *ContractMutation) ClearEbikeAllocate() {
-	m.clearedebike_allocate = true
+// AllocateCleared reports if the "allocate" edge to the Allocate entity was cleared.
+func (m *ContractMutation) AllocateCleared() bool {
+	return m.AllocateIDCleared() || m.clearedallocate
 }
 
-// EbikeAllocateCleared reports if the "ebike_allocate" edge to the Allocate entity was cleared.
-func (m *ContractMutation) EbikeAllocateCleared() bool {
-	return m.AllocateIDCleared() || m.clearedebike_allocate
-}
-
-// EbikeAllocateID returns the "ebike_allocate" edge ID in the mutation.
-func (m *ContractMutation) EbikeAllocateID() (id uint64, exists bool) {
-	if m.ebike_allocate != nil {
-		return *m.ebike_allocate, true
-	}
-	return
-}
-
-// EbikeAllocateIDs returns the "ebike_allocate" edge IDs in the mutation.
+// AllocateIDs returns the "allocate" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// EbikeAllocateID instead. It exists only for internal usage by the builders.
-func (m *ContractMutation) EbikeAllocateIDs() (ids []uint64) {
-	if id := m.ebike_allocate; id != nil {
+// AllocateID instead. It exists only for internal usage by the builders.
+func (m *ContractMutation) AllocateIDs() (ids []uint64) {
+	if id := m.allocate; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetEbikeAllocate resets all changes to the "ebike_allocate" edge.
-func (m *ContractMutation) ResetEbikeAllocate() {
-	m.ebike_allocate = nil
-	m.clearedebike_allocate = false
+// ResetAllocate resets all changes to the "allocate" edge.
+func (m *ContractMutation) ResetAllocate() {
+	m.allocate = nil
+	m.clearedallocate = false
 }
 
 // Where appends a list predicates to the ContractMutation builder.
@@ -1202,7 +1189,7 @@ func (m *ContractMutation) Fields() []string {
 	if m.rider_info != nil {
 		fields = append(fields, contract.FieldRiderInfo)
 	}
-	if m.ebike_allocate != nil {
+	if m.allocate != nil {
 		fields = append(fields, contract.FieldAllocateID)
 	}
 	return fields
@@ -1638,8 +1625,8 @@ func (m *ContractMutation) AddedEdges() []string {
 	if m.rider != nil {
 		edges = append(edges, contract.EdgeRider)
 	}
-	if m.ebike_allocate != nil {
-		edges = append(edges, contract.EdgeEbikeAllocate)
+	if m.allocate != nil {
+		edges = append(edges, contract.EdgeAllocate)
 	}
 	return edges
 }
@@ -1668,8 +1655,8 @@ func (m *ContractMutation) AddedIDs(name string) []ent.Value {
 		if id := m.rider; id != nil {
 			return []ent.Value{*id}
 		}
-	case contract.EdgeEbikeAllocate:
-		if id := m.ebike_allocate; id != nil {
+	case contract.EdgeAllocate:
+		if id := m.allocate; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -1708,8 +1695,8 @@ func (m *ContractMutation) ClearedEdges() []string {
 	if m.clearedrider {
 		edges = append(edges, contract.EdgeRider)
 	}
-	if m.clearedebike_allocate {
-		edges = append(edges, contract.EdgeEbikeAllocate)
+	if m.clearedallocate {
+		edges = append(edges, contract.EdgeAllocate)
 	}
 	return edges
 }
@@ -1728,8 +1715,8 @@ func (m *ContractMutation) EdgeCleared(name string) bool {
 		return m.clearedcabinet
 	case contract.EdgeRider:
 		return m.clearedrider
-	case contract.EdgeEbikeAllocate:
-		return m.clearedebike_allocate
+	case contract.EdgeAllocate:
+		return m.clearedallocate
 	}
 	return false
 }
@@ -1753,8 +1740,8 @@ func (m *ContractMutation) ClearEdge(name string) error {
 	case contract.EdgeRider:
 		m.ClearRider()
 		return nil
-	case contract.EdgeEbikeAllocate:
-		m.ClearEbikeAllocate()
+	case contract.EdgeAllocate:
+		m.ClearAllocate()
 		return nil
 	}
 	return fmt.Errorf("unknown Contract unique edge %s", name)
@@ -1779,8 +1766,8 @@ func (m *ContractMutation) ResetEdge(name string) error {
 	case contract.EdgeRider:
 		m.ResetRider()
 		return nil
-	case contract.EdgeEbikeAllocate:
-		m.ResetEbikeAllocate()
+	case contract.EdgeAllocate:
+		m.ResetAllocate()
 		return nil
 	}
 	return fmt.Errorf("unknown Contract edge %s", name)

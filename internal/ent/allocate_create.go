@@ -31,6 +31,18 @@ type AllocateCreate struct {
 	conflict []sql.ConflictOption
 }
 
+// SetRiderID sets the "rider_id" field.
+func (ac *AllocateCreate) SetRiderID(u uint64) *AllocateCreate {
+	ac.mutation.SetRiderID(u)
+	return ac
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (ac *AllocateCreate) SetSubscribeID(u uint64) *AllocateCreate {
+	ac.mutation.SetSubscribeID(u)
+	return ac
+}
+
 // SetCreator sets the "creator" field.
 func (ac *AllocateCreate) SetCreator(m *model.Modifier) *AllocateCreate {
 	ac.mutation.SetCreator(m)
@@ -57,12 +69,6 @@ func (ac *AllocateCreate) SetNillableRemark(s *string) *AllocateCreate {
 	return ac
 }
 
-// SetRiderID sets the "rider_id" field.
-func (ac *AllocateCreate) SetRiderID(u uint64) *AllocateCreate {
-	ac.mutation.SetRiderID(u)
-	return ac
-}
-
 // SetEmployeeID sets the "employee_id" field.
 func (ac *AllocateCreate) SetEmployeeID(u uint64) *AllocateCreate {
 	ac.mutation.SetEmployeeID(u)
@@ -73,6 +79,20 @@ func (ac *AllocateCreate) SetEmployeeID(u uint64) *AllocateCreate {
 func (ac *AllocateCreate) SetNillableEmployeeID(u *uint64) *AllocateCreate {
 	if u != nil {
 		ac.SetEmployeeID(*u)
+	}
+	return ac
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (ac *AllocateCreate) SetCabinetID(u uint64) *AllocateCreate {
+	ac.mutation.SetCabinetID(u)
+	return ac
+}
+
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (ac *AllocateCreate) SetNillableCabinetID(u *uint64) *AllocateCreate {
+	if u != nil {
+		ac.SetCabinetID(*u)
 	}
 	return ac
 }
@@ -119,26 +139,6 @@ func (ac *AllocateCreate) SetNillableBrandID(u *uint64) *AllocateCreate {
 	return ac
 }
 
-// SetSubscribeID sets the "subscribe_id" field.
-func (ac *AllocateCreate) SetSubscribeID(u uint64) *AllocateCreate {
-	ac.mutation.SetSubscribeID(u)
-	return ac
-}
-
-// SetCabinetID sets the "cabinet_id" field.
-func (ac *AllocateCreate) SetCabinetID(u uint64) *AllocateCreate {
-	ac.mutation.SetCabinetID(u)
-	return ac
-}
-
-// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
-func (ac *AllocateCreate) SetNillableCabinetID(u *uint64) *AllocateCreate {
-	if u != nil {
-		ac.SetCabinetID(*u)
-	}
-	return ac
-}
-
 // SetType sets the "type" field.
 func (ac *AllocateCreate) SetType(a allocate.Type) *AllocateCreate {
 	ac.mutation.SetType(a)
@@ -148,12 +148,6 @@ func (ac *AllocateCreate) SetType(a allocate.Type) *AllocateCreate {
 // SetStatus sets the "status" field.
 func (ac *AllocateCreate) SetStatus(u uint8) *AllocateCreate {
 	ac.mutation.SetStatus(u)
-	return ac
-}
-
-// SetInfo sets the "info" field.
-func (ac *AllocateCreate) SetInfo(m *model.Allocate) *AllocateCreate {
-	ac.mutation.SetInfo(m)
 	return ac
 }
 
@@ -174,9 +168,19 @@ func (ac *AllocateCreate) SetRider(r *Rider) *AllocateCreate {
 	return ac.SetRiderID(r.ID)
 }
 
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (ac *AllocateCreate) SetSubscribe(s *Subscribe) *AllocateCreate {
+	return ac.SetSubscribeID(s.ID)
+}
+
 // SetEmployee sets the "employee" edge to the Employee entity.
 func (ac *AllocateCreate) SetEmployee(e *Employee) *AllocateCreate {
 	return ac.SetEmployeeID(e.ID)
+}
+
+// SetCabinet sets the "cabinet" edge to the Cabinet entity.
+func (ac *AllocateCreate) SetCabinet(c *Cabinet) *AllocateCreate {
+	return ac.SetCabinetID(c.ID)
 }
 
 // SetStore sets the "store" edge to the Store entity.
@@ -192,16 +196,6 @@ func (ac *AllocateCreate) SetEbike(e *Ebike) *AllocateCreate {
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (ac *AllocateCreate) SetBrand(e *EbikeBrand) *AllocateCreate {
 	return ac.SetBrandID(e.ID)
-}
-
-// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
-func (ac *AllocateCreate) SetSubscribe(s *Subscribe) *AllocateCreate {
-	return ac.SetSubscribeID(s.ID)
-}
-
-// SetCabinet sets the "cabinet" edge to the Cabinet entity.
-func (ac *AllocateCreate) SetCabinet(c *Cabinet) *AllocateCreate {
-	return ac.SetCabinetID(c.ID)
 }
 
 // SetContractID sets the "contract" edge to the Contract entity by ID.
@@ -316,9 +310,6 @@ func (ac *AllocateCreate) check() error {
 	if _, ok := ac.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Allocate.status"`)}
 	}
-	if _, ok := ac.mutation.Info(); !ok {
-		return &ValidationError{Name: "info", err: errors.New(`ent: missing required field "Allocate.info"`)}
-	}
 	if _, ok := ac.mutation.Time(); !ok {
 		return &ValidationError{Name: "time", err: errors.New(`ent: missing required field "Allocate.time"`)}
 	}
@@ -399,14 +390,6 @@ func (ac *AllocateCreate) createSpec() (*Allocate, *sqlgraph.CreateSpec) {
 		})
 		_node.Status = value
 	}
-	if value, ok := ac.mutation.Info(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: allocate.FieldInfo,
-		})
-		_node.Info = value
-	}
 	if value, ok := ac.mutation.Time(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -443,6 +426,26 @@ func (ac *AllocateCreate) createSpec() (*Allocate, *sqlgraph.CreateSpec) {
 		_node.RiderID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := ac.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   allocate.SubscribeTable,
+			Columns: []string{allocate.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.SubscribeID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := ac.mutation.EmployeeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -461,6 +464,26 @@ func (ac *AllocateCreate) createSpec() (*Allocate, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.EmployeeID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.CabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   allocate.CabinetTable,
+			Columns: []string{allocate.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CabinetID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ac.mutation.StoreIDs(); len(nodes) > 0 {
@@ -523,46 +546,6 @@ func (ac *AllocateCreate) createSpec() (*Allocate, *sqlgraph.CreateSpec) {
 		_node.BrandID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ac.mutation.SubscribeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   allocate.SubscribeTable,
-			Columns: []string{allocate.SubscribeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.SubscribeID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := ac.mutation.CabinetIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   allocate.CabinetTable,
-			Columns: []string{allocate.CabinetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.CabinetID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := ac.mutation.ContractIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
@@ -589,7 +572,7 @@ func (ac *AllocateCreate) createSpec() (*Allocate, *sqlgraph.CreateSpec) {
 // of the `INSERT` statement. For example:
 //
 //	client.Allocate.Create().
-//		SetCreator(v).
+//		SetRiderID(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -598,7 +581,7 @@ func (ac *AllocateCreate) createSpec() (*Allocate, *sqlgraph.CreateSpec) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.AllocateUpsert) {
-//			SetCreator(v+v).
+//			SetRiderID(v+v).
 //		}).
 //		Exec(ctx)
 func (ac *AllocateCreate) OnConflict(opts ...sql.ConflictOption) *AllocateUpsertOne {
@@ -633,6 +616,30 @@ type (
 		*sql.UpdateSet
 	}
 )
+
+// SetRiderID sets the "rider_id" field.
+func (u *AllocateUpsert) SetRiderID(v uint64) *AllocateUpsert {
+	u.Set(allocate.FieldRiderID, v)
+	return u
+}
+
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *AllocateUpsert) UpdateRiderID() *AllocateUpsert {
+	u.SetExcluded(allocate.FieldRiderID)
+	return u
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *AllocateUpsert) SetSubscribeID(v uint64) *AllocateUpsert {
+	u.Set(allocate.FieldSubscribeID, v)
+	return u
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *AllocateUpsert) UpdateSubscribeID() *AllocateUpsert {
+	u.SetExcluded(allocate.FieldSubscribeID)
+	return u
+}
 
 // SetLastModifier sets the "last_modifier" field.
 func (u *AllocateUpsert) SetLastModifier(v *model.Modifier) *AllocateUpsert {
@@ -670,18 +677,6 @@ func (u *AllocateUpsert) ClearRemark() *AllocateUpsert {
 	return u
 }
 
-// SetRiderID sets the "rider_id" field.
-func (u *AllocateUpsert) SetRiderID(v uint64) *AllocateUpsert {
-	u.Set(allocate.FieldRiderID, v)
-	return u
-}
-
-// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
-func (u *AllocateUpsert) UpdateRiderID() *AllocateUpsert {
-	u.SetExcluded(allocate.FieldRiderID)
-	return u
-}
-
 // SetEmployeeID sets the "employee_id" field.
 func (u *AllocateUpsert) SetEmployeeID(v uint64) *AllocateUpsert {
 	u.Set(allocate.FieldEmployeeID, v)
@@ -697,6 +692,24 @@ func (u *AllocateUpsert) UpdateEmployeeID() *AllocateUpsert {
 // ClearEmployeeID clears the value of the "employee_id" field.
 func (u *AllocateUpsert) ClearEmployeeID() *AllocateUpsert {
 	u.SetNull(allocate.FieldEmployeeID)
+	return u
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (u *AllocateUpsert) SetCabinetID(v uint64) *AllocateUpsert {
+	u.Set(allocate.FieldCabinetID, v)
+	return u
+}
+
+// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
+func (u *AllocateUpsert) UpdateCabinetID() *AllocateUpsert {
+	u.SetExcluded(allocate.FieldCabinetID)
+	return u
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *AllocateUpsert) ClearCabinetID() *AllocateUpsert {
+	u.SetNull(allocate.FieldCabinetID)
 	return u
 }
 
@@ -754,36 +767,6 @@ func (u *AllocateUpsert) ClearBrandID() *AllocateUpsert {
 	return u
 }
 
-// SetSubscribeID sets the "subscribe_id" field.
-func (u *AllocateUpsert) SetSubscribeID(v uint64) *AllocateUpsert {
-	u.Set(allocate.FieldSubscribeID, v)
-	return u
-}
-
-// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
-func (u *AllocateUpsert) UpdateSubscribeID() *AllocateUpsert {
-	u.SetExcluded(allocate.FieldSubscribeID)
-	return u
-}
-
-// SetCabinetID sets the "cabinet_id" field.
-func (u *AllocateUpsert) SetCabinetID(v uint64) *AllocateUpsert {
-	u.Set(allocate.FieldCabinetID, v)
-	return u
-}
-
-// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
-func (u *AllocateUpsert) UpdateCabinetID() *AllocateUpsert {
-	u.SetExcluded(allocate.FieldCabinetID)
-	return u
-}
-
-// ClearCabinetID clears the value of the "cabinet_id" field.
-func (u *AllocateUpsert) ClearCabinetID() *AllocateUpsert {
-	u.SetNull(allocate.FieldCabinetID)
-	return u
-}
-
 // SetType sets the "type" field.
 func (u *AllocateUpsert) SetType(v allocate.Type) *AllocateUpsert {
 	u.Set(allocate.FieldType, v)
@@ -811,18 +794,6 @@ func (u *AllocateUpsert) UpdateStatus() *AllocateUpsert {
 // AddStatus adds v to the "status" field.
 func (u *AllocateUpsert) AddStatus(v uint8) *AllocateUpsert {
 	u.Add(allocate.FieldStatus, v)
-	return u
-}
-
-// SetInfo sets the "info" field.
-func (u *AllocateUpsert) SetInfo(v *model.Allocate) *AllocateUpsert {
-	u.Set(allocate.FieldInfo, v)
-	return u
-}
-
-// UpdateInfo sets the "info" field to the value that was provided on create.
-func (u *AllocateUpsert) UpdateInfo() *AllocateUpsert {
-	u.SetExcluded(allocate.FieldInfo)
 	return u
 }
 
@@ -895,6 +866,34 @@ func (u *AllocateUpsertOne) Update(set func(*AllocateUpsert)) *AllocateUpsertOne
 	return u
 }
 
+// SetRiderID sets the "rider_id" field.
+func (u *AllocateUpsertOne) SetRiderID(v uint64) *AllocateUpsertOne {
+	return u.Update(func(s *AllocateUpsert) {
+		s.SetRiderID(v)
+	})
+}
+
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *AllocateUpsertOne) UpdateRiderID() *AllocateUpsertOne {
+	return u.Update(func(s *AllocateUpsert) {
+		s.UpdateRiderID()
+	})
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *AllocateUpsertOne) SetSubscribeID(v uint64) *AllocateUpsertOne {
+	return u.Update(func(s *AllocateUpsert) {
+		s.SetSubscribeID(v)
+	})
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *AllocateUpsertOne) UpdateSubscribeID() *AllocateUpsertOne {
+	return u.Update(func(s *AllocateUpsert) {
+		s.UpdateSubscribeID()
+	})
+}
+
 // SetLastModifier sets the "last_modifier" field.
 func (u *AllocateUpsertOne) SetLastModifier(v *model.Modifier) *AllocateUpsertOne {
 	return u.Update(func(s *AllocateUpsert) {
@@ -937,20 +936,6 @@ func (u *AllocateUpsertOne) ClearRemark() *AllocateUpsertOne {
 	})
 }
 
-// SetRiderID sets the "rider_id" field.
-func (u *AllocateUpsertOne) SetRiderID(v uint64) *AllocateUpsertOne {
-	return u.Update(func(s *AllocateUpsert) {
-		s.SetRiderID(v)
-	})
-}
-
-// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
-func (u *AllocateUpsertOne) UpdateRiderID() *AllocateUpsertOne {
-	return u.Update(func(s *AllocateUpsert) {
-		s.UpdateRiderID()
-	})
-}
-
 // SetEmployeeID sets the "employee_id" field.
 func (u *AllocateUpsertOne) SetEmployeeID(v uint64) *AllocateUpsertOne {
 	return u.Update(func(s *AllocateUpsert) {
@@ -969,6 +954,27 @@ func (u *AllocateUpsertOne) UpdateEmployeeID() *AllocateUpsertOne {
 func (u *AllocateUpsertOne) ClearEmployeeID() *AllocateUpsertOne {
 	return u.Update(func(s *AllocateUpsert) {
 		s.ClearEmployeeID()
+	})
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (u *AllocateUpsertOne) SetCabinetID(v uint64) *AllocateUpsertOne {
+	return u.Update(func(s *AllocateUpsert) {
+		s.SetCabinetID(v)
+	})
+}
+
+// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
+func (u *AllocateUpsertOne) UpdateCabinetID() *AllocateUpsertOne {
+	return u.Update(func(s *AllocateUpsert) {
+		s.UpdateCabinetID()
+	})
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *AllocateUpsertOne) ClearCabinetID() *AllocateUpsertOne {
+	return u.Update(func(s *AllocateUpsert) {
+		s.ClearCabinetID()
 	})
 }
 
@@ -1035,41 +1041,6 @@ func (u *AllocateUpsertOne) ClearBrandID() *AllocateUpsertOne {
 	})
 }
 
-// SetSubscribeID sets the "subscribe_id" field.
-func (u *AllocateUpsertOne) SetSubscribeID(v uint64) *AllocateUpsertOne {
-	return u.Update(func(s *AllocateUpsert) {
-		s.SetSubscribeID(v)
-	})
-}
-
-// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
-func (u *AllocateUpsertOne) UpdateSubscribeID() *AllocateUpsertOne {
-	return u.Update(func(s *AllocateUpsert) {
-		s.UpdateSubscribeID()
-	})
-}
-
-// SetCabinetID sets the "cabinet_id" field.
-func (u *AllocateUpsertOne) SetCabinetID(v uint64) *AllocateUpsertOne {
-	return u.Update(func(s *AllocateUpsert) {
-		s.SetCabinetID(v)
-	})
-}
-
-// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
-func (u *AllocateUpsertOne) UpdateCabinetID() *AllocateUpsertOne {
-	return u.Update(func(s *AllocateUpsert) {
-		s.UpdateCabinetID()
-	})
-}
-
-// ClearCabinetID clears the value of the "cabinet_id" field.
-func (u *AllocateUpsertOne) ClearCabinetID() *AllocateUpsertOne {
-	return u.Update(func(s *AllocateUpsert) {
-		s.ClearCabinetID()
-	})
-}
-
 // SetType sets the "type" field.
 func (u *AllocateUpsertOne) SetType(v allocate.Type) *AllocateUpsertOne {
 	return u.Update(func(s *AllocateUpsert) {
@@ -1102,20 +1073,6 @@ func (u *AllocateUpsertOne) AddStatus(v uint8) *AllocateUpsertOne {
 func (u *AllocateUpsertOne) UpdateStatus() *AllocateUpsertOne {
 	return u.Update(func(s *AllocateUpsert) {
 		s.UpdateStatus()
-	})
-}
-
-// SetInfo sets the "info" field.
-func (u *AllocateUpsertOne) SetInfo(v *model.Allocate) *AllocateUpsertOne {
-	return u.Update(func(s *AllocateUpsert) {
-		s.SetInfo(v)
-	})
-}
-
-// UpdateInfo sets the "info" field to the value that was provided on create.
-func (u *AllocateUpsertOne) UpdateInfo() *AllocateUpsertOne {
-	return u.Update(func(s *AllocateUpsert) {
-		s.UpdateInfo()
 	})
 }
 
@@ -1277,7 +1234,7 @@ func (acb *AllocateCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.AllocateUpsert) {
-//			SetCreator(v+v).
+//			SetRiderID(v+v).
 //		}).
 //		Exec(ctx)
 func (acb *AllocateCreateBulk) OnConflict(opts ...sql.ConflictOption) *AllocateUpsertBulk {
@@ -1353,6 +1310,34 @@ func (u *AllocateUpsertBulk) Update(set func(*AllocateUpsert)) *AllocateUpsertBu
 	return u
 }
 
+// SetRiderID sets the "rider_id" field.
+func (u *AllocateUpsertBulk) SetRiderID(v uint64) *AllocateUpsertBulk {
+	return u.Update(func(s *AllocateUpsert) {
+		s.SetRiderID(v)
+	})
+}
+
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *AllocateUpsertBulk) UpdateRiderID() *AllocateUpsertBulk {
+	return u.Update(func(s *AllocateUpsert) {
+		s.UpdateRiderID()
+	})
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *AllocateUpsertBulk) SetSubscribeID(v uint64) *AllocateUpsertBulk {
+	return u.Update(func(s *AllocateUpsert) {
+		s.SetSubscribeID(v)
+	})
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *AllocateUpsertBulk) UpdateSubscribeID() *AllocateUpsertBulk {
+	return u.Update(func(s *AllocateUpsert) {
+		s.UpdateSubscribeID()
+	})
+}
+
 // SetLastModifier sets the "last_modifier" field.
 func (u *AllocateUpsertBulk) SetLastModifier(v *model.Modifier) *AllocateUpsertBulk {
 	return u.Update(func(s *AllocateUpsert) {
@@ -1395,20 +1380,6 @@ func (u *AllocateUpsertBulk) ClearRemark() *AllocateUpsertBulk {
 	})
 }
 
-// SetRiderID sets the "rider_id" field.
-func (u *AllocateUpsertBulk) SetRiderID(v uint64) *AllocateUpsertBulk {
-	return u.Update(func(s *AllocateUpsert) {
-		s.SetRiderID(v)
-	})
-}
-
-// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
-func (u *AllocateUpsertBulk) UpdateRiderID() *AllocateUpsertBulk {
-	return u.Update(func(s *AllocateUpsert) {
-		s.UpdateRiderID()
-	})
-}
-
 // SetEmployeeID sets the "employee_id" field.
 func (u *AllocateUpsertBulk) SetEmployeeID(v uint64) *AllocateUpsertBulk {
 	return u.Update(func(s *AllocateUpsert) {
@@ -1427,6 +1398,27 @@ func (u *AllocateUpsertBulk) UpdateEmployeeID() *AllocateUpsertBulk {
 func (u *AllocateUpsertBulk) ClearEmployeeID() *AllocateUpsertBulk {
 	return u.Update(func(s *AllocateUpsert) {
 		s.ClearEmployeeID()
+	})
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (u *AllocateUpsertBulk) SetCabinetID(v uint64) *AllocateUpsertBulk {
+	return u.Update(func(s *AllocateUpsert) {
+		s.SetCabinetID(v)
+	})
+}
+
+// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
+func (u *AllocateUpsertBulk) UpdateCabinetID() *AllocateUpsertBulk {
+	return u.Update(func(s *AllocateUpsert) {
+		s.UpdateCabinetID()
+	})
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *AllocateUpsertBulk) ClearCabinetID() *AllocateUpsertBulk {
+	return u.Update(func(s *AllocateUpsert) {
+		s.ClearCabinetID()
 	})
 }
 
@@ -1493,41 +1485,6 @@ func (u *AllocateUpsertBulk) ClearBrandID() *AllocateUpsertBulk {
 	})
 }
 
-// SetSubscribeID sets the "subscribe_id" field.
-func (u *AllocateUpsertBulk) SetSubscribeID(v uint64) *AllocateUpsertBulk {
-	return u.Update(func(s *AllocateUpsert) {
-		s.SetSubscribeID(v)
-	})
-}
-
-// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
-func (u *AllocateUpsertBulk) UpdateSubscribeID() *AllocateUpsertBulk {
-	return u.Update(func(s *AllocateUpsert) {
-		s.UpdateSubscribeID()
-	})
-}
-
-// SetCabinetID sets the "cabinet_id" field.
-func (u *AllocateUpsertBulk) SetCabinetID(v uint64) *AllocateUpsertBulk {
-	return u.Update(func(s *AllocateUpsert) {
-		s.SetCabinetID(v)
-	})
-}
-
-// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
-func (u *AllocateUpsertBulk) UpdateCabinetID() *AllocateUpsertBulk {
-	return u.Update(func(s *AllocateUpsert) {
-		s.UpdateCabinetID()
-	})
-}
-
-// ClearCabinetID clears the value of the "cabinet_id" field.
-func (u *AllocateUpsertBulk) ClearCabinetID() *AllocateUpsertBulk {
-	return u.Update(func(s *AllocateUpsert) {
-		s.ClearCabinetID()
-	})
-}
-
 // SetType sets the "type" field.
 func (u *AllocateUpsertBulk) SetType(v allocate.Type) *AllocateUpsertBulk {
 	return u.Update(func(s *AllocateUpsert) {
@@ -1560,20 +1517,6 @@ func (u *AllocateUpsertBulk) AddStatus(v uint8) *AllocateUpsertBulk {
 func (u *AllocateUpsertBulk) UpdateStatus() *AllocateUpsertBulk {
 	return u.Update(func(s *AllocateUpsert) {
 		s.UpdateStatus()
-	})
-}
-
-// SetInfo sets the "info" field.
-func (u *AllocateUpsertBulk) SetInfo(v *model.Allocate) *AllocateUpsertBulk {
-	return u.Update(func(s *AllocateUpsert) {
-		s.SetInfo(v)
-	})
-}
-
-// UpdateInfo sets the "info" field to the value that was provided on create.
-func (u *AllocateUpsertBulk) UpdateInfo() *AllocateUpsertBulk {
-	return u.Update(func(s *AllocateUpsert) {
-		s.UpdateInfo()
 	})
 }
 

@@ -13,50 +13,48 @@ const (
 	Label = "allocate"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldRiderID holds the string denoting the rider_id field in the database.
+	FieldRiderID = "rider_id"
+	// FieldSubscribeID holds the string denoting the subscribe_id field in the database.
+	FieldSubscribeID = "subscribe_id"
 	// FieldCreator holds the string denoting the creator field in the database.
 	FieldCreator = "creator"
 	// FieldLastModifier holds the string denoting the last_modifier field in the database.
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
-	// FieldRiderID holds the string denoting the rider_id field in the database.
-	FieldRiderID = "rider_id"
 	// FieldEmployeeID holds the string denoting the employee_id field in the database.
 	FieldEmployeeID = "employee_id"
+	// FieldCabinetID holds the string denoting the cabinet_id field in the database.
+	FieldCabinetID = "cabinet_id"
 	// FieldStoreID holds the string denoting the store_id field in the database.
 	FieldStoreID = "store_id"
 	// FieldEbikeID holds the string denoting the ebike_id field in the database.
 	FieldEbikeID = "ebike_id"
 	// FieldBrandID holds the string denoting the brand_id field in the database.
 	FieldBrandID = "brand_id"
-	// FieldSubscribeID holds the string denoting the subscribe_id field in the database.
-	FieldSubscribeID = "subscribe_id"
-	// FieldCabinetID holds the string denoting the cabinet_id field in the database.
-	FieldCabinetID = "cabinet_id"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
-	// FieldInfo holds the string denoting the info field in the database.
-	FieldInfo = "info"
 	// FieldTime holds the string denoting the time field in the database.
 	FieldTime = "time"
 	// FieldModel holds the string denoting the model field in the database.
 	FieldModel = "model"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
+	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
+	EdgeSubscribe = "subscribe"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
 	EdgeEmployee = "employee"
+	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
+	EdgeCabinet = "cabinet"
 	// EdgeStore holds the string denoting the store edge name in mutations.
 	EdgeStore = "store"
 	// EdgeEbike holds the string denoting the ebike edge name in mutations.
 	EdgeEbike = "ebike"
 	// EdgeBrand holds the string denoting the brand edge name in mutations.
 	EdgeBrand = "brand"
-	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
-	EdgeSubscribe = "subscribe"
-	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
-	EdgeCabinet = "cabinet"
 	// EdgeContract holds the string denoting the contract edge name in mutations.
 	EdgeContract = "contract"
 	// Table holds the table name of the allocate in the database.
@@ -68,6 +66,13 @@ const (
 	RiderInverseTable = "rider"
 	// RiderColumn is the table column denoting the rider relation/edge.
 	RiderColumn = "rider_id"
+	// SubscribeTable is the table that holds the subscribe relation/edge.
+	SubscribeTable = "allocate"
+	// SubscribeInverseTable is the table name for the Subscribe entity.
+	// It exists in this package in order to avoid circular dependency with the "subscribe" package.
+	SubscribeInverseTable = "subscribe"
+	// SubscribeColumn is the table column denoting the subscribe relation/edge.
+	SubscribeColumn = "subscribe_id"
 	// EmployeeTable is the table that holds the employee relation/edge.
 	EmployeeTable = "allocate"
 	// EmployeeInverseTable is the table name for the Employee entity.
@@ -75,6 +80,13 @@ const (
 	EmployeeInverseTable = "employee"
 	// EmployeeColumn is the table column denoting the employee relation/edge.
 	EmployeeColumn = "employee_id"
+	// CabinetTable is the table that holds the cabinet relation/edge.
+	CabinetTable = "allocate"
+	// CabinetInverseTable is the table name for the Cabinet entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
+	CabinetInverseTable = "cabinet"
+	// CabinetColumn is the table column denoting the cabinet relation/edge.
+	CabinetColumn = "cabinet_id"
 	// StoreTable is the table that holds the store relation/edge.
 	StoreTable = "allocate"
 	// StoreInverseTable is the table name for the Store entity.
@@ -96,20 +108,6 @@ const (
 	BrandInverseTable = "ebike_brand"
 	// BrandColumn is the table column denoting the brand relation/edge.
 	BrandColumn = "brand_id"
-	// SubscribeTable is the table that holds the subscribe relation/edge.
-	SubscribeTable = "allocate"
-	// SubscribeInverseTable is the table name for the Subscribe entity.
-	// It exists in this package in order to avoid circular dependency with the "subscribe" package.
-	SubscribeInverseTable = "subscribe"
-	// SubscribeColumn is the table column denoting the subscribe relation/edge.
-	SubscribeColumn = "subscribe_id"
-	// CabinetTable is the table that holds the cabinet relation/edge.
-	CabinetTable = "allocate"
-	// CabinetInverseTable is the table name for the Cabinet entity.
-	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
-	CabinetInverseTable = "cabinet"
-	// CabinetColumn is the table column denoting the cabinet relation/edge.
-	CabinetColumn = "cabinet_id"
 	// ContractTable is the table that holds the contract relation/edge.
 	ContractTable = "contract"
 	// ContractInverseTable is the table name for the Contract entity.
@@ -122,19 +120,18 @@ const (
 // Columns holds all SQL columns for allocate fields.
 var Columns = []string{
 	FieldID,
+	FieldRiderID,
+	FieldSubscribeID,
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
-	FieldRiderID,
 	FieldEmployeeID,
+	FieldCabinetID,
 	FieldStoreID,
 	FieldEbikeID,
 	FieldBrandID,
-	FieldSubscribeID,
-	FieldCabinetID,
 	FieldType,
 	FieldStatus,
-	FieldInfo,
 	FieldTime,
 	FieldModel,
 }

@@ -296,23 +296,9 @@ func (cu *ContractUpdate) SetRider(r *Rider) *ContractUpdate {
 	return cu.SetRiderID(r.ID)
 }
 
-// SetEbikeAllocateID sets the "ebike_allocate" edge to the Allocate entity by ID.
-func (cu *ContractUpdate) SetEbikeAllocateID(id uint64) *ContractUpdate {
-	cu.mutation.SetEbikeAllocateID(id)
-	return cu
-}
-
-// SetNillableEbikeAllocateID sets the "ebike_allocate" edge to the Allocate entity by ID if the given value is not nil.
-func (cu *ContractUpdate) SetNillableEbikeAllocateID(id *uint64) *ContractUpdate {
-	if id != nil {
-		cu = cu.SetEbikeAllocateID(*id)
-	}
-	return cu
-}
-
-// SetEbikeAllocate sets the "ebike_allocate" edge to the Allocate entity.
-func (cu *ContractUpdate) SetEbikeAllocate(a *Allocate) *ContractUpdate {
-	return cu.SetEbikeAllocateID(a.ID)
+// SetAllocate sets the "allocate" edge to the Allocate entity.
+func (cu *ContractUpdate) SetAllocate(a *Allocate) *ContractUpdate {
+	return cu.SetAllocateID(a.ID)
 }
 
 // Mutation returns the ContractMutation object of the builder.
@@ -350,9 +336,9 @@ func (cu *ContractUpdate) ClearRider() *ContractUpdate {
 	return cu
 }
 
-// ClearEbikeAllocate clears the "ebike_allocate" edge to the Allocate entity.
-func (cu *ContractUpdate) ClearEbikeAllocate() *ContractUpdate {
-	cu.mutation.ClearEbikeAllocate()
+// ClearAllocate clears the "allocate" edge to the Allocate entity.
+func (cu *ContractUpdate) ClearAllocate() *ContractUpdate {
+	cu.mutation.ClearAllocate()
 	return cu
 }
 
@@ -761,12 +747,12 @@ func (cu *ContractUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if cu.mutation.EbikeAllocateCleared() {
+	if cu.mutation.AllocateCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: true,
-			Table:   contract.EbikeAllocateTable,
-			Columns: []string{contract.EbikeAllocateColumn},
+			Table:   contract.AllocateTable,
+			Columns: []string{contract.AllocateColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -777,12 +763,12 @@ func (cu *ContractUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cu.mutation.EbikeAllocateIDs(); len(nodes) > 0 {
+	if nodes := cu.mutation.AllocateIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: true,
-			Table:   contract.EbikeAllocateTable,
-			Columns: []string{contract.EbikeAllocateColumn},
+			Table:   contract.AllocateTable,
+			Columns: []string{contract.AllocateColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1077,23 +1063,9 @@ func (cuo *ContractUpdateOne) SetRider(r *Rider) *ContractUpdateOne {
 	return cuo.SetRiderID(r.ID)
 }
 
-// SetEbikeAllocateID sets the "ebike_allocate" edge to the Allocate entity by ID.
-func (cuo *ContractUpdateOne) SetEbikeAllocateID(id uint64) *ContractUpdateOne {
-	cuo.mutation.SetEbikeAllocateID(id)
-	return cuo
-}
-
-// SetNillableEbikeAllocateID sets the "ebike_allocate" edge to the Allocate entity by ID if the given value is not nil.
-func (cuo *ContractUpdateOne) SetNillableEbikeAllocateID(id *uint64) *ContractUpdateOne {
-	if id != nil {
-		cuo = cuo.SetEbikeAllocateID(*id)
-	}
-	return cuo
-}
-
-// SetEbikeAllocate sets the "ebike_allocate" edge to the Allocate entity.
-func (cuo *ContractUpdateOne) SetEbikeAllocate(a *Allocate) *ContractUpdateOne {
-	return cuo.SetEbikeAllocateID(a.ID)
+// SetAllocate sets the "allocate" edge to the Allocate entity.
+func (cuo *ContractUpdateOne) SetAllocate(a *Allocate) *ContractUpdateOne {
+	return cuo.SetAllocateID(a.ID)
 }
 
 // Mutation returns the ContractMutation object of the builder.
@@ -1131,9 +1103,9 @@ func (cuo *ContractUpdateOne) ClearRider() *ContractUpdateOne {
 	return cuo
 }
 
-// ClearEbikeAllocate clears the "ebike_allocate" edge to the Allocate entity.
-func (cuo *ContractUpdateOne) ClearEbikeAllocate() *ContractUpdateOne {
-	cuo.mutation.ClearEbikeAllocate()
+// ClearAllocate clears the "allocate" edge to the Allocate entity.
+func (cuo *ContractUpdateOne) ClearAllocate() *ContractUpdateOne {
+	cuo.mutation.ClearAllocate()
 	return cuo
 }
 
@@ -1572,12 +1544,12 @@ func (cuo *ContractUpdateOne) sqlSave(ctx context.Context) (_node *Contract, err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if cuo.mutation.EbikeAllocateCleared() {
+	if cuo.mutation.AllocateCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: true,
-			Table:   contract.EbikeAllocateTable,
-			Columns: []string{contract.EbikeAllocateColumn},
+			Table:   contract.AllocateTable,
+			Columns: []string{contract.AllocateColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1588,12 +1560,12 @@ func (cuo *ContractUpdateOne) sqlSave(ctx context.Context) (_node *Contract, err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cuo.mutation.EbikeAllocateIDs(); len(nodes) > 0 {
+	if nodes := cuo.mutation.AllocateIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: true,
-			Table:   contract.EbikeAllocateTable,
-			Columns: []string{contract.EbikeAllocateColumn},
+			Table:   contract.AllocateTable,
+			Columns: []string{contract.AllocateColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
