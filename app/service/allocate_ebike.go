@@ -1,6 +1,6 @@
 // Copyright (C) liasica. 2022-present.
 //
-// Created at 2022-10-14
+// Created at 2022-10-19
 // Based on aurservd by liasica, magicrolan@qq.com.
 
 package service
@@ -19,23 +19,23 @@ import (
     "time"
 )
 
-type ebikeAllocateService struct {
+type allocateEbikeService struct {
     *BaseService
     orm *ent.EbikeAllocateClient
 }
 
-func NewEbikeAllocate(params ...any) *ebikeAllocateService {
-    return &ebikeAllocateService{
+func NewAllocateEbike(params ...any) *allocateEbikeService {
+    return &allocateEbikeService{
         BaseService: newService(params...),
         orm:         ent.Database.EbikeAllocate,
     }
 }
 
-func (s *ebikeAllocateService) QueryID(id uint64) (*ent.EbikeAllocate, error) {
+func (s *allocateEbikeService) QueryID(id uint64) (*ent.EbikeAllocate, error) {
     return s.orm.Query().Where(ebikeallocate.ID(id)).First(s.ctx)
 }
 
-func (s *ebikeAllocateService) QueryIDX(id uint64) *ent.EbikeAllocate {
+func (s *allocateEbikeService) QueryIDX(id uint64) *ent.EbikeAllocate {
     ea, _ := s.QueryID(id)
     if ea == nil {
         snag.Panic("未找到信息")
@@ -44,16 +44,16 @@ func (s *ebikeAllocateService) QueryIDX(id uint64) *ent.EbikeAllocate {
 }
 
 // QueryEffectiveSubscribeID 查询生效中的分配信息
-func (s *ebikeAllocateService) QueryEffectiveSubscribeID(subscribeID uint64) (*ent.EbikeAllocate, error) {
+func (s *allocateEbikeService) QueryEffectiveSubscribeID(subscribeID uint64) (*ent.EbikeAllocate, error) {
     return s.orm.Query().
         Where(
             ebikeallocate.SubscribeID(subscribeID),
-            ebikeallocate.TimeGTE(carbon.Now().SubSeconds(model.EbikeAllocateExpiration).Carbon2Time()),
+            ebikeallocate.TimeGTE(carbon.Now().SubSeconds(model.AllocateExpiration).Carbon2Time()),
         ).
         First(s.ctx)
 }
 
-func (s *ebikeAllocateService) QueryEffectiveSubscribeIDX(subscribeID uint64) *ent.EbikeAllocate {
+func (s *allocateEbikeService) QueryEffectiveSubscribeIDX(subscribeID uint64) *ent.EbikeAllocate {
     ea, _ := s.QueryEffectiveSubscribeID(subscribeID)
     if ea == nil {
         snag.Panic("未找到有效分配信息")
@@ -62,7 +62,7 @@ func (s *ebikeAllocateService) QueryEffectiveSubscribeIDX(subscribeID uint64) *e
 }
 
 // UnallocatedInfo 获取未分配车辆信息
-func (s *ebikeAllocateService) UnallocatedInfo(keyword string) model.EbikeInfo {
+func (s *allocateEbikeService) UnallocatedInfo(keyword string) model.EbikeInfo {
     if s.entStore == nil {
         snag.Panic("店员未上班")
     }
@@ -90,13 +90,13 @@ func (s *ebikeAllocateService) UnallocatedInfo(keyword string) model.EbikeInfo {
 }
 
 // Allocate 分配车辆
-func (s *ebikeAllocateService) Allocate(req *model.EbikeAllocateReq) model.IDPostReq {
-    if s.entEmployee == nil {
-        snag.Panic("需要店员操作")
+func (s *allocateEbikeService) Allocate(req *model.SubscribeAllocate) model.IDPostReq {
+    if req.EbikeID == nil {
+        snag.Panic("需要分配电车")
     }
 
     if s.entStore == nil {
-        snag.Panic("店员未上班")
+        snag.Panic("未找到门店信息")
     }
 
     // 查找订阅
@@ -125,13 +125,13 @@ func (s *ebikeAllocateService) Allocate(req *model.EbikeAllocateReq) model.IDPos
     // 是否被分配过
     ea, _ := s.orm.Query().Where(ebikeallocate.SubscribeID(req.SubscribeID)).First(s.ctx)
     if ea != nil {
-        if ea.Time.After(carbon.Now().SubSeconds(model.EbikeAllocateExpiration).Carbon2Time()) {
+        if ea.Time.After(carbon.Now().SubSeconds(model.AllocateExpiration).Carbon2Time()) {
             snag.Panic("已被分配过")
         }
     }
 
     // 查找电车
-    bike := NewEbike().QueryAllocatableX(req.EbikeID, s.entStore.ID)
+    bike := NewEbike().QueryAllocatableX(*req.EbikeID, s.entStore.ID)
 
     // 比对型号
     if bike.BrandID != *sub.BrandID {
@@ -190,7 +190,7 @@ func (s *ebikeAllocateService) Allocate(req *model.EbikeAllocateReq) model.IDPos
     }
 }
 
-func (s *ebikeAllocateService) detail(ea *ent.EbikeAllocate) model.EbikeAllocateDetail {
+func (s *allocateEbikeService) detail(ea *ent.EbikeAllocate) model.EbikeAllocateDetail {
     return model.EbikeAllocateDetail{
         Status:        model.EbikeAllocateStatus(ea.Status),
         Time:          ea.Time.Format(carbon.DateTimeLayout),
@@ -200,13 +200,13 @@ func (s *ebikeAllocateService) detail(ea *ent.EbikeAllocate) model.EbikeAllocate
 }
 
 // Info 电车分配信息
-func (s *ebikeAllocateService) Info(req *model.IDParamReq) model.EbikeAllocateDetail {
+func (s *allocateEbikeService) Info(req *model.IDParamReq) model.EbikeAllocateDetail {
     ea := s.QueryIDX(req.ID)
     return s.detail(ea)
 }
 
 // EmployeeList 电车分配店员列表
-func (s *ebikeAllocateService) EmployeeList(req *model.EbikeAllocateEmployeeListReq) *model.PaginationRes {
+func (s *allocateEbikeService) EmployeeList(req *model.EbikeAllocateEmployeeListReq) *model.PaginationRes {
     q := s.orm.Query().Where(ebikeallocate.EmployeeID(s.employee.ID)).Order(ent.Desc(ebikeallocate.FieldTime))
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.EbikeAllocate) model.EbikeAllocateDetail {
         return s.detail(item)

@@ -267,7 +267,7 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
     var employeeID, storeID, allocateID *uint64
     if sub.BrandID != nil {
         // 查找电车分配
-        ea := NewEbikeAllocate().QueryEffectiveSubscribeIDX(sub.ID)
+        ea := NewAllocateEbike().QueryEffectiveSubscribeIDX(sub.ID)
         employeeID = ea.EmployeeID
         storeID = silk.UInt64(ea.StoreID)
         allocateID = silk.UInt64(ea.ID)

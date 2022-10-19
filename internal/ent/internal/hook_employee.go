@@ -21,6 +21,11 @@ type HookEmployeeMutator interface {
     SetEmployeeInfo(value *model.Employee)
 }
 
+type HookEmployeeIDMutator interface {
+    SetEmployeeID(v uint64)
+    EmployeeID() (uint64, bool)
+}
+
 // Fields of the PointLog.
 func (HookEmployee) Fields() []ent.Field {
     return []ent.Field{
@@ -28,24 +33,46 @@ func (HookEmployee) Fields() []ent.Field {
     }
 }
 
-func (HookEmployee) Hooks() []ent.Hook {
+func (h HookEmployee) Hooks() []ent.Hook {
     return []ent.Hook{
         func(next ent.Mutator) ent.Mutator {
             return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-                ml, ok := m.(HookEmployeeMutator)
-                if ok {
-                    value, _ := ctx.Value("employee").(*model.Employee)
-                    if value != nil {
-                        switch op := m.Op(); {
-                        case op.Is(ent.OpCreate):
-                            ml.SetEmployeeInfo(value)
-                        case op.Is(ent.OpUpdateOne | ent.OpUpdate):
-                            // TODO: 更新?
-                        }
-                    }
-                }
+                h.setEmployeeInfo(ctx, m)
+                h.setEmployeeID(ctx, m)
                 return next.Mutate(ctx, m)
             })
         },
+    }
+}
+
+func (HookEmployee) setEmployeeInfo(ctx context.Context, m ent.Mutation) {
+    ml, ok := m.(HookEmployeeMutator)
+    if ok {
+        value, _ := ctx.Value("employee").(*model.Employee)
+        if value != nil {
+            switch op := m.Op(); {
+            case op.Is(ent.OpCreate):
+                ml.SetEmployeeInfo(value)
+            case op.Is(ent.OpUpdateOne | ent.OpUpdate):
+                // TODO: 更新?
+            }
+        }
+    }
+}
+
+// TODO 判定 nilableID
+func (HookEmployee) setEmployeeID(ctx context.Context, m ent.Mutation) {
+    ml, ok := m.(HookEmployeeIDMutator)
+    eid, idOk := ml.EmployeeID()
+    if ok && (eid == 0 || !idOk) {
+        value, _ := ctx.Value("employee").(*model.Employee)
+        if value != nil {
+            switch op := m.Op(); {
+            case op.Is(ent.OpCreate):
+                ml.SetEmployeeID(value.ID)
+            case op.Is(ent.OpUpdateOne | ent.OpUpdate):
+                // TODO: 更新?
+            }
+        }
     }
 }

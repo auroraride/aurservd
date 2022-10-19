@@ -6,6 +6,7 @@
 package eapi
 
 import (
+    "errors"
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/service"
@@ -28,22 +29,20 @@ var Ebike = new(ebike)
 // @Success      200  {object}  model.EbikeInfo  "电车信息"
 func (*ebike) Unallocated(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.KeywordQueryReq](c)
-    return ctx.SendResponse(service.NewEbikeAllocate(ctx.Employee).UnallocatedInfo(req.Keyword))
+    return ctx.SendResponse(service.NewAllocateEbike(ctx.Employee).UnallocatedInfo(req.Keyword))
 }
 
 // Allocate
 // @ID           EmployeeEbikeAllocate
 // @Router       /employee/v1/ebike/allocate [POST]
-// @Summary      E6002 分配车辆
+// @Summary      E6002 分配车辆 (废弃)
 // @Tags         [E]店员接口
 // @Accept       json
 // @Produce      json
 // @Param        X-Employee-Token  header  string  true  "店员校验token"
-// @Param        body  body     model.EbikeAllocateReq  true  "分配请求"
-// @Success      200  {object}  model.IDPostReq  "请求成功"
 func (*ebike) Allocate(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.EbikeAllocateReq](c)
-    return ctx.SendResponse(service.NewEbikeAllocate(ctx.Employee).Allocate(req))
+    return errors.New("接口已废弃")
+    // return ctx.SendResponse(service.NewAllocateEbike(ctx.Employee).Allocate(req))
 }
 
 // Info
@@ -59,7 +58,7 @@ func (*ebike) Allocate(c echo.Context) (err error) {
 // @Success      200  {object}  model.EbikeAllocateDetail  "请求成功"
 func (*ebike) Info(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.IDParamReq](c)
-    return ctx.SendResponse(service.NewEbikeAllocate(ctx.Employee).Info(req))
+    return ctx.SendResponse(service.NewAllocateEbike(ctx.Employee).Info(req))
 }
 
 // List
@@ -74,5 +73,5 @@ func (*ebike) Info(c echo.Context) (err error) {
 // @Success      200  {object}  model.PaginationRes{items=[]model.EbikeAllocateDetail}  "请求成功"
 func (*ebike) List(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.EbikeAllocateEmployeeListReq](c)
-    return ctx.SendResponse(service.NewEbikeAllocate(ctx.Employee).EmployeeList(req))
+    return ctx.SendResponse(service.NewAllocateEbike(ctx.Employee).EmployeeList(req))
 }

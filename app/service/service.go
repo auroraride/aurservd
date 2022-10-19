@@ -70,6 +70,8 @@ func newService(params ...any) (bs *BaseService) {
                 Phone: p.Phone,
             }
             ctx = context.WithValue(ctx, "employee", bs.employee)
+        case *ent.Store:
+            bs.entStore = p
         }
     }
 

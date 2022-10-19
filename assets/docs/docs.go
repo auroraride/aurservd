@@ -1324,7 +1324,7 @@ const docTemplate = `{
                 "tags": [
                     "[E]店员接口"
                 ],
-                "summary": "E6002 分配车辆",
+                "summary": "E6002 分配车辆 (废弃)",
                 "operationId": "EmployeeEbikeAllocate",
                 "parameters": [
                     {
@@ -1333,25 +1333,9 @@ const docTemplate = `{
                         "name": "X-Employee-Token",
                         "in": "header",
                         "required": true
-                    },
-                    {
-                        "description": "分配请求",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.EbikeAllocateReq"
-                        }
                     }
                 ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.IDPostReq"
-                        }
-                    }
-                }
+                "responses": {}
             }
         },
         "/employee/v1/ebike/allocate/info/{id}": {
@@ -2007,12 +1991,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "二维码可带` + "`" + `SUBSCRIBE:` + "`" + `, 也可不带",
+                        "description": "分配请求",
                         "name": "body",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.QRPostReq"
+                            "$ref": "#/definitions/model.SubscribeAllocate"
                         }
                     }
                 ],
@@ -2020,7 +2004,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
+                            "$ref": "#/definitions/model.IDPostReq"
                         }
                     }
                 }
@@ -16688,23 +16672,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.EbikeAllocateReq": {
-            "type": "object",
-            "required": [
-                "ebikeId",
-                "subscribeId"
-            ],
-            "properties": {
-                "ebikeId": {
-                    "description": "电车ID ",
-                    "type": "integer"
-                },
-                "subscribeId": {
-                    "description": "订阅ID ",
-                    "type": "integer"
-                }
-            }
-        },
         "model.EbikeBrand": {
             "type": "object",
             "properties": {
@@ -19183,18 +19150,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.QRPostReq": {
-            "type": "object",
-            "required": [
-                "qrcode"
-            ],
-            "properties": {
-                "qrcode": {
-                    "description": "二维码 ",
-                    "type": "string"
-                }
-            }
-        },
         "model.Refund": {
             "type": "object",
             "properties": {
@@ -21507,6 +21462,22 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.Rider"
                         }
                     ]
+                }
+            }
+        },
+        "model.SubscribeAllocate": {
+            "type": "object",
+            "required": [
+                "subscribeId"
+            ],
+            "properties": {
+                "ebikeId": {
+                    "description": "电车ID",
+                    "type": "integer"
+                },
+                "subscribeId": {
+                    "description": "订阅ID ",
+                    "type": "integer"
                 }
             }
         },

@@ -2698,18 +2698,6 @@ definitions:
         description: 分配时间
         type: string
     type: object
-  model.EbikeAllocateReq:
-    properties:
-      ebikeId:
-        description: '电车ID '
-        type: integer
-      subscribeId:
-        description: '订阅ID '
-        type: integer
-    required:
-    - ebikeId
-    - subscribeId
-    type: object
   model.EbikeBrand:
     properties:
       cover:
@@ -4450,14 +4438,6 @@ definitions:
         description: 充值次数
         type: integer
     type: object
-  model.QRPostReq:
-    properties:
-      qrcode:
-        description: '二维码 '
-        type: string
-    required:
-    - qrcode
-    type: object
   model.Refund:
     properties:
       amount:
@@ -6051,6 +6031,17 @@ definitions:
         - $ref: '#/definitions/model.Rider'
         description: 骑手详情
     type: object
+  model.SubscribeAllocate:
+    properties:
+      ebikeId:
+        description: 电车ID
+        type: integer
+      subscribeId:
+        description: '订阅ID '
+        type: integer
+    required:
+    - subscribeId
+    type: object
   model.SubscribeAlter:
     properties:
       days:
@@ -7189,20 +7180,10 @@ paths:
         name: X-Employee-Token
         required: true
         type: string
-      - description: 分配请求
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.EbikeAllocateReq'
       produces:
       - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.IDPostReq'
-      summary: E6002 分配车辆
+      responses: {}
+      summary: E6002 分配车辆 (废弃)
       tags:
       - '[E]店员接口'
   /employee/v1/ebike/allocate/info/{id}:
@@ -7625,19 +7606,19 @@ paths:
         name: X-Rider-Token
         required: true
         type: string
-      - description: 二维码可带`SUBSCRIBE:`, 也可不带
+      - description: 分配请求
         in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/model.QRPostReq'
+          $ref: '#/definitions/model.SubscribeAllocate'
       produces:
       - application/json
       responses:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.StatusResponse'
+            $ref: '#/definitions/model.IDPostReq'
       summary: E2003 激活骑士卡
       tags:
       - '[E]店员接口'

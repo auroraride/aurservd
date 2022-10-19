@@ -51,6 +51,12 @@ func (s *businessEmployeeService) Inactive(qr string) (*model.SubscribeActiveInf
 }
 
 // Active 激活订阅
-func (s *businessEmployeeService) Active(req *model.QRPostReq) {
-    NewBusinessRiderWithEmployee(s.employee).Active(s.Inactive(req.Qrcode))
+func (s *businessEmployeeService) Active(req *model.SubscribeAllocate) (res model.IDPostReq) {
+    _, sub := NewBusinessRiderWithEmployee(s.employee).Inactive(req.SubscribeID)
+    // 车电
+    if sub.BrandID != nil {
+        return NewAllocateEbike(s.employee).Allocate(req)
+    }
+    // TODO: 单电
+    return
 }
