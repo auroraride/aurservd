@@ -22,6 +22,19 @@ func (f AgentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	return f(ctx, mv)
 }
 
+// The AllocateFunc type is an adapter to allow the use of ordinary
+// function as Allocate mutator.
+type AllocateFunc func(context.Context, *ent.AllocateMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AllocateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.AllocateMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AllocateMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The AssistanceFunc type is an adapter to allow the use of ordinary
 // function as Assistance mutator.
 type AssistanceFunc func(context.Context, *ent.AssistanceMutation) (ent.Value, error)
@@ -213,19 +226,6 @@ func (f EbikeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	mv, ok := m.(*ent.EbikeMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EbikeMutation", m)
-	}
-	return f(ctx, mv)
-}
-
-// The EbikeAllocateFunc type is an adapter to allow the use of ordinary
-// function as EbikeAllocate mutator.
-type EbikeAllocateFunc func(context.Context, *ent.EbikeAllocateMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f EbikeAllocateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.EbikeAllocateMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EbikeAllocateMutation", m)
 	}
 	return f(ctx, mv)
 }

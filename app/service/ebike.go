@@ -10,8 +10,8 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/allocate"
     "github.com/auroraride/aurservd/internal/ent/ebike"
-    "github.com/auroraride/aurservd/internal/ent/ebikeallocate"
     "github.com/auroraride/aurservd/internal/ent/ebikebrand"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/store"
@@ -75,7 +75,7 @@ func (s *ebikeService) AllocatableBaseFilter() *ent.EbikeQuery {
 
 // IsAllocated 电车是否已分配
 func (s *ebikeService) IsAllocated(id uint64) bool {
-    exists, _ := ent.Database.EbikeAllocate.Query().Where(ebikeallocate.EbikeID(id), ebikeallocate.Status(model.EbikeAllocateStatusPending.Value())).Exist(s.ctx)
+    exists, _ := ent.Database.Allocate.Query().Where(allocate.EbikeID(id), allocate.Status(model.AllocateStatusPending.Value())).Exist(s.ctx)
     return exists
 }
 

@@ -12,9 +12,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/contract"
-	"github.com/auroraride/aurservd/internal/ent/ebikeallocate"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -250,13 +250,13 @@ func (cc *ContractCreate) SetRider(r *Rider) *ContractCreate {
 	return cc.SetRiderID(r.ID)
 }
 
-// SetEbikeAllocateID sets the "ebike_allocate" edge to the EbikeAllocate entity by ID.
+// SetEbikeAllocateID sets the "ebike_allocate" edge to the Allocate entity by ID.
 func (cc *ContractCreate) SetEbikeAllocateID(id uint64) *ContractCreate {
 	cc.mutation.SetEbikeAllocateID(id)
 	return cc
 }
 
-// SetNillableEbikeAllocateID sets the "ebike_allocate" edge to the EbikeAllocate entity by ID if the given value is not nil.
+// SetNillableEbikeAllocateID sets the "ebike_allocate" edge to the Allocate entity by ID if the given value is not nil.
 func (cc *ContractCreate) SetNillableEbikeAllocateID(id *uint64) *ContractCreate {
 	if id != nil {
 		cc = cc.SetEbikeAllocateID(*id)
@@ -264,9 +264,9 @@ func (cc *ContractCreate) SetNillableEbikeAllocateID(id *uint64) *ContractCreate
 	return cc
 }
 
-// SetEbikeAllocate sets the "ebike_allocate" edge to the EbikeAllocate entity.
-func (cc *ContractCreate) SetEbikeAllocate(e *EbikeAllocate) *ContractCreate {
-	return cc.SetEbikeAllocateID(e.ID)
+// SetEbikeAllocate sets the "ebike_allocate" edge to the Allocate entity.
+func (cc *ContractCreate) SetEbikeAllocate(a *Allocate) *ContractCreate {
+	return cc.SetEbikeAllocateID(a.ID)
 }
 
 // Mutation returns the ContractMutation object of the builder.
@@ -643,7 +643,7 @@ func (cc *ContractCreate) createSpec() (*Contract, *sqlgraph.CreateSpec) {
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: ebikeallocate.FieldID,
+					Column: allocate.FieldID,
 				},
 			},
 		}

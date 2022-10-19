@@ -16,6 +16,8 @@ type Tx struct {
 	config
 	// Agent is the client for interacting with the Agent builders.
 	Agent *AgentClient
+	// Allocate is the client for interacting with the Allocate builders.
+	Allocate *AllocateClient
 	// Assistance is the client for interacting with the Assistance builders.
 	Assistance *AssistanceClient
 	// Attendance is the client for interacting with the Attendance builders.
@@ -46,8 +48,6 @@ type Tx struct {
 	CouponTemplate *CouponTemplateClient
 	// Ebike is the client for interacting with the Ebike builders.
 	Ebike *EbikeClient
-	// EbikeAllocate is the client for interacting with the EbikeAllocate builders.
-	EbikeAllocate *EbikeAllocateClient
 	// EbikeBrand is the client for interacting with the EbikeBrand builders.
 	EbikeBrand *EbikeBrandClient
 	// Employee is the client for interacting with the Employee builders.
@@ -248,6 +248,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Agent = NewAgentClient(tx.config)
+	tx.Allocate = NewAllocateClient(tx.config)
 	tx.Assistance = NewAssistanceClient(tx.config)
 	tx.Attendance = NewAttendanceClient(tx.config)
 	tx.BatteryModel = NewBatteryModelClient(tx.config)
@@ -263,7 +264,6 @@ func (tx *Tx) init() {
 	tx.CouponAssembly = NewCouponAssemblyClient(tx.config)
 	tx.CouponTemplate = NewCouponTemplateClient(tx.config)
 	tx.Ebike = NewEbikeClient(tx.config)
-	tx.EbikeAllocate = NewEbikeAllocateClient(tx.config)
 	tx.EbikeBrand = NewEbikeBrandClient(tx.config)
 	tx.Employee = NewEmployeeClient(tx.config)
 	tx.Enterprise = NewEnterpriseClient(tx.config)

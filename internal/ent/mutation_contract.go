@@ -1092,17 +1092,17 @@ func (m *ContractMutation) ResetRider() {
 	m.clearedrider = false
 }
 
-// SetEbikeAllocateID sets the "ebike_allocate" edge to the EbikeAllocate entity by id.
+// SetEbikeAllocateID sets the "ebike_allocate" edge to the Allocate entity by id.
 func (m *ContractMutation) SetEbikeAllocateID(id uint64) {
 	m.ebike_allocate = &id
 }
 
-// ClearEbikeAllocate clears the "ebike_allocate" edge to the EbikeAllocate entity.
+// ClearEbikeAllocate clears the "ebike_allocate" edge to the Allocate entity.
 func (m *ContractMutation) ClearEbikeAllocate() {
 	m.clearedebike_allocate = true
 }
 
-// EbikeAllocateCleared reports if the "ebike_allocate" edge to the EbikeAllocate entity was cleared.
+// EbikeAllocateCleared reports if the "ebike_allocate" edge to the Allocate entity was cleared.
 func (m *ContractMutation) EbikeAllocateCleared() bool {
 	return m.AllocateIDCleared() || m.clearedebike_allocate
 }

@@ -500,6 +500,45 @@ definitions:
       stsToken:
         type: string
     type: object
+  model.AllocateCreateReq:
+    properties:
+      ebikeId:
+        description: 电车ID
+        type: integer
+      subscribeId:
+        description: '订阅ID '
+        type: integer
+    required:
+    - subscribeId
+    type: object
+  model.AllocateDetail:
+    properties:
+      ebike:
+        allOf:
+        - $ref: '#/definitions/model.Ebike'
+        description: 电车信息
+      id:
+        type: integer
+      model:
+        description: 电池型号
+        type: string
+      rider:
+        allOf:
+        - $ref: '#/definitions/model.Rider'
+        description: 骑手信息
+      status:
+        description: 1:未激活 2:已签约 3:已作废
+        type: integer
+      time:
+        description: 分配时间
+        type: string
+      type:
+        description: 分配类型 battery:单电 ebike:车电
+        enum:
+        - battery
+        - ebike
+        type: string
+    type: object
   model.AssistanceAllocateReq:
     properties:
       id:
@@ -2674,28 +2713,6 @@ definitions:
         type: string
       sn:
         description: 车架号
-        type: string
-    type: object
-  model.EbikeAllocateDetail:
-    properties:
-      ebike:
-        allOf:
-        - $ref: '#/definitions/model.Ebike'
-        description: 电车信息
-      id:
-        type: integer
-      model:
-        description: 电池型号
-        type: string
-      rider:
-        allOf:
-        - $ref: '#/definitions/model.Rider'
-        description: 骑手信息
-      status:
-        description: 1:未激活 2:已签约 3:已作废
-        type: integer
-      time:
-        description: 分配时间
         type: string
     type: object
   model.EbikeBrand:
@@ -6031,17 +6048,6 @@ definitions:
         - $ref: '#/definitions/model.Rider'
         description: 骑手详情
     type: object
-  model.SubscribeAllocate:
-    properties:
-      ebikeId:
-        description: 电车ID
-        type: integer
-      subscribeId:
-        description: '订阅ID '
-        type: integer
-    required:
-    - subscribeId
-    type: object
   model.SubscribeAlter:
     properties:
       days:
@@ -6716,6 +6722,115 @@ paths:
       summary: F01 添加客户
       tags:
       - '[F]房金聚接口'
+  /employee/v1/allocate:
+    get:
+      consumes:
+      - application/json
+      operationId: EmployeeAllocateList
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 1:未激活 2:已签约 3:已作废
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.AllocateDetail'
+                  type: array
+              type: object
+      summary: E6004 分配记录
+      tags:
+      - '[E]店员接口'
+    post:
+      consumes:
+      - application/json
+      operationId: EmployeeAllocate
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: E6002 分配车辆 (废弃)
+      tags:
+      - '[E]店员接口'
+  /employee/v1/allocate/ebike:
+    get:
+      consumes:
+      - application/json
+      operationId: EmployeeUnallocatedEbike
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      - description: 关键词
+        in: query
+        name: keyword
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 电车信息
+          schema:
+            $ref: '#/definitions/model.EbikeInfo'
+      summary: E6001 获取未分配电车信息
+      tags:
+      - '[E]店员接口'
+  /employee/v1/allocate/info/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 骑手签约成功后通过socket推送门店消息
+      operationId: EmployeeAllocateInfo
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      - description: 分配ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.AllocateDetail'
+      summary: E6003 分配详情
+      tags:
+      - '[E]店员接口'
   /employee/v1/assistance:
     get:
       consumes:
@@ -7130,115 +7245,6 @@ paths:
       summary: E2006 退租
       tags:
       - '[E]店员接口'
-  /employee/v1/ebike/allocate:
-    get:
-      consumes:
-      - application/json
-      operationId: EmployeeEbikeList
-      parameters:
-      - description: 店员校验token
-        in: header
-        name: X-Employee-Token
-        required: true
-        type: string
-      - description: 当前页, 从1开始, 默认1
-        in: query
-        name: current
-        type: integer
-      - description: 每页数据, 默认20
-        in: query
-        name: pageSize
-        type: integer
-      - description: 1:未激活 2:已签约 3:已作废
-        in: query
-        name: status
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/model.PaginationRes'
-            - properties:
-                items:
-                  items:
-                    $ref: '#/definitions/model.EbikeAllocateDetail'
-                  type: array
-              type: object
-      summary: E6004 车辆分配记录
-      tags:
-      - '[E]店员接口'
-    post:
-      consumes:
-      - application/json
-      operationId: EmployeeEbikeAllocate
-      parameters:
-      - description: 店员校验token
-        in: header
-        name: X-Employee-Token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: E6002 分配车辆 (废弃)
-      tags:
-      - '[E]店员接口'
-  /employee/v1/ebike/allocate/info/{id}:
-    get:
-      consumes:
-      - application/json
-      description: 骑手签约成功后通过socket推送门店消息
-      operationId: EmployeeEbikeInfo
-      parameters:
-      - description: 店员校验token
-        in: header
-        name: X-Employee-Token
-        required: true
-        type: string
-      - description: 分配ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.EbikeAllocateDetail'
-      summary: E6003 车辆分配信息
-      tags:
-      - '[E]店员接口'
-  /employee/v1/ebike/unallocated:
-    get:
-      consumes:
-      - application/json
-      operationId: EmployeeEbikeUnallocated
-      parameters:
-      - description: 店员校验token
-        in: header
-        name: X-Employee-Token
-        required: true
-        type: string
-      - description: 关键词
-        in: query
-        name: keyword
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 电车信息
-          schema:
-            $ref: '#/definitions/model.EbikeInfo'
-      summary: E6001 获取未分配电车信息
-      tags:
-      - '[E]店员接口'
   /employee/v1/exception:
     post:
       consumes:
@@ -7611,7 +7617,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/model.SubscribeAllocate'
+          $ref: '#/definitions/model.AllocateCreateReq'
       produces:
       - application/json
       responses:

@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
@@ -26,7 +27,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
-	"github.com/auroraride/aurservd/internal/ent/ebikeallocate"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -80,6 +80,7 @@ type OrderFunc func(*sql.Selector)
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
 		agent.Table:                agent.ValidColumn,
+		allocate.Table:             allocate.ValidColumn,
 		assistance.Table:           assistance.ValidColumn,
 		attendance.Table:           attendance.ValidColumn,
 		batterymodel.Table:         batterymodel.ValidColumn,
@@ -95,7 +96,6 @@ func columnChecker(table string) func(string) error {
 		couponassembly.Table:       couponassembly.ValidColumn,
 		coupontemplate.Table:       coupontemplate.ValidColumn,
 		ebike.Table:                ebike.ValidColumn,
-		ebikeallocate.Table:        ebikeallocate.ValidColumn,
 		ebikebrand.Table:           ebikebrand.ValidColumn,
 		employee.Table:             employee.ValidColumn,
 		enterprise.Table:           enterprise.ValidColumn,

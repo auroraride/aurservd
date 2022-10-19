@@ -54,9 +54,9 @@ func loadEmployeeRoutes() {
     g.GET("/assistance", eapi.Assistance.List)
     g.GET("/assistance/overview", eapi.Assistance.Overview)
 
-    // 电车
-    g.GET("/ebike/unallocated", eapi.Ebike.Unallocated)
-    g.POST("/ebike/allocate", eapi.Ebike.Allocate)
-    g.GET("/ebike/allocate/info/:id", eapi.Ebike.Info)
-    g.GET("/ebike/allocate", eapi.Ebike.List)
+    // 分配
+    g.GET("/allocate/ebike", eapi.Allocate.UnallocatedEbike)
+    g.POST("/allocate", eapi.Allocate.Allocate)
+    g.GET("/allocate/info/:id", eapi.Allocate.Info)
+    g.GET("/allocate", eapi.Allocate.List)
 }

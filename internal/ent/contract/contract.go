@@ -100,9 +100,9 @@ const (
 	RiderColumn = "rider_id"
 	// EbikeAllocateTable is the table that holds the ebike_allocate relation/edge.
 	EbikeAllocateTable = "contract"
-	// EbikeAllocateInverseTable is the table name for the EbikeAllocate entity.
-	// It exists in this package in order to avoid circular dependency with the "ebikeallocate" package.
-	EbikeAllocateInverseTable = "ebike_allocate"
+	// EbikeAllocateInverseTable is the table name for the Allocate entity.
+	// It exists in this package in order to avoid circular dependency with the "allocate" package.
+	EbikeAllocateInverseTable = "allocate"
 	// EbikeAllocateColumn is the table column denoting the ebike_allocate relation/edge.
 	EbikeAllocateColumn = "allocate_id"
 )

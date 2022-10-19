@@ -58,6 +58,13 @@ func (c *AgentClient) ModifyOne(old *Agent, data any) *AgentUpdateOne {
 	return EntitySetAttributes[AgentUpdateOne, Agent](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for Allocate.
+func (c *AllocateClient) ModifyOne(old *Allocate, data any) *AllocateUpdateOne {
+	mutation := newAllocateMutation(c.config, OpUpdateOne, withAllocate(old))
+	up := &AllocateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AllocateUpdateOne, Allocate](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Assistance.
 func (c *AssistanceClient) ModifyOne(old *Assistance, data any) *AssistanceUpdateOne {
 	mutation := newAssistanceMutation(c.config, OpUpdateOne, withAssistance(old))
@@ -161,13 +168,6 @@ func (c *EbikeClient) ModifyOne(old *Ebike, data any) *EbikeUpdateOne {
 	mutation := newEbikeMutation(c.config, OpUpdateOne, withEbike(old))
 	up := &EbikeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 	return EntitySetAttributes[EbikeUpdateOne, Ebike](up, old, data)
-}
-
-// ModifyOne returns an update with pointer struct builder for EbikeAllocate.
-func (c *EbikeAllocateClient) ModifyOne(old *EbikeAllocate, data any) *EbikeAllocateUpdateOne {
-	mutation := newEbikeAllocateMutation(c.config, OpUpdateOne, withEbikeAllocate(old))
-	up := &EbikeAllocateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-	return EntitySetAttributes[EbikeAllocateUpdateOne, EbikeAllocate](up, old, data)
 }
 
 // ModifyOne returns an update with pointer struct builder for EbikeBrand.

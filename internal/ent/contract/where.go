@@ -1269,7 +1269,7 @@ func HasEbikeAllocate() predicate.Contract {
 }
 
 // HasEbikeAllocateWith applies the HasEdge predicate on the "ebike_allocate" edge with a given conditions (other predicates).
-func HasEbikeAllocateWith(preds ...predicate.EbikeAllocate) predicate.Contract {
+func HasEbikeAllocateWith(preds ...predicate.Allocate) predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),

@@ -59,6 +59,117 @@ var (
 			},
 		},
 	}
+	// AllocateColumns holds the columns for the "allocate" table.
+	AllocateColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "type", Type: field.TypeEnum, Comment: "分配类型", Enums: []string{"battery", "ebike"}},
+		{Name: "status", Type: field.TypeUint8, Comment: "分配状态"},
+		{Name: "info", Type: field.TypeJSON, Comment: "分配信息"},
+		{Name: "time", Type: field.TypeTime, Comment: "分配时间"},
+		{Name: "model", Type: field.TypeString, Comment: "电池型号"},
+		{Name: "rider_id", Type: field.TypeUint64},
+		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "ebike_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "subscribe_id", Type: field.TypeUint64},
+		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
+	}
+	// AllocateTable holds the schema information for the "allocate" table.
+	AllocateTable = &schema.Table{
+		Name:       "allocate",
+		Columns:    AllocateColumns,
+		PrimaryKey: []*schema.Column{AllocateColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "allocate_rider_rider",
+				Columns:    []*schema.Column{AllocateColumns[9]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "allocate_employee_employee",
+				Columns:    []*schema.Column{AllocateColumns[10]},
+				RefColumns: []*schema.Column{EmployeeColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "allocate_store_store",
+				Columns:    []*schema.Column{AllocateColumns[11]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "allocate_ebike_ebike",
+				Columns:    []*schema.Column{AllocateColumns[12]},
+				RefColumns: []*schema.Column{EbikeColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "allocate_ebike_brand_brand",
+				Columns:    []*schema.Column{AllocateColumns[13]},
+				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "allocate_subscribe_subscribe",
+				Columns:    []*schema.Column{AllocateColumns[14]},
+				RefColumns: []*schema.Column{SubscribeColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "allocate_cabinet_cabinet",
+				Columns:    []*schema.Column{AllocateColumns[15]},
+				RefColumns: []*schema.Column{CabinetColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "allocate_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{AllocateColumns[9]},
+			},
+			{
+				Name:    "allocate_employee_id",
+				Unique:  false,
+				Columns: []*schema.Column{AllocateColumns[10]},
+			},
+			{
+				Name:    "allocate_store_id",
+				Unique:  false,
+				Columns: []*schema.Column{AllocateColumns[11]},
+			},
+			{
+				Name:    "allocate_ebike_id",
+				Unique:  false,
+				Columns: []*schema.Column{AllocateColumns[12]},
+			},
+			{
+				Name:    "allocate_brand_id",
+				Unique:  false,
+				Columns: []*schema.Column{AllocateColumns[13]},
+			},
+			{
+				Name:    "allocate_subscribe_id",
+				Unique:  true,
+				Columns: []*schema.Column{AllocateColumns[14]},
+			},
+			{
+				Name:    "allocate_cabinet_id",
+				Unique:  false,
+				Columns: []*schema.Column{AllocateColumns[15]},
+			},
+			{
+				Name:    "allocate_time",
+				Unique:  false,
+				Columns: []*schema.Column{AllocateColumns[7]},
+			},
+		},
+	}
 	// AssistanceColumns holds the columns for the "assistance" table.
 	AssistanceColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -943,11 +1054,11 @@ var (
 		{Name: "files", Type: field.TypeJSON, Comment: "合同链接", Nullable: true},
 		{Name: "effective", Type: field.TypeBool, Comment: "是否有效", Default: true},
 		{Name: "rider_info", Type: field.TypeJSON, Comment: "骑手信息", Nullable: true},
+		{Name: "allocate_id", Type: field.TypeUint64, Unique: true, Nullable: true},
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "allocate_id", Type: field.TypeUint64, Unique: true, Nullable: true},
 		{Name: "rider_id", Type: field.TypeUint64},
 	}
 	// ContractTable holds the schema information for the "contract" table.
@@ -957,33 +1068,33 @@ var (
 		PrimaryKey: []*schema.Column{ContractColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "contract_employee_employee",
+				Symbol:     "contract_allocate_contract",
 				Columns:    []*schema.Column{ContractColumns[13]},
+				RefColumns: []*schema.Column{AllocateColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "contract_employee_employee",
+				Columns:    []*schema.Column{ContractColumns[14]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "contract_store_store",
-				Columns:    []*schema.Column{ContractColumns[14]},
+				Columns:    []*schema.Column{ContractColumns[15]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "contract_subscribe_subscribe",
-				Columns:    []*schema.Column{ContractColumns[15]},
+				Columns:    []*schema.Column{ContractColumns[16]},
 				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "contract_cabinet_cabinet",
-				Columns:    []*schema.Column{ContractColumns[16]},
-				RefColumns: []*schema.Column{CabinetColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "contract_ebike_allocate_contract",
 				Columns:    []*schema.Column{ContractColumns[17]},
-				RefColumns: []*schema.Column{EbikeAllocateColumns[0]},
+				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
@@ -1007,22 +1118,22 @@ var (
 			{
 				Name:    "contract_employee_id",
 				Unique:  false,
-				Columns: []*schema.Column{ContractColumns[13]},
+				Columns: []*schema.Column{ContractColumns[14]},
 			},
 			{
 				Name:    "contract_store_id",
 				Unique:  false,
-				Columns: []*schema.Column{ContractColumns[14]},
+				Columns: []*schema.Column{ContractColumns[15]},
 			},
 			{
 				Name:    "contract_subscribe_id",
 				Unique:  false,
-				Columns: []*schema.Column{ContractColumns[15]},
+				Columns: []*schema.Column{ContractColumns[16]},
 			},
 			{
 				Name:    "contract_cabinet_id",
 				Unique:  false,
-				Columns: []*schema.Column{ContractColumns[16]},
+				Columns: []*schema.Column{ContractColumns[17]},
 			},
 			{
 				Name:    "contract_rider_id",
@@ -1294,100 +1405,6 @@ var (
 				Name:    "ebike_ex_factory",
 				Unique:  false,
 				Columns: []*schema.Column{EbikeColumns[13]},
-			},
-		},
-	}
-	// EbikeAllocateColumns holds the columns for the "ebike_allocate" table.
-	EbikeAllocateColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUint64, Increment: true},
-		{Name: "status", Type: field.TypeUint8, Comment: "分配状态"},
-		{Name: "info", Type: field.TypeJSON, Comment: "电车信息"},
-		{Name: "time", Type: field.TypeTime, Comment: "分配时间"},
-		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "store_id", Type: field.TypeUint64},
-		{Name: "ebike_id", Type: field.TypeUint64},
-		{Name: "brand_id", Type: field.TypeUint64},
-		{Name: "subscribe_id", Type: field.TypeUint64},
-		{Name: "rider_id", Type: field.TypeUint64},
-	}
-	// EbikeAllocateTable holds the schema information for the "ebike_allocate" table.
-	EbikeAllocateTable = &schema.Table{
-		Name:       "ebike_allocate",
-		Columns:    EbikeAllocateColumns,
-		PrimaryKey: []*schema.Column{EbikeAllocateColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "ebike_allocate_employee_employee",
-				Columns:    []*schema.Column{EbikeAllocateColumns[4]},
-				RefColumns: []*schema.Column{EmployeeColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "ebike_allocate_store_store",
-				Columns:    []*schema.Column{EbikeAllocateColumns[5]},
-				RefColumns: []*schema.Column{StoreColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-			{
-				Symbol:     "ebike_allocate_ebike_ebike",
-				Columns:    []*schema.Column{EbikeAllocateColumns[6]},
-				RefColumns: []*schema.Column{EbikeColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-			{
-				Symbol:     "ebike_allocate_ebike_brand_brand",
-				Columns:    []*schema.Column{EbikeAllocateColumns[7]},
-				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-			{
-				Symbol:     "ebike_allocate_subscribe_subscribe",
-				Columns:    []*schema.Column{EbikeAllocateColumns[8]},
-				RefColumns: []*schema.Column{SubscribeColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-			{
-				Symbol:     "ebike_allocate_rider_rider",
-				Columns:    []*schema.Column{EbikeAllocateColumns[9]},
-				RefColumns: []*schema.Column{RiderColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "ebikeallocate_employee_id",
-				Unique:  false,
-				Columns: []*schema.Column{EbikeAllocateColumns[4]},
-			},
-			{
-				Name:    "ebikeallocate_store_id",
-				Unique:  false,
-				Columns: []*schema.Column{EbikeAllocateColumns[5]},
-			},
-			{
-				Name:    "ebikeallocate_ebike_id",
-				Unique:  false,
-				Columns: []*schema.Column{EbikeAllocateColumns[6]},
-			},
-			{
-				Name:    "ebikeallocate_brand_id",
-				Unique:  false,
-				Columns: []*schema.Column{EbikeAllocateColumns[7]},
-			},
-			{
-				Name:    "ebikeallocate_subscribe_id",
-				Unique:  true,
-				Columns: []*schema.Column{EbikeAllocateColumns[8]},
-			},
-			{
-				Name:    "ebikeallocate_rider_id",
-				Unique:  false,
-				Columns: []*schema.Column{EbikeAllocateColumns[9]},
-			},
-			{
-				Name:    "ebikeallocate_time",
-				Unique:  false,
-				Columns: []*schema.Column{EbikeAllocateColumns[3]},
 			},
 		},
 	}
@@ -4074,6 +4091,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AgentTable,
+		AllocateTable,
 		AssistanceTable,
 		AttendanceTable,
 		BatteryModelTable,
@@ -4089,7 +4107,6 @@ var (
 		CouponAssemblyTable,
 		CouponTemplateTable,
 		EbikeTable,
-		EbikeAllocateTable,
 		EbikeBrandTable,
 		EmployeeTable,
 		EnterpriseTable,
@@ -4133,6 +4150,16 @@ func init() {
 	AgentTable.ForeignKeys[0].RefTable = EnterpriseTable
 	AgentTable.Annotation = &entsql.Annotation{
 		Table: "agent",
+	}
+	AllocateTable.ForeignKeys[0].RefTable = RiderTable
+	AllocateTable.ForeignKeys[1].RefTable = EmployeeTable
+	AllocateTable.ForeignKeys[2].RefTable = StoreTable
+	AllocateTable.ForeignKeys[3].RefTable = EbikeTable
+	AllocateTable.ForeignKeys[4].RefTable = EbikeBrandTable
+	AllocateTable.ForeignKeys[5].RefTable = SubscribeTable
+	AllocateTable.ForeignKeys[6].RefTable = CabinetTable
+	AllocateTable.Annotation = &entsql.Annotation{
+		Table: "allocate",
 	}
 	AssistanceTable.ForeignKeys[0].RefTable = StoreTable
 	AssistanceTable.ForeignKeys[1].RefTable = RiderTable
@@ -4196,11 +4223,11 @@ func init() {
 	CommissionTable.Annotation = &entsql.Annotation{
 		Table: "commission",
 	}
-	ContractTable.ForeignKeys[0].RefTable = EmployeeTable
-	ContractTable.ForeignKeys[1].RefTable = StoreTable
-	ContractTable.ForeignKeys[2].RefTable = SubscribeTable
-	ContractTable.ForeignKeys[3].RefTable = CabinetTable
-	ContractTable.ForeignKeys[4].RefTable = EbikeAllocateTable
+	ContractTable.ForeignKeys[0].RefTable = AllocateTable
+	ContractTable.ForeignKeys[1].RefTable = EmployeeTable
+	ContractTable.ForeignKeys[2].RefTable = StoreTable
+	ContractTable.ForeignKeys[3].RefTable = SubscribeTable
+	ContractTable.ForeignKeys[4].RefTable = CabinetTable
 	ContractTable.ForeignKeys[5].RefTable = RiderTable
 	ContractTable.Annotation = &entsql.Annotation{
 		Table: "contract",
@@ -4225,15 +4252,6 @@ func init() {
 	EbikeTable.ForeignKeys[2].RefTable = StoreTable
 	EbikeTable.Annotation = &entsql.Annotation{
 		Table: "ebike",
-	}
-	EbikeAllocateTable.ForeignKeys[0].RefTable = EmployeeTable
-	EbikeAllocateTable.ForeignKeys[1].RefTable = StoreTable
-	EbikeAllocateTable.ForeignKeys[2].RefTable = EbikeTable
-	EbikeAllocateTable.ForeignKeys[3].RefTable = EbikeBrandTable
-	EbikeAllocateTable.ForeignKeys[4].RefTable = SubscribeTable
-	EbikeAllocateTable.ForeignKeys[5].RefTable = RiderTable
-	EbikeAllocateTable.Annotation = &entsql.Annotation{
-		Table: "ebike_allocate",
 	}
 	EbikeBrandTable.Annotation = &entsql.Annotation{
 		Table: "ebike_brand",

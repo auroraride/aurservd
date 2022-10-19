@@ -16,6 +16,7 @@ const (
 
 	// Node types.
 	TypeAgent                = "Agent"
+	TypeAllocate             = "Allocate"
 	TypeAssistance           = "Assistance"
 	TypeAttendance           = "Attendance"
 	TypeBatteryModel         = "BatteryModel"
@@ -31,7 +32,6 @@ const (
 	TypeCouponAssembly       = "CouponAssembly"
 	TypeCouponTemplate       = "CouponTemplate"
 	TypeEbike                = "Ebike"
-	TypeEbikeAllocate        = "EbikeAllocate"
 	TypeEbikeBrand           = "EbikeBrand"
 	TypeEmployee             = "Employee"
 	TypeEnterprise           = "Enterprise"

@@ -71,7 +71,7 @@ func (Contract) Fields() []ent.Field {
 func (Contract) Edges() []ent.Edge {
     return []ent.Edge{
         edge.From("rider", Rider.Type).Ref("contracts").Required().Unique().Field("rider_id"),
-        edge.From("ebike_allocate", EbikeAllocate.Type).Ref("contract").Unique().Field("allocate_id"),
+        edge.From("ebike_allocate", Allocate.Type).Ref("contract").Unique().Field("allocate_id"),
     }
 }
 

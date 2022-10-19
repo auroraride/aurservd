@@ -16,6 +16,16 @@ func (a *Agent) GetName() string {
 	return a.Name
 }
 
+// GetTableName returns table name for Allocate.
+func (a *Allocate) GetTableName() string {
+	return "allocate"
+}
+
+// GetID returns id for Allocate.
+func (a *Allocate) GetID() uint64 {
+	return a.ID
+}
+
 // GetTableName returns table name for Assistance.
 func (a *Assistance) GetTableName() string {
 	return "assistance"
@@ -188,16 +198,6 @@ func (e *Ebike) GetTableName() string {
 // GetID returns id for Ebike.
 func (e *Ebike) GetID() uint64 {
 	return e.ID
-}
-
-// GetTableName returns table name for EbikeAllocate.
-func (ea *EbikeAllocate) GetTableName() string {
-	return "ebike_allocate"
-}
-
-// GetID returns id for EbikeAllocate.
-func (ea *EbikeAllocate) GetID() uint64 {
-	return ea.ID
 }
 
 // GetTableName returns table name for EbikeBrand.

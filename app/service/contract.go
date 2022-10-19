@@ -267,9 +267,9 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
     var employeeID, storeID, allocateID *uint64
     if sub.BrandID != nil {
         // 查找电车分配
-        ea := NewAllocateEbike().QueryEffectiveSubscribeIDX(sub.ID)
+        ea := NewAllocate().QueryEffectiveSubscribeIDX(sub.ID)
         employeeID = ea.EmployeeID
-        storeID = silk.UInt64(ea.StoreID)
+        storeID = ea.StoreID
         allocateID = silk.UInt64(ea.ID)
 
         bike := ea.Info.Ebike
@@ -543,25 +543,25 @@ func (s *contractService) update(c *ent.Contract) (err error) {
     srv := NewBusinessRider(c.Edges.Rider).SetStoreID(c.StoreID).SetCabinetID(c.CabinetID)
 
     // 查询分配信息
-    var ea *ent.EbikeAllocate
+    var ea *ent.Allocate
     if c.AllocateID != nil {
         ea, _ = c.QueryEbikeAllocate().First(s.ctx)
-        if ea == nil {
+        if ea == nil || ea.EbikeID == nil {
             return errors.New("未找到分配信息")
         }
         // 设置门店和电车属性
         srv.SetEbike(&model.EbikeBusinessInfo{
-            ID:        ea.EbikeID,
+            ID:        *ea.EbikeID,
             BrandID:   ea.Info.Ebike.Brand.ID,
             BrandName: ea.Info.Ebike.Brand.Name,
-        }).SetStoreID(silk.UInt64(ea.StoreID))
+        }).SetStoreID(ea.StoreID)
     }
 
     // 完成签约并激活
     srv.Active(info, sub, func(tx *ent.Tx) (err error) {
         if c.AllocateID != nil {
             // 更新分配
-            err = tx.EbikeAllocate.UpdateOne(ea).SetStatus(model.EbikeAllocateStatusSigned.Value()).Exec(s.ctx)
+            err = tx.Allocate.UpdateOne(ea).SetStatus(model.AllocateStatusSigned.Value()).Exec(s.ctx)
             if err != nil {
                 return
             }

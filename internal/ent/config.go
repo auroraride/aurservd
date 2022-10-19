@@ -29,6 +29,7 @@ type config struct {
 // hooks per client, for fast access.
 type hooks struct {
 	Agent                []ent.Hook
+	Allocate             []ent.Hook
 	Assistance           []ent.Hook
 	Attendance           []ent.Hook
 	BatteryModel         []ent.Hook
@@ -44,7 +45,6 @@ type hooks struct {
 	CouponAssembly       []ent.Hook
 	CouponTemplate       []ent.Hook
 	Ebike                []ent.Hook
-	EbikeAllocate        []ent.Hook
 	EbikeBrand           []ent.Hook
 	Employee             []ent.Hook
 	Enterprise           []ent.Hook

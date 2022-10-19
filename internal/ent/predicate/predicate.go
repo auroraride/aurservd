@@ -9,6 +9,9 @@ import (
 // Agent is the predicate function for agent builders.
 type Agent func(*sql.Selector)
 
+// Allocate is the predicate function for allocate builders.
+type Allocate func(*sql.Selector)
+
 // Assistance is the predicate function for assistance builders.
 type Assistance func(*sql.Selector)
 
@@ -53,9 +56,6 @@ type CouponTemplate func(*sql.Selector)
 
 // Ebike is the predicate function for ebike builders.
 type Ebike func(*sql.Selector)
-
-// EbikeAllocate is the predicate function for ebikeallocate builders.
-type EbikeAllocate func(*sql.Selector)
 
 // EbikeBrand is the predicate function for ebikebrand builders.
 type EbikeBrand func(*sql.Selector)

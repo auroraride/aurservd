@@ -13,13 +13,13 @@ import (
     "github.com/labstack/echo/v4"
 )
 
-type ebike struct{}
+type allocate struct{}
 
-var Ebike = new(ebike)
+var Allocate = new(allocate)
 
-// Unallocated
-// @ID           EmployeeEbikeUnallocated
-// @Router       /employee/v1/ebike/unallocated [GET]
+// UnallocatedEbike
+// @ID           EmployeeUnallocatedEbike
+// @Router       /employee/v1/allocate/ebike [GET]
 // @Summary      E6001 获取未分配电车信息
 // @Tags         [E]店员接口
 // @Accept       json
@@ -27,51 +27,51 @@ var Ebike = new(ebike)
 // @Param        X-Employee-Token  header  string  true  "店员校验token"
 // @Param        keyword  query  string  true  "关键词"
 // @Success      200  {object}  model.EbikeInfo  "电车信息"
-func (*ebike) Unallocated(c echo.Context) (err error) {
+func (*allocate) UnallocatedEbike(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.KeywordQueryReq](c)
-    return ctx.SendResponse(service.NewAllocateEbike(ctx.Employee).UnallocatedInfo(req.Keyword))
+    return ctx.SendResponse(service.NewAllocate(ctx.Employee).UnallocatedEbikeInfo(req.Keyword))
 }
 
 // Allocate
-// @ID           EmployeeEbikeAllocate
-// @Router       /employee/v1/ebike/allocate [POST]
+// @ID           EmployeeAllocate
+// @Router       /employee/v1/allocate [POST]
 // @Summary      E6002 分配车辆 (废弃)
 // @Tags         [E]店员接口
 // @Accept       json
 // @Produce      json
 // @Param        X-Employee-Token  header  string  true  "店员校验token"
-func (*ebike) Allocate(c echo.Context) (err error) {
+func (*allocate) Allocate(c echo.Context) (err error) {
     return errors.New("接口已废弃")
-    // return ctx.SendResponse(service.NewAllocateEbike(ctx.Employee).Allocate(req))
+    // return ctx.SendResponse(service.NewAllocate(ctx.Employee).AllocateEbike(req))
 }
 
 // Info
-// @ID           EmployeeEbikeInfo
-// @Router       /employee/v1/ebike/allocate/info/{id} [GET]
-// @Summary      E6003 车辆分配信息
+// @ID           EmployeeAllocateInfo
+// @Router       /employee/v1/allocate/info/{id} [GET]
+// @Summary      E6003 分配详情
 // @Description  骑手签约成功后通过socket推送门店消息
 // @Tags         [E]店员接口
 // @Accept       json
 // @Produce      json
 // @Param        X-Employee-Token  header  string  true  "店员校验token"
 // @Param        id   path      uint64  true  "分配ID"
-// @Success      200  {object}  model.EbikeAllocateDetail  "请求成功"
-func (*ebike) Info(c echo.Context) (err error) {
+// @Success      200  {object}  model.AllocateDetail  "请求成功"
+func (*allocate) Info(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.IDParamReq](c)
-    return ctx.SendResponse(service.NewAllocateEbike(ctx.Employee).Info(req))
+    return ctx.SendResponse(service.NewAllocate(ctx.Employee).Info(req))
 }
 
 // List
-// @ID           EmployeeEbikeList
-// @Router       /employee/v1/ebike/allocate [GET]
-// @Summary      E6004 车辆分配记录
+// @ID           EmployeeAllocateList
+// @Router       /employee/v1/allocate [GET]
+// @Summary      E6004 分配记录
 // @Tags         [E]店员接口
 // @Accept       json
 // @Produce      json
 // @Param        X-Employee-Token  header  string  true  "店员校验token"
-// @Param        query  query   model.EbikeAllocateEmployeeListReq  false  "筛选选项"
-// @Success      200  {object}  model.PaginationRes{items=[]model.EbikeAllocateDetail}  "请求成功"
-func (*ebike) List(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.EbikeAllocateEmployeeListReq](c)
-    return ctx.SendResponse(service.NewAllocateEbike(ctx.Employee).EmployeeList(req))
+// @Param        query  query   model.AllocateEmployeeListReq  false  "筛选选项"
+// @Success      200  {object}  model.PaginationRes{items=[]model.AllocateDetail}  "请求成功"
+func (*allocate) List(c echo.Context) (err error) {
+    ctx, req := app.EmployeeContextAndBinding[model.AllocateEmployeeListReq](c)
+    return ctx.SendResponse(service.NewAllocate(ctx.Employee).EmployeeList(req))
 }
