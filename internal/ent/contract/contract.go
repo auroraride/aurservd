@@ -25,12 +25,10 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
-	// FieldEmployeeID holds the string denoting the employee_id field in the database.
-	FieldEmployeeID = "employee_id"
-	// FieldStoreID holds the string denoting the store_id field in the database.
-	FieldStoreID = "store_id"
 	// FieldSubscribeID holds the string denoting the subscribe_id field in the database.
 	FieldSubscribeID = "subscribe_id"
+	// FieldEmployeeID holds the string denoting the employee_id field in the database.
+	FieldEmployeeID = "employee_id"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
@@ -47,32 +45,16 @@ const (
 	FieldRiderInfo = "rider_info"
 	// FieldAllocateID holds the string denoting the allocate_id field in the database.
 	FieldAllocateID = "allocate_id"
-	// EdgeEmployee holds the string denoting the employee edge name in mutations.
-	EdgeEmployee = "employee"
-	// EdgeStore holds the string denoting the store edge name in mutations.
-	EdgeStore = "store"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
 	EdgeSubscribe = "subscribe"
+	// EdgeEmployee holds the string denoting the employee edge name in mutations.
+	EdgeEmployee = "employee"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeAllocate holds the string denoting the allocate edge name in mutations.
 	EdgeAllocate = "allocate"
 	// Table holds the table name of the contract in the database.
 	Table = "contract"
-	// EmployeeTable is the table that holds the employee relation/edge.
-	EmployeeTable = "contract"
-	// EmployeeInverseTable is the table name for the Employee entity.
-	// It exists in this package in order to avoid circular dependency with the "employee" package.
-	EmployeeInverseTable = "employee"
-	// EmployeeColumn is the table column denoting the employee relation/edge.
-	EmployeeColumn = "employee_id"
-	// StoreTable is the table that holds the store relation/edge.
-	StoreTable = "contract"
-	// StoreInverseTable is the table name for the Store entity.
-	// It exists in this package in order to avoid circular dependency with the "store" package.
-	StoreInverseTable = "store"
-	// StoreColumn is the table column denoting the store relation/edge.
-	StoreColumn = "store_id"
 	// SubscribeTable is the table that holds the subscribe relation/edge.
 	SubscribeTable = "contract"
 	// SubscribeInverseTable is the table name for the Subscribe entity.
@@ -80,6 +62,13 @@ const (
 	SubscribeInverseTable = "subscribe"
 	// SubscribeColumn is the table column denoting the subscribe relation/edge.
 	SubscribeColumn = "subscribe_id"
+	// EmployeeTable is the table that holds the employee relation/edge.
+	EmployeeTable = "contract"
+	// EmployeeInverseTable is the table name for the Employee entity.
+	// It exists in this package in order to avoid circular dependency with the "employee" package.
+	EmployeeInverseTable = "employee"
+	// EmployeeColumn is the table column denoting the employee relation/edge.
+	EmployeeColumn = "employee_id"
 	// RiderTable is the table that holds the rider relation/edge.
 	RiderTable = "contract"
 	// RiderInverseTable is the table name for the Rider entity.
@@ -105,9 +94,8 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
-	FieldEmployeeID,
-	FieldStoreID,
 	FieldSubscribeID,
+	FieldEmployeeID,
 	FieldStatus,
 	FieldRiderID,
 	FieldFlowID,

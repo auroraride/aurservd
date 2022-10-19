@@ -14,7 +14,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/rider"
-	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
@@ -35,12 +34,10 @@ type Contract struct {
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
-	// 店员ID
-	EmployeeID *uint64 `json:"employee_id,omitempty"`
-	// 门店ID
-	StoreID *uint64 `json:"store_id,omitempty"`
 	// SubscribeID holds the value of the "subscribe_id" field.
 	SubscribeID *uint64 `json:"subscribe_id,omitempty"`
+	// 店员ID
+	EmployeeID *uint64 `json:"employee_id,omitempty"`
 	// 状态
 	Status uint8 `json:"status,omitempty"`
 	// 骑手
@@ -64,51 +61,23 @@ type Contract struct {
 
 // ContractEdges holds the relations/edges for other nodes in the graph.
 type ContractEdges struct {
-	// Employee holds the value of the employee edge.
-	Employee *Employee `json:"employee,omitempty"`
-	// Store holds the value of the store edge.
-	Store *Store `json:"store,omitempty"`
 	// Subscribe holds the value of the subscribe edge.
 	Subscribe *Subscribe `json:"subscribe,omitempty"`
+	// Employee holds the value of the employee edge.
+	Employee *Employee `json:"employee,omitempty"`
 	// Rider holds the value of the rider edge.
 	Rider *Rider `json:"rider,omitempty"`
 	// Allocate holds the value of the allocate edge.
 	Allocate *Allocate `json:"allocate,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
-}
-
-// EmployeeOrErr returns the Employee value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e ContractEdges) EmployeeOrErr() (*Employee, error) {
-	if e.loadedTypes[0] {
-		if e.Employee == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: employee.Label}
-		}
-		return e.Employee, nil
-	}
-	return nil, &NotLoadedError{edge: "employee"}
-}
-
-// StoreOrErr returns the Store value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e ContractEdges) StoreOrErr() (*Store, error) {
-	if e.loadedTypes[1] {
-		if e.Store == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: store.Label}
-		}
-		return e.Store, nil
-	}
-	return nil, &NotLoadedError{edge: "store"}
+	loadedTypes [4]bool
 }
 
 // SubscribeOrErr returns the Subscribe value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ContractEdges) SubscribeOrErr() (*Subscribe, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[0] {
 		if e.Subscribe == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: subscribe.Label}
@@ -118,10 +87,23 @@ func (e ContractEdges) SubscribeOrErr() (*Subscribe, error) {
 	return nil, &NotLoadedError{edge: "subscribe"}
 }
 
+// EmployeeOrErr returns the Employee value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ContractEdges) EmployeeOrErr() (*Employee, error) {
+	if e.loadedTypes[1] {
+		if e.Employee == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: employee.Label}
+		}
+		return e.Employee, nil
+	}
+	return nil, &NotLoadedError{edge: "employee"}
+}
+
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ContractEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[2] {
 		if e.Rider == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: rider.Label}
@@ -134,7 +116,7 @@ func (e ContractEdges) RiderOrErr() (*Rider, error) {
 // AllocateOrErr returns the Allocate value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ContractEdges) AllocateOrErr() (*Allocate, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[3] {
 		if e.Allocate == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: allocate.Label}
@@ -153,7 +135,7 @@ func (*Contract) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case contract.FieldEffective:
 			values[i] = new(sql.NullBool)
-		case contract.FieldID, contract.FieldEmployeeID, contract.FieldStoreID, contract.FieldSubscribeID, contract.FieldStatus, contract.FieldRiderID, contract.FieldAllocateID:
+		case contract.FieldID, contract.FieldSubscribeID, contract.FieldEmployeeID, contract.FieldStatus, contract.FieldRiderID, contract.FieldAllocateID:
 			values[i] = new(sql.NullInt64)
 		case contract.FieldRemark, contract.FieldFlowID, contract.FieldSn:
 			values[i] = new(sql.NullString)
@@ -221,26 +203,19 @@ func (c *Contract) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.Remark = value.String
 			}
-		case contract.FieldEmployeeID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field employee_id", values[i])
-			} else if value.Valid {
-				c.EmployeeID = new(uint64)
-				*c.EmployeeID = uint64(value.Int64)
-			}
-		case contract.FieldStoreID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field store_id", values[i])
-			} else if value.Valid {
-				c.StoreID = new(uint64)
-				*c.StoreID = uint64(value.Int64)
-			}
 		case contract.FieldSubscribeID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field subscribe_id", values[i])
 			} else if value.Valid {
 				c.SubscribeID = new(uint64)
 				*c.SubscribeID = uint64(value.Int64)
+			}
+		case contract.FieldEmployeeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field employee_id", values[i])
+			} else if value.Valid {
+				c.EmployeeID = new(uint64)
+				*c.EmployeeID = uint64(value.Int64)
 			}
 		case contract.FieldStatus:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -300,19 +275,14 @@ func (c *Contract) assignValues(columns []string, values []any) error {
 	return nil
 }
 
-// QueryEmployee queries the "employee" edge of the Contract entity.
-func (c *Contract) QueryEmployee() *EmployeeQuery {
-	return (&ContractClient{config: c.config}).QueryEmployee(c)
-}
-
-// QueryStore queries the "store" edge of the Contract entity.
-func (c *Contract) QueryStore() *StoreQuery {
-	return (&ContractClient{config: c.config}).QueryStore(c)
-}
-
 // QuerySubscribe queries the "subscribe" edge of the Contract entity.
 func (c *Contract) QuerySubscribe() *SubscribeQuery {
 	return (&ContractClient{config: c.config}).QuerySubscribe(c)
+}
+
+// QueryEmployee queries the "employee" edge of the Contract entity.
+func (c *Contract) QueryEmployee() *EmployeeQuery {
+	return (&ContractClient{config: c.config}).QueryEmployee(c)
 }
 
 // QueryRider queries the "rider" edge of the Contract entity.
@@ -368,18 +338,13 @@ func (c *Contract) String() string {
 	builder.WriteString("remark=")
 	builder.WriteString(c.Remark)
 	builder.WriteString(", ")
-	if v := c.EmployeeID; v != nil {
-		builder.WriteString("employee_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	if v := c.StoreID; v != nil {
-		builder.WriteString("store_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
 	if v := c.SubscribeID; v != nil {
 		builder.WriteString("subscribe_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := c.EmployeeID; v != nil {
+		builder.WriteString("employee_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

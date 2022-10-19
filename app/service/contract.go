@@ -180,7 +180,13 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
         snag.Panic("当前订阅错误")
     }
 
-    if sub.BrandID != nil && req.StoreID == nil {
+    // 查找分配信息
+    al := NewAllocate().QueryEffectiveSubscribeIDX(sub.ID)
+    if al == nil {
+        snag.Panic("未找到有效分配")
+    }
+
+    if sub.BrandID != nil && al.StoreID == nil {
         snag.Panic("电车必须由门店分配")
     }
 
@@ -191,18 +197,12 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
     }
 
     // 判定门店或电柜库存
-    if req.StoreID != nil {
+    if al.StoreID != nil {
         // 判定门店库存
-        stockable := NewStock().CheckStore(*req.StoreID, sub.Model, 1)
+        stockable := NewStock().CheckStore(*al.StoreID, sub.Model, 1)
         if !stockable {
             snag.Panic("电池库存不足")
         }
-    }
-
-    // 查找分配信息
-    ea := NewAllocate().QueryEffectiveSubscribeIDX(sub.ID)
-    if ea == nil {
-        snag.Panic("未找到有效分配")
     }
 
     // 定义变量
@@ -271,10 +271,10 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
     var employeeID, storeID *uint64
     if sub.BrandID != nil {
         // 查找电车分配
-        employeeID = ea.EmployeeID
-        storeID = ea.StoreID
+        employeeID = al.EmployeeID
+        storeID = al.StoreID
 
-        bike, _ := ea.QueryEbike().WithBrand().First(s.ctx)
+        bike, _ := al.QueryEbike().WithBrand().First(s.ctx)
         if bike == nil || bike.Edges.Brand == nil {
             snag.Panic("未找到电车信息")
         }
@@ -379,19 +379,28 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
             }
         }
     }
-    // 填充内容生成PDF
-    pdf := s.esign.CreateByTemplate(esign.CreateByTemplateReq{
-        Name:             fmt.Sprintf("%s-%s.pdf", flow.Scene, sn),
-        SimpleFormFields: m,
-        TemplateId:       templateId,
-    })
-    flow.FileId = pdf.FileId
 
-    // 发起签署，获取flowId
-    flowId := s.esign.CreateFlowOneStep(flow)
+    var link, flowId string
+    if ar.Config.Debug {
+        // TODO DEBUG START
+        flowId = tools.NewUnique().NewSN28()
+        link = "link"
+        // TODO DEBUG END
+    } else {
+        // 填充内容生成PDF
+        pdf := s.esign.CreateByTemplate(esign.CreateByTemplateReq{
+            Name:             fmt.Sprintf("%s-%s.pdf", flow.Scene, sn),
+            SimpleFormFields: m,
+            TemplateId:       templateId,
+        })
+        flow.FileId = pdf.FileId
 
-    // 获取签署链接
-    link := s.esign.ExecuteUrl(flowId, accountId)
+        // 发起签署，获取flowId
+        flowId = s.esign.CreateFlowOneStep(flow)
+
+        // 获取签署链接
+        link = s.esign.ExecuteUrl(flowId, accountId)
+    }
 
     // 存储合同信息
     var c *ent.Contract
@@ -401,9 +410,8 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
             SetRiderID(u.ID).
             SetStatus(model.ContractStatusSigning.Value()).
             SetSn(sn).
-            SetNillableStoreID(storeID).
             SetNillableEmployeeID(employeeID).
-            SetAllocateID(ea.ID).
+            SetAllocateID(al.ID).
             SetSubscribe(sub).
             SetRiderInfo(&model.ContractRider{
                 Phone:        u.Phone,
@@ -480,22 +488,31 @@ func (s *contractService) doResult(flowID string, isExpired bool) (stop, success
         return
     }
 
-    // 查询合同流程状态
-    result = s.esign.Result(c.FlowID)
     updater := s.orm.UpdateOneID(c.ID)
 
-    // 是否过期
-    if isExpired {
-        result = model.ContractStatusExpired
-        updater.SetStatus(result.Value())
-    }
+    if ar.Config.Debug {
+        // TODO DEBUG START
+        result = model.ContractStatusSuccess
+        updater.SetStatus(model.ContractStatusSuccess.Value())
+        success = true
+        // TODO DEBUG END
+    } else {
+        // 查询合同流程状态
+        result = s.esign.Result(c.FlowID)
 
-    // 是否成功
-    success = result.IsSuccessed()
+        // 是否过期
+        if isExpired {
+            result = model.ContractStatusExpired
+            updater.SetStatus(result.Value())
+        }
 
-    if success {
-        // 获取合同并上传到阿里云
-        updater.SetStatus(model.ContractStatusSuccess.Value()).SetFiles(s.esign.DownloadDocument(fmt.Sprintf("%s-%s/contracts/", r.Name, r.IDCardNumber), c.FlowID))
+        // 是否成功
+        success = result.IsSuccessed()
+
+        if success {
+            // 获取合同并上传到阿里云
+            updater.SetStatus(model.ContractStatusSuccess.Value()).SetFiles(s.esign.DownloadDocument(fmt.Sprintf("%s-%s/contracts/", r.Name, r.IDCardNumber), c.FlowID))
+        }
     }
 
     // 流程是否终止
@@ -503,7 +520,7 @@ func (s *contractService) doResult(flowID string, isExpired bool) (stop, success
         stop = true
         err := updater.Exec(context.Background())
         if err != nil {
-            log.Errorf("合同更新失败: %v", err)
+            log.Errorf("合同更新失败 [id = %d]: %v", c.ID, err)
             stop = true
             return
         }
@@ -513,7 +530,7 @@ func (s *contractService) doResult(flowID string, isExpired bool) (stop, success
     if success {
         err := s.update(c)
         if err != nil {
-            log.Errorf("合同更新失败 [id = %d] %v", c.ID, err)
+            log.Errorf("已成功签署合同, 但更新失败 [id = %d] %v", c.ID, err)
         }
 
         // 如有必要, 通知店员合同签署完成
@@ -547,17 +564,17 @@ func (s *contractService) update(c *ent.Contract) (err error) {
         return errors.New("需要更新订阅, 但是未找到订阅信息")
     }
 
-    // 激活
-    srv := NewBusinessRider(c.Edges.Rider).SetStoreID(c.StoreID)
-
     // 查询分配信息
     ea, _ := c.QueryAllocate().First(s.ctx)
+
+    // 激活
+    srv := NewBusinessRider(c.Edges.Rider).SetStoreID(ea.StoreID).SetCabinetID(ea.CabinetID)
 
     if ea == nil {
         return errors.New("未找到分配信息")
     }
 
-    // 设置门店和电车属性
+    // 设置电车属性
     if ea.EbikeID != nil {
         bike, _ := ea.QueryEbike().WithBrand().First(s.ctx)
         if bike == nil || bike.Edges.Brand == nil {
@@ -568,7 +585,7 @@ func (s *contractService) update(c *ent.Contract) (err error) {
             ID:        bike.ID,
             BrandID:   brand.ID,
             BrandName: brand.Name,
-        }).SetStoreID(ea.StoreID)
+        })
     }
 
     // 完成签约后

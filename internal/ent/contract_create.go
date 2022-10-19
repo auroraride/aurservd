@@ -16,7 +16,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/rider"
-	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
@@ -96,34 +95,6 @@ func (cc *ContractCreate) SetNillableRemark(s *string) *ContractCreate {
 	return cc
 }
 
-// SetEmployeeID sets the "employee_id" field.
-func (cc *ContractCreate) SetEmployeeID(u uint64) *ContractCreate {
-	cc.mutation.SetEmployeeID(u)
-	return cc
-}
-
-// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
-func (cc *ContractCreate) SetNillableEmployeeID(u *uint64) *ContractCreate {
-	if u != nil {
-		cc.SetEmployeeID(*u)
-	}
-	return cc
-}
-
-// SetStoreID sets the "store_id" field.
-func (cc *ContractCreate) SetStoreID(u uint64) *ContractCreate {
-	cc.mutation.SetStoreID(u)
-	return cc
-}
-
-// SetNillableStoreID sets the "store_id" field if the given value is not nil.
-func (cc *ContractCreate) SetNillableStoreID(u *uint64) *ContractCreate {
-	if u != nil {
-		cc.SetStoreID(*u)
-	}
-	return cc
-}
-
 // SetSubscribeID sets the "subscribe_id" field.
 func (cc *ContractCreate) SetSubscribeID(u uint64) *ContractCreate {
 	cc.mutation.SetSubscribeID(u)
@@ -134,6 +105,20 @@ func (cc *ContractCreate) SetSubscribeID(u uint64) *ContractCreate {
 func (cc *ContractCreate) SetNillableSubscribeID(u *uint64) *ContractCreate {
 	if u != nil {
 		cc.SetSubscribeID(*u)
+	}
+	return cc
+}
+
+// SetEmployeeID sets the "employee_id" field.
+func (cc *ContractCreate) SetEmployeeID(u uint64) *ContractCreate {
+	cc.mutation.SetEmployeeID(u)
+	return cc
+}
+
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (cc *ContractCreate) SetNillableEmployeeID(u *uint64) *ContractCreate {
+	if u != nil {
+		cc.SetEmployeeID(*u)
 	}
 	return cc
 }
@@ -210,19 +195,14 @@ func (cc *ContractCreate) SetNillableAllocateID(u *uint64) *ContractCreate {
 	return cc
 }
 
-// SetEmployee sets the "employee" edge to the Employee entity.
-func (cc *ContractCreate) SetEmployee(e *Employee) *ContractCreate {
-	return cc.SetEmployeeID(e.ID)
-}
-
-// SetStore sets the "store" edge to the Store entity.
-func (cc *ContractCreate) SetStore(s *Store) *ContractCreate {
-	return cc.SetStoreID(s.ID)
-}
-
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (cc *ContractCreate) SetSubscribe(s *Subscribe) *ContractCreate {
 	return cc.SetSubscribeID(s.ID)
+}
+
+// SetEmployee sets the "employee" edge to the Employee entity.
+func (cc *ContractCreate) SetEmployee(e *Employee) *ContractCreate {
+	return cc.SetEmployeeID(e.ID)
 }
 
 // SetRider sets the "rider" edge to the Rider entity.
@@ -499,46 +479,6 @@ func (cc *ContractCreate) createSpec() (*Contract, *sqlgraph.CreateSpec) {
 		})
 		_node.RiderInfo = value
 	}
-	if nodes := cc.mutation.EmployeeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   contract.EmployeeTable,
-			Columns: []string{contract.EmployeeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: employee.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.EmployeeID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := cc.mutation.StoreIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   contract.StoreTable,
-			Columns: []string{contract.StoreColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: store.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.StoreID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := cc.mutation.SubscribeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -557,6 +497,26 @@ func (cc *ContractCreate) createSpec() (*Contract, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.SubscribeID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.EmployeeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   contract.EmployeeTable,
+			Columns: []string{contract.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.EmployeeID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := cc.mutation.RiderIDs(); len(nodes) > 0 {
@@ -717,42 +677,6 @@ func (u *ContractUpsert) ClearRemark() *ContractUpsert {
 	return u
 }
 
-// SetEmployeeID sets the "employee_id" field.
-func (u *ContractUpsert) SetEmployeeID(v uint64) *ContractUpsert {
-	u.Set(contract.FieldEmployeeID, v)
-	return u
-}
-
-// UpdateEmployeeID sets the "employee_id" field to the value that was provided on create.
-func (u *ContractUpsert) UpdateEmployeeID() *ContractUpsert {
-	u.SetExcluded(contract.FieldEmployeeID)
-	return u
-}
-
-// ClearEmployeeID clears the value of the "employee_id" field.
-func (u *ContractUpsert) ClearEmployeeID() *ContractUpsert {
-	u.SetNull(contract.FieldEmployeeID)
-	return u
-}
-
-// SetStoreID sets the "store_id" field.
-func (u *ContractUpsert) SetStoreID(v uint64) *ContractUpsert {
-	u.Set(contract.FieldStoreID, v)
-	return u
-}
-
-// UpdateStoreID sets the "store_id" field to the value that was provided on create.
-func (u *ContractUpsert) UpdateStoreID() *ContractUpsert {
-	u.SetExcluded(contract.FieldStoreID)
-	return u
-}
-
-// ClearStoreID clears the value of the "store_id" field.
-func (u *ContractUpsert) ClearStoreID() *ContractUpsert {
-	u.SetNull(contract.FieldStoreID)
-	return u
-}
-
 // SetSubscribeID sets the "subscribe_id" field.
 func (u *ContractUpsert) SetSubscribeID(v uint64) *ContractUpsert {
 	u.Set(contract.FieldSubscribeID, v)
@@ -768,6 +692,24 @@ func (u *ContractUpsert) UpdateSubscribeID() *ContractUpsert {
 // ClearSubscribeID clears the value of the "subscribe_id" field.
 func (u *ContractUpsert) ClearSubscribeID() *ContractUpsert {
 	u.SetNull(contract.FieldSubscribeID)
+	return u
+}
+
+// SetEmployeeID sets the "employee_id" field.
+func (u *ContractUpsert) SetEmployeeID(v uint64) *ContractUpsert {
+	u.Set(contract.FieldEmployeeID, v)
+	return u
+}
+
+// UpdateEmployeeID sets the "employee_id" field to the value that was provided on create.
+func (u *ContractUpsert) UpdateEmployeeID() *ContractUpsert {
+	u.SetExcluded(contract.FieldEmployeeID)
+	return u
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (u *ContractUpsert) ClearEmployeeID() *ContractUpsert {
+	u.SetNull(contract.FieldEmployeeID)
 	return u
 }
 
@@ -1016,48 +958,6 @@ func (u *ContractUpsertOne) ClearRemark() *ContractUpsertOne {
 	})
 }
 
-// SetEmployeeID sets the "employee_id" field.
-func (u *ContractUpsertOne) SetEmployeeID(v uint64) *ContractUpsertOne {
-	return u.Update(func(s *ContractUpsert) {
-		s.SetEmployeeID(v)
-	})
-}
-
-// UpdateEmployeeID sets the "employee_id" field to the value that was provided on create.
-func (u *ContractUpsertOne) UpdateEmployeeID() *ContractUpsertOne {
-	return u.Update(func(s *ContractUpsert) {
-		s.UpdateEmployeeID()
-	})
-}
-
-// ClearEmployeeID clears the value of the "employee_id" field.
-func (u *ContractUpsertOne) ClearEmployeeID() *ContractUpsertOne {
-	return u.Update(func(s *ContractUpsert) {
-		s.ClearEmployeeID()
-	})
-}
-
-// SetStoreID sets the "store_id" field.
-func (u *ContractUpsertOne) SetStoreID(v uint64) *ContractUpsertOne {
-	return u.Update(func(s *ContractUpsert) {
-		s.SetStoreID(v)
-	})
-}
-
-// UpdateStoreID sets the "store_id" field to the value that was provided on create.
-func (u *ContractUpsertOne) UpdateStoreID() *ContractUpsertOne {
-	return u.Update(func(s *ContractUpsert) {
-		s.UpdateStoreID()
-	})
-}
-
-// ClearStoreID clears the value of the "store_id" field.
-func (u *ContractUpsertOne) ClearStoreID() *ContractUpsertOne {
-	return u.Update(func(s *ContractUpsert) {
-		s.ClearStoreID()
-	})
-}
-
 // SetSubscribeID sets the "subscribe_id" field.
 func (u *ContractUpsertOne) SetSubscribeID(v uint64) *ContractUpsertOne {
 	return u.Update(func(s *ContractUpsert) {
@@ -1076,6 +976,27 @@ func (u *ContractUpsertOne) UpdateSubscribeID() *ContractUpsertOne {
 func (u *ContractUpsertOne) ClearSubscribeID() *ContractUpsertOne {
 	return u.Update(func(s *ContractUpsert) {
 		s.ClearSubscribeID()
+	})
+}
+
+// SetEmployeeID sets the "employee_id" field.
+func (u *ContractUpsertOne) SetEmployeeID(v uint64) *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.SetEmployeeID(v)
+	})
+}
+
+// UpdateEmployeeID sets the "employee_id" field to the value that was provided on create.
+func (u *ContractUpsertOne) UpdateEmployeeID() *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.UpdateEmployeeID()
+	})
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (u *ContractUpsertOne) ClearEmployeeID() *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.ClearEmployeeID()
 	})
 }
 
@@ -1506,48 +1427,6 @@ func (u *ContractUpsertBulk) ClearRemark() *ContractUpsertBulk {
 	})
 }
 
-// SetEmployeeID sets the "employee_id" field.
-func (u *ContractUpsertBulk) SetEmployeeID(v uint64) *ContractUpsertBulk {
-	return u.Update(func(s *ContractUpsert) {
-		s.SetEmployeeID(v)
-	})
-}
-
-// UpdateEmployeeID sets the "employee_id" field to the value that was provided on create.
-func (u *ContractUpsertBulk) UpdateEmployeeID() *ContractUpsertBulk {
-	return u.Update(func(s *ContractUpsert) {
-		s.UpdateEmployeeID()
-	})
-}
-
-// ClearEmployeeID clears the value of the "employee_id" field.
-func (u *ContractUpsertBulk) ClearEmployeeID() *ContractUpsertBulk {
-	return u.Update(func(s *ContractUpsert) {
-		s.ClearEmployeeID()
-	})
-}
-
-// SetStoreID sets the "store_id" field.
-func (u *ContractUpsertBulk) SetStoreID(v uint64) *ContractUpsertBulk {
-	return u.Update(func(s *ContractUpsert) {
-		s.SetStoreID(v)
-	})
-}
-
-// UpdateStoreID sets the "store_id" field to the value that was provided on create.
-func (u *ContractUpsertBulk) UpdateStoreID() *ContractUpsertBulk {
-	return u.Update(func(s *ContractUpsert) {
-		s.UpdateStoreID()
-	})
-}
-
-// ClearStoreID clears the value of the "store_id" field.
-func (u *ContractUpsertBulk) ClearStoreID() *ContractUpsertBulk {
-	return u.Update(func(s *ContractUpsert) {
-		s.ClearStoreID()
-	})
-}
-
 // SetSubscribeID sets the "subscribe_id" field.
 func (u *ContractUpsertBulk) SetSubscribeID(v uint64) *ContractUpsertBulk {
 	return u.Update(func(s *ContractUpsert) {
@@ -1566,6 +1445,27 @@ func (u *ContractUpsertBulk) UpdateSubscribeID() *ContractUpsertBulk {
 func (u *ContractUpsertBulk) ClearSubscribeID() *ContractUpsertBulk {
 	return u.Update(func(s *ContractUpsert) {
 		s.ClearSubscribeID()
+	})
+}
+
+// SetEmployeeID sets the "employee_id" field.
+func (u *ContractUpsertBulk) SetEmployeeID(v uint64) *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.SetEmployeeID(v)
+	})
+}
+
+// UpdateEmployeeID sets the "employee_id" field to the value that was provided on create.
+func (u *ContractUpsertBulk) UpdateEmployeeID() *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.UpdateEmployeeID()
+	})
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (u *ContractUpsertBulk) ClearEmployeeID() *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.ClearEmployeeID()
 	})
 }
 

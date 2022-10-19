@@ -4710,7 +4710,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M7009 修改押金",
+                "summary": "M7019 修改押金",
                 "operationId": "ManagerSubscribeDeposit",
                 "parameters": [
                     {
@@ -10219,7 +10219,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.BusinessSubscribeReq"
+                            "$ref": "#/definitions/model.ManagerSubscribeActive"
                         }
                     }
                 ],
@@ -13557,7 +13557,15 @@ const docTemplate = `{
                     "description": "电车信息",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.Ebike"
+                            "$ref": "#/definitions/model.EbikeInfo"
+                        }
+                    ]
+                },
+                "ebikeBrand": {
+                    "description": "电车品牌信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EbikeBrand"
                         }
                     ]
                 },
@@ -16153,10 +16161,6 @@ const docTemplate = `{
                 "subscribeId"
             ],
             "properties": {
-                "storeId": {
-                    "description": "门店ID",
-                    "type": "integer"
-                },
                 "subscribeId": {
                     "description": "订阅ID ",
                     "type": "integer"
@@ -16167,7 +16171,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "effective": {
-                    "description": "是否存在生效中的合同",
+                    "description": "是否存在生效中的合同, 若返回值为true则代表无需签合同",
                     "type": "boolean"
                 },
                 "sn": {
@@ -18253,6 +18257,26 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ManagerSubscribeActive": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "ebikeKeyword": {
+                    "description": "车架号或车牌号",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "订阅ID ",
+                    "type": "integer"
+                },
+                "storeId": {
+                    "description": "门店ID",
+                    "type": "integer"
+                }
+            }
+        },
         "model.Modifier": {
             "type": "object",
             "properties": {
@@ -19762,6 +19786,10 @@ const docTemplate = `{
                 "suspend": {
                     "description": "是否暂停中",
                     "type": "boolean"
+                },
+                "type": {
+                    "description": "订阅类型 battery:单电 ebike:车电",
+                    "type": "string"
                 }
             }
         },

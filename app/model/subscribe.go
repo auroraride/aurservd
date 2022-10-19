@@ -6,6 +6,11 @@
 package model
 
 const (
+    SubscribeTypeBattery = "battery"
+    SubscribeTypeEbike   = "ebike"
+)
+
+const (
     SubscribeStatusInactive     uint8 = iota // 未激活
     SubscribeStatusUsing                     // 计费中
     SubscribeStatusPaused                    // 寄存中

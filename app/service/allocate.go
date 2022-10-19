@@ -35,11 +35,11 @@ func (s *allocateService) QueryID(id uint64) (*ent.Allocate, error) {
 }
 
 func (s *allocateService) QueryIDX(id uint64) *ent.Allocate {
-    ea, _ := s.QueryID(id)
-    if ea == nil {
+    al, _ := s.QueryID(id)
+    if al == nil {
         snag.Panic("未找到信息")
     }
-    return ea
+    return al
 }
 
 // QueryEffectiveSubscribeID 查询生效中的分配信息
@@ -53,19 +53,15 @@ func (s *allocateService) QueryEffectiveSubscribeID(subscribeID uint64) (*ent.Al
 }
 
 func (s *allocateService) QueryEffectiveSubscribeIDX(subscribeID uint64) *ent.Allocate {
-    ea, _ := s.QueryEffectiveSubscribeID(subscribeID)
-    if ea == nil {
+    al, _ := s.QueryEffectiveSubscribeID(subscribeID)
+    if al == nil {
         snag.Panic("未找到有效分配信息")
     }
-    return ea
+    return al
 }
 
 // UnallocatedEbikeInfo 获取未分配车辆信息
 func (s *allocateService) UnallocatedEbikeInfo(keyword string) model.EbikeInfo {
-    if s.entStore == nil {
-        snag.Panic("店员未上班")
-    }
-
     bike, _ := NewEbike().AllocatableBaseFilter().Where(
         ebike.Or(
             ebike.Sn(keyword),
@@ -89,9 +85,12 @@ func (s *allocateService) UnallocatedEbikeInfo(keyword string) model.EbikeInfo {
 }
 
 func (s *allocateService) Create(req *model.AllocateCreateReq) model.IDPostReq {
+    if req.StoreID == nil && req.CabinetID == nil {
+        snag.Panic("必须由门店或电柜参与")
+    }
 
-    if s.entStore == nil {
-        snag.Panic("未找到门店信息")
+    if req.StoreID != nil && req.CabinetID != nil {
+        snag.Panic("门店和电柜不能同时存在")
     }
 
     // 查找订阅
@@ -101,7 +100,25 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.IDPostReq {
         snag.Panic("未找到订阅信息")
     }
 
-    if sub.CityID != s.entStore.CityID {
+    var (
+        cityID     uint64
+        entStore   *ent.Store
+        entCabinet *ent.Cabinet
+    )
+
+    if req.StoreID != nil {
+        entStore = NewStore().Query(*req.StoreID)
+        cityID = entStore.CityID
+    }
+
+    if req.CabinetID != nil {
+        entCabinet = NewCabinet().QueryOne(*req.CabinetID)
+        if entCabinet.CityID != nil {
+            cityID = *entCabinet.CityID
+        }
+    }
+
+    if sub.CityID != cityID {
         snag.Panic("无法跨城市操作")
     }
 
@@ -116,17 +133,22 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.IDPostReq {
     }
 
     // 是否被分配过
-    ea, _ := s.orm.Query().Where(allocate.SubscribeID(req.SubscribeID)).First(s.ctx)
-    if ea != nil {
-        if ea.Time.After(carbon.Now().SubSeconds(model.AllocateExpiration).Carbon2Time()) {
+    exists, _ := s.orm.Query().Where(allocate.SubscribeID(req.SubscribeID)).First(s.ctx)
+    if exists != nil {
+        if exists.Time.After(carbon.Now().SubSeconds(model.AllocateExpiration).Carbon2Time()) {
             snag.Panic("已被分配过")
         }
     }
 
     // 查找电车
     var bikeID, brandID *uint64
+    typ := allocate.TypeBattery
     if req.EbikeID != nil {
-        bike := NewEbike().QueryAllocatableX(*req.EbikeID, s.entStore.ID)
+        typ = allocate.TypeEbike
+        if req.StoreID == nil {
+            snag.Panic("车电必须由门店参与")
+        }
+        bike := NewEbike().QueryAllocatableX(*req.EbikeID, *req.StoreID)
 
         // 比对型号
         if bike.BrandID != *sub.BrandID {
@@ -144,15 +166,18 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.IDPostReq {
     }
 
     // 判定电池库存
-    if NewStockBatchable().Fetch(model.StockTargetStore, s.entStore.ID, sub.Model) < 1 {
-        snag.Panic("电池库存不足")
+    if req.StoreID != nil {
+        if !NewStock().CheckStore(s.entStore.ID, sub.Model, 1) {
+            snag.Panic("电池库存不足")
+        }
     }
 
     // 存储分配信息
     id, err := s.orm.Create().
-        SetType(allocate.TypeEbike).
-        SetEmployee(s.entEmployee).
-        SetStore(s.entStore).
+        SetType(typ).
+        SetNillableEmployeeID(req.EmployeeID).
+        SetNillableStoreID(req.StoreID).
+        SetNillableCabinetID(req.CabinetID).
         SetNillableEbikeID(bikeID).
         SetNillableBrandID(brandID).
         SetSubscribe(sub).
@@ -172,7 +197,6 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.IDPostReq {
     // 推送签约消息
     socket.SendMessage(NewRiderSocket(), r.ID, &model.RiderSocketMessage{ContractSign: &model.ContractSignReq{
         SubscribeID: sub.ID,
-        StoreID:     silk.Pointer(s.entStore.ID),
     }})
 
     return model.IDPostReq{
@@ -180,36 +204,38 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.IDPostReq {
     }
 }
 
-func (s *allocateService) detail(ea *ent.Allocate) model.AllocateDetail {
-    r := ea.Edges.Rider
+func (s *allocateService) detail(al *ent.Allocate) model.AllocateDetail {
+    r := al.Edges.Rider
     res := model.AllocateDetail{
-        ID:     ea.ID,
-        Type:   ea.Type.String(),
-        Status: model.AllocateStatus(ea.Status),
-        Time:   ea.Time.Format(carbon.DateTimeLayout),
-        Model:  ea.Model,
+        ID:     al.ID,
+        Type:   al.Type.String(),
+        Status: model.AllocateStatus(al.Status),
+        Time:   al.Time.Format(carbon.DateTimeLayout),
+        Model:  al.Model,
         Rider: model.Rider{
             ID:    r.ID,
             Phone: r.Phone,
             Name:  r.Name,
         },
     }
-    bike := ea.Edges.Ebike
-    brand := ea.Edges.Brand
-    if bike != nil && brand != nil {
-        res.Ebike = &model.Ebike{
-            EbikeInfo: model.EbikeInfo{
-                ID:        bike.ID,
-                SN:        bike.Sn,
-                ExFactory: bike.ExFactory,
-                Plate:     bike.Plate,
-                Color:     bike.Color,
-            },
-            Brand: &model.EbikeBrand{
-                ID:    brand.ID,
-                Name:  brand.Name,
-                Cover: brand.Cover,
-            },
+
+    bike := al.Edges.Ebike
+    if bike != nil {
+        res.Ebike = &model.EbikeInfo{
+            ID:        bike.ID,
+            SN:        bike.Sn,
+            ExFactory: bike.ExFactory,
+            Plate:     bike.Plate,
+            Color:     bike.Color,
+        }
+    }
+
+    brand := al.Edges.Brand
+    if brand != nil {
+        res.EbikeBrand = &model.EbikeBrand{
+            ID:    brand.ID,
+            Name:  brand.Name,
+            Cover: brand.Cover,
         }
     }
     return res
@@ -217,8 +243,8 @@ func (s *allocateService) detail(ea *ent.Allocate) model.AllocateDetail {
 
 // Info 分配信息
 func (s *allocateService) Info(req *model.IDParamReq) model.AllocateDetail {
-    ea := s.QueryIDX(req.ID)
-    return s.detail(ea)
+    al := s.QueryIDX(req.ID)
+    return s.detail(al)
 }
 
 // EmployeeList 电车分配店员列表

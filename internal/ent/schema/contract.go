@@ -81,9 +81,8 @@ func (Contract) Mixin() []ent.Mixin {
         internal.DeleteMixin{},
         internal.Modifier{},
 
-        EmployeeMixin{Optional: true},
-        StoreMixin{Optional: true},
         SubscribeMixin{Optional: true},
+        EmployeeMixin{Optional: true},
     }
 }
 

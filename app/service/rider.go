@@ -635,6 +635,10 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
             Model:     sub.Model,
             Suspend:   sub.SuspendAt != nil,
             Formula:   sub.Formula,
+            Type:      model.SubscribeTypeBattery,
+        }
+        if sub.BrandID != nil {
+            ri.Subscribe.Type = model.SubscribeTypeEbike
         }
         if sub.AgentEndAt != nil {
             ri.Subscribe.AgentEndAt = sub.AgentEndAt.Format(carbon.DateLayout)

@@ -55,7 +55,8 @@ type EsignConfig struct {
 }
 
 type config struct {
-    App struct {
+    Debug bool
+    App   struct {
         Address      string
         Host         string
         Mode         string

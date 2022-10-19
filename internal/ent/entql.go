@@ -439,9 +439,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			contract.FieldCreator:      {Type: field.TypeJSON, Column: contract.FieldCreator},
 			contract.FieldLastModifier: {Type: field.TypeJSON, Column: contract.FieldLastModifier},
 			contract.FieldRemark:       {Type: field.TypeString, Column: contract.FieldRemark},
-			contract.FieldEmployeeID:   {Type: field.TypeUint64, Column: contract.FieldEmployeeID},
-			contract.FieldStoreID:      {Type: field.TypeUint64, Column: contract.FieldStoreID},
 			contract.FieldSubscribeID:  {Type: field.TypeUint64, Column: contract.FieldSubscribeID},
+			contract.FieldEmployeeID:   {Type: field.TypeUint64, Column: contract.FieldEmployeeID},
 			contract.FieldStatus:       {Type: field.TypeUint8, Column: contract.FieldStatus},
 			contract.FieldRiderID:      {Type: field.TypeUint64, Column: contract.FieldRiderID},
 			contract.FieldFlowID:       {Type: field.TypeString, Column: contract.FieldFlowID},
@@ -2078,30 +2077,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Employee",
 	)
 	graph.MustAddE(
-		"employee",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   contract.EmployeeTable,
-			Columns: []string{contract.EmployeeColumn},
-			Bidi:    false,
-		},
-		"Contract",
-		"Employee",
-	)
-	graph.MustAddE(
-		"store",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   contract.StoreTable,
-			Columns: []string{contract.StoreColumn},
-			Bidi:    false,
-		},
-		"Contract",
-		"Store",
-	)
-	graph.MustAddE(
 		"subscribe",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -2112,6 +2087,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Contract",
 		"Subscribe",
+	)
+	graph.MustAddE(
+		"employee",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   contract.EmployeeTable,
+			Columns: []string{contract.EmployeeColumn},
+			Bidi:    false,
+		},
+		"Contract",
+		"Employee",
 	)
 	graph.MustAddE(
 		"rider",
@@ -6205,19 +6192,14 @@ func (f *ContractFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(contract.FieldRemark))
 }
 
-// WhereEmployeeID applies the entql uint64 predicate on the employee_id field.
-func (f *ContractFilter) WhereEmployeeID(p entql.Uint64P) {
-	f.Where(p.Field(contract.FieldEmployeeID))
-}
-
-// WhereStoreID applies the entql uint64 predicate on the store_id field.
-func (f *ContractFilter) WhereStoreID(p entql.Uint64P) {
-	f.Where(p.Field(contract.FieldStoreID))
-}
-
 // WhereSubscribeID applies the entql uint64 predicate on the subscribe_id field.
 func (f *ContractFilter) WhereSubscribeID(p entql.Uint64P) {
 	f.Where(p.Field(contract.FieldSubscribeID))
+}
+
+// WhereEmployeeID applies the entql uint64 predicate on the employee_id field.
+func (f *ContractFilter) WhereEmployeeID(p entql.Uint64P) {
+	f.Where(p.Field(contract.FieldEmployeeID))
 }
 
 // WhereStatus applies the entql uint8 predicate on the status field.
@@ -6260,34 +6242,6 @@ func (f *ContractFilter) WhereAllocateID(p entql.Uint64P) {
 	f.Where(p.Field(contract.FieldAllocateID))
 }
 
-// WhereHasEmployee applies a predicate to check if query has an edge employee.
-func (f *ContractFilter) WhereHasEmployee() {
-	f.Where(entql.HasEdge("employee"))
-}
-
-// WhereHasEmployeeWith applies a predicate to check if query has an edge employee with a given conditions (other predicates).
-func (f *ContractFilter) WhereHasEmployeeWith(preds ...predicate.Employee) {
-	f.Where(entql.HasEdgeWith("employee", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasStore applies a predicate to check if query has an edge store.
-func (f *ContractFilter) WhereHasStore() {
-	f.Where(entql.HasEdge("store"))
-}
-
-// WhereHasStoreWith applies a predicate to check if query has an edge store with a given conditions (other predicates).
-func (f *ContractFilter) WhereHasStoreWith(preds ...predicate.Store) {
-	f.Where(entql.HasEdgeWith("store", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
 // WhereHasSubscribe applies a predicate to check if query has an edge subscribe.
 func (f *ContractFilter) WhereHasSubscribe() {
 	f.Where(entql.HasEdge("subscribe"))
@@ -6296,6 +6250,20 @@ func (f *ContractFilter) WhereHasSubscribe() {
 // WhereHasSubscribeWith applies a predicate to check if query has an edge subscribe with a given conditions (other predicates).
 func (f *ContractFilter) WhereHasSubscribeWith(preds ...predicate.Subscribe) {
 	f.Where(entql.HasEdgeWith("subscribe", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasEmployee applies a predicate to check if query has an edge employee.
+func (f *ContractFilter) WhereHasEmployee() {
+	f.Where(entql.HasEdge("employee"))
+}
+
+// WhereHasEmployeeWith applies a predicate to check if query has an edge employee with a given conditions (other predicates).
+func (f *ContractFilter) WhereHasEmployeeWith(preds ...predicate.Employee) {
+	f.Where(entql.HasEdgeWith("employee", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

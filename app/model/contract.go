@@ -69,15 +69,13 @@ type ContractRider struct {
 // ContractSignReq 签约请求
 type ContractSignReq struct {
     SubscribeID uint64 `json:"subscribeId" validate:"required" trans:"订阅ID"`
-
-    StoreID *uint64 `json:"storeId,omitempty"` // 门店ID
 }
 
 // ContractSignRes 合同签订返回
 type ContractSignRes struct {
     Url       string `json:"url,omitempty"` // 签署URL
     Sn        string `json:"sn,omitempty"`  // 签署识别码
-    Effective bool   `json:"effective"`     // 是否存在生效中的合同
+    Effective bool   `json:"effective"`     // 是否存在生效中的合同, 若返回值为true则代表无需签合同
 }
 
 // ContractSignResultReq 合同签署结果请求

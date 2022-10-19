@@ -17,6 +17,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/golang-module/carbon/v2"
     "github.com/labstack/echo/v4"
     "strings"
 )
@@ -75,7 +76,11 @@ func (s *ebikeService) AllocatableBaseFilter() *ent.EbikeQuery {
 
 // IsAllocated 电车是否已分配
 func (s *ebikeService) IsAllocated(id uint64) bool {
-    exists, _ := ent.Database.Allocate.Query().Where(allocate.EbikeID(id), allocate.Status(model.AllocateStatusPending.Value())).Exist(s.ctx)
+    exists, _ := ent.Database.Allocate.Query().Where(
+        allocate.EbikeID(id),
+        allocate.Status(model.AllocateStatusPending.Value()),
+        allocate.TimeGTE(carbon.Now().SubSeconds(model.AllocateExpiration).Carbon2Time()),
+    ).Exist(s.ctx)
     return exists
 }
 
@@ -100,7 +105,7 @@ func (s *ebikeService) QueryAllocatable(id, storeID uint64) (bike *ent.Ebike) {
 func (s *ebikeService) QueryAllocatableX(id, storeID uint64) *ent.Ebike {
     bike := s.QueryAllocatable(id, storeID)
     if bike == nil {
-        snag.Panic("未找到可分配车辆")
+        snag.Panic("未找到可分配电车")
     }
     return bike
 }

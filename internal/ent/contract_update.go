@@ -17,7 +17,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
-	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
@@ -93,46 +92,6 @@ func (cu *ContractUpdate) ClearRemark() *ContractUpdate {
 	return cu
 }
 
-// SetEmployeeID sets the "employee_id" field.
-func (cu *ContractUpdate) SetEmployeeID(u uint64) *ContractUpdate {
-	cu.mutation.SetEmployeeID(u)
-	return cu
-}
-
-// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
-func (cu *ContractUpdate) SetNillableEmployeeID(u *uint64) *ContractUpdate {
-	if u != nil {
-		cu.SetEmployeeID(*u)
-	}
-	return cu
-}
-
-// ClearEmployeeID clears the value of the "employee_id" field.
-func (cu *ContractUpdate) ClearEmployeeID() *ContractUpdate {
-	cu.mutation.ClearEmployeeID()
-	return cu
-}
-
-// SetStoreID sets the "store_id" field.
-func (cu *ContractUpdate) SetStoreID(u uint64) *ContractUpdate {
-	cu.mutation.SetStoreID(u)
-	return cu
-}
-
-// SetNillableStoreID sets the "store_id" field if the given value is not nil.
-func (cu *ContractUpdate) SetNillableStoreID(u *uint64) *ContractUpdate {
-	if u != nil {
-		cu.SetStoreID(*u)
-	}
-	return cu
-}
-
-// ClearStoreID clears the value of the "store_id" field.
-func (cu *ContractUpdate) ClearStoreID() *ContractUpdate {
-	cu.mutation.ClearStoreID()
-	return cu
-}
-
 // SetSubscribeID sets the "subscribe_id" field.
 func (cu *ContractUpdate) SetSubscribeID(u uint64) *ContractUpdate {
 	cu.mutation.SetSubscribeID(u)
@@ -150,6 +109,26 @@ func (cu *ContractUpdate) SetNillableSubscribeID(u *uint64) *ContractUpdate {
 // ClearSubscribeID clears the value of the "subscribe_id" field.
 func (cu *ContractUpdate) ClearSubscribeID() *ContractUpdate {
 	cu.mutation.ClearSubscribeID()
+	return cu
+}
+
+// SetEmployeeID sets the "employee_id" field.
+func (cu *ContractUpdate) SetEmployeeID(u uint64) *ContractUpdate {
+	cu.mutation.SetEmployeeID(u)
+	return cu
+}
+
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (cu *ContractUpdate) SetNillableEmployeeID(u *uint64) *ContractUpdate {
+	if u != nil {
+		cu.SetEmployeeID(*u)
+	}
+	return cu
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (cu *ContractUpdate) ClearEmployeeID() *ContractUpdate {
+	cu.mutation.ClearEmployeeID()
 	return cu
 }
 
@@ -250,19 +229,14 @@ func (cu *ContractUpdate) ClearAllocateID() *ContractUpdate {
 	return cu
 }
 
-// SetEmployee sets the "employee" edge to the Employee entity.
-func (cu *ContractUpdate) SetEmployee(e *Employee) *ContractUpdate {
-	return cu.SetEmployeeID(e.ID)
-}
-
-// SetStore sets the "store" edge to the Store entity.
-func (cu *ContractUpdate) SetStore(s *Store) *ContractUpdate {
-	return cu.SetStoreID(s.ID)
-}
-
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (cu *ContractUpdate) SetSubscribe(s *Subscribe) *ContractUpdate {
 	return cu.SetSubscribeID(s.ID)
+}
+
+// SetEmployee sets the "employee" edge to the Employee entity.
+func (cu *ContractUpdate) SetEmployee(e *Employee) *ContractUpdate {
+	return cu.SetEmployeeID(e.ID)
 }
 
 // SetRider sets the "rider" edge to the Rider entity.
@@ -280,21 +254,15 @@ func (cu *ContractUpdate) Mutation() *ContractMutation {
 	return cu.mutation
 }
 
-// ClearEmployee clears the "employee" edge to the Employee entity.
-func (cu *ContractUpdate) ClearEmployee() *ContractUpdate {
-	cu.mutation.ClearEmployee()
-	return cu
-}
-
-// ClearStore clears the "store" edge to the Store entity.
-func (cu *ContractUpdate) ClearStore() *ContractUpdate {
-	cu.mutation.ClearStore()
-	return cu
-}
-
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (cu *ContractUpdate) ClearSubscribe() *ContractUpdate {
 	cu.mutation.ClearSubscribe()
+	return cu
+}
+
+// ClearEmployee clears the "employee" edge to the Employee entity.
+func (cu *ContractUpdate) ClearEmployee() *ContractUpdate {
+	cu.mutation.ClearEmployee()
 	return cu
 }
 
@@ -540,76 +508,6 @@ func (cu *ContractUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: contract.FieldRiderInfo,
 		})
 	}
-	if cu.mutation.EmployeeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   contract.EmployeeTable,
-			Columns: []string{contract.EmployeeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: employee.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cu.mutation.EmployeeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   contract.EmployeeTable,
-			Columns: []string{contract.EmployeeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: employee.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if cu.mutation.StoreCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   contract.StoreTable,
-			Columns: []string{contract.StoreColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: store.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cu.mutation.StoreIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   contract.StoreTable,
-			Columns: []string{contract.StoreColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: store.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if cu.mutation.SubscribeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -637,6 +535,41 @@ func (cu *ContractUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cu.mutation.EmployeeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   contract.EmployeeTable,
+			Columns: []string{contract.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.EmployeeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   contract.EmployeeTable,
+			Columns: []string{contract.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
 				},
 			},
 		}
@@ -794,46 +727,6 @@ func (cuo *ContractUpdateOne) ClearRemark() *ContractUpdateOne {
 	return cuo
 }
 
-// SetEmployeeID sets the "employee_id" field.
-func (cuo *ContractUpdateOne) SetEmployeeID(u uint64) *ContractUpdateOne {
-	cuo.mutation.SetEmployeeID(u)
-	return cuo
-}
-
-// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
-func (cuo *ContractUpdateOne) SetNillableEmployeeID(u *uint64) *ContractUpdateOne {
-	if u != nil {
-		cuo.SetEmployeeID(*u)
-	}
-	return cuo
-}
-
-// ClearEmployeeID clears the value of the "employee_id" field.
-func (cuo *ContractUpdateOne) ClearEmployeeID() *ContractUpdateOne {
-	cuo.mutation.ClearEmployeeID()
-	return cuo
-}
-
-// SetStoreID sets the "store_id" field.
-func (cuo *ContractUpdateOne) SetStoreID(u uint64) *ContractUpdateOne {
-	cuo.mutation.SetStoreID(u)
-	return cuo
-}
-
-// SetNillableStoreID sets the "store_id" field if the given value is not nil.
-func (cuo *ContractUpdateOne) SetNillableStoreID(u *uint64) *ContractUpdateOne {
-	if u != nil {
-		cuo.SetStoreID(*u)
-	}
-	return cuo
-}
-
-// ClearStoreID clears the value of the "store_id" field.
-func (cuo *ContractUpdateOne) ClearStoreID() *ContractUpdateOne {
-	cuo.mutation.ClearStoreID()
-	return cuo
-}
-
 // SetSubscribeID sets the "subscribe_id" field.
 func (cuo *ContractUpdateOne) SetSubscribeID(u uint64) *ContractUpdateOne {
 	cuo.mutation.SetSubscribeID(u)
@@ -851,6 +744,26 @@ func (cuo *ContractUpdateOne) SetNillableSubscribeID(u *uint64) *ContractUpdateO
 // ClearSubscribeID clears the value of the "subscribe_id" field.
 func (cuo *ContractUpdateOne) ClearSubscribeID() *ContractUpdateOne {
 	cuo.mutation.ClearSubscribeID()
+	return cuo
+}
+
+// SetEmployeeID sets the "employee_id" field.
+func (cuo *ContractUpdateOne) SetEmployeeID(u uint64) *ContractUpdateOne {
+	cuo.mutation.SetEmployeeID(u)
+	return cuo
+}
+
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (cuo *ContractUpdateOne) SetNillableEmployeeID(u *uint64) *ContractUpdateOne {
+	if u != nil {
+		cuo.SetEmployeeID(*u)
+	}
+	return cuo
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (cuo *ContractUpdateOne) ClearEmployeeID() *ContractUpdateOne {
+	cuo.mutation.ClearEmployeeID()
 	return cuo
 }
 
@@ -951,19 +864,14 @@ func (cuo *ContractUpdateOne) ClearAllocateID() *ContractUpdateOne {
 	return cuo
 }
 
-// SetEmployee sets the "employee" edge to the Employee entity.
-func (cuo *ContractUpdateOne) SetEmployee(e *Employee) *ContractUpdateOne {
-	return cuo.SetEmployeeID(e.ID)
-}
-
-// SetStore sets the "store" edge to the Store entity.
-func (cuo *ContractUpdateOne) SetStore(s *Store) *ContractUpdateOne {
-	return cuo.SetStoreID(s.ID)
-}
-
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (cuo *ContractUpdateOne) SetSubscribe(s *Subscribe) *ContractUpdateOne {
 	return cuo.SetSubscribeID(s.ID)
+}
+
+// SetEmployee sets the "employee" edge to the Employee entity.
+func (cuo *ContractUpdateOne) SetEmployee(e *Employee) *ContractUpdateOne {
+	return cuo.SetEmployeeID(e.ID)
 }
 
 // SetRider sets the "rider" edge to the Rider entity.
@@ -981,21 +889,15 @@ func (cuo *ContractUpdateOne) Mutation() *ContractMutation {
 	return cuo.mutation
 }
 
-// ClearEmployee clears the "employee" edge to the Employee entity.
-func (cuo *ContractUpdateOne) ClearEmployee() *ContractUpdateOne {
-	cuo.mutation.ClearEmployee()
-	return cuo
-}
-
-// ClearStore clears the "store" edge to the Store entity.
-func (cuo *ContractUpdateOne) ClearStore() *ContractUpdateOne {
-	cuo.mutation.ClearStore()
-	return cuo
-}
-
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (cuo *ContractUpdateOne) ClearSubscribe() *ContractUpdateOne {
 	cuo.mutation.ClearSubscribe()
+	return cuo
+}
+
+// ClearEmployee clears the "employee" edge to the Employee entity.
+func (cuo *ContractUpdateOne) ClearEmployee() *ContractUpdateOne {
+	cuo.mutation.ClearEmployee()
 	return cuo
 }
 
@@ -1271,76 +1173,6 @@ func (cuo *ContractUpdateOne) sqlSave(ctx context.Context) (_node *Contract, err
 			Column: contract.FieldRiderInfo,
 		})
 	}
-	if cuo.mutation.EmployeeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   contract.EmployeeTable,
-			Columns: []string{contract.EmployeeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: employee.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cuo.mutation.EmployeeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   contract.EmployeeTable,
-			Columns: []string{contract.EmployeeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: employee.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if cuo.mutation.StoreCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   contract.StoreTable,
-			Columns: []string{contract.StoreColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: store.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cuo.mutation.StoreIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   contract.StoreTable,
-			Columns: []string{contract.StoreColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: store.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if cuo.mutation.SubscribeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1368,6 +1200,41 @@ func (cuo *ContractUpdateOne) sqlSave(ctx context.Context) (_node *Contract, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.EmployeeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   contract.EmployeeTable,
+			Columns: []string{contract.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.EmployeeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   contract.EmployeeTable,
+			Columns: []string{contract.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
 				},
 			},
 		}

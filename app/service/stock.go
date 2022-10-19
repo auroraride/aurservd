@@ -300,7 +300,7 @@ func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (s
     // TODO 平台管理员可操作性时处理出入库逻辑
     if req.StoreID != nil {
         creator.SetStoreID(*req.StoreID)
-        if num < 0 && s.CheckStore(*req.StoreID, req.Model, int(math.Round(math.Abs(float64(num))))) {
+        if num < 0 && !s.CheckStore(*req.StoreID, req.Model, int(math.Round(math.Abs(float64(num))))) {
             err = errors.New("电池库存不足")
             return
         }
@@ -308,7 +308,7 @@ func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (s
 
     if req.CabinetID != nil {
         creator.SetCabinetID(*req.CabinetID)
-        if num < 0 && s.CheckCabinet(*req.CabinetID, req.Model, int(math.Round(math.Abs(float64(num))))) {
+        if num < 0 && !s.CheckCabinet(*req.CabinetID, req.Model, int(math.Round(math.Abs(float64(num))))) {
             err = errors.New("电池库存不足")
             return
         }

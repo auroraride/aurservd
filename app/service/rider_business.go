@@ -12,6 +12,7 @@ import (
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/allocate"
     "github.com/auroraride/aurservd/internal/ent/business"
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
     "github.com/auroraride/aurservd/pkg/silk"
@@ -294,6 +295,23 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
 
     // 检车合同是否有效
     if !NewContract().Effective(s.rider) {
+        // 存储分配信息
+        err := ent.Database.Allocate.Create().
+            SetType(allocate.TypeEbike).
+            SetSubscribe(s.subscribe).
+            SetRider(s.rider).
+            SetStatus(model.AllocateStatusPending.Value()).
+            SetTime(time.Now()).
+            SetModel(s.subscribe.Model).
+            SetCabinetID(s.cabinet.ID).
+            SetRemark("用户自主扫码").
+            OnConflictColumns(allocate.FieldSubscribeID).
+            UpdateNewValues().
+            Exec(s.ctx)
+        if err != nil {
+            snag.Panic("请求失败")
+        }
+
         // 返回签约URL
         snag.Panic(snag.StatusRequireSign, NewContractWithRider(s.rider).Sign(&model.ContractSignReq{
             SubscribeID: s.subscribe.ID,

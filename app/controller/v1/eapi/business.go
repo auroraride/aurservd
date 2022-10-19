@@ -44,7 +44,7 @@ func (*business) Rider(c echo.Context) (err error) {
 // @Success      200  {object}  model.SubscribeActiveInfo  "请求成功"
 func (*business) Inactive(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.QRQueryReq](c)
-    detail, _ := service.NewBusinessEmployeeWithEmployee(ctx.Employee).Inactive(req.Qrcode)
+    detail, _ := service.NewBusinessEmployee(ctx.Employee).Inactive(req.Qrcode)
     return ctx.SendResponse(detail)
 }
 
@@ -60,7 +60,7 @@ func (*business) Inactive(c echo.Context) (err error) {
 // @Success      200  {object}  model.IDPostReq  "请求成功"
 func (*business) Active(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.AllocateCreateReq](c)
-    service.NewBusinessEmployeeWithEmployee(ctx.Employee).Active(req)
+    service.NewBusinessEmployee(ctx.Employee).Active(req)
     return ctx.SendResponse()
 }
 

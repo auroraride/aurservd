@@ -307,7 +307,6 @@ func (s *businessRiderService) preprocess(bt business.Type, sub *ent.Subscribe) 
 
     // 校验权限
     if s.employee != nil {
-        log.Println(s.employee.ID)
         NewBusinessWithEmployee(s.employee).CheckCity(s.subscribe.CityID, s.store)
     }
 

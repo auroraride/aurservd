@@ -8,6 +8,7 @@ import (
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -57,7 +58,7 @@ func (Allocate) Annotations() []schema.Annotation {
 // Fields of the Allocate.
 func (Allocate) Fields() []ent.Field {
     return []ent.Field{
-        field.Enum("type").Values("battery", "ebike").Comment("分配类型"),
+        field.Enum("type").Values(model.SubscribeTypeBattery, model.SubscribeTypeEbike).Comment("分配类型"),
         field.Uint8("status").Comment("分配状态"),
         field.Time("time").Comment("分配时间"),
         field.String("model").Comment("电池型号"),

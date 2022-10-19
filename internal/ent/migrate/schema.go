@@ -1054,9 +1054,8 @@ var (
 		{Name: "effective", Type: field.TypeBool, Comment: "是否有效", Default: true},
 		{Name: "rider_info", Type: field.TypeJSON, Comment: "骑手信息", Nullable: true},
 		{Name: "allocate_id", Type: field.TypeUint64, Unique: true, Nullable: true},
-		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "rider_id", Type: field.TypeUint64},
 	}
 	// ContractTable holds the schema information for the "contract" table.
@@ -1072,26 +1071,20 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "contract_employee_employee",
-				Columns:    []*schema.Column{ContractColumns[14]},
-				RefColumns: []*schema.Column{EmployeeColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "contract_store_store",
-				Columns:    []*schema.Column{ContractColumns[15]},
-				RefColumns: []*schema.Column{StoreColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
 				Symbol:     "contract_subscribe_subscribe",
-				Columns:    []*schema.Column{ContractColumns[16]},
+				Columns:    []*schema.Column{ContractColumns[14]},
 				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
+				Symbol:     "contract_employee_employee",
+				Columns:    []*schema.Column{ContractColumns[15]},
+				RefColumns: []*schema.Column{EmployeeColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
 				Symbol:     "contract_rider_contracts",
-				Columns:    []*schema.Column{ContractColumns[17]},
+				Columns:    []*schema.Column{ContractColumns[16]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -1108,24 +1101,19 @@ var (
 				Columns: []*schema.Column{ContractColumns[3]},
 			},
 			{
-				Name:    "contract_employee_id",
+				Name:    "contract_subscribe_id",
 				Unique:  false,
 				Columns: []*schema.Column{ContractColumns[14]},
 			},
 			{
-				Name:    "contract_store_id",
+				Name:    "contract_employee_id",
 				Unique:  false,
 				Columns: []*schema.Column{ContractColumns[15]},
 			},
 			{
-				Name:    "contract_subscribe_id",
-				Unique:  false,
-				Columns: []*schema.Column{ContractColumns[16]},
-			},
-			{
 				Name:    "contract_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{ContractColumns[17]},
+				Columns: []*schema.Column{ContractColumns[16]},
 			},
 			{
 				Name:    "contract_status_effective",
@@ -4211,10 +4199,9 @@ func init() {
 		Table: "commission",
 	}
 	ContractTable.ForeignKeys[0].RefTable = AllocateTable
-	ContractTable.ForeignKeys[1].RefTable = EmployeeTable
-	ContractTable.ForeignKeys[2].RefTable = StoreTable
-	ContractTable.ForeignKeys[3].RefTable = SubscribeTable
-	ContractTable.ForeignKeys[4].RefTable = RiderTable
+	ContractTable.ForeignKeys[1].RefTable = SubscribeTable
+	ContractTable.ForeignKeys[2].RefTable = EmployeeTable
+	ContractTable.ForeignKeys[3].RefTable = RiderTable
 	ContractTable.Annotation = &entsql.Annotation{
 		Table: "contract",
 	}

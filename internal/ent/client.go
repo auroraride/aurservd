@@ -2484,38 +2484,6 @@ func (c *ContractClient) GetX(ctx context.Context, id uint64) *Contract {
 	return obj
 }
 
-// QueryEmployee queries the employee edge of a Contract.
-func (c *ContractClient) QueryEmployee(co *Contract) *EmployeeQuery {
-	query := &EmployeeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := co.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(contract.Table, contract.FieldID, id),
-			sqlgraph.To(employee.Table, employee.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, contract.EmployeeTable, contract.EmployeeColumn),
-		)
-		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryStore queries the store edge of a Contract.
-func (c *ContractClient) QueryStore(co *Contract) *StoreQuery {
-	query := &StoreQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := co.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(contract.Table, contract.FieldID, id),
-			sqlgraph.To(store.Table, store.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, contract.StoreTable, contract.StoreColumn),
-		)
-		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QuerySubscribe queries the subscribe edge of a Contract.
 func (c *ContractClient) QuerySubscribe(co *Contract) *SubscribeQuery {
 	query := &SubscribeQuery{config: c.config}
@@ -2525,6 +2493,22 @@ func (c *ContractClient) QuerySubscribe(co *Contract) *SubscribeQuery {
 			sqlgraph.From(contract.Table, contract.FieldID, id),
 			sqlgraph.To(subscribe.Table, subscribe.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, contract.SubscribeTable, contract.SubscribeColumn),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEmployee queries the employee edge of a Contract.
+func (c *ContractClient) QueryEmployee(co *Contract) *EmployeeQuery {
+	query := &EmployeeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(contract.Table, contract.FieldID, id),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, contract.EmployeeTable, contract.EmployeeColumn),
 		)
 		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
 		return fromV, nil

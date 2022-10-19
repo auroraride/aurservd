@@ -109,24 +109,17 @@ func Remark(v string) predicate.Contract {
 	})
 }
 
-// EmployeeID applies equality check predicate on the "employee_id" field. It's identical to EmployeeIDEQ.
-func EmployeeID(v uint64) predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
-	})
-}
-
-// StoreID applies equality check predicate on the "store_id" field. It's identical to StoreIDEQ.
-func StoreID(v uint64) predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStoreID), v))
-	})
-}
-
 // SubscribeID applies equality check predicate on the "subscribe_id" field. It's identical to SubscribeIDEQ.
 func SubscribeID(v uint64) predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
+	})
+}
+
+// EmployeeID applies equality check predicate on the "employee_id" field. It's identical to EmployeeIDEQ.
+func EmployeeID(v uint64) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
 	})
 }
 
@@ -519,106 +512,6 @@ func RemarkContainsFold(v string) predicate.Contract {
 	})
 }
 
-// EmployeeIDEQ applies the EQ predicate on the "employee_id" field.
-func EmployeeIDEQ(v uint64) predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
-	})
-}
-
-// EmployeeIDNEQ applies the NEQ predicate on the "employee_id" field.
-func EmployeeIDNEQ(v uint64) predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEmployeeID), v))
-	})
-}
-
-// EmployeeIDIn applies the In predicate on the "employee_id" field.
-func EmployeeIDIn(vs ...uint64) predicate.Contract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEmployeeID), v...))
-	})
-}
-
-// EmployeeIDNotIn applies the NotIn predicate on the "employee_id" field.
-func EmployeeIDNotIn(vs ...uint64) predicate.Contract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEmployeeID), v...))
-	})
-}
-
-// EmployeeIDIsNil applies the IsNil predicate on the "employee_id" field.
-func EmployeeIDIsNil() predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldEmployeeID)))
-	})
-}
-
-// EmployeeIDNotNil applies the NotNil predicate on the "employee_id" field.
-func EmployeeIDNotNil() predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldEmployeeID)))
-	})
-}
-
-// StoreIDEQ applies the EQ predicate on the "store_id" field.
-func StoreIDEQ(v uint64) predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStoreID), v))
-	})
-}
-
-// StoreIDNEQ applies the NEQ predicate on the "store_id" field.
-func StoreIDNEQ(v uint64) predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStoreID), v))
-	})
-}
-
-// StoreIDIn applies the In predicate on the "store_id" field.
-func StoreIDIn(vs ...uint64) predicate.Contract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStoreID), v...))
-	})
-}
-
-// StoreIDNotIn applies the NotIn predicate on the "store_id" field.
-func StoreIDNotIn(vs ...uint64) predicate.Contract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStoreID), v...))
-	})
-}
-
-// StoreIDIsNil applies the IsNil predicate on the "store_id" field.
-func StoreIDIsNil() predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldStoreID)))
-	})
-}
-
-// StoreIDNotNil applies the NotNil predicate on the "store_id" field.
-func StoreIDNotNil() predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldStoreID)))
-	})
-}
-
 // SubscribeIDEQ applies the EQ predicate on the "subscribe_id" field.
 func SubscribeIDEQ(v uint64) predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
@@ -666,6 +559,56 @@ func SubscribeIDIsNil() predicate.Contract {
 func SubscribeIDNotNil() predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldSubscribeID)))
+	})
+}
+
+// EmployeeIDEQ applies the EQ predicate on the "employee_id" field.
+func EmployeeIDEQ(v uint64) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
+	})
+}
+
+// EmployeeIDNEQ applies the NEQ predicate on the "employee_id" field.
+func EmployeeIDNEQ(v uint64) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldEmployeeID), v))
+	})
+}
+
+// EmployeeIDIn applies the In predicate on the "employee_id" field.
+func EmployeeIDIn(vs ...uint64) predicate.Contract {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldEmployeeID), v...))
+	})
+}
+
+// EmployeeIDNotIn applies the NotIn predicate on the "employee_id" field.
+func EmployeeIDNotIn(vs ...uint64) predicate.Contract {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldEmployeeID), v...))
+	})
+}
+
+// EmployeeIDIsNil applies the IsNil predicate on the "employee_id" field.
+func EmployeeIDIsNil() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldEmployeeID)))
+	})
+}
+
+// EmployeeIDNotNil applies the NotNil predicate on the "employee_id" field.
+func EmployeeIDNotNil() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldEmployeeID)))
 	})
 }
 
@@ -1059,62 +1002,6 @@ func AllocateIDNotNil() predicate.Contract {
 	})
 }
 
-// HasEmployee applies the HasEdge predicate on the "employee" edge.
-func HasEmployee() predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EmployeeTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, EmployeeTable, EmployeeColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasEmployeeWith applies the HasEdge predicate on the "employee" edge with a given conditions (other predicates).
-func HasEmployeeWith(preds ...predicate.Employee) predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EmployeeInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, EmployeeTable, EmployeeColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasStore applies the HasEdge predicate on the "store" edge.
-func HasStore() predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StoreTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasStoreWith applies the HasEdge predicate on the "store" edge with a given conditions (other predicates).
-func HasStoreWith(preds ...predicate.Store) predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StoreInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasSubscribe applies the HasEdge predicate on the "subscribe" edge.
 func HasSubscribe() predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
@@ -1134,6 +1021,34 @@ func HasSubscribeWith(preds ...predicate.Subscribe) predicate.Contract {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(SubscribeInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasEmployee applies the HasEdge predicate on the "employee" edge.
+func HasEmployee() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EmployeeTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, EmployeeTable, EmployeeColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEmployeeWith applies the HasEdge predicate on the "employee" edge with a given conditions (other predicates).
+func HasEmployeeWith(preds ...predicate.Employee) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EmployeeInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, EmployeeTable, EmployeeColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
