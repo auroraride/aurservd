@@ -27,8 +27,8 @@ func loadEmployeeRoutes() {
     g.GET("/profile", eapi.Employee.Profile)
     g.POST("/store/status", eapi.Store.Status)
 
-    g.GET("/subscribe/active", eapi.Subscribe.Inactive, middleware.EmployeeDutyMiddleware())
-    g.POST("/subscribe/active", eapi.Subscribe.Active, middleware.EmployeeDutyMiddleware())
+    g.GET("/subscribe/active", eapi.Business.Inactive, middleware.EmployeeDutyMiddleware())
+    g.POST("/subscribe/active", eapi.Business.Active, middleware.EmployeeDutyMiddleware())
     g.GET("/business/rider", eapi.Business.Rider, middleware.EmployeeDutyMiddleware())
     g.POST("/business/pause", eapi.Business.Pause, middleware.EmployeeDutyMiddleware())
     g.POST("/business/continue", eapi.Business.Continue, middleware.EmployeeDutyMiddleware())

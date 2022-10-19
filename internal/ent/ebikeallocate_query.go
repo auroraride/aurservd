@@ -649,7 +649,10 @@ func (eaq *EbikeAllocateQuery) loadEmployee(ctx context.Context, query *Employee
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*EbikeAllocate)
 	for i := range nodes {
-		fk := nodes[i].EmployeeID
+		if nodes[i].EmployeeID == nil {
+			continue
+		}
+		fk := *nodes[i].EmployeeID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}

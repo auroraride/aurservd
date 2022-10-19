@@ -161,7 +161,7 @@ func (m *EbikeAllocateMutation) EmployeeID() (r uint64, exists bool) {
 // OldEmployeeID returns the old "employee_id" field's value of the EbikeAllocate entity.
 // If the EbikeAllocate object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EbikeAllocateMutation) OldEmployeeID(ctx context.Context) (v uint64, err error) {
+func (m *EbikeAllocateMutation) OldEmployeeID(ctx context.Context) (v *uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldEmployeeID is only allowed on UpdateOne operations")
 	}
@@ -175,9 +175,22 @@ func (m *EbikeAllocateMutation) OldEmployeeID(ctx context.Context) (v uint64, er
 	return oldValue.EmployeeID, nil
 }
 
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (m *EbikeAllocateMutation) ClearEmployeeID() {
+	m.employee = nil
+	m.clearedFields[ebikeallocate.FieldEmployeeID] = struct{}{}
+}
+
+// EmployeeIDCleared returns if the "employee_id" field was cleared in this mutation.
+func (m *EbikeAllocateMutation) EmployeeIDCleared() bool {
+	_, ok := m.clearedFields[ebikeallocate.FieldEmployeeID]
+	return ok
+}
+
 // ResetEmployeeID resets all changes to the "employee_id" field.
 func (m *EbikeAllocateMutation) ResetEmployeeID() {
 	m.employee = nil
+	delete(m.clearedFields, ebikeallocate.FieldEmployeeID)
 }
 
 // SetStoreID sets the "store_id" field.
@@ -495,7 +508,7 @@ func (m *EbikeAllocateMutation) ClearEmployee() {
 
 // EmployeeCleared reports if the "employee" edge to the Employee entity was cleared.
 func (m *EbikeAllocateMutation) EmployeeCleared() bool {
-	return m.clearedemployee
+	return m.EmployeeIDCleared() || m.clearedemployee
 }
 
 // EmployeeIDs returns the "employee" edge IDs in the mutation.
@@ -899,7 +912,11 @@ func (m *EbikeAllocateMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *EbikeAllocateMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(ebikeallocate.FieldEmployeeID) {
+		fields = append(fields, ebikeallocate.FieldEmployeeID)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -912,6 +929,11 @@ func (m *EbikeAllocateMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *EbikeAllocateMutation) ClearField(name string) error {
+	switch name {
+	case ebikeallocate.FieldEmployeeID:
+		m.ClearEmployeeID()
+		return nil
+	}
 	return fmt.Errorf("unknown EbikeAllocate nullable field %s", name)
 }
 

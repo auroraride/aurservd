@@ -43,6 +43,20 @@ func (eau *EbikeAllocateUpdate) SetEmployeeID(u uint64) *EbikeAllocateUpdate {
 	return eau
 }
 
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (eau *EbikeAllocateUpdate) SetNillableEmployeeID(u *uint64) *EbikeAllocateUpdate {
+	if u != nil {
+		eau.SetEmployeeID(*u)
+	}
+	return eau
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (eau *EbikeAllocateUpdate) ClearEmployeeID() *EbikeAllocateUpdate {
+	eau.mutation.ClearEmployeeID()
+	return eau
+}
+
 // SetStoreID sets the "store_id" field.
 func (eau *EbikeAllocateUpdate) SetStoreID(u uint64) *EbikeAllocateUpdate {
 	eau.mutation.SetStoreID(u)
@@ -256,9 +270,6 @@ func (eau *EbikeAllocateUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (eau *EbikeAllocateUpdate) check() error {
-	if _, ok := eau.mutation.EmployeeID(); eau.mutation.EmployeeCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "EbikeAllocate.employee"`)
-	}
 	if _, ok := eau.mutation.StoreID(); eau.mutation.StoreCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "EbikeAllocate.store"`)
 	}
@@ -601,6 +612,20 @@ func (eauo *EbikeAllocateUpdateOne) SetEmployeeID(u uint64) *EbikeAllocateUpdate
 	return eauo
 }
 
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (eauo *EbikeAllocateUpdateOne) SetNillableEmployeeID(u *uint64) *EbikeAllocateUpdateOne {
+	if u != nil {
+		eauo.SetEmployeeID(*u)
+	}
+	return eauo
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (eauo *EbikeAllocateUpdateOne) ClearEmployeeID() *EbikeAllocateUpdateOne {
+	eauo.mutation.ClearEmployeeID()
+	return eauo
+}
+
 // SetStoreID sets the "store_id" field.
 func (eauo *EbikeAllocateUpdateOne) SetStoreID(u uint64) *EbikeAllocateUpdateOne {
 	eauo.mutation.SetStoreID(u)
@@ -827,9 +852,6 @@ func (eauo *EbikeAllocateUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (eauo *EbikeAllocateUpdateOne) check() error {
-	if _, ok := eauo.mutation.EmployeeID(); eauo.mutation.EmployeeCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "EbikeAllocate.employee"`)
-	}
 	if _, ok := eauo.mutation.StoreID(); eauo.mutation.StoreCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "EbikeAllocate.store"`)
 	}

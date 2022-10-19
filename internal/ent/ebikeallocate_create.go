@@ -36,6 +36,14 @@ func (eac *EbikeAllocateCreate) SetEmployeeID(u uint64) *EbikeAllocateCreate {
 	return eac
 }
 
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (eac *EbikeAllocateCreate) SetNillableEmployeeID(u *uint64) *EbikeAllocateCreate {
+	if u != nil {
+		eac.SetEmployeeID(*u)
+	}
+	return eac
+}
+
 // SetStoreID sets the "store_id" field.
 func (eac *EbikeAllocateCreate) SetStoreID(u uint64) *EbikeAllocateCreate {
 	eac.mutation.SetStoreID(u)
@@ -209,9 +217,6 @@ func (eac *EbikeAllocateCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (eac *EbikeAllocateCreate) check() error {
-	if _, ok := eac.mutation.EmployeeID(); !ok {
-		return &ValidationError{Name: "employee_id", err: errors.New(`ent: missing required field "EbikeAllocate.employee_id"`)}
-	}
 	if _, ok := eac.mutation.StoreID(); !ok {
 		return &ValidationError{Name: "store_id", err: errors.New(`ent: missing required field "EbikeAllocate.store_id"`)}
 	}
@@ -235,9 +240,6 @@ func (eac *EbikeAllocateCreate) check() error {
 	}
 	if _, ok := eac.mutation.Time(); !ok {
 		return &ValidationError{Name: "time", err: errors.New(`ent: missing required field "EbikeAllocate.time"`)}
-	}
-	if _, ok := eac.mutation.EmployeeID(); !ok {
-		return &ValidationError{Name: "employee", err: errors.New(`ent: missing required edge "EbikeAllocate.employee"`)}
 	}
 	if _, ok := eac.mutation.StoreID(); !ok {
 		return &ValidationError{Name: "store", err: errors.New(`ent: missing required edge "EbikeAllocate.store"`)}
@@ -323,7 +325,7 @@ func (eac *EbikeAllocateCreate) createSpec() (*EbikeAllocate, *sqlgraph.CreateSp
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.EmployeeID = nodes[0]
+		_node.EmployeeID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := eac.mutation.StoreIDs(); len(nodes) > 0 {
@@ -509,6 +511,12 @@ func (u *EbikeAllocateUpsert) UpdateEmployeeID() *EbikeAllocateUpsert {
 	return u
 }
 
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (u *EbikeAllocateUpsert) ClearEmployeeID() *EbikeAllocateUpsert {
+	u.SetNull(ebikeallocate.FieldEmployeeID)
+	return u
+}
+
 // SetStoreID sets the "store_id" field.
 func (u *EbikeAllocateUpsert) SetStoreID(v uint64) *EbikeAllocateUpsert {
 	u.Set(ebikeallocate.FieldStoreID, v)
@@ -662,6 +670,13 @@ func (u *EbikeAllocateUpsertOne) SetEmployeeID(v uint64) *EbikeAllocateUpsertOne
 func (u *EbikeAllocateUpsertOne) UpdateEmployeeID() *EbikeAllocateUpsertOne {
 	return u.Update(func(s *EbikeAllocateUpsert) {
 		s.UpdateEmployeeID()
+	})
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (u *EbikeAllocateUpsertOne) ClearEmployeeID() *EbikeAllocateUpsertOne {
+	return u.Update(func(s *EbikeAllocateUpsert) {
+		s.ClearEmployeeID()
 	})
 }
 
@@ -994,6 +1009,13 @@ func (u *EbikeAllocateUpsertBulk) SetEmployeeID(v uint64) *EbikeAllocateUpsertBu
 func (u *EbikeAllocateUpsertBulk) UpdateEmployeeID() *EbikeAllocateUpsertBulk {
 	return u.Update(func(s *EbikeAllocateUpsert) {
 		s.UpdateEmployeeID()
+	})
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (u *EbikeAllocateUpsertBulk) ClearEmployeeID() *EbikeAllocateUpsertBulk {
+	return u.Update(func(s *EbikeAllocateUpsert) {
+		s.ClearEmployeeID()
 	})
 }
 

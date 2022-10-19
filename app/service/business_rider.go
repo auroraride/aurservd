@@ -170,7 +170,9 @@ func (s *businessRiderService) Inactive(id uint64) (*model.SubscribeActiveInfo, 
         WithRider().
         WithEnterprise().
         WithCity().
-        Only(s.ctx)
+        WithEbike().
+        WithBrand().
+        First(s.ctx)
 
     if sub == nil {
         snag.Panic("未找到待激活骑士卡")
@@ -228,6 +230,19 @@ func (s *businessRiderService) Inactive(id uint64) (*model.SubscribeActiveInfo, 
             Agent: en.Agent,
         }
     }
+
+    if sub.BrandID != nil {
+        brand := sub.Edges.Brand
+        if brand == nil {
+            snag.Panic("电车型号查询失败")
+        }
+        res.EbikeBrand = &model.EbikeBrand{
+            ID:    brand.ID,
+            Name:  brand.Name,
+            Cover: brand.Cover,
+        }
+    }
+
     return res, sub
 }
 
@@ -306,8 +321,7 @@ func (s *businessRiderService) preprocess(bt business.Type, sub *ent.Subscribe) 
         }
     }
 
-    // 如果是车电套餐, 设置电车信息
-    // TODO 是否有此必要
+    // 如果是车电套餐, 查询并设置电车信息
     if sub.EbikeID != nil && s.ebikeInfo == nil {
         s.SetEbikeID(*sub.EbikeID)
     }
@@ -470,7 +484,6 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 func (s *businessRiderService) Active(info *model.SubscribeActiveInfo, sub *ent.Subscribe, cbs ...ent.TxFunc) {
     s.preprocess(business.TypeActive, sub)
 
-    // TODO 后台强制激活越过签约
     if !NewContract().Effective(s.rider) {
         if s.rider != nil {
             // 返回签约URL
@@ -504,6 +517,8 @@ func (s *businessRiderService) Active(info *model.SubscribeActiveInfo, sub *ent.
             SetNillableCabinetID(s.cabinetID).
             SetNillableAgentEndAt(aend).
             SetNeedContract(false)
+
+        // 设置订阅电车
         if s.ebikeInfo != nil {
             updater.SetEbikeID(s.ebikeInfo.ID).SetBrandID(s.ebikeInfo.BrandID)
         }
@@ -511,6 +526,12 @@ func (s *businessRiderService) Active(info *model.SubscribeActiveInfo, sub *ent.
         // 激活
         s.subscribe, err = updater.Save(s.ctx)
         snag.PanicIfError(err)
+
+        // 更新电车
+        if s.ebikeInfo != nil {
+            // 更新电车所属
+            err = tx.Ebike.UpdateOneID(s.ebikeInfo.ID).SetRiderID(sub.RiderID).SetStatus(model.EbikeStatusUsing).Exec(s.ctx)
+        }
     })
 
     if info.EnterpriseID != nil {
@@ -522,6 +543,7 @@ func (s *businessRiderService) Active(info *model.SubscribeActiveInfo, sub *ent.
 // UnSubscribe 退租
 // 会抹去欠费情况
 func (s *businessRiderService) UnSubscribe(subscribeID uint64) {
+
     s.preprocess(business.TypeUnsubscribe, s.QuerySubscribeWithRider(subscribeID))
 
     sub := s.subscribe
@@ -567,7 +589,14 @@ func (s *businessRiderService) UnSubscribe(subscribeID uint64) {
         snag.PanicIfError(err)
 
         // 查询并标记用户合同为失效
-        _, _ = tx.Contract.Update().Where(contract.RiderID(sub.RiderID)).SetEffective(false).Save(s.ctx)
+        _, err = tx.Contract.Update().Where(contract.RiderID(sub.RiderID)).SetEffective(false).Save(s.ctx)
+        snag.PanicIfError(err)
+
+        // 更新电车
+        if s.ebikeInfo != nil {
+            // 更新电车所属
+            err = tx.Ebike.UpdateOneID(s.ebikeInfo.ID).ClearRiderID().SetStatus(model.EbikeStatusInStock).Exec(s.ctx)
+        }
     })
 
     // 更新企业账单

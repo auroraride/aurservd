@@ -1181,7 +1181,7 @@ const docTemplate = `{
                 "tags": [
                     "[E]店员接口"
                 ],
-                "summary": "E2003 骑手业务详情",
+                "summary": "E2001 骑手业务详情",
                 "operationId": "EmployeeBusinessRider",
                 "parameters": [
                     {
@@ -1236,7 +1236,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.BusinessSubscribeID"
+                            "$ref": "#/definitions/model.UnsubscribeEmployeeReq"
                         }
                     }
                 ],
@@ -1959,7 +1959,7 @@ const docTemplate = `{
                 "tags": [
                     "[E]店员接口"
                 ],
-                "summary": "E2001 骑士卡详情",
+                "summary": "E2002 未激活骑士卡详情",
                 "operationId": "EmployeeSubscribeInactive",
                 "parameters": [
                     {
@@ -1996,7 +1996,7 @@ const docTemplate = `{
                 "tags": [
                     "[E]店员接口"
                 ],
-                "summary": "E2002 激活骑士卡",
+                "summary": "E2003 激活骑士卡",
                 "operationId": "RiderOrderActive",
                 "parameters": [
                     {
@@ -21456,6 +21456,14 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "ebikeBrand": {
+                    "description": "电车型号, 仅车电骑士卡有此字段",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EbikeBrand"
+                        }
+                    ]
+                },
                 "enterprise": {
                     "description": "企业详情, 个签用户此字段不存在",
                     "allOf": [
@@ -21680,6 +21688,23 @@ const docTemplate = `{
                 "remark": {
                     "description": "备注 ",
                     "type": "string"
+                }
+            }
+        },
+        "model.UnsubscribeEmployeeReq": {
+            "type": "object",
+            "required": [
+                "qrcode",
+                "subscribeId"
+            ],
+            "properties": {
+                "qrcode": {
+                    "description": "二维码 ",
+                    "type": "string"
+                },
+                "subscribeId": {
+                    "description": "订阅ID ",
+                    "type": "integer"
                 }
             }
         },

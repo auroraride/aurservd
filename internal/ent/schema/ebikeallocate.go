@@ -72,7 +72,7 @@ func (EbikeAllocate) Edges() []ent.Edge {
 
 func (EbikeAllocate) Mixin() []ent.Mixin {
     return []ent.Mixin{
-        EmployeeMixin{},
+        EmployeeMixin{Optional: true},
         StoreMixin{},
         EbikeMixin{},
         EbikeBrandMixin{},

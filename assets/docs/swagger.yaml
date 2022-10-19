@@ -6021,6 +6021,10 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.City'
         description: 所在城市
+      ebikeBrand:
+        allOf:
+        - $ref: '#/definitions/model.EbikeBrand'
+        description: 电车型号, 仅车电骑士卡有此字段
       enterprise:
         allOf:
         - $ref: '#/definitions/model.Enterprise'
@@ -6179,6 +6183,18 @@ definitions:
     required:
     - id
     - remark
+    type: object
+  model.UnsubscribeEmployeeReq:
+    properties:
+      qrcode:
+        description: '二维码 '
+        type: string
+      subscribeId:
+        description: '订阅ID '
+        type: integer
+    required:
+    - qrcode
+    - subscribeId
     type: object
   model.WalletOverview:
     properties:
@@ -7093,7 +7109,7 @@ paths:
           description: 业务详情返回
           schema:
             $ref: '#/definitions/model.SubscribeBusiness'
-      summary: E2003 骑手业务详情
+      summary: E2001 骑手业务详情
       tags:
       - '[E]店员接口'
   /employee/v1/business/unsubscribe:
@@ -7112,7 +7128,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/model.BusinessSubscribeID'
+          $ref: '#/definitions/model.UnsubscribeEmployeeReq'
       produces:
       - application/json
       responses:
@@ -7596,7 +7612,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.SubscribeActiveInfo'
-      summary: E2001 骑士卡详情
+      summary: E2002 未激活骑士卡详情
       tags:
       - '[E]店员接口'
     post:
@@ -7622,7 +7638,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: E2002 激活骑士卡
+      summary: E2003 激活骑士卡
       tags:
       - '[E]店员接口'
   /manager/crm/customer:

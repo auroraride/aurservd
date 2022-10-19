@@ -26,7 +26,7 @@ type EbikeAllocate struct {
 	// ID of the ent.
 	ID uint64 `json:"id,omitempty"`
 	// 店员ID
-	EmployeeID uint64 `json:"employee_id,omitempty"`
+	EmployeeID *uint64 `json:"employee_id,omitempty"`
 	// 门店ID
 	StoreID uint64 `json:"store_id,omitempty"`
 	// EbikeID holds the value of the "ebike_id" field.
@@ -196,7 +196,8 @@ func (ea *EbikeAllocate) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field employee_id", values[i])
 			} else if value.Valid {
-				ea.EmployeeID = uint64(value.Int64)
+				ea.EmployeeID = new(uint64)
+				*ea.EmployeeID = uint64(value.Int64)
 			}
 		case ebikeallocate.FieldStoreID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -311,8 +312,10 @@ func (ea *EbikeAllocate) String() string {
 	var builder strings.Builder
 	builder.WriteString("EbikeAllocate(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", ea.ID))
-	builder.WriteString("employee_id=")
-	builder.WriteString(fmt.Sprintf("%v", ea.EmployeeID))
+	if v := ea.EmployeeID; v != nil {
+		builder.WriteString("employee_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("store_id=")
 	builder.WriteString(fmt.Sprintf("%v", ea.StoreID))

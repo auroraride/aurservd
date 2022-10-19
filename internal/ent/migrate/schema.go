@@ -1303,7 +1303,7 @@ var (
 		{Name: "status", Type: field.TypeUint8, Comment: "分配状态"},
 		{Name: "info", Type: field.TypeJSON, Comment: "电车信息"},
 		{Name: "time", Type: field.TypeTime, Comment: "分配时间"},
-		{Name: "employee_id", Type: field.TypeUint64},
+		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "store_id", Type: field.TypeUint64},
 		{Name: "ebike_id", Type: field.TypeUint64},
 		{Name: "brand_id", Type: field.TypeUint64},
@@ -1320,7 +1320,7 @@ var (
 				Symbol:     "ebike_allocate_employee_employee",
 				Columns:    []*schema.Column{EbikeAllocateColumns[4]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "ebike_allocate_store_store",

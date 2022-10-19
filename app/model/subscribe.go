@@ -93,6 +93,7 @@ type SubscribeActiveInfo struct {
     Plan         *Plan               `json:"plan,omitempty"`         // 套餐详情, 团签骑手此字段不存在
     Order        *SubscribeOrderInfo `json:"order,omitempty"`        // 订单详情, 团签骑手此字段不存在
     Enterprise   *Enterprise         `json:"enterprise,omitempty"`   // 企业详情, 个签用户此字段不存在
+    EbikeBrand   *EbikeBrand         `json:"ebikeBrand,omitempty"`   // 电车型号, 仅车电骑士卡有此字段
 
     CommissionID *uint64 `json:"-" swaggerignore:"true"`
 }
@@ -109,4 +110,9 @@ type SubscribeBusiness struct {
     Model          string `json:"model"`                    // 可用电池型号
     EnterpriseName string `json:"enterpriseName,omitempty"` // 企业名称 (个签不存在)
     PlanName       string `json:"planName,omitempty"`       // 骑士卡名称 (团签不存在)
+}
+
+type UnsubscribeEmployeeReq struct {
+    BusinessSubscribeID
+    QRPostReq
 }

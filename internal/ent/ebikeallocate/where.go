@@ -173,6 +173,20 @@ func EmployeeIDNotIn(vs ...uint64) predicate.EbikeAllocate {
 	})
 }
 
+// EmployeeIDIsNil applies the IsNil predicate on the "employee_id" field.
+func EmployeeIDIsNil() predicate.EbikeAllocate {
+	return predicate.EbikeAllocate(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldEmployeeID)))
+	})
+}
+
+// EmployeeIDNotNil applies the NotNil predicate on the "employee_id" field.
+func EmployeeIDNotNil() predicate.EbikeAllocate {
+	return predicate.EbikeAllocate(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldEmployeeID)))
+	})
+}
+
 // StoreIDEQ applies the EQ predicate on the "store_id" field.
 func StoreIDEQ(v uint64) predicate.EbikeAllocate {
 	return predicate.EbikeAllocate(func(s *sql.Selector) {

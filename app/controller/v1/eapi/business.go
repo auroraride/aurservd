@@ -19,7 +19,7 @@ var Business = new(business)
 // Rider
 // @ID           EmployeeBusinessRider
 // @Router       /employee/v1/business/rider [GET]
-// @Summary      E2003 骑手业务详情
+// @Summary      E2001 骑手业务详情
 // @Tags         [E]店员接口
 // @Accept       json
 // @Produce      json
@@ -30,6 +30,38 @@ func (*business) Rider(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.QRQueryReq](c)
     id := service.NewRider().ParseQrcode(req.Qrcode)
     return ctx.SendResponse(service.NewBusinessWithEmployee(ctx.Employee).Detail(id))
+}
+
+// Inactive
+// @ID           EmployeeSubscribeInactive
+// @Router       /employee/v1/subscribe/active [GET]
+// @Summary      E2002 未激活骑士卡详情
+// @Tags         [E]店员接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Employee-Token  header  string  true  "店员校验token"
+// @Param        qrcode  query  string  true  "二维码详情, 可带`SUBSCRIBE:`, 也可不带"
+// @Success      200  {object}  model.SubscribeActiveInfo  "请求成功"
+func (*business) Inactive(c echo.Context) (err error) {
+    ctx, req := app.EmployeeContextAndBinding[model.QRQueryReq](c)
+    detail, _ := service.NewBusinessEmployeeWithEmployee(ctx.Employee).Inactive(req.Qrcode)
+    return ctx.SendResponse(detail)
+}
+
+// Active
+// @ID           RiderOrderActive
+// @Router       /employee/v1/subscribe/active [POST]
+// @Summary      E2003 激活骑士卡
+// @Tags         [E]店员接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Param        body  body     model.QRPostReq  true  "二维码可带`SUBSCRIBE:`, 也可不带"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*business) Active(c echo.Context) (err error) {
+    ctx, req := app.EmployeeContextAndBinding[model.QRPostReq](c)
+    service.NewBusinessEmployeeWithEmployee(ctx.Employee).Active(req)
+    return ctx.SendResponse()
 }
 
 // Pause
@@ -72,10 +104,10 @@ func (*business) Continue(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Employee-Token   header  string  true  "店员校验token"
-// @Param        body  body     model.BusinessSubscribeID  true  "退租请求"
+// @Param        body  body     model.UnsubscribeEmployeeReq  true  "退租请求"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*business) UnSubscribe(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.BusinessSubscribeID](c)
+    ctx, req := app.EmployeeContextAndBinding[model.UnsubscribeEmployeeReq](c)
     service.NewBusinessRiderWithEmployee(ctx.Employee).UnSubscribe(req.SubscribeID)
     return ctx.SendResponse()
 }
