@@ -90,6 +90,7 @@ func (s *riderOrderService) Detail(item *ent.Order) model.Order {
         PointAmount:   tools.NewDecimal().Mul(float64(item.Points), item.PointRatio),
         DiscountNewly: item.DiscountNewly,
         CouponAmount:  item.CouponAmount,
+        Ebike:         NewEbike().Detail(item.Edges.Ebike, item.Edges.Brand),
     }
     if len(item.Edges.Coupons) > 0 {
         res.Coupons = make([]model.CouponRider, len(item.Edges.Coupons))
@@ -154,12 +155,6 @@ func (s *riderOrderService) Detail(item *ent.Order) model.Order {
         if rf.RefundAt != nil {
             res.Refund.RefundAt = rf.RefundAt.Format(carbon.DateTimeLayout)
         }
-    }
-
-    // ebike
-    bike := item.Edges.Ebike
-    if bike != nil {
-        res.Ebike = NewEbike().Detail(bike, bike.Edges.Brand)
     }
     return res
 }

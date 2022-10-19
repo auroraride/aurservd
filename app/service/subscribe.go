@@ -174,6 +174,7 @@ func (s *subscribeService) Detail(sub *ent.Subscribe) *model.Subscribe {
             ID:   sub.Edges.City.ID,
             Name: sub.Edges.City.Name,
         },
+        Ebike: NewEbike().Detail(sub.Edges.Ebike, sub.Edges.Brand),
     }
 
     if sub.Edges.Plan != nil {
@@ -232,12 +233,6 @@ func (s *subscribeService) Detail(sub *ent.Subscribe) *model.Subscribe {
             Agent: e.Agent,
         }
         res.Business = e.Status == model.EnterpriseStatusCollaborated
-    }
-
-    brand := sub.Edges.Brand
-    bike := sub.Edges.Ebike
-    if bike != nil {
-        res.Ebike = NewEbike().Detail(bike, brand)
     }
 
     return res
