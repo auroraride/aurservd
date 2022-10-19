@@ -105,6 +105,7 @@ func (s *ebikeAllocateService) Allocate(req *model.EbikeAllocateReq) model.IDPos
         subscribe.Status(model.SubscribeStatusInactive),
         subscribe.NeedContract(true),
         subscribe.EbikeIDIsNil(),
+        subscribe.BrandIDNotNil(),
     ).WithRider().First(s.ctx)
 
     if sub == nil {
@@ -131,12 +132,19 @@ func (s *ebikeAllocateService) Allocate(req *model.EbikeAllocateReq) model.IDPos
 
     // 查找电车
     bike := NewEbike().QueryAllocatableX(req.EbikeID, s.entStore.ID)
+
+    // 比对型号
+    if bike.BrandID != *sub.BrandID {
+        snag.Panic("待分配车辆型号错误")
+    }
+
+    // 查找型号信息
     brand := bike.Edges.Brand
     if brand == nil {
         snag.Panic("电车型号查询失败")
     }
 
-    // 判定库存
+    // 判定电池库存
     if NewStockBatchable().Fetch(model.StockTargetStore, s.entStore.ID, sub.Model) < 1 {
         snag.Panic("电池库存不足")
     }
