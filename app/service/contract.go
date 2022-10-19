@@ -576,17 +576,18 @@ func (s *contractService) update(c *ent.Contract) (err error) {
         }).SetStoreID(ea.StoreID)
     }
 
-    // 完成签约并激活
-    srv.Active(info, sub, func(tx *ent.Tx) (err error) {
-        if c.AllocateID != nil {
+    // 完成签约后
+    // 若有分配信息则自动并激活 (骑手扫码电柜无需激活)
+    if c.AllocateID != nil {
+        srv.Active(info, sub, func(tx *ent.Tx) (err error) {
             // 更新分配
             err = tx.Allocate.UpdateOne(ea).SetStatus(model.AllocateStatusSigned.Value()).Exec(s.ctx)
             if err != nil {
                 return
             }
-        }
-        return
-    })
+            return
+        })
+    }
 
     return
 }

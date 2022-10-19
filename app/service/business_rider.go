@@ -311,16 +311,16 @@ func (s *businessRiderService) preprocess(bt business.Type, sub *ent.Subscribe) 
         NewBusinessWithEmployee(s.employee).CheckCity(s.subscribe.CityID, s.store)
     }
 
-    // 车电套餐检查
-    if s.ebikeInfo != nil || sub.EbikeID != nil {
-        // 车电套餐无法办理寄存业务
-        // 车电套餐无法使用电柜
+    // 车电订阅检查
+    if sub.BrandID != nil {
+        // 车电订阅无法办理非激活业务
+        // 车电订阅无法使用电柜
         if bt != business.TypeActive || s.cabinetID != nil {
             snag.Panic("车电订阅无法办理此业务")
         }
     }
 
-    // 如果是车电套餐, 查询并设置电车信息
+    // 如果是车电订阅, 查询并设置电车信息
     if sub.EbikeID != nil && s.ebikeInfo == nil {
         s.SetEbikeID(*sub.EbikeID)
     }
@@ -484,14 +484,6 @@ func (s *businessRiderService) Active(info *model.SubscribeActiveInfo, sub *ent.
     s.preprocess(business.TypeActive, sub)
 
     if !NewContract().Effective(s.rider) {
-        if s.rider != nil {
-            // 返回签约URL
-            snag.Panic(snag.StatusRequireSign, NewContractWithRider(s.rider).Sign(&model.ContractSignReq{
-                SubscribeID: sub.ID,
-                StoreID:     s.storeID,
-                CabinetID:   s.cabinetID,
-            }))
-        }
         snag.Panic("还未签约, 请签约")
     }
 

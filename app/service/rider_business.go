@@ -67,6 +67,10 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
         snag.Panic("无生效中的骑行卡")
     }
 
+    if sub.BrandID != nil {
+        snag.Panic("车电订阅无法自主办理业务")
+    }
+
     s.subscribe = sub
 
     // 检查可用电池型号
@@ -278,10 +282,23 @@ func (s *riderBusinessService) putout() *ec.BinInfo {
     return s.max
 }
 
+// Active 骑手自主激活
 func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.BusinessCabinetStatus {
+    // 预处理
     s.preprocess(req.Serial, business.TypeActive)
+
+    // 检查骑士卡状态
     if s.subscribe.Status != model.SubscribeStatusInactive {
         snag.Panic("骑士卡状态错误")
+    }
+
+    // 检车合同是否有效
+    if !NewContract().Effective(s.rider) {
+        // 返回签约URL
+        snag.Panic(snag.StatusRequireSign, NewContractWithRider(s.rider).Sign(&model.ContractSignReq{
+            SubscribeID: s.subscribe.ID,
+            CabinetID:   silk.UInt64(s.cabinet.ID),
+        }))
     }
 
     srv := NewBusinessRider(s.rider)
