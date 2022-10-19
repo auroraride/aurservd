@@ -153,7 +153,7 @@ func (s *contractService) enterpriseData(m ar.Map, sub *ent.Subscribe) *model.Co
 
 // Sign 签署合同
 // 月数按s.monthDays(30)天计算, 出现小数四舍五入
-// TODO 电柜激活电池(需要注意判定库存是否充足)
+// 电柜激活电池(需要注意判定库存是否充足)
 func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes {
     u := s.rider
     // 是否免签
