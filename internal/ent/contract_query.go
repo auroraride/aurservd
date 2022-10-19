@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
-	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -32,7 +31,6 @@ type ContractQuery struct {
 	withEmployee  *EmployeeQuery
 	withStore     *StoreQuery
 	withSubscribe *SubscribeQuery
-	withCabinet   *CabinetQuery
 	withRider     *RiderQuery
 	withAllocate  *AllocateQuery
 	modifiers     []func(*sql.Selector)
@@ -131,28 +129,6 @@ func (cq *ContractQuery) QuerySubscribe() *SubscribeQuery {
 			sqlgraph.From(contract.Table, contract.FieldID, selector),
 			sqlgraph.To(subscribe.Table, subscribe.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, contract.SubscribeTable, contract.SubscribeColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryCabinet chains the current query on the "cabinet" edge.
-func (cq *ContractQuery) QueryCabinet() *CabinetQuery {
-	query := &CabinetQuery{config: cq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := cq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := cq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(contract.Table, contract.FieldID, selector),
-			sqlgraph.To(cabinet.Table, cabinet.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, contract.CabinetTable, contract.CabinetColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -388,7 +364,6 @@ func (cq *ContractQuery) Clone() *ContractQuery {
 		withEmployee:  cq.withEmployee.Clone(),
 		withStore:     cq.withStore.Clone(),
 		withSubscribe: cq.withSubscribe.Clone(),
-		withCabinet:   cq.withCabinet.Clone(),
 		withRider:     cq.withRider.Clone(),
 		withAllocate:  cq.withAllocate.Clone(),
 		// clone intermediate query.
@@ -428,17 +403,6 @@ func (cq *ContractQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *ContractQ
 		opt(query)
 	}
 	cq.withSubscribe = query
-	return cq
-}
-
-// WithCabinet tells the query-builder to eager-load the nodes that are connected to
-// the "cabinet" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *ContractQuery) WithCabinet(opts ...func(*CabinetQuery)) *ContractQuery {
-	query := &CabinetQuery{config: cq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	cq.withCabinet = query
 	return cq
 }
 
@@ -532,11 +496,10 @@ func (cq *ContractQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Con
 	var (
 		nodes       = []*Contract{}
 		_spec       = cq.querySpec()
-		loadedTypes = [6]bool{
+		loadedTypes = [5]bool{
 			cq.withEmployee != nil,
 			cq.withStore != nil,
 			cq.withSubscribe != nil,
-			cq.withCabinet != nil,
 			cq.withRider != nil,
 			cq.withAllocate != nil,
 		}
@@ -577,12 +540,6 @@ func (cq *ContractQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Con
 	if query := cq.withSubscribe; query != nil {
 		if err := cq.loadSubscribe(ctx, query, nodes, nil,
 			func(n *Contract, e *Subscribe) { n.Edges.Subscribe = e }); err != nil {
-			return nil, err
-		}
-	}
-	if query := cq.withCabinet; query != nil {
-		if err := cq.loadCabinet(ctx, query, nodes, nil,
-			func(n *Contract, e *Cabinet) { n.Edges.Cabinet = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -681,35 +638,6 @@ func (cq *ContractQuery) loadSubscribe(ctx context.Context, query *SubscribeQuer
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
-func (cq *ContractQuery) loadCabinet(ctx context.Context, query *CabinetQuery, nodes []*Contract, init func(*Contract), assign func(*Contract, *Cabinet)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*Contract)
-	for i := range nodes {
-		if nodes[i].CabinetID == nil {
-			continue
-		}
-		fk := *nodes[i].CabinetID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	query.Where(cabinet.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "cabinet_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

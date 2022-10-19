@@ -84,7 +84,6 @@ func (Contract) Mixin() []ent.Mixin {
         EmployeeMixin{Optional: true},
         StoreMixin{Optional: true},
         SubscribeMixin{Optional: true},
-        CabinetMixin{Optional: true},
     }
 }
 

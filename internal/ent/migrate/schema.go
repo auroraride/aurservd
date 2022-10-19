@@ -1057,7 +1057,6 @@ var (
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "rider_id", Type: field.TypeUint64},
 	}
 	// ContractTable holds the schema information for the "contract" table.
@@ -1091,14 +1090,8 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "contract_cabinet_cabinet",
-				Columns:    []*schema.Column{ContractColumns[17]},
-				RefColumns: []*schema.Column{CabinetColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
 				Symbol:     "contract_rider_contracts",
-				Columns:    []*schema.Column{ContractColumns[18]},
+				Columns:    []*schema.Column{ContractColumns[17]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -1130,14 +1123,9 @@ var (
 				Columns: []*schema.Column{ContractColumns[16]},
 			},
 			{
-				Name:    "contract_cabinet_id",
-				Unique:  false,
-				Columns: []*schema.Column{ContractColumns[17]},
-			},
-			{
 				Name:    "contract_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{ContractColumns[18]},
+				Columns: []*schema.Column{ContractColumns[17]},
 			},
 			{
 				Name:    "contract_status_effective",
@@ -4226,8 +4214,7 @@ func init() {
 	ContractTable.ForeignKeys[1].RefTable = EmployeeTable
 	ContractTable.ForeignKeys[2].RefTable = StoreTable
 	ContractTable.ForeignKeys[3].RefTable = SubscribeTable
-	ContractTable.ForeignKeys[4].RefTable = CabinetTable
-	ContractTable.ForeignKeys[5].RefTable = RiderTable
+	ContractTable.ForeignKeys[4].RefTable = RiderTable
 	ContractTable.Annotation = &entsql.Annotation{
 		Table: "contract",
 	}

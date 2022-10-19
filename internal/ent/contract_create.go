@@ -13,7 +13,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
-	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -139,20 +138,6 @@ func (cc *ContractCreate) SetNillableSubscribeID(u *uint64) *ContractCreate {
 	return cc
 }
 
-// SetCabinetID sets the "cabinet_id" field.
-func (cc *ContractCreate) SetCabinetID(u uint64) *ContractCreate {
-	cc.mutation.SetCabinetID(u)
-	return cc
-}
-
-// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
-func (cc *ContractCreate) SetNillableCabinetID(u *uint64) *ContractCreate {
-	if u != nil {
-		cc.SetCabinetID(*u)
-	}
-	return cc
-}
-
 // SetStatus sets the "status" field.
 func (cc *ContractCreate) SetStatus(u uint8) *ContractCreate {
 	cc.mutation.SetStatus(u)
@@ -238,11 +223,6 @@ func (cc *ContractCreate) SetStore(s *Store) *ContractCreate {
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (cc *ContractCreate) SetSubscribe(s *Subscribe) *ContractCreate {
 	return cc.SetSubscribeID(s.ID)
-}
-
-// SetCabinet sets the "cabinet" edge to the Cabinet entity.
-func (cc *ContractCreate) SetCabinet(c *Cabinet) *ContractCreate {
-	return cc.SetCabinetID(c.ID)
 }
 
 // SetRider sets the "rider" edge to the Rider entity.
@@ -579,26 +559,6 @@ func (cc *ContractCreate) createSpec() (*Contract, *sqlgraph.CreateSpec) {
 		_node.SubscribeID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := cc.mutation.CabinetIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   contract.CabinetTable,
-			Columns: []string{contract.CabinetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.CabinetID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := cc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -808,24 +768,6 @@ func (u *ContractUpsert) UpdateSubscribeID() *ContractUpsert {
 // ClearSubscribeID clears the value of the "subscribe_id" field.
 func (u *ContractUpsert) ClearSubscribeID() *ContractUpsert {
 	u.SetNull(contract.FieldSubscribeID)
-	return u
-}
-
-// SetCabinetID sets the "cabinet_id" field.
-func (u *ContractUpsert) SetCabinetID(v uint64) *ContractUpsert {
-	u.Set(contract.FieldCabinetID, v)
-	return u
-}
-
-// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
-func (u *ContractUpsert) UpdateCabinetID() *ContractUpsert {
-	u.SetExcluded(contract.FieldCabinetID)
-	return u
-}
-
-// ClearCabinetID clears the value of the "cabinet_id" field.
-func (u *ContractUpsert) ClearCabinetID() *ContractUpsert {
-	u.SetNull(contract.FieldCabinetID)
 	return u
 }
 
@@ -1134,27 +1076,6 @@ func (u *ContractUpsertOne) UpdateSubscribeID() *ContractUpsertOne {
 func (u *ContractUpsertOne) ClearSubscribeID() *ContractUpsertOne {
 	return u.Update(func(s *ContractUpsert) {
 		s.ClearSubscribeID()
-	})
-}
-
-// SetCabinetID sets the "cabinet_id" field.
-func (u *ContractUpsertOne) SetCabinetID(v uint64) *ContractUpsertOne {
-	return u.Update(func(s *ContractUpsert) {
-		s.SetCabinetID(v)
-	})
-}
-
-// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
-func (u *ContractUpsertOne) UpdateCabinetID() *ContractUpsertOne {
-	return u.Update(func(s *ContractUpsert) {
-		s.UpdateCabinetID()
-	})
-}
-
-// ClearCabinetID clears the value of the "cabinet_id" field.
-func (u *ContractUpsertOne) ClearCabinetID() *ContractUpsertOne {
-	return u.Update(func(s *ContractUpsert) {
-		s.ClearCabinetID()
 	})
 }
 
@@ -1645,27 +1566,6 @@ func (u *ContractUpsertBulk) UpdateSubscribeID() *ContractUpsertBulk {
 func (u *ContractUpsertBulk) ClearSubscribeID() *ContractUpsertBulk {
 	return u.Update(func(s *ContractUpsert) {
 		s.ClearSubscribeID()
-	})
-}
-
-// SetCabinetID sets the "cabinet_id" field.
-func (u *ContractUpsertBulk) SetCabinetID(v uint64) *ContractUpsertBulk {
-	return u.Update(func(s *ContractUpsert) {
-		s.SetCabinetID(v)
-	})
-}
-
-// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
-func (u *ContractUpsertBulk) UpdateCabinetID() *ContractUpsertBulk {
-	return u.Update(func(s *ContractUpsert) {
-		s.UpdateCabinetID()
-	})
-}
-
-// ClearCabinetID clears the value of the "cabinet_id" field.
-func (u *ContractUpsertBulk) ClearCabinetID() *ContractUpsertBulk {
-	return u.Update(func(s *ContractUpsert) {
-		s.ClearCabinetID()
 	})
 }
 

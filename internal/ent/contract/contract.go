@@ -31,8 +31,6 @@ const (
 	FieldStoreID = "store_id"
 	// FieldSubscribeID holds the string denoting the subscribe_id field in the database.
 	FieldSubscribeID = "subscribe_id"
-	// FieldCabinetID holds the string denoting the cabinet_id field in the database.
-	FieldCabinetID = "cabinet_id"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
@@ -55,8 +53,6 @@ const (
 	EdgeStore = "store"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
 	EdgeSubscribe = "subscribe"
-	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
-	EdgeCabinet = "cabinet"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeAllocate holds the string denoting the allocate edge name in mutations.
@@ -84,13 +80,6 @@ const (
 	SubscribeInverseTable = "subscribe"
 	// SubscribeColumn is the table column denoting the subscribe relation/edge.
 	SubscribeColumn = "subscribe_id"
-	// CabinetTable is the table that holds the cabinet relation/edge.
-	CabinetTable = "contract"
-	// CabinetInverseTable is the table name for the Cabinet entity.
-	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
-	CabinetInverseTable = "cabinet"
-	// CabinetColumn is the table column denoting the cabinet relation/edge.
-	CabinetColumn = "cabinet_id"
 	// RiderTable is the table that holds the rider relation/edge.
 	RiderTable = "contract"
 	// RiderInverseTable is the table name for the Rider entity.
@@ -119,7 +108,6 @@ var Columns = []string{
 	FieldEmployeeID,
 	FieldStoreID,
 	FieldSubscribeID,
-	FieldCabinetID,
 	FieldStatus,
 	FieldRiderID,
 	FieldFlowID,

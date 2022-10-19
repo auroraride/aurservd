@@ -2532,22 +2532,6 @@ func (c *ContractClient) QuerySubscribe(co *Contract) *SubscribeQuery {
 	return query
 }
 
-// QueryCabinet queries the cabinet edge of a Contract.
-func (c *ContractClient) QueryCabinet(co *Contract) *CabinetQuery {
-	query := &CabinetQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := co.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(contract.Table, contract.FieldID, id),
-			sqlgraph.To(cabinet.Table, cabinet.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, contract.CabinetTable, contract.CabinetColumn),
-		)
-		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryRider queries the rider edge of a Contract.
 func (c *ContractClient) QueryRider(co *Contract) *RiderQuery {
 	query := &RiderQuery{config: c.config}

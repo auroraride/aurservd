@@ -70,8 +70,7 @@ type ContractRider struct {
 type ContractSignReq struct {
     SubscribeID uint64 `json:"subscribeId" validate:"required" trans:"订阅ID"`
 
-    CabinetID *uint64 `json:"cabinetId,omitempty"` // 电柜ID
-    StoreID   *uint64 `json:"storeId,omitempty"`   // 门店ID
+    StoreID *uint64 `json:"storeId,omitempty"` // 门店ID
 }
 
 // ContractSignRes 合同签订返回

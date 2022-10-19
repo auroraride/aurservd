@@ -42,8 +42,6 @@ type ContractMutation struct {
 	clearedstore     bool
 	subscribe        *uint64
 	clearedsubscribe bool
-	cabinet          *uint64
-	clearedcabinet   bool
 	rider            *uint64
 	clearedrider     bool
 	allocate         *uint64
@@ -566,55 +564,6 @@ func (m *ContractMutation) ResetSubscribeID() {
 	delete(m.clearedFields, contract.FieldSubscribeID)
 }
 
-// SetCabinetID sets the "cabinet_id" field.
-func (m *ContractMutation) SetCabinetID(u uint64) {
-	m.cabinet = &u
-}
-
-// CabinetID returns the value of the "cabinet_id" field in the mutation.
-func (m *ContractMutation) CabinetID() (r uint64, exists bool) {
-	v := m.cabinet
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCabinetID returns the old "cabinet_id" field's value of the Contract entity.
-// If the Contract object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ContractMutation) OldCabinetID(ctx context.Context) (v *uint64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCabinetID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCabinetID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCabinetID: %w", err)
-	}
-	return oldValue.CabinetID, nil
-}
-
-// ClearCabinetID clears the value of the "cabinet_id" field.
-func (m *ContractMutation) ClearCabinetID() {
-	m.cabinet = nil
-	m.clearedFields[contract.FieldCabinetID] = struct{}{}
-}
-
-// CabinetIDCleared returns if the "cabinet_id" field was cleared in this mutation.
-func (m *ContractMutation) CabinetIDCleared() bool {
-	_, ok := m.clearedFields[contract.FieldCabinetID]
-	return ok
-}
-
-// ResetCabinetID resets all changes to the "cabinet_id" field.
-func (m *ContractMutation) ResetCabinetID() {
-	m.cabinet = nil
-	delete(m.clearedFields, contract.FieldCabinetID)
-}
-
 // SetStatus sets the "status" field.
 func (m *ContractMutation) SetStatus(u uint8) {
 	m.status = &u
@@ -1040,32 +989,6 @@ func (m *ContractMutation) ResetSubscribe() {
 	m.clearedsubscribe = false
 }
 
-// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
-func (m *ContractMutation) ClearCabinet() {
-	m.clearedcabinet = true
-}
-
-// CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
-func (m *ContractMutation) CabinetCleared() bool {
-	return m.CabinetIDCleared() || m.clearedcabinet
-}
-
-// CabinetIDs returns the "cabinet" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// CabinetID instead. It exists only for internal usage by the builders.
-func (m *ContractMutation) CabinetIDs() (ids []uint64) {
-	if id := m.cabinet; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetCabinet resets all changes to the "cabinet" edge.
-func (m *ContractMutation) ResetCabinet() {
-	m.cabinet = nil
-	m.clearedcabinet = false
-}
-
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *ContractMutation) ClearRider() {
 	m.clearedrider = true
@@ -1137,7 +1060,7 @@ func (m *ContractMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ContractMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 17)
 	if m.created_at != nil {
 		fields = append(fields, contract.FieldCreatedAt)
 	}
@@ -1164,9 +1087,6 @@ func (m *ContractMutation) Fields() []string {
 	}
 	if m.subscribe != nil {
 		fields = append(fields, contract.FieldSubscribeID)
-	}
-	if m.cabinet != nil {
-		fields = append(fields, contract.FieldCabinetID)
 	}
 	if m.status != nil {
 		fields = append(fields, contract.FieldStatus)
@@ -1218,8 +1138,6 @@ func (m *ContractMutation) Field(name string) (ent.Value, bool) {
 		return m.StoreID()
 	case contract.FieldSubscribeID:
 		return m.SubscribeID()
-	case contract.FieldCabinetID:
-		return m.CabinetID()
 	case contract.FieldStatus:
 		return m.Status()
 	case contract.FieldRiderID:
@@ -1263,8 +1181,6 @@ func (m *ContractMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldStoreID(ctx)
 	case contract.FieldSubscribeID:
 		return m.OldSubscribeID(ctx)
-	case contract.FieldCabinetID:
-		return m.OldCabinetID(ctx)
 	case contract.FieldStatus:
 		return m.OldStatus(ctx)
 	case contract.FieldRiderID:
@@ -1352,13 +1268,6 @@ func (m *ContractMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSubscribeID(v)
-		return nil
-	case contract.FieldCabinetID:
-		v, ok := value.(uint64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCabinetID(v)
 		return nil
 	case contract.FieldStatus:
 		v, ok := value.(uint8)
@@ -1482,9 +1391,6 @@ func (m *ContractMutation) ClearedFields() []string {
 	if m.FieldCleared(contract.FieldSubscribeID) {
 		fields = append(fields, contract.FieldSubscribeID)
 	}
-	if m.FieldCleared(contract.FieldCabinetID) {
-		fields = append(fields, contract.FieldCabinetID)
-	}
 	if m.FieldCleared(contract.FieldFiles) {
 		fields = append(fields, contract.FieldFiles)
 	}
@@ -1528,9 +1434,6 @@ func (m *ContractMutation) ClearField(name string) error {
 		return nil
 	case contract.FieldSubscribeID:
 		m.ClearSubscribeID()
-		return nil
-	case contract.FieldCabinetID:
-		m.ClearCabinetID()
 		return nil
 	case contract.FieldFiles:
 		m.ClearFiles()
@@ -1576,9 +1479,6 @@ func (m *ContractMutation) ResetField(name string) error {
 	case contract.FieldSubscribeID:
 		m.ResetSubscribeID()
 		return nil
-	case contract.FieldCabinetID:
-		m.ResetCabinetID()
-		return nil
 	case contract.FieldStatus:
 		m.ResetStatus()
 		return nil
@@ -1609,7 +1509,7 @@ func (m *ContractMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ContractMutation) AddedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 5)
 	if m.employee != nil {
 		edges = append(edges, contract.EdgeEmployee)
 	}
@@ -1618,9 +1518,6 @@ func (m *ContractMutation) AddedEdges() []string {
 	}
 	if m.subscribe != nil {
 		edges = append(edges, contract.EdgeSubscribe)
-	}
-	if m.cabinet != nil {
-		edges = append(edges, contract.EdgeCabinet)
 	}
 	if m.rider != nil {
 		edges = append(edges, contract.EdgeRider)
@@ -1647,10 +1544,6 @@ func (m *ContractMutation) AddedIDs(name string) []ent.Value {
 		if id := m.subscribe; id != nil {
 			return []ent.Value{*id}
 		}
-	case contract.EdgeCabinet:
-		if id := m.cabinet; id != nil {
-			return []ent.Value{*id}
-		}
 	case contract.EdgeRider:
 		if id := m.rider; id != nil {
 			return []ent.Value{*id}
@@ -1665,7 +1558,7 @@ func (m *ContractMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ContractMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 5)
 	return edges
 }
 
@@ -1679,7 +1572,7 @@ func (m *ContractMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ContractMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 5)
 	if m.clearedemployee {
 		edges = append(edges, contract.EdgeEmployee)
 	}
@@ -1688,9 +1581,6 @@ func (m *ContractMutation) ClearedEdges() []string {
 	}
 	if m.clearedsubscribe {
 		edges = append(edges, contract.EdgeSubscribe)
-	}
-	if m.clearedcabinet {
-		edges = append(edges, contract.EdgeCabinet)
 	}
 	if m.clearedrider {
 		edges = append(edges, contract.EdgeRider)
@@ -1711,8 +1601,6 @@ func (m *ContractMutation) EdgeCleared(name string) bool {
 		return m.clearedstore
 	case contract.EdgeSubscribe:
 		return m.clearedsubscribe
-	case contract.EdgeCabinet:
-		return m.clearedcabinet
 	case contract.EdgeRider:
 		return m.clearedrider
 	case contract.EdgeAllocate:
@@ -1733,9 +1621,6 @@ func (m *ContractMutation) ClearEdge(name string) error {
 		return nil
 	case contract.EdgeSubscribe:
 		m.ClearSubscribe()
-		return nil
-	case contract.EdgeCabinet:
-		m.ClearCabinet()
 		return nil
 	case contract.EdgeRider:
 		m.ClearRider()
@@ -1759,9 +1644,6 @@ func (m *ContractMutation) ResetEdge(name string) error {
 		return nil
 	case contract.EdgeSubscribe:
 		m.ResetSubscribe()
-		return nil
-	case contract.EdgeCabinet:
-		m.ResetCabinet()
 		return nil
 	case contract.EdgeRider:
 		m.ResetRider()

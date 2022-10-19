@@ -442,7 +442,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			contract.FieldEmployeeID:   {Type: field.TypeUint64, Column: contract.FieldEmployeeID},
 			contract.FieldStoreID:      {Type: field.TypeUint64, Column: contract.FieldStoreID},
 			contract.FieldSubscribeID:  {Type: field.TypeUint64, Column: contract.FieldSubscribeID},
-			contract.FieldCabinetID:    {Type: field.TypeUint64, Column: contract.FieldCabinetID},
 			contract.FieldStatus:       {Type: field.TypeUint8, Column: contract.FieldStatus},
 			contract.FieldRiderID:      {Type: field.TypeUint64, Column: contract.FieldRiderID},
 			contract.FieldFlowID:       {Type: field.TypeString, Column: contract.FieldFlowID},
@@ -2113,18 +2112,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Contract",
 		"Subscribe",
-	)
-	graph.MustAddE(
-		"cabinet",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   contract.CabinetTable,
-			Columns: []string{contract.CabinetColumn},
-			Bidi:    false,
-		},
-		"Contract",
-		"Cabinet",
 	)
 	graph.MustAddE(
 		"rider",
@@ -6233,11 +6220,6 @@ func (f *ContractFilter) WhereSubscribeID(p entql.Uint64P) {
 	f.Where(p.Field(contract.FieldSubscribeID))
 }
 
-// WhereCabinetID applies the entql uint64 predicate on the cabinet_id field.
-func (f *ContractFilter) WhereCabinetID(p entql.Uint64P) {
-	f.Where(p.Field(contract.FieldCabinetID))
-}
-
 // WhereStatus applies the entql uint8 predicate on the status field.
 func (f *ContractFilter) WhereStatus(p entql.Uint8P) {
 	f.Where(p.Field(contract.FieldStatus))
@@ -6314,20 +6296,6 @@ func (f *ContractFilter) WhereHasSubscribe() {
 // WhereHasSubscribeWith applies a predicate to check if query has an edge subscribe with a given conditions (other predicates).
 func (f *ContractFilter) WhereHasSubscribeWith(preds ...predicate.Subscribe) {
 	f.Where(entql.HasEdgeWith("subscribe", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasCabinet applies a predicate to check if query has an edge cabinet.
-func (f *ContractFilter) WhereHasCabinet() {
-	f.Where(entql.HasEdge("cabinet"))
-}
-
-// WhereHasCabinetWith applies a predicate to check if query has an edge cabinet with a given conditions (other predicates).
-func (f *ContractFilter) WhereHasCabinetWith(preds ...predicate.Cabinet) {
-	f.Where(entql.HasEdgeWith("cabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

@@ -191,17 +191,12 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
     }
 
     // 判定门店或电柜库存
-    stockable := true
-    if req.CabinetID != nil {
-        // 判定电柜库存
-        stockable = NewStock().CheckCabinet(*req.CabinetID, sub.Model, 1)
-    }
     if req.StoreID != nil {
         // 判定门店库存
-        stockable = NewStock().CheckStore(*req.StoreID, sub.Model, 1)
-    }
-    if !stockable {
-        snag.Panic("电池库存不足")
+        stockable := NewStock().CheckStore(*req.StoreID, sub.Model, 1)
+        if !stockable {
+            snag.Panic("电池库存不足")
+        }
     }
 
     // 查找分配信息
@@ -553,7 +548,7 @@ func (s *contractService) update(c *ent.Contract) (err error) {
     }
 
     // 激活
-    srv := NewBusinessRider(c.Edges.Rider).SetStoreID(c.StoreID).SetCabinetID(c.CabinetID)
+    srv := NewBusinessRider(c.Edges.Rider).SetStoreID(c.StoreID)
 
     // 查询分配信息
     ea, _ := c.QueryAllocate().First(s.ctx)

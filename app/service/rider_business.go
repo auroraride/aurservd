@@ -297,7 +297,6 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
         // 返回签约URL
         snag.Panic(snag.StatusRequireSign, NewContractWithRider(s.rider).Sign(&model.ContractSignReq{
             SubscribeID: s.subscribe.ID,
-            CabinetID:   silk.UInt64(s.cabinet.ID),
         }))
     }
 

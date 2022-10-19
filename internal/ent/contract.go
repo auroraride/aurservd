@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
-	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -42,8 +41,6 @@ type Contract struct {
 	StoreID *uint64 `json:"store_id,omitempty"`
 	// SubscribeID holds the value of the "subscribe_id" field.
 	SubscribeID *uint64 `json:"subscribe_id,omitempty"`
-	// 电柜ID
-	CabinetID *uint64 `json:"cabinet_id,omitempty"`
 	// 状态
 	Status uint8 `json:"status,omitempty"`
 	// 骑手
@@ -73,15 +70,13 @@ type ContractEdges struct {
 	Store *Store `json:"store,omitempty"`
 	// Subscribe holds the value of the subscribe edge.
 	Subscribe *Subscribe `json:"subscribe,omitempty"`
-	// Cabinet holds the value of the cabinet edge.
-	Cabinet *Cabinet `json:"cabinet,omitempty"`
 	// Rider holds the value of the rider edge.
 	Rider *Rider `json:"rider,omitempty"`
 	// Allocate holds the value of the allocate edge.
 	Allocate *Allocate `json:"allocate,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [5]bool
 }
 
 // EmployeeOrErr returns the Employee value or an error if the edge
@@ -123,23 +118,10 @@ func (e ContractEdges) SubscribeOrErr() (*Subscribe, error) {
 	return nil, &NotLoadedError{edge: "subscribe"}
 }
 
-// CabinetOrErr returns the Cabinet value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e ContractEdges) CabinetOrErr() (*Cabinet, error) {
-	if e.loadedTypes[3] {
-		if e.Cabinet == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: cabinet.Label}
-		}
-		return e.Cabinet, nil
-	}
-	return nil, &NotLoadedError{edge: "cabinet"}
-}
-
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ContractEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[3] {
 		if e.Rider == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: rider.Label}
@@ -152,7 +134,7 @@ func (e ContractEdges) RiderOrErr() (*Rider, error) {
 // AllocateOrErr returns the Allocate value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ContractEdges) AllocateOrErr() (*Allocate, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[4] {
 		if e.Allocate == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: allocate.Label}
@@ -171,7 +153,7 @@ func (*Contract) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case contract.FieldEffective:
 			values[i] = new(sql.NullBool)
-		case contract.FieldID, contract.FieldEmployeeID, contract.FieldStoreID, contract.FieldSubscribeID, contract.FieldCabinetID, contract.FieldStatus, contract.FieldRiderID, contract.FieldAllocateID:
+		case contract.FieldID, contract.FieldEmployeeID, contract.FieldStoreID, contract.FieldSubscribeID, contract.FieldStatus, contract.FieldRiderID, contract.FieldAllocateID:
 			values[i] = new(sql.NullInt64)
 		case contract.FieldRemark, contract.FieldFlowID, contract.FieldSn:
 			values[i] = new(sql.NullString)
@@ -260,13 +242,6 @@ func (c *Contract) assignValues(columns []string, values []any) error {
 				c.SubscribeID = new(uint64)
 				*c.SubscribeID = uint64(value.Int64)
 			}
-		case contract.FieldCabinetID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field cabinet_id", values[i])
-			} else if value.Valid {
-				c.CabinetID = new(uint64)
-				*c.CabinetID = uint64(value.Int64)
-			}
 		case contract.FieldStatus:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
@@ -340,11 +315,6 @@ func (c *Contract) QuerySubscribe() *SubscribeQuery {
 	return (&ContractClient{config: c.config}).QuerySubscribe(c)
 }
 
-// QueryCabinet queries the "cabinet" edge of the Contract entity.
-func (c *Contract) QueryCabinet() *CabinetQuery {
-	return (&ContractClient{config: c.config}).QueryCabinet(c)
-}
-
 // QueryRider queries the "rider" edge of the Contract entity.
 func (c *Contract) QueryRider() *RiderQuery {
 	return (&ContractClient{config: c.config}).QueryRider(c)
@@ -410,11 +380,6 @@ func (c *Contract) String() string {
 	builder.WriteString(", ")
 	if v := c.SubscribeID; v != nil {
 		builder.WriteString("subscribe_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	if v := c.CabinetID; v != nil {
-		builder.WriteString("cabinet_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

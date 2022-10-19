@@ -13,7 +13,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
-	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -154,26 +153,6 @@ func (cu *ContractUpdate) ClearSubscribeID() *ContractUpdate {
 	return cu
 }
 
-// SetCabinetID sets the "cabinet_id" field.
-func (cu *ContractUpdate) SetCabinetID(u uint64) *ContractUpdate {
-	cu.mutation.SetCabinetID(u)
-	return cu
-}
-
-// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
-func (cu *ContractUpdate) SetNillableCabinetID(u *uint64) *ContractUpdate {
-	if u != nil {
-		cu.SetCabinetID(*u)
-	}
-	return cu
-}
-
-// ClearCabinetID clears the value of the "cabinet_id" field.
-func (cu *ContractUpdate) ClearCabinetID() *ContractUpdate {
-	cu.mutation.ClearCabinetID()
-	return cu
-}
-
 // SetStatus sets the "status" field.
 func (cu *ContractUpdate) SetStatus(u uint8) *ContractUpdate {
 	cu.mutation.ResetStatus()
@@ -286,11 +265,6 @@ func (cu *ContractUpdate) SetSubscribe(s *Subscribe) *ContractUpdate {
 	return cu.SetSubscribeID(s.ID)
 }
 
-// SetCabinet sets the "cabinet" edge to the Cabinet entity.
-func (cu *ContractUpdate) SetCabinet(c *Cabinet) *ContractUpdate {
-	return cu.SetCabinetID(c.ID)
-}
-
 // SetRider sets the "rider" edge to the Rider entity.
 func (cu *ContractUpdate) SetRider(r *Rider) *ContractUpdate {
 	return cu.SetRiderID(r.ID)
@@ -321,12 +295,6 @@ func (cu *ContractUpdate) ClearStore() *ContractUpdate {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (cu *ContractUpdate) ClearSubscribe() *ContractUpdate {
 	cu.mutation.ClearSubscribe()
-	return cu
-}
-
-// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
-func (cu *ContractUpdate) ClearCabinet() *ContractUpdate {
-	cu.mutation.ClearCabinet()
 	return cu
 }
 
@@ -677,41 +645,6 @@ func (cu *ContractUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if cu.mutation.CabinetCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   contract.CabinetTable,
-			Columns: []string{contract.CabinetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cu.mutation.CabinetIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   contract.CabinetTable,
-			Columns: []string{contract.CabinetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if cu.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -921,26 +854,6 @@ func (cuo *ContractUpdateOne) ClearSubscribeID() *ContractUpdateOne {
 	return cuo
 }
 
-// SetCabinetID sets the "cabinet_id" field.
-func (cuo *ContractUpdateOne) SetCabinetID(u uint64) *ContractUpdateOne {
-	cuo.mutation.SetCabinetID(u)
-	return cuo
-}
-
-// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
-func (cuo *ContractUpdateOne) SetNillableCabinetID(u *uint64) *ContractUpdateOne {
-	if u != nil {
-		cuo.SetCabinetID(*u)
-	}
-	return cuo
-}
-
-// ClearCabinetID clears the value of the "cabinet_id" field.
-func (cuo *ContractUpdateOne) ClearCabinetID() *ContractUpdateOne {
-	cuo.mutation.ClearCabinetID()
-	return cuo
-}
-
 // SetStatus sets the "status" field.
 func (cuo *ContractUpdateOne) SetStatus(u uint8) *ContractUpdateOne {
 	cuo.mutation.ResetStatus()
@@ -1053,11 +966,6 @@ func (cuo *ContractUpdateOne) SetSubscribe(s *Subscribe) *ContractUpdateOne {
 	return cuo.SetSubscribeID(s.ID)
 }
 
-// SetCabinet sets the "cabinet" edge to the Cabinet entity.
-func (cuo *ContractUpdateOne) SetCabinet(c *Cabinet) *ContractUpdateOne {
-	return cuo.SetCabinetID(c.ID)
-}
-
 // SetRider sets the "rider" edge to the Rider entity.
 func (cuo *ContractUpdateOne) SetRider(r *Rider) *ContractUpdateOne {
 	return cuo.SetRiderID(r.ID)
@@ -1088,12 +996,6 @@ func (cuo *ContractUpdateOne) ClearStore() *ContractUpdateOne {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (cuo *ContractUpdateOne) ClearSubscribe() *ContractUpdateOne {
 	cuo.mutation.ClearSubscribe()
-	return cuo
-}
-
-// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
-func (cuo *ContractUpdateOne) ClearCabinet() *ContractUpdateOne {
-	cuo.mutation.ClearCabinet()
 	return cuo
 }
 
@@ -1466,41 +1368,6 @@ func (cuo *ContractUpdateOne) sqlSave(ctx context.Context) (_node *Contract, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: subscribe.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if cuo.mutation.CabinetCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   contract.CabinetTable,
-			Columns: []string{contract.CabinetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cuo.mutation.CabinetIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   contract.CabinetTable,
-			Columns: []string{contract.CabinetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
 				},
 			},
 		}

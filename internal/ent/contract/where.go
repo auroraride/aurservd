@@ -130,13 +130,6 @@ func SubscribeID(v uint64) predicate.Contract {
 	})
 }
 
-// CabinetID applies equality check predicate on the "cabinet_id" field. It's identical to CabinetIDEQ.
-func CabinetID(v uint64) predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCabinetID), v))
-	})
-}
-
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v uint8) predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
@@ -676,56 +669,6 @@ func SubscribeIDNotNil() predicate.Contract {
 	})
 }
 
-// CabinetIDEQ applies the EQ predicate on the "cabinet_id" field.
-func CabinetIDEQ(v uint64) predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCabinetID), v))
-	})
-}
-
-// CabinetIDNEQ applies the NEQ predicate on the "cabinet_id" field.
-func CabinetIDNEQ(v uint64) predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCabinetID), v))
-	})
-}
-
-// CabinetIDIn applies the In predicate on the "cabinet_id" field.
-func CabinetIDIn(vs ...uint64) predicate.Contract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCabinetID), v...))
-	})
-}
-
-// CabinetIDNotIn applies the NotIn predicate on the "cabinet_id" field.
-func CabinetIDNotIn(vs ...uint64) predicate.Contract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCabinetID), v...))
-	})
-}
-
-// CabinetIDIsNil applies the IsNil predicate on the "cabinet_id" field.
-func CabinetIDIsNil() predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCabinetID)))
-	})
-}
-
-// CabinetIDNotNil applies the NotNil predicate on the "cabinet_id" field.
-func CabinetIDNotNil() predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCabinetID)))
-	})
-}
-
 // StatusEQ applies the EQ predicate on the "status" field.
 func StatusEQ(v uint8) predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
@@ -1191,34 +1134,6 @@ func HasSubscribeWith(preds ...predicate.Subscribe) predicate.Contract {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(SubscribeInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasCabinet applies the HasEdge predicate on the "cabinet" edge.
-func HasCabinet() predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CabinetTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, CabinetTable, CabinetColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasCabinetWith applies the HasEdge predicate on the "cabinet" edge with a given conditions (other predicates).
-func HasCabinetWith(preds ...predicate.Cabinet) predicate.Contract {
-	return predicate.Contract(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CabinetInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, CabinetTable, CabinetColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
