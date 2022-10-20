@@ -63,15 +63,17 @@ func (HookEmployee) setEmployeeInfo(ctx context.Context, m ent.Mutation) {
 // TODO 判定 nilableID
 func (HookEmployee) setEmployeeID(ctx context.Context, m ent.Mutation) {
     ml, ok := m.(HookEmployeeIDMutator)
-    eid, idOk := ml.EmployeeID()
-    if ok && (eid == 0 || !idOk) {
-        value, _ := ctx.Value("employee").(*model.Employee)
-        if value != nil {
-            switch op := m.Op(); {
-            case op.Is(ent.OpCreate):
-                ml.SetEmployeeID(value.ID)
-            case op.Is(ent.OpUpdateOne | ent.OpUpdate):
-                // TODO: 更新?
+    if ok {
+        eid, idOk := ml.EmployeeID()
+        if eid == 0 || !idOk {
+            value, _ := ctx.Value("employee").(*model.Employee)
+            if value != nil {
+                switch op := m.Op(); {
+                case op.Is(ent.OpCreate):
+                    ml.SetEmployeeID(value.ID)
+                case op.Is(ent.OpUpdateOne | ent.OpUpdate):
+                    // TODO: 更新?
+                }
             }
         }
     }

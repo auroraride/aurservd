@@ -140,6 +140,7 @@ type CouponAllocateReq struct {
 }
 
 type Coupon struct {
+    ID        uint64  `json:"id"`
     Cate      string  `json:"cate"`      // 类型标识
     Useable   bool    `json:"useable"`   // 是否可使用
     Amount    float64 `json:"amount"`    // 金额

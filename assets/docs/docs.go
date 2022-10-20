@@ -16381,6 +16381,9 @@ const docTemplate = `{
                     "description": "过期时间",
                     "type": "string"
                 },
+                "id": {
+                    "type": "integer"
+                },
                 "name": {
                     "description": "名称",
                     "type": "string"

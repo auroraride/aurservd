@@ -52,6 +52,7 @@ func (s *paymentService) Configure() *model.PaymentConfigure {
         cate := utils.Md5String(fmt.Sprintf("%d", c.TemplateID))
         amount := c.Amount
         res.Coupons = append(res.Coupons, model.Coupon{
+            ID:        c.ID,
             Cate:      cate,
             Useable:   c.ExpiresAt.After(now),
             Amount:    amount,

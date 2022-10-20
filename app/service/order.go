@@ -196,7 +196,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
             snag.Panic("优惠券选择错误")
         }
         var isExclusive bool
-        var cm map[uint64]uint64
+        cm := make(map[uint64]uint64)
         for _, c := range coupons {
             // 校验有效期
             if c.ExpiresAt.Before(now) {
