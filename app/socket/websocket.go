@@ -42,7 +42,9 @@ func (hub *WebsocketHub) SendMessage(message model.SocketBinaryMessage) {
     if hub == nil {
         return
     }
-    _ = hub.WriteMessage(websocket.TextMessage, message.Bytes())
+    b := message.Bytes()
+    log.Infof("[WS] sending message to %s: %s", hub.ClientID, string(b))
+    _ = hub.WriteMessage(websocket.TextMessage, b)
 }
 
 // DisConnect 断开连接

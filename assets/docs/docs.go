@@ -20104,6 +20104,10 @@ const docTemplate = `{
                     "description": "天数",
                     "type": "integer"
                 },
+                "desc": {
+                    "description": "优惠信息",
+                    "type": "string"
+                },
                 "discountNewly": {
                     "description": "新签优惠",
                     "type": "number"

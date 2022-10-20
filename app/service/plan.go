@@ -363,41 +363,47 @@ func (s *planService) List(req *model.PlanListReq) *model.PaginationRes {
     )
 }
 
-// CityList TODO 重新根据车型调整
-func (s *planService) CityList(req *model.PlanListRiderReq) map[string]*[]model.RiderPlanItem {
-    rmap := make(map[string]*[]model.RiderPlanItem)
-    // today := carbon.Now().StartOfDay().Carbon2Time()
-    //
-    // items := s.orm.QueryNotDeleted().
-    //     Where(
-    //         plan.Enable(true),
-    //         plan.StartLTE(today),
-    //         plan.EndGTE(today),
-    //         plan.DaysGTE(req.Min),
-    //         plan.HasCitiesWith(
-    //             city.ID(req.CityID),
-    //         ),
-    //     ).
-    //     Order(ent.Asc(plan.FieldDays)).
-    //     AllX(s.ctx)
+func (s *planService) renewalMapKey(m string, brandID *uint64) string {
+    if brandID == nil {
+        return m
+    }
+    return fmt.Sprintf("%s-%d", m, *brandID)
+}
 
-    // for _, item := range items {
-    //     for _, pm := range item.Edges.Models {
-    //         list, ok := rmap[pm.Model]
-    //         if !ok {
-    //             list = new([]model.RiderPlanItem)
-    //             rmap[pm.Model] = list
-    //         }
-    //         *list = append(*list, model.RiderPlanItem{
-    //             ID:       item.ID,
-    //             Name:     item.Name,
-    //             Price:    item.Price,
-    //             Days:     item.Days,
-    //             Original: item.Original,
-    //             Desc:     item.Desc,
-    //         })
-    //     }
-    // }
+// Renewal 续签选项
+func (s *planService) Renewal(req *model.PlanListRiderReq) map[string]*[]model.RiderPlanItem {
+    rmap := make(map[string]*[]model.RiderPlanItem)
+    today := carbon.Now().StartOfDay().Carbon2Time()
+
+    items := s.orm.QueryNotDeleted().
+        Where(
+            plan.Enable(true),
+            plan.StartLTE(today),
+            plan.EndGTE(today),
+            plan.DaysGTE(req.Min),
+            plan.HasCitiesWith(
+                city.ID(req.CityID),
+            ),
+        ).
+        Order(ent.Asc(plan.FieldDays)).
+        AllX(s.ctx)
+
+    for _, item := range items {
+        key := s.renewalMapKey(item.Model, item.BrandID)
+        list, ok := rmap[key]
+        if !ok {
+            list = new([]model.RiderPlanItem)
+            rmap[key] = list
+        }
+        *list = append(*list, model.RiderPlanItem{
+            ID:       item.ID,
+            Name:     item.Name,
+            Price:    item.Price,
+            Days:     item.Days,
+            Original: item.Original,
+            Desc:     item.Desc,
+        })
+    }
 
     return rmap
 }
@@ -544,14 +550,16 @@ func (s *planService) RiderListRenewal() model.RiderPlanRenewalRes {
         min = uint(0 - sub.Remaining)
     }
 
-    rmap := s.CityList(&model.PlanListRiderReq{
+    rmap := s.Renewal(&model.PlanListRiderReq{
         CityID: sub.CityID,
         Min:    min,
     })
 
     items := make([]model.RiderPlanItem, 0)
 
-    if list, ok := rmap[sub.Model]; ok {
+    key := s.renewalMapKey(sub.Model, sub.BrandID)
+
+    if list, ok := rmap[key]; ok {
         items = *list
     }
 

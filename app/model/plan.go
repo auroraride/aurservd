@@ -115,6 +115,7 @@ type RiderPlanItem struct {
     Days          uint    `json:"days"`          // 天数
     Original      float64 `json:"original"`      // 原价
     DiscountNewly float64 `json:"discountNewly"` // 新签优惠
+    Desc          string  `json:"desc"`          // 优惠信息
 }
 
 type RiderPlanListRes struct {
