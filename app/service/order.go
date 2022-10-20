@@ -222,8 +222,9 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
         }
         price = tools.NewDecimal().Sub(price, camount)
         // TODO price = 0时 直接支付成功
+        // 暂时处理成支付一分钱
         if price < 0 {
-            price = 0
+            price = 0.01
         }
     }
 
