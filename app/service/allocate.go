@@ -259,3 +259,34 @@ func (s *allocateService) EmployeeList(req *model.AllocateEmployeeListReq) *mode
         return s.detail(item)
     })
 }
+
+// LoopStatus 长连接查询是否已分配
+func (s *allocateService) LoopStatus(riderID, subscribeID uint64) (res model.AllocateRiderRes) {
+    ticker := time.NewTicker(3 * time.Second)
+    defer ticker.Stop()
+
+    start := time.Now()
+    for ; true; <-ticker.C {
+
+        allo, _ := s.orm.Query().Where(
+            allocate.RiderID(riderID),
+            allocate.SubscribeID(subscribeID),
+            allocate.TimeGT(carbon.Now().SubSeconds(model.AllocateExpiration).Carbon2Time()),
+        ).First(s.ctx)
+
+        if allo == nil {
+            continue
+        }
+
+        if allo.Status == model.AllocateStatusSigned.Value() {
+            res.Allocated = true
+            return
+        }
+
+        if time.Now().Sub(start).Seconds() > 59 {
+            return
+        }
+    }
+
+    return
+}

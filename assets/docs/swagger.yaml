@@ -539,6 +539,12 @@ definitions:
         - ebike
         type: string
     type: object
+  model.AllocateRiderRes:
+    properties:
+      allocated:
+        description: 是否已分配
+        type: boolean
+    type: object
   model.AssistanceAllocateReq:
     properties:
       id:
@@ -13796,6 +13802,28 @@ paths:
           schema:
             $ref: '#/definitions/model.BusinessCabinetStatus'
       summary: R7001 激活骑士卡
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/business/allocated:
+    get:
+      consumes:
+      - application/json
+      description: 用以判定待激活骑士卡是否需要签约(allocated = true)
+      operationId: RiderBusinessAllocated
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.AllocateRiderRes'
+      summary: R7009 长连接轮询是否已分配
       tags:
       - '[R]骑手接口'
   /rider/v1/business/continue:

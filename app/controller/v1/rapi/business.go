@@ -114,3 +114,18 @@ func (*business) PauseInfo(c echo.Context) (err error) {
     ctx := app.ContextX[app.RiderContext](c)
     return ctx.SendResponse(service.NewRiderBusiness(ctx.Rider).PauseInfo())
 }
+
+// Allocated
+// @ID           RiderBusinessAllocated
+// @Router       /rider/v1/business/allocated [GET]
+// @Summary      R7009 长连接轮询是否已分配
+// @Description  用以判定待激活骑士卡是否需要签约(allocated = true)
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token header string true "骑手校验token"
+// @Success      200 {object} model.AllocateRiderRes "请求成功"
+func (*business) Allocated(c echo.Context) (err error) {
+    ctx, req := app.RiderContextAndBinding[model.IDParamReq](c)
+    return ctx.SendResponse(service.NewAllocate().LoopStatus(ctx.Rider.ID, req.ID))
+}

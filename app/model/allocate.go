@@ -44,3 +44,7 @@ type AllocateCreateReq struct {
     EmployeeID *uint64 `swaggerignore:"true"`
     CabinetID  *uint64 `swaggerignore:"true"`
 }
+
+type AllocateRiderRes struct {
+    Allocated bool `json:"allocated"` // 是否已分配
+}

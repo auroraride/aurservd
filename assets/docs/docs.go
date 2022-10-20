@@ -11368,6 +11368,39 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/business/allocated": {
+            "get": {
+                "description": "用以判定待激活骑士卡是否需要签约(allocated = true)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R7009 长连接轮询是否已分配",
+                "operationId": "RiderBusinessAllocated",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.AllocateRiderRes"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/business/continue": {
             "post": {
                 "consumes": [
@@ -13731,6 +13764,15 @@ const docTemplate = `{
                         "battery",
                         "ebike"
                     ]
+                }
+            }
+        },
+        "model.AllocateRiderRes": {
+            "type": "object",
+            "properties": {
+                "allocated": {
+                    "description": "是否已分配",
+                    "type": "boolean"
                 }
             }
         },
