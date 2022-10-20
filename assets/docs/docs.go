@@ -739,7 +739,7 @@ const docTemplate = `{
                     "200": {
                         "description": "电车信息",
                         "schema": {
-                            "$ref": "#/definitions/model.EbikeInfo"
+                            "$ref": "#/definitions/model.Ebike"
                         }
                     }
                 }
@@ -10315,6 +10315,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/subscribe/ebike/change": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M7020 修改订阅车辆",
+                "operationId": "ManagerSubscribeEbikeChange",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "换车参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ManagerSubscribeChangeEbike"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/subscribe/halt": {
             "post": {
                 "consumes": [
@@ -18273,6 +18314,28 @@ const docTemplate = `{
                 },
                 "storeId": {
                     "description": "门店ID",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.ManagerSubscribeChangeEbike": {
+            "type": "object",
+            "required": [
+                "ebikeKeyword",
+                "id",
+                "storeId"
+            ],
+            "properties": {
+                "ebikeKeyword": {
+                    "description": "车架号或车牌号 ",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "订阅ID ",
+                    "type": "integer"
+                },
+                "storeId": {
+                    "description": "门店ID 旧车入库至门店",
                     "type": "integer"
                 }
             }

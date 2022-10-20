@@ -3830,6 +3830,22 @@ definitions:
     required:
     - id
     type: object
+  model.ManagerSubscribeChangeEbike:
+    properties:
+      ebikeKeyword:
+        description: '车架号或车牌号 '
+        type: string
+      id:
+        description: '订阅ID '
+        type: integer
+      storeId:
+        description: 门店ID 旧车入库至门店
+        type: integer
+    required:
+    - ebikeKeyword
+    - id
+    - storeId
+    type: object
   model.Modifier:
     properties:
       id:
@@ -6815,7 +6831,7 @@ paths:
         "200":
           description: 电车信息
           schema:
-            $ref: '#/definitions/model.EbikeInfo'
+            $ref: '#/definitions/model.Ebike'
       summary: E6001 获取未分配电车信息
       tags:
       - '[E]店员接口'
@@ -13100,6 +13116,33 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M7007 继续计费
+      tags:
+      - '[M]管理接口'
+  /manager/v1/subscribe/ebike/change:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerSubscribeEbikeChange
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 换车参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.ManagerSubscribeChangeEbike'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M7020 修改订阅车辆
       tags:
       - '[M]管理接口'
   /manager/v1/subscribe/halt:

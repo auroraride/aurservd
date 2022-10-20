@@ -126,3 +126,19 @@ func (*subscribe) UnSuspend(c echo.Context) (err error) {
     service.NewSuspendWithModifier(ctx.Modifier).UnSuspend(req)
     return ctx.SendResponse()
 }
+
+// EbikeChange
+// @ID           ManagerSubscribeEbikeChange
+// @Router       /manager/v1/subscribe/ebike/change [POST]
+// @Summary      M7020 修改订阅车辆
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token header string true "管理员校验token"
+// @Param        body body    model.ManagerSubscribeChangeEbike true "换车参数"
+// @Success      200 {object} model.StatusResponse "请求成功"
+func (*subscribe) EbikeChange(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.ManagerSubscribeChangeEbike](c)
+    service.NewManagerSubscribe(ctx.Modifier).ChangeEBike(req)
+    return ctx.SendResponse()
+}

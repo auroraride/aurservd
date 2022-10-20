@@ -26,7 +26,7 @@ var Allocate = new(allocate)
 // @Produce      json
 // @Param        X-Employee-Token  header  string  true  "店员校验token"
 // @Param        keyword  query  string  true  "关键词"
-// @Success      200  {object}  model.EbikeInfo  "电车信息"
+// @Success      200  {object}  model.Ebike  "电车信息"
 func (*allocate) UnallocatedEbike(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.KeywordQueryReq](c)
     return ctx.SendResponse(service.NewAllocate(ctx.Employee).UnallocatedEbikeInfo(req.Keyword))
