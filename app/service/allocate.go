@@ -245,11 +245,15 @@ func (s *allocateService) Info(req *model.IDParamReq) model.AllocateDetail {
 
 // EmployeeList 电车分配店员列表
 func (s *allocateService) EmployeeList(req *model.AllocateEmployeeListReq) *model.PaginationRes {
+    status := req.Status
+    if req.Status != 2 {
+        status = model.AllocateStatusPending
+    }
     q := s.orm.Query().
         WithRider().
         WithEbike().
         WithBrand().
-        Where(allocate.EmployeeID(s.employee.ID)).
+        Where(allocate.EmployeeID(s.employee.ID), allocate.Status(status.Value())).
         Order(ent.Desc(allocate.FieldTime))
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Allocate) model.AllocateDetail {
         return s.detail(item)
