@@ -20,6 +20,8 @@ const (
 	FieldSubscribeID = "subscribe_id"
 	// FieldPlanID holds the string denoting the plan_id field in the database.
 	FieldPlanID = "plan_id"
+	// FieldRiderID holds the string denoting the rider_id field in the database.
+	FieldRiderID = "rider_id"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
 	// FieldPhone holds the string denoting the phone field in the database.
@@ -42,6 +44,8 @@ const (
 	EdgeSubscribe = "subscribe"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
+	// EdgeRider holds the string denoting the rider edge name in mutations.
+	EdgeRider = "rider"
 	// Table holds the table name of the subscribereminder in the database.
 	Table = "subscribe_reminder"
 	// SubscribeTable is the table that holds the subscribe relation/edge.
@@ -58,6 +62,13 @@ const (
 	PlanInverseTable = "plan"
 	// PlanColumn is the table column denoting the plan relation/edge.
 	PlanColumn = "plan_id"
+	// RiderTable is the table that holds the rider relation/edge.
+	RiderTable = "subscribe_reminder"
+	// RiderInverseTable is the table name for the Rider entity.
+	// It exists in this package in order to avoid circular dependency with the "rider" package.
+	RiderInverseTable = "rider"
+	// RiderColumn is the table column denoting the rider relation/edge.
+	RiderColumn = "rider_id"
 )
 
 // Columns holds all SQL columns for subscribereminder fields.
@@ -67,6 +78,7 @@ var Columns = []string{
 	FieldUpdatedAt,
 	FieldSubscribeID,
 	FieldPlanID,
+	FieldRiderID,
 	FieldType,
 	FieldPhone,
 	FieldName,

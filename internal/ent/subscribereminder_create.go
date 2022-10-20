@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 )
@@ -61,6 +62,12 @@ func (src *SubscribeReminderCreate) SetSubscribeID(u uint64) *SubscribeReminderC
 // SetPlanID sets the "plan_id" field.
 func (src *SubscribeReminderCreate) SetPlanID(u uint64) *SubscribeReminderCreate {
 	src.mutation.SetPlanID(u)
+	return src
+}
+
+// SetRiderID sets the "rider_id" field.
+func (src *SubscribeReminderCreate) SetRiderID(u uint64) *SubscribeReminderCreate {
+	src.mutation.SetRiderID(u)
 	return src
 }
 
@@ -142,6 +149,11 @@ func (src *SubscribeReminderCreate) SetSubscribe(s *Subscribe) *SubscribeReminde
 // SetPlan sets the "plan" edge to the Plan entity.
 func (src *SubscribeReminderCreate) SetPlan(p *Plan) *SubscribeReminderCreate {
 	return src.SetPlanID(p.ID)
+}
+
+// SetRider sets the "rider" edge to the Rider entity.
+func (src *SubscribeReminderCreate) SetRider(r *Rider) *SubscribeReminderCreate {
+	return src.SetRiderID(r.ID)
 }
 
 // Mutation returns the SubscribeReminderMutation object of the builder.
@@ -249,6 +261,9 @@ func (src *SubscribeReminderCreate) check() error {
 	if _, ok := src.mutation.PlanID(); !ok {
 		return &ValidationError{Name: "plan_id", err: errors.New(`ent: missing required field "SubscribeReminder.plan_id"`)}
 	}
+	if _, ok := src.mutation.RiderID(); !ok {
+		return &ValidationError{Name: "rider_id", err: errors.New(`ent: missing required field "SubscribeReminder.rider_id"`)}
+	}
 	if _, ok := src.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "SubscribeReminder.type"`)}
 	}
@@ -283,6 +298,9 @@ func (src *SubscribeReminderCreate) check() error {
 	}
 	if _, ok := src.mutation.PlanID(); !ok {
 		return &ValidationError{Name: "plan", err: errors.New(`ent: missing required edge "SubscribeReminder.plan"`)}
+	}
+	if _, ok := src.mutation.RiderID(); !ok {
+		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "SubscribeReminder.rider"`)}
 	}
 	return nil
 }
@@ -440,6 +458,26 @@ func (src *SubscribeReminderCreate) createSpec() (*SubscribeReminder, *sqlgraph.
 		_node.PlanID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := src.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribereminder.RiderTable,
+			Columns: []string{subscribereminder.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: rider.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RiderID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -525,6 +563,18 @@ func (u *SubscribeReminderUpsert) SetPlanID(v uint64) *SubscribeReminderUpsert {
 // UpdatePlanID sets the "plan_id" field to the value that was provided on create.
 func (u *SubscribeReminderUpsert) UpdatePlanID() *SubscribeReminderUpsert {
 	u.SetExcluded(subscribereminder.FieldPlanID)
+	return u
+}
+
+// SetRiderID sets the "rider_id" field.
+func (u *SubscribeReminderUpsert) SetRiderID(v uint64) *SubscribeReminderUpsert {
+	u.Set(subscribereminder.FieldRiderID, v)
+	return u
+}
+
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *SubscribeReminderUpsert) UpdateRiderID() *SubscribeReminderUpsert {
+	u.SetExcluded(subscribereminder.FieldRiderID)
 	return u
 }
 
@@ -738,6 +788,20 @@ func (u *SubscribeReminderUpsertOne) SetPlanID(v uint64) *SubscribeReminderUpser
 func (u *SubscribeReminderUpsertOne) UpdatePlanID() *SubscribeReminderUpsertOne {
 	return u.Update(func(s *SubscribeReminderUpsert) {
 		s.UpdatePlanID()
+	})
+}
+
+// SetRiderID sets the "rider_id" field.
+func (u *SubscribeReminderUpsertOne) SetRiderID(v uint64) *SubscribeReminderUpsertOne {
+	return u.Update(func(s *SubscribeReminderUpsert) {
+		s.SetRiderID(v)
+	})
+}
+
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *SubscribeReminderUpsertOne) UpdateRiderID() *SubscribeReminderUpsertOne {
+	return u.Update(func(s *SubscribeReminderUpsert) {
+		s.UpdateRiderID()
 	})
 }
 
@@ -1134,6 +1198,20 @@ func (u *SubscribeReminderUpsertBulk) SetPlanID(v uint64) *SubscribeReminderUpse
 func (u *SubscribeReminderUpsertBulk) UpdatePlanID() *SubscribeReminderUpsertBulk {
 	return u.Update(func(s *SubscribeReminderUpsert) {
 		s.UpdatePlanID()
+	})
+}
+
+// SetRiderID sets the "rider_id" field.
+func (u *SubscribeReminderUpsertBulk) SetRiderID(v uint64) *SubscribeReminderUpsertBulk {
+	return u.Update(func(s *SubscribeReminderUpsert) {
+		s.SetRiderID(v)
+	})
+}
+
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *SubscribeReminderUpsertBulk) UpdateRiderID() *SubscribeReminderUpsertBulk {
+	return u.Update(func(s *SubscribeReminderUpsert) {
+		s.UpdateRiderID()
 	})
 }
 

@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 )
@@ -46,6 +47,12 @@ func (sru *SubscribeReminderUpdate) SetSubscribeID(u uint64) *SubscribeReminderU
 // SetPlanID sets the "plan_id" field.
 func (sru *SubscribeReminderUpdate) SetPlanID(u uint64) *SubscribeReminderUpdate {
 	sru.mutation.SetPlanID(u)
+	return sru
+}
+
+// SetRiderID sets the "rider_id" field.
+func (sru *SubscribeReminderUpdate) SetRiderID(u uint64) *SubscribeReminderUpdate {
+	sru.mutation.SetRiderID(u)
 	return sru
 }
 
@@ -149,6 +156,11 @@ func (sru *SubscribeReminderUpdate) SetPlan(p *Plan) *SubscribeReminderUpdate {
 	return sru.SetPlanID(p.ID)
 }
 
+// SetRider sets the "rider" edge to the Rider entity.
+func (sru *SubscribeReminderUpdate) SetRider(r *Rider) *SubscribeReminderUpdate {
+	return sru.SetRiderID(r.ID)
+}
+
 // Mutation returns the SubscribeReminderMutation object of the builder.
 func (sru *SubscribeReminderUpdate) Mutation() *SubscribeReminderMutation {
 	return sru.mutation
@@ -163,6 +175,12 @@ func (sru *SubscribeReminderUpdate) ClearSubscribe() *SubscribeReminderUpdate {
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (sru *SubscribeReminderUpdate) ClearPlan() *SubscribeReminderUpdate {
 	sru.mutation.ClearPlan()
+	return sru
+}
+
+// ClearRider clears the "rider" edge to the Rider entity.
+func (sru *SubscribeReminderUpdate) ClearRider() *SubscribeReminderUpdate {
+	sru.mutation.ClearRider()
 	return sru
 }
 
@@ -247,6 +265,9 @@ func (sru *SubscribeReminderUpdate) check() error {
 	}
 	if _, ok := sru.mutation.PlanID(); sru.mutation.PlanCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "SubscribeReminder.plan"`)
+	}
+	if _, ok := sru.mutation.RiderID(); sru.mutation.RiderCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "SubscribeReminder.rider"`)
 	}
 	return nil
 }
@@ -435,6 +456,41 @@ func (sru *SubscribeReminderUpdate) sqlSave(ctx context.Context) (n int, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if sru.mutation.RiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribereminder.RiderTable,
+			Columns: []string{subscribereminder.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: rider.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := sru.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribereminder.RiderTable,
+			Columns: []string{subscribereminder.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: rider.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.Modifiers = sru.modifiers
 	if n, err = sqlgraph.UpdateNodes(ctx, sru.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -471,6 +527,12 @@ func (sruo *SubscribeReminderUpdateOne) SetSubscribeID(u uint64) *SubscribeRemin
 // SetPlanID sets the "plan_id" field.
 func (sruo *SubscribeReminderUpdateOne) SetPlanID(u uint64) *SubscribeReminderUpdateOne {
 	sruo.mutation.SetPlanID(u)
+	return sruo
+}
+
+// SetRiderID sets the "rider_id" field.
+func (sruo *SubscribeReminderUpdateOne) SetRiderID(u uint64) *SubscribeReminderUpdateOne {
+	sruo.mutation.SetRiderID(u)
 	return sruo
 }
 
@@ -574,6 +636,11 @@ func (sruo *SubscribeReminderUpdateOne) SetPlan(p *Plan) *SubscribeReminderUpdat
 	return sruo.SetPlanID(p.ID)
 }
 
+// SetRider sets the "rider" edge to the Rider entity.
+func (sruo *SubscribeReminderUpdateOne) SetRider(r *Rider) *SubscribeReminderUpdateOne {
+	return sruo.SetRiderID(r.ID)
+}
+
 // Mutation returns the SubscribeReminderMutation object of the builder.
 func (sruo *SubscribeReminderUpdateOne) Mutation() *SubscribeReminderMutation {
 	return sruo.mutation
@@ -588,6 +655,12 @@ func (sruo *SubscribeReminderUpdateOne) ClearSubscribe() *SubscribeReminderUpdat
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (sruo *SubscribeReminderUpdateOne) ClearPlan() *SubscribeReminderUpdateOne {
 	sruo.mutation.ClearPlan()
+	return sruo
+}
+
+// ClearRider clears the "rider" edge to the Rider entity.
+func (sruo *SubscribeReminderUpdateOne) ClearRider() *SubscribeReminderUpdateOne {
+	sruo.mutation.ClearRider()
 	return sruo
 }
 
@@ -685,6 +758,9 @@ func (sruo *SubscribeReminderUpdateOne) check() error {
 	}
 	if _, ok := sruo.mutation.PlanID(); sruo.mutation.PlanCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "SubscribeReminder.plan"`)
+	}
+	if _, ok := sruo.mutation.RiderID(); sruo.mutation.RiderCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "SubscribeReminder.rider"`)
 	}
 	return nil
 }
@@ -882,6 +958,41 @@ func (sruo *SubscribeReminderUpdateOne) sqlSave(ctx context.Context) (_node *Sub
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: plan.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if sruo.mutation.RiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribereminder.RiderTable,
+			Columns: []string{subscribereminder.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: rider.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := sruo.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribereminder.RiderTable,
+			Columns: []string{subscribereminder.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: rider.FieldID,
 				},
 			},
 		}

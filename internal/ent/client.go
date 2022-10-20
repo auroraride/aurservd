@@ -8002,6 +8002,22 @@ func (c *SubscribeReminderClient) QueryPlan(sr *SubscribeReminder) *PlanQuery {
 	return query
 }
 
+// QueryRider queries the rider edge of a SubscribeReminder.
+func (c *SubscribeReminderClient) QueryRider(sr *SubscribeReminder) *RiderQuery {
+	query := &RiderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := sr.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribereminder.Table, subscribereminder.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribereminder.RiderTable, subscribereminder.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(sr.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *SubscribeReminderClient) Hooks() []Hook {
 	return c.hooks.SubscribeReminder

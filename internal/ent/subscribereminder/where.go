@@ -109,6 +109,13 @@ func PlanID(v uint64) predicate.SubscribeReminder {
 	})
 }
 
+// RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
+func RiderID(v uint64) predicate.SubscribeReminder {
+	return predicate.SubscribeReminder(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRiderID), v))
+	})
+}
+
 // Phone applies equality check predicate on the "phone" field. It's identical to PhoneEQ.
 func Phone(v string) predicate.SubscribeReminder {
 	return predicate.SubscribeReminder(func(s *sql.Selector) {
@@ -362,6 +369,42 @@ func PlanIDNotIn(vs ...uint64) predicate.SubscribeReminder {
 	}
 	return predicate.SubscribeReminder(func(s *sql.Selector) {
 		s.Where(sql.NotIn(s.C(FieldPlanID), v...))
+	})
+}
+
+// RiderIDEQ applies the EQ predicate on the "rider_id" field.
+func RiderIDEQ(v uint64) predicate.SubscribeReminder {
+	return predicate.SubscribeReminder(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRiderID), v))
+	})
+}
+
+// RiderIDNEQ applies the NEQ predicate on the "rider_id" field.
+func RiderIDNEQ(v uint64) predicate.SubscribeReminder {
+	return predicate.SubscribeReminder(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldRiderID), v))
+	})
+}
+
+// RiderIDIn applies the In predicate on the "rider_id" field.
+func RiderIDIn(vs ...uint64) predicate.SubscribeReminder {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribeReminder(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldRiderID), v...))
+	})
+}
+
+// RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
+func RiderIDNotIn(vs ...uint64) predicate.SubscribeReminder {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SubscribeReminder(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldRiderID), v...))
 	})
 }
 
@@ -1099,6 +1142,34 @@ func HasPlanWith(preds ...predicate.Plan) predicate.SubscribeReminder {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(PlanInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, PlanTable, PlanColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRider applies the HasEdge predicate on the "rider" edge.
+func HasRider() predicate.SubscribeReminder {
+	return predicate.SubscribeReminder(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(RiderTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRiderWith applies the HasEdge predicate on the "rider" edge with a given conditions (other predicates).
+func HasRiderWith(preds ...predicate.Rider) predicate.SubscribeReminder {
+	return predicate.SubscribeReminder(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(RiderInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

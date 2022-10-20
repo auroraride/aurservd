@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 )
@@ -27,6 +28,7 @@ type SubscribeReminderQuery struct {
 	predicates    []predicate.SubscribeReminder
 	withSubscribe *SubscribeQuery
 	withPlan      *PlanQuery
+	withRider     *RiderQuery
 	modifiers     []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -101,6 +103,28 @@ func (srq *SubscribeReminderQuery) QueryPlan() *PlanQuery {
 			sqlgraph.From(subscribereminder.Table, subscribereminder.FieldID, selector),
 			sqlgraph.To(plan.Table, plan.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, subscribereminder.PlanTable, subscribereminder.PlanColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(srq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRider chains the current query on the "rider" edge.
+func (srq *SubscribeReminderQuery) QueryRider() *RiderQuery {
+	query := &RiderQuery{config: srq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := srq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := srq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribereminder.Table, subscribereminder.FieldID, selector),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribereminder.RiderTable, subscribereminder.RiderColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(srq.driver.Dialect(), step)
 		return fromU, nil
@@ -291,6 +315,7 @@ func (srq *SubscribeReminderQuery) Clone() *SubscribeReminderQuery {
 		predicates:    append([]predicate.SubscribeReminder{}, srq.predicates...),
 		withSubscribe: srq.withSubscribe.Clone(),
 		withPlan:      srq.withPlan.Clone(),
+		withRider:     srq.withRider.Clone(),
 		// clone intermediate query.
 		sql:    srq.sql.Clone(),
 		path:   srq.path,
@@ -317,6 +342,17 @@ func (srq *SubscribeReminderQuery) WithPlan(opts ...func(*PlanQuery)) *Subscribe
 		opt(query)
 	}
 	srq.withPlan = query
+	return srq
+}
+
+// WithRider tells the query-builder to eager-load the nodes that are connected to
+// the "rider" edge. The optional arguments are used to configure the query builder of the edge.
+func (srq *SubscribeReminderQuery) WithRider(opts ...func(*RiderQuery)) *SubscribeReminderQuery {
+	query := &RiderQuery{config: srq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	srq.withRider = query
 	return srq
 }
 
@@ -388,9 +424,10 @@ func (srq *SubscribeReminderQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 	var (
 		nodes       = []*SubscribeReminder{}
 		_spec       = srq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			srq.withSubscribe != nil,
 			srq.withPlan != nil,
+			srq.withRider != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -423,6 +460,12 @@ func (srq *SubscribeReminderQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 	if query := srq.withPlan; query != nil {
 		if err := srq.loadPlan(ctx, query, nodes, nil,
 			func(n *SubscribeReminder, e *Plan) { n.Edges.Plan = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := srq.withRider; query != nil {
+		if err := srq.loadRider(ctx, query, nodes, nil,
+			func(n *SubscribeReminder, e *Rider) { n.Edges.Rider = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -474,6 +517,32 @@ func (srq *SubscribeReminderQuery) loadPlan(ctx context.Context, query *PlanQuer
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "plan_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (srq *SubscribeReminderQuery) loadRider(ctx context.Context, query *RiderQuery, nodes []*SubscribeReminder, init func(*SubscribeReminder), assign func(*SubscribeReminder, *Rider)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*SubscribeReminder)
+	for i := range nodes {
+		fk := nodes[i].RiderID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(rider.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "rider_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

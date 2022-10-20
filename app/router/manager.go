@@ -100,6 +100,7 @@ func loadManagerRoutes() {
     g.POST("/subscribe/suspend", mapi.Subscribe.Suspend)
     g.POST("/subscribe/unsuspend", mapi.Subscribe.UnSuspend)
     g.POST("/subscribe/ebike/change", mapi.Subscribe.EbikeChange)
+    g.GET("/subscribe/reminder", mapi.Subscribe.Reminder)
 
     // 业务
     g.GET("/order", mapi.Order.List)

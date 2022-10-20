@@ -10438,6 +10438,105 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/subscribe/reminder": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M7021 催费记录",
+                "operationId": "ManagerSubscribeReminder",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "剩余天数 (不携带为不筛选)",
+                        "name": "days",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "骑手关键词 (姓名或手机号)",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "骑手ID",
+                        "name": "riderId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "vms",
+                            "sms"
+                        ],
+                        "type": "string",
+                        "description": "催费方式, vms:语音 sms:短信",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.ReminderListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/subscribe/suspend": {
             "post": {
                 "consumes": [
@@ -19317,6 +19416,39 @@ const docTemplate = `{
             "properties": {
                 "outRefundNo": {
                     "description": "退款单号",
+                    "type": "string"
+                }
+            }
+        },
+        "model.ReminderListRes": {
+            "type": "object",
+            "properties": {
+                "fee": {
+                    "description": "逾期费用",
+                    "type": "number"
+                },
+                "feeFormula": {
+                    "description": "费用计算公式",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                },
+                "planName": {
+                    "description": "骑士卡",
+                    "type": "string"
+                },
+                "success": {
+                    "description": "是否成功",
+                    "type": "boolean"
+                },
+                "time": {
+                    "description": "发送时间",
                     "type": "string"
                 }
             }

@@ -2637,7 +2637,7 @@ var (
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "model", Type: field.TypeString, Comment: "电池型号", Nullable: true},
 		{Name: "enable", Type: field.TypeBool, Comment: "是否启用"},
-		{Name: "type", Type: field.TypeUint8, Comment: "骑士卡类别 1:单电 2:车加电"},
+		{Name: "type", Type: field.TypeUint8, Comment: "骑士卡类别 1:单电 2:车加电", Default: 1},
 		{Name: "name", Type: field.TypeString, Comment: "骑士卡名称"},
 		{Name: "start", Type: field.TypeTime, Comment: "有效期开始日期"},
 		{Name: "end", Type: field.TypeTime, Comment: "有效期结束日期"},
@@ -3850,6 +3850,7 @@ var (
 		{Name: "fee_formula", Type: field.TypeString, Comment: "逾期费用计算公式", Nullable: true},
 		{Name: "subscribe_id", Type: field.TypeUint64},
 		{Name: "plan_id", Type: field.TypeUint64},
+		{Name: "rider_id", Type: field.TypeUint64},
 	}
 	// SubscribeReminderTable holds the schema information for the "subscribe_reminder" table.
 	SubscribeReminderTable = &schema.Table{
@@ -3869,6 +3870,12 @@ var (
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
+			{
+				Symbol:     "subscribe_reminder_rider_rider",
+				Columns:    []*schema.Column{SubscribeReminderColumns[14]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
 		},
 		Indexes: []*schema.Index{
 			{
@@ -3882,6 +3889,11 @@ var (
 				Columns: []*schema.Column{SubscribeReminderColumns[13]},
 			},
 			{
+				Name:    "subscribereminder_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeReminderColumns[14]},
+			},
+			{
 				Name:    "subscribereminder_type",
 				Unique:  false,
 				Columns: []*schema.Column{SubscribeReminderColumns[3]},
@@ -3890,6 +3902,26 @@ var (
 				Name:    "subscribereminder_date",
 				Unique:  false,
 				Columns: []*schema.Column{SubscribeReminderColumns[9]},
+			},
+			{
+				Name:    "subscribereminder_name",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeReminderColumns[5]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
+			{
+				Name:    "subscribereminder_phone",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeReminderColumns[4]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
 			},
 		},
 	}
@@ -4405,6 +4437,7 @@ func init() {
 	}
 	SubscribeReminderTable.ForeignKeys[0].RefTable = SubscribeTable
 	SubscribeReminderTable.ForeignKeys[1].RefTable = PlanTable
+	SubscribeReminderTable.ForeignKeys[2].RefTable = RiderTable
 	SubscribeReminderTable.Annotation = &entsql.Annotation{
 		Table: "subscribe_reminder",
 	}

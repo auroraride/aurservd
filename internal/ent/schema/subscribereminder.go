@@ -2,6 +2,7 @@ package schema
 
 import (
     "entgo.io/ent"
+    "entgo.io/ent/dialect"
     "entgo.io/ent/dialect/entsql"
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/field"
@@ -46,6 +47,7 @@ func (SubscribeReminder) Mixin() []ent.Mixin {
         internal.TimeMixin{DisableIndex: true},
         SubscribeMixin{},
         PlanMixin{},
+        RiderMixin{},
     }
 }
 
@@ -53,5 +55,15 @@ func (SubscribeReminder) Indexes() []ent.Index {
     return []ent.Index{
         index.Fields("type"),
         index.Fields("date"),
+        index.Fields("name").Annotations(
+            entsql.IndexTypes(map[string]string{
+                dialect.Postgres: "GIN",
+            }),
+        ),
+        index.Fields("phone").Annotations(
+            entsql.IndexTypes(map[string]string{
+                dialect.Postgres: "GIN",
+            }),
+        ),
     }
 }

@@ -869,6 +869,10 @@ func init() {
 	plan.DefaultUpdatedAt = planDescUpdatedAt.Default.(func() time.Time)
 	// plan.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	plan.UpdateDefaultUpdatedAt = planDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// planDescType is the schema descriptor for type field.
+	planDescType := planFields[2].Descriptor()
+	// plan.DefaultType holds the default value on creation for the type field.
+	plan.DefaultType = planDescType.Default.(uint8)
 	// planDescDiscountNewly is the schema descriptor for discount_newly field.
 	planDescDiscountNewly := planFields[12].Descriptor()
 	// plan.DefaultDiscountNewly holds the default value on creation for the discount_newly field.

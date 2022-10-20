@@ -150,6 +150,10 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
         return req.Complexes[i].Days < req.Complexes[j].Days
     })
 
+    if len(req.Notes) == 0 {
+        req.Notes = make([]string, 0)
+    }
+
     // 开始创建
     var parent *ent.Plan
     ent.WithTxPanic(s.ctx, func(tx *ent.Tx) error {

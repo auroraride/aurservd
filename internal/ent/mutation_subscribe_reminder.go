@@ -39,6 +39,8 @@ type SubscribeReminderMutation struct {
 	clearedsubscribe bool
 	plan             *uint64
 	clearedplan      bool
+	rider            *uint64
+	clearedrider     bool
 	done             bool
 	oldValue         func(context.Context) (*SubscribeReminder, error)
 	predicates       []predicate.SubscribeReminder
@@ -284,6 +286,42 @@ func (m *SubscribeReminderMutation) OldPlanID(ctx context.Context) (v uint64, er
 // ResetPlanID resets all changes to the "plan_id" field.
 func (m *SubscribeReminderMutation) ResetPlanID() {
 	m.plan = nil
+}
+
+// SetRiderID sets the "rider_id" field.
+func (m *SubscribeReminderMutation) SetRiderID(u uint64) {
+	m.rider = &u
+}
+
+// RiderID returns the value of the "rider_id" field in the mutation.
+func (m *SubscribeReminderMutation) RiderID() (r uint64, exists bool) {
+	v := m.rider
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRiderID returns the old "rider_id" field's value of the SubscribeReminder entity.
+// If the SubscribeReminder object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeReminderMutation) OldRiderID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRiderID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRiderID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRiderID: %w", err)
+	}
+	return oldValue.RiderID, nil
+}
+
+// ResetRiderID resets all changes to the "rider_id" field.
+func (m *SubscribeReminderMutation) ResetRiderID() {
+	m.rider = nil
 }
 
 // SetType sets the "type" field.
@@ -715,6 +753,32 @@ func (m *SubscribeReminderMutation) ResetPlan() {
 	m.clearedplan = false
 }
 
+// ClearRider clears the "rider" edge to the Rider entity.
+func (m *SubscribeReminderMutation) ClearRider() {
+	m.clearedrider = true
+}
+
+// RiderCleared reports if the "rider" edge to the Rider entity was cleared.
+func (m *SubscribeReminderMutation) RiderCleared() bool {
+	return m.clearedrider
+}
+
+// RiderIDs returns the "rider" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// RiderID instead. It exists only for internal usage by the builders.
+func (m *SubscribeReminderMutation) RiderIDs() (ids []uint64) {
+	if id := m.rider; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetRider resets all changes to the "rider" edge.
+func (m *SubscribeReminderMutation) ResetRider() {
+	m.rider = nil
+	m.clearedrider = false
+}
+
 // Where appends a list predicates to the SubscribeReminderMutation builder.
 func (m *SubscribeReminderMutation) Where(ps ...predicate.SubscribeReminder) {
 	m.predicates = append(m.predicates, ps...)
@@ -734,7 +798,7 @@ func (m *SubscribeReminderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscribeReminderMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 14)
 	if m.created_at != nil {
 		fields = append(fields, subscribereminder.FieldCreatedAt)
 	}
@@ -746,6 +810,9 @@ func (m *SubscribeReminderMutation) Fields() []string {
 	}
 	if m.plan != nil {
 		fields = append(fields, subscribereminder.FieldPlanID)
+	}
+	if m.rider != nil {
+		fields = append(fields, subscribereminder.FieldRiderID)
 	}
 	if m._type != nil {
 		fields = append(fields, subscribereminder.FieldType)
@@ -790,6 +857,8 @@ func (m *SubscribeReminderMutation) Field(name string) (ent.Value, bool) {
 		return m.SubscribeID()
 	case subscribereminder.FieldPlanID:
 		return m.PlanID()
+	case subscribereminder.FieldRiderID:
+		return m.RiderID()
 	case subscribereminder.FieldType:
 		return m.GetType()
 	case subscribereminder.FieldPhone:
@@ -825,6 +894,8 @@ func (m *SubscribeReminderMutation) OldField(ctx context.Context, name string) (
 		return m.OldSubscribeID(ctx)
 	case subscribereminder.FieldPlanID:
 		return m.OldPlanID(ctx)
+	case subscribereminder.FieldRiderID:
+		return m.OldRiderID(ctx)
 	case subscribereminder.FieldType:
 		return m.OldType(ctx)
 	case subscribereminder.FieldPhone:
@@ -879,6 +950,13 @@ func (m *SubscribeReminderMutation) SetField(name string, value ent.Value) error
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPlanID(v)
+		return nil
+	case subscribereminder.FieldRiderID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRiderID(v)
 		return nil
 	case subscribereminder.FieldType:
 		v, ok := value.(subscribereminder.Type)
@@ -1040,6 +1118,9 @@ func (m *SubscribeReminderMutation) ResetField(name string) error {
 	case subscribereminder.FieldPlanID:
 		m.ResetPlanID()
 		return nil
+	case subscribereminder.FieldRiderID:
+		m.ResetRiderID()
+		return nil
 	case subscribereminder.FieldType:
 		m.ResetType()
 		return nil
@@ -1073,12 +1154,15 @@ func (m *SubscribeReminderMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *SubscribeReminderMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.subscribe != nil {
 		edges = append(edges, subscribereminder.EdgeSubscribe)
 	}
 	if m.plan != nil {
 		edges = append(edges, subscribereminder.EdgePlan)
+	}
+	if m.rider != nil {
+		edges = append(edges, subscribereminder.EdgeRider)
 	}
 	return edges
 }
@@ -1095,13 +1179,17 @@ func (m *SubscribeReminderMutation) AddedIDs(name string) []ent.Value {
 		if id := m.plan; id != nil {
 			return []ent.Value{*id}
 		}
+	case subscribereminder.EdgeRider:
+		if id := m.rider; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *SubscribeReminderMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	return edges
 }
 
@@ -1115,12 +1203,15 @@ func (m *SubscribeReminderMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *SubscribeReminderMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedsubscribe {
 		edges = append(edges, subscribereminder.EdgeSubscribe)
 	}
 	if m.clearedplan {
 		edges = append(edges, subscribereminder.EdgePlan)
+	}
+	if m.clearedrider {
+		edges = append(edges, subscribereminder.EdgeRider)
 	}
 	return edges
 }
@@ -1133,6 +1224,8 @@ func (m *SubscribeReminderMutation) EdgeCleared(name string) bool {
 		return m.clearedsubscribe
 	case subscribereminder.EdgePlan:
 		return m.clearedplan
+	case subscribereminder.EdgeRider:
+		return m.clearedrider
 	}
 	return false
 }
@@ -1147,6 +1240,9 @@ func (m *SubscribeReminderMutation) ClearEdge(name string) error {
 	case subscribereminder.EdgePlan:
 		m.ClearPlan()
 		return nil
+	case subscribereminder.EdgeRider:
+		m.ClearRider()
+		return nil
 	}
 	return fmt.Errorf("unknown SubscribeReminder unique edge %s", name)
 }
@@ -1160,6 +1256,9 @@ func (m *SubscribeReminderMutation) ResetEdge(name string) error {
 		return nil
 	case subscribereminder.EdgePlan:
 		m.ResetPlan()
+		return nil
+	case subscribereminder.EdgeRider:
+		m.ResetRider()
 		return nil
 	}
 	return fmt.Errorf("unknown SubscribeReminder edge %s", name)

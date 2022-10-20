@@ -29,6 +29,7 @@ type Task struct {
     Phone       string
     Days        int
     SubscribeID uint64
+    RiderID     uint64
     PlanName    string
     PlanID      uint64
     PlanDays    uint
@@ -128,6 +129,7 @@ func Subscribe(sub *ent.Subscribe) {
         Phone:       ri.Phone,
         Days:        sub.Remaining,
         SubscribeID: sub.ID,
+        RiderID:     sub.RiderID,
         PlanName:    pl.Name,
         PlanDays:    pl.Days,
         PlanID:      pl.ID,
@@ -252,6 +254,7 @@ func (r *reminderTask) sendsms(task *Task) {
 
 func (r *reminderTask) updateOrSave(task *Task, typ subscribereminder.Type) {
     _, _ = ent.Database.SubscribeReminder.Create().
+        SetRiderID(task.RiderID).
         SetPhone(task.Phone).
         SetSubscribeID(task.SubscribeID).
         SetPlanName(fmt.Sprintf("%s - %d天", task.PlanName, task.PlanDays)).

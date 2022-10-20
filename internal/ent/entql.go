@@ -1404,6 +1404,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribereminder.FieldUpdatedAt:   {Type: field.TypeTime, Column: subscribereminder.FieldUpdatedAt},
 			subscribereminder.FieldSubscribeID: {Type: field.TypeUint64, Column: subscribereminder.FieldSubscribeID},
 			subscribereminder.FieldPlanID:      {Type: field.TypeUint64, Column: subscribereminder.FieldPlanID},
+			subscribereminder.FieldRiderID:     {Type: field.TypeUint64, Column: subscribereminder.FieldRiderID},
 			subscribereminder.FieldType:        {Type: field.TypeEnum, Column: subscribereminder.FieldType},
 			subscribereminder.FieldPhone:       {Type: field.TypeString, Column: subscribereminder.FieldPhone},
 			subscribereminder.FieldName:        {Type: field.TypeString, Column: subscribereminder.FieldName},
@@ -3827,6 +3828,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"SubscribeReminder",
 		"Plan",
+	)
+	graph.MustAddE(
+		"rider",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribereminder.RiderTable,
+			Columns: []string{subscribereminder.RiderColumn},
+			Bidi:    false,
+		},
+		"SubscribeReminder",
+		"Rider",
 	)
 	graph.MustAddE(
 		"city",
@@ -12158,6 +12171,11 @@ func (f *SubscribeReminderFilter) WherePlanID(p entql.Uint64P) {
 	f.Where(p.Field(subscribereminder.FieldPlanID))
 }
 
+// WhereRiderID applies the entql uint64 predicate on the rider_id field.
+func (f *SubscribeReminderFilter) WhereRiderID(p entql.Uint64P) {
+	f.Where(p.Field(subscribereminder.FieldRiderID))
+}
+
 // WhereType applies the entql string predicate on the type field.
 func (f *SubscribeReminderFilter) WhereType(p entql.StringP) {
 	f.Where(p.Field(subscribereminder.FieldType))
@@ -12225,6 +12243,20 @@ func (f *SubscribeReminderFilter) WhereHasPlan() {
 // WhereHasPlanWith applies a predicate to check if query has an edge plan with a given conditions (other predicates).
 func (f *SubscribeReminderFilter) WhereHasPlanWith(preds ...predicate.Plan) {
 	f.Where(entql.HasEdgeWith("plan", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRider applies a predicate to check if query has an edge rider.
+func (f *SubscribeReminderFilter) WhereHasRider() {
+	f.Where(entql.HasEdge("rider"))
+}
+
+// WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
+func (f *SubscribeReminderFilter) WhereHasRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

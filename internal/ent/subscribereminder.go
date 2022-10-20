@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 )
@@ -26,6 +27,8 @@ type SubscribeReminder struct {
 	SubscribeID uint64 `json:"subscribe_id,omitempty"`
 	// PlanID holds the value of the "plan_id" field.
 	PlanID uint64 `json:"plan_id,omitempty"`
+	// 骑手ID
+	RiderID uint64 `json:"rider_id,omitempty"`
 	// 催费类型
 	Type subscribereminder.Type `json:"type,omitempty"`
 	// 电话
@@ -55,9 +58,11 @@ type SubscribeReminderEdges struct {
 	Subscribe *Subscribe `json:"subscribe,omitempty"`
 	// Plan holds the value of the plan edge.
 	Plan *Plan `json:"plan,omitempty"`
+	// 骑手
+	Rider *Rider `json:"rider,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // SubscribeOrErr returns the Subscribe value or an error if the edge
@@ -86,6 +91,19 @@ func (e SubscribeReminderEdges) PlanOrErr() (*Plan, error) {
 	return nil, &NotLoadedError{edge: "plan"}
 }
 
+// RiderOrErr returns the Rider value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e SubscribeReminderEdges) RiderOrErr() (*Rider, error) {
+	if e.loadedTypes[2] {
+		if e.Rider == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: rider.Label}
+		}
+		return e.Rider, nil
+	}
+	return nil, &NotLoadedError{edge: "rider"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*SubscribeReminder) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -95,7 +113,7 @@ func (*SubscribeReminder) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case subscribereminder.FieldFee:
 			values[i] = new(sql.NullFloat64)
-		case subscribereminder.FieldID, subscribereminder.FieldSubscribeID, subscribereminder.FieldPlanID, subscribereminder.FieldDays:
+		case subscribereminder.FieldID, subscribereminder.FieldSubscribeID, subscribereminder.FieldPlanID, subscribereminder.FieldRiderID, subscribereminder.FieldDays:
 			values[i] = new(sql.NullInt64)
 		case subscribereminder.FieldType, subscribereminder.FieldPhone, subscribereminder.FieldName, subscribereminder.FieldPlanName, subscribereminder.FieldDate, subscribereminder.FieldFeeFormula:
 			values[i] = new(sql.NullString)
@@ -145,6 +163,12 @@ func (sr *SubscribeReminder) assignValues(columns []string, values []any) error 
 				return fmt.Errorf("unexpected type %T for field plan_id", values[i])
 			} else if value.Valid {
 				sr.PlanID = uint64(value.Int64)
+			}
+		case subscribereminder.FieldRiderID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field rider_id", values[i])
+			} else if value.Valid {
+				sr.RiderID = uint64(value.Int64)
 			}
 		case subscribereminder.FieldType:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -215,6 +239,11 @@ func (sr *SubscribeReminder) QueryPlan() *PlanQuery {
 	return (&SubscribeReminderClient{config: sr.config}).QueryPlan(sr)
 }
 
+// QueryRider queries the "rider" edge of the SubscribeReminder entity.
+func (sr *SubscribeReminder) QueryRider() *RiderQuery {
+	return (&SubscribeReminderClient{config: sr.config}).QueryRider(sr)
+}
+
 // Update returns a builder for updating this SubscribeReminder.
 // Note that you need to call SubscribeReminder.Unwrap() before calling this method if this SubscribeReminder
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -249,6 +278,9 @@ func (sr *SubscribeReminder) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("plan_id=")
 	builder.WriteString(fmt.Sprintf("%v", sr.PlanID))
+	builder.WriteString(", ")
+	builder.WriteString("rider_id=")
+	builder.WriteString(fmt.Sprintf("%v", sr.RiderID))
 	builder.WriteString(", ")
 	builder.WriteString("type=")
 	builder.WriteString(fmt.Sprintf("%v", sr.Type))

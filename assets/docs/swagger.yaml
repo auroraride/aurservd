@@ -4530,6 +4530,30 @@ definitions:
         description: 退款单号
         type: string
     type: object
+  model.ReminderListRes:
+    properties:
+      fee:
+        description: 逾期费用
+        type: number
+      feeFormula:
+        description: 费用计算公式
+        type: string
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 电话
+        type: string
+      planName:
+        description: 骑士卡
+        type: string
+      success:
+        description: 是否成功
+        type: boolean
+      time:
+        description: 发送时间
+        type: string
+    type: object
   model.ReserveCabinetItem:
     properties:
       business:
@@ -13180,6 +13204,69 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M7006 暂停计费
+      tags:
+      - '[M]管理接口'
+  /manager/v1/subscribe/reminder:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSubscribeReminder
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 剩余天数 (不携带为不筛选)
+        in: query
+        name: days
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end
+        type: string
+      - description: 骑手关键词 (姓名或手机号)
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 骑手ID
+        in: query
+        name: riderId
+        type: integer
+      - description: 开始时间
+        in: query
+        name: start
+        type: string
+      - description: 催费方式, vms:语音 sms:短信
+        enum:
+        - vms
+        - sms
+        in: query
+        name: type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.ReminderListRes'
+                  type: array
+              type: object
+      summary: M7021 催费记录
       tags:
       - '[M]管理接口'
   /manager/v1/subscribe/suspend:

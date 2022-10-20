@@ -142,3 +142,18 @@ func (*subscribe) EbikeChange(c echo.Context) (err error) {
     service.NewManagerSubscribe(ctx.Modifier).ChangeEBike(req)
     return ctx.SendResponse()
 }
+
+// Reminder
+// @ID           ManagerSubscribeReminder
+// @Router       /manager/v1/subscribe/reminder [GET]
+// @Summary      M7021 催费记录
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token header string true "管理员校验token"
+// @Param        query query  model.ReminderListReq false "筛选选项"
+// @Success      200 {object} model.PaginationRes{items=[]model.ReminderListRes} "请求成功"
+func (*subscribe) Reminder(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.ReminderListReq](c)
+    return ctx.SendResponse(service.NewReminder(ctx.Modifier).List(req))
+}

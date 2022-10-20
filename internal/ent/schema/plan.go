@@ -9,6 +9,7 @@ import (
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -59,7 +60,7 @@ func (Plan) Fields() []ent.Field {
     return []ent.Field{
         field.String("model").Optional().Comment("电池型号"),
         field.Bool("enable").Comment("是否启用"),
-        field.Uint8("type").Comment("骑士卡类别 1:单电 2:车加电"),
+        field.Uint8("type").Default(model.PlanTypeBattery.Value()).Comment("骑士卡类别 1:单电 2:车加电"),
         field.String("name").Comment("骑士卡名称"),
         field.Time("start").Comment("有效期开始日期"),
         field.Time("end").Comment("有效期结束日期"),
