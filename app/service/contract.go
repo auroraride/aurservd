@@ -351,35 +351,6 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
     // 设置合同编号
     s.esign.SetSn(sn)
 
-    // 设置个人账户ID
-    flow := esign.CreateFlowReq{
-        Scene:           scene,
-        PersonAccountId: accountId,
-    }
-
-    // 获取模板控件
-    tmpl := s.esign.DocTemplate(templateId)
-    for _, com := range tmpl.StructComponents {
-        switch com.Key {
-        case snKey:
-            m[snKey] = sn
-            break
-        case aurSeal:
-            flow.EntSignBean = esign.PosBean{
-                PosPage: fmt.Sprintf("%v", com.Context.Pos.Page),
-                PosX:    com.Context.Pos.X,
-                PosY:    com.Context.Pos.Y,
-            }
-            break
-        case riderSeal:
-            flow.PsnSignBean = esign.PosBean{
-                PosPage: fmt.Sprintf("%v", com.Context.Pos.Page),
-                PosX:    com.Context.Pos.X,
-                PosY:    com.Context.Pos.Y,
-            }
-        }
-    }
-
     var link, flowId string
     if ar.Config.Debug {
         // TODO DEBUG START
@@ -387,6 +358,35 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
         link = "link"
         // TODO DEBUG END
     } else {
+        // 设置个人账户ID
+        flow := esign.CreateFlowReq{
+            Scene:           scene,
+            PersonAccountId: accountId,
+        }
+
+        // 获取模板控件
+        tmpl := s.esign.DocTemplate(templateId)
+        for _, com := range tmpl.StructComponents {
+            switch com.Key {
+            case snKey:
+                m[snKey] = sn
+                break
+            case aurSeal:
+                flow.EntSignBean = esign.PosBean{
+                    PosPage: fmt.Sprintf("%v", com.Context.Pos.Page),
+                    PosX:    com.Context.Pos.X,
+                    PosY:    com.Context.Pos.Y,
+                }
+                break
+            case riderSeal:
+                flow.PsnSignBean = esign.PosBean{
+                    PosPage: fmt.Sprintf("%v", com.Context.Pos.Page),
+                    PosX:    com.Context.Pos.X,
+                    PosY:    com.Context.Pos.Y,
+                }
+            }
+        }
+
         // 填充内容生成PDF
         pdf := s.esign.CreateByTemplate(esign.CreateByTemplateReq{
             Name:             fmt.Sprintf("%s-%s.pdf", flow.Scene, sn),

@@ -115,6 +115,7 @@ type SubscribeBusiness struct {
     Model          string `json:"model"`                    // 可用电池型号
     EnterpriseName string `json:"enterpriseName,omitempty"` // 企业名称 (个签不存在)
     PlanName       string `json:"planName,omitempty"`       // 骑士卡名称 (团签不存在)
+    Ebike          *Ebike `json:"ebike,omitempty"`          // 骑手电车信息
 }
 
 type UnsubscribeEmployeeReq struct {

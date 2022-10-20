@@ -119,6 +119,7 @@ func (s *businessService) Detail(id uint64) (res model.SubscribeBusiness) {
         IDCardNumber: ic,
         Model:        subd.Model,
         SubscribeID:  subd.ID,
+        Ebike:        subd.Ebike,
     }
 
     if subd.Enterprise != nil {

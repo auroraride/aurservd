@@ -515,12 +515,8 @@ definitions:
     properties:
       ebike:
         allOf:
-        - $ref: '#/definitions/model.EbikeInfo'
+        - $ref: '#/definitions/model.Ebike'
         description: 电车信息
-      ebikeBrand:
-        allOf:
-        - $ref: '#/definitions/model.EbikeBrand'
-        description: 电车品牌信息
       id:
         type: integer
       model:
@@ -2775,23 +2771,6 @@ definitions:
     - brandId
     - exFactory
     - sn
-    type: object
-  model.EbikeInfo:
-    properties:
-      color:
-        description: 颜色
-        type: string
-      exFactory:
-        description: 生产批次
-        type: string
-      id:
-        type: integer
-      plate:
-        description: 车牌号
-        type: string
-      sn:
-        description: 车架号
-        type: string
     type: object
   model.EbikeListRes:
     properties:
@@ -6100,6 +6079,10 @@ definitions:
       business:
         description: 是否可办理业务
         type: boolean
+      ebike:
+        allOf:
+        - $ref: '#/definitions/model.Ebike'
+        description: 骑手电车信息
       enterpriseName:
         description: 企业名称 (个签不存在)
         type: string

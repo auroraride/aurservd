@@ -177,7 +177,7 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.IDPostReq {
 
     // 判定电池库存
     if req.StoreID != nil {
-        if !NewStock().CheckStore(s.entStore.ID, sub.Model, 1) {
+        if !NewStock().CheckStore(*req.StoreID, sub.Model, 1) {
             snag.Panic("电池库存不足")
         }
     }
@@ -227,27 +227,13 @@ func (s *allocateService) detail(al *ent.Allocate) model.AllocateDetail {
             Phone: r.Phone,
             Name:  r.Name,
         },
+        Ebike: NewEbike().Detail(al.Edges.Ebike, al.Edges.Brand),
     }
 
-    bike := al.Edges.Ebike
-    if bike != nil {
-        res.Ebike = &model.EbikeInfo{
-            ID:        bike.ID,
-            SN:        bike.Sn,
-            ExFactory: bike.ExFactory,
-            Plate:     bike.Plate,
-            Color:     bike.Color,
-        }
+    if time.Now().Sub(al.Time).Seconds() > model.AllocateExpiration && res.Status == model.AllocateStatusPending {
+        res.Status = model.AllocateStatusVoid
     }
 
-    brand := al.Edges.Brand
-    if brand != nil {
-        res.EbikeBrand = &model.EbikeBrand{
-            ID:    brand.ID,
-            Name:  brand.Name,
-            Cover: brand.Cover,
-        }
-    }
     return res
 }
 

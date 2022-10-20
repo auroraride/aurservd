@@ -13598,15 +13598,7 @@ const docTemplate = `{
                     "description": "电车信息",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.EbikeInfo"
-                        }
-                    ]
-                },
-                "ebikeBrand": {
-                    "description": "电车品牌信息",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.EbikeBrand"
+                            "$ref": "#/definitions/model.Ebike"
                         }
                     ]
                 },
@@ -16821,30 +16813,6 @@ const docTemplate = `{
                 },
                 "sn": {
                     "description": "车架号 ",
-                    "type": "string"
-                }
-            }
-        },
-        "model.EbikeInfo": {
-            "type": "object",
-            "properties": {
-                "color": {
-                    "description": "颜色",
-                    "type": "string"
-                },
-                "exFactory": {
-                    "description": "生产批次",
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "plate": {
-                    "description": "车牌号",
-                    "type": "string"
-                },
-                "sn": {
-                    "description": "车架号",
                     "type": "string"
                 }
             }
@@ -21604,6 +21572,14 @@ const docTemplate = `{
                 "business": {
                     "description": "是否可办理业务",
                     "type": "boolean"
+                },
+                "ebike": {
+                    "description": "骑手电车信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Ebike"
+                        }
+                    ]
                 },
                 "enterpriseName": {
                     "description": "企业名称 (个签不存在)",

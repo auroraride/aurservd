@@ -27,14 +27,13 @@ type AllocateEmployeeListReq struct {
 }
 
 type AllocateDetail struct {
-    Rider      Rider          `json:"rider" bson:"rider"` // 骑手信息
-    ID         uint64         `json:"id"`
-    Type       string         `json:"type" enums:"battery,ebike"` // 分配类型 battery:单电 ebike:车电
-    Status     AllocateStatus `json:"status"`                     // 1:未激活 2:已签约 3:已作废
-    Time       string         `json:"time"`                       // 分配时间
-    Model      string         `json:"model"`                      // 电池型号
-    Ebike      *EbikeInfo     `json:"ebike,omitempty"`            // 电车信息
-    EbikeBrand *EbikeBrand    `json:"ebikeBrand,omitempty"`       // 电车品牌信息
+    Rider  Rider          `json:"rider" bson:"rider"` // 骑手信息
+    ID     uint64         `json:"id"`
+    Type   string         `json:"type" enums:"battery,ebike"` // 分配类型 battery:单电 ebike:车电
+    Status AllocateStatus `json:"status"`                     // 1:未激活 2:已签约 3:已作废
+    Time   string         `json:"time"`                       // 分配时间
+    Model  string         `json:"model"`                      // 电池型号
+    Ebike  *Ebike         `json:"ebike,omitempty"`            // 电车信息
 }
 
 type AllocateCreateReq struct {

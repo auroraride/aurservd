@@ -26,7 +26,7 @@ func demoOrder() {
     ctx := context.Background()
     fmt.Println(ent.Database.ExecContext(ctx, `TRUNCATE TABLE "subscribe"; TRUNCATE TABLE "order"; TRUNCATE TABLE "contract"; TRUNCATE TABLE "allocate"; UPDATE ebike SET status = 0, rider_id = NULL WHERE status IS NOT NULL;`))
     var result model.PaymentCache
-    _ = jsoniter.Unmarshal(demoBatteryOrder(), &result)
+    _ = jsoniter.Unmarshal(demoEbikeOrder(), &result)
     service.NewOrder().OrderPaid(result.Subscribe)
 }
 
