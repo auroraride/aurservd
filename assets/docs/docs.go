@@ -11368,9 +11368,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/rider/v1/business/allocated": {
+        "/rider/v1/business/allocated/{id}": {
             "get": {
-                "description": "用以判定待激活骑士卡是否需要签约(allocated = true)",
+                "description": "用以判定待激活骑士卡是否需要签约 (allocated = true)",
                 "consumes": [
                     "application/json"
                 ],
@@ -11388,6 +11388,13 @@ const docTemplate = `{
                         "description": "骑手校验token",
                         "name": "X-Rider-Token",
                         "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "订阅ID",
+                        "name": "id",
+                        "in": "path",
                         "required": true
                     }
                 ],

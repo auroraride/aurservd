@@ -117,13 +117,14 @@ func (*business) PauseInfo(c echo.Context) (err error) {
 
 // Allocated
 // @ID           RiderBusinessAllocated
-// @Router       /rider/v1/business/allocated [GET]
+// @Router       /rider/v1/business/allocated/{id} [GET]
 // @Summary      R7009 长连接轮询是否已分配
-// @Description  用以判定待激活骑士卡是否需要签约(allocated = true)
+// @Description  用以判定待激活骑士卡是否需要签约 (allocated = true)
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token header string true "骑手校验token"
+// @Param        id path uint64 true "订阅ID"
 // @Success      200 {object} model.AllocateRiderRes "请求成功"
 func (*business) Allocated(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.IDParamReq](c)

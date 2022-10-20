@@ -13806,11 +13806,11 @@ paths:
       summary: R7001 激活骑士卡
       tags:
       - '[R]骑手接口'
-  /rider/v1/business/allocated:
+  /rider/v1/business/allocated/{id}:
     get:
       consumes:
       - application/json
-      description: 用以判定待激活骑士卡是否需要签约(allocated = true)
+      description: 用以判定待激活骑士卡是否需要签约 (allocated = true)
       operationId: RiderBusinessAllocated
       parameters:
       - description: 骑手校验token
@@ -13818,6 +13818,11 @@ paths:
         name: X-Rider-Token
         required: true
         type: string
+      - description: 订阅ID
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
