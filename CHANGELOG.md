@@ -9,6 +9,14 @@ FROM (SELECT s.rider_id, s.id
       FROM subscribe_reminder sr
                LEFT JOIN subscribe s ON s.id = sr.subscribe_id) t
 WHERE subscribe_reminder.subscribe_id = t.id;
+
+UPDATE stock
+SET name = t.name, brand_id = t.brand_id
+FROM (SELECT b.id AS brand_id, b.name, e.id
+      FROM stock
+               LEFT JOIN ebike e ON e.id = stock.ebike_id
+               LEFT JOIN ebike_brand b ON b.id = e.brand_id) t
+WHERE t.id = stock.ebike_id;
 ```
 
 ## 2022-09-28

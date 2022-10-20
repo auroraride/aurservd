@@ -66,6 +66,7 @@ func (s *ebikeService) QueryKeywordX(keyword string) *ent.Ebike {
 // AllocatableBaseFilter 可分配车辆查询条件 (不包含门店筛选)
 func (s *ebikeService) AllocatableBaseFilter() *ent.EbikeQuery {
     return s.orm.Query().Where(
+        ebike.Enable(true),
         ebike.Status(model.EbikeStatusInStock),
         ebike.PlateNotNil(),
         ebike.MachineNotNil(),

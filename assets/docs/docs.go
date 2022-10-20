@@ -21186,6 +21186,17 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "ebikeTotal": {
+                    "description": "电车总数",
+                    "type": "integer"
+                },
+                "ebikes": {
+                    "description": "电车",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.StockMaterial"
+                    }
+                },
                 "materials": {
                     "description": "非电池物资详情",
                     "type": "array",

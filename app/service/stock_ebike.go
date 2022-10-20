@@ -31,14 +31,7 @@ func (s *stockEbikeService) Loopers(req *model.StockTransferReq) (looppers []mod
     // 查询电车信息
     eq := ent.Database.Ebike.Query()
     if req.InboundTarget == model.StockTargetStore {
-        eq.Where(
-            ebike.Status(model.EbikeStatusInStock),
-            ebike.Enable(true),
-            ebike.PlateNotNil(),
-            ebike.MachineNotNil(),
-            ebike.SimNotNil(),
-            ebike.StoreIDIsNil(),
-        )
+        eq = NewEbike().AllocatableBaseFilter()
     } else {
         // 调拨到平台则状态为 库存中 / 维修中 / 已报废
         eq.Where(
@@ -52,7 +45,7 @@ func (s *stockEbikeService) Loopers(req *model.StockTransferReq) (looppers []mod
         sns[e] = true
     }
 
-    bikes, err := eq.Where(ebike.SnIn(req.Ebikes...)).All(s.ctx)
+    bikes, err := eq.Where(ebike.SnIn(req.Ebikes...)).WithBrand().All(s.ctx)
     if err != nil {
         snag.Panic(err)
     }
@@ -62,9 +55,11 @@ func (s *stockEbikeService) Loopers(req *model.StockTransferReq) (looppers []mod
         delete(sns, bike.Sn)
 
         looppers = append(looppers, model.StockTransferLoopper{
-            EbikeSN: silk.String(bike.Sn),
-            EbikeID: silk.UInt64(bike.ID),
-            Message: bike.Sn,
+            EbikeSN:   silk.String(bike.Sn),
+            EbikeID:   silk.UInt64(bike.ID),
+            Message:   bike.Sn,
+            BrandID:   silk.UInt64(bike.BrandID),
+            BrandName: silk.String(bike.Edges.Brand.Name),
         })
     }
 

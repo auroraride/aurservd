@@ -5752,6 +5752,14 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.City'
         description: 城市
+      ebikeTotal:
+        description: 电车总数
+        type: integer
+      ebikes:
+        description: 电车
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
       materials:
         description: 非电池物资详情
         items:

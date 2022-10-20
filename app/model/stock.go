@@ -54,8 +54,10 @@ func StockNumberOfRiderBusiness(typ uint8) (num int) {
 type StockTransferLoopper struct {
     Message string // 错误提示消息
 
-    EbikeID *uint64 // 电车ID
-    EbikeSN *string // 车架号
+    EbikeID   *uint64 // 电车ID
+    BrandID   *uint64 // 电车型号ID
+    BrandName *string // 电车型号
+    EbikeSN   *string // 车架号
 }
 
 type StockTransferReq struct {
@@ -117,10 +119,7 @@ func (req *StockTransferReq) RealNumber() int {
 }
 
 func (req *StockTransferReq) RealName() string {
-    switch true {
-    case len(req.Ebikes) > 0:
-        return StockNameEbike
-    case req.Model != "":
+    if req.Model != "" {
         return req.Model
     }
     return req.Name
@@ -237,6 +236,8 @@ type StockListRes struct {
     BatteryTotal int              `json:"batteryTotal"` // 电池总数
     Batteries    []*StockMaterial `json:"batteries"`    // 电池详情
     Materials    []*StockMaterial `json:"materials"`    // 非电池物资详情
+    EbikeTotal   int              `json:"ebikeTotal"`   // 电车总数
+    Ebikes       []*StockMaterial `json:"ebikes"`       // 电车
 }
 
 // StockBusinessReq 业务库存调整请求

@@ -79,6 +79,7 @@ func NewStockWithEmployee(e *ent.Employee) *stockService {
     return s
 }
 
+// StoreList 门店物资
 func (s *stockService) StoreList(req *model.StockListReq) *model.PaginationRes {
     q := ent.Database.Store.QueryNotDeleted().
         Where(store.HasStocks()).
@@ -141,19 +142,25 @@ func (s *stockService) StoreList(req *model.StockListReq) *model.PaginationRes {
                 BatteryTotal: 0,
                 Batteries:    make([]*model.StockMaterial, 0),
                 Materials:    make([]*model.StockMaterial, 0),
+                Ebikes:       make([]*model.StockMaterial, 0),
             }
 
             // 计算所有物资
             batteries := make(map[string]*model.StockMaterial)
             materials := make(map[string]*model.StockMaterial)
+            bikes := make(map[string]*model.StockMaterial)
 
             // 出入库
             for _, st := range item.Edges.Stocks {
-                if st.Model != nil {
+                switch true {
+                case st.Model != nil:
                     // 电池
                     s.calculate(batteries, st)
-                } else {
-                    // 物资
+                case st.BrandID != nil:
+                    // 电车
+                    s.calculate(bikes, st)
+                default:
+                    // 其他物资
                     s.calculate(materials, st)
                 }
             }
@@ -169,6 +176,11 @@ func (s *stockService) StoreList(req *model.StockListReq) *model.PaginationRes {
             for _, battery := range batteries {
                 res.Batteries = append(res.Batteries, battery)
                 res.BatteryTotal += battery.Surplus
+            }
+
+            for _, bike := range bikes {
+                res.Ebikes = append(res.Ebikes, bike)
+                res.EbikeTotal += bike.Surplus
             }
 
             for _, material := range materials {
@@ -188,6 +200,7 @@ func (s *stockService) StoreList(req *model.StockListReq) *model.PaginationRes {
     )
 }
 
+// TODO 统计故障电车
 func (s *stockService) calculateException(items map[string]*model.StockMaterial, ex *ent.Exception) {
     name := ex.Name
     if _, ok := items[name]; !ok {
@@ -201,22 +214,29 @@ func (s *stockService) calculateException(items map[string]*model.StockMaterial,
     items[name].Exception += ex.Num
 }
 
+func (s *stockService) getKey(st *ent.Stock) string {
+    if st.BrandID != nil {
+        return fmt.Sprintf("%d", *st.BrandID)
+    }
+    return st.Name
+}
+
 func (s *stockService) calculate(items map[string]*model.StockMaterial, st *ent.Stock) {
-    name := st.Name
-    if _, ok := items[name]; !ok {
-        items[name] = &model.StockMaterial{
-            Name:     name,
+    key := s.getKey(st)
+    if _, ok := items[key]; !ok {
+        items[key] = &model.StockMaterial{
+            Name:     st.Name,
             Outbound: 0,
             Inbound:  0,
             Surplus:  0,
         }
     }
     if st.Num > 0 {
-        items[name].Inbound += st.Num
+        items[key].Inbound += st.Num
     } else {
-        items[name].Outbound += int(math.Abs(float64(st.Num)))
+        items[key].Outbound += int(math.Abs(float64(st.Num)))
     }
-    items[name].Surplus += st.Num
+    items[key].Surplus += st.Num
 }
 
 func (s *stockService) BatteryOverview(req *model.StockOverviewReq) (items []model.StockBatteryOverviewRes) {
@@ -325,13 +345,15 @@ func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (s
         SetNillableSubscribeID(req.SubscribeID).
         SetSn(sn)
 
+    son := creator.Clone()
+
     sk, err = creator.SetName(req.Model).SetModel(req.Model).SetMaterial(stock.MaterialBattery).Save(s.ctx)
     if err != nil {
         return
     }
 
     if req.Ebike != nil {
-        err = creator.Clone().SetParent(sk).SetEbikeID(req.Ebike.ID).SetName(req.Ebike.BrandName).SetBrandID(req.Ebike.BrandID).SetMaterial(stock.MaterialEbike).Exec(s.ctx)
+        err = son.SetParent(sk).SetEbikeID(req.Ebike.ID).SetName(req.Ebike.BrandName).SetBrandID(req.Ebike.BrandID).SetMaterial(stock.MaterialEbike).Exec(s.ctx)
     }
 
     return
@@ -997,7 +1019,8 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
     batchable := req.Batchable()
 
     // 批量调拨, 调出检查
-    if req.OutboundID > 0 && NewStockBatchable().Fetch(req.OutboundTarget, req.OutboundID, name) < req.Num {
+    // 跳过电车
+    if req.OutboundID > 0 && len(req.Ebikes) == 0 && NewStockBatchable().Fetch(req.OutboundTarget, req.OutboundID, name) < req.Num {
         snag.Panic("操作失败, 调出物资大于库存物资")
     }
 
@@ -1012,7 +1035,6 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
     }(req)
 
     outCreator := s.orm.Create().
-        SetName(name).
         SetNillableModel(batteryModel).
         SetNum(-num).
         SetCityID(cityID).
@@ -1027,7 +1049,6 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
     }
 
     inCreator := s.orm.Create().
-        SetName(name).
         SetNillableModel(batteryModel).
         SetNum(num).
         SetCityID(cityID).
@@ -1053,18 +1074,17 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 
     for _, l := range looppers {
         err = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
-
-            // 电车是否可调拨检查
-            if l.EbikeID != nil {
-                if exists, _ := NewEbike().AllocatableBaseFilter().Where(ebike.ID(*l.EbikeID)).Exist(s.ctx); !exists {
-                    return fmt.Errorf("电车无法调拨: %s", l.Message)
-                }
+            // 判定名称
+            if l.BrandName != nil {
+                name = *l.BrandName
             }
 
             // 调出
             var spouse *ent.Stock
             spouse, err = outCreator.
+                SetName(name).
                 SetNillableEbikeID(l.EbikeID).
+                SetNillableBrandID(l.BrandID).
                 Save(s.ctx)
             if err != nil {
                 log.Error(err)
@@ -1076,6 +1096,9 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 
             // 调入
             _, err = inCreator.
+                SetName(name).
+                SetNillableEbikeID(l.EbikeID).
+                SetNillableBrandID(l.BrandID).
                 SetSpouse(spouse).
                 SetNillableEbikeID(l.EbikeID).
                 Save(s.ctx)
