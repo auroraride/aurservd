@@ -312,9 +312,9 @@ func (s *businessRiderService) preprocess(bt business.Type, sub *ent.Subscribe) 
 
     // 车电订阅检查
     if sub.BrandID != nil {
-        // 车电订阅无法办理非激活业务
+        // 车电订阅无法办理寄存相关业务
         // 车电订阅无法使用电柜
-        if bt != business.TypeActive || s.cabinetID != nil {
+        if (bt != business.TypeActive && bt != business.TypeUnsubscribe) || s.cabinetID != nil {
             snag.Panic("车电订阅无法办理此业务")
         }
     }
