@@ -60,8 +60,7 @@ func (*business) Inactive(c echo.Context) (err error) {
 // @Success      200  {object}  model.IDPostReq  "请求成功"
 func (*business) Active(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.AllocateCreateReq](c)
-    service.NewBusinessEmployee(ctx.Employee).Active(req)
-    return ctx.SendResponse()
+    return ctx.SendResponse(service.NewBusinessEmployee(ctx.Employee).Active(req))
 }
 
 // Pause
