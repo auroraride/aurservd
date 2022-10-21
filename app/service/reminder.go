@@ -50,6 +50,7 @@ func (s *reminderService) List(req *model.ReminderListReq) *model.PaginationRes 
     }
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.SubscribeReminder) model.ReminderListRes {
         return model.ReminderListRes{
+            Type:       item.Type.String(),
             Phone:      item.Phone,
             Name:       item.Name,
             Success:    item.Success,

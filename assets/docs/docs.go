@@ -19512,6 +19512,14 @@ const docTemplate = `{
                 "time": {
                     "description": "发送时间",
                     "type": "string"
+                },
+                "type": {
+                    "description": "催费方式, vms:语音 sms:短信",
+                    "type": "string",
+                    "enum": [
+                        "vms",
+                        "sms"
+                    ]
                 }
             }
         },

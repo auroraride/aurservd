@@ -20,11 +20,12 @@ type ReminderListReq struct {
 }
 
 type ReminderListRes struct {
-    Phone      string  `json:"phone"`      // 电话
-    Name       string  `json:"name"`       // 姓名
-    Success    bool    `json:"success"`    // 是否成功
-    Time       string  `json:"time"`       // 发送时间
-    PlanName   string  `json:"planName"`   // 骑士卡
-    Fee        float64 `json:"fee"`        // 逾期费用
-    FeeFormula string  `json:"feeFormula"` // 费用计算公式
+    Type       string  `json:"type" enums:"vms,sms"` // 催费方式, vms:语音 sms:短信
+    Phone      string  `json:"phone"`                // 电话
+    Name       string  `json:"name"`                 // 姓名
+    Success    bool    `json:"success"`              // 是否成功
+    Time       string  `json:"time"`                 // 发送时间
+    PlanName   string  `json:"planName"`             // 骑士卡
+    Fee        float64 `json:"fee"`                  // 逾期费用
+    FeeFormula string  `json:"feeFormula"`           // 费用计算公式
 }
