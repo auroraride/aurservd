@@ -141,10 +141,10 @@ func (s *settingService) SystemMaintainX() {
     }
 }
 
-func (s *settingService) Question() (v []model.SettingQuestion) {
-    v, _ = s.GetSetting(model.SettingQuestions).([]model.SettingQuestion)
+func (s *settingService) Question() (v []interface{}) {
+    v, _ = s.GetSetting(model.SettingQuestions).([]interface{})
     if len(v) == 0 {
-        v = make([]model.SettingQuestion, 0)
+        v = make([]interface{}, 0)
     }
     return v
 }

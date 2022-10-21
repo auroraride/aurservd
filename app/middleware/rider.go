@@ -30,6 +30,7 @@ var (
         "/rider/v1/branch":                    true,
         "/rider/v1/branch/riding":             true,
         "/rider/v1/branch/facility/:fid":      true,
+        "/rider/v1/setting/question":          true,
     }
     riderAuthSkipper = map[string]bool{
         "/rider/v1/profile": true,
