@@ -4917,6 +4917,9 @@ definitions:
       cityId:
         description: 城市筛选
         type: integer
+      ebikeBrandId:
+        description: 电车型号筛选
+        type: integer
       end:
         description: '注册结束时间, 格式为: 2022-01-01'
         type: string
@@ -11904,6 +11907,10 @@ paths:
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
+        type: integer
+      - description: 电车型号筛选
+        in: query
+        name: ebikeBrandId
         type: integer
       - description: '注册结束时间, 格式为: 2022-01-01'
         in: query

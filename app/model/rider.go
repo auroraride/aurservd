@@ -95,13 +95,14 @@ type RiderListFilter struct {
     Enterprise      *uint8            `json:"enterprise,omitempty" query:"enterprise"`                                     // 是否团签, 0:全部 1:团签 2:个签
     EnterpriseID    *uint64           `json:"enterpriseId,omitempty" query:"enterpriseId"`                                 // 团签企业ID, `enterprise = 1`时才会生效
     CityID          *uint64           `json:"cityId,omitempty" query:"cityId"`                                             // 城市筛选
-    Model           string            `json:"model,omitempty" query:"model"`                                               // 电池型号筛选
     Status          *uint8            `json:"status,omitempty" enums:"0,1,2,3,4" query:"status"`                           // 用户状态 1:正常 2:已禁用 3:黑名单
     SubscribeStatus *uint8            `json:"subscribeStatus,omitempty" enums:"0,1,2,3,4,5,11,99" query:"subscribeStatus"` // 业务状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期 99:未使用
     AuthStatus      *PersonAuthStatus `json:"authStatus,omitempty" enums:"0,1,2,3" query:"authStatus"`                     // 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
     PlanID          *uint64           `json:"planId,omitempty" query:"planId"`                                             // 骑士卡
     Remaining       *string           `json:"remaining,omitempty" query:"remaining"`                                       // 订阅剩余天数区间, 逗号分隔, 例如 `0,7`
     Suspend         *bool             `json:"suspend,omitempty" query:"suspend"`                                           // 是否筛选暂停扣费中, 不携带此参数获取全部, 携带此参数`true`暂停中 `false`非暂停
+    Model           string            `json:"model,omitempty" query:"model"`                                               // 电池型号筛选
+    EbikeBrandID    uint64            `json:"ebikeBrandId" query:"ebikeBrandId"`                                           // 电车型号筛选
 }
 
 // RiderItemSubscribe 骑手骑士卡简单信息

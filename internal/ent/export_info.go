@@ -11,6 +11,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/ebike"
+    "github.com/auroraride/aurservd/internal/ent/ebikebrand"
     "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/internal/ent/enterprise"
     "github.com/auroraride/aurservd/internal/ent/plan"
@@ -59,6 +60,10 @@ func (e *Ebike) GetExportInfo() string {
     return e.Sn
 }
 
+func (eb *EbikeBrand) GetExportInfo() string {
+    return eb.Name
+}
+
 type ExportInfo struct {
     id    uint64
     table string
@@ -91,6 +96,8 @@ func (ei *ExportInfo) GetExportInfoData() string {
         m, _ = Database.Store.QueryNotDeleted().Where(store.ID(ei.id)).First(ctx)
     case ebike.Table:
         m, _ = Database.Ebike.Query().Where(ebike.ID(ei.id)).First(ctx)
+    case ebikebrand.Table:
+        m, _ = Database.EbikeBrand.Query().Where(ebikebrand.ID(ei.id)).First(ctx)
     }
     if m == nil {
         return ""

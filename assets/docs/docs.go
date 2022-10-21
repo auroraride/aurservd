@@ -8434,6 +8434,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "电车型号筛选",
+                        "name": "ebikeBrandId",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "注册结束时间, 格式为: 2022-01-01",
                         "name": "end",
@@ -20026,6 +20032,10 @@ const docTemplate = `{
                 },
                 "cityId": {
                     "description": "城市筛选",
+                    "type": "integer"
+                },
+                "ebikeBrandId": {
+                    "description": "电车型号筛选",
                     "type": "integer"
                 },
                 "end": {

@@ -19,6 +19,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/contract"
+    "github.com/auroraride/aurservd/internal/ent/ebikebrand"
     "github.com/auroraride/aurservd/internal/ent/enterprise"
     "github.com/auroraride/aurservd/internal/ent/order"
     "github.com/auroraride/aurservd/internal/ent/person"
@@ -553,6 +554,16 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
             q.Where(rider.HasSubscribesWith(subscribe.SuspendAtIsNil()))
             info["暂停扣费"] = "否"
         }
+    }
+
+    if req.Model != "" {
+        info["电池型号"] = req.Model
+        q.Where(rider.HasSubscribesWith(subscribe.Model(req.Model)))
+    }
+
+    if req.EbikeBrandID != 0 {
+        info["电车型号"] = ent.NewExportInfo(req.EbikeBrandID, ebikebrand.Table)
+        q.Where(rider.HasSubscribesWith(subscribe.BrandID(req.EbikeBrandID)))
     }
     return
 }
