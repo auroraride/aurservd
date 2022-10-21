@@ -185,6 +185,7 @@ func (s *ebikeService) List(req *model.EbikeListReq) *model.PaginationRes {
             SN:        item.Sn,
             BrandID:   item.BrandID,
             ExFactory: item.ExFactory,
+            Status:    item.Status.String(),
             EbikeAttributes: model.EbikeAttributes{
                 Enable:  silk.Pointer(item.Enable),
                 Plate:   item.Plate,

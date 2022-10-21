@@ -623,7 +623,7 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
 
     // 获取合同
     contracts := item.Edges.Contracts
-    if contracts != nil && len(contracts) > 0 {
+    if contracts != nil && len(contracts) > 0 && contracts[0].Files != nil {
         ri.Contract = contracts[0].Files[0]
     }
 

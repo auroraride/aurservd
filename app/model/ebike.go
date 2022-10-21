@@ -88,6 +88,7 @@ type EbikeListRes struct {
     Brand     string `json:"brand,omitempty"` // 品牌
     SN        string `json:"sn"`              // 车架号
     BrandID   uint64 `json:"brandId"`         // 品牌ID
+    Status    string `json:"status"`          // 状态
 }
 
 type EbikeCreateReq struct {

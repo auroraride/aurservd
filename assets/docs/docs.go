@@ -17020,6 +17020,10 @@ const docTemplate = `{
                     "description": "车架号",
                     "type": "string"
                 },
+                "status": {
+                    "description": "状态",
+                    "type": "string"
+                },
                 "store": {
                     "description": "门店",
                     "type": "string"
