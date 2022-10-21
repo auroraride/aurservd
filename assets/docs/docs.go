@@ -21957,12 +21957,11 @@ const docTemplate = `{
         "model.UnsubscribeEmployeeReq": {
             "type": "object",
             "required": [
-                "qrcode",
                 "subscribeId"
             ],
             "properties": {
                 "qrcode": {
-                    "description": "二维码 ",
+                    "description": "二维码",
                     "type": "string"
                 },
                 "subscribeId": {

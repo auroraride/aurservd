@@ -6253,13 +6253,12 @@ definitions:
   model.UnsubscribeEmployeeReq:
     properties:
       qrcode:
-        description: '二维码 '
+        description: 二维码
         type: string
       subscribeId:
         description: '订阅ID '
         type: integer
     required:
-    - qrcode
     - subscribeId
     type: object
   model.WalletOverview:

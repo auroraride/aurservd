@@ -120,5 +120,5 @@ type SubscribeBusiness struct {
 
 type UnsubscribeEmployeeReq struct {
     BusinessSubscribeID
-    QRPostReq
+    Qrcode string `json:"qrcode"` // 二维码
 }

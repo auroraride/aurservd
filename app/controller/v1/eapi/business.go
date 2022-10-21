@@ -107,7 +107,7 @@ func (*business) Continue(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*business) UnSubscribe(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.UnsubscribeEmployeeReq](c)
-    service.NewBusinessRiderWithEmployee(ctx.Employee).UnSubscribe(req.SubscribeID)
+    service.NewBusinessEmployee(ctx.Employee).UnSubscribe(req)
     return ctx.SendResponse()
 }
 

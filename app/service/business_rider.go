@@ -532,9 +532,13 @@ func (s *businessRiderService) Active(info *model.SubscribeActiveInfo, sub *ent.
 
 // UnSubscribe 退租
 // 会抹去欠费情况
-func (s *businessRiderService) UnSubscribe(subscribeID uint64) {
+func (s *businessRiderService) UnSubscribe(subscribeID uint64, fns ...func(sub *ent.Subscribe)) {
 
     s.preprocess(business.TypeUnsubscribe, s.QuerySubscribeWithRider(subscribeID))
+
+    if len(fns) > 0 {
+        fns[0](s.subscribe)
+    }
 
     sub := s.subscribe
 

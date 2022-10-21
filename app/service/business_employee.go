@@ -8,6 +8,7 @@ package service
 import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/ebike"
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "strconv"
@@ -43,4 +44,23 @@ func (s *businessEmployeeService) Active(req *model.AllocateCreateReq) (res mode
     req.StoreID = silk.UInt64(s.entStore.ID)
 
     return NewAllocate().Create(req)
+}
+
+func (s *businessEmployeeService) UnSubscribe(req *model.UnsubscribeEmployeeReq) {
+    NewBusinessRiderWithEmployee(s.entEmployee).UnSubscribe(req.SubscribeID, func(sub *ent.Subscribe) {
+        if sub.BrandID != nil && req.Qrcode == "" {
+            snag.Panic("必须提交车辆信息")
+        }
+        // 校验车辆
+        bike, _ := ent.Database.Ebike.Query().Where(
+            ebike.RiderID(sub.RiderID),
+            ebike.Or(
+                ebike.Sn(req.Qrcode),
+                ebike.Plate(req.Qrcode),
+            ),
+        ).First(s.ctx)
+        if bike == nil {
+            snag.Panic("未找到对应车辆")
+        }
+    })
 }
