@@ -274,16 +274,12 @@ func (s *allocateService) LoopStatus(riderID, subscribeID uint64) (res model.All
             allocate.TimeGT(carbon.Now().SubSeconds(model.AllocateExpiration).Carbon2Time()),
         ).First(s.ctx)
 
-        if allo == nil {
-            continue
-        }
-
-        if allo.Status == model.AllocateStatusSigned.Value() {
+        if allo != nil && allo.Status == model.AllocateStatusPending.Value() {
             res.Allocated = true
             return
         }
 
-        if time.Now().Sub(start).Seconds() > 59 {
+        if time.Now().Sub(start).Seconds() > 50 {
             return
         }
     }
