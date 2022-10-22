@@ -54,6 +54,8 @@ type Contract struct {
 	RiderInfo *model.ContractRider `json:"rider_info,omitempty"`
 	// 电车分配ID
 	AllocateID *uint64 `json:"allocate_id,omitempty"`
+	// 跳转URL
+	Link *string `json:"link,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ContractQuery when eager-loading is set.
 	Edges ContractEdges `json:"edges"`
@@ -137,7 +139,7 @@ func (*Contract) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case contract.FieldID, contract.FieldSubscribeID, contract.FieldEmployeeID, contract.FieldStatus, contract.FieldRiderID, contract.FieldAllocateID:
 			values[i] = new(sql.NullInt64)
-		case contract.FieldRemark, contract.FieldFlowID, contract.FieldSn:
+		case contract.FieldRemark, contract.FieldFlowID, contract.FieldSn, contract.FieldLink:
 			values[i] = new(sql.NullString)
 		case contract.FieldCreatedAt, contract.FieldUpdatedAt, contract.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -270,6 +272,13 @@ func (c *Contract) assignValues(columns []string, values []any) error {
 				c.AllocateID = new(uint64)
 				*c.AllocateID = uint64(value.Int64)
 			}
+		case contract.FieldLink:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field link", values[i])
+			} else if value.Valid {
+				c.Link = new(string)
+				*c.Link = value.String
+			}
 		}
 	}
 	return nil
@@ -372,6 +381,11 @@ func (c *Contract) String() string {
 	if v := c.AllocateID; v != nil {
 		builder.WriteString("allocate_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := c.Link; v != nil {
+		builder.WriteString("link=")
+		builder.WriteString(*v)
 	}
 	builder.WriteByte(')')
 	return builder.String()

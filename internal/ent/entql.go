@@ -443,6 +443,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			contract.FieldEffective:    {Type: field.TypeBool, Column: contract.FieldEffective},
 			contract.FieldRiderInfo:    {Type: field.TypeJSON, Column: contract.FieldRiderInfo},
 			contract.FieldAllocateID:   {Type: field.TypeUint64, Column: contract.FieldAllocateID},
+			contract.FieldLink:         {Type: field.TypeString, Column: contract.FieldLink},
 		},
 	}
 	graph.Nodes[13] = &sqlgraph.Node{
@@ -6217,6 +6218,11 @@ func (f *ContractFilter) WhereRiderInfo(p entql.BytesP) {
 // WhereAllocateID applies the entql uint64 predicate on the allocate_id field.
 func (f *ContractFilter) WhereAllocateID(p entql.Uint64P) {
 	f.Where(p.Field(contract.FieldAllocateID))
+}
+
+// WhereLink applies the entql string predicate on the link field.
+func (f *ContractFilter) WhereLink(p entql.StringP) {
+	f.Where(p.Field(contract.FieldLink))
 }
 
 // WhereHasSubscribe applies a predicate to check if query has an edge subscribe.

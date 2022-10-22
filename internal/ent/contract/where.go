@@ -165,6 +165,13 @@ func AllocateID(v uint64) predicate.Contract {
 	})
 }
 
+// Link applies equality check predicate on the "link" field. It's identical to LinkEQ.
+func Link(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLink), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
@@ -999,6 +1006,119 @@ func AllocateIDIsNil() predicate.Contract {
 func AllocateIDNotNil() predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldAllocateID)))
+	})
+}
+
+// LinkEQ applies the EQ predicate on the "link" field.
+func LinkEQ(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLink), v))
+	})
+}
+
+// LinkNEQ applies the NEQ predicate on the "link" field.
+func LinkNEQ(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldLink), v))
+	})
+}
+
+// LinkIn applies the In predicate on the "link" field.
+func LinkIn(vs ...string) predicate.Contract {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldLink), v...))
+	})
+}
+
+// LinkNotIn applies the NotIn predicate on the "link" field.
+func LinkNotIn(vs ...string) predicate.Contract {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldLink), v...))
+	})
+}
+
+// LinkGT applies the GT predicate on the "link" field.
+func LinkGT(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldLink), v))
+	})
+}
+
+// LinkGTE applies the GTE predicate on the "link" field.
+func LinkGTE(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldLink), v))
+	})
+}
+
+// LinkLT applies the LT predicate on the "link" field.
+func LinkLT(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldLink), v))
+	})
+}
+
+// LinkLTE applies the LTE predicate on the "link" field.
+func LinkLTE(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldLink), v))
+	})
+}
+
+// LinkContains applies the Contains predicate on the "link" field.
+func LinkContains(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldLink), v))
+	})
+}
+
+// LinkHasPrefix applies the HasPrefix predicate on the "link" field.
+func LinkHasPrefix(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldLink), v))
+	})
+}
+
+// LinkHasSuffix applies the HasSuffix predicate on the "link" field.
+func LinkHasSuffix(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldLink), v))
+	})
+}
+
+// LinkIsNil applies the IsNil predicate on the "link" field.
+func LinkIsNil() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldLink)))
+	})
+}
+
+// LinkNotNil applies the NotNil predicate on the "link" field.
+func LinkNotNil() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldLink)))
+	})
+}
+
+// LinkEqualFold applies the EqualFold predicate on the "link" field.
+func LinkEqualFold(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldLink), v))
+	})
+}
+
+// LinkContainsFold applies the ContainsFold predicate on the "link" field.
+func LinkContainsFold(v string) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldLink), v))
 	})
 }
 

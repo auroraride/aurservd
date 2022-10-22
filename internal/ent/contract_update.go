@@ -229,6 +229,26 @@ func (cu *ContractUpdate) ClearAllocateID() *ContractUpdate {
 	return cu
 }
 
+// SetLink sets the "link" field.
+func (cu *ContractUpdate) SetLink(s string) *ContractUpdate {
+	cu.mutation.SetLink(s)
+	return cu
+}
+
+// SetNillableLink sets the "link" field if the given value is not nil.
+func (cu *ContractUpdate) SetNillableLink(s *string) *ContractUpdate {
+	if s != nil {
+		cu.SetLink(*s)
+	}
+	return cu
+}
+
+// ClearLink clears the value of the "link" field.
+func (cu *ContractUpdate) ClearLink() *ContractUpdate {
+	cu.mutation.ClearLink()
+	return cu
+}
+
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (cu *ContractUpdate) SetSubscribe(s *Subscribe) *ContractUpdate {
 	return cu.SetSubscribeID(s.ID)
@@ -506,6 +526,19 @@ func (cu *ContractUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Column: contract.FieldRiderInfo,
+		})
+	}
+	if value, ok := cu.mutation.Link(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: contract.FieldLink,
+		})
+	}
+	if cu.mutation.LinkCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: contract.FieldLink,
 		})
 	}
 	if cu.mutation.SubscribeCleared() {
@@ -864,6 +897,26 @@ func (cuo *ContractUpdateOne) ClearAllocateID() *ContractUpdateOne {
 	return cuo
 }
 
+// SetLink sets the "link" field.
+func (cuo *ContractUpdateOne) SetLink(s string) *ContractUpdateOne {
+	cuo.mutation.SetLink(s)
+	return cuo
+}
+
+// SetNillableLink sets the "link" field if the given value is not nil.
+func (cuo *ContractUpdateOne) SetNillableLink(s *string) *ContractUpdateOne {
+	if s != nil {
+		cuo.SetLink(*s)
+	}
+	return cuo
+}
+
+// ClearLink clears the value of the "link" field.
+func (cuo *ContractUpdateOne) ClearLink() *ContractUpdateOne {
+	cuo.mutation.ClearLink()
+	return cuo
+}
+
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (cuo *ContractUpdateOne) SetSubscribe(s *Subscribe) *ContractUpdateOne {
 	return cuo.SetSubscribeID(s.ID)
@@ -1171,6 +1224,19 @@ func (cuo *ContractUpdateOne) sqlSave(ctx context.Context) (_node *Contract, err
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Column: contract.FieldRiderInfo,
+		})
+	}
+	if value, ok := cuo.mutation.Link(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: contract.FieldLink,
+		})
+	}
+	if cuo.mutation.LinkCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: contract.FieldLink,
 		})
 	}
 	if cuo.mutation.SubscribeCleared() {

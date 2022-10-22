@@ -31,9 +31,9 @@ func demoOrder() {
 }
 
 func demoBatteryOrder() []byte {
-    return []byte(`{"cacheType":1,"create":{"cityId":610100,"orderType":1,"outTradeNo":"202210151653590733151174430","riderId":98784248576,"name":"购买车电骑士卡","amount":0.01,"payway":2,"planId":94489280548,"deposit":0,"pastDays":null,"commission":20,"model":"60V26AH","days":30,"orderId":null,"subscribeId":null,"points":0,"pointRatio":0.01,"couponAmount":0,"coupons":null,"reliefNewly":30}}`)
+    return []byte(`{"cacheType":1,"create":{"cityId":610100,"orderType":1,"outTradeNo":"202210151653590733151174430","riderId":98784248576,"name":"购买车电骑士卡","amount":0.01,"payway":2,"plan":{"id":94489280549,"name":"测试骑行卡"},"deposit":0,"pastDays":null,"commission":20,"model":"60V26AH","days":30,"orderId":null,"subscribeId":null,"points":0,"pointRatio":0.01,"couponAmount":0,"coupons":null,"reliefNewly":30}}`)
 }
 
 func demoEbikeOrder() []byte {
-    return []byte(`{"cacheType":1,"create":{"cityId":610100,"orderType":1,"outTradeNo":"202210151653590733151174430","riderId":98784248576,"name":"购买车电骑士卡","amount":0.01,"payway":2,"planId":94489280549,"deposit":0,"pastDays":null,"commission":20,"model":"60V26AH","days":30,"orderId":null,"subscribeId":null,"points":0,"pointRatio":0.01,"couponAmount":0,"coupons":null,"reliefNewly":30,"ebikeBrandId":210453397505}}`)
+    return []byte(`{"cacheType":1,"create":{"cityId":610100,"orderType":1,"outTradeNo":"202210151653590733151174430","riderId":98784248576,"name":"购买车电骑士卡","amount":0.01,"payway":2,"plan":{"id":94489280549,"name":"测试骑行卡"},"deposit":0,"pastDays":null,"commission":20,"model":"60V26AH","days":30,"orderId":null,"subscribeId":null,"points":0,"pointRatio":0.01,"couponAmount":0,"coupons":null,"reliefNewly":30,"ebikeBrandId":210453397505}}`)
 }

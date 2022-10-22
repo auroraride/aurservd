@@ -205,228 +205,250 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
         }
     }
 
-    // 定义变量
-    var (
-        m            = make(ar.Map)
-        sn           = tools.NewUnique().NewSN()
-        cfg          = s.esign.Config
-        p            = NewPerson().GetNormalAuthedPerson(u)
-        accountId    = p.EsignAccountID
-        isEnterprise = u.EnterpriseID != nil
-        templateId   = cfg.Person.TemplateId
-        scene        = cfg.Person.Scene
-
-        // 电池型号
-        bm = strings.ToUpper(sub.Model)
-        // 当前日期
-        now = time.Now().Format(s.timeLayout)
-    )
-
-    // 填充公共变量
-    // 合同编号
-    m["sn"] = sn
-    // 骑手姓名
-    m["name"] = p.Name
-    // 身份证号
-    m["idcard"] = p.IDCardNumber
-    // 户口地址
-    m["address"] = p.AuthResult.Address
-    // 骑手电话
-    m["phone"] = u.Phone
-    // 限制城市
-    m["city"] = ec.Name
-    // 骑手签字
-    m["riderSign"] = p.Name
-    // 紧急联系人
-    m["riderContact"] = u.Contact.String()
-    // 企业签署日期
-    m["aurDate"] = now
-    // 骑手签署日期
-    m["riderDate"] = now
-
-    var un *model.ContractSignUniversal
-
-    if isEnterprise {
-        // 团签
-        templateId = cfg.Group.TemplateId
-        scene = cfg.Group.Scene
-        // 设置团签字段
-        un = s.enterpriseData(m, sub)
-        // 团签代缴
-        m["payEnt"] = true
-    } else {
-        // 个签骑士卡
-        un = s.planData(sub)
-        // 骑手缴费
-        m["payRider"] = true
+    var link, flowId, sn string
+    skip := false
+    co, _ := s.orm.QueryNotDeleted().Where(contract.SubscribeID(sub.ID), contract.LinkNotNil()).First(s.ctx)
+    // 判定是否生成过合同
+    if co != nil {
+        // 合同处于有效期内跳过生成
+        if time.Now().Sub(co.UpdatedAt).Minutes() < model.ContractExpiration {
+            skip = true
+            link = *co.Link
+            flowId = co.FlowID
+            sn = co.Sn
+        } else {
+            // 否则删除原合同
+            s.orm.DeleteOne(co).ExecX(s.ctx)
+        }
     }
 
-    if un == nil {
-        snag.Panic("合同信息错误")
-    }
+    // 生成合同
+    if !skip {
+        sn = tools.NewUnique().NewSN()
 
-    m["payMonth"] = un.Month
+        // 定义变量
+        var (
+            m            = make(ar.Map)
+            cfg          = s.esign.Config
+            p            = NewPerson().GetNormalAuthedPerson(u)
+            accountId    = p.EsignAccountID
+            isEnterprise = u.EnterpriseID != nil
+            templateId   = cfg.Person.TemplateId
+            scene        = cfg.Person.Scene
 
-    // 电车
-    var employeeID, storeID *uint64
-    if sub.BrandID != nil {
-        // 查找电车分配
-        employeeID = al.EmployeeID
-        storeID = al.StoreID
+            // 电池型号
+            bm = strings.ToUpper(sub.Model)
+            // 当前日期
+            now = time.Now().Format(s.timeLayout)
+        )
 
-        bike, _ := al.QueryEbike().WithBrand().First(s.ctx)
-        if bike == nil || bike.Edges.Brand == nil {
-            snag.Panic("未找到电车信息")
+        // 填充公共变量
+        // 合同编号
+        m["sn"] = sn
+        // 骑手姓名
+        m["name"] = p.Name
+        // 身份证号
+        m["idcard"] = p.IDCardNumber
+        // 户口地址
+        m["address"] = p.AuthResult.Address
+        // 骑手电话
+        m["phone"] = u.Phone
+        // 限制城市
+        m["city"] = ec.Name
+        // 骑手签字
+        m["riderSign"] = p.Name
+        // 紧急联系人
+        m["riderContact"] = u.Contact.String()
+        // 企业签署日期
+        m["aurDate"] = now
+        // 骑手签署日期
+        m["riderDate"] = now
+
+        var un *model.ContractSignUniversal
+
+        if isEnterprise {
+            // 团签
+            templateId = cfg.Group.TemplateId
+            scene = cfg.Group.Scene
+            // 设置团签字段
+            un = s.enterpriseData(m, sub)
+            // 团签代缴
+            m["payEnt"] = true
+        } else {
+            // 个签骑士卡
+            un = s.planData(sub)
+            // 骑手缴费
+            m["payRider"] = true
         }
 
-        brand := bike.Edges.Brand
+        if un == nil {
+            snag.Panic("合同信息错误")
+        }
 
-        // 车加电方案
-        m["schemaEbike"] = true
-        // 车加电方案一
-        m["ebikeScheme1"] = true
-        // 车辆品牌
-        m["ebikeBrand"] = brand.Name
-        // 车辆颜色
-        m["ebikeColor"] = bike.Color
-        // 车架号
-        m["ebikeSN"] = bike.Sn
-        // 车牌号
-        m["ebikePlate"] = bike.Plate
-        // 电池类型
-        m["ebikeBattery"] = "时光驹电池"
-        // 电池规格
-        m["ebikeModel"] = bm
-        // 车电方案一开始日期
-        m["ebikeScheme1Start"] = now
-        // 车电方案一截止日
-        m["ebikeScheme1Stop"] = un.Stop
-        // 车电方案一月租金
-        m["ebikeScheme1Price"] = un.Price
-        // 车电方案一首次缴纳月数
-        m["ebikeScheme1PayMonth"] = un.Month
-        // 车电方案一首次缴纳租金
-        m["ebikeScheme1PayTotal"] = un.Total
-    } else {
-        // 单电方案
-        m["schemaBattery"] = true
-        // 电池规格
-        m["batteryModel"] = bm
-        // 单电方案起租日
-        m["batteryStart"] = now
-        // 单电方案结束日
-        m["batteryStop"] = un.Stop
-        // 单电月租金
-        m["batteryPrice"] = un.Price
-        // 单电方案首次缴纳月数
-        m["batteryPayMonth"] = un.Month
-        // 单电方案首次缴纳租金
-        m["batteryPayTotal"] = un.Total
-    }
+        m["payMonth"] = un.Month
 
-    // 个签选项
-    if sub.PlanID != nil {
-        s.planData(sub)
-    }
+        // 电车
+        var employeeID, storeID *uint64
+        if sub.BrandID != nil {
+            // 查找电车分配
+            employeeID = al.EmployeeID
+            storeID = al.StoreID
 
-    // 创建 / 获取 签约个人账号
-    if accountId == "" {
-        accountId = s.esign.CreatePersonAccount(esign.PersonAccountReq{
-            ThirdPartyUserId: u.Phone,
-            Name:             p.Name,
-            IdType:           "CRED_PSN_CH_IDCARD",
-            IdNumber:         p.IDCardNumber,
-            Mobile:           u.Phone,
-        })
+            bike, _ := al.QueryEbike().WithBrand().First(s.ctx)
+            if bike == nil || bike.Edges.Brand == nil {
+                snag.Panic("未找到电车信息")
+            }
+
+            brand := bike.Edges.Brand
+
+            // 车加电方案
+            m["schemaEbike"] = true
+            // 车加电方案一
+            m["ebikeScheme1"] = true
+            // 车辆品牌
+            m["ebikeBrand"] = brand.Name
+            // 车辆颜色
+            m["ebikeColor"] = bike.Color
+            // 车架号
+            m["ebikeSN"] = bike.Sn
+            // 车牌号
+            m["ebikePlate"] = bike.Plate
+            // 电池类型
+            m["ebikeBattery"] = "时光驹电池"
+            // 电池规格
+            m["ebikeModel"] = bm
+            // 车电方案一开始日期
+            m["ebikeScheme1Start"] = now
+            // 车电方案一截止日
+            m["ebikeScheme1Stop"] = un.Stop
+            // 车电方案一月租金
+            m["ebikeScheme1Price"] = un.Price
+            // 车电方案一首次缴纳月数
+            m["ebikeScheme1PayMonth"] = un.Month
+            // 车电方案一首次缴纳租金
+            m["ebikeScheme1PayTotal"] = un.Total
+        } else {
+            // 单电方案
+            m["schemaBattery"] = true
+            // 电池规格
+            m["batteryModel"] = bm
+            // 单电方案起租日
+            m["batteryStart"] = now
+            // 单电方案结束日
+            m["batteryStop"] = un.Stop
+            // 单电月租金
+            m["batteryPrice"] = un.Price
+            // 单电方案首次缴纳月数
+            m["batteryPayMonth"] = un.Month
+            // 单电方案首次缴纳租金
+            m["batteryPayTotal"] = un.Total
+        }
+
+        // 个签选项
+        if sub.PlanID != nil {
+            s.planData(sub)
+        }
+
+        // 创建 / 获取 签约个人账号
         if accountId == "" {
-            snag.Panic("签署账号生成失败")
-        }
-        // 保存个人账号
-        err := p.Update().SetEsignAccountID(accountId).Exec(context.Background())
-        if err != nil {
-            snag.Panic(err)
-        }
-    }
-
-    // 设置合同编号
-    s.esign.SetSn(sn)
-
-    var link, flowId string
-    if ar.Config.Debug {
-        // TODO DEBUG START
-        flowId = tools.NewUnique().NewSN28()
-        link = "link"
-        // TODO DEBUG END
-    } else {
-        // 设置个人账户ID
-        flow := esign.CreateFlowReq{
-            Scene:           scene,
-            PersonAccountId: accountId,
-        }
-
-        // 获取模板控件
-        tmpl := s.esign.DocTemplate(templateId)
-        for _, com := range tmpl.StructComponents {
-            switch com.Key {
-            case snKey:
-                m[snKey] = sn
-                break
-            case aurSeal:
-                flow.EntSignBean = esign.PosBean{
-                    PosPage: fmt.Sprintf("%v", com.Context.Pos.Page),
-                    PosX:    com.Context.Pos.X,
-                    PosY:    com.Context.Pos.Y,
-                }
-                break
-            case riderSeal:
-                flow.PsnSignBean = esign.PosBean{
-                    PosPage: fmt.Sprintf("%v", com.Context.Pos.Page),
-                    PosX:    com.Context.Pos.X,
-                    PosY:    com.Context.Pos.Y,
-                }
+            accountId = s.esign.CreatePersonAccount(esign.PersonAccountReq{
+                ThirdPartyUserId: u.Phone,
+                Name:             p.Name,
+                IdType:           "CRED_PSN_CH_IDCARD",
+                IdNumber:         p.IDCardNumber,
+                Mobile:           u.Phone,
+            })
+            if accountId == "" {
+                snag.Panic("签署账号生成失败")
+            }
+            // 保存个人账号
+            err := p.Update().SetEsignAccountID(accountId).Exec(context.Background())
+            if err != nil {
+                snag.Panic(err)
             }
         }
 
-        // 填充内容生成PDF
-        pdf := s.esign.CreateByTemplate(esign.CreateByTemplateReq{
-            Name:             fmt.Sprintf("%s-%s.pdf", flow.Scene, sn),
-            SimpleFormFields: m,
-            TemplateId:       templateId,
-        })
-        flow.FileId = pdf.FileId
+        // 设置合同编号
+        s.esign.SetSn(sn)
 
-        // 发起签署，获取flowId
-        flowId = s.esign.CreateFlowOneStep(flow)
+        if ar.Config.Debug {
+            // TODO DEBUG START
+            flowId = tools.NewUnique().NewSN28()
+            link = "link"
+            // TODO DEBUG END
+        } else {
+            // 设置个人账户ID
+            flow := esign.CreateFlowReq{
+                Scene:           scene,
+                PersonAccountId: accountId,
+            }
 
-        // 获取签署链接
-        link = s.esign.ExecuteUrl(flowId, accountId)
-    }
+            // 获取模板控件
+            tmpl := s.esign.DocTemplate(templateId)
+            for _, com := range tmpl.StructComponents {
+                switch com.Key {
+                case snKey:
+                    m[snKey] = sn
+                    break
+                case aurSeal:
+                    flow.EntSignBean = esign.PosBean{
+                        PosPage: fmt.Sprintf("%v", com.Context.Pos.Page),
+                        PosX:    com.Context.Pos.X,
+                        PosY:    com.Context.Pos.Y,
+                    }
+                    break
+                case riderSeal:
+                    flow.PsnSignBean = esign.PosBean{
+                        PosPage: fmt.Sprintf("%v", com.Context.Pos.Page),
+                        PosX:    com.Context.Pos.X,
+                        PosY:    com.Context.Pos.Y,
+                    }
+                }
+            }
 
-    // 存储合同信息
-    var c *ent.Contract
-    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
-        c, err = tx.Contract.Create().
-            SetFlowID(flowId).
-            SetRiderID(u.ID).
-            SetStatus(model.ContractStatusSigning.Value()).
-            SetSn(sn).
-            SetNillableEmployeeID(employeeID).
-            SetAllocateID(al.ID).
-            SetSubscribe(sub).
-            SetRiderInfo(&model.ContractRider{
-                Phone:        u.Phone,
-                Name:         u.Name,
-                IDCardNumber: u.IDCardNumber,
-            }).
-            Save(context.Background())
-        if err != nil {
-            return
+            // 填充内容生成PDF
+            pdf := s.esign.CreateByTemplate(esign.CreateByTemplateReq{
+                Name:             fmt.Sprintf("%s-%s.pdf", flow.Scene, sn),
+                SimpleFormFields: m,
+                TemplateId:       templateId,
+            })
+            flow.FileId = pdf.FileId
+
+            // 发起签署，获取flowId
+            flowId = s.esign.CreateFlowOneStep(flow)
+
+            // 获取签署链接
+            link = s.esign.ExecuteUrl(flowId, accountId)
         }
-        return sub.Update().SetNillableStoreID(storeID).SetNillableEmployeeID(employeeID).Exec(s.ctx)
-    })
 
-    // 监听合同签署结果
-    go s.checkResult(c.FlowID)
+        // 存储合同信息
+        ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+            err = tx.Contract.Create().
+                SetFlowID(flowId).
+                SetRiderID(u.ID).
+                SetStatus(model.ContractStatusSigning.Value()).
+                SetSn(sn).
+                SetNillableEmployeeID(employeeID).
+                SetAllocateID(al.ID).
+                SetSubscribe(sub).
+                SetRiderInfo(&model.ContractRider{
+                    Phone:        u.Phone,
+                    Name:         u.Name,
+                    IDCardNumber: u.IDCardNumber,
+                }).
+                SetLink(link).
+                OnConflictColumns(contract.FieldAllocateID).
+                UpdateNewValues().
+                Exec(context.Background())
+            if err != nil {
+                return
+            }
+            return sub.Update().SetNillableStoreID(storeID).SetNillableEmployeeID(employeeID).Exec(s.ctx)
+        })
+
+        // 监听合同签署结果
+        go s.checkResult(flowId)
+    }
 
     return model.ContractSignRes{
         Url: link,

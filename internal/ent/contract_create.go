@@ -195,6 +195,20 @@ func (cc *ContractCreate) SetNillableAllocateID(u *uint64) *ContractCreate {
 	return cc
 }
 
+// SetLink sets the "link" field.
+func (cc *ContractCreate) SetLink(s string) *ContractCreate {
+	cc.mutation.SetLink(s)
+	return cc
+}
+
+// SetNillableLink sets the "link" field if the given value is not nil.
+func (cc *ContractCreate) SetNillableLink(s *string) *ContractCreate {
+	if s != nil {
+		cc.SetLink(*s)
+	}
+	return cc
+}
+
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (cc *ContractCreate) SetSubscribe(s *Subscribe) *ContractCreate {
 	return cc.SetSubscribeID(s.ID)
@@ -478,6 +492,14 @@ func (cc *ContractCreate) createSpec() (*Contract, *sqlgraph.CreateSpec) {
 			Column: contract.FieldRiderInfo,
 		})
 		_node.RiderInfo = value
+	}
+	if value, ok := cc.mutation.Link(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: contract.FieldLink,
+		})
+		_node.Link = &value
 	}
 	if nodes := cc.mutation.SubscribeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -833,6 +855,24 @@ func (u *ContractUpsert) ClearAllocateID() *ContractUpsert {
 	return u
 }
 
+// SetLink sets the "link" field.
+func (u *ContractUpsert) SetLink(v string) *ContractUpsert {
+	u.Set(contract.FieldLink, v)
+	return u
+}
+
+// UpdateLink sets the "link" field to the value that was provided on create.
+func (u *ContractUpsert) UpdateLink() *ContractUpsert {
+	u.SetExcluded(contract.FieldLink)
+	return u
+}
+
+// ClearLink clears the value of the "link" field.
+func (u *ContractUpsert) ClearLink() *ContractUpsert {
+	u.SetNull(contract.FieldLink)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1137,6 +1177,27 @@ func (u *ContractUpsertOne) UpdateAllocateID() *ContractUpsertOne {
 func (u *ContractUpsertOne) ClearAllocateID() *ContractUpsertOne {
 	return u.Update(func(s *ContractUpsert) {
 		s.ClearAllocateID()
+	})
+}
+
+// SetLink sets the "link" field.
+func (u *ContractUpsertOne) SetLink(v string) *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.SetLink(v)
+	})
+}
+
+// UpdateLink sets the "link" field to the value that was provided on create.
+func (u *ContractUpsertOne) UpdateLink() *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.UpdateLink()
+	})
+}
+
+// ClearLink clears the value of the "link" field.
+func (u *ContractUpsertOne) ClearLink() *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.ClearLink()
 	})
 }
 
@@ -1606,6 +1667,27 @@ func (u *ContractUpsertBulk) UpdateAllocateID() *ContractUpsertBulk {
 func (u *ContractUpsertBulk) ClearAllocateID() *ContractUpsertBulk {
 	return u.Update(func(s *ContractUpsert) {
 		s.ClearAllocateID()
+	})
+}
+
+// SetLink sets the "link" field.
+func (u *ContractUpsertBulk) SetLink(v string) *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.SetLink(v)
+	})
+}
+
+// UpdateLink sets the "link" field to the value that was provided on create.
+func (u *ContractUpsertBulk) UpdateLink() *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.UpdateLink()
+	})
+}
+
+// ClearLink clears the value of the "link" field.
+func (u *ContractUpsertBulk) ClearLink() *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.ClearLink()
 	})
 }
 

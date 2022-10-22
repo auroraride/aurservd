@@ -35,6 +35,7 @@ type ContractMutation struct {
 	files            *[]string
 	effective        *bool
 	rider_info       **model.ContractRider
+	link             *string
 	clearedFields    map[string]struct{}
 	subscribe        *uint64
 	clearedsubscribe bool
@@ -860,6 +861,55 @@ func (m *ContractMutation) ResetAllocateID() {
 	delete(m.clearedFields, contract.FieldAllocateID)
 }
 
+// SetLink sets the "link" field.
+func (m *ContractMutation) SetLink(s string) {
+	m.link = &s
+}
+
+// Link returns the value of the "link" field in the mutation.
+func (m *ContractMutation) Link() (r string, exists bool) {
+	v := m.link
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLink returns the old "link" field's value of the Contract entity.
+// If the Contract object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContractMutation) OldLink(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLink is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLink requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLink: %w", err)
+	}
+	return oldValue.Link, nil
+}
+
+// ClearLink clears the value of the "link" field.
+func (m *ContractMutation) ClearLink() {
+	m.link = nil
+	m.clearedFields[contract.FieldLink] = struct{}{}
+}
+
+// LinkCleared returns if the "link" field was cleared in this mutation.
+func (m *ContractMutation) LinkCleared() bool {
+	_, ok := m.clearedFields[contract.FieldLink]
+	return ok
+}
+
+// ResetLink resets all changes to the "link" field.
+func (m *ContractMutation) ResetLink() {
+	m.link = nil
+	delete(m.clearedFields, contract.FieldLink)
+}
+
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *ContractMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
@@ -983,7 +1033,7 @@ func (m *ContractMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ContractMutation) Fields() []string {
-	fields := make([]string, 0, 16)
+	fields := make([]string, 0, 17)
 	if m.created_at != nil {
 		fields = append(fields, contract.FieldCreatedAt)
 	}
@@ -1032,6 +1082,9 @@ func (m *ContractMutation) Fields() []string {
 	if m.allocate != nil {
 		fields = append(fields, contract.FieldAllocateID)
 	}
+	if m.link != nil {
+		fields = append(fields, contract.FieldLink)
+	}
 	return fields
 }
 
@@ -1072,6 +1125,8 @@ func (m *ContractMutation) Field(name string) (ent.Value, bool) {
 		return m.RiderInfo()
 	case contract.FieldAllocateID:
 		return m.AllocateID()
+	case contract.FieldLink:
+		return m.Link()
 	}
 	return nil, false
 }
@@ -1113,6 +1168,8 @@ func (m *ContractMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldRiderInfo(ctx)
 	case contract.FieldAllocateID:
 		return m.OldAllocateID(ctx)
+	case contract.FieldLink:
+		return m.OldLink(ctx)
 	}
 	return nil, fmt.Errorf("unknown Contract field %s", name)
 }
@@ -1234,6 +1291,13 @@ func (m *ContractMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetAllocateID(v)
 		return nil
+	case contract.FieldLink:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLink(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Contract field %s", name)
 }
@@ -1306,6 +1370,9 @@ func (m *ContractMutation) ClearedFields() []string {
 	if m.FieldCleared(contract.FieldAllocateID) {
 		fields = append(fields, contract.FieldAllocateID)
 	}
+	if m.FieldCleared(contract.FieldLink) {
+		fields = append(fields, contract.FieldLink)
+	}
 	return fields
 }
 
@@ -1346,6 +1413,9 @@ func (m *ContractMutation) ClearField(name string) error {
 		return nil
 	case contract.FieldAllocateID:
 		m.ClearAllocateID()
+		return nil
+	case contract.FieldLink:
+		m.ClearLink()
 		return nil
 	}
 	return fmt.Errorf("unknown Contract nullable field %s", name)
@@ -1402,6 +1472,9 @@ func (m *ContractMutation) ResetField(name string) error {
 		return nil
 	case contract.FieldAllocateID:
 		m.ResetAllocateID()
+		return nil
+	case contract.FieldLink:
+		m.ResetLink()
 		return nil
 	}
 	return fmt.Errorf("unknown Contract field %s", name)
