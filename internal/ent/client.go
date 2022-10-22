@@ -1198,8 +1198,7 @@ func (c *BatteryModelClient) QueryCabinets(bm *BatteryModel) *CabinetQuery {
 
 // Hooks returns the client hooks.
 func (c *BatteryModelClient) Hooks() []Hook {
-	hooks := c.hooks.BatteryModel
-	return append(hooks[:len(hooks):len(hooks)], batterymodel.Hooks[:]...)
+	return c.hooks.BatteryModel
 }
 
 // BranchClient is a client for the Branch schema.

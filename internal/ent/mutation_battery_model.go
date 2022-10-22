@@ -9,7 +9,6 @@ import (
     "errors"
     "time"
     "github.com/auroraride/aurservd/internal/ent/batterymodel"
-    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/predicate"
 
     "entgo.io/ent"
@@ -22,14 +21,8 @@ type BatteryModelMutation struct {
 	op              Op
 	typ             string
 	id              *uint64
-	created_at      *time.Time
-	updated_at      *time.Time
-	deleted_at      *time.Time
-	creator         **model.Modifier
-	last_modifier   **model.Modifier
-	remark          *string
 	model           *string
-	enable          *bool
+	created_at      *time.Time
 	clearedFields   map[string]struct{}
 	cabinets        map[uint64]struct{}
 	removedcabinets map[uint64]struct{}
@@ -137,274 +130,6 @@ func (m *BatteryModelMutation) IDs(ctx context.Context) ([]uint64, error) {
 	}
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (m *BatteryModelMutation) SetCreatedAt(t time.Time) {
-	m.created_at = &t
-}
-
-// CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *BatteryModelMutation) CreatedAt() (r time.Time, exists bool) {
-	v := m.created_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreatedAt returns the old "created_at" field's value of the BatteryModel entity.
-// If the BatteryModel object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BatteryModelMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
-	}
-	return oldValue.CreatedAt, nil
-}
-
-// ResetCreatedAt resets all changes to the "created_at" field.
-func (m *BatteryModelMutation) ResetCreatedAt() {
-	m.created_at = nil
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (m *BatteryModelMutation) SetUpdatedAt(t time.Time) {
-	m.updated_at = &t
-}
-
-// UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *BatteryModelMutation) UpdatedAt() (r time.Time, exists bool) {
-	v := m.updated_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUpdatedAt returns the old "updated_at" field's value of the BatteryModel entity.
-// If the BatteryModel object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BatteryModelMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
-	}
-	return oldValue.UpdatedAt, nil
-}
-
-// ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *BatteryModelMutation) ResetUpdatedAt() {
-	m.updated_at = nil
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (m *BatteryModelMutation) SetDeletedAt(t time.Time) {
-	m.deleted_at = &t
-}
-
-// DeletedAt returns the value of the "deleted_at" field in the mutation.
-func (m *BatteryModelMutation) DeletedAt() (r time.Time, exists bool) {
-	v := m.deleted_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDeletedAt returns the old "deleted_at" field's value of the BatteryModel entity.
-// If the BatteryModel object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BatteryModelMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
-	}
-	return oldValue.DeletedAt, nil
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (m *BatteryModelMutation) ClearDeletedAt() {
-	m.deleted_at = nil
-	m.clearedFields[batterymodel.FieldDeletedAt] = struct{}{}
-}
-
-// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
-func (m *BatteryModelMutation) DeletedAtCleared() bool {
-	_, ok := m.clearedFields[batterymodel.FieldDeletedAt]
-	return ok
-}
-
-// ResetDeletedAt resets all changes to the "deleted_at" field.
-func (m *BatteryModelMutation) ResetDeletedAt() {
-	m.deleted_at = nil
-	delete(m.clearedFields, batterymodel.FieldDeletedAt)
-}
-
-// SetCreator sets the "creator" field.
-func (m *BatteryModelMutation) SetCreator(value *model.Modifier) {
-	m.creator = &value
-}
-
-// Creator returns the value of the "creator" field in the mutation.
-func (m *BatteryModelMutation) Creator() (r *model.Modifier, exists bool) {
-	v := m.creator
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreator returns the old "creator" field's value of the BatteryModel entity.
-// If the BatteryModel object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BatteryModelMutation) OldCreator(ctx context.Context) (v *model.Modifier, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreator is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreator requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreator: %w", err)
-	}
-	return oldValue.Creator, nil
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (m *BatteryModelMutation) ClearCreator() {
-	m.creator = nil
-	m.clearedFields[batterymodel.FieldCreator] = struct{}{}
-}
-
-// CreatorCleared returns if the "creator" field was cleared in this mutation.
-func (m *BatteryModelMutation) CreatorCleared() bool {
-	_, ok := m.clearedFields[batterymodel.FieldCreator]
-	return ok
-}
-
-// ResetCreator resets all changes to the "creator" field.
-func (m *BatteryModelMutation) ResetCreator() {
-	m.creator = nil
-	delete(m.clearedFields, batterymodel.FieldCreator)
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (m *BatteryModelMutation) SetLastModifier(value *model.Modifier) {
-	m.last_modifier = &value
-}
-
-// LastModifier returns the value of the "last_modifier" field in the mutation.
-func (m *BatteryModelMutation) LastModifier() (r *model.Modifier, exists bool) {
-	v := m.last_modifier
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldLastModifier returns the old "last_modifier" field's value of the BatteryModel entity.
-// If the BatteryModel object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BatteryModelMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastModifier is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastModifier requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastModifier: %w", err)
-	}
-	return oldValue.LastModifier, nil
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (m *BatteryModelMutation) ClearLastModifier() {
-	m.last_modifier = nil
-	m.clearedFields[batterymodel.FieldLastModifier] = struct{}{}
-}
-
-// LastModifierCleared returns if the "last_modifier" field was cleared in this mutation.
-func (m *BatteryModelMutation) LastModifierCleared() bool {
-	_, ok := m.clearedFields[batterymodel.FieldLastModifier]
-	return ok
-}
-
-// ResetLastModifier resets all changes to the "last_modifier" field.
-func (m *BatteryModelMutation) ResetLastModifier() {
-	m.last_modifier = nil
-	delete(m.clearedFields, batterymodel.FieldLastModifier)
-}
-
-// SetRemark sets the "remark" field.
-func (m *BatteryModelMutation) SetRemark(s string) {
-	m.remark = &s
-}
-
-// Remark returns the value of the "remark" field in the mutation.
-func (m *BatteryModelMutation) Remark() (r string, exists bool) {
-	v := m.remark
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRemark returns the old "remark" field's value of the BatteryModel entity.
-// If the BatteryModel object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BatteryModelMutation) OldRemark(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRemark requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRemark: %w", err)
-	}
-	return oldValue.Remark, nil
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (m *BatteryModelMutation) ClearRemark() {
-	m.remark = nil
-	m.clearedFields[batterymodel.FieldRemark] = struct{}{}
-}
-
-// RemarkCleared returns if the "remark" field was cleared in this mutation.
-func (m *BatteryModelMutation) RemarkCleared() bool {
-	_, ok := m.clearedFields[batterymodel.FieldRemark]
-	return ok
-}
-
-// ResetRemark resets all changes to the "remark" field.
-func (m *BatteryModelMutation) ResetRemark() {
-	m.remark = nil
-	delete(m.clearedFields, batterymodel.FieldRemark)
-}
-
 // SetModel sets the "model" field.
 func (m *BatteryModelMutation) SetModel(s string) {
 	m.model = &s
@@ -441,40 +166,40 @@ func (m *BatteryModelMutation) ResetModel() {
 	m.model = nil
 }
 
-// SetEnable sets the "enable" field.
-func (m *BatteryModelMutation) SetEnable(b bool) {
-	m.enable = &b
+// SetCreatedAt sets the "created_at" field.
+func (m *BatteryModelMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
 }
 
-// Enable returns the value of the "enable" field in the mutation.
-func (m *BatteryModelMutation) Enable() (r bool, exists bool) {
-	v := m.enable
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *BatteryModelMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldEnable returns the old "enable" field's value of the BatteryModel entity.
+// OldCreatedAt returns the old "created_at" field's value of the BatteryModel entity.
 // If the BatteryModel object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BatteryModelMutation) OldEnable(ctx context.Context) (v bool, err error) {
+func (m *BatteryModelMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldEnable is only allowed on UpdateOne operations")
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldEnable requires an ID field in the mutation")
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldEnable: %w", err)
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
 	}
-	return oldValue.Enable, nil
+	return oldValue.CreatedAt, nil
 }
 
-// ResetEnable resets all changes to the "enable" field.
-func (m *BatteryModelMutation) ResetEnable() {
-	m.enable = nil
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *BatteryModelMutation) ResetCreatedAt() {
+	m.created_at = nil
 }
 
 // AddCabinetIDs adds the "cabinets" edge to the Cabinet entity by ids.
@@ -550,30 +275,12 @@ func (m *BatteryModelMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *BatteryModelMutation) Fields() []string {
-	fields := make([]string, 0, 8)
-	if m.created_at != nil {
-		fields = append(fields, batterymodel.FieldCreatedAt)
-	}
-	if m.updated_at != nil {
-		fields = append(fields, batterymodel.FieldUpdatedAt)
-	}
-	if m.deleted_at != nil {
-		fields = append(fields, batterymodel.FieldDeletedAt)
-	}
-	if m.creator != nil {
-		fields = append(fields, batterymodel.FieldCreator)
-	}
-	if m.last_modifier != nil {
-		fields = append(fields, batterymodel.FieldLastModifier)
-	}
-	if m.remark != nil {
-		fields = append(fields, batterymodel.FieldRemark)
-	}
+	fields := make([]string, 0, 2)
 	if m.model != nil {
 		fields = append(fields, batterymodel.FieldModel)
 	}
-	if m.enable != nil {
-		fields = append(fields, batterymodel.FieldEnable)
+	if m.created_at != nil {
+		fields = append(fields, batterymodel.FieldCreatedAt)
 	}
 	return fields
 }
@@ -583,22 +290,10 @@ func (m *BatteryModelMutation) Fields() []string {
 // schema.
 func (m *BatteryModelMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case batterymodel.FieldCreatedAt:
-		return m.CreatedAt()
-	case batterymodel.FieldUpdatedAt:
-		return m.UpdatedAt()
-	case batterymodel.FieldDeletedAt:
-		return m.DeletedAt()
-	case batterymodel.FieldCreator:
-		return m.Creator()
-	case batterymodel.FieldLastModifier:
-		return m.LastModifier()
-	case batterymodel.FieldRemark:
-		return m.Remark()
 	case batterymodel.FieldModel:
 		return m.Model()
-	case batterymodel.FieldEnable:
-		return m.Enable()
+	case batterymodel.FieldCreatedAt:
+		return m.CreatedAt()
 	}
 	return nil, false
 }
@@ -608,22 +303,10 @@ func (m *BatteryModelMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *BatteryModelMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case batterymodel.FieldCreatedAt:
-		return m.OldCreatedAt(ctx)
-	case batterymodel.FieldUpdatedAt:
-		return m.OldUpdatedAt(ctx)
-	case batterymodel.FieldDeletedAt:
-		return m.OldDeletedAt(ctx)
-	case batterymodel.FieldCreator:
-		return m.OldCreator(ctx)
-	case batterymodel.FieldLastModifier:
-		return m.OldLastModifier(ctx)
-	case batterymodel.FieldRemark:
-		return m.OldRemark(ctx)
 	case batterymodel.FieldModel:
 		return m.OldModel(ctx)
-	case batterymodel.FieldEnable:
-		return m.OldEnable(ctx)
+	case batterymodel.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown BatteryModel field %s", name)
 }
@@ -633,48 +316,6 @@ func (m *BatteryModelMutation) OldField(ctx context.Context, name string) (ent.V
 // type.
 func (m *BatteryModelMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case batterymodel.FieldCreatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreatedAt(v)
-		return nil
-	case batterymodel.FieldUpdatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUpdatedAt(v)
-		return nil
-	case batterymodel.FieldDeletedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDeletedAt(v)
-		return nil
-	case batterymodel.FieldCreator:
-		v, ok := value.(*model.Modifier)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreator(v)
-		return nil
-	case batterymodel.FieldLastModifier:
-		v, ok := value.(*model.Modifier)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetLastModifier(v)
-		return nil
-	case batterymodel.FieldRemark:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRemark(v)
-		return nil
 	case batterymodel.FieldModel:
 		v, ok := value.(string)
 		if !ok {
@@ -682,12 +323,12 @@ func (m *BatteryModelMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetModel(v)
 		return nil
-	case batterymodel.FieldEnable:
-		v, ok := value.(bool)
+	case batterymodel.FieldCreatedAt:
+		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetEnable(v)
+		m.SetCreatedAt(v)
 		return nil
 	}
 	return fmt.Errorf("unknown BatteryModel field %s", name)
@@ -718,20 +359,7 @@ func (m *BatteryModelMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *BatteryModelMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(batterymodel.FieldDeletedAt) {
-		fields = append(fields, batterymodel.FieldDeletedAt)
-	}
-	if m.FieldCleared(batterymodel.FieldCreator) {
-		fields = append(fields, batterymodel.FieldCreator)
-	}
-	if m.FieldCleared(batterymodel.FieldLastModifier) {
-		fields = append(fields, batterymodel.FieldLastModifier)
-	}
-	if m.FieldCleared(batterymodel.FieldRemark) {
-		fields = append(fields, batterymodel.FieldRemark)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -744,20 +372,6 @@ func (m *BatteryModelMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *BatteryModelMutation) ClearField(name string) error {
-	switch name {
-	case batterymodel.FieldDeletedAt:
-		m.ClearDeletedAt()
-		return nil
-	case batterymodel.FieldCreator:
-		m.ClearCreator()
-		return nil
-	case batterymodel.FieldLastModifier:
-		m.ClearLastModifier()
-		return nil
-	case batterymodel.FieldRemark:
-		m.ClearRemark()
-		return nil
-	}
 	return fmt.Errorf("unknown BatteryModel nullable field %s", name)
 }
 
@@ -765,29 +379,11 @@ func (m *BatteryModelMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *BatteryModelMutation) ResetField(name string) error {
 	switch name {
-	case batterymodel.FieldCreatedAt:
-		m.ResetCreatedAt()
-		return nil
-	case batterymodel.FieldUpdatedAt:
-		m.ResetUpdatedAt()
-		return nil
-	case batterymodel.FieldDeletedAt:
-		m.ResetDeletedAt()
-		return nil
-	case batterymodel.FieldCreator:
-		m.ResetCreator()
-		return nil
-	case batterymodel.FieldLastModifier:
-		m.ResetLastModifier()
-		return nil
-	case batterymodel.FieldRemark:
-		m.ResetRemark()
-		return nil
 	case batterymodel.FieldModel:
 		m.ResetModel()
 		return nil
-	case batterymodel.FieldEnable:
-		m.ResetEnable()
+	case batterymodel.FieldCreatedAt:
+		m.ResetCreatedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown BatteryModel field %s", name)

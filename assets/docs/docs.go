@@ -14627,7 +14627,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "model": {
-                    "description": "电池型号, 例如60V30AH",
+                    "description": "电池型号(POST), 例如60V30AH",
                     "type": "string"
                 }
             }

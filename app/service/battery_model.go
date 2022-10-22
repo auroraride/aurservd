@@ -13,7 +13,6 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "regexp"
     "strings"
-    "time"
 )
 
 type batteryModelService struct {
@@ -64,7 +63,7 @@ func NewBatteryModelWithEmployee(e *ent.Employee) *batteryModelService {
 func (s *batteryModelService) List() (res *model.ItemListRes) {
     res = new(model.ItemListRes)
     var items []model.BatteryModel
-    s.orm.QueryNotDeleted().
+    s.orm.Query().
         Select(batterymodel.FieldID, batterymodel.FieldModel).
         ScanX(s.ctx, &items)
 
@@ -79,7 +78,7 @@ func (s *batteryModelService) CreateModel(req *model.BatteryModelReq) model.Batt
         snag.Panic("电池型号名称校验失败")
     }
     // 查找同型号电池是否存在
-    if s.orm.QueryNotDeleted().
+    if s.orm.Query().
         Where(batterymodel.Model(req.Model)).
         ExistX(s.ctx) {
         snag.Panic("电池型号已存在")
@@ -95,8 +94,7 @@ func (s *batteryModelService) CreateModel(req *model.BatteryModelReq) model.Batt
 }
 
 // Query 查询电池型号
-// params 0(deleted)如果为true 则查询已删除的
-func (s *batteryModelService) Query(t any, params ...bool) (*ent.BatteryModel, error) {
+func (s *batteryModelService) Query(t any) (*ent.BatteryModel, error) {
     q := s.orm.Query()
     switch u := t.(type) {
     case uint64:
@@ -106,14 +104,11 @@ func (s *batteryModelService) Query(t any, params ...bool) (*ent.BatteryModel, e
     default:
         snag.Panic("参数错误")
     }
-    if len(params) > 0 && params[0] {
-        q.Where(batterymodel.DeletedAtIsNil())
-    }
     return q.First(s.ctx)
 }
 
-func (s *batteryModelService) QueryX(t any, params ...bool) *ent.BatteryModel {
-    bm, _ := s.Query(t, params...)
+func (s *batteryModelService) QueryX(t any) *ent.BatteryModel {
+    bm, _ := s.Query(t)
     if bm == nil {
         snag.Panic("未找到电池型号")
     }
@@ -122,11 +117,11 @@ func (s *batteryModelService) QueryX(t any, params ...bool) *ent.BatteryModel {
 
 // QueryIDs 根据ID查询电池型号
 func (s *batteryModelService) QueryIDs(ids []uint64) []*ent.BatteryModel {
-    return s.orm.QueryNotDeleted().Where(batterymodel.IDIn(ids...)).AllX(s.ctx)
+    return s.orm.Query().Where(batterymodel.IDIn(ids...)).AllX(s.ctx)
 }
 
 func (s *batteryModelService) QueryModelsX(models []string) []*ent.BatteryModel {
-    items, _ := s.orm.QueryNotDeleted().Where(batterymodel.ModelIn(models...)).All(s.ctx)
+    items, _ := s.orm.Query().Where(batterymodel.ModelIn(models...)).All(s.ctx)
     if len(items) != len(models) {
         snag.Panic("电池型号查询失败")
     }
@@ -135,7 +130,7 @@ func (s *batteryModelService) QueryModelsX(models []string) []*ent.BatteryModel 
 
 // Models 列出所有电池型号
 func (s *batteryModelService) Models() []string {
-    items, _ := s.orm.QueryNotDeleted().Where(batterymodel.Enable(true)).All(s.ctx)
+    items, _ := s.orm.Query().All(s.ctx)
     out := make([]string, len(items))
     for i, item := range items {
         out[i] = item.Model
@@ -145,5 +140,5 @@ func (s *batteryModelService) Models() []string {
 
 // Delete 删除电池型号
 func (s *batteryModelService) Delete(req *model.BatteryModelReq) {
-    s.QueryX(req.Model).Update().SetDeletedAt(time.Now()).ExecX(s.ctx)
+    s.orm.DeleteOne(s.QueryX(req.Model)).ExecX(s.ctx)
 }

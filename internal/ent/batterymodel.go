@@ -3,13 +3,11 @@
 package ent
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 )
 
@@ -18,22 +16,10 @@ type BatteryModel struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID uint64 `json:"id,omitempty"`
-	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
-	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
-	// 创建人
-	Creator *model.Modifier `json:"creator,omitempty"`
-	// 最后修改人
-	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
-	// 管理员改动原因/备注
-	Remark string `json:"remark,omitempty"`
 	// 型号
 	Model string `json:"model,omitempty"`
-	// 是否启用
-	Enable bool `json:"enable,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the BatteryModelQuery when eager-loading is set.
 	Edges BatteryModelEdges `json:"edges"`
@@ -62,15 +48,11 @@ func (*BatteryModel) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case batterymodel.FieldCreator, batterymodel.FieldLastModifier:
-			values[i] = new([]byte)
-		case batterymodel.FieldEnable:
-			values[i] = new(sql.NullBool)
 		case batterymodel.FieldID:
 			values[i] = new(sql.NullInt64)
-		case batterymodel.FieldRemark, batterymodel.FieldModel:
+		case batterymodel.FieldModel:
 			values[i] = new(sql.NullString)
-		case batterymodel.FieldCreatedAt, batterymodel.FieldUpdatedAt, batterymodel.FieldDeletedAt:
+		case batterymodel.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type BatteryModel", columns[i])
@@ -93,58 +75,17 @@ func (bm *BatteryModel) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			bm.ID = uint64(value.Int64)
-		case batterymodel.FieldCreatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field created_at", values[i])
-			} else if value.Valid {
-				bm.CreatedAt = value.Time
-			}
-		case batterymodel.FieldUpdatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
-			} else if value.Valid {
-				bm.UpdatedAt = value.Time
-			}
-		case batterymodel.FieldDeletedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
-			} else if value.Valid {
-				bm.DeletedAt = new(time.Time)
-				*bm.DeletedAt = value.Time
-			}
-		case batterymodel.FieldCreator:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field creator", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &bm.Creator); err != nil {
-					return fmt.Errorf("unmarshal field creator: %w", err)
-				}
-			}
-		case batterymodel.FieldLastModifier:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field last_modifier", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &bm.LastModifier); err != nil {
-					return fmt.Errorf("unmarshal field last_modifier: %w", err)
-				}
-			}
-		case batterymodel.FieldRemark:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field remark", values[i])
-			} else if value.Valid {
-				bm.Remark = value.String
-			}
 		case batterymodel.FieldModel:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field model", values[i])
 			} else if value.Valid {
 				bm.Model = value.String
 			}
-		case batterymodel.FieldEnable:
-			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field enable", values[i])
+		case batterymodel.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				bm.Enable = value.Bool
+				bm.CreatedAt = value.Time
 			}
 		}
 	}
@@ -179,31 +120,11 @@ func (bm *BatteryModel) String() string {
 	var builder strings.Builder
 	builder.WriteString("BatteryModel(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", bm.ID))
-	builder.WriteString("created_at=")
-	builder.WriteString(bm.CreatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("updated_at=")
-	builder.WriteString(bm.UpdatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	if v := bm.DeletedAt; v != nil {
-		builder.WriteString("deleted_at=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
-	builder.WriteString(", ")
-	builder.WriteString("creator=")
-	builder.WriteString(fmt.Sprintf("%v", bm.Creator))
-	builder.WriteString(", ")
-	builder.WriteString("last_modifier=")
-	builder.WriteString(fmt.Sprintf("%v", bm.LastModifier))
-	builder.WriteString(", ")
-	builder.WriteString("remark=")
-	builder.WriteString(bm.Remark)
-	builder.WriteString(", ")
 	builder.WriteString("model=")
 	builder.WriteString(bm.Model)
 	builder.WriteString(", ")
-	builder.WriteString("enable=")
-	builder.WriteString(fmt.Sprintf("%v", bm.Enable))
+	builder.WriteString("created_at=")
+	builder.WriteString(bm.CreatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

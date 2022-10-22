@@ -291,12 +291,12 @@ func (bmq *BatteryModelQuery) WithCabinets(opts ...func(*CabinetQuery)) *Battery
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		Model string `json:"model,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.BatteryModel.Query().
-//		GroupBy(batterymodel.FieldCreatedAt).
+//		GroupBy(batterymodel.FieldModel).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (bmq *BatteryModelQuery) GroupBy(field string, fields ...string) *BatteryModelGroupBy {
@@ -319,11 +319,11 @@ func (bmq *BatteryModelQuery) GroupBy(field string, fields ...string) *BatteryMo
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		Model string `json:"model,omitempty"`
 //	}
 //
 //	client.BatteryModel.Query().
-//		Select(batterymodel.FieldCreatedAt).
+//		Select(batterymodel.FieldModel).
 //		Scan(ctx, &v)
 func (bmq *BatteryModelQuery) Select(fields ...string) *BatteryModelSelect {
 	bmq.fields = append(bmq.fields, fields...)

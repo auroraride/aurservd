@@ -6,12 +6,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -31,81 +29,9 @@ func (bmu *BatteryModelUpdate) Where(ps ...predicate.BatteryModel) *BatteryModel
 	return bmu
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (bmu *BatteryModelUpdate) SetUpdatedAt(t time.Time) *BatteryModelUpdate {
-	bmu.mutation.SetUpdatedAt(t)
-	return bmu
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (bmu *BatteryModelUpdate) SetDeletedAt(t time.Time) *BatteryModelUpdate {
-	bmu.mutation.SetDeletedAt(t)
-	return bmu
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (bmu *BatteryModelUpdate) SetNillableDeletedAt(t *time.Time) *BatteryModelUpdate {
-	if t != nil {
-		bmu.SetDeletedAt(*t)
-	}
-	return bmu
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (bmu *BatteryModelUpdate) ClearDeletedAt() *BatteryModelUpdate {
-	bmu.mutation.ClearDeletedAt()
-	return bmu
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (bmu *BatteryModelUpdate) SetLastModifier(m *model.Modifier) *BatteryModelUpdate {
-	bmu.mutation.SetLastModifier(m)
-	return bmu
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (bmu *BatteryModelUpdate) ClearLastModifier() *BatteryModelUpdate {
-	bmu.mutation.ClearLastModifier()
-	return bmu
-}
-
-// SetRemark sets the "remark" field.
-func (bmu *BatteryModelUpdate) SetRemark(s string) *BatteryModelUpdate {
-	bmu.mutation.SetRemark(s)
-	return bmu
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (bmu *BatteryModelUpdate) SetNillableRemark(s *string) *BatteryModelUpdate {
-	if s != nil {
-		bmu.SetRemark(*s)
-	}
-	return bmu
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (bmu *BatteryModelUpdate) ClearRemark() *BatteryModelUpdate {
-	bmu.mutation.ClearRemark()
-	return bmu
-}
-
 // SetModel sets the "model" field.
 func (bmu *BatteryModelUpdate) SetModel(s string) *BatteryModelUpdate {
 	bmu.mutation.SetModel(s)
-	return bmu
-}
-
-// SetEnable sets the "enable" field.
-func (bmu *BatteryModelUpdate) SetEnable(b bool) *BatteryModelUpdate {
-	bmu.mutation.SetEnable(b)
-	return bmu
-}
-
-// SetNillableEnable sets the "enable" field if the given value is not nil.
-func (bmu *BatteryModelUpdate) SetNillableEnable(b *bool) *BatteryModelUpdate {
-	if b != nil {
-		bmu.SetEnable(*b)
-	}
 	return bmu
 }
 
@@ -156,9 +82,6 @@ func (bmu *BatteryModelUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
-	if err := bmu.defaults(); err != nil {
-		return 0, err
-	}
 	if len(bmu.hooks) == 0 {
 		affected, err = bmu.sqlSave(ctx)
 	} else {
@@ -207,18 +130,6 @@ func (bmu *BatteryModelUpdate) ExecX(ctx context.Context) {
 	}
 }
 
-// defaults sets the default values of the builder before save.
-func (bmu *BatteryModelUpdate) defaults() error {
-	if _, ok := bmu.mutation.UpdatedAt(); !ok {
-		if batterymodel.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized batterymodel.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := batterymodel.UpdateDefaultUpdatedAt()
-		bmu.mutation.SetUpdatedAt(v)
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (bmu *BatteryModelUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *BatteryModelUpdate {
 	bmu.modifiers = append(bmu.modifiers, modifiers...)
@@ -243,70 +154,11 @@ func (bmu *BatteryModelUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := bmu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: batterymodel.FieldUpdatedAt,
-		})
-	}
-	if value, ok := bmu.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: batterymodel.FieldDeletedAt,
-		})
-	}
-	if bmu.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: batterymodel.FieldDeletedAt,
-		})
-	}
-	if bmu.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: batterymodel.FieldCreator,
-		})
-	}
-	if value, ok := bmu.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: batterymodel.FieldLastModifier,
-		})
-	}
-	if bmu.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: batterymodel.FieldLastModifier,
-		})
-	}
-	if value, ok := bmu.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: batterymodel.FieldRemark,
-		})
-	}
-	if bmu.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: batterymodel.FieldRemark,
-		})
-	}
 	if value, ok := bmu.mutation.Model(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
 			Column: batterymodel.FieldModel,
-		})
-	}
-	if value, ok := bmu.mutation.Enable(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: batterymodel.FieldEnable,
 		})
 	}
 	if bmu.mutation.CabinetsCleared() {
@@ -384,81 +236,9 @@ type BatteryModelUpdateOne struct {
 	modifiers []func(*sql.UpdateBuilder)
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (bmuo *BatteryModelUpdateOne) SetUpdatedAt(t time.Time) *BatteryModelUpdateOne {
-	bmuo.mutation.SetUpdatedAt(t)
-	return bmuo
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (bmuo *BatteryModelUpdateOne) SetDeletedAt(t time.Time) *BatteryModelUpdateOne {
-	bmuo.mutation.SetDeletedAt(t)
-	return bmuo
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (bmuo *BatteryModelUpdateOne) SetNillableDeletedAt(t *time.Time) *BatteryModelUpdateOne {
-	if t != nil {
-		bmuo.SetDeletedAt(*t)
-	}
-	return bmuo
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (bmuo *BatteryModelUpdateOne) ClearDeletedAt() *BatteryModelUpdateOne {
-	bmuo.mutation.ClearDeletedAt()
-	return bmuo
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (bmuo *BatteryModelUpdateOne) SetLastModifier(m *model.Modifier) *BatteryModelUpdateOne {
-	bmuo.mutation.SetLastModifier(m)
-	return bmuo
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (bmuo *BatteryModelUpdateOne) ClearLastModifier() *BatteryModelUpdateOne {
-	bmuo.mutation.ClearLastModifier()
-	return bmuo
-}
-
-// SetRemark sets the "remark" field.
-func (bmuo *BatteryModelUpdateOne) SetRemark(s string) *BatteryModelUpdateOne {
-	bmuo.mutation.SetRemark(s)
-	return bmuo
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (bmuo *BatteryModelUpdateOne) SetNillableRemark(s *string) *BatteryModelUpdateOne {
-	if s != nil {
-		bmuo.SetRemark(*s)
-	}
-	return bmuo
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (bmuo *BatteryModelUpdateOne) ClearRemark() *BatteryModelUpdateOne {
-	bmuo.mutation.ClearRemark()
-	return bmuo
-}
-
 // SetModel sets the "model" field.
 func (bmuo *BatteryModelUpdateOne) SetModel(s string) *BatteryModelUpdateOne {
 	bmuo.mutation.SetModel(s)
-	return bmuo
-}
-
-// SetEnable sets the "enable" field.
-func (bmuo *BatteryModelUpdateOne) SetEnable(b bool) *BatteryModelUpdateOne {
-	bmuo.mutation.SetEnable(b)
-	return bmuo
-}
-
-// SetNillableEnable sets the "enable" field if the given value is not nil.
-func (bmuo *BatteryModelUpdateOne) SetNillableEnable(b *bool) *BatteryModelUpdateOne {
-	if b != nil {
-		bmuo.SetEnable(*b)
-	}
 	return bmuo
 }
 
@@ -516,9 +296,6 @@ func (bmuo *BatteryModelUpdateOne) Save(ctx context.Context) (*BatteryModel, err
 		err  error
 		node *BatteryModel
 	)
-	if err := bmuo.defaults(); err != nil {
-		return nil, err
-	}
 	if len(bmuo.hooks) == 0 {
 		node, err = bmuo.sqlSave(ctx)
 	} else {
@@ -573,18 +350,6 @@ func (bmuo *BatteryModelUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
-// defaults sets the default values of the builder before save.
-func (bmuo *BatteryModelUpdateOne) defaults() error {
-	if _, ok := bmuo.mutation.UpdatedAt(); !ok {
-		if batterymodel.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized batterymodel.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := batterymodel.UpdateDefaultUpdatedAt()
-		bmuo.mutation.SetUpdatedAt(v)
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (bmuo *BatteryModelUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *BatteryModelUpdateOne {
 	bmuo.modifiers = append(bmuo.modifiers, modifiers...)
@@ -626,70 +391,11 @@ func (bmuo *BatteryModelUpdateOne) sqlSave(ctx context.Context) (_node *BatteryM
 			}
 		}
 	}
-	if value, ok := bmuo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: batterymodel.FieldUpdatedAt,
-		})
-	}
-	if value, ok := bmuo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: batterymodel.FieldDeletedAt,
-		})
-	}
-	if bmuo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: batterymodel.FieldDeletedAt,
-		})
-	}
-	if bmuo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: batterymodel.FieldCreator,
-		})
-	}
-	if value, ok := bmuo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: batterymodel.FieldLastModifier,
-		})
-	}
-	if bmuo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: batterymodel.FieldLastModifier,
-		})
-	}
-	if value, ok := bmuo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: batterymodel.FieldRemark,
-		})
-	}
-	if bmuo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: batterymodel.FieldRemark,
-		})
-	}
 	if value, ok := bmuo.mutation.Model(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
 			Column: batterymodel.FieldModel,
-		})
-	}
-	if value, ok := bmuo.mutation.Enable(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: batterymodel.FieldEnable,
 		})
 	}
 	if bmuo.mutation.CabinetsCleared() {

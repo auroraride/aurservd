@@ -202,14 +202,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "BatteryModel",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			batterymodel.FieldCreatedAt:    {Type: field.TypeTime, Column: batterymodel.FieldCreatedAt},
-			batterymodel.FieldUpdatedAt:    {Type: field.TypeTime, Column: batterymodel.FieldUpdatedAt},
-			batterymodel.FieldDeletedAt:    {Type: field.TypeTime, Column: batterymodel.FieldDeletedAt},
-			batterymodel.FieldCreator:      {Type: field.TypeJSON, Column: batterymodel.FieldCreator},
-			batterymodel.FieldLastModifier: {Type: field.TypeJSON, Column: batterymodel.FieldLastModifier},
-			batterymodel.FieldRemark:       {Type: field.TypeString, Column: batterymodel.FieldRemark},
-			batterymodel.FieldModel:        {Type: field.TypeString, Column: batterymodel.FieldModel},
-			batterymodel.FieldEnable:       {Type: field.TypeBool, Column: batterymodel.FieldEnable},
+			batterymodel.FieldModel:     {Type: field.TypeString, Column: batterymodel.FieldModel},
+			batterymodel.FieldCreatedAt: {Type: field.TypeTime, Column: batterymodel.FieldCreatedAt},
 		},
 	}
 	graph.Nodes[5] = &sqlgraph.Node{
@@ -4716,44 +4710,14 @@ func (f *BatteryModelFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(batterymodel.FieldID))
 }
 
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *BatteryModelFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(batterymodel.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *BatteryModelFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(batterymodel.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *BatteryModelFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(batterymodel.FieldDeletedAt))
-}
-
-// WhereCreator applies the entql json.RawMessage predicate on the creator field.
-func (f *BatteryModelFilter) WhereCreator(p entql.BytesP) {
-	f.Where(p.Field(batterymodel.FieldCreator))
-}
-
-// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
-func (f *BatteryModelFilter) WhereLastModifier(p entql.BytesP) {
-	f.Where(p.Field(batterymodel.FieldLastModifier))
-}
-
-// WhereRemark applies the entql string predicate on the remark field.
-func (f *BatteryModelFilter) WhereRemark(p entql.StringP) {
-	f.Where(p.Field(batterymodel.FieldRemark))
-}
-
 // WhereModel applies the entql string predicate on the model field.
 func (f *BatteryModelFilter) WhereModel(p entql.StringP) {
 	f.Where(p.Field(batterymodel.FieldModel))
 }
 
-// WhereEnable applies the entql bool predicate on the enable field.
-func (f *BatteryModelFilter) WhereEnable(p entql.BoolP) {
-	f.Where(p.Field(batterymodel.FieldEnable))
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *BatteryModelFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(batterymodel.FieldCreatedAt))
 }
 
 // WhereHasCabinets applies a predicate to check if query has an edge cabinets.

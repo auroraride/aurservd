@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 )
@@ -24,6 +23,12 @@ type BatteryModelCreate struct {
 	conflict []sql.ConflictOption
 }
 
+// SetModel sets the "model" field.
+func (bmc *BatteryModelCreate) SetModel(s string) *BatteryModelCreate {
+	bmc.mutation.SetModel(s)
+	return bmc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (bmc *BatteryModelCreate) SetCreatedAt(t time.Time) *BatteryModelCreate {
 	bmc.mutation.SetCreatedAt(t)
@@ -34,80 +39,6 @@ func (bmc *BatteryModelCreate) SetCreatedAt(t time.Time) *BatteryModelCreate {
 func (bmc *BatteryModelCreate) SetNillableCreatedAt(t *time.Time) *BatteryModelCreate {
 	if t != nil {
 		bmc.SetCreatedAt(*t)
-	}
-	return bmc
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (bmc *BatteryModelCreate) SetUpdatedAt(t time.Time) *BatteryModelCreate {
-	bmc.mutation.SetUpdatedAt(t)
-	return bmc
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (bmc *BatteryModelCreate) SetNillableUpdatedAt(t *time.Time) *BatteryModelCreate {
-	if t != nil {
-		bmc.SetUpdatedAt(*t)
-	}
-	return bmc
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (bmc *BatteryModelCreate) SetDeletedAt(t time.Time) *BatteryModelCreate {
-	bmc.mutation.SetDeletedAt(t)
-	return bmc
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (bmc *BatteryModelCreate) SetNillableDeletedAt(t *time.Time) *BatteryModelCreate {
-	if t != nil {
-		bmc.SetDeletedAt(*t)
-	}
-	return bmc
-}
-
-// SetCreator sets the "creator" field.
-func (bmc *BatteryModelCreate) SetCreator(m *model.Modifier) *BatteryModelCreate {
-	bmc.mutation.SetCreator(m)
-	return bmc
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (bmc *BatteryModelCreate) SetLastModifier(m *model.Modifier) *BatteryModelCreate {
-	bmc.mutation.SetLastModifier(m)
-	return bmc
-}
-
-// SetRemark sets the "remark" field.
-func (bmc *BatteryModelCreate) SetRemark(s string) *BatteryModelCreate {
-	bmc.mutation.SetRemark(s)
-	return bmc
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (bmc *BatteryModelCreate) SetNillableRemark(s *string) *BatteryModelCreate {
-	if s != nil {
-		bmc.SetRemark(*s)
-	}
-	return bmc
-}
-
-// SetModel sets the "model" field.
-func (bmc *BatteryModelCreate) SetModel(s string) *BatteryModelCreate {
-	bmc.mutation.SetModel(s)
-	return bmc
-}
-
-// SetEnable sets the "enable" field.
-func (bmc *BatteryModelCreate) SetEnable(b bool) *BatteryModelCreate {
-	bmc.mutation.SetEnable(b)
-	return bmc
-}
-
-// SetNillableEnable sets the "enable" field if the given value is not nil.
-func (bmc *BatteryModelCreate) SetNillableEnable(b *bool) *BatteryModelCreate {
-	if b != nil {
-		bmc.SetEnable(*b)
 	}
 	return bmc
 }
@@ -138,9 +69,7 @@ func (bmc *BatteryModelCreate) Save(ctx context.Context) (*BatteryModel, error) 
 		err  error
 		node *BatteryModel
 	)
-	if err := bmc.defaults(); err != nil {
-		return nil, err
-	}
+	bmc.defaults()
 	if len(bmc.hooks) == 0 {
 		if err = bmc.check(); err != nil {
 			return nil, err
@@ -205,41 +134,20 @@ func (bmc *BatteryModelCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (bmc *BatteryModelCreate) defaults() error {
+func (bmc *BatteryModelCreate) defaults() {
 	if _, ok := bmc.mutation.CreatedAt(); !ok {
-		if batterymodel.DefaultCreatedAt == nil {
-			return fmt.Errorf("ent: uninitialized batterymodel.DefaultCreatedAt (forgotten import ent/runtime?)")
-		}
 		v := batterymodel.DefaultCreatedAt()
 		bmc.mutation.SetCreatedAt(v)
 	}
-	if _, ok := bmc.mutation.UpdatedAt(); !ok {
-		if batterymodel.DefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized batterymodel.DefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := batterymodel.DefaultUpdatedAt()
-		bmc.mutation.SetUpdatedAt(v)
-	}
-	if _, ok := bmc.mutation.Enable(); !ok {
-		v := batterymodel.DefaultEnable
-		bmc.mutation.SetEnable(v)
-	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (bmc *BatteryModelCreate) check() error {
-	if _, ok := bmc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "BatteryModel.created_at"`)}
-	}
-	if _, ok := bmc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "BatteryModel.updated_at"`)}
-	}
 	if _, ok := bmc.mutation.Model(); !ok {
 		return &ValidationError{Name: "model", err: errors.New(`ent: missing required field "BatteryModel.model"`)}
 	}
-	if _, ok := bmc.mutation.Enable(); !ok {
-		return &ValidationError{Name: "enable", err: errors.New(`ent: missing required field "BatteryModel.enable"`)}
+	if _, ok := bmc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "BatteryModel.created_at"`)}
 	}
 	return nil
 }
@@ -269,54 +177,6 @@ func (bmc *BatteryModelCreate) createSpec() (*BatteryModel, *sqlgraph.CreateSpec
 		}
 	)
 	_spec.OnConflict = bmc.conflict
-	if value, ok := bmc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: batterymodel.FieldCreatedAt,
-		})
-		_node.CreatedAt = value
-	}
-	if value, ok := bmc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: batterymodel.FieldUpdatedAt,
-		})
-		_node.UpdatedAt = value
-	}
-	if value, ok := bmc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: batterymodel.FieldDeletedAt,
-		})
-		_node.DeletedAt = &value
-	}
-	if value, ok := bmc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: batterymodel.FieldCreator,
-		})
-		_node.Creator = value
-	}
-	if value, ok := bmc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: batterymodel.FieldLastModifier,
-		})
-		_node.LastModifier = value
-	}
-	if value, ok := bmc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: batterymodel.FieldRemark,
-		})
-		_node.Remark = value
-	}
 	if value, ok := bmc.mutation.Model(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -325,13 +185,13 @@ func (bmc *BatteryModelCreate) createSpec() (*BatteryModel, *sqlgraph.CreateSpec
 		})
 		_node.Model = value
 	}
-	if value, ok := bmc.mutation.Enable(); ok {
+	if value, ok := bmc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
+			Type:   field.TypeTime,
 			Value:  value,
-			Column: batterymodel.FieldEnable,
+			Column: batterymodel.FieldCreatedAt,
 		})
-		_node.Enable = value
+		_node.CreatedAt = value
 	}
 	if nodes := bmc.mutation.CabinetsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -359,7 +219,7 @@ func (bmc *BatteryModelCreate) createSpec() (*BatteryModel, *sqlgraph.CreateSpec
 // of the `INSERT` statement. For example:
 //
 //	client.BatteryModel.Create().
-//		SetCreatedAt(v).
+//		SetModel(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -368,7 +228,7 @@ func (bmc *BatteryModelCreate) createSpec() (*BatteryModel, *sqlgraph.CreateSpec
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.BatteryModelUpsert) {
-//			SetCreatedAt(v+v).
+//			SetModel(v+v).
 //		}).
 //		Exec(ctx)
 func (bmc *BatteryModelCreate) OnConflict(opts ...sql.ConflictOption) *BatteryModelUpsertOne {
@@ -404,72 +264,6 @@ type (
 	}
 )
 
-// SetUpdatedAt sets the "updated_at" field.
-func (u *BatteryModelUpsert) SetUpdatedAt(v time.Time) *BatteryModelUpsert {
-	u.Set(batterymodel.FieldUpdatedAt, v)
-	return u
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *BatteryModelUpsert) UpdateUpdatedAt() *BatteryModelUpsert {
-	u.SetExcluded(batterymodel.FieldUpdatedAt)
-	return u
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (u *BatteryModelUpsert) SetDeletedAt(v time.Time) *BatteryModelUpsert {
-	u.Set(batterymodel.FieldDeletedAt, v)
-	return u
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *BatteryModelUpsert) UpdateDeletedAt() *BatteryModelUpsert {
-	u.SetExcluded(batterymodel.FieldDeletedAt)
-	return u
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *BatteryModelUpsert) ClearDeletedAt() *BatteryModelUpsert {
-	u.SetNull(batterymodel.FieldDeletedAt)
-	return u
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (u *BatteryModelUpsert) SetLastModifier(v *model.Modifier) *BatteryModelUpsert {
-	u.Set(batterymodel.FieldLastModifier, v)
-	return u
-}
-
-// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
-func (u *BatteryModelUpsert) UpdateLastModifier() *BatteryModelUpsert {
-	u.SetExcluded(batterymodel.FieldLastModifier)
-	return u
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (u *BatteryModelUpsert) ClearLastModifier() *BatteryModelUpsert {
-	u.SetNull(batterymodel.FieldLastModifier)
-	return u
-}
-
-// SetRemark sets the "remark" field.
-func (u *BatteryModelUpsert) SetRemark(v string) *BatteryModelUpsert {
-	u.Set(batterymodel.FieldRemark, v)
-	return u
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *BatteryModelUpsert) UpdateRemark() *BatteryModelUpsert {
-	u.SetExcluded(batterymodel.FieldRemark)
-	return u
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *BatteryModelUpsert) ClearRemark() *BatteryModelUpsert {
-	u.SetNull(batterymodel.FieldRemark)
-	return u
-}
-
 // SetModel sets the "model" field.
 func (u *BatteryModelUpsert) SetModel(v string) *BatteryModelUpsert {
 	u.Set(batterymodel.FieldModel, v)
@@ -479,18 +273,6 @@ func (u *BatteryModelUpsert) SetModel(v string) *BatteryModelUpsert {
 // UpdateModel sets the "model" field to the value that was provided on create.
 func (u *BatteryModelUpsert) UpdateModel() *BatteryModelUpsert {
 	u.SetExcluded(batterymodel.FieldModel)
-	return u
-}
-
-// SetEnable sets the "enable" field.
-func (u *BatteryModelUpsert) SetEnable(v bool) *BatteryModelUpsert {
-	u.Set(batterymodel.FieldEnable, v)
-	return u
-}
-
-// UpdateEnable sets the "enable" field to the value that was provided on create.
-func (u *BatteryModelUpsert) UpdateEnable() *BatteryModelUpsert {
-	u.SetExcluded(batterymodel.FieldEnable)
 	return u
 }
 
@@ -507,9 +289,6 @@ func (u *BatteryModelUpsertOne) UpdateNewValues() *BatteryModelUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(batterymodel.FieldCreatedAt)
-		}
-		if _, exists := u.create.mutation.Creator(); exists {
-			s.SetIgnore(batterymodel.FieldCreator)
 		}
 	}))
 	return u
@@ -542,83 +321,6 @@ func (u *BatteryModelUpsertOne) Update(set func(*BatteryModelUpsert)) *BatteryMo
 	return u
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (u *BatteryModelUpsertOne) SetUpdatedAt(v time.Time) *BatteryModelUpsertOne {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *BatteryModelUpsertOne) UpdateUpdatedAt() *BatteryModelUpsertOne {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.UpdateUpdatedAt()
-	})
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (u *BatteryModelUpsertOne) SetDeletedAt(v time.Time) *BatteryModelUpsertOne {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.SetDeletedAt(v)
-	})
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *BatteryModelUpsertOne) UpdateDeletedAt() *BatteryModelUpsertOne {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.UpdateDeletedAt()
-	})
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *BatteryModelUpsertOne) ClearDeletedAt() *BatteryModelUpsertOne {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.ClearDeletedAt()
-	})
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (u *BatteryModelUpsertOne) SetLastModifier(v *model.Modifier) *BatteryModelUpsertOne {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.SetLastModifier(v)
-	})
-}
-
-// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
-func (u *BatteryModelUpsertOne) UpdateLastModifier() *BatteryModelUpsertOne {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.UpdateLastModifier()
-	})
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (u *BatteryModelUpsertOne) ClearLastModifier() *BatteryModelUpsertOne {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.ClearLastModifier()
-	})
-}
-
-// SetRemark sets the "remark" field.
-func (u *BatteryModelUpsertOne) SetRemark(v string) *BatteryModelUpsertOne {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.SetRemark(v)
-	})
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *BatteryModelUpsertOne) UpdateRemark() *BatteryModelUpsertOne {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.UpdateRemark()
-	})
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *BatteryModelUpsertOne) ClearRemark() *BatteryModelUpsertOne {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.ClearRemark()
-	})
-}
-
 // SetModel sets the "model" field.
 func (u *BatteryModelUpsertOne) SetModel(v string) *BatteryModelUpsertOne {
 	return u.Update(func(s *BatteryModelUpsert) {
@@ -630,20 +332,6 @@ func (u *BatteryModelUpsertOne) SetModel(v string) *BatteryModelUpsertOne {
 func (u *BatteryModelUpsertOne) UpdateModel() *BatteryModelUpsertOne {
 	return u.Update(func(s *BatteryModelUpsert) {
 		s.UpdateModel()
-	})
-}
-
-// SetEnable sets the "enable" field.
-func (u *BatteryModelUpsertOne) SetEnable(v bool) *BatteryModelUpsertOne {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.SetEnable(v)
-	})
-}
-
-// UpdateEnable sets the "enable" field to the value that was provided on create.
-func (u *BatteryModelUpsertOne) UpdateEnable() *BatteryModelUpsertOne {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.UpdateEnable()
 	})
 }
 
@@ -778,7 +466,7 @@ func (bmcb *BatteryModelCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.BatteryModelUpsert) {
-//			SetCreatedAt(v+v).
+//			SetModel(v+v).
 //		}).
 //		Exec(ctx)
 func (bmcb *BatteryModelCreateBulk) OnConflict(opts ...sql.ConflictOption) *BatteryModelUpsertBulk {
@@ -822,9 +510,6 @@ func (u *BatteryModelUpsertBulk) UpdateNewValues() *BatteryModelUpsertBulk {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(batterymodel.FieldCreatedAt)
 			}
-			if _, exists := b.mutation.Creator(); exists {
-				s.SetIgnore(batterymodel.FieldCreator)
-			}
 		}
 	}))
 	return u
@@ -857,83 +542,6 @@ func (u *BatteryModelUpsertBulk) Update(set func(*BatteryModelUpsert)) *BatteryM
 	return u
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (u *BatteryModelUpsertBulk) SetUpdatedAt(v time.Time) *BatteryModelUpsertBulk {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *BatteryModelUpsertBulk) UpdateUpdatedAt() *BatteryModelUpsertBulk {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.UpdateUpdatedAt()
-	})
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (u *BatteryModelUpsertBulk) SetDeletedAt(v time.Time) *BatteryModelUpsertBulk {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.SetDeletedAt(v)
-	})
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *BatteryModelUpsertBulk) UpdateDeletedAt() *BatteryModelUpsertBulk {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.UpdateDeletedAt()
-	})
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *BatteryModelUpsertBulk) ClearDeletedAt() *BatteryModelUpsertBulk {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.ClearDeletedAt()
-	})
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (u *BatteryModelUpsertBulk) SetLastModifier(v *model.Modifier) *BatteryModelUpsertBulk {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.SetLastModifier(v)
-	})
-}
-
-// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
-func (u *BatteryModelUpsertBulk) UpdateLastModifier() *BatteryModelUpsertBulk {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.UpdateLastModifier()
-	})
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (u *BatteryModelUpsertBulk) ClearLastModifier() *BatteryModelUpsertBulk {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.ClearLastModifier()
-	})
-}
-
-// SetRemark sets the "remark" field.
-func (u *BatteryModelUpsertBulk) SetRemark(v string) *BatteryModelUpsertBulk {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.SetRemark(v)
-	})
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *BatteryModelUpsertBulk) UpdateRemark() *BatteryModelUpsertBulk {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.UpdateRemark()
-	})
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *BatteryModelUpsertBulk) ClearRemark() *BatteryModelUpsertBulk {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.ClearRemark()
-	})
-}
-
 // SetModel sets the "model" field.
 func (u *BatteryModelUpsertBulk) SetModel(v string) *BatteryModelUpsertBulk {
 	return u.Update(func(s *BatteryModelUpsert) {
@@ -945,20 +553,6 @@ func (u *BatteryModelUpsertBulk) SetModel(v string) *BatteryModelUpsertBulk {
 func (u *BatteryModelUpsertBulk) UpdateModel() *BatteryModelUpsertBulk {
 	return u.Update(func(s *BatteryModelUpsert) {
 		s.UpdateModel()
-	})
-}
-
-// SetEnable sets the "enable" field.
-func (u *BatteryModelUpsertBulk) SetEnable(v bool) *BatteryModelUpsertBulk {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.SetEnable(v)
-	})
-}
-
-// UpdateEnable sets the "enable" field to the value that was provided on create.
-func (u *BatteryModelUpsertBulk) UpdateEnable() *BatteryModelUpsertBulk {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.UpdateEnable()
 	})
 }
 

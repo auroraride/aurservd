@@ -370,14 +370,8 @@ var (
 	// BatteryModelColumns holds the columns for the "battery_model" table.
 	BatteryModelColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
-		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
-		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "model", Type: field.TypeString, Unique: true, Comment: "型号"},
-		{Name: "enable", Type: field.TypeBool, Comment: "是否启用", Default: true},
+		{Name: "created_at", Type: field.TypeTime},
 	}
 	// BatteryModelTable holds the schema information for the "battery_model" table.
 	BatteryModelTable = &schema.Table{
@@ -386,19 +380,9 @@ var (
 		PrimaryKey: []*schema.Column{BatteryModelColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "batterymodel_created_at",
-				Unique:  false,
-				Columns: []*schema.Column{BatteryModelColumns[1]},
-			},
-			{
-				Name:    "batterymodel_deleted_at",
-				Unique:  false,
-				Columns: []*schema.Column{BatteryModelColumns[3]},
-			},
-			{
 				Name:    "batterymodel_model",
 				Unique:  false,
-				Columns: []*schema.Column{BatteryModelColumns[7]},
+				Columns: []*schema.Column{BatteryModelColumns[1]},
 				Annotation: &entsql.IndexAnnotation{
 					Types: map[string]string{
 						"postgres": "GIN",

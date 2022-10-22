@@ -128,27 +128,12 @@ func init() {
 	attendance.DefaultUpdatedAt = attendanceDescUpdatedAt.Default.(func() time.Time)
 	// attendance.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	attendance.UpdateDefaultUpdatedAt = attendanceDescUpdatedAt.UpdateDefault.(func() time.Time)
-	batterymodelMixin := schema.BatteryModel{}.Mixin()
-	batterymodelMixinHooks2 := batterymodelMixin[2].Hooks()
-	batterymodel.Hooks[0] = batterymodelMixinHooks2[0]
-	batterymodelMixinFields0 := batterymodelMixin[0].Fields()
-	_ = batterymodelMixinFields0
 	batterymodelFields := schema.BatteryModel{}.Fields()
 	_ = batterymodelFields
 	// batterymodelDescCreatedAt is the schema descriptor for created_at field.
-	batterymodelDescCreatedAt := batterymodelMixinFields0[0].Descriptor()
+	batterymodelDescCreatedAt := batterymodelFields[1].Descriptor()
 	// batterymodel.DefaultCreatedAt holds the default value on creation for the created_at field.
 	batterymodel.DefaultCreatedAt = batterymodelDescCreatedAt.Default.(func() time.Time)
-	// batterymodelDescUpdatedAt is the schema descriptor for updated_at field.
-	batterymodelDescUpdatedAt := batterymodelMixinFields0[1].Descriptor()
-	// batterymodel.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	batterymodel.DefaultUpdatedAt = batterymodelDescUpdatedAt.Default.(func() time.Time)
-	// batterymodel.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	batterymodel.UpdateDefaultUpdatedAt = batterymodelDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// batterymodelDescEnable is the schema descriptor for enable field.
-	batterymodelDescEnable := batterymodelFields[1].Descriptor()
-	// batterymodel.DefaultEnable holds the default value on creation for the enable field.
-	batterymodel.DefaultEnable = batterymodelDescEnable.Default.(bool)
 	branchMixin := schema.Branch{}.Mixin()
 	branchMixinHooks2 := branchMixin[2].Hooks()
 	branch.Hooks[0] = branchMixinHooks2[0]

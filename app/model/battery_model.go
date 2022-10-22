@@ -13,5 +13,5 @@ type BatteryModel struct {
 
 // BatteryModelReq 电池型号创建请求
 type BatteryModelReq struct {
-    Model string `json:"model"` // 电池型号, 例如60V30AH
+    Model string `json:"model"` // 电池型号(POST), 例如60V30AH
 }

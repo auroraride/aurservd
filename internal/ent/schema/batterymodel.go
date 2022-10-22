@@ -8,40 +8,39 @@ import (
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
-    "entgo.io/ent/schema/mixin"
-    "github.com/auroraride/aurservd/internal/ent/internal"
+    "time"
 )
 
-type BatteryModelMixin struct {
-    mixin.Schema
-    Optional     bool
-    DisableIndex bool
-}
-
-func (m BatteryModelMixin) Fields() []ent.Field {
-    relate := field.Uint64("model_id")
-    if m.Optional {
-        relate.Optional().Nillable()
-    }
-    return []ent.Field{
-        relate,
-    }
-}
-
-func (m BatteryModelMixin) Edges() []ent.Edge {
-    e := edge.To("model", BatteryModel.Type).Unique().Field("model_id")
-    if !m.Optional {
-        e.Required()
-    }
-    return []ent.Edge{e}
-}
-
-func (m BatteryModelMixin) Indexes() (arr []ent.Index) {
-    if !m.DisableIndex {
-        arr = append(arr, index.Fields("model_id"))
-    }
-    return
-}
+// type BatteryModelMixin struct {
+//     mixin.Schema
+//     Optional     bool
+//     DisableIndex bool
+// }
+//
+// func (m BatteryModelMixin) Fields() []ent.Field {
+//     relate := field.Uint64("model_id")
+//     if m.Optional {
+//         relate.Optional().Nillable()
+//     }
+//     return []ent.Field{
+//         relate,
+//     }
+// }
+//
+// func (m BatteryModelMixin) Edges() []ent.Edge {
+//     e := edge.To("model", BatteryModel.Type).Unique().Field("model_id")
+//     if !m.Optional {
+//         e.Required()
+//     }
+//     return []ent.Edge{e}
+// }
+//
+// func (m BatteryModelMixin) Indexes() (arr []ent.Index) {
+//     if !m.DisableIndex {
+//         arr = append(arr, index.Fields("model_id"))
+//     }
+//     return
+// }
 
 // BatteryModel holds the schema definition for the BatteryModel entity.
 type BatteryModel struct {
@@ -59,7 +58,7 @@ func (BatteryModel) Annotations() []schema.Annotation {
 func (BatteryModel) Fields() []ent.Field {
     return []ent.Field{
         field.String("model").Unique().Comment("型号"),
-        field.Bool("enable").Default(true).Comment("是否启用"),
+        field.Time("created_at").Immutable().Default(time.Now),
     }
 }
 
@@ -71,11 +70,7 @@ func (BatteryModel) Edges() []ent.Edge {
 }
 
 func (BatteryModel) Mixin() []ent.Mixin {
-    return []ent.Mixin{
-        internal.TimeMixin{},
-        internal.DeleteMixin{},
-        internal.Modifier{},
-    }
+    return []ent.Mixin{}
 }
 
 func (BatteryModel) Indexes() []ent.Index {
