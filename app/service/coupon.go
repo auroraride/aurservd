@@ -92,6 +92,7 @@ func (s *couponService) QueryEffective(riderID uint64) ent.Coupons {
         coupon.RiderID(riderID),
         coupon.UsedAtIsNil(),
         coupon.ExpiresAtGT(time.Now()),
+        coupon.OrderIDIsNil(),
     ).All(s.ctx)
     return items
 }

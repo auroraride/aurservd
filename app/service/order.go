@@ -481,6 +481,13 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
             SetNillableBrandID(trade.EbikeBrandID)
         if len(trade.Coupons) > 0 {
             oc.AddCouponIDs(trade.Coupons...)
+            // 更新优惠券使用状态
+            for _, couponID := range trade.Coupons {
+                err = tx.Coupon.UpdateOneID(couponID).SetPlanID(trade.PlanID).SetUsedAt(time.Now()).Exec(s.ctx)
+                if err != nil {
+                    log.Errorf("[ORDER PAID %s COUPON id = %d ERROR]: %s", trade.OutTradeNo, couponID, err.Error())
+                }
+            }
         }
         o, err = oc.Save(s.ctx)
         if err != nil {
