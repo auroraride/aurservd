@@ -35,6 +35,7 @@ import (
     "github.com/golang-module/carbon/v2"
     jsoniter "github.com/json-iterator/go"
     "github.com/rs/xid"
+    "golang.org/x/exp/slices"
     "strconv"
     "strings"
     "time"
@@ -861,7 +862,9 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device, token string)
         Contact:         u.Contact,
         Qrcode:          s.GetQrcode(u.ID),
         Token:           token,
-        Subscribe:       subd,
+    }
+    if slices.Contains(model.SubscribeNotUnSubscribed(), subd.Status) {
+        profile.Subscribe = subd
     }
     if u.Edges.Person != nil {
         profile.Name = u.Edges.Person.Name
