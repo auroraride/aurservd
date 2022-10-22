@@ -116,6 +116,7 @@ type RiderItemSubscribe struct {
     Suspend    bool    `json:"suspend"`           // 是否暂停中
     AgentEndAt string  `json:"agentEndAt"`        // 代理商处到期日期
     Formula    *string `json:"formula,omitempty"` // 订阅天数计算公式
+    Ebike      *Ebike  `json:"ebike,omitempty"`   // 电车信息
 }
 
 // RiderItem 骑手信息

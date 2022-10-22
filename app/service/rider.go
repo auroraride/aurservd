@@ -382,7 +382,7 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
             )
         }).
         WithSubscribes(func(sq *ent.SubscribeQuery) {
-            sq.WithCity().Order(ent.Desc(subscribe.FieldCreatedAt))
+            sq.WithCity().Order(ent.Desc(subscribe.FieldCreatedAt)).WithEbike().WithBrand()
         }).
         WithContracts(func(cq *ent.ContractQuery) {
             cq.Where(contract.DeletedAtIsNil(), contract.Status(model.ContractStatusSuccess.Value()))
@@ -573,7 +573,7 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
     q, _ := s.listFilter(req.RiderListFilter)
 
-    return model.ParsePaginationResponse[model.RiderItem, ent.Rider](
+    return model.ParsePaginationResponse(
         q,
         req.PaginationReq,
         func(item *ent.Rider) model.RiderItem {
@@ -648,6 +648,7 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
             Suspend:   sub.SuspendAt != nil,
             Formula:   sub.Formula,
             Type:      model.SubscribeTypeBattery,
+            Ebike:     NewEbike().Detail(sub.Edges.Ebike, sub.Edges.Brand),
         }
         if sub.BrandID != nil {
             ri.Subscribe.Type = model.SubscribeTypeEbike

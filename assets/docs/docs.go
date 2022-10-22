@@ -19991,6 +19991,14 @@ const docTemplate = `{
                     "description": "代理商处到期日期",
                     "type": "string"
                 },
+                "ebike": {
+                    "description": "电车信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Ebike"
+                        }
+                    ]
+                },
                 "formula": {
                     "description": "订阅天数计算公式",
                     "type": "string"

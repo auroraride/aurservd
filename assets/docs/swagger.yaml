@@ -4886,6 +4886,10 @@ definitions:
       agentEndAt:
         description: 代理商处到期日期
         type: string
+      ebike:
+        allOf:
+        - $ref: '#/definitions/model.Ebike'
+        description: 电车信息
       formula:
         description: 订阅天数计算公式
         type: string
