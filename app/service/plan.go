@@ -81,7 +81,6 @@ func (s *planService) QueryEffectiveWithID(id uint64) *ent.Plan {
 }
 
 // checkDuplicate 查询骑士卡是否冲突
-// TODO 需要考虑电车
 func (s *planService) checkDuplicate(brandID uint64, cities []uint64, models []string, start, end time.Time, params ...uint64) {
     q := s.orm.QueryNotDeleted().
         Where(
@@ -100,6 +99,8 @@ func (s *planService) checkDuplicate(brandID uint64, cities []uint64, models []s
     }
     if brandID > 0 {
         q.Where(plan.BrandID(brandID))
+    } else {
+        q.Where(plan.BrandIDIsNil())
     }
 
     exists, _ := q.Exist(s.ctx)
