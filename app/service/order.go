@@ -230,7 +230,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
 
     // 积分抵扣
     var points int64
-    if req.Point && price > 0 {
+    if req.Point && price > 0.01 {
         pointServ := NewPoint()
         realPoints := pointServ.Real(s.rider)
         if realPoints > 0 {
