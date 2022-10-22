@@ -18202,7 +18202,6 @@ const docTemplate = `{
                 "cityId",
                 "employeeId",
                 "end",
-                "model",
                 "name",
                 "phone",
                 "planId",
@@ -18219,10 +18218,6 @@ const docTemplate = `{
                 },
                 "end": {
                     "description": "结束日期 ",
-                    "type": "string"
-                },
-                "model": {
-                    "description": "电池型号 ",
                     "type": "string"
                 },
                 "name": {

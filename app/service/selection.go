@@ -20,7 +20,6 @@ import (
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "sort"
-    "strconv"
     "time"
 )
 
@@ -94,7 +93,7 @@ func (s *selectionService) Plan(req *model.PlanSelectionReq) (items []model.Casc
                 for _, cl := range *arr {
                     children = append(children, model.SelectOption{
                         Value: cl.ID,
-                        Label: strconv.Itoa(int(cl.Days)),
+                        Label: fmt.Sprintf("%s - %d天", cl.Model, cl.Days),
                     })
                 }
             }

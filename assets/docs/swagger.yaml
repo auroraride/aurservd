@@ -3652,9 +3652,6 @@ definitions:
       end:
         description: '结束日期 '
         type: string
-      model:
-        description: '电池型号 '
-        type: string
       name:
         description: '姓名 '
         type: string
@@ -3671,7 +3668,6 @@ definitions:
     - cityId
     - employeeId
     - end
-    - model
     - name
     - phone
     - planId

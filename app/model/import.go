@@ -39,5 +39,4 @@ type ImportRiderCreateReq struct {
     StoreID    uint64 `json:"storeId" validate:"required" trans:"门店ID"`
     EmployeeID uint64 `json:"employeeId" validate:"required" trans:"店员ID"`
     End        string `json:"end" validate:"required,datetime=2006-01-02" trans:"结束日期"`
-    Model      string `json:"model" validate:"required" trans:"电池型号"`
 }

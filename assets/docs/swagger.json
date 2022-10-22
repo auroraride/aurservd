@@ -18194,7 +18194,6 @@
                 "cityId",
                 "employeeId",
                 "end",
-                "model",
                 "name",
                 "phone",
                 "planId",
@@ -18211,10 +18210,6 @@
                 },
                 "end": {
                     "description": "结束日期 ",
-                    "type": "string"
-                },
-                "model": {
-                    "description": "电池型号 ",
                     "type": "string"
                 },
                 "name": {

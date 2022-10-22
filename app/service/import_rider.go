@@ -125,12 +125,13 @@ func (s *importRiderService) BatchFile(path string) (err error) {
 func (s *importRiderService) parseRow(record []string) (item *model.ImportRiderFromExcel, err error) {
     x, _ := strconv.Atoi(record[7])
     end := s.epoch.Add(time.Second * time.Duration(x*86400)).Format(carbon.DateLayout)
+    bm := strings.ToUpper(strings.TrimSpace(record[4]))
     item = &model.ImportRiderFromExcel{
         Name:  strings.TrimSpace(record[0]),
         Phone: strings.TrimSpace(record[1]),
         Plan:  strings.TrimSpace(record[2]),
         Days:  strings.TrimSpace(record[3]),
-        Model: strings.ToUpper(strings.TrimSpace(record[4])),
+        Model: bm,
         City:  strings.TrimSpace(record[5]),
         Store: strings.TrimSpace(record[6]),
         End:   end,
@@ -145,6 +146,7 @@ func (s *importRiderService) parseRow(record []string) (item *model.ImportRiderF
         plan.Name(item.Plan),
         plan.Days(uint(days)),
         plan.HasCitiesWith(city.ID(qc.ID)),
+        plan.Model(item.Model),
     ).First(s.ctx)
     if s.plan == nil {
         err = errors.New("未找到骑行卡")
@@ -166,12 +168,12 @@ func (s *importRiderService) parseRow(record []string) (item *model.ImportRiderF
         StoreID:    qs.ID,
         EmployeeID: 38654705685,
         End:        end,
-        Model:      item.Model,
     })
     return
 }
 
 // Create 手动添加骑手
+// TODO 导入车电套餐
 func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
     return ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
         var p *ent.Person
@@ -236,7 +238,7 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
             SetStoreID(req.StoreID).
             SetPlanID(req.PlanID).
             SetCityID(req.CityID).
-            SetModel(req.Model).
+            SetModel(s.plan.Model).
             SetRemaining(tools.NewTime().LastDays(end.Carbon2Time(), time.Now())).
             Save(s.ctx)
         if err != nil {
@@ -274,10 +276,10 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
             SetRemark("导入数据").
             SetStoreID(req.StoreID).
             SetEmployeeID(req.EmployeeID).
-            SetName(req.Model).
+            SetName(s.plan.Model).
             SetRiderID(sub.RiderID).
             SetType(model.StockTypeRiderActive).
-            SetModel(req.Model).
+            SetModel(s.plan.Model).
             SetNum(-1).
             SetCityID(req.CityID).
             SetSubscribeID(sub.ID).
