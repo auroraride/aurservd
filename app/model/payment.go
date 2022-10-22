@@ -27,7 +27,7 @@ type PaymentSubscribe struct {
     Amount      float64 `json:"amount"`            // 总金额 = 套餐 + 押金
     Payway      uint8   `json:"payway"`            // 支付方式
     TradeNo     string  `json:"tradeNo,omitempty"` // 平台单号
-    PlanID      uint64  `json:"planId"`            // 骑士卡ID
+    Plan        *Plan   `json:"plan"`              // 骑士卡
     Deposit     float64 `json:"deposit"`           // 附带押金
     PastDays    *int    `json:"pastDays"`          // 距离上次退订天数
     Commission  float64 `json:"commission"`        // 提成金额

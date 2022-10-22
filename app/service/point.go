@@ -80,7 +80,7 @@ func (s *pointService) Modify(req *model.PointModifyReq) error {
 
 // List 积分变动日志
 func (s *pointService) List(req *model.PointLogListReq) *model.PaginationRes {
-    q := s.orm.Query().Order(ent.Desc(pointlog.FieldCreatedAt))
+    q := s.orm.Query().Order(ent.Desc(pointlog.FieldCreatedAt)).WithRider()
     if req.RiderID == 0 {
         if req.Keyword != "" {
             q.Where(
@@ -103,6 +103,15 @@ func (s *pointService) List(req *model.PointLogListReq) *model.PaginationRes {
                 mp = fmt.Sprintf("%s-%d天", item.Attach.Plan.Name, item.Attach.Plan.Days)
             }
         }
+
+        if item.Modifier != nil {
+            mm = item.Modifier.Name
+        }
+
+        if item.Edges.Rider != nil {
+            mm = item.Edges.Rider.GetExportInfo()
+        }
+
         return model.PointLogListRes{
             ID:       item.ID,
             Type:     model.PointLogType(item.Type).String(),

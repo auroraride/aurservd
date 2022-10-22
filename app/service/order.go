@@ -276,7 +276,6 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
             Name:          "购买" + p.Name,
             Amount:        total,
             Payway:        req.Payway,
-            PlanID:        p.ID,
             Deposit:       deposit,
             PastDays:      past,
             Commission:    p.Commission,
@@ -290,6 +289,11 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
             Coupons:       req.Coupons,
             DiscountNewly: p.DiscountNewly,
             EbikeBrandID:  p.BrandID,
+            Plan: &model.Plan{
+                ID:   p.ID,
+                Name: p.Name,
+                Days: p.Days,
+            },
         },
     }
 
@@ -461,7 +465,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
         // 创建订单
         oc := tx.Order.Create().
             SetPayway(trade.Payway).
-            SetPlanID(trade.PlanID).
+            SetPlanID(trade.Plan.ID).
             SetRiderID(trade.RiderID).
             SetAmount(tools.NewDecimal().Sub(trade.Amount, trade.Deposit)).
             SetTotal(trade.Amount).
@@ -483,7 +487,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
             oc.AddCouponIDs(trade.Coupons...)
             // 更新优惠券使用状态
             for _, couponID := range trade.Coupons {
-                err = tx.Coupon.UpdateOneID(couponID).SetPlanID(trade.PlanID).SetUsedAt(time.Now()).Exec(s.ctx)
+                err = tx.Coupon.UpdateOneID(couponID).SetPlanID(trade.Plan.ID).SetUsedAt(time.Now()).Exec(s.ctx)
                 if err != nil {
                     log.Errorf("[ORDER PAID %s COUPON id = %d ERROR]: %s", trade.OutTradeNo, couponID, err.Error())
                 }
@@ -510,6 +514,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
                 SetReason("订阅骑士卡").
                 SetType(model.PointLogTypeConsume.Value()).
                 SetAfter(r.Points).
+                SetAttach(&model.PointLogAttach{Plan: trade.Plan}).
                 SetOrder(o).
                 Exec(s.ctx)
             if err != nil {
@@ -552,7 +557,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
                 SetRemaining(int(trade.Days)).
                 SetInitialDays(int(trade.Days)).
                 SetStatus(model.SubscribeStatusInactive).
-                SetPlanID(trade.PlanID).
+                SetPlanID(trade.Plan.ID).
                 SetCityID(trade.CityID).
                 SetInitialOrderID(o.ID).
                 AddOrders(o).
@@ -591,7 +596,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
         // 当新签和重签的时候有提成
         if trade.OrderType == model.OrderTypeNewly && trade.Commission > 0 && sub != nil {
             // 创建提成
-            _, err = tx.Commission.Create().SetOrderID(o.ID).SetPlanID(trade.PlanID).SetAmount(trade.Commission).SetStatus(model.CommissionStatusPending).SetRiderID(sub.RiderID).SetSubscribe(sub).Save(s.ctx)
+            _, err = tx.Commission.Create().SetOrderID(o.ID).SetPlanID(trade.Plan.ID).SetAmount(trade.Commission).SetStatus(model.CommissionStatusPending).SetRiderID(sub.RiderID).SetSubscribe(sub).Save(s.ctx)
             if err != nil {
                 log.Errorf("[ORDER PAID %s COMMISSION(%d) ERROR]: %s", trade.OutTradeNo, o.ID, err.Error())
                 return
