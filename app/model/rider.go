@@ -55,6 +55,7 @@ type RiderSigninRes struct {
     Subscribe         *Subscribe         `json:"subscribe,omitempty"`         // 骑士卡
     Enterprise        *Enterprise        `json:"enterprise,omitempty"`        // 所属企业
     UseStore          bool               `json:"useStore"`                    // 是否可使用门店办理业务
+    CabinetBusiness   bool               `json:"cabinetBusiness"`             // 是否可以自主使用电柜办理业务
     EnterpriseContact *EnterpriseContact `json:"enterpriseContact,omitempty"` // 团签联系方式
 }
 

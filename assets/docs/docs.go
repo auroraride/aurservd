@@ -20251,6 +20251,10 @@ const docTemplate = `{
         "model.RiderSigninRes": {
             "type": "object",
             "properties": {
+                "cabinetBusiness": {
+                    "description": "是否可以自主使用电柜办理业务",
+                    "type": "boolean"
+                },
                 "contact": {
                     "description": "联系人",
                     "allOf": [

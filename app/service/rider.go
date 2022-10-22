@@ -852,7 +852,7 @@ func (s *riderService) ParseQrcode(qrcode string) uint64 {
 
 // Profile 获取用户资料
 func (s *riderService) Profile(u *ent.Rider, device *model.Device, token string) *model.RiderSigninRes {
-    subd, _ := NewSubscribe().RecentDetail(u.ID)
+    subd, sub := NewSubscribe().RecentDetail(u.ID)
     profile := &model.RiderSigninRes{
         ID:              u.ID,
         Phone:           u.Phone,
@@ -863,8 +863,9 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device, token string)
         Qrcode:          s.GetQrcode(u.ID),
         Token:           token,
     }
-    if slices.Contains(model.SubscribeNotUnSubscribed(), subd.Status) {
+    if sub != nil && slices.Contains(model.SubscribeNotUnSubscribed(), sub.Status) {
         profile.Subscribe = subd
+        profile.CabinetBusiness = u.EnterpriseID == nil && sub.BrandID == nil
     }
     if u.Edges.Person != nil {
         profile.Name = u.Edges.Person.Name

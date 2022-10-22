@@ -5077,6 +5077,9 @@ definitions:
     type: object
   model.RiderSigninRes:
     properties:
+      cabinetBusiness:
+        description: 是否可以自主使用电柜办理业务
+        type: boolean
       contact:
         allOf:
         - $ref: '#/definitions/model.RiderContact'
