@@ -64,8 +64,9 @@ func (e *Esign) CreateFlowOneStep(data CreateFlowReq) string {
                 },
                 Signfields: []Signfield{
                     {
-                        FileId:  fileId,
-                        PosBean: psnSignBean,
+                        FileId:   fileId,
+                        PosBean:  psnSignBean,
+                        SealType: "0",
                     },
                 },
             },
