@@ -54,6 +54,7 @@ func loadManagerRoutes() {
     // 电池
     g.GET("/battery/model", mapi.Battery.ListModels)
     g.POST("/battery/model", mapi.Battery.CreateModel)
+    g.DELETE("/battery/model", mapi.Battery.DeleteModel)
 
     // 电柜
     g.POST("/cabinet", mapi.Cabinet.Create)
