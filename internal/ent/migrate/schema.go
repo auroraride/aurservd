@@ -3268,6 +3268,11 @@ var (
 				Name:    "stock_name",
 				Unique:  false,
 				Columns: []*schema.Column{StockColumns[9]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
 			},
 			{
 				Name:    "stock_model",
@@ -3283,6 +3288,11 @@ var (
 				Name:    "stock_parent_id",
 				Unique:  false,
 				Columns: []*schema.Column{StockColumns[21]},
+			},
+			{
+				Name:    "stock_name",
+				Unique:  false,
+				Columns: []*schema.Column{StockColumns[9]},
 			},
 		},
 	}

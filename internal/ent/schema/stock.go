@@ -3,6 +3,7 @@ package schema
 import (
     "context"
     "entgo.io/ent"
+    "entgo.io/ent/dialect"
     "entgo.io/ent/dialect/entsql"
     "entgo.io/ent/entc/integration/ent/hook"
     "entgo.io/ent/schema"
@@ -83,6 +84,11 @@ func (Stock) Indexes() []ent.Index {
         index.Fields("model"),
         index.Fields("sn"),
         index.Fields("parent_id"),
+        index.Fields("name").Annotations(
+            entsql.IndexTypes(map[string]string{
+                dialect.Postgres: "GIN",
+            }),
+        ),
     }
 }
 

@@ -9930,9 +9930,27 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "电车型号ID",
+                        "name": "ebikeBrandId",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "结束时间",
                         "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "其他物资名称",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电池型号",
+                        "name": "model",
                         "in": "query"
                     },
                     {

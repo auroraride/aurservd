@@ -126,6 +126,15 @@ func (s *stockService) StoreList(req *model.StockListReq) *model.PaginationRes {
             ),
         )
     }
+    if req.EbikeBrandID != 0 {
+        q.Where(store.HasStocksWith(stock.BrandID(req.EbikeBrandID)))
+    }
+    if req.Model != "" {
+        q.Where(store.HasStocksWith(stock.Model(req.Model)))
+    }
+    if req.Keyword != "" {
+        q.Where(store.HasStocksWith(stock.NameContainsFold(req.Keyword)))
+    }
     return model.ParsePaginationResponse(
         q,
         req.PaginationReq,

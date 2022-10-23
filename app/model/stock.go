@@ -214,6 +214,10 @@ type StockListReq struct {
     Start   *string `json:"start" query:"start"`     // 开始时间
     End     *string `json:"end" query:"end"`         // 结束时间
     StoreID *uint64 `json:"storeId" query:"storeId"` // 门店ID
+
+    EbikeBrandID uint64 `json:"ebikeBrandId" query:"ebikeBrandId"` // 电车型号ID
+    Model        string `json:"model" query:"model"`               // 电池型号
+    Keyword      string `json:"keyword" query:"keyword"`           // 其他物资名称
 }
 
 type StockMaterial struct {
