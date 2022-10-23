@@ -13,11 +13,13 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/business"
     "github.com/auroraride/aurservd/internal/ent/city"
+    "github.com/auroraride/aurservd/internal/ent/ebike"
     "github.com/auroraride/aurservd/internal/ent/plan"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/stock"
     "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
+    "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/golang-module/carbon/v2"
@@ -176,10 +178,12 @@ func (s *importRiderService) parseRow(record []string) (item *model.ImportRiderF
 // TODO 导入车电套餐
 func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
     return ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
-        var p *ent.Person
-        var r *ent.Rider
-        var o *ent.Order
-        var sub *ent.Subscribe
+        var (
+            p   *ent.Person
+            r   *ent.Rider
+            o   *ent.Order
+            sub *ent.Subscribe
+        )
 
         if r, _ = ent.Database.Rider.QueryNotDeleted().WithPerson().Where(rider.Phone(req.Phone)).First(s.ctx); r != nil {
             if existSub, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.RiderID(r.ID)).First(s.ctx); existSub != nil {
@@ -192,7 +196,50 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
 
         // 查询plan
         if s.plan == nil {
-            s.plan = ent.Database.Plan.QueryNotDeleted().Where(plan.ID(req.PlanID)).FirstX(s.ctx)
+            s.plan, err = ent.Database.Plan.QueryNotDeleted().Where(plan.ID(req.PlanID)).First(s.ctx)
+            if err != nil {
+                return
+            }
+        }
+
+        // 查询电车
+        var (
+            bike    *model.Ebike
+            bikeID  *uint64
+            brandID *uint64
+        )
+        if s.plan.BrandID != nil {
+            var eb *ent.Ebike
+
+            eb, err = ent.Database.Ebike.Query().Where(ebike.StoreID(req.StoreID), ebike.Sn(req.EbikeSN), ebike.BrandID(*s.plan.BrandID)).WithBrand().First(s.ctx)
+            if eb == nil {
+                return errors.New("电车未找到")
+            }
+
+            brand := eb.Edges.Brand
+            if brand == nil {
+                return errors.New("电车型号未找到")
+            }
+
+            bike = &model.Ebike{
+                EbikeInfo: model.EbikeInfo{
+                    ID:        eb.ID,
+                    SN:        eb.Sn,
+                    ExFactory: eb.ExFactory,
+                    Plate:     eb.Plate,
+                    Color:     eb.Color,
+                },
+                Brand: &model.EbikeBrand{
+                    ID:    brand.ID,
+                    Name:  brand.Name,
+                    Cover: brand.Cover,
+                },
+            }
+
+            bikeID = silk.UInt64(bike.ID)
+            brandID = silk.UInt64(brand.ID)
+            // TODO 继续流程
+            println(bikeID, brandID)
         }
 
         // 计算开始时间
@@ -239,6 +286,7 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
             SetPlanID(req.PlanID).
             SetCityID(req.CityID).
             SetModel(s.plan.Model).
+            SetNeedContract(false).
             SetRemaining(tools.NewTime().LastDays(end.Carbon2Time(), time.Now())).
             Save(s.ctx)
         if err != nil {

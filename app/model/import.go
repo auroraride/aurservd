@@ -8,14 +8,15 @@ package model
 import "fmt"
 
 type ImportRiderFromExcel struct {
-    Name  string `json:"name"`  // 姓名
-    Phone string `json:"phone"` // 电话
-    Plan  string `json:"plan"`  // 订阅
-    Days  string `json:"days"`  // 订阅天数
-    Model string `json:"model"` // 电池型号
-    City  string `json:"city"`  // 城市
-    Store string `json:"store"` // 激活门店
-    End   string `json:"end"`   // 结束日期
+    Name    string `json:"name"`    // 姓名
+    Phone   string `json:"phone"`   // 电话
+    Plan    string `json:"plan"`    // 订阅
+    Days    string `json:"days"`    // 订阅天数
+    Model   string `json:"model"`   // 电池型号
+    City    string `json:"city"`    // 城市
+    Store   string `json:"store"`   // 激活门店
+    End     string `json:"end"`     // 结束日期
+    EbikeSN string `json:"ebikeSn"` // 车架号
 }
 
 func (r *ImportRiderFromExcel) String() string {
@@ -39,4 +40,5 @@ type ImportRiderCreateReq struct {
     StoreID    uint64 `json:"storeId" validate:"required" trans:"门店ID"`
     EmployeeID uint64 `json:"employeeId" validate:"required" trans:"店员ID"`
     End        string `json:"end" validate:"required,datetime=2006-01-02" trans:"结束日期"`
+    EbikeSN    string `json:"ebikeSn"` // 车架号
 }
