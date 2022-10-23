@@ -372,10 +372,10 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
         s.esign.SetSn(sn)
 
         if ar.Config.Debug {
-            // TODO DEBUG START
+            // DEBUG START
             flowId = tools.NewUnique().NewSN28()
             link = "link"
-            // TODO DEBUG END
+            // DEBUG END
         } else {
             // 设置个人账户ID
             flow := esign.CreateFlowReq{
@@ -513,11 +513,11 @@ func (s *contractService) doResult(flowID string, isExpired bool) (stop, success
     updater := s.orm.UpdateOneID(c.ID)
 
     if ar.Config.Debug {
-        // TODO DEBUG START
+        // DEBUG START
         result = model.ContractStatusSuccess
         updater.SetStatus(model.ContractStatusSuccess.Value())
         success = true
-        // TODO DEBUG END
+        // DEBUG END
     } else {
         // 查询合同流程状态
         result = s.esign.Result(c.FlowID)
