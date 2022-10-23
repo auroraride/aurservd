@@ -94,6 +94,7 @@ func (s *allocateService) UnallocatedEbikeInfo(keyword string) model.Ebike {
     }
 }
 
+// Create 订单激活分配
 func (s *allocateService) Create(req *model.AllocateCreateReq) model.IDPostReq {
     if req.StoreID == nil && req.CabinetID == nil {
         snag.Panic("必须由门店或电柜参与")
@@ -108,6 +109,17 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.IDPostReq {
 
     if sub == nil {
         snag.Panic("未找到订阅信息")
+    }
+
+    e := sub.Edges.Enterprise
+    if e != nil {
+        if e.Agent && !e.UseStore && s.employee != nil {
+            snag.Panic("代理骑手无法分配")
+        }
+
+        if e.Payment == model.EnterprisePaymentPrepay && e.Balance < 0 {
+            snag.Panic("企业已欠费")
+        }
     }
 
     var (

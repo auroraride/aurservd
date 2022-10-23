@@ -126,8 +126,10 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
                 SetInitialDays(req.Days).
                 SetStatus(model.SubscribeStatusInactive).
                 SetCityID(ep.CityID).
+                SetNeedContract(true).
                 SetEnterpriseID(req.EnterpriseID).
                 SetStationID(req.StationID).
+                SetAgentEndAt(tools.NewTime().WillEnd(time.Now(), req.Days)).
                 Save(s.ctx)
         }
         return
@@ -293,12 +295,15 @@ func (s *enterpriseRiderService) BatteryModels(req *model.EnterprisePriceBattery
 
 // ChooseBatteryModel 团签选择电池型号
 func (s *enterpriseRiderService) ChooseBatteryModel(req *model.EnterpriseRiderSubscribeChooseReq) model.EnterpriseRiderSubscribeChooseRes {
-    enterpriseID := s.rider.EnterpriseID
-    if enterpriseID == nil {
-        snag.Panic("非企业骑手")
+    e, _ := s.rider.QueryEnterprise().First(s.ctx)
+    if e == nil {
+        snag.Panic("非团签骑手")
+    }
+    if e.Agent {
+        snag.Panic("代理骑手无法使用该功能")
     }
 
-    ep, _ := ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(*enterpriseID), enterpriseprice.Model(req.Model)).First(s.ctx)
+    ep, _ := ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(e.ID), enterpriseprice.Model(req.Model)).First(s.ctx)
     if ep == nil {
         snag.Panic("未找到电池")
     }
@@ -321,6 +326,7 @@ func (s *enterpriseRiderService) ChooseBatteryModel(req *model.EnterpriseRiderSu
             SetModel(ep.Model).
             SetCityID(ep.CityID).
             SetRiderID(s.rider.ID).
+            SetNeedContract(true).
             Save(s.ctx)
     } else {
         sub, err = sub.Update().SetModel(ep.Model).Save(s.ctx)

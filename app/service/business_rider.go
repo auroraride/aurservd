@@ -86,9 +86,6 @@ func (s *businessRiderService) SetCabinetID(id *uint64) *businessRiderService {
 func (s *businessRiderService) SetStoreID(id *uint64) *businessRiderService {
     if id != nil {
         s.store = NewStore().Query(*id)
-        if s.store.Edges.Employee != nil {
-            s.employee = s.store.Edges.Employee
-        }
     }
     return s
 }
@@ -301,7 +298,7 @@ func (s *businessRiderService) preprocess(bt business.Type, sub *ent.Subscribe) 
         s.employeeID = silk.Pointer(s.employee.ID)
     }
 
-    if s.employee == nil && s.modifier == nil && s.cabinet == nil {
+    if s.employee == nil && s.store == nil && s.modifier == nil && s.cabinet == nil {
         snag.Panic("操作权限校验失败")
     }
 
