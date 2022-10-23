@@ -37,8 +37,10 @@ type AllocateDetail struct {
 }
 
 type AllocateCreateReq struct {
-    EbikeID     *uint64 `json:"ebikeId"` // 电车ID
-    SubscribeID uint64  `json:"subscribeId" validate:"required" trans:"订阅ID"`
+    Qrcode      *string `json:"qrcode" validate:"required_without=SubscribeID" trans:"二维码"`
+    SubscribeID *uint64 `json:"subscribeId" validate:"required_without=Qrcode" trans:"订阅ID"`
+
+    EbikeID *uint64 `json:"ebikeId"` // 电车ID
 
     StoreID    *uint64 `swaggerignore:"true"`
     EmployeeID *uint64 `swaggerignore:"true"`

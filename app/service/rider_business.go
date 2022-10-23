@@ -294,7 +294,7 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
     }
 
     // 检车合同是否有效
-    if !NewContract().Effective(s.rider) {
+    if !NewContract().Effective(s.rider, s.subscribe.ID) {
         // 存储分配信息
         err := ent.Database.Allocate.Create().
             SetType(allocate.TypeEbike).
@@ -318,12 +318,17 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
         }))
     }
 
+    allo, _ := ent.Database.Allocate.Query().Where(allocate.SubscribeID(s.subscribe.ID), allocate.RiderID(s.subscribe.RiderID), allocate.Status(model.AllocateStatusPending.Value())).First(s.ctx)
+    if allo == nil {
+        snag.Panic("未找到分配信息")
+    }
+
     srv := NewBusinessRider(s.rider)
     srv.SetCabinet(s.cabinet).
         SetTask(func() *ec.BinInfo {
             return s.putout()
         }).
-        Active(srv.Inactive(req.ID))
+        Active(s.subscribe, allo)
     return model.BusinessCabinetStatus{
         UUID:  s.task.ID.Hex(),
         Index: s.max.Index,

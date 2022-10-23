@@ -13740,13 +13740,14 @@ const docTemplate = `{
         },
         "model.AllocateCreateReq": {
             "type": "object",
-            "required": [
-                "subscribeId"
-            ],
             "properties": {
                 "ebikeId": {
                     "description": "电车ID",
                     "type": "integer"
+                },
+                "qrcode": {
+                    "description": "二维码 ",
+                    "type": "string"
                 },
                 "subscribeId": {
                     "description": "订阅ID ",
@@ -18229,6 +18230,10 @@ const docTemplate = `{
                 "cityId": {
                     "description": "城市ID ",
                     "type": "integer"
+                },
+                "ebikeSn": {
+                    "description": "车架号",
+                    "type": "string"
                 },
                 "employeeId": {
                     "description": "店员ID ",

@@ -62,7 +62,7 @@ func NewContractWithRider(u *ent.Rider) *contractService {
 
 // Effective 查询骑手是否存在生效中的合同
 // 当用户退租之后触发合同失效, 需要重新签订
-func (s *contractService) Effective(u *ent.Rider) bool {
+func (s *contractService) Effective(u *ent.Rider, subscribeID uint64) bool {
     if u.Contractual {
         return true
     }
@@ -70,6 +70,7 @@ func (s *contractService) Effective(u *ent.Rider) bool {
         contract.RiderID(u.ID),
         contract.Status(model.ContractStatusSuccess.Value()),
         contract.Effective(true),
+        contract.SubscribeID(subscribeID),
     ).Exist(s.ctx)
     return exists
 }
@@ -156,10 +157,6 @@ func (s *contractService) enterpriseData(m ar.Map, sub *ent.Subscribe) *model.Co
 // 电柜激活电池(需要注意判定库存是否充足)
 func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes {
     u := s.rider
-    // 是否免签
-    if s.Effective(u) {
-        return model.ContractSignRes{Effective: true}
-    }
 
     // 是否有紧急联系人
     if u.Contact == nil {
@@ -178,6 +175,11 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
 
     if sub.BrandID == nil && sub.EbikeID != nil {
         snag.Panic("当前订阅错误")
+    }
+
+    // 是否免签或已签约
+    if s.Effective(u, sub.ID) {
+        return model.ContractSignRes{Effective: true}
     }
 
     // 查找分配信息
@@ -581,7 +583,7 @@ func (s *contractService) update(c *ent.Contract) (err error) {
         return errors.New("合同未关联订阅")
     }
 
-    info, sub := NewBusinessRider(c.Edges.Rider).Inactive(*c.SubscribeID)
+    _, sub := NewBusinessRider(c.Edges.Rider).Inactive(*c.SubscribeID)
     if sub == nil {
         return errors.New("需要更新订阅, 但是未找到订阅信息")
     }
@@ -589,12 +591,16 @@ func (s *contractService) update(c *ent.Contract) (err error) {
     // 查询分配信息
     ea, _ := c.QueryAllocate().First(s.ctx)
 
-    // 激活
-    srv := NewBusinessRider(c.Edges.Rider).SetStoreID(ea.StoreID).SetCabinetID(ea.CabinetID)
-
     if ea == nil {
         return errors.New("未找到分配信息")
     }
+
+    if ea.StoreID == nil {
+        return
+    }
+
+    // 激活
+    srv := NewBusinessRider(c.Edges.Rider).SetStoreID(ea.StoreID).SetCabinetID(ea.CabinetID)
 
     // 设置电车属性
     if ea.EbikeID != nil {
@@ -613,14 +619,7 @@ func (s *contractService) update(c *ent.Contract) (err error) {
     // 完成签约后
     // 若有分配信息则自动并激活 (骑手扫码电柜无需激活)
     if c.AllocateID != nil {
-        srv.Active(info, sub, func(tx *ent.Tx) (err error) {
-            // 更新分配
-            err = tx.Allocate.UpdateOne(ea).SetStatus(model.AllocateStatusSigned.Value()).Exec(s.ctx)
-            if err != nil {
-                return
-            }
-            return
-        })
+        srv.Active(sub, ea)
     }
 
     return

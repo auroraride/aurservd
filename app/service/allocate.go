@@ -104,7 +104,7 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.IDPostReq {
     }
 
     // 查找订阅
-    _, sub := NewBusinessRider(nil).Inactive(req.SubscribeID)
+    _, sub := NewBusinessRider(nil).Inactive(*req.SubscribeID)
 
     if sub == nil {
         snag.Panic("未找到订阅信息")
@@ -143,7 +143,7 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.IDPostReq {
     }
 
     // 是否被分配过
-    exists, _ := s.orm.Query().Where(allocate.SubscribeID(req.SubscribeID)).First(s.ctx)
+    exists, _ := s.orm.Query().Where(allocate.SubscribeID(*req.SubscribeID)).First(s.ctx)
     if exists != nil {
         if exists.Time.After(carbon.Now().SubSeconds(model.AllocateExpiration).Carbon2Time()) {
             snag.Panic("已被分配过")

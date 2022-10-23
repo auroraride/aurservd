@@ -478,28 +478,39 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 }
 
 // Active 激活订阅
-// TODO 电柜激活电池
-func (s *businessRiderService) Active(info *model.SubscribeActiveInfo, sub *ent.Subscribe, cbs ...ent.TxFunc) {
+func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
     s.preprocess(business.TypeActive, sub)
 
-    if !NewContract().Effective(s.rider) {
+    if !NewContract().Effective(s.rider, sub.ID) {
         snag.Panic("还未签约, 请签约")
     }
 
     s.do(business.TypeActive, func(tx *ent.Tx) {
         var err error
-        if len(cbs) > 0 {
-            err = cbs[0](tx)
-            snag.PanicIfError(err)
+
+        // 更新分配
+        err = tx.Allocate.UpdateOne(allo).SetStatus(model.AllocateStatusSigned.Value()).Exec(s.ctx)
+        if err != nil {
+            return
         }
 
-        var aend *time.Time
+        var (
+            aend *time.Time
+        )
         // 如果是代理商, 计算骑士卡代理商结束时间
-        if info.Enterprise != nil && info.Enterprise.Agent {
-            aend = silk.Pointer(tools.NewTime().WillEnd(time.Now(), sub.InitialDays))
+        if sub.EnterpriseID != nil {
+            if sub.Edges.Enterprise == nil {
+                sub.Edges.Enterprise = sub.QueryEnterprise().FirstX(s.ctx)
+            }
+            if sub.Edges.Enterprise == nil {
+                snag.Panic("未找到团签信息")
+            }
+            if sub.Edges.Enterprise.Agent {
+                aend = silk.Pointer(tools.NewTime().WillEnd(time.Now(), sub.InitialDays))
+            }
         }
 
-        updater := tx.Subscribe.UpdateOneID(info.ID).
+        updater := tx.Subscribe.UpdateOneID(sub.ID).
             SetStatus(model.SubscribeStatusUsing).
             SetStartAt(time.Now()).
             SetNillableEmployeeID(s.employeeID).
@@ -524,7 +535,7 @@ func (s *businessRiderService) Active(info *model.SubscribeActiveInfo, sub *ent.
         }
     })
 
-    if info.EnterpriseID != nil {
+    if sub.EnterpriseID != nil {
         // 更新团签账单
         go NewEnterprise().UpdateStatement(sub.Edges.Enterprise)
     }

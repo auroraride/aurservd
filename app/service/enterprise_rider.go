@@ -291,21 +291,18 @@ func (s *enterpriseRiderService) BatteryModels(req *model.EnterprisePriceBattery
     return res
 }
 
-// ChooseBatteryModel 选择电池型号
+// ChooseBatteryModel 团签选择电池型号
 func (s *enterpriseRiderService) ChooseBatteryModel(req *model.EnterpriseRiderSubscribeChooseReq) model.EnterpriseRiderSubscribeChooseRes {
-    // 查询骑手是否签约过
-    if !NewContract().Effective(s.rider) {
-        snag.Panic("请先签约")
-    }
-
     enterpriseID := s.rider.EnterpriseID
     if enterpriseID == nil {
         snag.Panic("非企业骑手")
     }
+
     ep, _ := ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(*enterpriseID), enterpriseprice.Model(req.Model)).First(s.ctx)
     if ep == nil {
         snag.Panic("未找到电池")
     }
+
     // 判断骑手是否有使用中的电池
     sub, _ := ent.Database.Subscribe.QueryNotDeleted().Where(
         subscribe.EnterpriseID(*s.rider.EnterpriseID),
@@ -315,6 +312,7 @@ func (s *enterpriseRiderService) ChooseBatteryModel(req *model.EnterpriseRiderSu
     if sub != nil && sub.StartAt != nil {
         snag.Panic("已被激活, 无法重新选择电池")
     }
+
     var err error
     if sub == nil {
         sub, err = ent.Database.Subscribe.Create().
@@ -330,10 +328,12 @@ func (s *enterpriseRiderService) ChooseBatteryModel(req *model.EnterpriseRiderSu
             return model.EnterpriseRiderSubscribeChooseRes{}
         }
     }
+
     if err != nil {
         log.Error(err)
         snag.Panic("型号选择失败")
     }
+
     return model.EnterpriseRiderSubscribeChooseRes{
         Qrcode: fmt.Sprintf("SUBSCRIBE:%d", sub.ID),
     }

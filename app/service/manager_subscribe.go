@@ -38,7 +38,7 @@ func (s *managerSubscribeService) Active(req *model.ManagerSubscribeActive) {
 
     NewAllocate(s.modifier).Create(&model.AllocateCreateReq{
         EbikeID:     bikeID,
-        SubscribeID: req.ID,
+        SubscribeID: silk.UInt64(req.ID),
         StoreID:     req.StoreID,
     })
 }

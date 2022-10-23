@@ -40,6 +40,13 @@ func (s *businessEmployeeService) Active(req *model.AllocateCreateReq) (res mode
         snag.Panic("当前未上班")
     }
 
+    // 解析二维码
+    if req.SubscribeID == nil {
+        str := strings.ReplaceAll(*req.Qrcode, "SUBSCRIBE:", "")
+        id, _ := strconv.ParseUint(str, 10, 64)
+        req.SubscribeID = silk.UInt64(id)
+    }
+
     req.EmployeeID = silk.UInt64(s.entEmployee.ID)
     req.StoreID = silk.UInt64(s.entStore.ID)
 
