@@ -636,7 +636,9 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
         sub := item.Edges.Subscribes[0]
 
         remaining := sub.Remaining
-        if sub.AgentEndAt != nil {
+
+        // 代理骑手未退组剩余天数
+        if sub.AgentEndAt != nil && sub.EndAt == nil {
             remaining = tools.NewTime().LastDaysToNow(*sub.AgentEndAt)
         }
 
