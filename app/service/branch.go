@@ -249,7 +249,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (temps 
     }
 
     storeQuery := ent.Database.Store.QueryNotDeleted().Where(store.BranchIDIn(ids...))
-    if req.Filter == "" {
+    if req.Filter != "" {
         switch req.Filter {
         case model.BranchFacilityFilterEbikeObtain:
             storeQuery.Where(store.EbikeObtain(true))
@@ -265,6 +265,8 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (temps 
         default:
             cabinets = ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.BranchIDIn(ids...)).WithModels().AllX(s.ctx)
         }
+    } else {
+        cabinets = ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.BranchIDIn(ids...)).WithModels().AllX(s.ctx)
     }
     stores = storeQuery.AllX(s.ctx)
     return

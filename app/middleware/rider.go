@@ -132,7 +132,8 @@ func RiderFaceMiddleware() echo.MiddlewareFunc {
             u := ctx.Rider
             s := service.NewRider()
             if s.IsNewDevice(u, ctx.Device) {
-                snag.Panic(snag.StatusLocked, ar.Map{"url": s.GetFaceUrl(ctx)})
+                // TODO 暂时跳过人脸校验
+                // snag.Panic(snag.StatusLocked, ar.Map{"url": s.GetFaceUrl(ctx)})
             }
             return next(ctx)
         }

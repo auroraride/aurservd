@@ -10,14 +10,15 @@ import (
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/model"
     "github.com/labstack/echo/v4"
+    "strings"
 )
 
 func DeviceMiddleware() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(ctx echo.Context) error {
             c := app.Context(ctx)
-            sn := c.Request().Header.Get(app.HeaderDeviceSerial)
-            dt := c.Request().Header.Get(app.HeaderDeviceType)
+            sn := splitDeviceInfo(c.Request().Header.Get(app.HeaderDeviceSerial))
+            dt := splitDeviceInfo(c.Request().Header.Get(app.HeaderDeviceType))
             if sn == "" || dt == "" {
                 return errors.New("设备校验失败")
             }
@@ -29,4 +30,14 @@ func DeviceMiddleware() echo.MiddlewareFunc {
             return next(ctx)
         }
     }
+}
+
+func splitDeviceInfo(str string) (s string) {
+    arr := strings.Split(str, ",")
+    for _, s = range arr {
+        if len(s) > 0 {
+            return
+        }
+    }
+    return
 }
