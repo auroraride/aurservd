@@ -240,7 +240,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
                 points = realPoints
             } else {
                 // 若剩余积分大于所需金额, 则扣除剩余金额积分数量
-                points = realPoints - cents
+                points = cents
             }
             price = tools.NewDecimal().Sub(price, float64(points)*model.PointRatio)
             _, err := pointServ.PreConsume(s.rider, points)
