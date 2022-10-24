@@ -223,7 +223,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
         price = tools.NewDecimal().Sub(price, camount)
         // TODO price = 0时 直接支付成功
         // 暂时处理成支付一分钱
-        if price < 0 {
+        if price <= 0 {
             price = 0.01
         }
     }
@@ -235,10 +235,11 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
         realPoints := pointServ.Real(s.rider)
         if realPoints > 0 {
             cents := int64(price / model.PointRatio)
-            // 若积分小于所需积分, 则全部扣除
             if realPoints < cents {
+                // 若积分小于所需积分, 则全部扣除
                 points = realPoints
             } else {
+                // 若剩余积分大于所需金额, 则扣除剩余金额积分数量
                 points = realPoints - cents
             }
             price = tools.NewDecimal().Sub(price, float64(points)*model.PointRatio)
@@ -246,6 +247,9 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
             if err != nil {
                 snag.Panic("订单创建失败: %v", err)
             }
+        }
+        if price <= 0 {
+            price = 0.01
         }
     }
 

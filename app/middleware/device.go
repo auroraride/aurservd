@@ -17,8 +17,8 @@ func DeviceMiddleware() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(ctx echo.Context) error {
             c := app.Context(ctx)
-            sn := splitDeviceInfo(c.Request().Header.Get(app.HeaderDeviceSerial))
-            dt := splitDeviceInfo(c.Request().Header.Get(app.HeaderDeviceType))
+            sn := splitString(c.Request().Header.Get(app.HeaderDeviceSerial))
+            dt := splitString(c.Request().Header.Get(app.HeaderDeviceType))
             if sn == "" || dt == "" {
                 return errors.New("设备校验失败")
             }
@@ -32,7 +32,7 @@ func DeviceMiddleware() echo.MiddlewareFunc {
     }
 }
 
-func splitDeviceInfo(str string) (s string) {
+func splitString(str string) (s string) {
     arr := strings.Split(str, ",")
     for _, s = range arr {
         if len(s) > 0 {

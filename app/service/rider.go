@@ -80,7 +80,7 @@ func (s *riderService) GetRiderById(id uint64) (u *ent.Rider, err error) {
         WithEnterprise().
         WithEnterprise().
         Where(rider.ID(id)).
-        Only(context.Background())
+        First(s.ctx)
 }
 
 // IsAuthed 是否已认证
@@ -166,6 +166,8 @@ func (s *riderService) SetNewDevice(u *ent.Rider, device *model.Device) {
     if ar.Config.App.Debug.Phone[u.Phone] {
         isNew = false
     }
+    // TODO 暂时跳过人脸校验
+    isNew = false
     _, err := ent.Database.Rider.
         UpdateOneID(u.ID).
         SetLastDevice(device.Serial).

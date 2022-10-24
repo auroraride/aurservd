@@ -84,7 +84,7 @@ func RiderMiddleware() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(c echo.Context) error {
             url := c.Path()
-            token := c.Request().Header.Get(app.HeaderRiderToken)
+            token := splitString(c.Request().Header.Get(app.HeaderRiderToken))
             needLogin := !riderLoginSkipper[url]
             pushId := c.Request().Header.Get(app.HeaderPushId)
             u := riderLogin(token, pushId, needLogin)

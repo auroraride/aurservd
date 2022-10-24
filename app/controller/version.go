@@ -30,6 +30,7 @@ func (*version) Get(c echo.Context) (err error) {
     if a == "" {
         a = "rider"
     }
+    // TODO 读取单独文件
     key := fmt.Sprintf("%s-%s", strings.ToLower(a), strings.ToLower(plaform))
     return ctx.SendResponse(m[key])
 }
