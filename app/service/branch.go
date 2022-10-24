@@ -249,23 +249,22 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (temps 
     }
 
     storeQuery := ent.Database.Store.QueryNotDeleted().Where(store.BranchIDIn(ids...))
-    if req.Filter != "" {
-        switch req.Filter {
-        case model.BranchFacilityFilterEbikeObtain:
-            storeQuery.Where(store.EbikeObtain(true))
-        case model.BranchFacilityFilterEbikeRepair:
-            storeQuery.Where(store.EbikeRepair(true))
-        case model.BranchFacilityFilterEbike:
-            storeQuery.Where(
-                store.Or(
-                    store.EbikeObtain(true),
-                    store.EbikeRepair(true),
-                ),
-            )
-        default:
-            cabinets = ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.BranchIDIn(ids...)).WithModels().AllX(s.ctx)
-        }
-    } else {
+    filter := strings.ToLower(req.Filter)
+    switch filter {
+    case model.BranchFacilityTypeStore:
+        break
+    case model.BranchFacilityFilterEbikeObtain:
+        storeQuery.Where(store.EbikeObtain(true))
+    case model.BranchFacilityFilterEbikeRepair:
+        storeQuery.Where(store.EbikeRepair(true))
+    case model.BranchFacilityFilterEbike:
+        storeQuery.Where(
+            store.Or(
+                store.EbikeObtain(true),
+                store.EbikeRepair(true),
+            ),
+        )
+    default:
         cabinets = ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.BranchIDIn(ids...)).WithModels().AllX(s.ctx)
     }
     stores = storeQuery.AllX(s.ctx)
