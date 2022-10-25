@@ -8,7 +8,8 @@ package controller
 import (
     "fmt"
     "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/internal/ar"
+    "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/service"
     "github.com/labstack/echo/v4"
     "strings"
 )
@@ -20,17 +21,15 @@ var Version = new(version)
 func (*version) Get(c echo.Context) (err error) {
     ctx := app.Context(c)
     plaform := ctx.QueryParam("plaform")
-    a := ctx.QueryParam("app")
-    m := ar.Map{
-        "rider-android":    ar.Config.RiderApp.Android,
-        "rider-ios":        ar.Config.RiderApp.IOS,
-        "employee-android": ar.Config.EmployeeApp.Android,
-        "employee-ios":     ar.Config.EmployeeApp.IOS,
+    app := ctx.QueryParam("app")
+    if app == "" {
+        app = "rider"
     }
-    if a == "" {
-        a = "rider"
+    key := fmt.Sprintf("%s-%s", strings.ToLower(app), strings.ToLower(plaform))
+    set := service.NewSetting().GetSetting(model.SettingAppVersion).(map[string]interface{})
+    v, ok := set[key]
+    if !ok {
+        v = model.SettingAppVersionValue{}
     }
-    // TODO 读取单独文件
-    key := fmt.Sprintf("%s-%s", strings.ToLower(a), strings.ToLower(plaform))
-    return ctx.SendResponse(m[key])
+    return ctx.SendResponse(v)
 }

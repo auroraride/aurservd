@@ -22,6 +22,7 @@ const (
     SettingPlanBatteryDescription = "PLAN_BATTERY_DESCRIPTION" // 单电订阅介绍
     SettingPlanEbikeDescription   = "PLAN_EBIKE_DESCRIPTION"   // 车电订阅介绍
     SettingQuestions              = "QUESTION"                 // 常见问题
+    SettingAppVersion             = "APP_VERSION"              // App版本
 )
 
 type SettingValueConvert func(content string) any
@@ -117,6 +118,10 @@ var Settings = map[string]SettingItem{
         Desc:    "常见问题",
         Default: []SettingQuestion{},
     },
+    SettingAppVersion: {
+        Desc:    "App版本",
+        Default: map[string]SettingAppVersionValue{},
+    },
 }
 
 type SettingRiderApp struct {
@@ -134,4 +139,11 @@ type SettingPlanDescription struct {
 type SettingQuestion struct {
     Question string `json:"question"` // 问题
     Answer   string `json:"answer"`   // 解答
+}
+
+type SettingAppVersionValue struct {
+    Version     string `json:"version"`
+    Description string `json:"description"`
+    Link        string `json:"link"`
+    Enable      bool   `json:"enable"`
 }
