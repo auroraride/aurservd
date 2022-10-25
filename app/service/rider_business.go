@@ -293,8 +293,8 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
         snag.Panic("骑士卡状态错误")
     }
 
-    // 检车合同是否有效
-    if !NewContract().Effective(s.rider, s.subscribe.ID) {
+    // 检查是否需要签约
+    if !NewSubscribe().NeedContract(s.subscribe) {
         // 存储分配信息
         err := ent.Database.Allocate.Create().
             SetType(allocate.TypeEbike).

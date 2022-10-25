@@ -496,10 +496,8 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
     s.preprocess(business.TypeActive, sub)
 
-    if sub.NeedContract {
-        if !NewContract().Effective(s.rider, sub.ID) {
-            snag.Panic("还未签约, 请签约")
-        }
+    if NewSubscribe().NeedContract(sub) {
+        snag.Panic("还未签约, 请签约")
     }
 
     s.do(business.TypeActive, func(tx *ent.Tx) {
@@ -607,7 +605,7 @@ func (s *businessRiderService) UnSubscribe(subscribeID uint64, fns ...func(sub *
         snag.PanicIfError(err)
 
         // 标记需要签约
-        _, err = tx.Rider.UpdateOneID(sub.RiderID).SetContractual(false).Save(s.ctx)
+        _, err = tx.Rider.UpdateOneID(sub.RiderID).Save(s.ctx)
         snag.PanicIfError(err)
 
         // 查询并标记用户合同为失效

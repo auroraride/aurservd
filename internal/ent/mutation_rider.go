@@ -40,7 +40,6 @@ type RiderMutation struct {
 	push_id           *string
 	last_signin_at    *time.Time
 	blocked           *bool
-	contractual       *bool
 	points            *int64
 	addpoints         *int64
 	clearedFields     map[string]struct{}
@@ -1110,55 +1109,6 @@ func (m *RiderMutation) ResetBlocked() {
 	m.blocked = nil
 }
 
-// SetContractual sets the "contractual" field.
-func (m *RiderMutation) SetContractual(b bool) {
-	m.contractual = &b
-}
-
-// Contractual returns the value of the "contractual" field in the mutation.
-func (m *RiderMutation) Contractual() (r bool, exists bool) {
-	v := m.contractual
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldContractual returns the old "contractual" field's value of the Rider entity.
-// If the Rider object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RiderMutation) OldContractual(ctx context.Context) (v bool, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldContractual is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldContractual requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldContractual: %w", err)
-	}
-	return oldValue.Contractual, nil
-}
-
-// ClearContractual clears the value of the "contractual" field.
-func (m *RiderMutation) ClearContractual() {
-	m.contractual = nil
-	m.clearedFields[rider.FieldContractual] = struct{}{}
-}
-
-// ContractualCleared returns if the "contractual" field was cleared in this mutation.
-func (m *RiderMutation) ContractualCleared() bool {
-	_, ok := m.clearedFields[rider.FieldContractual]
-	return ok
-}
-
-// ResetContractual resets all changes to the "contractual" field.
-func (m *RiderMutation) ResetContractual() {
-	m.contractual = nil
-	delete(m.clearedFields, rider.FieldContractual)
-}
-
 // SetPoints sets the "points" field.
 func (m *RiderMutation) SetPoints(i int64) {
 	m.points = &i
@@ -1690,7 +1640,7 @@ func (m *RiderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RiderMutation) Fields() []string {
-	fields := make([]string, 0, 22)
+	fields := make([]string, 0, 21)
 	if m.created_at != nil {
 		fields = append(fields, rider.FieldCreatedAt)
 	}
@@ -1751,9 +1701,6 @@ func (m *RiderMutation) Fields() []string {
 	if m.blocked != nil {
 		fields = append(fields, rider.FieldBlocked)
 	}
-	if m.contractual != nil {
-		fields = append(fields, rider.FieldContractual)
-	}
 	if m.points != nil {
 		fields = append(fields, rider.FieldPoints)
 	}
@@ -1805,8 +1752,6 @@ func (m *RiderMutation) Field(name string) (ent.Value, bool) {
 		return m.LastSigninAt()
 	case rider.FieldBlocked:
 		return m.Blocked()
-	case rider.FieldContractual:
-		return m.Contractual()
 	case rider.FieldPoints:
 		return m.Points()
 	}
@@ -1858,8 +1803,6 @@ func (m *RiderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldLastSigninAt(ctx)
 	case rider.FieldBlocked:
 		return m.OldBlocked(ctx)
-	case rider.FieldContractual:
-		return m.OldContractual(ctx)
 	case rider.FieldPoints:
 		return m.OldPoints(ctx)
 	}
@@ -2011,13 +1954,6 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetBlocked(v)
 		return nil
-	case rider.FieldContractual:
-		v, ok := value.(bool)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetContractual(v)
-		return nil
 	case rider.FieldPoints:
 		v, ok := value.(int64)
 		if !ok {
@@ -2127,9 +2063,6 @@ func (m *RiderMutation) ClearedFields() []string {
 	if m.FieldCleared(rider.FieldLastSigninAt) {
 		fields = append(fields, rider.FieldLastSigninAt)
 	}
-	if m.FieldCleared(rider.FieldContractual) {
-		fields = append(fields, rider.FieldContractual)
-	}
 	return fields
 }
 
@@ -2188,9 +2121,6 @@ func (m *RiderMutation) ClearField(name string) error {
 		return nil
 	case rider.FieldLastSigninAt:
 		m.ClearLastSigninAt()
-		return nil
-	case rider.FieldContractual:
-		m.ClearContractual()
 		return nil
 	}
 	return fmt.Errorf("unknown Rider nullable field %s", name)
@@ -2259,9 +2189,6 @@ func (m *RiderMutation) ResetField(name string) error {
 		return nil
 	case rider.FieldBlocked:
 		m.ResetBlocked()
-		return nil
-	case rider.FieldContractual:
-		m.ResetContractual()
 		return nil
 	case rider.FieldPoints:
 		m.ResetPoints()

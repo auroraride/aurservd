@@ -60,21 +60,6 @@ func NewContractWithRider(u *ent.Rider) *contractService {
     return s
 }
 
-// Effective 查询骑手是否存在生效中的合同
-// 当用户退租之后触发合同失效, 需要重新签订
-func (s *contractService) Effective(u *ent.Rider, subscribeID uint64) bool {
-    if u.Contractual {
-        return true
-    }
-    exists, _ := s.orm.Query().Where(
-        contract.RiderID(u.ID),
-        contract.Status(model.ContractStatusSuccess.Value()),
-        contract.Effective(true),
-        contract.SubscribeID(subscribeID),
-    ).Exist(s.ctx)
-    return exists
-}
-
 // planData 个签合同数据
 func (s *contractService) planData(sub *ent.Subscribe) *model.ContractSignUniversal {
     p, _ := sub.QueryPlan().First(s.ctx)
@@ -178,7 +163,7 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
     }
 
     // 是否免签或已签约
-    if s.Effective(u, sub.ID) {
+    if !NewSubscribe().NeedContract(sub) {
         return model.ContractSignRes{Effective: true}
     }
 

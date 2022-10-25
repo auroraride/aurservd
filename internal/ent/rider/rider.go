@@ -53,8 +53,6 @@ const (
 	FieldLastSigninAt = "last_signin_at"
 	// FieldBlocked holds the string denoting the blocked field in the database.
 	FieldBlocked = "blocked"
-	// FieldContractual holds the string denoting the contractual field in the database.
-	FieldContractual = "contractual"
 	// FieldPoints holds the string denoting the points field in the database.
 	FieldPoints = "points"
 	// EdgeStation holds the string denoting the station edge name in mutations.
@@ -174,7 +172,6 @@ var Columns = []string{
 	FieldPushID,
 	FieldLastSigninAt,
 	FieldBlocked,
-	FieldContractual,
 	FieldPoints,
 }
 
@@ -211,8 +208,6 @@ var (
 	PushIDValidator func(string) error
 	// DefaultBlocked holds the default value on creation for the "blocked" field.
 	DefaultBlocked bool
-	// DefaultContractual holds the default value on creation for the "contractual" field.
-	DefaultContractual bool
 	// DefaultPoints holds the default value on creation for the "points" field.
 	DefaultPoints int64
 )

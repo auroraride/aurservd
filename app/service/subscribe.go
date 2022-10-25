@@ -372,7 +372,7 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe, notice bool) error 
 
         if unsub {
             // 标记需要签约
-            _, _ = tx.Rider.UpdateOneID(sub.RiderID).SetContractual(false).Save(s.ctx)
+            _, _ = tx.Rider.UpdateOneID(sub.RiderID).Save(s.ctx)
 
             // 查询并标记用户合同为失效
             _, _ = tx.Contract.Update().Where(contract.RiderID(sub.RiderID)).SetEffective(false).Save(s.ctx)
@@ -528,4 +528,17 @@ func (s *subscribeService) OverdueFeeFormula(price float64, days uint, remaining
 
     formula = fmt.Sprintf("(上次购买骑士卡价格 %.2f元 ÷ 天数 %d天) × 逾期天数 %d天 × 1.24 = 逾期费用 %.2f元", price, days, remaining, fee)
     return
+}
+
+// NeedContract 查询订阅是否需要签约
+func (s *subscribeService) NeedContract(sub *ent.Subscribe) bool {
+    if !sub.NeedContract {
+        return false
+    }
+    exists, _ := ent.Database.Contract.Query().Where(
+        contract.Status(model.ContractStatusSuccess.Value()),
+        contract.Effective(true),
+        contract.SubscribeID(sub.ID),
+    ).Exist(s.ctx)
+    return !exists
 }

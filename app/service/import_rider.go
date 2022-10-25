@@ -254,7 +254,7 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
         }
         if r == nil {
             // 创建骑手并设置为不需要签约
-            rc := tx.Rider.Create().SetPhone(req.Phone).SetName(req.Name).SetRemark("导入骑手").SetContractual(true)
+            rc := tx.Rider.Create().SetPhone(req.Phone).SetName(req.Name).SetRemark("导入骑手")
             if p != nil {
                 rc.SetPersonID(p.ID).SetIDCardNumber(p.IDCardNumber)
             }
@@ -263,7 +263,7 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
                 return
             }
         } else {
-            ru := tx.Rider.UpdateOne(r).SetRemark("导入骑手 & 更新").SetContractual(true)
+            ru := tx.Rider.UpdateOne(r).SetRemark("导入骑手 & 更新")
             if r.Edges.Person == nil {
                 ru.SetPersonID(p.ID).SetIDCardNumber(p.IDCardNumber).SetName(p.Name)
             }

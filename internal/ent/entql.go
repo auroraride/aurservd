@@ -1147,7 +1147,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldPushID:       {Type: field.TypeString, Column: rider.FieldPushID},
 			rider.FieldLastSigninAt: {Type: field.TypeTime, Column: rider.FieldLastSigninAt},
 			rider.FieldBlocked:      {Type: field.TypeBool, Column: rider.FieldBlocked},
-			rider.FieldContractual:  {Type: field.TypeBool, Column: rider.FieldContractual},
 			rider.FieldPoints:       {Type: field.TypeInt64, Column: rider.FieldPoints},
 		},
 	}
@@ -10252,11 +10251,6 @@ func (f *RiderFilter) WhereLastSigninAt(p entql.TimeP) {
 // WhereBlocked applies the entql bool predicate on the blocked field.
 func (f *RiderFilter) WhereBlocked(p entql.BoolP) {
 	f.Where(p.Field(rider.FieldBlocked))
-}
-
-// WhereContractual applies the entql bool predicate on the contractual field.
-func (f *RiderFilter) WhereContractual(p entql.BoolP) {
-	f.Where(p.Field(rider.FieldContractual))
 }
 
 // WherePoints applies the entql int64 predicate on the points field.

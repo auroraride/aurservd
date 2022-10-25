@@ -61,8 +61,6 @@ type Rider struct {
 	LastSigninAt *time.Time `json:"last_signin_at,omitempty"`
 	// 是否封禁骑手账号
 	Blocked bool `json:"blocked,omitempty"`
-	// 是否标记为无需签约
-	Contractual bool `json:"contractual,omitempty"`
 	// 骑手积分
 	Points int64 `json:"points,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -206,7 +204,7 @@ func (*Rider) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case rider.FieldCreator, rider.FieldLastModifier, rider.FieldContact:
 			values[i] = new([]byte)
-		case rider.FieldIsNewDevice, rider.FieldBlocked, rider.FieldContractual:
+		case rider.FieldIsNewDevice, rider.FieldBlocked:
 			values[i] = new(sql.NullBool)
 		case rider.FieldID, rider.FieldStationID, rider.FieldPersonID, rider.FieldEnterpriseID, rider.FieldDeviceType, rider.FieldPoints:
 			values[i] = new(sql.NullInt64)
@@ -367,12 +365,6 @@ func (r *Rider) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				r.Blocked = value.Bool
 			}
-		case rider.FieldContractual:
-			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field contractual", values[i])
-			} else if value.Valid {
-				r.Contractual = value.Bool
-			}
 		case rider.FieldPoints:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field points", values[i])
@@ -528,9 +520,6 @@ func (r *Rider) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("blocked=")
 	builder.WriteString(fmt.Sprintf("%v", r.Blocked))
-	builder.WriteString(", ")
-	builder.WriteString("contractual=")
-	builder.WriteString(fmt.Sprintf("%v", r.Contractual))
 	builder.WriteString(", ")
 	builder.WriteString("points=")
 	builder.WriteString(fmt.Sprintf("%v", r.Points))

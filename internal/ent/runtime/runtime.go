@@ -968,12 +968,8 @@ func init() {
 	riderDescBlocked := riderFields[12].Descriptor()
 	// rider.DefaultBlocked holds the default value on creation for the blocked field.
 	rider.DefaultBlocked = riderDescBlocked.Default.(bool)
-	// riderDescContractual is the schema descriptor for contractual field.
-	riderDescContractual := riderFields[13].Descriptor()
-	// rider.DefaultContractual holds the default value on creation for the contractual field.
-	rider.DefaultContractual = riderDescContractual.Default.(bool)
 	// riderDescPoints is the schema descriptor for points field.
-	riderDescPoints := riderFields[14].Descriptor()
+	riderDescPoints := riderFields[13].Descriptor()
 	// rider.DefaultPoints holds the default value on creation for the points field.
 	rider.DefaultPoints = riderDescPoints.Default.(int64)
 	riderfollowupMixin := schema.RiderFollowUp{}.Mixin()

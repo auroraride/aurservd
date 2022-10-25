@@ -2912,7 +2912,6 @@ var (
 		{Name: "push_id", Type: field.TypeString, Comment: "推送ID", Nullable: true, Size: 60},
 		{Name: "last_signin_at", Type: field.TypeTime, Comment: "最后登录时间", Nullable: true},
 		{Name: "blocked", Type: field.TypeBool, Comment: "是否封禁骑手账号", Default: false},
-		{Name: "contractual", Type: field.TypeBool, Comment: "是否标记为无需签约", Nullable: true, Default: false},
 		{Name: "points", Type: field.TypeInt64, Comment: "骑手积分", Default: 0},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "person_id", Type: field.TypeUint64, Nullable: true},
@@ -2926,19 +2925,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "rider_enterprise_riders",
-				Columns:    []*schema.Column{RiderColumns[20]},
+				Columns:    []*schema.Column{RiderColumns[19]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "rider_person_rider",
-				Columns:    []*schema.Column{RiderColumns[21]},
+				Columns:    []*schema.Column{RiderColumns[20]},
 				RefColumns: []*schema.Column{PersonColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "rider_enterprise_station_station",
-				Columns:    []*schema.Column{RiderColumns[22]},
+				Columns:    []*schema.Column{RiderColumns[21]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2957,7 +2956,7 @@ var (
 			{
 				Name:    "rider_station_id",
 				Unique:  false,
-				Columns: []*schema.Column{RiderColumns[22]},
+				Columns: []*schema.Column{RiderColumns[21]},
 			},
 			{
 				Name:    "rider_phone",
@@ -2987,12 +2986,12 @@ var (
 			{
 				Name:    "rider_person_id",
 				Unique:  false,
-				Columns: []*schema.Column{RiderColumns[21]},
+				Columns: []*schema.Column{RiderColumns[20]},
 			},
 			{
 				Name:    "rider_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{RiderColumns[20]},
+				Columns: []*schema.Column{RiderColumns[19]},
 			},
 			{
 				Name:    "rider_last_device",

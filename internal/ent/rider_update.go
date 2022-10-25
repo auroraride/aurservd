@@ -351,26 +351,6 @@ func (ru *RiderUpdate) SetNillableBlocked(b *bool) *RiderUpdate {
 	return ru
 }
 
-// SetContractual sets the "contractual" field.
-func (ru *RiderUpdate) SetContractual(b bool) *RiderUpdate {
-	ru.mutation.SetContractual(b)
-	return ru
-}
-
-// SetNillableContractual sets the "contractual" field if the given value is not nil.
-func (ru *RiderUpdate) SetNillableContractual(b *bool) *RiderUpdate {
-	if b != nil {
-		ru.SetContractual(*b)
-	}
-	return ru
-}
-
-// ClearContractual clears the value of the "contractual" field.
-func (ru *RiderUpdate) ClearContractual() *RiderUpdate {
-	ru.mutation.ClearContractual()
-	return ru
-}
-
 // SetPoints sets the "points" field.
 func (ru *RiderUpdate) SetPoints(i int64) *RiderUpdate {
 	ru.mutation.ResetPoints()
@@ -983,19 +963,6 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: rider.FieldBlocked,
-		})
-	}
-	if value, ok := ru.mutation.Contractual(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: rider.FieldContractual,
-		})
-	}
-	if ru.mutation.ContractualCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Column: rider.FieldContractual,
 		})
 	}
 	if value, ok := ru.mutation.Points(); ok {
@@ -1827,26 +1794,6 @@ func (ruo *RiderUpdateOne) SetNillableBlocked(b *bool) *RiderUpdateOne {
 	return ruo
 }
 
-// SetContractual sets the "contractual" field.
-func (ruo *RiderUpdateOne) SetContractual(b bool) *RiderUpdateOne {
-	ruo.mutation.SetContractual(b)
-	return ruo
-}
-
-// SetNillableContractual sets the "contractual" field if the given value is not nil.
-func (ruo *RiderUpdateOne) SetNillableContractual(b *bool) *RiderUpdateOne {
-	if b != nil {
-		ruo.SetContractual(*b)
-	}
-	return ruo
-}
-
-// ClearContractual clears the value of the "contractual" field.
-func (ruo *RiderUpdateOne) ClearContractual() *RiderUpdateOne {
-	ruo.mutation.ClearContractual()
-	return ruo
-}
-
 // SetPoints sets the "points" field.
 func (ruo *RiderUpdateOne) SetPoints(i int64) *RiderUpdateOne {
 	ruo.mutation.ResetPoints()
@@ -2489,19 +2436,6 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: rider.FieldBlocked,
-		})
-	}
-	if value, ok := ruo.mutation.Contractual(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: rider.FieldContractual,
-		})
-	}
-	if ruo.mutation.ContractualCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Column: rider.FieldContractual,
 		})
 	}
 	if value, ok := ruo.mutation.Points(); ok {

@@ -200,13 +200,6 @@ func Blocked(v bool) predicate.Rider {
 	})
 }
 
-// Contractual applies equality check predicate on the "contractual" field. It's identical to ContractualEQ.
-func Contractual(v bool) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldContractual), v))
-	})
-}
-
 // Points applies equality check predicate on the "points" field. It's identical to PointsEQ.
 func Points(v int64) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
@@ -1570,34 +1563,6 @@ func BlockedEQ(v bool) predicate.Rider {
 func BlockedNEQ(v bool) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldBlocked), v))
-	})
-}
-
-// ContractualEQ applies the EQ predicate on the "contractual" field.
-func ContractualEQ(v bool) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldContractual), v))
-	})
-}
-
-// ContractualNEQ applies the NEQ predicate on the "contractual" field.
-func ContractualNEQ(v bool) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldContractual), v))
-	})
-}
-
-// ContractualIsNil applies the IsNil predicate on the "contractual" field.
-func ContractualIsNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldContractual)))
-	})
-}
-
-// ContractualNotNil applies the NotNil predicate on the "contractual" field.
-func ContractualNotNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldContractual)))
 	})
 }
 
