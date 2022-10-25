@@ -38,6 +38,12 @@ func (au *AllocateUpdate) Where(ps ...predicate.Allocate) *AllocateUpdate {
 	return au
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (au *AllocateUpdate) SetUpdatedAt(t time.Time) *AllocateUpdate {
+	au.mutation.SetUpdatedAt(t)
+	return au
+}
+
 // SetRiderID sets the "rider_id" field.
 func (au *AllocateUpdate) SetRiderID(u uint64) *AllocateUpdate {
 	au.mutation.SetRiderID(u)
@@ -326,6 +332,9 @@ func (au *AllocateUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	if err := au.defaults(); err != nil {
+		return 0, err
+	}
 	if len(au.hooks) == 0 {
 		if err = au.check(); err != nil {
 			return 0, err
@@ -380,6 +389,18 @@ func (au *AllocateUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (au *AllocateUpdate) defaults() error {
+	if _, ok := au.mutation.UpdatedAt(); !ok {
+		if allocate.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized allocate.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
+		v := allocate.UpdateDefaultUpdatedAt()
+		au.mutation.SetUpdatedAt(v)
+	}
+	return nil
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (au *AllocateUpdate) check() error {
 	if v, ok := au.mutation.GetType(); ok {
@@ -419,6 +440,13 @@ func (au *AllocateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := au.mutation.UpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: allocate.FieldUpdatedAt,
+		})
 	}
 	if au.mutation.CreatorCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
@@ -788,6 +816,12 @@ type AllocateUpdateOne struct {
 	modifiers []func(*sql.UpdateBuilder)
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (auo *AllocateUpdateOne) SetUpdatedAt(t time.Time) *AllocateUpdateOne {
+	auo.mutation.SetUpdatedAt(t)
+	return auo
+}
+
 // SetRiderID sets the "rider_id" field.
 func (auo *AllocateUpdateOne) SetRiderID(u uint64) *AllocateUpdateOne {
 	auo.mutation.SetRiderID(u)
@@ -1083,6 +1117,9 @@ func (auo *AllocateUpdateOne) Save(ctx context.Context) (*Allocate, error) {
 		err  error
 		node *Allocate
 	)
+	if err := auo.defaults(); err != nil {
+		return nil, err
+	}
 	if len(auo.hooks) == 0 {
 		if err = auo.check(); err != nil {
 			return nil, err
@@ -1143,6 +1180,18 @@ func (auo *AllocateUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (auo *AllocateUpdateOne) defaults() error {
+	if _, ok := auo.mutation.UpdatedAt(); !ok {
+		if allocate.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized allocate.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
+		v := allocate.UpdateDefaultUpdatedAt()
+		auo.mutation.SetUpdatedAt(v)
+	}
+	return nil
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (auo *AllocateUpdateOne) check() error {
 	if v, ok := auo.mutation.GetType(); ok {
@@ -1199,6 +1248,13 @@ func (auo *AllocateUpdateOne) sqlSave(ctx context.Context) (_node *Allocate, err
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := auo.mutation.UpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: allocate.FieldUpdatedAt,
+		})
 	}
 	if auo.mutation.CreatorCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{

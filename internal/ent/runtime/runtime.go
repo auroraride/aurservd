@@ -80,8 +80,22 @@ func init() {
 	// agent.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	agent.UpdateDefaultUpdatedAt = agentDescUpdatedAt.UpdateDefault.(func() time.Time)
 	allocateMixin := schema.Allocate{}.Mixin()
-	allocateMixinHooks2 := allocateMixin[2].Hooks()
-	allocate.Hooks[0] = allocateMixinHooks2[0]
+	allocateMixinHooks3 := allocateMixin[3].Hooks()
+	allocate.Hooks[0] = allocateMixinHooks3[0]
+	allocateMixinFields0 := allocateMixin[0].Fields()
+	_ = allocateMixinFields0
+	allocateFields := schema.Allocate{}.Fields()
+	_ = allocateFields
+	// allocateDescCreatedAt is the schema descriptor for created_at field.
+	allocateDescCreatedAt := allocateMixinFields0[0].Descriptor()
+	// allocate.DefaultCreatedAt holds the default value on creation for the created_at field.
+	allocate.DefaultCreatedAt = allocateDescCreatedAt.Default.(func() time.Time)
+	// allocateDescUpdatedAt is the schema descriptor for updated_at field.
+	allocateDescUpdatedAt := allocateMixinFields0[1].Descriptor()
+	// allocate.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	allocate.DefaultUpdatedAt = allocateDescUpdatedAt.Default.(func() time.Time)
+	// allocate.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	allocate.UpdateDefaultUpdatedAt = allocateDescUpdatedAt.UpdateDefault.(func() time.Time)
 	assistanceMixin := schema.Assistance{}.Mixin()
 	assistanceMixinHooks2 := assistanceMixin[2].Hooks()
 	assistance.Hooks[0] = assistanceMixinHooks2[0]

@@ -62,6 +62,8 @@ var (
 	// AllocateColumns holds the columns for the "allocate" table.
 	AllocateColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
@@ -85,43 +87,43 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "allocate_rider_rider",
-				Columns:    []*schema.Column{AllocateColumns[8]},
+				Columns:    []*schema.Column{AllocateColumns[10]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "allocate_subscribe_subscribe",
-				Columns:    []*schema.Column{AllocateColumns[9]},
+				Columns:    []*schema.Column{AllocateColumns[11]},
 				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "allocate_employee_employee",
-				Columns:    []*schema.Column{AllocateColumns[10]},
+				Columns:    []*schema.Column{AllocateColumns[12]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "allocate_cabinet_cabinet",
-				Columns:    []*schema.Column{AllocateColumns[11]},
+				Columns:    []*schema.Column{AllocateColumns[13]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "allocate_store_store",
-				Columns:    []*schema.Column{AllocateColumns[12]},
+				Columns:    []*schema.Column{AllocateColumns[14]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "allocate_ebike_ebike",
-				Columns:    []*schema.Column{AllocateColumns[13]},
+				Columns:    []*schema.Column{AllocateColumns[15]},
 				RefColumns: []*schema.Column{EbikeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "allocate_ebike_brand_brand",
-				Columns:    []*schema.Column{AllocateColumns[14]},
+				Columns:    []*schema.Column{AllocateColumns[16]},
 				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -130,42 +132,42 @@ var (
 			{
 				Name:    "allocate_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{AllocateColumns[8]},
+				Columns: []*schema.Column{AllocateColumns[10]},
 			},
 			{
 				Name:    "allocate_subscribe_id",
 				Unique:  true,
-				Columns: []*schema.Column{AllocateColumns[9]},
+				Columns: []*schema.Column{AllocateColumns[11]},
 			},
 			{
 				Name:    "allocate_employee_id",
 				Unique:  false,
-				Columns: []*schema.Column{AllocateColumns[10]},
+				Columns: []*schema.Column{AllocateColumns[12]},
 			},
 			{
 				Name:    "allocate_cabinet_id",
 				Unique:  false,
-				Columns: []*schema.Column{AllocateColumns[11]},
+				Columns: []*schema.Column{AllocateColumns[13]},
 			},
 			{
 				Name:    "allocate_store_id",
 				Unique:  false,
-				Columns: []*schema.Column{AllocateColumns[12]},
+				Columns: []*schema.Column{AllocateColumns[14]},
 			},
 			{
 				Name:    "allocate_ebike_id",
 				Unique:  false,
-				Columns: []*schema.Column{AllocateColumns[13]},
+				Columns: []*schema.Column{AllocateColumns[15]},
 			},
 			{
 				Name:    "allocate_brand_id",
 				Unique:  false,
-				Columns: []*schema.Column{AllocateColumns[14]},
+				Columns: []*schema.Column{AllocateColumns[16]},
 			},
 			{
 				Name:    "allocate_time",
 				Unique:  false,
-				Columns: []*schema.Column{AllocateColumns[6]},
+				Columns: []*schema.Column{AllocateColumns[8]},
 			},
 		},
 	}

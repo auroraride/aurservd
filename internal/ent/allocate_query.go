@@ -543,12 +543,12 @@ func (aq *AllocateQuery) WithContract(opts ...func(*ContractQuery)) *AllocateQue
 // Example:
 //
 //	var v []struct {
-//		RiderID uint64 `json:"rider_id,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Allocate.Query().
-//		GroupBy(allocate.FieldRiderID).
+//		GroupBy(allocate.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (aq *AllocateQuery) GroupBy(field string, fields ...string) *AllocateGroupBy {
@@ -571,11 +571,11 @@ func (aq *AllocateQuery) GroupBy(field string, fields ...string) *AllocateGroupB
 // Example:
 //
 //	var v []struct {
-//		RiderID uint64 `json:"rider_id,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.Allocate.Query().
-//		Select(allocate.FieldRiderID).
+//		Select(allocate.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (aq *AllocateQuery) Select(fields ...string) *AllocateSelect {
 	aq.fields = append(aq.fields, fields...)

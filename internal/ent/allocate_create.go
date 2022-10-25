@@ -31,6 +31,34 @@ type AllocateCreate struct {
 	conflict []sql.ConflictOption
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (ac *AllocateCreate) SetCreatedAt(t time.Time) *AllocateCreate {
+	ac.mutation.SetCreatedAt(t)
+	return ac
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (ac *AllocateCreate) SetNillableCreatedAt(t *time.Time) *AllocateCreate {
+	if t != nil {
+		ac.SetCreatedAt(*t)
+	}
+	return ac
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (ac *AllocateCreate) SetUpdatedAt(t time.Time) *AllocateCreate {
+	ac.mutation.SetUpdatedAt(t)
+	return ac
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (ac *AllocateCreate) SetNillableUpdatedAt(t *time.Time) *AllocateCreate {
+	if t != nil {
+		ac.SetUpdatedAt(*t)
+	}
+	return ac
+}
+
 // SetRiderID sets the "rider_id" field.
 func (ac *AllocateCreate) SetRiderID(u uint64) *AllocateCreate {
 	ac.mutation.SetRiderID(u)
@@ -228,6 +256,9 @@ func (ac *AllocateCreate) Save(ctx context.Context) (*Allocate, error) {
 		err  error
 		node *Allocate
 	)
+	if err := ac.defaults(); err != nil {
+		return nil, err
+	}
 	if len(ac.hooks) == 0 {
 		if err = ac.check(); err != nil {
 			return nil, err
@@ -291,8 +322,33 @@ func (ac *AllocateCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (ac *AllocateCreate) defaults() error {
+	if _, ok := ac.mutation.CreatedAt(); !ok {
+		if allocate.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized allocate.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
+		v := allocate.DefaultCreatedAt()
+		ac.mutation.SetCreatedAt(v)
+	}
+	if _, ok := ac.mutation.UpdatedAt(); !ok {
+		if allocate.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized allocate.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
+		v := allocate.DefaultUpdatedAt()
+		ac.mutation.SetUpdatedAt(v)
+	}
+	return nil
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (ac *AllocateCreate) check() error {
+	if _, ok := ac.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Allocate.created_at"`)}
+	}
+	if _, ok := ac.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Allocate.updated_at"`)}
+	}
 	if _, ok := ac.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider_id", err: errors.New(`ent: missing required field "Allocate.rider_id"`)}
 	}
@@ -350,6 +406,22 @@ func (ac *AllocateCreate) createSpec() (*Allocate, *sqlgraph.CreateSpec) {
 		}
 	)
 	_spec.OnConflict = ac.conflict
+	if value, ok := ac.mutation.CreatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: allocate.FieldCreatedAt,
+		})
+		_node.CreatedAt = value
+	}
+	if value, ok := ac.mutation.UpdatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: allocate.FieldUpdatedAt,
+		})
+		_node.UpdatedAt = value
+	}
 	if value, ok := ac.mutation.Creator(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
@@ -572,7 +644,7 @@ func (ac *AllocateCreate) createSpec() (*Allocate, *sqlgraph.CreateSpec) {
 // of the `INSERT` statement. For example:
 //
 //	client.Allocate.Create().
-//		SetRiderID(v).
+//		SetCreatedAt(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -581,7 +653,7 @@ func (ac *AllocateCreate) createSpec() (*Allocate, *sqlgraph.CreateSpec) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.AllocateUpsert) {
-//			SetRiderID(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (ac *AllocateCreate) OnConflict(opts ...sql.ConflictOption) *AllocateUpsertOne {
@@ -616,6 +688,18 @@ type (
 		*sql.UpdateSet
 	}
 )
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *AllocateUpsert) SetUpdatedAt(v time.Time) *AllocateUpsert {
+	u.Set(allocate.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *AllocateUpsert) UpdateUpdatedAt() *AllocateUpsert {
+	u.SetExcluded(allocate.FieldUpdatedAt)
+	return u
+}
 
 // SetRiderID sets the "rider_id" field.
 func (u *AllocateUpsert) SetRiderID(v uint64) *AllocateUpsert {
@@ -832,6 +916,9 @@ func (u *AllocateUpsert) UpdateModel() *AllocateUpsert {
 func (u *AllocateUpsertOne) UpdateNewValues() *AllocateUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(allocate.FieldCreatedAt)
+		}
 		if _, exists := u.create.mutation.Creator(); exists {
 			s.SetIgnore(allocate.FieldCreator)
 		}
@@ -864,6 +951,20 @@ func (u *AllocateUpsertOne) Update(set func(*AllocateUpsert)) *AllocateUpsertOne
 		set(&AllocateUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *AllocateUpsertOne) SetUpdatedAt(v time.Time) *AllocateUpsertOne {
+	return u.Update(func(s *AllocateUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *AllocateUpsertOne) UpdateUpdatedAt() *AllocateUpsertOne {
+	return u.Update(func(s *AllocateUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetRiderID sets the "rider_id" field.
@@ -1152,6 +1253,7 @@ func (acb *AllocateCreateBulk) Save(ctx context.Context) ([]*Allocate, error) {
 	for i := range acb.builders {
 		func(i int, root context.Context) {
 			builder := acb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*AllocateMutation)
 				if !ok {
@@ -1234,7 +1336,7 @@ func (acb *AllocateCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.AllocateUpsert) {
-//			SetRiderID(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (acb *AllocateCreateBulk) OnConflict(opts ...sql.ConflictOption) *AllocateUpsertBulk {
@@ -1275,6 +1377,9 @@ func (u *AllocateUpsertBulk) UpdateNewValues() *AllocateUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		for _, b := range u.create.builders {
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(allocate.FieldCreatedAt)
+			}
 			if _, exists := b.mutation.Creator(); exists {
 				s.SetIgnore(allocate.FieldCreator)
 			}
@@ -1308,6 +1413,20 @@ func (u *AllocateUpsertBulk) Update(set func(*AllocateUpsert)) *AllocateUpsertBu
 		set(&AllocateUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *AllocateUpsertBulk) SetUpdatedAt(v time.Time) *AllocateUpsertBulk {
+	return u.Update(func(s *AllocateUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *AllocateUpsertBulk) UpdateUpdatedAt() *AllocateUpsertBulk {
+	return u.Update(func(s *AllocateUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetRiderID sets the "rider_id" field.

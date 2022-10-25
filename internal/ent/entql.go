@@ -97,6 +97,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Allocate",
 		Fields: map[string]*sqlgraph.FieldSpec{
+			allocate.FieldCreatedAt:    {Type: field.TypeTime, Column: allocate.FieldCreatedAt},
+			allocate.FieldUpdatedAt:    {Type: field.TypeTime, Column: allocate.FieldUpdatedAt},
 			allocate.FieldRiderID:      {Type: field.TypeUint64, Column: allocate.FieldRiderID},
 			allocate.FieldSubscribeID:  {Type: field.TypeUint64, Column: allocate.FieldSubscribeID},
 			allocate.FieldCreator:      {Type: field.TypeJSON, Column: allocate.FieldCreator},
@@ -4035,6 +4037,16 @@ func (f *AllocateFilter) Where(p entql.P) {
 // WhereID applies the entql uint64 predicate on the id field.
 func (f *AllocateFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(allocate.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *AllocateFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(allocate.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *AllocateFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(allocate.FieldUpdatedAt))
 }
 
 // WhereRiderID applies the entql uint64 predicate on the rider_id field.

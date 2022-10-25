@@ -26,6 +26,10 @@ type Allocate struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID uint64 `json:"id,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// 骑手ID
 	RiderID uint64 `json:"rider_id,omitempty"`
 	// SubscribeID holds the value of the "subscribe_id" field.
@@ -197,7 +201,7 @@ func (*Allocate) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case allocate.FieldRemark, allocate.FieldType, allocate.FieldModel:
 			values[i] = new(sql.NullString)
-		case allocate.FieldTime:
+		case allocate.FieldCreatedAt, allocate.FieldUpdatedAt, allocate.FieldTime:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Allocate", columns[i])
@@ -220,6 +224,18 @@ func (a *Allocate) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			a.ID = uint64(value.Int64)
+		case allocate.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				a.CreatedAt = value.Time
+			}
+		case allocate.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				a.UpdatedAt = value.Time
+			}
 		case allocate.FieldRiderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field rider_id", values[i])
@@ -381,6 +397,12 @@ func (a *Allocate) String() string {
 	var builder strings.Builder
 	builder.WriteString("Allocate(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", a.ID))
+	builder.WriteString("created_at=")
+	builder.WriteString(a.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(a.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
 	builder.WriteString("rider_id=")
 	builder.WriteString(fmt.Sprintf("%v", a.RiderID))
 	builder.WriteString(", ")
