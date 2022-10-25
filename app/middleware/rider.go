@@ -15,6 +15,7 @@ import (
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
+    log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -56,6 +57,9 @@ func riderLogin(token, pushId string, needLogin bool) (u *ent.Rider) {
     id, _ := cache.Get(context.Background(), token).Uint64()
     u, err = s.GetRiderById(id)
     // 判定是否需要登录
+    if err != nil {
+        log.Errorf("用户查询失败: %v", err)
+    }
     if needLogin && (err != nil || u == nil) {
         snag.Panic(snag.StatusUnauthorized)
     }
