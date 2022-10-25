@@ -234,9 +234,14 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCre
             SubscribeID: sub.ID,
         }})
     } else {
+        var srv *businessRiderService
         // 直接激活
-        srv := NewBusinessRider(r).
-            SetStoreID(allo.StoreID).
+        if s.modifier != nil {
+            srv = NewBusinessRiderWithModifier(s.modifier)
+        } else {
+            srv = NewBusinessRider(r)
+        }
+        srv.SetStoreID(allo.StoreID).
             SetCabinetID(allo.CabinetID).
             SetEmployeeID(allo.EmployeeID)
         // TODO 电车直接激活?
