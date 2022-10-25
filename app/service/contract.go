@@ -600,7 +600,7 @@ func (s *contractService) update(c *ent.Contract) (err error) {
     }
 
     // 激活
-    srv := NewBusinessRider(c.Edges.Rider).SetStoreID(ea.StoreID).SetCabinetID(ea.CabinetID)
+    srv := NewBusinessRider(c.Edges.Rider).SetStoreID(ea.StoreID).SetCabinetID(ea.CabinetID).SetEmployeeID(ea.EmployeeID)
 
     // 设置电车属性
     if ea.EbikeID != nil {

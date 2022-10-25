@@ -95,7 +95,7 @@ func (s *allocateService) UnallocatedEbikeInfo(keyword string) model.Ebike {
 }
 
 // Create 订单激活分配
-func (s *allocateService) Create(req *model.AllocateCreateReq) model.IDPostReq {
+func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCreateRes {
     if req.StoreID == nil && req.CabinetID == nil {
         snag.Panic("必须由门店或电柜参与")
     }
@@ -113,7 +113,9 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.IDPostReq {
 
     e := sub.Edges.Enterprise
     if e != nil {
-        if e.Agent && !e.UseStore && s.employee != nil {
+        // if e.Agent && !e.UseStore && s.employee != nil {
+        // 就算使用门店也禁止门店端激活
+        if e.Agent && s.employee != nil {
             snag.Panic("代理骑手无法分配")
         }
 
@@ -164,6 +166,7 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.IDPostReq {
 
     // 查找电车
     var bikeID, brandID *uint64
+    var bikeInfo *model.EbikeBusinessInfo
     typ := allocate.TypeBattery
     if req.EbikeID != nil {
         typ = allocate.TypeEbike
@@ -185,6 +188,11 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.IDPostReq {
 
         bikeID = silk.UInt64(bike.ID)
         brandID = silk.UInt64(brand.ID)
+        bikeInfo = &model.EbikeBusinessInfo{
+            ID:        bike.ID,
+            BrandID:   brand.ID,
+            BrandName: brand.Name,
+        }
     }
 
     // 判定电池库存
@@ -195,7 +203,11 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.IDPostReq {
     }
 
     // 存储分配信息
-    id, err := s.orm.Create().
+    status := model.AllocateStatusPending.Value()
+    if !sub.NeedContract {
+        status = model.AllocateStatusSigned.Value()
+    }
+    allo, err := s.orm.Create().
         SetType(typ).
         SetNillableEmployeeID(req.EmployeeID).
         SetNillableStoreID(req.StoreID).
@@ -204,12 +216,12 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.IDPostReq {
         SetNillableBrandID(brandID).
         SetSubscribe(sub).
         SetRider(r).
-        SetStatus(model.AllocateStatusPending.Value()).
+        SetStatus(status).
         SetTime(time.Now()).
         SetModel(sub.Model).
         OnConflictColumns(allocate.FieldSubscribeID).
         UpdateNewValues().
-        ID(s.ctx)
+        Save(s.ctx)
 
     if err != nil {
         log.Errorf("分配失败: %v", err)
@@ -217,12 +229,27 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.IDPostReq {
     }
 
     // 推送签约消息
-    socket.SendMessage(NewRiderSocket(), r.ID, &model.RiderSocketMessage{ContractSign: &model.ContractSignReq{
-        SubscribeID: sub.ID,
-    }})
+    if sub.NeedContract {
+        socket.SendMessage(NewRiderSocket(), r.ID, &model.RiderSocketMessage{ContractSign: &model.ContractSignReq{
+            SubscribeID: sub.ID,
+        }})
+    } else {
+        // 直接激活
+        srv := NewBusinessRider(r).
+            SetStoreID(allo.StoreID).
+            SetCabinetID(allo.CabinetID).
+            SetEmployeeID(allo.EmployeeID)
+        // TODO 电车直接激活?
+        if bikeID != nil || brandID != nil {
+            snag.Panic("暂不支持此业务")
+            srv.SetEbike(bikeInfo)
+        }
+        srv.Active(sub, allo)
+    }
 
-    return model.IDPostReq{
-        ID: id,
+    return model.AllocateCreateRes{
+        ID:           allo.ID,
+        NeedContract: sub.NeedContract,
     }
 }
 

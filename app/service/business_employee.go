@@ -35,7 +35,7 @@ func (s *businessEmployeeService) Inactive(qr string) (*model.SubscribeActiveInf
 }
 
 // Active 激活订阅
-func (s *businessEmployeeService) Active(req *model.AllocateCreateReq) (res model.IDPostReq) {
+func (s *businessEmployeeService) Active(req *model.AllocateCreateReq) (res model.AllocateCreateRes) {
     if s.entStore == nil {
         snag.Panic("当前未上班")
     }

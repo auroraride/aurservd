@@ -33,6 +33,7 @@ var (
         "plan_attached.go":      FileInfoTypeFile,
         "stock_attached.go":     FileInfoTypeFile,
         "subscribe_attached.go": FileInfoTypeFile,
+        "allocate_attached.go":  FileInfoTypeFile,
         "internal":              FileInfoTypeDir,
         "schema":                FileInfoTypeDir,
     }

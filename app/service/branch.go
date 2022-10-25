@@ -249,7 +249,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (temps 
     }
 
     storeQuery := ent.Database.Store.QueryNotDeleted().Where(store.BranchIDIn(ids...))
-    filter := strings.ToLower(req.Filter)
+    filter := req.Filter
     switch filter {
     case model.BranchFacilityTypeStore:
         break

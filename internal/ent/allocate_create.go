@@ -343,12 +343,6 @@ func (ac *AllocateCreate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (ac *AllocateCreate) check() error {
-	if _, ok := ac.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Allocate.created_at"`)}
-	}
-	if _, ok := ac.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Allocate.updated_at"`)}
-	}
 	if _, ok := ac.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider_id", err: errors.New(`ent: missing required field "Allocate.rider_id"`)}
 	}
@@ -412,7 +406,7 @@ func (ac *AllocateCreate) createSpec() (*Allocate, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: allocate.FieldCreatedAt,
 		})
-		_node.CreatedAt = value
+		_node.CreatedAt = &value
 	}
 	if value, ok := ac.mutation.UpdatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -420,7 +414,7 @@ func (ac *AllocateCreate) createSpec() (*Allocate, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: allocate.FieldUpdatedAt,
 		})
-		_node.UpdatedAt = value
+		_node.UpdatedAt = &value
 	}
 	if value, ok := ac.mutation.Creator(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -701,6 +695,12 @@ func (u *AllocateUpsert) UpdateUpdatedAt() *AllocateUpsert {
 	return u
 }
 
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (u *AllocateUpsert) ClearUpdatedAt() *AllocateUpsert {
+	u.SetNull(allocate.FieldUpdatedAt)
+	return u
+}
+
 // SetRiderID sets the "rider_id" field.
 func (u *AllocateUpsert) SetRiderID(v uint64) *AllocateUpsert {
 	u.Set(allocate.FieldRiderID, v)
@@ -964,6 +964,13 @@ func (u *AllocateUpsertOne) SetUpdatedAt(v time.Time) *AllocateUpsertOne {
 func (u *AllocateUpsertOne) UpdateUpdatedAt() *AllocateUpsertOne {
 	return u.Update(func(s *AllocateUpsert) {
 		s.UpdateUpdatedAt()
+	})
+}
+
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (u *AllocateUpsertOne) ClearUpdatedAt() *AllocateUpsertOne {
+	return u.Update(func(s *AllocateUpsert) {
+		s.ClearUpdatedAt()
 	})
 }
 
@@ -1426,6 +1433,13 @@ func (u *AllocateUpsertBulk) SetUpdatedAt(v time.Time) *AllocateUpsertBulk {
 func (u *AllocateUpsertBulk) UpdateUpdatedAt() *AllocateUpsertBulk {
 	return u.Update(func(s *AllocateUpsert) {
 		s.UpdateUpdatedAt()
+	})
+}
+
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (u *AllocateUpsertBulk) ClearUpdatedAt() *AllocateUpsertBulk {
+	return u.Update(func(s *AllocateUpsert) {
+		s.ClearUpdatedAt()
 	})
 }
 

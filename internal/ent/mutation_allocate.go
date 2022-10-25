@@ -169,7 +169,7 @@ func (m *AllocateMutation) CreatedAt() (r time.Time, exists bool) {
 // OldCreatedAt returns the old "created_at" field's value of the Allocate entity.
 // If the Allocate object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AllocateMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *AllocateMutation) OldCreatedAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
 	}
@@ -183,9 +183,22 @@ func (m *AllocateMutation) OldCreatedAt(ctx context.Context) (v time.Time, err e
 	return oldValue.CreatedAt, nil
 }
 
+// ClearCreatedAt clears the value of the "created_at" field.
+func (m *AllocateMutation) ClearCreatedAt() {
+	m.created_at = nil
+	m.clearedFields[allocate.FieldCreatedAt] = struct{}{}
+}
+
+// CreatedAtCleared returns if the "created_at" field was cleared in this mutation.
+func (m *AllocateMutation) CreatedAtCleared() bool {
+	_, ok := m.clearedFields[allocate.FieldCreatedAt]
+	return ok
+}
+
 // ResetCreatedAt resets all changes to the "created_at" field.
 func (m *AllocateMutation) ResetCreatedAt() {
 	m.created_at = nil
+	delete(m.clearedFields, allocate.FieldCreatedAt)
 }
 
 // SetUpdatedAt sets the "updated_at" field.
@@ -205,7 +218,7 @@ func (m *AllocateMutation) UpdatedAt() (r time.Time, exists bool) {
 // OldUpdatedAt returns the old "updated_at" field's value of the Allocate entity.
 // If the Allocate object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AllocateMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *AllocateMutation) OldUpdatedAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
 	}
@@ -219,9 +232,22 @@ func (m *AllocateMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err e
 	return oldValue.UpdatedAt, nil
 }
 
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (m *AllocateMutation) ClearUpdatedAt() {
+	m.updated_at = nil
+	m.clearedFields[allocate.FieldUpdatedAt] = struct{}{}
+}
+
+// UpdatedAtCleared returns if the "updated_at" field was cleared in this mutation.
+func (m *AllocateMutation) UpdatedAtCleared() bool {
+	_, ok := m.clearedFields[allocate.FieldUpdatedAt]
+	return ok
+}
+
 // ResetUpdatedAt resets all changes to the "updated_at" field.
 func (m *AllocateMutation) ResetUpdatedAt() {
 	m.updated_at = nil
+	delete(m.clearedFields, allocate.FieldUpdatedAt)
 }
 
 // SetRiderID sets the "rider_id" field.
@@ -1388,6 +1414,12 @@ func (m *AllocateMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *AllocateMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(allocate.FieldCreatedAt) {
+		fields = append(fields, allocate.FieldCreatedAt)
+	}
+	if m.FieldCleared(allocate.FieldUpdatedAt) {
+		fields = append(fields, allocate.FieldUpdatedAt)
+	}
 	if m.FieldCleared(allocate.FieldCreator) {
 		fields = append(fields, allocate.FieldCreator)
 	}
@@ -1426,6 +1458,12 @@ func (m *AllocateMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *AllocateMutation) ClearField(name string) error {
 	switch name {
+	case allocate.FieldCreatedAt:
+		m.ClearCreatedAt()
+		return nil
+	case allocate.FieldUpdatedAt:
+		m.ClearUpdatedAt()
+		return nil
 	case allocate.FieldCreator:
 		m.ClearCreator()
 		return nil

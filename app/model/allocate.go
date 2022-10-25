@@ -50,3 +50,8 @@ type AllocateCreateReq struct {
 type AllocateRiderRes struct {
     Allocated bool `json:"allocated"` // 是否已分配
 }
+
+type AllocateCreateRes struct {
+    ID           uint64 `json:"id"`
+    NeedContract bool   `json:"needContract"`
+}

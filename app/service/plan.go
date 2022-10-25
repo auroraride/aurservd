@@ -409,6 +409,14 @@ func (s *planService) Renewal(req *model.PlanListRiderReq) map[string]*[]model.R
     return rmap
 }
 
+func (s *planService) Key(model string, brandID *uint64) string {
+    k := model
+    if brandID != nil {
+        k += fmt.Sprintf("-%d", *brandID)
+    }
+    return k
+}
+
 // RiderListNewly 获取新购骑士卡列表
 func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewlyRes {
     // 判断骑手是否个签
@@ -451,7 +459,8 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
     intro := serv.QueryMap()
 
     for _, item := range items {
-        m, ok := mmap[item.Model]
+        key := s.Key(item.Model, item.BrandID)
+        m, ok := mmap[key]
         if !ok {
             // 可用城市
             var cs []string
@@ -465,7 +474,7 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
                 Intro:    intro[serv.Key(item.Model, item.BrandID)],
                 Notes:    append(item.Notes, fmt.Sprintf("仅限 %s 使用", strings.Join(cs, " / "))),
             }
-            mmap[item.Model] = m
+            mmap[key] = m
         }
         *m.Children = append(*m.Children, model.PlanDaysPriceOption{
             ID:            item.ID,

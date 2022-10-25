@@ -17,13 +17,20 @@ import (
 type TimeMixin struct {
     mixin.Schema
     DisableIndex bool
+    Optional     bool
 }
 
-func (TimeMixin) Fields() []ent.Field {
+func (t TimeMixin) Fields() []ent.Field {
+    creator := field.Time("created_at").Immutable()
+    updator := field.Time("updated_at")
+    if t.Optional {
+        creator.Optional().Nillable()
+        updator.Optional().Nillable()
+    }
     return []ent.Field{
         // .SchemaType(map[string]string{dialect.Postgres: "timestamp without time zone"})
-        field.Time("created_at").Immutable().Default(time.Now),
-        field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
+        creator.Default(time.Now),
+        updator.Default(time.Now).UpdateDefault(time.Now),
     }
 }
 

@@ -29,6 +29,8 @@ func NewManagerSubscribe(params ...any) *managerSubscribeService {
     return s
 }
 
+// Active 激活订阅
+// 团签无需签约
 func (s *managerSubscribeService) Active(req *model.ManagerSubscribeActive) {
     var bikeID *uint64
     if req.EbikeKeyword != nil {

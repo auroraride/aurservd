@@ -74,7 +74,7 @@ func (Allocate) Edges() []ent.Edge {
 
 func (Allocate) Mixin() []ent.Mixin {
     return []ent.Mixin{
-        internal.TimeMixin{DisableIndex: true},
+        internal.TimeMixin{DisableIndex: true, Optional: true},
 
         RiderMixin{},
         SubscribeMixin{Unique: true},

@@ -90,9 +90,27 @@ func (s *businessRiderService) SetStoreID(id *uint64) *businessRiderService {
     return s
 }
 
+func (s *businessRiderService) SetEmployeeID(id *uint64) *businessRiderService {
+    if id != nil {
+        s.employee, _ = NewEmployee().Query(*id)
+        if s.employee != nil {
+            s.employeeID = id
+            s.employeeInfo = &model.Employee{
+                ID:    s.employee.ID,
+                Name:  s.employee.Name,
+                Phone: s.employee.Phone,
+            }
+        }
+    }
+    return s
+}
+
 // SetEbikeID 设置电车
-func (s *businessRiderService) SetEbikeID(ebikeID uint64) *businessRiderService {
-    bike, _ := ent.Database.Ebike.Query().Where(ebike.ID(ebikeID)).WithBrand().First(s.ctx)
+func (s *businessRiderService) SetEbikeID(id *uint64) *businessRiderService {
+    if id == nil {
+        return s
+    }
+    bike, _ := ent.Database.Ebike.Query().Where(ebike.ID(*id)).WithBrand().First(s.ctx)
     if bike == nil || bike.Edges.Brand == nil {
         snag.Panic("电车信息查询失败")
     }
@@ -318,7 +336,7 @@ func (s *businessRiderService) preprocess(bt business.Type, sub *ent.Subscribe) 
 
     // 如果是车电订阅, 查询并设置电车信息
     if sub.EbikeID != nil && s.ebikeInfo == nil {
-        s.SetEbikeID(*sub.EbikeID)
+        s.SetEbikeID(sub.EbikeID)
     }
 
     // 预约检查
@@ -478,8 +496,10 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
     s.preprocess(business.TypeActive, sub)
 
-    if !NewContract().Effective(s.rider, sub.ID) {
-        snag.Panic("还未签约, 请签约")
+    if sub.NeedContract {
+        if !NewContract().Effective(s.rider, sub.ID) {
+            snag.Panic("还未签约, 请签约")
+        }
     }
 
     s.do(business.TypeActive, func(tx *ent.Tx) {
