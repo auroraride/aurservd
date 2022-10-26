@@ -9823,7 +9823,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "查询物资类别, 默认为电池, 逗号分隔 battery:电池 frame:车架 others:其他物资",
+                        "description": "查询物资类别, 默认为电池, 逗号分隔 battery:电池 ebike:电车 others:其他物资",
                         "name": "materials",
                         "in": "query"
                     },
@@ -17052,10 +17052,6 @@ const docTemplate = `{
         "model.EbikeModifyReq": {
             "type": "object",
             "properties": {
-                "brandId": {
-                    "description": "型号, 关联: ` + "`" + `MB015 车辆型号列表` + "`" + `",
-                    "type": "integer"
-                },
                 "color": {
                     "description": "颜色, 默认` + "`" + `橘黄` + "`" + `, 创建或编辑时用选择列表, 选项为: ` + "`" + `橘黄` + "`" + ` / ` + "`" + `红` + "`" + ` / ` + "`" + `白` + "`" + ` / ` + "`" + `黑` + "`" + `",
                     "type": "string"
@@ -17078,10 +17074,6 @@ const docTemplate = `{
                 },
                 "sim": {
                     "description": "SIM卡号",
-                    "type": "string"
-                },
-                "sn": {
-                    "description": "车架号",
                     "type": "string"
                 }
             }
@@ -19985,6 +19977,10 @@ const docTemplate = `{
                     "description": "手机号",
                     "type": "string"
                 },
+                "plan": {
+                    "description": "骑士卡名称",
+                    "type": "string"
+                },
                 "points": {
                     "description": "积分",
                     "type": "integer"
@@ -21078,7 +21074,7 @@ const docTemplate = `{
                     ]
                 },
                 "materials": {
-                    "description": "查询物资类别, 默认为电池, 逗号分隔 battery:电池 frame:车架 others:其他物资",
+                    "description": "查询物资类别, 默认为电池, 逗号分隔 battery:电池 ebike:电车 others:其他物资",
                     "type": "string"
                 },
                 "positive": {

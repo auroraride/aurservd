@@ -62,13 +62,17 @@ func (s *allocateService) QueryEffectiveSubscribeIDX(subscribeID uint64) *ent.Al
 
 // UnallocatedEbikeInfo 获取未分配车辆信息
 func (s *allocateService) UnallocatedEbikeInfo(keyword string) model.Ebike {
-    bike, _ := NewEbike().AllocatableBaseFilter().Where(
+    q := NewEbike().AllocatableBaseFilter().Where(
         ebike.Or(
             ebike.Sn(keyword),
             ebike.Plate(keyword),
         ),
         ebike.StoreIDNotNil(),
-    ).WithBrand().First(s.ctx)
+    )
+    if s.entStore != nil {
+        q.Where(ebike.StoreID(s.entStore.ID))
+    }
+    bike, _ := q.WithBrand().First(s.ctx)
     if bike == nil {
         snag.Panic("未找到可分配电车")
     }

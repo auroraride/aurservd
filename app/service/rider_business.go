@@ -297,7 +297,7 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
     if !NewSubscribe().NeedContract(s.subscribe) {
         // 存储分配信息
         err := ent.Database.Allocate.Create().
-            SetType(allocate.TypeEbike).
+            SetType(allocate.TypeBattery).
             SetSubscribe(s.subscribe).
             SetRider(s.rider).
             SetStatus(model.AllocateStatusPending.Value()).

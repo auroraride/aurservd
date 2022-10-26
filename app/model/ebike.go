@@ -100,9 +100,7 @@ type EbikeCreateReq struct {
 
 type EbikeModifyReq struct {
     ID        uint64  `json:"id" param:"id" validate:"required"`
-    SN        *string `json:"sn"`        // 车架号
     ExFactory *string `json:"exFactory"` // 生产批次
-    BrandID   *uint64 `json:"brandId"`   // 型号, 关联: `MB015 车辆型号列表`
     EbikeAttributes
 }
 

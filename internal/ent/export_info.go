@@ -41,7 +41,7 @@ func (e *Employee) GetExportInfo() string {
 }
 
 func (pl *Plan) GetExportInfo() string {
-    return fmt.Sprintf("%s - %d", pl.Name, pl.Days)
+    return fmt.Sprintf("%s - %d天", pl.Name, pl.Days)
 }
 
 func (e *Enterprise) GetExportInfo() string {

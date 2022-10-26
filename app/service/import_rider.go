@@ -11,6 +11,7 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/allocate"
     "github.com/auroraride/aurservd/internal/ent/business"
     "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/ebike"
@@ -202,44 +203,33 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
             }
         }
 
-        // 查询电车
+        // 定义变量
         var (
-            bike    *model.Ebike
-            bikeID  *uint64
-            brandID *uint64
+            bike     *ent.Ebike
+            brand    *ent.EbikeBrand
+            bikeID   *uint64
+            brandID  *uint64
+            alloType = allocate.TypeBattery
         )
-        if s.plan.BrandID != nil {
-            var eb *ent.Ebike
 
-            eb, err = ent.Database.Ebike.Query().Where(ebike.StoreID(req.StoreID), ebike.Sn(req.EbikeSN), ebike.BrandID(*s.plan.BrandID)).WithBrand().First(s.ctx)
-            if eb == nil {
+        // 查询电车
+        if s.plan.BrandID != nil {
+            bike, err = NewEbike().AllocatableBaseFilter().
+                Where(ebike.Sn(req.EbikeSN), ebike.StoreID(req.StoreID)).
+                WithBrand().
+                First(s.ctx)
+            if bike == nil {
                 return errors.New("电车未找到")
             }
 
-            brand := eb.Edges.Brand
+            brand = bike.Edges.Brand
             if brand == nil {
                 return errors.New("电车型号未找到")
             }
 
-            bike = &model.Ebike{
-                EbikeInfo: model.EbikeInfo{
-                    ID:        eb.ID,
-                    SN:        eb.Sn,
-                    ExFactory: eb.ExFactory,
-                    Plate:     eb.Plate,
-                    Color:     eb.Color,
-                },
-                Brand: &model.EbikeBrand{
-                    ID:    brand.ID,
-                    Name:  brand.Name,
-                    Cover: brand.Cover,
-                },
-            }
-
             bikeID = silk.UInt64(bike.ID)
             brandID = silk.UInt64(brand.ID)
-            // TODO 继续流程
-            println(bikeID, brandID)
+            alloType = allocate.TypeEbike
         }
 
         // 计算开始时间
@@ -288,6 +278,27 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
             SetModel(s.plan.Model).
             SetNeedContract(false).
             SetRemaining(tools.NewTime().LastDays(end.Carbon2Time(), time.Now())).
+            SetNillableBrandID(brandID).
+            SetNillableEbikeID(bikeID).
+            Save(s.ctx)
+        if err != nil {
+            return
+        }
+
+        // 添加分配信息
+        _, err = tx.Allocate.Create().
+            SetType(alloType).
+            SetEmployeeID(req.EmployeeID).
+            SetStoreID(req.StoreID).
+            SetNillableEbikeID(bikeID).
+            SetNillableBrandID(brandID).
+            SetSubscribe(sub).
+            SetRider(r).
+            SetStatus(model.AllocateStatusSigned.Value()).
+            SetTime(time.Now()).
+            SetModel(sub.Model).
+            OnConflictColumns(allocate.FieldSubscribeID).
+            UpdateNewValues().
             Save(s.ctx)
         if err != nil {
             return
@@ -308,6 +319,8 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
             SetInitialDays(sub.InitialDays).
             SetCityID(sub.CityID).
             SetNillablePlanID(sub.PlanID).
+            SetNillableBrandID(brandID).
+            SetNillableEbikeID(bikeID).
             Save(s.ctx)
         if err != nil {
             return
@@ -319,8 +332,8 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
         }
 
         // 创建 stock
-        sn := tools.NewUnique().NewSN()
-        _, err = tx.Stock.Create().
+        var stockParent *ent.Stock
+        stockParent, err = tx.Stock.Create().
             SetRemark("导入数据").
             SetStoreID(req.StoreID).
             SetEmployeeID(req.EmployeeID).
@@ -332,10 +345,37 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
             SetCityID(req.CityID).
             SetSubscribeID(sub.ID).
             SetMaterial(stock.MaterialBattery).
-            SetSn(sn).
+            SetSn(tools.NewUnique().NewSN()).
             Save(s.ctx)
         if err != nil {
             return
+        }
+
+        // 更新电车
+        if bike != nil {
+            err = tx.Ebike.UpdateOneID(bike.ID).SetRiderID(r.ID).SetStatus(model.EbikeStatusUsing).Exec(s.ctx)
+            if err != nil {
+                return
+            }
+            err = tx.Stock.Create().
+                SetRemark("导入数据").
+                SetStoreID(req.StoreID).
+                SetEmployeeID(req.EmployeeID).
+                SetName(brand.Name).
+                SetRiderID(sub.RiderID).
+                SetType(model.StockTypeRiderActive).
+                SetNum(-1).
+                SetCityID(req.CityID).
+                SetSubscribeID(sub.ID).
+                SetMaterial(stock.MaterialEbike).
+                SetSn(tools.NewUnique().NewSN()).
+                SetNillableEbikeID(bikeID).
+                SetNillableBrandID(brandID).
+                SetParent(stockParent).
+                Exec(s.ctx)
+            if err != nil {
+                return
+            }
         }
 
         // 创建 business
@@ -350,8 +390,9 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
             SetNillableStationID(sub.StationID).
             SetNillablePlanID(sub.PlanID).
             SetType(business.TypeActive).
-            SetStockSn(sn).
+            SetStockSn(stockParent.Sn).
             Save(s.ctx)
+
         return
     })
 }

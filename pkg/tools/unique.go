@@ -28,13 +28,23 @@ func (*unique) NewSonyflakeID() string {
 
 // NewSN28 生成28位字符串
 func (u *unique) NewSN28() string {
+    str := strings.ReplaceAll(time.Now().Format(carbon.ShortDateTimeMicroLayout), ".", "")
+    n := 20 - len(str)
+    if n > 0 {
+        str += strings.Repeat("0", n)
+    }
     return fmt.Sprintf(
         "%s%d",
-        strings.ReplaceAll(time.Now().Format(carbon.ShortDateTimeMicroLayout), ".", ""),
+        str,
         utils.RandomIntMaxMin(10000000, 99999999),
     )
 }
 
 func (u *unique) NewSN() string {
-    return strings.ReplaceAll(time.Now().Format(carbon.ShortDateTimeMilliLayout), ".", "")
+    str := strings.ReplaceAll(time.Now().Format(carbon.ShortDateTimeMilliLayout), ".", "")
+    n := 17 - len(str)
+    if n > 0 {
+        str += strings.Repeat("0", n)
+    }
+    return str
 }

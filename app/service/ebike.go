@@ -224,14 +224,6 @@ func (s *ebikeService) Create(req *model.EbikeCreateReq) {
 func (s *ebikeService) Modify(req *model.EbikeModifyReq) {
     updater := s.QueryX(req.ID).Update()
 
-    if req.SN != nil {
-        updater.SetSn(*req.SN)
-    }
-
-    if req.BrandID != nil {
-        updater.SetBrand(NewEbikeBrand().QueryX(*req.BrandID))
-    }
-
     if req.ExFactory != nil {
         updater.SetExFactory(*req.ExFactory)
     }

@@ -384,7 +384,7 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
             )
         }).
         WithSubscribes(func(sq *ent.SubscribeQuery) {
-            sq.WithCity().Order(ent.Desc(subscribe.FieldCreatedAt)).WithEbike().WithBrand()
+            sq.WithCity().Order(ent.Desc(subscribe.FieldCreatedAt)).WithEbike().WithBrand().WithPlan()
         }).
         WithContracts(func(cq *ent.ContractQuery) {
             cq.Where(contract.DeletedAtIsNil(), contract.Status(model.ContractStatusSuccess.Value()))
@@ -666,6 +666,19 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
         if sub.Edges.City != nil {
             ri.City.Name = sub.Edges.City.Name
         }
+
+        pl := sub.Edges.Plan
+        pn := "单电"
+
+        if sub.BrandID != nil {
+            pn = "车电"
+        }
+
+        if pl != nil {
+            pn = fmt.Sprintf("%s [%s]", pn, pl.GetExportInfo())
+        }
+
+        ri.PlanName = pn
     }
     if item.DeletedAt != nil {
         ri.DeletedAt = item.DeletedAt.Format(carbon.DateTimeLayout)

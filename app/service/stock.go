@@ -343,26 +343,33 @@ func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (s
         }
     }
 
-    sn := tools.NewUnique().NewSN()
-
     // 主出入库
     creator.SetNillableEmployeeID(req.EmployeeID).
         SetRiderID(req.RiderID).
         SetType(req.StockType).
         SetNum(num).
         SetCityID(req.CityID).
-        SetNillableSubscribeID(req.SubscribeID).
-        SetSn(sn)
+        SetNillableSubscribeID(req.SubscribeID)
 
     son := creator.Clone()
 
-    sk, err = creator.SetName(req.Model).SetModel(req.Model).SetMaterial(stock.MaterialBattery).Save(s.ctx)
+    sk, err = creator.SetName(req.Model).
+        SetModel(req.Model).
+        SetMaterial(stock.MaterialBattery).
+        SetSn(tools.NewUnique().NewSN()).
+        Save(s.ctx)
     if err != nil {
         return
     }
 
     if req.Ebike != nil {
-        err = son.SetParent(sk).SetEbikeID(req.Ebike.ID).SetName(req.Ebike.BrandName).SetBrandID(req.Ebike.BrandID).SetMaterial(stock.MaterialEbike).Exec(s.ctx)
+        err = son.SetParent(sk).
+            SetEbikeID(req.Ebike.ID).
+            SetName(req.Ebike.BrandName).
+            SetBrandID(req.Ebike.BrandID).
+            SetMaterial(stock.MaterialEbike).
+            SetSn(tools.NewUnique().NewSN()).
+            Exec(s.ctx)
     }
 
     return
@@ -575,7 +582,7 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
 
     q = s.orm.QueryNotDeleted().WithCabinet().WithStore().WithSpouse(func(sq *ent.StockQuery) {
         sq.WithStore().WithCabinet().WithRider()
-    }).WithRider().WithEmployee().WithCity()
+    }).WithRider().WithEmployee().WithCity().WithEbike()
     // 排序
     if req.Positive {
         q.Order(ent.Asc(stock.FieldSn))
@@ -634,9 +641,9 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
 
     // 筛选物资类别
     if req.Materials == "" {
-        info["物资"] = "电池"
-        req.Materials = string(stock.MaterialBattery)
+        req.Materials = fmt.Sprintf("%s,%s", stock.MaterialBattery, stock.MaterialEbike)
     } else {
+        strings.ReplaceAll(req.Materials, "frame", stock.MaterialEbike.String())
         req.Materials = strings.ReplaceAll(req.Materials, " ", "")
     }
     materials := strings.Split(req.Materials, ",")
@@ -650,12 +657,17 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
                 mtext = append(mtext, "电池")
                 predicates = append(predicates, stock.ModelNotNil())
                 break
+            case stock.MaterialEbike:
+                mtext = append(mtext, "电车")
+                predicates = append(predicates, stock.EbikeIDNotNil())
+                break
             case stock.MaterialOthers:
                 mtext = append(mtext, "其他")
                 predicates = append(predicates, stock.ModelIsNil())
                 break
             }
         }
+        info["物资"] = strings.Join(mtext, ",")
         q.Where(stock.Or(predicates...))
     }
 
@@ -675,7 +687,7 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
     }
 
     q.Modify(func(sel *sql.Selector) {
-        sel.Select("ON (sn) *")
+        sel.Select("ON (sn,parent_id) *")
     })
 
     return
@@ -696,6 +708,12 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
     c := item.Edges.City
     if c != nil {
         res.City = c.Name
+    }
+
+    // 电车
+    bike := item.Edges.Ebike
+    if bike != nil {
+        res.Name = fmt.Sprintf("[%s] %s", item.Name, bike.Sn)
     }
 
     em := item.Creator
@@ -1022,7 +1040,6 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
         batteryModel = nil
     }
 
-    sn := tools.NewUnique().NewSN()
     num := req.RealNumber()
     name := req.RealName()
     batchable := req.Batchable()
@@ -1050,7 +1067,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
         SetType(model.StockTypeTransfer).
         SetMaterial(material).
         SetRemark(req.Remark).
-        SetSn(sn)
+        SetSn(tools.NewUnique().NewSN())
     if req.OutboundTarget == model.StockTargetStore {
         outCreator.SetNillableStoreID(out)
     } else {
@@ -1064,7 +1081,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
         SetType(model.StockTypeTransfer).
         SetMaterial(material).
         SetRemark(req.Remark).
-        SetSn(sn)
+        SetSn(tools.NewUnique().NewSN())
     if req.InboundTarget == model.StockTargetStore {
         inCreator.SetNillableStoreID(in)
     } else {
