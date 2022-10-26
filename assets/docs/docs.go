@@ -19977,7 +19977,7 @@ const docTemplate = `{
                     "description": "手机号",
                     "type": "string"
                 },
-                "plan": {
+                "planName": {
                     "description": "骑士卡名称",
                     "type": "string"
                 },

@@ -133,7 +133,7 @@ type RiderItem struct {
     Contract   string           `json:"contract,omitempty"` // 合同(有可能不存在)
     Points     int64            `json:"points"`             // 积分
     Balance    float64          `json:"balance"`            // 余额
-    PlanName   string           `json:"plan,omitempty"`     // 骑士卡名称
+    PlanName   string           `json:"planName,omitempty"` // 骑士卡名称
     // 团签企业信息, 若无此字段则为个签用户
     Enterprise *Enterprise `json:"enterprise,omitempty"`
     // 当前有效订阅信息, 若无此字段则代表当前无有效订阅 (订阅 = 骑手骑士卡)
