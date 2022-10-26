@@ -294,7 +294,7 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
     }
 
     // 检查是否需要签约
-    if !NewSubscribe().NeedContract(s.subscribe) {
+    if NewSubscribe().NeedContract(s.subscribe) {
         // 存储分配信息
         err := ent.Database.Allocate.Create().
             SetType(allocate.TypeBattery).
