@@ -166,6 +166,8 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCre
         if exists.Time.After(carbon.Now().SubSeconds(model.AllocateExpiration).Carbon2Time()) {
             snag.Panic("已被分配过")
         }
+        // 删除已分配过的信息
+        _ = s.orm.DeleteOne(exists).Exec(s.ctx)
     }
 
     // 查找电车
@@ -211,6 +213,7 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCre
     if !sub.NeedContract {
         status = model.AllocateStatusSigned.Value()
     }
+
     allo, err := s.orm.Create().
         SetType(typ).
         SetNillableEmployeeID(req.EmployeeID).
