@@ -47,6 +47,8 @@ const (
 	FieldAllocateID = "allocate_id"
 	// FieldLink holds the string denoting the link field in the database.
 	FieldLink = "link"
+	// FieldExpiresAt holds the string denoting the expires_at field in the database.
+	FieldExpiresAt = "expires_at"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
 	EdgeSubscribe = "subscribe"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
@@ -107,6 +109,7 @@ var Columns = []string{
 	FieldRiderInfo,
 	FieldAllocateID,
 	FieldLink,
+	FieldExpiresAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

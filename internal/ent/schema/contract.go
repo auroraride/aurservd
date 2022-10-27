@@ -65,6 +65,7 @@ func (Contract) Fields() []ent.Field {
         field.JSON("rider_info", &model.ContractRider{}).Optional().Comment("骑手信息"),
         field.Uint64("allocate_id").Optional().Nillable().Comment("电车分配ID"),
         field.String("link").Optional().Nillable().Comment("跳转URL"),
+        field.Time("expires_at").Optional().Nillable().Comment("合同过期时间"),
     }
 }
 

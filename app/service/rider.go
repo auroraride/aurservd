@@ -387,7 +387,7 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
             sq.WithCity().Order(ent.Desc(subscribe.FieldCreatedAt)).WithEbike().WithBrand().WithPlan()
         }).
         WithContracts(func(cq *ent.ContractQuery) {
-            cq.Where(contract.DeletedAtIsNil(), contract.Status(model.ContractStatusSuccess.Value()))
+            cq.Where(contract.DeletedAtIsNil(), contract.Status(model.ContractStatusSuccess.Value())).Order(ent.Desc(contract.FieldCreatedAt))
         }).
         WithEnterprise().
         Order(ent.Desc(rider.FieldCreatedAt))

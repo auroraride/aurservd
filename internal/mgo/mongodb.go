@@ -16,6 +16,7 @@ var (
     Client      *qmgo.Client
     DB          *qmgo.Database
     CabinetTask *qmgo.Collection
+    Order       *qmgo.Collection
 )
 
 func Connect(url, db string) {

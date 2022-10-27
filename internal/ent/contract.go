@@ -56,6 +56,8 @@ type Contract struct {
 	AllocateID *uint64 `json:"allocate_id,omitempty"`
 	// 跳转URL
 	Link *string `json:"link,omitempty"`
+	// 合同过期时间
+	ExpiresAt *time.Time `json:"expires_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ContractQuery when eager-loading is set.
 	Edges ContractEdges `json:"edges"`
@@ -141,7 +143,7 @@ func (*Contract) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case contract.FieldRemark, contract.FieldFlowID, contract.FieldSn, contract.FieldLink:
 			values[i] = new(sql.NullString)
-		case contract.FieldCreatedAt, contract.FieldUpdatedAt, contract.FieldDeletedAt:
+		case contract.FieldCreatedAt, contract.FieldUpdatedAt, contract.FieldDeletedAt, contract.FieldExpiresAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Contract", columns[i])
@@ -279,6 +281,13 @@ func (c *Contract) assignValues(columns []string, values []any) error {
 				c.Link = new(string)
 				*c.Link = value.String
 			}
+		case contract.FieldExpiresAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field expires_at", values[i])
+			} else if value.Valid {
+				c.ExpiresAt = new(time.Time)
+				*c.ExpiresAt = value.Time
+			}
 		}
 	}
 	return nil
@@ -386,6 +395,11 @@ func (c *Contract) String() string {
 	if v := c.Link; v != nil {
 		builder.WriteString("link=")
 		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := c.ExpiresAt; v != nil {
+		builder.WriteString("expires_at=")
+		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteByte(')')
 	return builder.String()

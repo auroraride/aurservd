@@ -36,6 +36,7 @@ type ContractMutation struct {
 	effective        *bool
 	rider_info       **model.ContractRider
 	link             *string
+	expires_at       *time.Time
 	clearedFields    map[string]struct{}
 	subscribe        *uint64
 	clearedsubscribe bool
@@ -910,6 +911,55 @@ func (m *ContractMutation) ResetLink() {
 	delete(m.clearedFields, contract.FieldLink)
 }
 
+// SetExpiresAt sets the "expires_at" field.
+func (m *ContractMutation) SetExpiresAt(t time.Time) {
+	m.expires_at = &t
+}
+
+// ExpiresAt returns the value of the "expires_at" field in the mutation.
+func (m *ContractMutation) ExpiresAt() (r time.Time, exists bool) {
+	v := m.expires_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExpiresAt returns the old "expires_at" field's value of the Contract entity.
+// If the Contract object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContractMutation) OldExpiresAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldExpiresAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldExpiresAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExpiresAt: %w", err)
+	}
+	return oldValue.ExpiresAt, nil
+}
+
+// ClearExpiresAt clears the value of the "expires_at" field.
+func (m *ContractMutation) ClearExpiresAt() {
+	m.expires_at = nil
+	m.clearedFields[contract.FieldExpiresAt] = struct{}{}
+}
+
+// ExpiresAtCleared returns if the "expires_at" field was cleared in this mutation.
+func (m *ContractMutation) ExpiresAtCleared() bool {
+	_, ok := m.clearedFields[contract.FieldExpiresAt]
+	return ok
+}
+
+// ResetExpiresAt resets all changes to the "expires_at" field.
+func (m *ContractMutation) ResetExpiresAt() {
+	m.expires_at = nil
+	delete(m.clearedFields, contract.FieldExpiresAt)
+}
+
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *ContractMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
@@ -1033,7 +1083,7 @@ func (m *ContractMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ContractMutation) Fields() []string {
-	fields := make([]string, 0, 17)
+	fields := make([]string, 0, 18)
 	if m.created_at != nil {
 		fields = append(fields, contract.FieldCreatedAt)
 	}
@@ -1085,6 +1135,9 @@ func (m *ContractMutation) Fields() []string {
 	if m.link != nil {
 		fields = append(fields, contract.FieldLink)
 	}
+	if m.expires_at != nil {
+		fields = append(fields, contract.FieldExpiresAt)
+	}
 	return fields
 }
 
@@ -1127,6 +1180,8 @@ func (m *ContractMutation) Field(name string) (ent.Value, bool) {
 		return m.AllocateID()
 	case contract.FieldLink:
 		return m.Link()
+	case contract.FieldExpiresAt:
+		return m.ExpiresAt()
 	}
 	return nil, false
 }
@@ -1170,6 +1225,8 @@ func (m *ContractMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldAllocateID(ctx)
 	case contract.FieldLink:
 		return m.OldLink(ctx)
+	case contract.FieldExpiresAt:
+		return m.OldExpiresAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown Contract field %s", name)
 }
@@ -1298,6 +1355,13 @@ func (m *ContractMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetLink(v)
 		return nil
+	case contract.FieldExpiresAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExpiresAt(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Contract field %s", name)
 }
@@ -1373,6 +1437,9 @@ func (m *ContractMutation) ClearedFields() []string {
 	if m.FieldCleared(contract.FieldLink) {
 		fields = append(fields, contract.FieldLink)
 	}
+	if m.FieldCleared(contract.FieldExpiresAt) {
+		fields = append(fields, contract.FieldExpiresAt)
+	}
 	return fields
 }
 
@@ -1416,6 +1483,9 @@ func (m *ContractMutation) ClearField(name string) error {
 		return nil
 	case contract.FieldLink:
 		m.ClearLink()
+		return nil
+	case contract.FieldExpiresAt:
+		m.ClearExpiresAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Contract nullable field %s", name)
@@ -1475,6 +1545,9 @@ func (m *ContractMutation) ResetField(name string) error {
 		return nil
 	case contract.FieldLink:
 		m.ResetLink()
+		return nil
+	case contract.FieldExpiresAt:
+		m.ResetExpiresAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Contract field %s", name)

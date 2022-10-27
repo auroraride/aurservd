@@ -10,6 +10,7 @@ import (
     "github.com/auroraride/aurservd/app/socket"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/allocate"
+    "github.com/auroraride/aurservd/internal/ent/contract"
     "github.com/auroraride/aurservd/internal/ent/ebike"
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -115,6 +116,15 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCre
         snag.Panic("未找到订阅信息")
     }
 
+    // 查询是否已签约
+    if exists, _ := ent.Database.Contract.QueryNotDeleted().Where(
+        contract.SubscribeID(sub.ID),
+        contract.Status(model.ContractStatusSuccess.Value()),
+        contract.Effective(true),
+    ).Exist(s.ctx); exists {
+        snag.Panic("已签约, 无法重新分配")
+    }
+
     e := sub.Edges.Enterprise
     if e != nil {
         // if e.Agent && !e.UseStore && s.employee != nil {
@@ -166,8 +176,6 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCre
         if exists.Time.After(carbon.Now().SubSeconds(model.AllocateExpiration).Carbon2Time()) {
             snag.Panic("已被分配过")
         }
-        // 删除已分配过的信息
-        _ = s.orm.DeleteOne(exists).Exec(s.ctx)
     }
 
     // 查找电车
@@ -228,6 +236,8 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCre
         SetModel(sub.Model).
         OnConflictColumns(allocate.FieldSubscribeID).
         UpdateNewValues().
+        ClearCabinetID().
+        ClearRemark().
         Save(s.ctx)
 
     if err != nil {
@@ -235,12 +245,13 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCre
         snag.Panic("分配失败")
     }
 
-    // 推送签约消息
     if sub.NeedContract {
+        // 需要签约, 推送签约消息
         socket.SendMessage(NewRiderSocket(), r.ID, &model.RiderSocketMessage{ContractSign: &model.ContractSignReq{
             SubscribeID: sub.ID,
         }})
     } else {
+        // 无须签约, 直接激活
         var srv *businessRiderService
         // 直接激活
         if s.modifier != nil {

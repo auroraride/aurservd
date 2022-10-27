@@ -318,7 +318,11 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
         }))
     }
 
-    allo, _ := ent.Database.Allocate.Query().Where(allocate.SubscribeID(s.subscribe.ID), allocate.RiderID(s.subscribe.RiderID), allocate.Status(model.AllocateStatusPending.Value())).First(s.ctx)
+    allo, _ := ent.Database.Allocate.Query().Where(
+        allocate.SubscribeID(s.subscribe.ID),
+        allocate.RiderID(s.subscribe.RiderID),
+        allocate.Status(model.AllocateStatusSigned.Value()),
+    ).First(s.ctx)
     if allo == nil {
         snag.Panic("未找到分配信息")
     }

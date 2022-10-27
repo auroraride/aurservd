@@ -194,17 +194,17 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
 
     var link, flowId, sn string
     skip := false
-    co, _ := s.orm.QueryNotDeleted().Where(contract.SubscribeID(sub.ID), contract.LinkNotNil()).First(s.ctx)
+    co, _ := s.orm.QueryNotDeleted().Where(contract.SubscribeID(sub.ID), contract.LinkNotNil(), contract.Status(model.ContractStatusSigning.Value())).First(s.ctx)
     // 判定是否生成过合同
     if co != nil {
         // 合同处于有效期内跳过生成
-        if time.Now().Sub(co.UpdatedAt).Minutes() < model.ContractExpiration {
+        if co.ExpiresAt != nil && co.ExpiresAt.After(time.Now()) {
             skip = true
             link = *co.Link
             flowId = co.FlowID
             sn = co.Sn
         } else {
-            // 否则删除原合同
+            // 否则删除原合同重新生成
             s.orm.DeleteOne(co).ExecX(s.ctx)
         }
     }
@@ -358,6 +358,9 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
         // 设置合同编号
         s.esign.SetSn(sn)
 
+        // 合同过期时间
+        expiresAt := time.Now().Add(model.ContractExpiration * time.Minute)
+
         if ar.Config.Debug {
             // DEBUG START
             flowId = tools.NewUnique().NewSN28()
@@ -402,7 +405,7 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
             flow.FileId = pdf.FileId
 
             // 发起签署，获取flowId
-            flowId = s.esign.CreateFlowOneStep(flow)
+            flowId = s.esign.CreateFlowOneStep(flow, expiresAt)
 
             // 获取签署链接
             link = s.esign.ExecuteUrl(flowId, accountId)
@@ -424,6 +427,7 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
                     IDCardNumber: u.IDCardNumber,
                 }).
                 SetLink(link).
+                SetExpiresAt(expiresAt).
                 OnConflictColumns(contract.FieldAllocateID).
                 UpdateNewValues().
                 Exec(context.Background())
@@ -574,22 +578,27 @@ func (s *contractService) update(c *ent.Contract) (err error) {
     }
 
     // 查询分配信息
-    ea, _ := c.QueryAllocate().First(s.ctx)
+    allo, _ := c.QueryAllocate().First(s.ctx)
 
-    if ea == nil {
+    if allo == nil {
         return errors.New("未找到分配信息")
     }
 
-    if ea.StoreID == nil {
+    // 更新分配状态
+    err = allo.Update().SetStatus(model.AllocateStatusSigned.Value()).Exec(s.ctx)
+
+    // 以下进行激活流程
+    // 如果没有门店属性, 则代表是电柜激活, 此时跳过激活流程让用户扫码激活
+    if allo.StoreID == nil {
         return
     }
 
     // 激活
-    srv := NewBusinessRider(c.Edges.Rider).SetStoreID(ea.StoreID).SetCabinetID(ea.CabinetID).SetEmployeeID(ea.EmployeeID)
+    srv := NewBusinessRider(c.Edges.Rider).SetStoreID(allo.StoreID).SetCabinetID(allo.CabinetID).SetEmployeeID(allo.EmployeeID)
 
     // 设置电车属性
-    if ea.EbikeID != nil {
-        bike, _ := ea.QueryEbike().WithBrand().First(s.ctx)
+    if allo.EbikeID != nil {
+        bike, _ := allo.QueryEbike().WithBrand().First(s.ctx)
         if bike == nil || bike.Edges.Brand == nil {
             return errors.New("未找到电车信息")
         }
@@ -604,7 +613,7 @@ func (s *contractService) update(c *ent.Contract) (err error) {
     // 完成签约后
     // 若有分配信息则自动并激活 (骑手扫码电柜无需激活)
     if c.AllocateID != nil {
-        srv.Active(sub, ea)
+        srv.Active(sub, allo)
     }
 
     return

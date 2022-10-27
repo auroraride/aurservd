@@ -249,6 +249,26 @@ func (cu *ContractUpdate) ClearLink() *ContractUpdate {
 	return cu
 }
 
+// SetExpiresAt sets the "expires_at" field.
+func (cu *ContractUpdate) SetExpiresAt(t time.Time) *ContractUpdate {
+	cu.mutation.SetExpiresAt(t)
+	return cu
+}
+
+// SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
+func (cu *ContractUpdate) SetNillableExpiresAt(t *time.Time) *ContractUpdate {
+	if t != nil {
+		cu.SetExpiresAt(*t)
+	}
+	return cu
+}
+
+// ClearExpiresAt clears the value of the "expires_at" field.
+func (cu *ContractUpdate) ClearExpiresAt() *ContractUpdate {
+	cu.mutation.ClearExpiresAt()
+	return cu
+}
+
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (cu *ContractUpdate) SetSubscribe(s *Subscribe) *ContractUpdate {
 	return cu.SetSubscribeID(s.ID)
@@ -539,6 +559,19 @@ func (cu *ContractUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: contract.FieldLink,
+		})
+	}
+	if value, ok := cu.mutation.ExpiresAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: contract.FieldExpiresAt,
+		})
+	}
+	if cu.mutation.ExpiresAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: contract.FieldExpiresAt,
 		})
 	}
 	if cu.mutation.SubscribeCleared() {
@@ -917,6 +950,26 @@ func (cuo *ContractUpdateOne) ClearLink() *ContractUpdateOne {
 	return cuo
 }
 
+// SetExpiresAt sets the "expires_at" field.
+func (cuo *ContractUpdateOne) SetExpiresAt(t time.Time) *ContractUpdateOne {
+	cuo.mutation.SetExpiresAt(t)
+	return cuo
+}
+
+// SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
+func (cuo *ContractUpdateOne) SetNillableExpiresAt(t *time.Time) *ContractUpdateOne {
+	if t != nil {
+		cuo.SetExpiresAt(*t)
+	}
+	return cuo
+}
+
+// ClearExpiresAt clears the value of the "expires_at" field.
+func (cuo *ContractUpdateOne) ClearExpiresAt() *ContractUpdateOne {
+	cuo.mutation.ClearExpiresAt()
+	return cuo
+}
+
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (cuo *ContractUpdateOne) SetSubscribe(s *Subscribe) *ContractUpdateOne {
 	return cuo.SetSubscribeID(s.ID)
@@ -1237,6 +1290,19 @@ func (cuo *ContractUpdateOne) sqlSave(ctx context.Context) (_node *Contract, err
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: contract.FieldLink,
+		})
+	}
+	if value, ok := cuo.mutation.ExpiresAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: contract.FieldExpiresAt,
+		})
+	}
+	if cuo.mutation.ExpiresAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: contract.FieldExpiresAt,
 		})
 	}
 	if cuo.mutation.SubscribeCleared() {

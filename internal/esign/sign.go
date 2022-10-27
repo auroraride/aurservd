@@ -25,7 +25,7 @@ type CreateFlowReq struct {
 }
 
 // CreateFlowOneStep 一步发起签署
-func (e *Esign) CreateFlowOneStep(data CreateFlowReq) string {
+func (e *Esign) CreateFlowOneStep(data CreateFlowReq, expiresAt time.Time) string {
     if e.sn == "" {
         snag.Panic("合同编号为空")
     }
@@ -44,7 +44,7 @@ func (e *Esign) CreateFlowOneStep(data CreateFlowReq) string {
             AutoArchive:   true,
             AutoInitiate:  true,
             BusinessScene: scene,
-            SignValidity:  time.Now().Add(model.ContractExpiration * time.Minute).UnixMilli(),
+            SignValidity:  expiresAt.UnixMilli(),
             FlowConfigInfo: FlowConfigInfo{
                 RedirectDelayTime:        0,
                 NoticeDeveloperUrl:       e.Config.Callback,

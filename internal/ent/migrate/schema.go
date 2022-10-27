@@ -1040,6 +1040,7 @@ var (
 		{Name: "effective", Type: field.TypeBool, Comment: "是否有效", Default: true},
 		{Name: "rider_info", Type: field.TypeJSON, Comment: "骑手信息", Nullable: true},
 		{Name: "link", Type: field.TypeString, Comment: "跳转URL", Nullable: true},
+		{Name: "expires_at", Type: field.TypeTime, Comment: "合同过期时间", Nullable: true},
 		{Name: "allocate_id", Type: field.TypeUint64, Unique: true, Nullable: true},
 		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
@@ -1053,25 +1054,25 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "contract_allocate_contract",
-				Columns:    []*schema.Column{ContractColumns[14]},
+				Columns:    []*schema.Column{ContractColumns[15]},
 				RefColumns: []*schema.Column{AllocateColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "contract_subscribe_subscribe",
-				Columns:    []*schema.Column{ContractColumns[15]},
+				Columns:    []*schema.Column{ContractColumns[16]},
 				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "contract_employee_employee",
-				Columns:    []*schema.Column{ContractColumns[16]},
+				Columns:    []*schema.Column{ContractColumns[17]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "contract_rider_contracts",
-				Columns:    []*schema.Column{ContractColumns[17]},
+				Columns:    []*schema.Column{ContractColumns[18]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -1090,17 +1091,17 @@ var (
 			{
 				Name:    "contract_subscribe_id",
 				Unique:  false,
-				Columns: []*schema.Column{ContractColumns[15]},
+				Columns: []*schema.Column{ContractColumns[16]},
 			},
 			{
 				Name:    "contract_employee_id",
 				Unique:  false,
-				Columns: []*schema.Column{ContractColumns[16]},
+				Columns: []*schema.Column{ContractColumns[17]},
 			},
 			{
 				Name:    "contract_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{ContractColumns[17]},
+				Columns: []*schema.Column{ContractColumns[18]},
 			},
 			{
 				Name:    "contract_status_effective",

@@ -209,6 +209,20 @@ func (cc *ContractCreate) SetNillableLink(s *string) *ContractCreate {
 	return cc
 }
 
+// SetExpiresAt sets the "expires_at" field.
+func (cc *ContractCreate) SetExpiresAt(t time.Time) *ContractCreate {
+	cc.mutation.SetExpiresAt(t)
+	return cc
+}
+
+// SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
+func (cc *ContractCreate) SetNillableExpiresAt(t *time.Time) *ContractCreate {
+	if t != nil {
+		cc.SetExpiresAt(*t)
+	}
+	return cc
+}
+
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (cc *ContractCreate) SetSubscribe(s *Subscribe) *ContractCreate {
 	return cc.SetSubscribeID(s.ID)
@@ -500,6 +514,14 @@ func (cc *ContractCreate) createSpec() (*Contract, *sqlgraph.CreateSpec) {
 			Column: contract.FieldLink,
 		})
 		_node.Link = &value
+	}
+	if value, ok := cc.mutation.ExpiresAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: contract.FieldExpiresAt,
+		})
+		_node.ExpiresAt = &value
 	}
 	if nodes := cc.mutation.SubscribeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -873,6 +895,24 @@ func (u *ContractUpsert) ClearLink() *ContractUpsert {
 	return u
 }
 
+// SetExpiresAt sets the "expires_at" field.
+func (u *ContractUpsert) SetExpiresAt(v time.Time) *ContractUpsert {
+	u.Set(contract.FieldExpiresAt, v)
+	return u
+}
+
+// UpdateExpiresAt sets the "expires_at" field to the value that was provided on create.
+func (u *ContractUpsert) UpdateExpiresAt() *ContractUpsert {
+	u.SetExcluded(contract.FieldExpiresAt)
+	return u
+}
+
+// ClearExpiresAt clears the value of the "expires_at" field.
+func (u *ContractUpsert) ClearExpiresAt() *ContractUpsert {
+	u.SetNull(contract.FieldExpiresAt)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1198,6 +1238,27 @@ func (u *ContractUpsertOne) UpdateLink() *ContractUpsertOne {
 func (u *ContractUpsertOne) ClearLink() *ContractUpsertOne {
 	return u.Update(func(s *ContractUpsert) {
 		s.ClearLink()
+	})
+}
+
+// SetExpiresAt sets the "expires_at" field.
+func (u *ContractUpsertOne) SetExpiresAt(v time.Time) *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.SetExpiresAt(v)
+	})
+}
+
+// UpdateExpiresAt sets the "expires_at" field to the value that was provided on create.
+func (u *ContractUpsertOne) UpdateExpiresAt() *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.UpdateExpiresAt()
+	})
+}
+
+// ClearExpiresAt clears the value of the "expires_at" field.
+func (u *ContractUpsertOne) ClearExpiresAt() *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.ClearExpiresAt()
 	})
 }
 
@@ -1688,6 +1749,27 @@ func (u *ContractUpsertBulk) UpdateLink() *ContractUpsertBulk {
 func (u *ContractUpsertBulk) ClearLink() *ContractUpsertBulk {
 	return u.Update(func(s *ContractUpsert) {
 		s.ClearLink()
+	})
+}
+
+// SetExpiresAt sets the "expires_at" field.
+func (u *ContractUpsertBulk) SetExpiresAt(v time.Time) *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.SetExpiresAt(v)
+	})
+}
+
+// UpdateExpiresAt sets the "expires_at" field to the value that was provided on create.
+func (u *ContractUpsertBulk) UpdateExpiresAt() *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.UpdateExpiresAt()
+	})
+}
+
+// ClearExpiresAt clears the value of the "expires_at" field.
+func (u *ContractUpsertBulk) ClearExpiresAt() *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.ClearExpiresAt()
 	})
 }
 
