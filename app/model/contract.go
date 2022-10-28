@@ -89,3 +89,24 @@ type ContractSignUniversal struct {
     Total string // 首次缴纳总计
     Stop  string // 结束日期
 }
+
+type ContractListReq struct {
+    PaginationReq
+
+    Keyword   string `json:"keyword" query:"keyword"`                     // 骑手关键词
+    Status    *uint8 `json:"status" query:"status" enums:"0,1,2,3,4,5,7"` // 签约状态(不携带为全部) 0.草稿 1.签署中 2.已完成 3.已撤销 4.已终止 5.已过期 7.已拒绝
+    Effective *bool  `json:"effective" query:"effective"`                 // 是否有效 (不携带为全部)
+    Start     string `json:"start" query:"start"`                         // 开始日期
+    End       string `json:"end" query:"end"`                             // 结束日期
+}
+
+type ContractListRes struct {
+    Name      string `json:"name"`                // 骑手姓名
+    Phone     string `json:"phone"`               // 骑手电话
+    Link      string `json:"link"`                // 文件Url
+    Status    string `json:"status"`              // 状态
+    Effective bool   `json:"effective"`           // 是否有效
+    ExpiresAt string `json:"expiresAt,omitempty"` // 过期时间 (签约完成无此字段)
+    CreatedAt string `json:"createdAt"`           // 创建时间
+    SignAt    string `json:"signAt"`              // 签约时间 (未签约完成无此字段)
+}

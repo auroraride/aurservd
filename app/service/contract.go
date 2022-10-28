@@ -14,10 +14,12 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/contract"
+    "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/internal/esign"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
+    "github.com/golang-module/carbon/v2"
     jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
     "io"
@@ -503,15 +505,20 @@ func (s *contractService) doResult(flowID string, isExpired bool) (stop, success
 
     updater := s.orm.UpdateOneID(c.ID)
 
+    var endAt time.Time
+
     if ar.Config.Debug {
         // DEBUG START
         result = model.ContractStatusSuccess
         updater.SetStatus(model.ContractStatusSuccess.Value())
         success = true
+        endAt = time.Now()
         // DEBUG END
     } else {
         // 查询合同流程状态
-        result = s.esign.Result(c.FlowID)
+        var signResult *esign.SignResult
+        result, signResult = s.esign.Result(c.FlowID)
+        endAt = signResult.EndAt()
 
         // 是否过期
         if isExpired {
@@ -531,7 +538,7 @@ func (s *contractService) doResult(flowID string, isExpired bool) (stop, success
     // 流程是否终止
     if result.IsFinished() {
         stop = true
-        err := updater.Exec(context.Background())
+        err := updater.SetSignedAt(endAt).Exec(context.Background())
         if err != nil {
             log.Errorf("合同更新失败 [id = %d]: %v", c.ID, err)
             stop = true
@@ -654,4 +661,49 @@ func (s *contractService) Notice(req *http.Request) {
             s.doResult(result.FlowId, false)
         }
     }
+}
+
+func (s *contractService) List(req *model.ContractListReq) *model.PaginationRes {
+    q := s.orm.QueryNotDeleted().Order(ent.Desc(contract.FieldCreatedAt))
+    if req.Keyword != "" {
+        q.Where(contract.HasRiderWith(rider.Or(rider.PhoneContainsFold(req.Keyword), rider.NameContainsFold(req.Keyword))))
+    }
+    if req.Status != nil {
+        q.Where(contract.Status(*req.Status))
+    }
+    if req.Effective != nil {
+        q.Where(contract.Effective(*req.Effective))
+    }
+    if req.Start != "" {
+        q.Where(contract.CreatedAtGTE(tools.NewTime().ParseDateStringX(req.Start)))
+    }
+    if req.End != "" {
+        q.Where(contract.CreatedAtLT(tools.NewTime().ParseNextDateStringX(req.End)))
+    }
+    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Contract) (res model.ContractListRes) {
+        status := model.ContractStatus(item.Status)
+        res = model.ContractListRes{
+            Name:      item.RiderInfo.Name,
+            Phone:     item.RiderInfo.Phone,
+            Status:    status.String(),
+            Effective: item.Effective,
+            CreatedAt: item.CreatedAt.Format(carbon.DateTimeLayout),
+        }
+        // 文档链接
+        if len(item.Files) > 0 {
+            res.Link = item.Files[0]
+        }
+
+        if status == model.ContractStatusSuccess {
+            // 如果签署成功, 显示签署时间
+            if item.SignedAt != nil {
+                res.SignAt = item.SignedAt.Format(carbon.DateTimeLayout)
+            }
+        } else {
+            // 如果还未签署成功, 显示过期时间
+            res.ExpiresAt = item.ExpiresAt.Format(carbon.DateTimeLayout)
+        }
+
+        return
+    })
 }

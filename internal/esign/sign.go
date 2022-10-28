@@ -115,7 +115,7 @@ func (e *Esign) ExecuteUrl(flowId, accountId string, params ...string) string {
     return res.ShortUrl
 }
 
-type signResult struct {
+type SignResult struct {
     ProcessId                    string      `json:"processId,omitempty"`
     ContractNo                   interface{} `json:"contractNo,omitempty"`
     FlowId                       string      `json:"flowId,omitempty"`
@@ -144,10 +144,17 @@ type signResult struct {
     } `json:"configInfo,omitempty"`
 }
 
+func (r *SignResult) EndAt() (t time.Time) {
+    if r.FlowEndTime == 0 {
+        return
+    }
+    return time.UnixMilli(r.FlowEndTime)
+}
+
 // Result 签署结果查询
 // @doc https://open.esign.cn/doc/detail?id=opendoc%2Fpaas_api%2Fghywlg&namespace=opendoc%2Fpaas_api
-func (e *Esign) Result(flowId string) model.ContractStatus {
-    var res = new(signResult)
+func (e *Esign) Result(flowId string) (model.ContractStatus, *SignResult) {
+    var res = new(SignResult)
     e.request(fmt.Sprintf(signResultUrl, flowId), methodGet, nil, res)
-    return model.ContractStatus(res.FlowStatus)
+    return model.ContractStatus(res.FlowStatus), res
 }

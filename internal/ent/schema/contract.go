@@ -66,6 +66,7 @@ func (Contract) Fields() []ent.Field {
         field.Uint64("allocate_id").Optional().Nillable().Comment("电车分配ID"),
         field.String("link").Optional().Nillable().Comment("跳转URL"),
         field.Time("expires_at").Optional().Nillable().Comment("合同过期时间"),
+        field.Time("signed_at").Optional().Nillable().Comment("签约时间"),
     }
 }
 

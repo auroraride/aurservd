@@ -223,6 +223,20 @@ func (cc *ContractCreate) SetNillableExpiresAt(t *time.Time) *ContractCreate {
 	return cc
 }
 
+// SetSignedAt sets the "signed_at" field.
+func (cc *ContractCreate) SetSignedAt(t time.Time) *ContractCreate {
+	cc.mutation.SetSignedAt(t)
+	return cc
+}
+
+// SetNillableSignedAt sets the "signed_at" field if the given value is not nil.
+func (cc *ContractCreate) SetNillableSignedAt(t *time.Time) *ContractCreate {
+	if t != nil {
+		cc.SetSignedAt(*t)
+	}
+	return cc
+}
+
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (cc *ContractCreate) SetSubscribe(s *Subscribe) *ContractCreate {
 	return cc.SetSubscribeID(s.ID)
@@ -522,6 +536,14 @@ func (cc *ContractCreate) createSpec() (*Contract, *sqlgraph.CreateSpec) {
 			Column: contract.FieldExpiresAt,
 		})
 		_node.ExpiresAt = &value
+	}
+	if value, ok := cc.mutation.SignedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: contract.FieldSignedAt,
+		})
+		_node.SignedAt = &value
 	}
 	if nodes := cc.mutation.SubscribeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -913,6 +935,24 @@ func (u *ContractUpsert) ClearExpiresAt() *ContractUpsert {
 	return u
 }
 
+// SetSignedAt sets the "signed_at" field.
+func (u *ContractUpsert) SetSignedAt(v time.Time) *ContractUpsert {
+	u.Set(contract.FieldSignedAt, v)
+	return u
+}
+
+// UpdateSignedAt sets the "signed_at" field to the value that was provided on create.
+func (u *ContractUpsert) UpdateSignedAt() *ContractUpsert {
+	u.SetExcluded(contract.FieldSignedAt)
+	return u
+}
+
+// ClearSignedAt clears the value of the "signed_at" field.
+func (u *ContractUpsert) ClearSignedAt() *ContractUpsert {
+	u.SetNull(contract.FieldSignedAt)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1259,6 +1299,27 @@ func (u *ContractUpsertOne) UpdateExpiresAt() *ContractUpsertOne {
 func (u *ContractUpsertOne) ClearExpiresAt() *ContractUpsertOne {
 	return u.Update(func(s *ContractUpsert) {
 		s.ClearExpiresAt()
+	})
+}
+
+// SetSignedAt sets the "signed_at" field.
+func (u *ContractUpsertOne) SetSignedAt(v time.Time) *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.SetSignedAt(v)
+	})
+}
+
+// UpdateSignedAt sets the "signed_at" field to the value that was provided on create.
+func (u *ContractUpsertOne) UpdateSignedAt() *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.UpdateSignedAt()
+	})
+}
+
+// ClearSignedAt clears the value of the "signed_at" field.
+func (u *ContractUpsertOne) ClearSignedAt() *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.ClearSignedAt()
 	})
 }
 
@@ -1770,6 +1831,27 @@ func (u *ContractUpsertBulk) UpdateExpiresAt() *ContractUpsertBulk {
 func (u *ContractUpsertBulk) ClearExpiresAt() *ContractUpsertBulk {
 	return u.Update(func(s *ContractUpsert) {
 		s.ClearExpiresAt()
+	})
+}
+
+// SetSignedAt sets the "signed_at" field.
+func (u *ContractUpsertBulk) SetSignedAt(v time.Time) *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.SetSignedAt(v)
+	})
+}
+
+// UpdateSignedAt sets the "signed_at" field to the value that was provided on create.
+func (u *ContractUpsertBulk) UpdateSignedAt() *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.UpdateSignedAt()
+	})
+}
+
+// ClearSignedAt clears the value of the "signed_at" field.
+func (u *ContractUpsertBulk) ClearSignedAt() *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.ClearSignedAt()
 	})
 }
 

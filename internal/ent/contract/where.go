@@ -179,6 +179,13 @@ func ExpiresAt(v time.Time) predicate.Contract {
 	})
 }
 
+// SignedAt applies equality check predicate on the "signed_at" field. It's identical to SignedAtEQ.
+func SignedAt(v time.Time) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSignedAt), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
@@ -1204,6 +1211,84 @@ func ExpiresAtIsNil() predicate.Contract {
 func ExpiresAtNotNil() predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldExpiresAt)))
+	})
+}
+
+// SignedAtEQ applies the EQ predicate on the "signed_at" field.
+func SignedAtEQ(v time.Time) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSignedAt), v))
+	})
+}
+
+// SignedAtNEQ applies the NEQ predicate on the "signed_at" field.
+func SignedAtNEQ(v time.Time) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldSignedAt), v))
+	})
+}
+
+// SignedAtIn applies the In predicate on the "signed_at" field.
+func SignedAtIn(vs ...time.Time) predicate.Contract {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldSignedAt), v...))
+	})
+}
+
+// SignedAtNotIn applies the NotIn predicate on the "signed_at" field.
+func SignedAtNotIn(vs ...time.Time) predicate.Contract {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldSignedAt), v...))
+	})
+}
+
+// SignedAtGT applies the GT predicate on the "signed_at" field.
+func SignedAtGT(v time.Time) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldSignedAt), v))
+	})
+}
+
+// SignedAtGTE applies the GTE predicate on the "signed_at" field.
+func SignedAtGTE(v time.Time) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldSignedAt), v))
+	})
+}
+
+// SignedAtLT applies the LT predicate on the "signed_at" field.
+func SignedAtLT(v time.Time) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldSignedAt), v))
+	})
+}
+
+// SignedAtLTE applies the LTE predicate on the "signed_at" field.
+func SignedAtLTE(v time.Time) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldSignedAt), v))
+	})
+}
+
+// SignedAtIsNil applies the IsNil predicate on the "signed_at" field.
+func SignedAtIsNil() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldSignedAt)))
+	})
+}
+
+// SignedAtNotNil applies the NotNil predicate on the "signed_at" field.
+func SignedAtNotNil() predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldSignedAt)))
 	})
 }
 

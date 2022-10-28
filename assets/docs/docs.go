@@ -4267,6 +4267,104 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/contract": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M7022 合同列表",
+                "operationId": "ManagerContractList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否有效 (不携带为全部)",
+                        "name": "effective",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束日期",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "骑手关键词",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始日期",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            7
+                        ],
+                        "type": "integer",
+                        "description": "签约状态(不携带为全部) 0.草稿 1.签署中 2.已完成 3.已撤销 4.已终止 5.已过期 7.已拒绝",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.ContractListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/coupon": {
             "get": {
                 "consumes": [
@@ -16357,6 +16455,43 @@ const docTemplate = `{
                 },
                 "name": {
                     "description": "城市",
+                    "type": "string"
+                }
+            }
+        },
+        "model.ContractListRes": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "effective": {
+                    "description": "是否有效",
+                    "type": "boolean"
+                },
+                "expiresAt": {
+                    "description": "过期时间 (签约完成无此字段)",
+                    "type": "string"
+                },
+                "link": {
+                    "description": "文件Url",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "骑手姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "骑手电话",
+                    "type": "string"
+                },
+                "signAt": {
+                    "description": "签约时间 (未签约完成无此字段)",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态",
                     "type": "string"
                 }
             }

@@ -223,4 +223,7 @@ func loadManagerRoutes() {
     g.POST("/ebike", mapi.Ebike.Create)
     g.PUT("/ebike/:id", mapi.Ebike.Modify)
     g.POST("/ebike/batch", mapi.Ebike.BatchCreate)
+
+    // 合同
+    g.GET("/contract", mapi.Contract.List)
 }

@@ -20,6 +20,7 @@ func fixCommand() *cobra.Command {
         fix.Commission(),
         fix.Reminder(),
         fix.Assistance(),
+        fix.Contract(),
     )
 
     return cmd
