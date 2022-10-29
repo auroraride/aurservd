@@ -23,6 +23,7 @@ const (
     SettingPlanEbikeDescription   = "PLAN_EBIKE_DESCRIPTION"   // 车电订阅介绍
     SettingQuestions              = "QUESTION"                 // 常见问题
     SettingAppVersion             = "APP_VERSION"              // App版本
+    SettingConsumePoints          = "CONSUME_POINTS"           // 消费赠送积分
 )
 
 type SettingValueConvert func(content string) any
@@ -121,6 +122,10 @@ var Settings = map[string]SettingItem{
     SettingAppVersion: {
         Desc:    "App版本",
         Default: map[string]SettingAppVersionValue{},
+    },
+    SettingConsumePoints: {
+        Desc:    "消费赠送积分",
+        Default: map[uint64]float64{},
     },
 }
 
