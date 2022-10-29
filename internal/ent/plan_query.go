@@ -12,7 +12,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -31,7 +30,6 @@ type PlanQuery struct {
 	withCities    *CityQuery
 	withParent    *PlanQuery
 	withComplexes *PlanQuery
-	withCoupons   *CouponQuery
 	modifiers     []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -150,28 +148,6 @@ func (pq *PlanQuery) QueryComplexes() *PlanQuery {
 			sqlgraph.From(plan.Table, plan.FieldID, selector),
 			sqlgraph.To(plan.Table, plan.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, plan.ComplexesTable, plan.ComplexesColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryCoupons chains the current query on the "coupons" edge.
-func (pq *PlanQuery) QueryCoupons() *CouponQuery {
-	query := &CouponQuery{config: pq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := pq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := pq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(plan.Table, plan.FieldID, selector),
-			sqlgraph.To(coupon.Table, coupon.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, plan.CouponsTable, plan.CouponsPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -364,7 +340,6 @@ func (pq *PlanQuery) Clone() *PlanQuery {
 		withCities:    pq.withCities.Clone(),
 		withParent:    pq.withParent.Clone(),
 		withComplexes: pq.withComplexes.Clone(),
-		withCoupons:   pq.withCoupons.Clone(),
 		// clone intermediate query.
 		sql:    pq.sql.Clone(),
 		path:   pq.path,
@@ -413,17 +388,6 @@ func (pq *PlanQuery) WithComplexes(opts ...func(*PlanQuery)) *PlanQuery {
 		opt(query)
 	}
 	pq.withComplexes = query
-	return pq
-}
-
-// WithCoupons tells the query-builder to eager-load the nodes that are connected to
-// the "coupons" edge. The optional arguments are used to configure the query builder of the edge.
-func (pq *PlanQuery) WithCoupons(opts ...func(*CouponQuery)) *PlanQuery {
-	query := &CouponQuery{config: pq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	pq.withCoupons = query
 	return pq
 }
 
@@ -495,12 +459,11 @@ func (pq *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 	var (
 		nodes       = []*Plan{}
 		_spec       = pq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [4]bool{
 			pq.withBrand != nil,
 			pq.withCities != nil,
 			pq.withParent != nil,
 			pq.withComplexes != nil,
-			pq.withCoupons != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -547,13 +510,6 @@ func (pq *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 		if err := pq.loadComplexes(ctx, query, nodes,
 			func(n *Plan) { n.Edges.Complexes = []*Plan{} },
 			func(n *Plan, e *Plan) { n.Edges.Complexes = append(n.Edges.Complexes, e) }); err != nil {
-			return nil, err
-		}
-	}
-	if query := pq.withCoupons; query != nil {
-		if err := pq.loadCoupons(ctx, query, nodes,
-			func(n *Plan) { n.Edges.Coupons = []*Coupon{} },
-			func(n *Plan, e *Coupon) { n.Edges.Coupons = append(n.Edges.Coupons, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -703,64 +659,6 @@ func (pq *PlanQuery) loadComplexes(ctx context.Context, query *PlanQuery, nodes 
 			return fmt.Errorf(`unexpected foreign-key "parent_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
-	}
-	return nil
-}
-func (pq *PlanQuery) loadCoupons(ctx context.Context, query *CouponQuery, nodes []*Plan, init func(*Plan), assign func(*Plan, *Coupon)) error {
-	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[uint64]*Plan)
-	nids := make(map[uint64]map[*Plan]struct{})
-	for i, node := range nodes {
-		edgeIDs[i] = node.ID
-		byID[node.ID] = node
-		if init != nil {
-			init(node)
-		}
-	}
-	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(plan.CouponsTable)
-		s.Join(joinT).On(s.C(coupon.FieldID), joinT.C(plan.CouponsPrimaryKey[0]))
-		s.Where(sql.InValues(joinT.C(plan.CouponsPrimaryKey[1]), edgeIDs...))
-		columns := s.SelectedColumns()
-		s.Select(joinT.C(plan.CouponsPrimaryKey[1]))
-		s.AppendSelect(columns...)
-		s.SetDistinct(false)
-	})
-	if err := query.prepareQuery(ctx); err != nil {
-		return err
-	}
-	neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
-		assign := spec.Assign
-		values := spec.ScanValues
-		spec.ScanValues = func(columns []string) ([]any, error) {
-			values, err := values(columns[1:])
-			if err != nil {
-				return nil, err
-			}
-			return append([]any{new(sql.NullInt64)}, values...), nil
-		}
-		spec.Assign = func(columns []string, values []any) error {
-			outValue := uint64(values[0].(*sql.NullInt64).Int64)
-			inValue := uint64(values[1].(*sql.NullInt64).Int64)
-			if nids[inValue] == nil {
-				nids[inValue] = map[*Plan]struct{}{byID[outValue]: struct{}{}}
-				return assign(columns[1:], values[1:])
-			}
-			nids[inValue][byID[outValue]] = struct{}{}
-			return nil
-		}
-	})
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected "coupons" node returned %v`, n.ID)
-		}
-		for kn := range nodes {
-			assign(kn, n)
-		}
 	}
 	return nil
 }

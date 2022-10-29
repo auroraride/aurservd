@@ -1127,6 +1127,8 @@ var (
 		{Name: "expires_at", Type: field.TypeTime, Comment: "过期时间", Nullable: true},
 		{Name: "used_at", Type: field.TypeTime, Comment: "使用时间", Nullable: true},
 		{Name: "duration", Type: field.TypeJSON, Comment: "有效期规则"},
+		{Name: "plans", Type: field.TypeJSON, Comment: "可用骑士卡", Nullable: true},
+		{Name: "cities", Type: field.TypeJSON, Comment: "可用城市", Nullable: true},
 		{Name: "rider_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "assembly_id", Type: field.TypeUint64},
 		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
@@ -1141,31 +1143,31 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "coupon_rider_rider",
-				Columns:    []*schema.Column{CouponColumns[14]},
+				Columns:    []*schema.Column{CouponColumns[16]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "coupon_coupon_assembly_assembly",
-				Columns:    []*schema.Column{CouponColumns[15]},
+				Columns:    []*schema.Column{CouponColumns[17]},
 				RefColumns: []*schema.Column{CouponAssemblyColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "coupon_plan_plan",
-				Columns:    []*schema.Column{CouponColumns[16]},
+				Columns:    []*schema.Column{CouponColumns[18]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "coupon_coupon_template_coupons",
-				Columns:    []*schema.Column{CouponColumns[17]},
+				Columns:    []*schema.Column{CouponColumns[19]},
 				RefColumns: []*schema.Column{CouponTemplateColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "coupon_order_coupons",
-				Columns:    []*schema.Column{CouponColumns[18]},
+				Columns:    []*schema.Column{CouponColumns[20]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -1179,17 +1181,17 @@ var (
 			{
 				Name:    "coupon_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{CouponColumns[14]},
+				Columns: []*schema.Column{CouponColumns[16]},
 			},
 			{
 				Name:    "coupon_assembly_id",
 				Unique:  false,
-				Columns: []*schema.Column{CouponColumns[15]},
+				Columns: []*schema.Column{CouponColumns[17]},
 			},
 			{
 				Name:    "coupon_plan_id",
 				Unique:  false,
-				Columns: []*schema.Column{CouponColumns[16]},
+				Columns: []*schema.Column{CouponColumns[18]},
 			},
 			{
 				Name:    "coupon_name",
@@ -1204,12 +1206,12 @@ var (
 			{
 				Name:    "coupon_order_id",
 				Unique:  false,
-				Columns: []*schema.Column{CouponColumns[18]},
+				Columns: []*schema.Column{CouponColumns[20]},
 			},
 			{
 				Name:    "coupon_template_id",
 				Unique:  false,
-				Columns: []*schema.Column{CouponColumns[17]},
+				Columns: []*schema.Column{CouponColumns[19]},
 			},
 			{
 				Name:    "coupon_multiple",
@@ -4018,56 +4020,6 @@ var (
 			},
 		},
 	}
-	// CouponCitiesColumns holds the columns for the "coupon_cities" table.
-	CouponCitiesColumns = []*schema.Column{
-		{Name: "coupon_id", Type: field.TypeInt},
-		{Name: "city_id", Type: field.TypeUint64},
-	}
-	// CouponCitiesTable holds the schema information for the "coupon_cities" table.
-	CouponCitiesTable = &schema.Table{
-		Name:       "coupon_cities",
-		Columns:    CouponCitiesColumns,
-		PrimaryKey: []*schema.Column{CouponCitiesColumns[0], CouponCitiesColumns[1]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "coupon_cities_coupon_id",
-				Columns:    []*schema.Column{CouponCitiesColumns[0]},
-				RefColumns: []*schema.Column{CouponColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-			{
-				Symbol:     "coupon_cities_city_id",
-				Columns:    []*schema.Column{CouponCitiesColumns[1]},
-				RefColumns: []*schema.Column{CityColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-		},
-	}
-	// CouponPlansColumns holds the columns for the "coupon_plans" table.
-	CouponPlansColumns = []*schema.Column{
-		{Name: "coupon_id", Type: field.TypeInt},
-		{Name: "plan_id", Type: field.TypeInt},
-	}
-	// CouponPlansTable holds the schema information for the "coupon_plans" table.
-	CouponPlansTable = &schema.Table{
-		Name:       "coupon_plans",
-		Columns:    CouponPlansColumns,
-		PrimaryKey: []*schema.Column{CouponPlansColumns[0], CouponPlansColumns[1]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "coupon_plans_coupon_id",
-				Columns:    []*schema.Column{CouponPlansColumns[0]},
-				RefColumns: []*schema.Column{CouponColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-			{
-				Symbol:     "coupon_plans_plan_id",
-				Columns:    []*schema.Column{CouponPlansColumns[1]},
-				RefColumns: []*schema.Column{PlanColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-		},
-	}
 	// PlanCitiesColumns holds the columns for the "plan_cities" table.
 	PlanCitiesColumns = []*schema.Column{
 		{Name: "plan_id", Type: field.TypeInt},
@@ -4145,8 +4097,6 @@ var (
 		SubscribeReminderTable,
 		SubscribeSuspendTable,
 		CabinetModelsTable,
-		CouponCitiesTable,
-		CouponPlansTable,
 		PlanCitiesTable,
 	}
 )
@@ -4448,10 +4398,6 @@ func init() {
 	}
 	CabinetModelsTable.ForeignKeys[0].RefTable = CabinetTable
 	CabinetModelsTable.ForeignKeys[1].RefTable = BatteryModelTable
-	CouponCitiesTable.ForeignKeys[0].RefTable = CouponTable
-	CouponCitiesTable.ForeignKeys[1].RefTable = CityTable
-	CouponPlansTable.ForeignKeys[0].RefTable = CouponTable
-	CouponPlansTable.ForeignKeys[1].RefTable = PlanTable
 	PlanCitiesTable.ForeignKeys[0].RefTable = PlanTable
 	PlanCitiesTable.ForeignKeys[1].RefTable = CityTable
 }

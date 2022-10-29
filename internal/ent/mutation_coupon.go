@@ -37,6 +37,8 @@ type CouponMutation struct {
 	expires_at      *time.Time
 	used_at         *time.Time
 	duration        **model.CouponDuration
+	plans           *[]model.Plan
+	cities          *[]model.City
 	clearedFields   map[string]struct{}
 	rider           *uint64
 	clearedrider    bool
@@ -48,12 +50,6 @@ type CouponMutation struct {
 	clearedtemplate bool
 	_order          *uint64
 	cleared_order   bool
-	cities          map[uint64]struct{}
-	removedcities   map[uint64]struct{}
-	clearedcities   bool
-	plans           map[uint64]struct{}
-	removedplans    map[uint64]struct{}
-	clearedplans    bool
 	done            bool
 	oldValue        func(context.Context) (*Coupon, error)
 	predicates      []predicate.Coupon
@@ -949,6 +945,104 @@ func (m *CouponMutation) ResetDuration() {
 	m.duration = nil
 }
 
+// SetPlans sets the "plans" field.
+func (m *CouponMutation) SetPlans(value []model.Plan) {
+	m.plans = &value
+}
+
+// Plans returns the value of the "plans" field in the mutation.
+func (m *CouponMutation) Plans() (r []model.Plan, exists bool) {
+	v := m.plans
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlans returns the old "plans" field's value of the Coupon entity.
+// If the Coupon object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CouponMutation) OldPlans(ctx context.Context) (v []model.Plan, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlans is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlans requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlans: %w", err)
+	}
+	return oldValue.Plans, nil
+}
+
+// ClearPlans clears the value of the "plans" field.
+func (m *CouponMutation) ClearPlans() {
+	m.plans = nil
+	m.clearedFields[coupon.FieldPlans] = struct{}{}
+}
+
+// PlansCleared returns if the "plans" field was cleared in this mutation.
+func (m *CouponMutation) PlansCleared() bool {
+	_, ok := m.clearedFields[coupon.FieldPlans]
+	return ok
+}
+
+// ResetPlans resets all changes to the "plans" field.
+func (m *CouponMutation) ResetPlans() {
+	m.plans = nil
+	delete(m.clearedFields, coupon.FieldPlans)
+}
+
+// SetCities sets the "cities" field.
+func (m *CouponMutation) SetCities(value []model.City) {
+	m.cities = &value
+}
+
+// Cities returns the value of the "cities" field in the mutation.
+func (m *CouponMutation) Cities() (r []model.City, exists bool) {
+	v := m.cities
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCities returns the old "cities" field's value of the Coupon entity.
+// If the Coupon object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CouponMutation) OldCities(ctx context.Context) (v []model.City, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCities is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCities requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCities: %w", err)
+	}
+	return oldValue.Cities, nil
+}
+
+// ClearCities clears the value of the "cities" field.
+func (m *CouponMutation) ClearCities() {
+	m.cities = nil
+	m.clearedFields[coupon.FieldCities] = struct{}{}
+}
+
+// CitiesCleared returns if the "cities" field was cleared in this mutation.
+func (m *CouponMutation) CitiesCleared() bool {
+	_, ok := m.clearedFields[coupon.FieldCities]
+	return ok
+}
+
+// ResetCities resets all changes to the "cities" field.
+func (m *CouponMutation) ResetCities() {
+	m.cities = nil
+	delete(m.clearedFields, coupon.FieldCities)
+}
+
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *CouponMutation) ClearRider() {
 	m.clearedrider = true
@@ -1079,114 +1173,6 @@ func (m *CouponMutation) ResetOrder() {
 	m.cleared_order = false
 }
 
-// AddCityIDs adds the "cities" edge to the City entity by ids.
-func (m *CouponMutation) AddCityIDs(ids ...uint64) {
-	if m.cities == nil {
-		m.cities = make(map[uint64]struct{})
-	}
-	for i := range ids {
-		m.cities[ids[i]] = struct{}{}
-	}
-}
-
-// ClearCities clears the "cities" edge to the City entity.
-func (m *CouponMutation) ClearCities() {
-	m.clearedcities = true
-}
-
-// CitiesCleared reports if the "cities" edge to the City entity was cleared.
-func (m *CouponMutation) CitiesCleared() bool {
-	return m.clearedcities
-}
-
-// RemoveCityIDs removes the "cities" edge to the City entity by IDs.
-func (m *CouponMutation) RemoveCityIDs(ids ...uint64) {
-	if m.removedcities == nil {
-		m.removedcities = make(map[uint64]struct{})
-	}
-	for i := range ids {
-		delete(m.cities, ids[i])
-		m.removedcities[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedCities returns the removed IDs of the "cities" edge to the City entity.
-func (m *CouponMutation) RemovedCitiesIDs() (ids []uint64) {
-	for id := range m.removedcities {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// CitiesIDs returns the "cities" edge IDs in the mutation.
-func (m *CouponMutation) CitiesIDs() (ids []uint64) {
-	for id := range m.cities {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetCities resets all changes to the "cities" edge.
-func (m *CouponMutation) ResetCities() {
-	m.cities = nil
-	m.clearedcities = false
-	m.removedcities = nil
-}
-
-// AddPlanIDs adds the "plans" edge to the Plan entity by ids.
-func (m *CouponMutation) AddPlanIDs(ids ...uint64) {
-	if m.plans == nil {
-		m.plans = make(map[uint64]struct{})
-	}
-	for i := range ids {
-		m.plans[ids[i]] = struct{}{}
-	}
-}
-
-// ClearPlans clears the "plans" edge to the Plan entity.
-func (m *CouponMutation) ClearPlans() {
-	m.clearedplans = true
-}
-
-// PlansCleared reports if the "plans" edge to the Plan entity was cleared.
-func (m *CouponMutation) PlansCleared() bool {
-	return m.clearedplans
-}
-
-// RemovePlanIDs removes the "plans" edge to the Plan entity by IDs.
-func (m *CouponMutation) RemovePlanIDs(ids ...uint64) {
-	if m.removedplans == nil {
-		m.removedplans = make(map[uint64]struct{})
-	}
-	for i := range ids {
-		delete(m.plans, ids[i])
-		m.removedplans[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedPlans returns the removed IDs of the "plans" edge to the Plan entity.
-func (m *CouponMutation) RemovedPlansIDs() (ids []uint64) {
-	for id := range m.removedplans {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// PlansIDs returns the "plans" edge IDs in the mutation.
-func (m *CouponMutation) PlansIDs() (ids []uint64) {
-	for id := range m.plans {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetPlans resets all changes to the "plans" edge.
-func (m *CouponMutation) ResetPlans() {
-	m.plans = nil
-	m.clearedplans = false
-	m.removedplans = nil
-}
-
 // Where appends a list predicates to the CouponMutation builder.
 func (m *CouponMutation) Where(ps ...predicate.Coupon) {
 	m.predicates = append(m.predicates, ps...)
@@ -1206,7 +1192,7 @@ func (m *CouponMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CouponMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 20)
 	if m.created_at != nil {
 		fields = append(fields, coupon.FieldCreatedAt)
 	}
@@ -1261,6 +1247,12 @@ func (m *CouponMutation) Fields() []string {
 	if m.duration != nil {
 		fields = append(fields, coupon.FieldDuration)
 	}
+	if m.plans != nil {
+		fields = append(fields, coupon.FieldPlans)
+	}
+	if m.cities != nil {
+		fields = append(fields, coupon.FieldCities)
+	}
 	return fields
 }
 
@@ -1305,6 +1297,10 @@ func (m *CouponMutation) Field(name string) (ent.Value, bool) {
 		return m.UsedAt()
 	case coupon.FieldDuration:
 		return m.Duration()
+	case coupon.FieldPlans:
+		return m.Plans()
+	case coupon.FieldCities:
+		return m.Cities()
 	}
 	return nil, false
 }
@@ -1350,6 +1346,10 @@ func (m *CouponMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldUsedAt(ctx)
 	case coupon.FieldDuration:
 		return m.OldDuration(ctx)
+	case coupon.FieldPlans:
+		return m.OldPlans(ctx)
+	case coupon.FieldCities:
+		return m.OldCities(ctx)
 	}
 	return nil, fmt.Errorf("unknown Coupon field %s", name)
 }
@@ -1485,6 +1485,20 @@ func (m *CouponMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDuration(v)
 		return nil
+	case coupon.FieldPlans:
+		v, ok := value.([]model.Plan)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlans(v)
+		return nil
+	case coupon.FieldCities:
+		v, ok := value.([]model.City)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCities(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Coupon field %s", name)
 }
@@ -1566,6 +1580,12 @@ func (m *CouponMutation) ClearedFields() []string {
 	if m.FieldCleared(coupon.FieldUsedAt) {
 		fields = append(fields, coupon.FieldUsedAt)
 	}
+	if m.FieldCleared(coupon.FieldPlans) {
+		fields = append(fields, coupon.FieldPlans)
+	}
+	if m.FieldCleared(coupon.FieldCities) {
+		fields = append(fields, coupon.FieldCities)
+	}
 	return fields
 }
 
@@ -1603,6 +1623,12 @@ func (m *CouponMutation) ClearField(name string) error {
 		return nil
 	case coupon.FieldUsedAt:
 		m.ClearUsedAt()
+		return nil
+	case coupon.FieldPlans:
+		m.ClearPlans()
+		return nil
+	case coupon.FieldCities:
+		m.ClearCities()
 		return nil
 	}
 	return fmt.Errorf("unknown Coupon nullable field %s", name)
@@ -1666,13 +1692,19 @@ func (m *CouponMutation) ResetField(name string) error {
 	case coupon.FieldDuration:
 		m.ResetDuration()
 		return nil
+	case coupon.FieldPlans:
+		m.ResetPlans()
+		return nil
+	case coupon.FieldCities:
+		m.ResetCities()
+		return nil
 	}
 	return fmt.Errorf("unknown Coupon field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CouponMutation) AddedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 5)
 	if m.rider != nil {
 		edges = append(edges, coupon.EdgeRider)
 	}
@@ -1687,12 +1719,6 @@ func (m *CouponMutation) AddedEdges() []string {
 	}
 	if m._order != nil {
 		edges = append(edges, coupon.EdgeOrder)
-	}
-	if m.cities != nil {
-		edges = append(edges, coupon.EdgeCities)
-	}
-	if m.plans != nil {
-		edges = append(edges, coupon.EdgePlans)
 	}
 	return edges
 }
@@ -1721,31 +1747,13 @@ func (m *CouponMutation) AddedIDs(name string) []ent.Value {
 		if id := m._order; id != nil {
 			return []ent.Value{*id}
 		}
-	case coupon.EdgeCities:
-		ids := make([]ent.Value, 0, len(m.cities))
-		for id := range m.cities {
-			ids = append(ids, id)
-		}
-		return ids
-	case coupon.EdgePlans:
-		ids := make([]ent.Value, 0, len(m.plans))
-		for id := range m.plans {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CouponMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 7)
-	if m.removedcities != nil {
-		edges = append(edges, coupon.EdgeCities)
-	}
-	if m.removedplans != nil {
-		edges = append(edges, coupon.EdgePlans)
-	}
+	edges := make([]string, 0, 5)
 	return edges
 }
 
@@ -1753,25 +1761,13 @@ func (m *CouponMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *CouponMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case coupon.EdgeCities:
-		ids := make([]ent.Value, 0, len(m.removedcities))
-		for id := range m.removedcities {
-			ids = append(ids, id)
-		}
-		return ids
-	case coupon.EdgePlans:
-		ids := make([]ent.Value, 0, len(m.removedplans))
-		for id := range m.removedplans {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CouponMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 5)
 	if m.clearedrider {
 		edges = append(edges, coupon.EdgeRider)
 	}
@@ -1786,12 +1782,6 @@ func (m *CouponMutation) ClearedEdges() []string {
 	}
 	if m.cleared_order {
 		edges = append(edges, coupon.EdgeOrder)
-	}
-	if m.clearedcities {
-		edges = append(edges, coupon.EdgeCities)
-	}
-	if m.clearedplans {
-		edges = append(edges, coupon.EdgePlans)
 	}
 	return edges
 }
@@ -1810,10 +1800,6 @@ func (m *CouponMutation) EdgeCleared(name string) bool {
 		return m.clearedtemplate
 	case coupon.EdgeOrder:
 		return m.cleared_order
-	case coupon.EdgeCities:
-		return m.clearedcities
-	case coupon.EdgePlans:
-		return m.clearedplans
 	}
 	return false
 }
@@ -1859,12 +1845,6 @@ func (m *CouponMutation) ResetEdge(name string) error {
 		return nil
 	case coupon.EdgeOrder:
 		m.ResetOrder()
-		return nil
-	case coupon.EdgeCities:
-		m.ResetCities()
-		return nil
-	case coupon.EdgePlans:
-		m.ResetPlans()
 		return nil
 	}
 	return fmt.Errorf("unknown Coupon edge %s", name)

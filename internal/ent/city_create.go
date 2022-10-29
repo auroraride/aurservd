@@ -13,7 +13,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 )
 
@@ -200,21 +199,6 @@ func (cc *CityCreate) AddPlans(p ...*Plan) *CityCreate {
 		ids[i] = p[i].ID
 	}
 	return cc.AddPlanIDs(ids...)
-}
-
-// AddCouponIDs adds the "coupons" edge to the Coupon entity by IDs.
-func (cc *CityCreate) AddCouponIDs(ids ...uint64) *CityCreate {
-	cc.mutation.AddCouponIDs(ids...)
-	return cc
-}
-
-// AddCoupons adds the "coupons" edges to the Coupon entity.
-func (cc *CityCreate) AddCoupons(c ...*Coupon) *CityCreate {
-	ids := make([]uint64, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return cc.AddCouponIDs(ids...)
 }
 
 // Mutation returns the CityMutation object of the builder.
@@ -509,25 +493,6 @@ func (cc *CityCreate) createSpec() (*City, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: plan.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := cc.mutation.CouponsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   city.CouponsTable,
-			Columns: city.CouponsPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupon.FieldID,
 				},
 			},
 		}

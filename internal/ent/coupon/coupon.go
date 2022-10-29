@@ -49,6 +49,10 @@ const (
 	FieldUsedAt = "used_at"
 	// FieldDuration holds the string denoting the duration field in the database.
 	FieldDuration = "duration"
+	// FieldPlans holds the string denoting the plans field in the database.
+	FieldPlans = "plans"
+	// FieldCities holds the string denoting the cities field in the database.
+	FieldCities = "cities"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeAssembly holds the string denoting the assembly edge name in mutations.
@@ -59,10 +63,6 @@ const (
 	EdgeTemplate = "template"
 	// EdgeOrder holds the string denoting the order edge name in mutations.
 	EdgeOrder = "order"
-	// EdgeCities holds the string denoting the cities edge name in mutations.
-	EdgeCities = "cities"
-	// EdgePlans holds the string denoting the plans edge name in mutations.
-	EdgePlans = "plans"
 	// Table holds the table name of the coupon in the database.
 	Table = "coupon"
 	// RiderTable is the table that holds the rider relation/edge.
@@ -100,16 +100,6 @@ const (
 	OrderInverseTable = "order"
 	// OrderColumn is the table column denoting the order relation/edge.
 	OrderColumn = "order_id"
-	// CitiesTable is the table that holds the cities relation/edge. The primary key declared below.
-	CitiesTable = "coupon_cities"
-	// CitiesInverseTable is the table name for the City entity.
-	// It exists in this package in order to avoid circular dependency with the "city" package.
-	CitiesInverseTable = "city"
-	// PlansTable is the table that holds the plans relation/edge. The primary key declared below.
-	PlansTable = "coupon_plans"
-	// PlansInverseTable is the table name for the Plan entity.
-	// It exists in this package in order to avoid circular dependency with the "plan" package.
-	PlansInverseTable = "plan"
 )
 
 // Columns holds all SQL columns for coupon fields.
@@ -133,16 +123,9 @@ var Columns = []string{
 	FieldExpiresAt,
 	FieldUsedAt,
 	FieldDuration,
+	FieldPlans,
+	FieldCities,
 }
-
-var (
-	// CitiesPrimaryKey and CitiesColumn2 are the table columns denoting the
-	// primary key for the cities relation (M2M).
-	CitiesPrimaryKey = []string{"coupon_id", "city_id"}
-	// PlansPrimaryKey and PlansColumn2 are the table columns denoting the
-	// primary key for the plans relation (M2M).
-	PlansPrimaryKey = []string{"coupon_id", "plan_id"}
-)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {

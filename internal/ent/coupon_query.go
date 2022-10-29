@@ -4,14 +4,12 @@ package ent
 
 import (
 	"context"
-	"database/sql/driver"
 	"fmt"
 	"math"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
@@ -35,8 +33,6 @@ type CouponQuery struct {
 	withPlan     *PlanQuery
 	withTemplate *CouponTemplateQuery
 	withOrder    *OrderQuery
-	withCities   *CityQuery
-	withPlans    *PlanQuery
 	modifiers    []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -177,50 +173,6 @@ func (cq *CouponQuery) QueryOrder() *OrderQuery {
 			sqlgraph.From(coupon.Table, coupon.FieldID, selector),
 			sqlgraph.To(order.Table, order.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, coupon.OrderTable, coupon.OrderColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryCities chains the current query on the "cities" edge.
-func (cq *CouponQuery) QueryCities() *CityQuery {
-	query := &CityQuery{config: cq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := cq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := cq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(coupon.Table, coupon.FieldID, selector),
-			sqlgraph.To(city.Table, city.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, coupon.CitiesTable, coupon.CitiesPrimaryKey...),
-		)
-		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryPlans chains the current query on the "plans" edge.
-func (cq *CouponQuery) QueryPlans() *PlanQuery {
-	query := &PlanQuery{config: cq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := cq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := cq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(coupon.Table, coupon.FieldID, selector),
-			sqlgraph.To(plan.Table, plan.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, coupon.PlansTable, coupon.PlansPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -414,8 +366,6 @@ func (cq *CouponQuery) Clone() *CouponQuery {
 		withPlan:     cq.withPlan.Clone(),
 		withTemplate: cq.withTemplate.Clone(),
 		withOrder:    cq.withOrder.Clone(),
-		withCities:   cq.withCities.Clone(),
-		withPlans:    cq.withPlans.Clone(),
 		// clone intermediate query.
 		sql:    cq.sql.Clone(),
 		path:   cq.path,
@@ -475,28 +425,6 @@ func (cq *CouponQuery) WithOrder(opts ...func(*OrderQuery)) *CouponQuery {
 		opt(query)
 	}
 	cq.withOrder = query
-	return cq
-}
-
-// WithCities tells the query-builder to eager-load the nodes that are connected to
-// the "cities" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *CouponQuery) WithCities(opts ...func(*CityQuery)) *CouponQuery {
-	query := &CityQuery{config: cq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	cq.withCities = query
-	return cq
-}
-
-// WithPlans tells the query-builder to eager-load the nodes that are connected to
-// the "plans" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *CouponQuery) WithPlans(opts ...func(*PlanQuery)) *CouponQuery {
-	query := &PlanQuery{config: cq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	cq.withPlans = query
 	return cq
 }
 
@@ -568,14 +496,12 @@ func (cq *CouponQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Coupo
 	var (
 		nodes       = []*Coupon{}
 		_spec       = cq.querySpec()
-		loadedTypes = [7]bool{
+		loadedTypes = [5]bool{
 			cq.withRider != nil,
 			cq.withAssembly != nil,
 			cq.withPlan != nil,
 			cq.withTemplate != nil,
 			cq.withOrder != nil,
-			cq.withCities != nil,
-			cq.withPlans != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -626,20 +552,6 @@ func (cq *CouponQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Coupo
 	if query := cq.withOrder; query != nil {
 		if err := cq.loadOrder(ctx, query, nodes, nil,
 			func(n *Coupon, e *Order) { n.Edges.Order = e }); err != nil {
-			return nil, err
-		}
-	}
-	if query := cq.withCities; query != nil {
-		if err := cq.loadCities(ctx, query, nodes,
-			func(n *Coupon) { n.Edges.Cities = []*City{} },
-			func(n *Coupon, e *City) { n.Edges.Cities = append(n.Edges.Cities, e) }); err != nil {
-			return nil, err
-		}
-	}
-	if query := cq.withPlans; query != nil {
-		if err := cq.loadPlans(ctx, query, nodes,
-			func(n *Coupon) { n.Edges.Plans = []*Plan{} },
-			func(n *Coupon, e *Plan) { n.Edges.Plans = append(n.Edges.Plans, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -781,122 +693,6 @@ func (cq *CouponQuery) loadOrder(ctx context.Context, query *OrderQuery, nodes [
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
-func (cq *CouponQuery) loadCities(ctx context.Context, query *CityQuery, nodes []*Coupon, init func(*Coupon), assign func(*Coupon, *City)) error {
-	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[uint64]*Coupon)
-	nids := make(map[uint64]map[*Coupon]struct{})
-	for i, node := range nodes {
-		edgeIDs[i] = node.ID
-		byID[node.ID] = node
-		if init != nil {
-			init(node)
-		}
-	}
-	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(coupon.CitiesTable)
-		s.Join(joinT).On(s.C(city.FieldID), joinT.C(coupon.CitiesPrimaryKey[1]))
-		s.Where(sql.InValues(joinT.C(coupon.CitiesPrimaryKey[0]), edgeIDs...))
-		columns := s.SelectedColumns()
-		s.Select(joinT.C(coupon.CitiesPrimaryKey[0]))
-		s.AppendSelect(columns...)
-		s.SetDistinct(false)
-	})
-	if err := query.prepareQuery(ctx); err != nil {
-		return err
-	}
-	neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
-		assign := spec.Assign
-		values := spec.ScanValues
-		spec.ScanValues = func(columns []string) ([]any, error) {
-			values, err := values(columns[1:])
-			if err != nil {
-				return nil, err
-			}
-			return append([]any{new(sql.NullInt64)}, values...), nil
-		}
-		spec.Assign = func(columns []string, values []any) error {
-			outValue := uint64(values[0].(*sql.NullInt64).Int64)
-			inValue := uint64(values[1].(*sql.NullInt64).Int64)
-			if nids[inValue] == nil {
-				nids[inValue] = map[*Coupon]struct{}{byID[outValue]: struct{}{}}
-				return assign(columns[1:], values[1:])
-			}
-			nids[inValue][byID[outValue]] = struct{}{}
-			return nil
-		}
-	})
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected "cities" node returned %v`, n.ID)
-		}
-		for kn := range nodes {
-			assign(kn, n)
-		}
-	}
-	return nil
-}
-func (cq *CouponQuery) loadPlans(ctx context.Context, query *PlanQuery, nodes []*Coupon, init func(*Coupon), assign func(*Coupon, *Plan)) error {
-	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[uint64]*Coupon)
-	nids := make(map[uint64]map[*Coupon]struct{})
-	for i, node := range nodes {
-		edgeIDs[i] = node.ID
-		byID[node.ID] = node
-		if init != nil {
-			init(node)
-		}
-	}
-	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(coupon.PlansTable)
-		s.Join(joinT).On(s.C(plan.FieldID), joinT.C(coupon.PlansPrimaryKey[1]))
-		s.Where(sql.InValues(joinT.C(coupon.PlansPrimaryKey[0]), edgeIDs...))
-		columns := s.SelectedColumns()
-		s.Select(joinT.C(coupon.PlansPrimaryKey[0]))
-		s.AppendSelect(columns...)
-		s.SetDistinct(false)
-	})
-	if err := query.prepareQuery(ctx); err != nil {
-		return err
-	}
-	neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
-		assign := spec.Assign
-		values := spec.ScanValues
-		spec.ScanValues = func(columns []string) ([]any, error) {
-			values, err := values(columns[1:])
-			if err != nil {
-				return nil, err
-			}
-			return append([]any{new(sql.NullInt64)}, values...), nil
-		}
-		spec.Assign = func(columns []string, values []any) error {
-			outValue := uint64(values[0].(*sql.NullInt64).Int64)
-			inValue := uint64(values[1].(*sql.NullInt64).Int64)
-			if nids[inValue] == nil {
-				nids[inValue] = map[*Coupon]struct{}{byID[outValue]: struct{}{}}
-				return assign(columns[1:], values[1:])
-			}
-			nids[inValue][byID[outValue]] = struct{}{}
-			return nil
-		}
-	})
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected "plans" node returned %v`, n.ID)
-		}
-		for kn := range nodes {
-			assign(kn, n)
 		}
 	}
 	return nil

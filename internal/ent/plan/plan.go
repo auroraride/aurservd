@@ -63,8 +63,6 @@ const (
 	EdgeParent = "parent"
 	// EdgeComplexes holds the string denoting the complexes edge name in mutations.
 	EdgeComplexes = "complexes"
-	// EdgeCoupons holds the string denoting the coupons edge name in mutations.
-	EdgeCoupons = "coupons"
 	// Table holds the table name of the plan in the database.
 	Table = "plan"
 	// BrandTable is the table that holds the brand relation/edge.
@@ -87,11 +85,6 @@ const (
 	ComplexesTable = "plan"
 	// ComplexesColumn is the table column denoting the complexes relation/edge.
 	ComplexesColumn = "parent_id"
-	// CouponsTable is the table that holds the coupons relation/edge. The primary key declared below.
-	CouponsTable = "coupon_plans"
-	// CouponsInverseTable is the table name for the Coupon entity.
-	// It exists in this package in order to avoid circular dependency with the "coupon" package.
-	CouponsInverseTable = "coupon"
 )
 
 // Columns holds all SQL columns for plan fields.
@@ -124,9 +117,6 @@ var (
 	// CitiesPrimaryKey and CitiesColumn2 are the table columns denoting the
 	// primary key for the cities relation (M2M).
 	CitiesPrimaryKey = []string{"plan_id", "city_id"}
-	// CouponsPrimaryKey and CouponsColumn2 are the table columns denoting the
-	// primary key for the coupons relation (M2M).
-	CouponsPrimaryKey = []string{"coupon_id", "plan_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).

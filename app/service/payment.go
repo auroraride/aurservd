@@ -51,7 +51,7 @@ func (s *paymentService) Configure() *model.PaymentConfigure {
         isExclusive := c.Rule == model.CouponRuleExclusive.Value()
         cate := utils.Md5String(fmt.Sprintf("%d", c.TemplateID))
         amount := c.Amount
-        res.Coupons = append(res.Coupons, model.Coupon{
+        r := model.Coupon{
             ID:        c.ID,
             Cate:      cate,
             Useable:   c.ExpiresAt.After(now),
@@ -60,7 +60,9 @@ func (s *paymentService) Configure() *model.PaymentConfigure {
             ExpiredAt: c.ExpiresAt.Format("2006.1.2"),
             Code:      c.Code,
             Exclusive: isExclusive,
-        })
+            Plans:     c.Plans,
+            Cities:    c.Cities,
+        }
         // 可叠加券
         if sc, ok := stackables[cate]; !ok || sc < amount {
             stackables[cate] = amount
@@ -69,6 +71,8 @@ func (s *paymentService) Configure() *model.PaymentConfigure {
         if isExclusive && exclusive < amount {
             exclusive = amount
         }
+
+        res.Coupons = append(res.Coupons, r)
     }
 
     // 可叠加券值

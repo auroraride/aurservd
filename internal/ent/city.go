@@ -55,11 +55,9 @@ type CityEdges struct {
 	Children []*City `json:"children,omitempty"`
 	// Plans holds the value of the plans edge.
 	Plans []*Plan `json:"plans,omitempty"`
-	// Coupons holds the value of the coupons edge.
-	Coupons []*Coupon `json:"coupons,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [3]bool
 }
 
 // ParentOrErr returns the Parent value or an error if the edge
@@ -91,15 +89,6 @@ func (e CityEdges) PlansOrErr() ([]*Plan, error) {
 		return e.Plans, nil
 	}
 	return nil, &NotLoadedError{edge: "plans"}
-}
-
-// CouponsOrErr returns the Coupons value or an error if the edge
-// was not loaded in eager-loading.
-func (e CityEdges) CouponsOrErr() ([]*Coupon, error) {
-	if e.loadedTypes[3] {
-		return e.Coupons, nil
-	}
-	return nil, &NotLoadedError{edge: "coupons"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -237,11 +226,6 @@ func (c *City) QueryChildren() *CityQuery {
 // QueryPlans queries the "plans" edge of the City entity.
 func (c *City) QueryPlans() *PlanQuery {
 	return (&CityClient{config: c.config}).QueryPlans(c)
-}
-
-// QueryCoupons queries the "coupons" edge of the City entity.
-func (c *City) QueryCoupons() *CouponQuery {
-	return (&CityClient{config: c.config}).QueryCoupons(c)
 }
 
 // Update returns a builder for updating this City.

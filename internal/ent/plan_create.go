@@ -13,7 +13,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 )
@@ -278,21 +277,6 @@ func (pc *PlanCreate) AddComplexes(p ...*Plan) *PlanCreate {
 		ids[i] = p[i].ID
 	}
 	return pc.AddComplexIDs(ids...)
-}
-
-// AddCouponIDs adds the "coupons" edge to the Coupon entity by IDs.
-func (pc *PlanCreate) AddCouponIDs(ids ...uint64) *PlanCreate {
-	pc.mutation.AddCouponIDs(ids...)
-	return pc
-}
-
-// AddCoupons adds the "coupons" edges to the Coupon entity.
-func (pc *PlanCreate) AddCoupons(c ...*Coupon) *PlanCreate {
-	ids := make([]uint64, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return pc.AddCouponIDs(ids...)
 }
 
 // Mutation returns the PlanMutation object of the builder.
@@ -684,25 +668,6 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: plan.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := pc.mutation.CouponsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   plan.CouponsTable,
-			Columns: plan.CouponsPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupon.FieldID,
 				},
 			},
 		}

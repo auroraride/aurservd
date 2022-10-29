@@ -1014,34 +1014,6 @@ func HasPlansWith(preds ...predicate.Plan) predicate.City {
 	})
 }
 
-// HasCoupons applies the HasEdge predicate on the "coupons" edge.
-func HasCoupons() predicate.City {
-	return predicate.City(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CouponsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, CouponsTable, CouponsPrimaryKey...),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasCouponsWith applies the HasEdge predicate on the "coupons" edge with a given conditions (other predicates).
-func HasCouponsWith(preds ...predicate.Coupon) predicate.City {
-	return predicate.City(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CouponsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, CouponsTable, CouponsPrimaryKey...),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.City) predicate.City {
 	return predicate.City(func(s *sql.Selector) {

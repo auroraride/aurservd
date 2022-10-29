@@ -12,7 +12,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
@@ -209,6 +208,18 @@ func (cc *CouponCreate) SetDuration(md *model.CouponDuration) *CouponCreate {
 	return cc
 }
 
+// SetPlans sets the "plans" field.
+func (cc *CouponCreate) SetPlans(m []model.Plan) *CouponCreate {
+	cc.mutation.SetPlans(m)
+	return cc
+}
+
+// SetCities sets the "cities" field.
+func (cc *CouponCreate) SetCities(m []model.City) *CouponCreate {
+	cc.mutation.SetCities(m)
+	return cc
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (cc *CouponCreate) SetRider(r *Rider) *CouponCreate {
 	return cc.SetRiderID(r.ID)
@@ -232,36 +243,6 @@ func (cc *CouponCreate) SetTemplate(c *CouponTemplate) *CouponCreate {
 // SetOrder sets the "order" edge to the Order entity.
 func (cc *CouponCreate) SetOrder(o *Order) *CouponCreate {
 	return cc.SetOrderID(o.ID)
-}
-
-// AddCityIDs adds the "cities" edge to the City entity by IDs.
-func (cc *CouponCreate) AddCityIDs(ids ...uint64) *CouponCreate {
-	cc.mutation.AddCityIDs(ids...)
-	return cc
-}
-
-// AddCities adds the "cities" edges to the City entity.
-func (cc *CouponCreate) AddCities(c ...*City) *CouponCreate {
-	ids := make([]uint64, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return cc.AddCityIDs(ids...)
-}
-
-// AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
-func (cc *CouponCreate) AddPlanIDs(ids ...uint64) *CouponCreate {
-	cc.mutation.AddPlanIDs(ids...)
-	return cc
-}
-
-// AddPlans adds the "plans" edges to the Plan entity.
-func (cc *CouponCreate) AddPlans(p ...*Plan) *CouponCreate {
-	ids := make([]uint64, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return cc.AddPlanIDs(ids...)
 }
 
 // Mutation returns the CouponMutation object of the builder.
@@ -534,6 +515,22 @@ func (cc *CouponCreate) createSpec() (*Coupon, *sqlgraph.CreateSpec) {
 		})
 		_node.Duration = value
 	}
+	if value, ok := cc.mutation.Plans(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: coupon.FieldPlans,
+		})
+		_node.Plans = value
+	}
+	if value, ok := cc.mutation.Cities(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: coupon.FieldCities,
+		})
+		_node.Cities = value
+	}
 	if nodes := cc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -632,44 +629,6 @@ func (cc *CouponCreate) createSpec() (*Coupon, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.OrderID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := cc.mutation.CitiesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   coupon.CitiesTable,
-			Columns: coupon.CitiesPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := cc.mutation.PlansIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   coupon.PlansTable,
-			Columns: coupon.PlansPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: plan.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -955,6 +914,42 @@ func (u *CouponUpsert) SetDuration(v *model.CouponDuration) *CouponUpsert {
 // UpdateDuration sets the "duration" field to the value that was provided on create.
 func (u *CouponUpsert) UpdateDuration() *CouponUpsert {
 	u.SetExcluded(coupon.FieldDuration)
+	return u
+}
+
+// SetPlans sets the "plans" field.
+func (u *CouponUpsert) SetPlans(v []model.Plan) *CouponUpsert {
+	u.Set(coupon.FieldPlans, v)
+	return u
+}
+
+// UpdatePlans sets the "plans" field to the value that was provided on create.
+func (u *CouponUpsert) UpdatePlans() *CouponUpsert {
+	u.SetExcluded(coupon.FieldPlans)
+	return u
+}
+
+// ClearPlans clears the value of the "plans" field.
+func (u *CouponUpsert) ClearPlans() *CouponUpsert {
+	u.SetNull(coupon.FieldPlans)
+	return u
+}
+
+// SetCities sets the "cities" field.
+func (u *CouponUpsert) SetCities(v []model.City) *CouponUpsert {
+	u.Set(coupon.FieldCities, v)
+	return u
+}
+
+// UpdateCities sets the "cities" field to the value that was provided on create.
+func (u *CouponUpsert) UpdateCities() *CouponUpsert {
+	u.SetExcluded(coupon.FieldCities)
+	return u
+}
+
+// ClearCities clears the value of the "cities" field.
+func (u *CouponUpsert) ClearCities() *CouponUpsert {
+	u.SetNull(coupon.FieldCities)
 	return u
 }
 
@@ -1279,6 +1274,48 @@ func (u *CouponUpsertOne) SetDuration(v *model.CouponDuration) *CouponUpsertOne 
 func (u *CouponUpsertOne) UpdateDuration() *CouponUpsertOne {
 	return u.Update(func(s *CouponUpsert) {
 		s.UpdateDuration()
+	})
+}
+
+// SetPlans sets the "plans" field.
+func (u *CouponUpsertOne) SetPlans(v []model.Plan) *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.SetPlans(v)
+	})
+}
+
+// UpdatePlans sets the "plans" field to the value that was provided on create.
+func (u *CouponUpsertOne) UpdatePlans() *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.UpdatePlans()
+	})
+}
+
+// ClearPlans clears the value of the "plans" field.
+func (u *CouponUpsertOne) ClearPlans() *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.ClearPlans()
+	})
+}
+
+// SetCities sets the "cities" field.
+func (u *CouponUpsertOne) SetCities(v []model.City) *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.SetCities(v)
+	})
+}
+
+// UpdateCities sets the "cities" field to the value that was provided on create.
+func (u *CouponUpsertOne) UpdateCities() *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.UpdateCities()
+	})
+}
+
+// ClearCities clears the value of the "cities" field.
+func (u *CouponUpsertOne) ClearCities() *CouponUpsertOne {
+	return u.Update(func(s *CouponUpsert) {
+		s.ClearCities()
 	})
 }
 
@@ -1765,6 +1802,48 @@ func (u *CouponUpsertBulk) SetDuration(v *model.CouponDuration) *CouponUpsertBul
 func (u *CouponUpsertBulk) UpdateDuration() *CouponUpsertBulk {
 	return u.Update(func(s *CouponUpsert) {
 		s.UpdateDuration()
+	})
+}
+
+// SetPlans sets the "plans" field.
+func (u *CouponUpsertBulk) SetPlans(v []model.Plan) *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.SetPlans(v)
+	})
+}
+
+// UpdatePlans sets the "plans" field to the value that was provided on create.
+func (u *CouponUpsertBulk) UpdatePlans() *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.UpdatePlans()
+	})
+}
+
+// ClearPlans clears the value of the "plans" field.
+func (u *CouponUpsertBulk) ClearPlans() *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.ClearPlans()
+	})
+}
+
+// SetCities sets the "cities" field.
+func (u *CouponUpsertBulk) SetCities(v []model.City) *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.SetCities(v)
+	})
+}
+
+// UpdateCities sets the "cities" field to the value that was provided on create.
+func (u *CouponUpsertBulk) UpdateCities() *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.UpdateCities()
+	})
+}
+
+// ClearCities clears the value of the "cities" field.
+func (u *CouponUpsertBulk) ClearCities() *CouponUpsertBulk {
+	return u.Update(func(s *CouponUpsert) {
+		s.ClearCities()
 	})
 }
 

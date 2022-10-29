@@ -12,7 +12,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
@@ -238,6 +237,30 @@ func (cu *CouponUpdate) SetDuration(md *model.CouponDuration) *CouponUpdate {
 	return cu
 }
 
+// SetPlans sets the "plans" field.
+func (cu *CouponUpdate) SetPlans(m []model.Plan) *CouponUpdate {
+	cu.mutation.SetPlans(m)
+	return cu
+}
+
+// ClearPlans clears the value of the "plans" field.
+func (cu *CouponUpdate) ClearPlans() *CouponUpdate {
+	cu.mutation.ClearPlans()
+	return cu
+}
+
+// SetCities sets the "cities" field.
+func (cu *CouponUpdate) SetCities(m []model.City) *CouponUpdate {
+	cu.mutation.SetCities(m)
+	return cu
+}
+
+// ClearCities clears the value of the "cities" field.
+func (cu *CouponUpdate) ClearCities() *CouponUpdate {
+	cu.mutation.ClearCities()
+	return cu
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (cu *CouponUpdate) SetRider(r *Rider) *CouponUpdate {
 	return cu.SetRiderID(r.ID)
@@ -261,36 +284,6 @@ func (cu *CouponUpdate) SetTemplate(c *CouponTemplate) *CouponUpdate {
 // SetOrder sets the "order" edge to the Order entity.
 func (cu *CouponUpdate) SetOrder(o *Order) *CouponUpdate {
 	return cu.SetOrderID(o.ID)
-}
-
-// AddCityIDs adds the "cities" edge to the City entity by IDs.
-func (cu *CouponUpdate) AddCityIDs(ids ...uint64) *CouponUpdate {
-	cu.mutation.AddCityIDs(ids...)
-	return cu
-}
-
-// AddCities adds the "cities" edges to the City entity.
-func (cu *CouponUpdate) AddCities(c ...*City) *CouponUpdate {
-	ids := make([]uint64, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return cu.AddCityIDs(ids...)
-}
-
-// AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
-func (cu *CouponUpdate) AddPlanIDs(ids ...uint64) *CouponUpdate {
-	cu.mutation.AddPlanIDs(ids...)
-	return cu
-}
-
-// AddPlans adds the "plans" edges to the Plan entity.
-func (cu *CouponUpdate) AddPlans(p ...*Plan) *CouponUpdate {
-	ids := make([]uint64, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return cu.AddPlanIDs(ids...)
 }
 
 // Mutation returns the CouponMutation object of the builder.
@@ -326,48 +319,6 @@ func (cu *CouponUpdate) ClearTemplate() *CouponUpdate {
 func (cu *CouponUpdate) ClearOrder() *CouponUpdate {
 	cu.mutation.ClearOrder()
 	return cu
-}
-
-// ClearCities clears all "cities" edges to the City entity.
-func (cu *CouponUpdate) ClearCities() *CouponUpdate {
-	cu.mutation.ClearCities()
-	return cu
-}
-
-// RemoveCityIDs removes the "cities" edge to City entities by IDs.
-func (cu *CouponUpdate) RemoveCityIDs(ids ...uint64) *CouponUpdate {
-	cu.mutation.RemoveCityIDs(ids...)
-	return cu
-}
-
-// RemoveCities removes "cities" edges to City entities.
-func (cu *CouponUpdate) RemoveCities(c ...*City) *CouponUpdate {
-	ids := make([]uint64, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return cu.RemoveCityIDs(ids...)
-}
-
-// ClearPlans clears all "plans" edges to the Plan entity.
-func (cu *CouponUpdate) ClearPlans() *CouponUpdate {
-	cu.mutation.ClearPlans()
-	return cu
-}
-
-// RemovePlanIDs removes the "plans" edge to Plan entities by IDs.
-func (cu *CouponUpdate) RemovePlanIDs(ids ...uint64) *CouponUpdate {
-	cu.mutation.RemovePlanIDs(ids...)
-	return cu
-}
-
-// RemovePlans removes "plans" edges to Plan entities.
-func (cu *CouponUpdate) RemovePlans(p ...*Plan) *CouponUpdate {
-	ids := make([]uint64, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return cu.RemovePlanIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -594,6 +545,32 @@ func (cu *CouponUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: coupon.FieldDuration,
 		})
 	}
+	if value, ok := cu.mutation.Plans(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: coupon.FieldPlans,
+		})
+	}
+	if cu.mutation.PlansCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: coupon.FieldPlans,
+		})
+	}
+	if value, ok := cu.mutation.Cities(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: coupon.FieldCities,
+		})
+	}
+	if cu.mutation.CitiesCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: coupon.FieldCities,
+		})
+	}
 	if cu.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -761,114 +738,6 @@ func (cu *CouponUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: order.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if cu.mutation.CitiesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   coupon.CitiesTable,
-			Columns: coupon.CitiesPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cu.mutation.RemovedCitiesIDs(); len(nodes) > 0 && !cu.mutation.CitiesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   coupon.CitiesTable,
-			Columns: coupon.CitiesPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cu.mutation.CitiesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   coupon.CitiesTable,
-			Columns: coupon.CitiesPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if cu.mutation.PlansCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   coupon.PlansTable,
-			Columns: coupon.PlansPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: plan.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cu.mutation.RemovedPlansIDs(); len(nodes) > 0 && !cu.mutation.PlansCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   coupon.PlansTable,
-			Columns: coupon.PlansPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: plan.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cu.mutation.PlansIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   coupon.PlansTable,
-			Columns: coupon.PlansPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: plan.FieldID,
 				},
 			},
 		}
@@ -1100,6 +969,30 @@ func (cuo *CouponUpdateOne) SetDuration(md *model.CouponDuration) *CouponUpdateO
 	return cuo
 }
 
+// SetPlans sets the "plans" field.
+func (cuo *CouponUpdateOne) SetPlans(m []model.Plan) *CouponUpdateOne {
+	cuo.mutation.SetPlans(m)
+	return cuo
+}
+
+// ClearPlans clears the value of the "plans" field.
+func (cuo *CouponUpdateOne) ClearPlans() *CouponUpdateOne {
+	cuo.mutation.ClearPlans()
+	return cuo
+}
+
+// SetCities sets the "cities" field.
+func (cuo *CouponUpdateOne) SetCities(m []model.City) *CouponUpdateOne {
+	cuo.mutation.SetCities(m)
+	return cuo
+}
+
+// ClearCities clears the value of the "cities" field.
+func (cuo *CouponUpdateOne) ClearCities() *CouponUpdateOne {
+	cuo.mutation.ClearCities()
+	return cuo
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (cuo *CouponUpdateOne) SetRider(r *Rider) *CouponUpdateOne {
 	return cuo.SetRiderID(r.ID)
@@ -1123,36 +1016,6 @@ func (cuo *CouponUpdateOne) SetTemplate(c *CouponTemplate) *CouponUpdateOne {
 // SetOrder sets the "order" edge to the Order entity.
 func (cuo *CouponUpdateOne) SetOrder(o *Order) *CouponUpdateOne {
 	return cuo.SetOrderID(o.ID)
-}
-
-// AddCityIDs adds the "cities" edge to the City entity by IDs.
-func (cuo *CouponUpdateOne) AddCityIDs(ids ...uint64) *CouponUpdateOne {
-	cuo.mutation.AddCityIDs(ids...)
-	return cuo
-}
-
-// AddCities adds the "cities" edges to the City entity.
-func (cuo *CouponUpdateOne) AddCities(c ...*City) *CouponUpdateOne {
-	ids := make([]uint64, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return cuo.AddCityIDs(ids...)
-}
-
-// AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
-func (cuo *CouponUpdateOne) AddPlanIDs(ids ...uint64) *CouponUpdateOne {
-	cuo.mutation.AddPlanIDs(ids...)
-	return cuo
-}
-
-// AddPlans adds the "plans" edges to the Plan entity.
-func (cuo *CouponUpdateOne) AddPlans(p ...*Plan) *CouponUpdateOne {
-	ids := make([]uint64, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return cuo.AddPlanIDs(ids...)
 }
 
 // Mutation returns the CouponMutation object of the builder.
@@ -1188,48 +1051,6 @@ func (cuo *CouponUpdateOne) ClearTemplate() *CouponUpdateOne {
 func (cuo *CouponUpdateOne) ClearOrder() *CouponUpdateOne {
 	cuo.mutation.ClearOrder()
 	return cuo
-}
-
-// ClearCities clears all "cities" edges to the City entity.
-func (cuo *CouponUpdateOne) ClearCities() *CouponUpdateOne {
-	cuo.mutation.ClearCities()
-	return cuo
-}
-
-// RemoveCityIDs removes the "cities" edge to City entities by IDs.
-func (cuo *CouponUpdateOne) RemoveCityIDs(ids ...uint64) *CouponUpdateOne {
-	cuo.mutation.RemoveCityIDs(ids...)
-	return cuo
-}
-
-// RemoveCities removes "cities" edges to City entities.
-func (cuo *CouponUpdateOne) RemoveCities(c ...*City) *CouponUpdateOne {
-	ids := make([]uint64, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return cuo.RemoveCityIDs(ids...)
-}
-
-// ClearPlans clears all "plans" edges to the Plan entity.
-func (cuo *CouponUpdateOne) ClearPlans() *CouponUpdateOne {
-	cuo.mutation.ClearPlans()
-	return cuo
-}
-
-// RemovePlanIDs removes the "plans" edge to Plan entities by IDs.
-func (cuo *CouponUpdateOne) RemovePlanIDs(ids ...uint64) *CouponUpdateOne {
-	cuo.mutation.RemovePlanIDs(ids...)
-	return cuo
-}
-
-// RemovePlans removes "plans" edges to Plan entities.
-func (cuo *CouponUpdateOne) RemovePlans(p ...*Plan) *CouponUpdateOne {
-	ids := make([]uint64, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return cuo.RemovePlanIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1486,6 +1307,32 @@ func (cuo *CouponUpdateOne) sqlSave(ctx context.Context) (_node *Coupon, err err
 			Column: coupon.FieldDuration,
 		})
 	}
+	if value, ok := cuo.mutation.Plans(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: coupon.FieldPlans,
+		})
+	}
+	if cuo.mutation.PlansCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: coupon.FieldPlans,
+		})
+	}
+	if value, ok := cuo.mutation.Cities(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: coupon.FieldCities,
+		})
+	}
+	if cuo.mutation.CitiesCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: coupon.FieldCities,
+		})
+	}
 	if cuo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1653,114 +1500,6 @@ func (cuo *CouponUpdateOne) sqlSave(ctx context.Context) (_node *Coupon, err err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: order.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if cuo.mutation.CitiesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   coupon.CitiesTable,
-			Columns: coupon.CitiesPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cuo.mutation.RemovedCitiesIDs(); len(nodes) > 0 && !cuo.mutation.CitiesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   coupon.CitiesTable,
-			Columns: coupon.CitiesPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cuo.mutation.CitiesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   coupon.CitiesTable,
-			Columns: coupon.CitiesPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if cuo.mutation.PlansCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   coupon.PlansTable,
-			Columns: coupon.PlansPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: plan.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cuo.mutation.RemovedPlansIDs(); len(nodes) > 0 && !cuo.mutation.PlansCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   coupon.PlansTable,
-			Columns: coupon.PlansPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: plan.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cuo.mutation.PlansIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   coupon.PlansTable,
-			Columns: coupon.PlansPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: plan.FieldID,
 				},
 			},
 		}

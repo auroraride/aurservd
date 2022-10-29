@@ -29,31 +29,10 @@ func NewCouponAssembly() *couponAssemblyService {
     }
 }
 
-func NewCouponAssemblyWithRider(r *ent.Rider) *couponAssemblyService {
-    s := NewCouponAssembly()
-    s.ctx = context.WithValue(s.ctx, "rider", r)
-    s.rider = r
-    return s
-}
-
 func NewCouponAssemblyWithModifier(m *model.Modifier) *couponAssemblyService {
     s := NewCouponAssembly()
     s.ctx = context.WithValue(s.ctx, "modifier", m)
     s.modifier = m
-    return s
-}
-
-func NewCouponAssemblyWithEmployee(e *ent.Employee) *couponAssemblyService {
-    s := NewCouponAssembly()
-    if e != nil {
-        s.employee = e
-        s.employeeInfo = &model.Employee{
-            ID:    e.ID,
-            Name:  e.Name,
-            Phone: e.Phone,
-        }
-        s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
-    }
     return s
 }
 

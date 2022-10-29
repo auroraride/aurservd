@@ -212,6 +212,33 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
             if _, ok := cm[c.TemplateID]; ok {
                 snag.Panic("优惠券无法叠加")
             }
+
+            // 是否限制城市
+            if len(c.Cities) > 0 {
+                cityUseable := false
+                for _, cc := range c.Cities {
+                    if cc.ID == req.CityID {
+                        cityUseable = true
+                    }
+                }
+                if !cityUseable {
+                    snag.Panic("当前城市无法使用")
+                }
+            }
+
+            // 是否限制骑士卡
+            if len(c.Plans) > 0 {
+                planUsable := false
+                for _, cp := range c.Plans {
+                    if cp.ID == req.PlanID {
+                        planUsable = true
+                    }
+                }
+                if !planUsable {
+                    snag.Panic("当前骑士卡无法使用")
+                }
+            }
+
             cm[c.TemplateID] = c.ID
 
             // 累加优惠券金额
