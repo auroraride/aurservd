@@ -574,11 +574,12 @@ func (s *planService) RiderListRenewal() model.RiderPlanRenewalRes {
     }
 
     return model.RiderPlanRenewalRes{
-        Overdue: sub.Remaining < 0,
-        Fee:     fee,
-        Formula: formula,
-        Days:    min,
-        Items:   items,
+        Overdue:   sub.Remaining < 0,
+        Fee:       fee,
+        Formula:   formula,
+        Days:      min,
+        Items:     items,
+        Configure: NewPayment(s.rider).Configure(),
     }
 }
 

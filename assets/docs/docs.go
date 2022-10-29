@@ -20377,6 +20377,14 @@ const docTemplate = `{
         "model.RiderPlanRenewalRes": {
             "type": "object",
             "properties": {
+                "configure": {
+                    "description": "支付配置",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PaymentConfigure"
+                        }
+                    ]
+                },
                 "days": {
                     "description": "逾期天数, 可能为空",
                     "type": "integer"

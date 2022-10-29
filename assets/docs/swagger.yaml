@@ -5083,6 +5083,10 @@ definitions:
     type: object
   model.RiderPlanRenewalRes:
     properties:
+      configure:
+        allOf:
+        - $ref: '#/definitions/model.PaymentConfigure'
+        description: 支付配置
       days:
         description: 逾期天数, 可能为空
         type: integer
