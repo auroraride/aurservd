@@ -615,7 +615,7 @@ func (s *businessRiderService) UnSubscribe(subscribeID uint64, fns ...func(sub *
         // 更新电车
         if sub.EbikeID != nil {
             // 删除电车所属
-            err = tx.Ebike.UpdateOneID(*sub.EbikeID).ClearRiderID().SetStatus(model.EbikeStatusInStock).Exec(s.ctx)
+            err = tx.Ebike.UpdateOneID(*sub.EbikeID).ClearRiderID().SetStatus(model.EbikeStatusInStock).SetNillableStoreID(s.storeID).Exec(s.ctx)
         }
     })
 
