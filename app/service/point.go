@@ -175,11 +175,20 @@ func (s *pointService) Detail(r *ent.Rider) model.PointRes {
 }
 
 // CalculateGift 计算赠送积分
-func (s *pointService) CalculateGift(amount float64, cityID uint64) (points int) {
-    set, ok := NewSetting().GetSetting(model.SettingConsumePoints).(map[uint64]float64)
-    if !ok {
+func (s *pointService) CalculateGift(amount float64, cityID uint64) (points int64, proportion float64) {
+    arr, err := GetSetting[[]model.SettingConsumePoint](model.SettingConsumePoints)
+    if err != nil {
         return
     }
-    v := set[cityID]
-    return int(math.Round(v * amount))
+    for _, set := range arr {
+        if set.CityID == cityID {
+            proportion = set.Proportion
+            points = int64(math.Round(proportion * amount))
+            if points < 0 {
+                points = 0
+            }
+            return
+        }
+    }
+    return
 }

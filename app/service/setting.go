@@ -8,6 +8,7 @@ package service
 import (
     "context"
     "encoding/json"
+    "errors"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/setting"
@@ -101,6 +102,22 @@ func (s *settingService) Modify(req *model.SettingReq) {
         SaveX(s.ctx)
 
     s.CacheSettings(sm)
+}
+
+func GetSetting[T any](key string) (v T, err error) {
+    var set *ent.Setting
+    set, err = ent.Database.Setting.Query().Where(setting.Key(key)).First(context.Background())
+    if err != nil {
+        return
+    }
+
+    if set == nil {
+        err = errors.New("未找到设置")
+        return
+    }
+
+    err = jsoniter.Unmarshal([]byte(set.Content), &v)
+    return
 }
 
 // GetSetting 获取设置

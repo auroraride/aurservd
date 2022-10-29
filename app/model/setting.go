@@ -50,6 +50,35 @@ type SettingRes struct {
     Desc    string `json:"desc"`    // 描述
 }
 
+type SettingRiderApp struct {
+    AssistanceFee   float64 `json:"assistanceFee"`   // 救援费用
+    ReserveDuration int     `json:"reserveDuration"` // 预约最长时间(分钟)
+}
+
+type SettingPlanDescription struct {
+    Banner    string `json:"banner"`    // banner图
+    Product   string `json:"product"`   // 商品介绍
+    Pickup    string `json:"pickup"`    // 提货方式
+    Attention string `json:"attention"` // 注意事项
+}
+
+type SettingQuestion struct {
+    Question string `json:"question"` // 问题
+    Answer   string `json:"answer"`   // 解答
+}
+
+type SettingAppVersionValue struct {
+    Version     string `json:"version"`
+    Description string `json:"description"`
+    Link        string `json:"link"`
+    Enable      bool   `json:"enable"`
+}
+
+type SettingConsumePoint struct {
+    CityID     uint64  `json:"cityId"`     // 城市ID
+    Proportion float64 `json:"proportion"` // 赠送比例
+}
+
 var Settings = map[string]SettingItem{
     SettingDeposit: {
         Desc:    "平台押金",
@@ -125,30 +154,6 @@ var Settings = map[string]SettingItem{
     },
     SettingConsumePoints: {
         Desc:    "消费赠送积分",
-        Default: map[uint64]float64{},
+        Default: []SettingConsumePoint{},
     },
-}
-
-type SettingRiderApp struct {
-    AssistanceFee   float64 `json:"assistanceFee"`   // 救援费用
-    ReserveDuration int     `json:"reserveDuration"` // 预约最长时间(分钟)
-}
-
-type SettingPlanDescription struct {
-    Banner    string `json:"banner"`    // banner图
-    Product   string `json:"product"`   // 商品介绍
-    Pickup    string `json:"pickup"`    // 提货方式
-    Attention string `json:"attention"` // 注意事项
-}
-
-type SettingQuestion struct {
-    Question string `json:"question"` // 问题
-    Answer   string `json:"answer"`   // 解答
-}
-
-type SettingAppVersionValue struct {
-    Version     string `json:"version"`
-    Description string `json:"description"`
-    Link        string `json:"link"`
-    Enable      bool   `json:"enable"`
 }
