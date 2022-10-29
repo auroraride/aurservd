@@ -21598,12 +21598,12 @@ const docTemplate = `{
                     "description": "网点 ",
                     "type": "integer"
                 },
-                "ebikeRepair": {
-                    "description": "是否可以维修车辆",
+                "ebikeObtain": {
+                    "description": "是否可以领取车辆",
                     "type": "boolean"
                 },
-                "ebikeeObtain": {
-                    "description": "是否可以领取车辆",
+                "ebikeRepair": {
+                    "description": "是否可以维修车辆",
                     "type": "boolean"
                 },
                 "materials": {
@@ -21647,12 +21647,12 @@ const docTemplate = `{
                         }
                     ]
                 },
-                "ebikeRepair": {
-                    "description": "是否可以维修车辆",
+                "ebikeObtain": {
+                    "description": "是否可以领取车辆",
                     "type": "boolean"
                 },
-                "ebikeeObtain": {
-                    "description": "是否可以领取车辆",
+                "ebikeRepair": {
+                    "description": "是否可以维修车辆",
                     "type": "boolean"
                 },
                 "employee": {
@@ -21705,12 +21705,12 @@ const docTemplate = `{
                     "description": "网点 ",
                     "type": "integer"
                 },
-                "ebikeRepair": {
-                    "description": "是否可以维修车辆",
+                "ebikeObtain": {
+                    "description": "是否可以领取车辆",
                     "type": "boolean"
                 },
-                "ebikeeObtain": {
-                    "description": "是否可以领取车辆",
+                "ebikeRepair": {
+                    "description": "是否可以维修车辆",
                     "type": "boolean"
                 },
                 "name": {

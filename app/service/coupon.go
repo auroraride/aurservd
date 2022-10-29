@@ -257,7 +257,7 @@ func (s *couponService) List(req *model.CouponListReq) *model.PaginationRes {
             cities = append(cities, mc.Name)
         }
         for _, mp := range ea.Meta.Plans {
-            plans = append(plans, mp.Name)
+            plans = append(plans, fmt.Sprintf("%s - %d天", mp.Name, mp.Days))
         }
         // 骑手
         er := item.Edges.Rider

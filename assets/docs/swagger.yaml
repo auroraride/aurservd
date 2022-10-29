@@ -5923,11 +5923,11 @@ definitions:
       branchId:
         description: '网点 '
         type: integer
+      ebikeObtain:
+        description: 是否可以领取车辆
+        type: boolean
       ebikeRepair:
         description: 是否可以维修车辆
-        type: boolean
-      ebikeeObtain:
-        description: 是否可以领取车辆
         type: boolean
       materials:
         description: 门店物资
@@ -5961,11 +5961,11 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.City'
         description: 城市
+      ebikeObtain:
+        description: 是否可以领取车辆
+        type: boolean
       ebikeRepair:
         description: 是否可以维修车辆
-        type: boolean
-      ebikeeObtain:
-        description: 是否可以领取车辆
         type: boolean
       employee:
         allOf:
@@ -6000,11 +6000,11 @@ definitions:
       branchId:
         description: '网点 '
         type: integer
+      ebikeObtain:
+        description: 是否可以领取车辆
+        type: boolean
       ebikeRepair:
         description: 是否可以维修车辆
-        type: boolean
-      ebikeeObtain:
-        description: 是否可以领取车辆
         type: boolean
       name:
         description: '门店名称 '
