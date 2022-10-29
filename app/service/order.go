@@ -217,7 +217,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
             // 累加优惠券金额
             camount += c.Amount
         }
-        if isExclusive && len(req.Coupons) > 0 {
+        if isExclusive && len(req.Coupons) > 1 {
             snag.Panic("所选优惠券互斥")
         }
         price = tools.NewDecimal().Sub(price, camount)
