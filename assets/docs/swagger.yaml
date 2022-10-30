@@ -6241,6 +6241,16 @@ definitions:
         description: 总支付金额, 总金额为 amount + deposit
         type: number
     type: object
+  model.SubscribeSigned:
+    properties:
+      signed:
+        description: 签约状态, 0:无签约信息(直接弹窗提示用户"未找到签约信息"并返回首页) 1:签署中(继续轮询) 2:签约成功(弹出扫码)
+        enum:
+        - 0
+        - 1
+        - 2
+        type: integer
+    type: object
   model.SuspendListRes:
     properties:
       city:
@@ -14068,6 +14078,32 @@ paths:
           schema:
             $ref: '#/definitions/model.BusinessCabinetStatusRes'
       summary: R7005 业务状态
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/business/subscribe/signed/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderBusinessSubscribeSigned
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 订阅ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.SubscribeSigned'
+      summary: R7010 长连接轮询是否已签约
       tags:
       - '[R]骑手接口'
   /rider/v1/business/unsubscribe:

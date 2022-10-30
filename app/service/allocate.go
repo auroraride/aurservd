@@ -222,6 +222,10 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCre
         status = model.AllocateStatusSigned.Value()
     }
 
+    // 强制删除原有分配信息
+    s.SubscribeDeleteIfExists(sub.ID)
+
+    // 保存分配信息
     allo, err := s.orm.Create().
         SetType(typ).
         SetNillableEmployeeID(req.EmployeeID).
@@ -234,10 +238,6 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCre
         SetStatus(status).
         SetTime(time.Now()).
         SetModel(sub.Model).
-        OnConflictColumns(allocate.FieldSubscribeID).
-        UpdateNewValues().
-        ClearCabinetID().
-        ClearRemark().
         Save(s.ctx)
 
     if err != nil {
@@ -336,7 +336,8 @@ func (s *allocateService) LoopStatus(riderID, subscribeID uint64) (res model.All
             allocate.TimeGT(carbon.Now().SubSeconds(model.AllocateExpiration).Carbon2Time()),
         ).First(s.ctx)
 
-        if allo != nil && allo.Status == model.AllocateStatusPending.Value() {
+        // 如果有分配信息 并且 状态为待签约 并且 非电柜扫码
+        if allo != nil && allo.Status == model.AllocateStatusPending.Value() && allo.CabinetID == nil {
             res.Allocated = true
             return
         }
@@ -347,4 +348,12 @@ func (s *allocateService) LoopStatus(riderID, subscribeID uint64) (res model.All
     }
 
     return
+}
+
+// SubscribeDeleteIfExists 根据subscribeID强制删除分配信息
+func (s *allocateService) SubscribeDeleteIfExists(subscribeID uint64) {
+    _, err := s.orm.Delete().Where(allocate.SubscribeID(subscribeID)).Exec(s.ctx)
+    if err != nil {
+        log.Errorf("分配信息强制删除失败: %v", err)
+    }
 }

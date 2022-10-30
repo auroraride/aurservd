@@ -122,3 +122,7 @@ type UnsubscribeEmployeeReq struct {
     BusinessSubscribeID
     Qrcode string `json:"qrcode"` // 二维码
 }
+
+type SubscribeSigned struct {
+    Signed uint8 `json:"signed" enums:"0,1,2"` // 签约状态, 0:无签约信息(直接弹窗提示用户"未找到签约信息"并返回首页) 1:签署中(继续轮询) 2:签约成功(弹出扫码)
+}

@@ -11675,6 +11675,45 @@
                 }
             }
         },
+        "/rider/v1/business/subscribe/signed/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R7010 长连接轮询是否已签约",
+                "operationId": "RiderBusinessSubscribeSigned",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "订阅ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.SubscribeSigned"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/business/unsubscribe": {
             "post": {
                 "consumes": [
@@ -22052,6 +22091,20 @@
                 "total": {
                     "description": "总支付金额, 总金额为 amount + deposit",
                     "type": "number"
+                }
+            }
+        },
+        "model.SubscribeSigned": {
+            "type": "object",
+            "properties": {
+                "signed": {
+                    "description": "签约状态, 0:无签约信息(直接弹窗提示用户\"未找到签约信息\"并返回首页) 1:签署中(继续轮询) 2:签约成功(弹出扫码)",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ]
                 }
             }
         },

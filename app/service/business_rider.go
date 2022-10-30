@@ -528,9 +528,7 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
         updater := tx.Subscribe.UpdateOneID(sub.ID).
             SetStatus(model.SubscribeStatusUsing).
             SetStartAt(time.Now()).
-            SetNillableEmployeeID(s.employeeID).
-            SetNillableStoreID(s.storeID).
-            SetNillableCabinetID(s.cabinetID).
+            UpdateTarget(s.cabinetID, s.storeID, s.employeeID).
             SetNillableAgentEndAt(aend).
             SetNeedContract(false)
 

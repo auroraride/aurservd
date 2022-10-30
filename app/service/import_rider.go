@@ -297,8 +297,6 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
             SetStatus(model.AllocateStatusSigned.Value()).
             SetTime(time.Now()).
             SetModel(sub.Model).
-            OnConflictColumns(allocate.FieldSubscribeID).
-            UpdateNewValues().
             Save(s.ctx)
         if err != nil {
             return

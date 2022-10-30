@@ -170,12 +170,12 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
     }
 
     // 查找分配信息
-    al := NewAllocate().QueryEffectiveSubscribeIDX(sub.ID)
-    if al == nil {
+    allo := NewAllocate().QueryEffectiveSubscribeIDX(sub.ID)
+    if allo == nil {
         snag.Panic("未找到有效分配")
     }
 
-    if sub.BrandID != nil && al.StoreID == nil {
+    if sub.BrandID != nil && allo.StoreID == nil {
         snag.Panic("电车必须由门店分配")
     }
 
@@ -186,9 +186,9 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
     }
 
     // 判定门店或电柜库存
-    if al.StoreID != nil {
+    if allo.StoreID != nil {
         // 判定门店库存
-        stockable := NewStock().CheckStore(*al.StoreID, sub.Model, 1)
+        stockable := NewStock().CheckStore(*allo.StoreID, sub.Model, 1)
         if !stockable {
             snag.Panic("电池库存不足")
         }
@@ -277,13 +277,9 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
         m["payMonth"] = un.Month
 
         // 电车
-        var employeeID, storeID *uint64
         if sub.BrandID != nil {
             // 查找电车分配
-            employeeID = al.EmployeeID
-            storeID = al.StoreID
-
-            bike, _ := al.QueryEbike().WithBrand().First(s.ctx)
+            bike, _ := allo.QueryEbike().WithBrand().First(s.ctx)
             if bike == nil || bike.Edges.Brand == nil {
                 snag.Panic("未找到电车信息")
             }
@@ -415,13 +411,19 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
 
         // 存储合同信息
         ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+            // 删除原有合同
+            _, err = tx.Contract.Delete().Where(contract.AllocateID(allo.ID)).Exec(s.ctx)
+            if err != nil {
+                log.Errorf("[allocateID = %d]合同强制删除失败, %v", allo.ID, err)
+            }
+
             err = tx.Contract.Create().
                 SetFlowID(flowId).
                 SetRiderID(u.ID).
                 SetStatus(model.ContractStatusSigning.Value()).
                 SetSn(sn).
-                SetNillableEmployeeID(employeeID).
-                SetAllocateID(al.ID).
+                SetNillableEmployeeID(allo.EmployeeID).
+                SetAllocateID(allo.ID).
                 SetSubscribe(sub).
                 SetRiderInfo(&model.ContractRider{
                     Phone:        u.Phone,
@@ -430,13 +432,11 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
                 }).
                 SetLink(link).
                 SetExpiresAt(expiresAt).
-                OnConflictColumns(contract.FieldAllocateID).
-                UpdateNewValues().
                 Exec(context.Background())
             if err != nil {
                 return
             }
-            return sub.Update().SetNillableStoreID(storeID).SetNillableEmployeeID(employeeID).Exec(s.ctx)
+            return sub.Update().UpdateTarget(allo.CabinetID, allo.StoreID, allo.EmployeeID).Exec(s.ctx)
         })
 
         // 监听合同签署结果
@@ -531,14 +531,15 @@ func (s *contractService) doResult(flowID string, isExpired bool) (stop, success
 
         if success {
             // 获取合同并上传到阿里云
-            updater.SetStatus(model.ContractStatusSuccess.Value()).SetFiles(s.esign.DownloadDocument(fmt.Sprintf("%s-%s/contracts/", r.Name, r.IDCardNumber), c.FlowID))
+            updater.SetSignedAt(endAt).SetStatus(model.ContractStatusSuccess.Value())
+            go s.downloadFile(c.ID, c.FlowID, r)
         }
     }
 
     // 流程是否终止
     if result.IsFinished() {
         stop = true
-        err := updater.SetSignedAt(endAt).Exec(context.Background())
+        err := updater.Exec(context.Background())
         if err != nil {
             log.Errorf("合同更新失败 [id = %d]: %v", c.ID, err)
             stop = true
@@ -618,8 +619,8 @@ func (s *contractService) update(c *ent.Contract) (err error) {
     }
 
     // 完成签约后
-    // 若有分配信息则自动并激活 (骑手扫码电柜无需激活)
-    if c.AllocateID != nil {
+    // 若是门店分配则自动并激活 (骑手扫码电柜无需激活)
+    if allo.StoreID != nil {
         srv.Active(sub, allo)
     }
 
@@ -706,4 +707,13 @@ func (s *contractService) List(req *model.ContractListReq) *model.PaginationRes 
 
         return
     })
+}
+
+// 下载合同文件
+func (s *contractService) downloadFile(id uint64, flowID string, r *model.ContractRider) {
+    err := s.orm.UpdateOneID(id).SetFiles(s.esign.DownloadDocument(fmt.Sprintf("%s-%s/contracts/", r.Name, r.IDCardNumber), flowID)).Exec(s.ctx)
+    if err != nil {
+        log.Errorf("[%d / %s] 合同下载失败: %v", id, flowID, err)
+        return
+    }
 }

@@ -182,3 +182,16 @@ func subscribeAdditionalDays[T SubscribeAdditional](item T) (days int, overdue i
 
     return
 }
+
+func (suo *SubscribeUpdateOne) UpdateTarget(cabinetID, storeID, employeeID *uint64) *SubscribeUpdateOne {
+    suo.SetNillableCabinetID(cabinetID).
+        SetNillableEmployeeID(employeeID).
+        SetNillableStoreID(storeID)
+    if cabinetID != nil {
+        suo.ClearEmployeeID().ClearStoreID()
+    }
+    if storeID != nil || employeeID != nil {
+        suo.ClearCabinetID()
+    }
+    return suo
+}

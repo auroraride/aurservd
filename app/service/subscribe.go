@@ -542,3 +542,39 @@ func (s *subscribeService) NeedContract(sub *ent.Subscribe) bool {
     ).Exist(s.ctx)
     return !exists
 }
+
+func (s *subscribeService) Signed(riderID, subscribeID uint64) (res model.SubscribeSigned) {
+    ticker := time.NewTicker(3 * time.Second)
+    defer ticker.Stop()
+
+    start := time.Now()
+    for ; true; <-ticker.C {
+
+        c, _ := ent.Database.Contract.Query().Where(
+            contract.RiderID(riderID),
+            contract.SubscribeID(subscribeID),
+        ).First(s.ctx)
+
+        // 未找到签约信息
+        if c == nil {
+            return
+        }
+
+        switch model.ContractStatus(c.Status) {
+        case model.ContractStatusSigning:
+            res.Signed = 1
+        case model.ContractStatusSuccess:
+            res.Signed = 2
+            return
+        default:
+            res.Signed = 0
+            return
+        }
+
+        if time.Now().Sub(start).Seconds() > 50 {
+            return
+        }
+    }
+
+    return
+}
