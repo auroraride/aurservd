@@ -104,7 +104,10 @@ type PlanListRes struct {
 type PlanListRiderReq struct {
     Type   PlanType `json:"type" query:"type" validate:"required,enum" trans:"骑士卡类别"` // 1:单电 2:车电
     CityID uint64   `json:"cityId" query:"cityId" validate:"required" trans:"城市ID"`
-    Min    uint     `json:"min" swaggerignore:"true"` // 最小天数
+
+    Min          uint    `json:"min" swaggerignore:"true"`          // 最小天数
+    Model        string  `json:"model" swaggerignore:"true"`        // 电池型号
+    EbikeBrandID *uint64 `json:"ebikeBrandId" swaggerignore:"true"` // 电车型号
 }
 
 // RiderPlanItem 骑士返回数据
