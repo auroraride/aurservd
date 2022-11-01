@@ -10,25 +10,55 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/contract"
     "github.com/auroraride/aurservd/internal/esign"
     "github.com/auroraride/aurservd/pkg/snag"
-    log "github.com/sirupsen/logrus"
     "github.com/spf13/cobra"
+    "log"
     "time"
 )
 
-func Contract() *cobra.Command {
+func contractRider() *cobra.Command {
     return &cobra.Command{
-        Use:   "contract",
-        Short: "修复签约时间",
-        Run: func(cmd *cobra.Command, args []string) {
+        Use:   "common",
+        Short: "修复签约骑手和过期时间",
+        Run: func(_ *cobra.Command, _ []string) {
             ctx := context.Background()
             items, _ := ent.Database.Contract.QueryNotDeleted().WithRider().All(ctx)
+            for _, item := range items {
+                updater := item.Update()
+                // 设置骑手
+                r := item.Edges.Rider
+                if r != nil {
+                    updater.SetRiderInfo(&model.ContractRider{
+                        Phone:        r.Phone,
+                        Name:         r.Name,
+                        IDCardNumber: r.IDCardNumber,
+                    })
+                }
+                if item.Status != model.ContractStatusSuccess.Value() && item.CreatedAt.Before(time.Now().Add(-31*time.Minute)) {
+                    updater.SetExpiresAt(item.CreatedAt.Add(model.ContractExpiration * time.Minute))
+                }
+                _ = updater.Exec(ctx)
+            }
+        },
+    }
+}
+
+func contractStatus() *cobra.Command {
+    return &cobra.Command{
+        Use:   "status",
+        Short: "修复签约状态",
+        Run: func(_ *cobra.Command, _ []string) {
+            ctx := context.Background()
+            items, _ := ent.Database.Contract.QueryNotDeleted().WithRider().Where(contract.Or(
+                contract.SignedAtIsNil(),
+                contract.ExpiresAtIsNil(),
+            )).All(ctx)
             log.Printf("即将查询 %d 条结果", len(items))
             s := esign.New()
             for _, item := range items {
                 err := snag.WithPanic(func() {
-
                     log.Printf("查询 %d 签约时间", item.ID)
                     status, sr := s.Result(item.FlowID)
 
@@ -52,6 +82,7 @@ func Contract() *cobra.Command {
                             updater.SetFiles(s.DownloadDocument(fmt.Sprintf("%s-%s/contracts/", r.Name, r.IDCardNumber), item.FlowID))
                         }
                     } else {
+                        updater.SetExpiresAt(item.CreatedAt.Add(model.ContractExpiration * time.Minute))
                         // 设置过期时间
                         if at, ok := sr.SignValidity.(float64); ok {
                             t := time.UnixMilli(int64(at))
@@ -67,11 +98,23 @@ func Contract() *cobra.Command {
                 })
 
                 if err != nil {
-                    log.Error(err)
+                    log.Println(err)
                 }
 
-                time.Sleep(1 * time.Second)
+                time.Sleep(10 * time.Second)
             }
         },
     }
+}
+
+func Contract() *cobra.Command {
+    c := &cobra.Command{
+        Use:   "contract",
+        Short: "修复签约时间",
+    }
+    c.AddCommand(
+        contractRider(),
+        contractStatus(),
+    )
+    return c
 }
