@@ -319,10 +319,12 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
         }))
     }
 
+    // 查找分配信息
     allo, _ := ent.Database.Allocate.Query().Where(
         allocate.SubscribeID(s.subscribe.ID),
         allocate.RiderID(s.subscribe.RiderID),
-        allocate.Status(model.AllocateStatusSigned.Value()),
+        // allocate.Status(model.AllocateStatusSigned.Value()),
+        allocate.CabinetIDNotNil(),
     ).First(s.ctx)
     if allo == nil {
         snag.Panic("未找到分配信息")
@@ -331,6 +333,8 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
     srv := NewBusinessRider(s.rider)
     srv.SetCabinet(s.cabinet).
         SetTask(func() *ec.BinInfo {
+            // 更新分配信息
+            _ = allo.Update().SetStatus(model.AllocateStatusSigned.Value()).SetCabinetID(s.cabinet.ID).Exec(s.ctx)
             return s.putout()
         }).
         Active(s.subscribe, allo)
