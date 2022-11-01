@@ -13,7 +13,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -355,21 +354,6 @@ func (pu *PlanUpdate) AddComplexes(p ...*Plan) *PlanUpdate {
 	return pu.AddComplexIDs(ids...)
 }
 
-// AddCouponIDs adds the "coupons" edge to the Coupon entity by IDs.
-func (pu *PlanUpdate) AddCouponIDs(ids ...uint64) *PlanUpdate {
-	pu.mutation.AddCouponIDs(ids...)
-	return pu
-}
-
-// AddCoupons adds the "coupons" edges to the Coupon entity.
-func (pu *PlanUpdate) AddCoupons(c ...*Coupon) *PlanUpdate {
-	ids := make([]uint64, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return pu.AddCouponIDs(ids...)
-}
-
 // Mutation returns the PlanMutation object of the builder.
 func (pu *PlanUpdate) Mutation() *PlanMutation {
 	return pu.mutation
@@ -427,27 +411,6 @@ func (pu *PlanUpdate) RemoveComplexes(p ...*Plan) *PlanUpdate {
 		ids[i] = p[i].ID
 	}
 	return pu.RemoveComplexIDs(ids...)
-}
-
-// ClearCoupons clears all "coupons" edges to the Coupon entity.
-func (pu *PlanUpdate) ClearCoupons() *PlanUpdate {
-	pu.mutation.ClearCoupons()
-	return pu
-}
-
-// RemoveCouponIDs removes the "coupons" edge to Coupon entities by IDs.
-func (pu *PlanUpdate) RemoveCouponIDs(ids ...uint64) *PlanUpdate {
-	pu.mutation.RemoveCouponIDs(ids...)
-	return pu
-}
-
-// RemoveCoupons removes "coupons" edges to Coupon entities.
-func (pu *PlanUpdate) RemoveCoupons(c ...*Coupon) *PlanUpdate {
-	ids := make([]uint64, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return pu.RemoveCouponIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -930,60 +893,6 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if pu.mutation.CouponsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   plan.CouponsTable,
-			Columns: plan.CouponsPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupon.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := pu.mutation.RemovedCouponsIDs(); len(nodes) > 0 && !pu.mutation.CouponsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   plan.CouponsTable,
-			Columns: plan.CouponsPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupon.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := pu.mutation.CouponsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   plan.CouponsTable,
-			Columns: plan.CouponsPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupon.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	_spec.Modifiers = pu.modifiers
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -1327,21 +1236,6 @@ func (puo *PlanUpdateOne) AddComplexes(p ...*Plan) *PlanUpdateOne {
 	return puo.AddComplexIDs(ids...)
 }
 
-// AddCouponIDs adds the "coupons" edge to the Coupon entity by IDs.
-func (puo *PlanUpdateOne) AddCouponIDs(ids ...uint64) *PlanUpdateOne {
-	puo.mutation.AddCouponIDs(ids...)
-	return puo
-}
-
-// AddCoupons adds the "coupons" edges to the Coupon entity.
-func (puo *PlanUpdateOne) AddCoupons(c ...*Coupon) *PlanUpdateOne {
-	ids := make([]uint64, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return puo.AddCouponIDs(ids...)
-}
-
 // Mutation returns the PlanMutation object of the builder.
 func (puo *PlanUpdateOne) Mutation() *PlanMutation {
 	return puo.mutation
@@ -1399,27 +1293,6 @@ func (puo *PlanUpdateOne) RemoveComplexes(p ...*Plan) *PlanUpdateOne {
 		ids[i] = p[i].ID
 	}
 	return puo.RemoveComplexIDs(ids...)
-}
-
-// ClearCoupons clears all "coupons" edges to the Coupon entity.
-func (puo *PlanUpdateOne) ClearCoupons() *PlanUpdateOne {
-	puo.mutation.ClearCoupons()
-	return puo
-}
-
-// RemoveCouponIDs removes the "coupons" edge to Coupon entities by IDs.
-func (puo *PlanUpdateOne) RemoveCouponIDs(ids ...uint64) *PlanUpdateOne {
-	puo.mutation.RemoveCouponIDs(ids...)
-	return puo
-}
-
-// RemoveCoupons removes "coupons" edges to Coupon entities.
-func (puo *PlanUpdateOne) RemoveCoupons(c ...*Coupon) *PlanUpdateOne {
-	ids := make([]uint64, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return puo.RemoveCouponIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1924,60 +1797,6 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: plan.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if puo.mutation.CouponsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   plan.CouponsTable,
-			Columns: plan.CouponsPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupon.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := puo.mutation.RemovedCouponsIDs(); len(nodes) > 0 && !puo.mutation.CouponsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   plan.CouponsTable,
-			Columns: plan.CouponsPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupon.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := puo.mutation.CouponsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   plan.CouponsTable,
-			Columns: plan.CouponsPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupon.FieldID,
 				},
 			},
 		}

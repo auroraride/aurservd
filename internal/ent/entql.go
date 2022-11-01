@@ -479,6 +479,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			coupon.FieldExpiresAt:    {Type: field.TypeTime, Column: coupon.FieldExpiresAt},
 			coupon.FieldUsedAt:       {Type: field.TypeTime, Column: coupon.FieldUsedAt},
 			coupon.FieldDuration:     {Type: field.TypeJSON, Column: coupon.FieldDuration},
+			coupon.FieldPlans:        {Type: field.TypeJSON, Column: coupon.FieldPlans},
+			coupon.FieldCities:       {Type: field.TypeJSON, Column: coupon.FieldCities},
 		},
 	}
 	graph.Nodes[14] = &sqlgraph.Node{
@@ -1992,18 +1994,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Plan",
 	)
 	graph.MustAddE(
-		"coupons",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   city.CouponsTable,
-			Columns: city.CouponsPrimaryKey,
-			Bidi:    false,
-		},
-		"City",
-		"Coupon",
-	)
-	graph.MustAddE(
 		"business",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -2182,30 +2172,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Coupon",
 		"Order",
-	)
-	graph.MustAddE(
-		"cities",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   coupon.CitiesTable,
-			Columns: coupon.CitiesPrimaryKey,
-			Bidi:    false,
-		},
-		"Coupon",
-		"City",
-	)
-	graph.MustAddE(
-		"plans",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   coupon.PlansTable,
-			Columns: coupon.PlansPrimaryKey,
-			Bidi:    false,
-		},
-		"Coupon",
-		"Plan",
 	)
 	graph.MustAddE(
 		"template",
@@ -2974,18 +2940,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Plan",
 		"Plan",
-	)
-	graph.MustAddE(
-		"coupons",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   plan.CouponsTable,
-			Columns: plan.CouponsPrimaryKey,
-			Bidi:    false,
-		},
-		"Plan",
-		"Coupon",
 	)
 	graph.MustAddE(
 		"brand",
@@ -5905,20 +5859,6 @@ func (f *CityFilter) WhereHasPlansWith(preds ...predicate.Plan) {
 	})))
 }
 
-// WhereHasCoupons applies a predicate to check if query has an edge coupons.
-func (f *CityFilter) WhereHasCoupons() {
-	f.Where(entql.HasEdge("coupons"))
-}
-
-// WhereHasCouponsWith applies a predicate to check if query has an edge coupons with a given conditions (other predicates).
-func (f *CityFilter) WhereHasCouponsWith(preds ...predicate.Coupon) {
-	f.Where(entql.HasEdgeWith("coupons", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
 // addPredicate implements the predicateAdder interface.
 func (cq *CommissionQuery) addPredicate(pred func(s *sql.Selector)) {
 	cq.predicates = append(cq.predicates, pred)
@@ -6434,6 +6374,16 @@ func (f *CouponFilter) WhereDuration(p entql.BytesP) {
 	f.Where(p.Field(coupon.FieldDuration))
 }
 
+// WherePlans applies the entql json.RawMessage predicate on the plans field.
+func (f *CouponFilter) WherePlans(p entql.BytesP) {
+	f.Where(p.Field(coupon.FieldPlans))
+}
+
+// WhereCities applies the entql json.RawMessage predicate on the cities field.
+func (f *CouponFilter) WhereCities(p entql.BytesP) {
+	f.Where(p.Field(coupon.FieldCities))
+}
+
 // WhereHasRider applies a predicate to check if query has an edge rider.
 func (f *CouponFilter) WhereHasRider() {
 	f.Where(entql.HasEdge("rider"))
@@ -6498,34 +6448,6 @@ func (f *CouponFilter) WhereHasOrder() {
 // WhereHasOrderWith applies a predicate to check if query has an edge order with a given conditions (other predicates).
 func (f *CouponFilter) WhereHasOrderWith(preds ...predicate.Order) {
 	f.Where(entql.HasEdgeWith("order", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasCities applies a predicate to check if query has an edge cities.
-func (f *CouponFilter) WhereHasCities() {
-	f.Where(entql.HasEdge("cities"))
-}
-
-// WhereHasCitiesWith applies a predicate to check if query has an edge cities with a given conditions (other predicates).
-func (f *CouponFilter) WhereHasCitiesWith(preds ...predicate.City) {
-	f.Where(entql.HasEdgeWith("cities", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasPlans applies a predicate to check if query has an edge plans.
-func (f *CouponFilter) WhereHasPlans() {
-	f.Where(entql.HasEdge("plans"))
-}
-
-// WhereHasPlansWith applies a predicate to check if query has an edge plans with a given conditions (other predicates).
-func (f *CouponFilter) WhereHasPlansWith(preds ...predicate.Plan) {
-	f.Where(entql.HasEdgeWith("plans", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -9747,20 +9669,6 @@ func (f *PlanFilter) WhereHasComplexes() {
 // WhereHasComplexesWith applies a predicate to check if query has an edge complexes with a given conditions (other predicates).
 func (f *PlanFilter) WhereHasComplexesWith(preds ...predicate.Plan) {
 	f.Where(entql.HasEdgeWith("complexes", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasCoupons applies a predicate to check if query has an edge coupons.
-func (f *PlanFilter) WhereHasCoupons() {
-	f.Where(entql.HasEdge("coupons"))
-}
-
-// WhereHasCouponsWith applies a predicate to check if query has an edge coupons with a given conditions (other predicates).
-func (f *PlanFilter) WhereHasCouponsWith(preds ...predicate.Coupon) {
-	f.Where(entql.HasEdgeWith("coupons", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

@@ -80,7 +80,6 @@ func (Plan) Edges() []ent.Edge {
     return []ent.Edge{
         edge.To("cities", City.Type),
         edge.To("complexes", Plan.Type).From("parent").Field("parent_id").Unique(),
-        edge.From("coupons", Coupon.Type).Ref("plans"),
     }
 }
 

@@ -212,12 +212,39 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
             if _, ok := cm[c.TemplateID]; ok {
                 snag.Panic("优惠券无法叠加")
             }
+
+            // 是否限制城市
+            if len(c.Cities) > 0 {
+                cityUseable := false
+                for _, cc := range c.Cities {
+                    if cc.ID == req.CityID {
+                        cityUseable = true
+                    }
+                }
+                if !cityUseable {
+                    snag.Panic("当前城市无法使用")
+                }
+            }
+
+            // 是否限制骑士卡
+            if len(c.Plans) > 0 {
+                planUsable := false
+                for _, cp := range c.Plans {
+                    if cp.ID == req.PlanID {
+                        planUsable = true
+                    }
+                }
+                if !planUsable {
+                    snag.Panic("当前骑士卡无法使用")
+                }
+            }
+
             cm[c.TemplateID] = c.ID
 
             // 累加优惠券金额
             camount += c.Amount
         }
-        if isExclusive && len(req.Coupons) > 0 {
+        if isExclusive && len(req.Coupons) > 1 {
             snag.Panic("所选优惠券互斥")
         }
         price = tools.NewDecimal().Sub(price, camount)
@@ -505,8 +532,12 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 
         // 更新积分
         if trade.Points > 0 {
+            // 赠送积分
+            gift, proportion := NewPoint().CalculateGift(trade.Amount, trade.CityID)
+
             var r *ent.Rider
-            r, err = tx.Rider.UpdateOneID(trade.RiderID).AddPoints(-trade.Points).Save(s.ctx)
+            r, err = tx.Rider.UpdateOneID(trade.RiderID).AddPoints(-trade.Points + gift).Save(s.ctx)
+            before := r.Points
             if err != nil {
                 log.Errorf("[ORDER PAID POINT UPDATE %s ERROR]: %s", trade.OutTradeNo, err.Error())
                 return
@@ -517,16 +548,32 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
                 SetRiderID(trade.RiderID).
                 SetReason("订阅骑士卡").
                 SetType(model.PointLogTypeConsume.Value()).
-                SetAfter(r.Points).
+                SetAfter(before - trade.Points).
                 SetAttach(&model.PointLogAttach{Plan: trade.Plan}).
                 SetOrder(o).
                 Exec(s.ctx)
             if err != nil {
                 log.Errorf("[ORDER PAID POINT LOG %s ERROR]: %s", trade.OutTradeNo, err.Error())
-                return
             }
 
             NewPoint().RemovePreConsume(r, trade.Points)
+
+            // 存储赠送积分
+            err = tx.PointLog.Create().
+                SetPoints(gift).
+                SetRiderID(trade.RiderID).
+                SetReason("消费赠送").
+                SetType(model.PointLogTypeAward.Value()).
+                SetAfter(r.Points).
+                SetAttach(&model.PointLogAttach{PointGift: &model.PointGift{
+                    Amount:     trade.Amount,
+                    Proportion: proportion,
+                }}).
+                SetOrder(o).
+                Exec(s.ctx)
+            if err != nil {
+                log.Errorf("[ORDER PAID POINT GIFT %s ERROR]: %s", trade.OutTradeNo, err.Error())
+            }
         }
 
         // 如果有押金, 创建押金订单

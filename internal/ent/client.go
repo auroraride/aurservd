@@ -2189,22 +2189,6 @@ func (c *CityClient) QueryPlans(ci *City) *PlanQuery {
 	return query
 }
 
-// QueryCoupons queries the coupons edge of a City.
-func (c *CityClient) QueryCoupons(ci *City) *CouponQuery {
-	query := &CouponQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := ci.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(city.Table, city.FieldID, id),
-			sqlgraph.To(coupon.Table, coupon.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, city.CouponsTable, city.CouponsPrimaryKey...),
-		)
-		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // Hooks returns the client hooks.
 func (c *CityClient) Hooks() []Hook {
 	hooks := c.hooks.City
@@ -2711,38 +2695,6 @@ func (c *CouponClient) QueryOrder(co *Coupon) *OrderQuery {
 			sqlgraph.From(coupon.Table, coupon.FieldID, id),
 			sqlgraph.To(order.Table, order.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, coupon.OrderTable, coupon.OrderColumn),
-		)
-		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryCities queries the cities edge of a Coupon.
-func (c *CouponClient) QueryCities(co *Coupon) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := co.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(coupon.Table, coupon.FieldID, id),
-			sqlgraph.To(city.Table, city.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, coupon.CitiesTable, coupon.CitiesPrimaryKey...),
-		)
-		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryPlans queries the plans edge of a Coupon.
-func (c *CouponClient) QueryPlans(co *Coupon) *PlanQuery {
-	query := &PlanQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := co.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(coupon.Table, coupon.FieldID, id),
-			sqlgraph.To(plan.Table, plan.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, coupon.PlansTable, coupon.PlansPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
 		return fromV, nil
@@ -5677,22 +5629,6 @@ func (c *PlanClient) QueryComplexes(pl *Plan) *PlanQuery {
 			sqlgraph.From(plan.Table, plan.FieldID, id),
 			sqlgraph.To(plan.Table, plan.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, plan.ComplexesTable, plan.ComplexesColumn),
-		)
-		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryCoupons queries the coupons edge of a Plan.
-func (c *PlanClient) QueryCoupons(pl *Plan) *CouponQuery {
-	query := &CouponQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := pl.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(plan.Table, plan.FieldID, id),
-			sqlgraph.To(coupon.Table, coupon.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, plan.CouponsTable, plan.CouponsPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
 		return fromV, nil

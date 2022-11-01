@@ -15,6 +15,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/golang-module/carbon/v2"
+    "math"
     "time"
 )
 
@@ -34,31 +35,10 @@ func NewPoint() *pointService {
     }
 }
 
-func NewPointWithRider(r *ent.Rider) *pointService {
-    s := NewPoint()
-    s.ctx = context.WithValue(s.ctx, "rider", r)
-    s.rider = r
-    return s
-}
-
 func NewPointWithModifier(m *model.Modifier) *pointService {
     s := NewPoint()
     s.ctx = context.WithValue(s.ctx, "modifier", m)
     s.modifier = m
-    return s
-}
-
-func NewPointWithEmployee(e *ent.Employee) *pointService {
-    s := NewPoint()
-    if e != nil {
-        s.employee = e
-        s.employeeInfo = &model.Employee{
-            ID:    e.ID,
-            Name:  e.Name,
-            Phone: e.Phone,
-        }
-        s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
-    }
     return s
 }
 
@@ -192,4 +172,23 @@ func (s *pointService) Detail(r *ent.Rider) model.PointRes {
         Points: points,
         Locked: x,
     }
+}
+
+// CalculateGift 计算赠送积分
+func (s *pointService) CalculateGift(amount float64, cityID uint64) (points int64, proportion float64) {
+    arr, err := GetSetting[[]model.SettingConsumePoint](model.SettingConsumePoints)
+    if err != nil {
+        return
+    }
+    for _, set := range arr {
+        if set.CityID == cityID {
+            proportion = set.Proportion
+            points = int64(math.Round(proportion * amount))
+            if points < 0 {
+                points = 0
+            }
+            return
+        }
+    }
+    return
 }

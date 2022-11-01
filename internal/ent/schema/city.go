@@ -71,7 +71,6 @@ func (City) Edges() []ent.Edge {
         edge.To("children", City.Type).From("parent").Field("parent_id").Unique(),
 
         edge.From("plans", Plan.Type).Ref("cities"),
-        edge.From("coupons", Coupon.Type).Ref("cities"),
     }
 }
 

@@ -1173,6 +1173,34 @@ func UsedAtNotNil() predicate.Coupon {
 	})
 }
 
+// PlansIsNil applies the IsNil predicate on the "plans" field.
+func PlansIsNil() predicate.Coupon {
+	return predicate.Coupon(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldPlans)))
+	})
+}
+
+// PlansNotNil applies the NotNil predicate on the "plans" field.
+func PlansNotNil() predicate.Coupon {
+	return predicate.Coupon(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldPlans)))
+	})
+}
+
+// CitiesIsNil applies the IsNil predicate on the "cities" field.
+func CitiesIsNil() predicate.Coupon {
+	return predicate.Coupon(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldCities)))
+	})
+}
+
+// CitiesNotNil applies the NotNil predicate on the "cities" field.
+func CitiesNotNil() predicate.Coupon {
+	return predicate.Coupon(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldCities)))
+	})
+}
+
 // HasRider applies the HasEdge predicate on the "rider" edge.
 func HasRider() predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
@@ -1304,62 +1332,6 @@ func HasOrderWith(preds ...predicate.Order) predicate.Coupon {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(OrderInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, OrderTable, OrderColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasCities applies the HasEdge predicate on the "cities" edge.
-func HasCities() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CitiesTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, CitiesTable, CitiesPrimaryKey...),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasCitiesWith applies the HasEdge predicate on the "cities" edge with a given conditions (other predicates).
-func HasCitiesWith(preds ...predicate.City) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CitiesInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, CitiesTable, CitiesPrimaryKey...),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasPlans applies the HasEdge predicate on the "plans" edge.
-func HasPlans() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PlansTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, PlansTable, PlansPrimaryKey...),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasPlansWith applies the HasEdge predicate on the "plans" edge with a given conditions (other predicates).
-func HasPlansWith(preds ...predicate.Plan) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PlansInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, PlansTable, PlansPrimaryKey...),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

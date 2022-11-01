@@ -61,20 +61,6 @@ func NewCouponWithModifier(m *model.Modifier) *couponService {
     return s
 }
 
-func NewCouponWithEmployee(e *ent.Employee) *couponService {
-    s := NewCoupon()
-    if e != nil {
-        s.employee = e
-        s.employeeInfo = &model.Employee{
-            ID:    e.ID,
-            Name:  e.Name,
-            Phone: e.Phone,
-        }
-        s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
-    }
-    return s
-}
-
 func (s *couponService) Query(id uint64) (*ent.Coupon, error) {
     return s.orm.Query().Where(coupon.ID(id)).First(s.ctx)
 }
@@ -174,7 +160,9 @@ func (s *couponService) Generate(req *model.CouponGenerateReq) (phones []string)
                 SetNillableExpiresAt(expiresAt).
                 SetDuration(ct.Meta.CouponDuration).
                 SetRemark(req.Remark).
-                SetAssembly(as)
+                SetAssembly(as).
+                SetPlans(ct.Meta.Plans).
+                SetCities(ct.Meta.Cities)
             if toRider {
                 bulk[i].SetRiderID(ids[i])
             }
@@ -269,7 +257,7 @@ func (s *couponService) List(req *model.CouponListReq) *model.PaginationRes {
             cities = append(cities, mc.Name)
         }
         for _, mp := range ea.Meta.Plans {
-            plans = append(plans, mp.Name)
+            plans = append(plans, fmt.Sprintf("%s - %d天", mp.Name, mp.Days))
         }
         // 骑手
         er := item.Edges.Rider

@@ -104,7 +104,10 @@ type PlanListRes struct {
 type PlanListRiderReq struct {
     Type   PlanType `json:"type" query:"type" validate:"required,enum" trans:"骑士卡类别"` // 1:单电 2:车电
     CityID uint64   `json:"cityId" query:"cityId" validate:"required" trans:"城市ID"`
-    Min    uint     `json:"min" swaggerignore:"true"` // 最小天数
+
+    Min          uint    `json:"min" swaggerignore:"true"`          // 最小天数
+    Model        string  `json:"model" swaggerignore:"true"`        // 电池型号
+    EbikeBrandID *uint64 `json:"ebikeBrandId" swaggerignore:"true"` // 电车型号
 }
 
 // RiderPlanItem 骑士返回数据
@@ -122,14 +125,6 @@ type RiderPlanListRes struct {
     Model   string          `json:"model"`   // 电池型号
     Plans   []RiderPlanItem `json:"plans"`   // 套餐列表
     Deposit float64         `json:"deposit"` // 需缴纳押金
-}
-
-type RiderPlanRenewalRes struct {
-    Items   []RiderPlanItem `json:"items"`             // 骑士卡列表
-    Overdue bool            `json:"overdue"`           // 是否需要支付逾期费用
-    Days    uint            `json:"days,omitempty"`    // 逾期天数, 可能为空
-    Fee     float64         `json:"fee,omitempty"`     // 逾期费用, 可能为空
-    Formula string          `json:"formula,omitempty"` // 逾期费用计算公式, 可能为空
 }
 
 // // PlanItem 单项骑士卡详情(用做订单备份)
@@ -180,6 +175,15 @@ type PlanEbikeBrandOption struct {
     Children *PlanModelOptions `json:"children"`        // 子项
     Name     string            `json:"name"`            // 名称
     Cover    string            `json:"cover,omitempty"` // 封面图
+}
+
+type RiderPlanRenewalRes struct {
+    Items     []RiderPlanItem   `json:"items"`               // 骑士卡列表
+    Overdue   bool              `json:"overdue"`             // 是否需要支付逾期费用
+    Days      uint              `json:"days,omitempty"`      // 逾期天数, 可能为空
+    Fee       float64           `json:"fee,omitempty"`       // 逾期费用, 可能为空
+    Formula   string            `json:"formula,omitempty"`   // 逾期费用计算公式, 可能为空
+    Configure *PaymentConfigure `json:"configure,omitempty"` // 支付配置
 }
 
 type PlanNewlyRes struct {

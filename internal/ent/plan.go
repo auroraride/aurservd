@@ -76,11 +76,9 @@ type PlanEdges struct {
 	Parent *Plan `json:"parent,omitempty"`
 	// Complexes holds the value of the complexes edge.
 	Complexes []*Plan `json:"complexes,omitempty"`
-	// Coupons holds the value of the coupons edge.
-	Coupons []*Coupon `json:"coupons,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [4]bool
 }
 
 // BrandOrErr returns the Brand value or an error if the edge
@@ -125,15 +123,6 @@ func (e PlanEdges) ComplexesOrErr() ([]*Plan, error) {
 		return e.Complexes, nil
 	}
 	return nil, &NotLoadedError{edge: "complexes"}
-}
-
-// CouponsOrErr returns the Coupons value or an error if the edge
-// was not loaded in eager-loading.
-func (e PlanEdges) CouponsOrErr() ([]*Coupon, error) {
-	if e.loadedTypes[4] {
-		return e.Coupons, nil
-	}
-	return nil, &NotLoadedError{edge: "coupons"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -332,11 +321,6 @@ func (pl *Plan) QueryParent() *PlanQuery {
 // QueryComplexes queries the "complexes" edge of the Plan entity.
 func (pl *Plan) QueryComplexes() *PlanQuery {
 	return (&PlanClient{config: pl.config}).QueryComplexes(pl)
-}
-
-// QueryCoupons queries the "coupons" edge of the Plan entity.
-func (pl *Plan) QueryCoupons() *CouponQuery {
-	return (&PlanClient{config: pl.config}).QueryCoupons(pl)
 }
 
 // Update returns a builder for updating this Plan.

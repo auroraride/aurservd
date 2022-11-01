@@ -528,9 +528,7 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
         updater := tx.Subscribe.UpdateOneID(sub.ID).
             SetStatus(model.SubscribeStatusUsing).
             SetStartAt(time.Now()).
-            SetNillableEmployeeID(s.employeeID).
-            SetNillableStoreID(s.storeID).
-            SetNillableCabinetID(s.cabinetID).
+            UpdateTarget(s.cabinetID, s.storeID, s.employeeID).
             SetNillableAgentEndAt(aend).
             SetNeedContract(false)
 
@@ -615,7 +613,7 @@ func (s *businessRiderService) UnSubscribe(subscribeID uint64, fns ...func(sub *
         // 更新电车
         if sub.EbikeID != nil {
             // 删除电车所属
-            err = tx.Ebike.UpdateOneID(*sub.EbikeID).ClearRiderID().SetStatus(model.EbikeStatusInStock).Exec(s.ctx)
+            err = tx.Ebike.UpdateOneID(*sub.EbikeID).ClearRiderID().SetStatus(model.EbikeStatusInStock).SetNillableStoreID(s.storeID).Exec(s.ctx)
         }
     })
 

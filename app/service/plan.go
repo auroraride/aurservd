@@ -376,7 +376,7 @@ func (s *planService) Renewal(req *model.PlanListRiderReq) map[string]*[]model.R
     rmap := make(map[string]*[]model.RiderPlanItem)
     today := carbon.Now().StartOfDay().Carbon2Time()
 
-    items := s.orm.QueryNotDeleted().
+    q := s.orm.QueryNotDeleted().
         Where(
             plan.Enable(true),
             plan.StartLTE(today),
@@ -385,9 +385,15 @@ func (s *planService) Renewal(req *model.PlanListRiderReq) map[string]*[]model.R
             plan.HasCitiesWith(
                 city.ID(req.CityID),
             ),
+            plan.Model(req.Model),
         ).
-        Order(ent.Asc(plan.FieldDays)).
-        AllX(s.ctx)
+        Order(ent.Asc(plan.FieldDays))
+
+    if req.EbikeBrandID != nil {
+        q.Where(plan.BrandID(*req.EbikeBrandID))
+    }
+
+    items := q.AllX(s.ctx)
 
     for _, item := range items {
         key := s.renewalMapKey(item.Model, item.BrandID)
@@ -441,7 +447,6 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
             plan.Enable(true),
             plan.StartLTE(today),
             plan.EndGTE(today),
-            plan.DaysGTE(req.Min),
             plan.HasCitiesWith(
                 city.ID(req.CityID),
             ),
@@ -561,8 +566,10 @@ func (s *planService) RiderListRenewal() model.RiderPlanRenewalRes {
     }
 
     rmap := s.Renewal(&model.PlanListRiderReq{
-        CityID: sub.CityID,
-        Min:    min,
+        CityID:       sub.CityID,
+        Min:          min,
+        Model:        sub.Model,
+        EbikeBrandID: sub.BrandID,
     })
 
     items := make([]model.RiderPlanItem, 0)
@@ -574,11 +581,12 @@ func (s *planService) RiderListRenewal() model.RiderPlanRenewalRes {
     }
 
     return model.RiderPlanRenewalRes{
-        Overdue: sub.Remaining < 0,
-        Fee:     fee,
-        Formula: formula,
-        Days:    min,
-        Items:   items,
+        Overdue:   sub.Remaining < 0,
+        Fee:       fee,
+        Formula:   formula,
+        Days:      min,
+        Items:     items,
+        Configure: NewPayment(s.rider).Configure(),
     }
 }
 

@@ -37,7 +37,8 @@ func (t PointLogType) String() string {
 }
 
 type PointLogAttach struct {
-    Plan *Plan `json:"plan,omitempty"`
+    Plan      *Plan      `json:"plan,omitempty"`
+    PointGift *PointGift `json:"pointGift,omitempty"`
 }
 
 type PointModifyReq struct {
@@ -70,4 +71,9 @@ type PointBatchReq struct {
     Points int64        `json:"points" validate:"required" trans:"积分"`
     Reason string       `json:"reason" validate:"required" trans:"原因"`
     Type   PointLogType `json:"type" validate:"required,enum" trans:"类别" enums:"1,2"` // 1:消费 2:奖励
+}
+
+type PointGift struct {
+    Amount     float64 `json:"amount"`     // 消费金额
+    Proportion float64 `json:"proportion"` // 赠送比例
 }

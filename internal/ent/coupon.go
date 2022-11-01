@@ -59,6 +59,10 @@ type Coupon struct {
 	UsedAt *time.Time `json:"used_at,omitempty"`
 	// 有效期规则
 	Duration *model.CouponDuration `json:"duration,omitempty"`
+	// 可用骑士卡
+	Plans []model.Plan `json:"plans,omitempty"`
+	// 可用城市
+	Cities []model.City `json:"cities,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CouponQuery when eager-loading is set.
 	Edges CouponEdges `json:"edges"`
@@ -76,13 +80,9 @@ type CouponEdges struct {
 	Template *CouponTemplate `json:"template,omitempty"`
 	// Order holds the value of the order edge.
 	Order *Order `json:"order,omitempty"`
-	// Cities holds the value of the cities edge.
-	Cities []*City `json:"cities,omitempty"`
-	// Plans holds the value of the plans edge.
-	Plans []*Plan `json:"plans,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [7]bool
+	loadedTypes [5]bool
 }
 
 // RiderOrErr returns the Rider value or an error if the edge
@@ -150,30 +150,12 @@ func (e CouponEdges) OrderOrErr() (*Order, error) {
 	return nil, &NotLoadedError{edge: "order"}
 }
 
-// CitiesOrErr returns the Cities value or an error if the edge
-// was not loaded in eager-loading.
-func (e CouponEdges) CitiesOrErr() ([]*City, error) {
-	if e.loadedTypes[5] {
-		return e.Cities, nil
-	}
-	return nil, &NotLoadedError{edge: "cities"}
-}
-
-// PlansOrErr returns the Plans value or an error if the edge
-// was not loaded in eager-loading.
-func (e CouponEdges) PlansOrErr() ([]*Plan, error) {
-	if e.loadedTypes[6] {
-		return e.Plans, nil
-	}
-	return nil, &NotLoadedError{edge: "plans"}
-}
-
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Coupon) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case coupon.FieldCreator, coupon.FieldLastModifier, coupon.FieldDuration:
+		case coupon.FieldCreator, coupon.FieldLastModifier, coupon.FieldDuration, coupon.FieldPlans, coupon.FieldCities:
 			values[i] = new([]byte)
 		case coupon.FieldMultiple:
 			values[i] = new(sql.NullBool)
@@ -324,6 +306,22 @@ func (c *Coupon) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field duration: %w", err)
 				}
 			}
+		case coupon.FieldPlans:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field plans", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &c.Plans); err != nil {
+					return fmt.Errorf("unmarshal field plans: %w", err)
+				}
+			}
+		case coupon.FieldCities:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field cities", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &c.Cities); err != nil {
+					return fmt.Errorf("unmarshal field cities: %w", err)
+				}
+			}
 		}
 	}
 	return nil
@@ -352,16 +350,6 @@ func (c *Coupon) QueryTemplate() *CouponTemplateQuery {
 // QueryOrder queries the "order" edge of the Coupon entity.
 func (c *Coupon) QueryOrder() *OrderQuery {
 	return (&CouponClient{config: c.config}).QueryOrder(c)
-}
-
-// QueryCities queries the "cities" edge of the Coupon entity.
-func (c *Coupon) QueryCities() *CityQuery {
-	return (&CouponClient{config: c.config}).QueryCities(c)
-}
-
-// QueryPlans queries the "plans" edge of the Coupon entity.
-func (c *Coupon) QueryPlans() *PlanQuery {
-	return (&CouponClient{config: c.config}).QueryPlans(c)
 }
 
 // Update returns a builder for updating this Coupon.
@@ -448,6 +436,12 @@ func (c *Coupon) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("duration=")
 	builder.WriteString(fmt.Sprintf("%v", c.Duration))
+	builder.WriteString(", ")
+	builder.WriteString("plans=")
+	builder.WriteString(fmt.Sprintf("%v", c.Plans))
+	builder.WriteString(", ")
+	builder.WriteString("cities=")
+	builder.WriteString(fmt.Sprintf("%v", c.Cities))
 	builder.WriteByte(')')
 	return builder.String()
 }

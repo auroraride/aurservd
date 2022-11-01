@@ -23,6 +23,7 @@ const (
     SettingPlanEbikeDescription   = "PLAN_EBIKE_DESCRIPTION"   // 车电订阅介绍
     SettingQuestions              = "QUESTION"                 // 常见问题
     SettingAppVersion             = "APP_VERSION"              // App版本
+    SettingConsumePoints          = "CONSUME_POINTS"           // 消费赠送积分
 )
 
 type SettingValueConvert func(content string) any
@@ -47,6 +48,35 @@ type SettingRes struct {
     Key     string `json:"key"`     // 设置项
     Content string `json:"content"` // 设置值
     Desc    string `json:"desc"`    // 描述
+}
+
+type SettingRiderApp struct {
+    AssistanceFee   float64 `json:"assistanceFee"`   // 救援费用
+    ReserveDuration int     `json:"reserveDuration"` // 预约最长时间(分钟)
+}
+
+type SettingPlanDescription struct {
+    Banner    string `json:"banner"`    // banner图
+    Product   string `json:"product"`   // 商品介绍
+    Pickup    string `json:"pickup"`    // 提货方式
+    Attention string `json:"attention"` // 注意事项
+}
+
+type SettingQuestion struct {
+    Question string `json:"question"` // 问题
+    Answer   string `json:"answer"`   // 解答
+}
+
+type SettingAppVersionValue struct {
+    Version     string `json:"version"`
+    Description string `json:"description"`
+    Link        string `json:"link"`
+    Enable      bool   `json:"enable"`
+}
+
+type SettingConsumePoint struct {
+    CityID     uint64  `json:"cityId"`     // 城市ID
+    Proportion float64 `json:"proportion"` // 赠送比例
 }
 
 var Settings = map[string]SettingItem{
@@ -122,28 +152,8 @@ var Settings = map[string]SettingItem{
         Desc:    "App版本",
         Default: map[string]SettingAppVersionValue{},
     },
-}
-
-type SettingRiderApp struct {
-    AssistanceFee   float64 `json:"assistanceFee"`   // 救援费用
-    ReserveDuration int     `json:"reserveDuration"` // 预约最长时间(分钟)
-}
-
-type SettingPlanDescription struct {
-    Banner    string `json:"banner"`    // banner图
-    Product   string `json:"product"`   // 商品介绍
-    Pickup    string `json:"pickup"`    // 提货方式
-    Attention string `json:"attention"` // 注意事项
-}
-
-type SettingQuestion struct {
-    Question string `json:"question"` // 问题
-    Answer   string `json:"answer"`   // 解答
-}
-
-type SettingAppVersionValue struct {
-    Version     string `json:"version"`
-    Description string `json:"description"`
-    Link        string `json:"link"`
-    Enable      bool   `json:"enable"`
+    SettingConsumePoints: {
+        Desc:    "消费赠送积分",
+        Default: []SettingConsumePoint{},
+    },
 }

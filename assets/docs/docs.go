@@ -11683,6 +11683,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/business/subscribe/signed/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R7010 长连接轮询是否已签约",
+                "operationId": "RiderBusinessSubscribeSigned",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "订阅ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.SubscribeSigned"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/business/unsubscribe": {
             "post": {
                 "consumes": [
@@ -16536,6 +16575,13 @@ const docTemplate = `{
                     "description": "类型标识",
                     "type": "string"
                 },
+                "cities": {
+                    "description": "可用城市, 不存在此字段则不限制",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.City"
+                    }
+                },
                 "code": {
                     "description": "券码",
                     "type": "string"
@@ -16554,6 +16600,13 @@ const docTemplate = `{
                 "name": {
                     "description": "名称",
                     "type": "string"
+                },
+                "plans": {
+                    "description": "可用骑士卡, 不存在此字段则不限制",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Plan"
+                    }
                 },
                 "useable": {
                     "description": "是否可使用",
@@ -20363,6 +20416,14 @@ const docTemplate = `{
         "model.RiderPlanRenewalRes": {
             "type": "object",
             "properties": {
+                "configure": {
+                    "description": "支付配置",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PaymentConfigure"
+                        }
+                    ]
+                },
                 "days": {
                     "description": "逾期天数, 可能为空",
                     "type": "integer"
@@ -21576,12 +21637,12 @@ const docTemplate = `{
                     "description": "网点 ",
                     "type": "integer"
                 },
-                "ebikeRepair": {
-                    "description": "是否可以维修车辆",
+                "ebikeObtain": {
+                    "description": "是否可以领取车辆",
                     "type": "boolean"
                 },
-                "ebikeeObtain": {
-                    "description": "是否可以领取车辆",
+                "ebikeRepair": {
+                    "description": "是否可以维修车辆",
                     "type": "boolean"
                 },
                 "materials": {
@@ -21625,12 +21686,12 @@ const docTemplate = `{
                         }
                     ]
                 },
-                "ebikeRepair": {
-                    "description": "是否可以维修车辆",
+                "ebikeObtain": {
+                    "description": "是否可以领取车辆",
                     "type": "boolean"
                 },
-                "ebikeeObtain": {
-                    "description": "是否可以领取车辆",
+                "ebikeRepair": {
+                    "description": "是否可以维修车辆",
                     "type": "boolean"
                 },
                 "employee": {
@@ -21683,12 +21744,12 @@ const docTemplate = `{
                     "description": "网点 ",
                     "type": "integer"
                 },
-                "ebikeRepair": {
-                    "description": "是否可以维修车辆",
+                "ebikeObtain": {
+                    "description": "是否可以领取车辆",
                     "type": "boolean"
                 },
-                "ebikeeObtain": {
-                    "description": "是否可以领取车辆",
+                "ebikeRepair": {
+                    "description": "是否可以维修车辆",
                     "type": "boolean"
                 },
                 "name": {
@@ -22038,6 +22099,20 @@ const docTemplate = `{
                 "total": {
                     "description": "总支付金额, 总金额为 amount + deposit",
                     "type": "number"
+                }
+            }
+        },
+        "model.SubscribeSigned": {
+            "type": "object",
+            "properties": {
+                "signed": {
+                    "description": "签约状态, 0:无签约信息(直接弹窗提示用户\"未找到签约信息\"并返回首页) 1:签署中(继续轮询) 2:签约成功(弹出扫码)",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ]
                 }
             }
         },

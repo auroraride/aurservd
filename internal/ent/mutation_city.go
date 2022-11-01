@@ -44,9 +44,6 @@ type CityMutation struct {
 	plans           map[uint64]struct{}
 	removedplans    map[uint64]struct{}
 	clearedplans    bool
-	coupons         map[uint64]struct{}
-	removedcoupons  map[uint64]struct{}
-	clearedcoupons  bool
 	done            bool
 	oldValue        func(context.Context) (*City, error)
 	predicates      []predicate.City
@@ -868,60 +865,6 @@ func (m *CityMutation) ResetPlans() {
 	m.removedplans = nil
 }
 
-// AddCouponIDs adds the "coupons" edge to the Coupon entity by ids.
-func (m *CityMutation) AddCouponIDs(ids ...uint64) {
-	if m.coupons == nil {
-		m.coupons = make(map[uint64]struct{})
-	}
-	for i := range ids {
-		m.coupons[ids[i]] = struct{}{}
-	}
-}
-
-// ClearCoupons clears the "coupons" edge to the Coupon entity.
-func (m *CityMutation) ClearCoupons() {
-	m.clearedcoupons = true
-}
-
-// CouponsCleared reports if the "coupons" edge to the Coupon entity was cleared.
-func (m *CityMutation) CouponsCleared() bool {
-	return m.clearedcoupons
-}
-
-// RemoveCouponIDs removes the "coupons" edge to the Coupon entity by IDs.
-func (m *CityMutation) RemoveCouponIDs(ids ...uint64) {
-	if m.removedcoupons == nil {
-		m.removedcoupons = make(map[uint64]struct{})
-	}
-	for i := range ids {
-		delete(m.coupons, ids[i])
-		m.removedcoupons[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedCoupons returns the removed IDs of the "coupons" edge to the Coupon entity.
-func (m *CityMutation) RemovedCouponsIDs() (ids []uint64) {
-	for id := range m.removedcoupons {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// CouponsIDs returns the "coupons" edge IDs in the mutation.
-func (m *CityMutation) CouponsIDs() (ids []uint64) {
-	for id := range m.coupons {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetCoupons resets all changes to the "coupons" edge.
-func (m *CityMutation) ResetCoupons() {
-	m.coupons = nil
-	m.clearedcoupons = false
-	m.removedcoupons = nil
-}
-
 // Where appends a list predicates to the CityMutation builder.
 func (m *CityMutation) Where(ps ...predicate.City) {
 	m.predicates = append(m.predicates, ps...)
@@ -1305,7 +1248,7 @@ func (m *CityMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CityMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	if m.parent != nil {
 		edges = append(edges, city.EdgeParent)
 	}
@@ -1314,9 +1257,6 @@ func (m *CityMutation) AddedEdges() []string {
 	}
 	if m.plans != nil {
 		edges = append(edges, city.EdgePlans)
-	}
-	if m.coupons != nil {
-		edges = append(edges, city.EdgeCoupons)
 	}
 	return edges
 }
@@ -1341,27 +1281,18 @@ func (m *CityMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case city.EdgeCoupons:
-		ids := make([]ent.Value, 0, len(m.coupons))
-		for id := range m.coupons {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CityMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	if m.removedchildren != nil {
 		edges = append(edges, city.EdgeChildren)
 	}
 	if m.removedplans != nil {
 		edges = append(edges, city.EdgePlans)
-	}
-	if m.removedcoupons != nil {
-		edges = append(edges, city.EdgeCoupons)
 	}
 	return edges
 }
@@ -1382,19 +1313,13 @@ func (m *CityMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case city.EdgeCoupons:
-		ids := make([]ent.Value, 0, len(m.removedcoupons))
-		for id := range m.removedcoupons {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CityMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	if m.clearedparent {
 		edges = append(edges, city.EdgeParent)
 	}
@@ -1403,9 +1328,6 @@ func (m *CityMutation) ClearedEdges() []string {
 	}
 	if m.clearedplans {
 		edges = append(edges, city.EdgePlans)
-	}
-	if m.clearedcoupons {
-		edges = append(edges, city.EdgeCoupons)
 	}
 	return edges
 }
@@ -1420,8 +1342,6 @@ func (m *CityMutation) EdgeCleared(name string) bool {
 		return m.clearedchildren
 	case city.EdgePlans:
 		return m.clearedplans
-	case city.EdgeCoupons:
-		return m.clearedcoupons
 	}
 	return false
 }
@@ -1449,9 +1369,6 @@ func (m *CityMutation) ResetEdge(name string) error {
 		return nil
 	case city.EdgePlans:
 		m.ResetPlans()
-		return nil
-	case city.EdgeCoupons:
-		m.ResetCoupons()
 		return nil
 	}
 	return fmt.Errorf("unknown City edge %s", name)

@@ -24,5 +24,5 @@ func RandomIntMaxMin(min, max int) int {
 func RandTokenString() string {
     b := make([]byte, 128)
     rand.Read(b)
-    return b64.URLEncoding.EncodeToString(b)
+    return b64.RawURLEncoding.EncodeToString(b)
 }

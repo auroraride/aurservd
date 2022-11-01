@@ -130,3 +130,18 @@ func (*business) Allocated(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.IDParamReq](c)
     return ctx.SendResponse(service.NewAllocate().LoopStatus(ctx.Rider.ID, req.ID))
 }
+
+// SubscribeSigned
+// @ID           RiderBusinessSubscribeSigned
+// @Router       /rider/v1/business/subscribe/signed/{id} [GET]
+// @Summary      R7010 长连接轮询是否已签约
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token header string true "骑手校验token"
+// @Param        id path uint64 true "订阅ID"
+// @Success      200 {object} model.SubscribeSigned "请求成功"
+func (*business) SubscribeSigned(c echo.Context) (err error) {
+    ctx, req := app.RiderContextAndBinding[model.IDParamReq](c)
+    return ctx.SendResponse(service.NewSubscribe().Signed(ctx.Rider.ID, req.ID))
+}

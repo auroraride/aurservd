@@ -295,6 +295,9 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
 
     // 检查是否需要签约
     if NewSubscribe().NeedContract(s.subscribe) {
+        // 查询分配信息是否存在, 如果存在则删除
+        NewAllocate().SubscribeDeleteIfExists(s.subscribe.ID)
+
         // 存储分配信息
         err := ent.Database.Allocate.Create().
             SetType(allocate.TypeBattery).
@@ -305,8 +308,6 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
             SetModel(s.subscribe.Model).
             SetCabinetID(s.cabinet.ID).
             SetRemark("用户自主扫码").
-            OnConflictColumns(allocate.FieldSubscribeID).
-            UpdateNewValues().
             Exec(s.ctx)
         if err != nil {
             snag.Panic("请求失败")
