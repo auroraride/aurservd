@@ -51,10 +51,10 @@ func contractStatus() *cobra.Command {
         Short: "修复签约状态",
         Run: func(_ *cobra.Command, _ []string) {
             ctx := context.Background()
-            items, _ := ent.Database.Contract.QueryNotDeleted().WithRider().Where(contract.Or(
+            items, _ := ent.Database.Contract.QueryNotDeleted().WithRider().Where(
                 contract.SignedAtIsNil(),
                 contract.ExpiresAtIsNil(),
-            )).All(ctx)
+            ).All(ctx)
             log.Printf("即将查询 %d 条结果", len(items))
             s := esign.New()
             for _, item := range items {

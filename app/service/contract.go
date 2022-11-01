@@ -450,22 +450,29 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
 }
 
 func (s *contractService) checkResult(flowID string) {
-    ticker := time.NewTicker(5 * time.Second)
+    ticker := time.NewTicker(10 * time.Second)
     defer ticker.Stop()
 
     start := time.Now()
     for {
         select {
         case t := <-ticker.C:
-            // 签署是否过期
-            isExpired := t.Sub(start).Minutes() > model.ContractExpiration
-            stop, _ := s.doResult(flowID, isExpired)
-            if stop {
+            // 获取合同
+            c, _ := s.orm.Query().Where(contract.FlowID(flowID)).WithRider().First(s.ctx)
+
+            // 如果合同状态不是签署中, 直接结束
+            if c.Status != model.ContractStatusSigning.Value() {
                 ticker.Stop()
                 return
             }
+
+            // 签署是否过期
+            isExpired := t.Sub(start).Minutes() > model.ContractExpiration+1
+            // 如果已过期, 直接结束
             if isExpired {
+                _ = c.Update().SetStatus(model.ContractStatusExpired.Value()).Exec(s.ctx)
                 ticker.Stop()
+                return
             }
         }
     }
