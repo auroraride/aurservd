@@ -155,6 +155,7 @@ type PlanDaysPriceOption struct {
     Days          uint    `json:"days"`          // 天数
     Original      float64 `json:"original"`      // 原价
     DiscountNewly float64 `json:"discountNewly"` // 新签优惠
+    HasEbike      bool    `json:"hasEbike"`      // 是否包含电车
 }
 
 type PlanModelOptions []*PlanModelOption

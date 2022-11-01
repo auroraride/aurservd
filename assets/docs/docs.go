@@ -19153,6 +19153,10 @@ const docTemplate = `{
                     "description": "新签优惠",
                     "type": "number"
                 },
+                "hasEbike": {
+                    "description": "是否包含电车",
+                    "type": "boolean"
+                },
                 "id": {
                     "type": "integer"
                 },

@@ -457,6 +457,7 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
         AllX(s.ctx)
 
     mmap := make(map[string]*model.PlanModelOption)
+
     bmap := make(map[uint64]*model.PlanEbikeBrandOption)
 
     serv := NewPlanIntroduce()
@@ -487,6 +488,7 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
             Days:          item.Days,
             Original:      item.Original,
             DiscountNewly: item.DiscountNewly,
+            HasEbike:      item.BrandID != nil,
         })
 
         if item.BrandID != nil {
@@ -535,7 +537,15 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
     }
 
     for _, m := range mmap {
-        res.Models = append(res.Models, m)
+        he := false
+        for _, c := range *m.Children {
+            if c.HasEbike {
+                he = true
+            }
+        }
+        if !he {
+            res.Models = append(res.Models, m)
+        }
     }
 
     for _, b := range bmap {
