@@ -12712,13 +12712,6 @@ const docTemplate = `{
                         "name": "cityId",
                         "in": "query",
                         "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "骑士卡类别 骑士卡类别 ",
-                        "name": "type",
-                        "in": "query",
-                        "required": true
                     }
                 ],
                 "responses": {

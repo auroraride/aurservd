@@ -709,6 +709,8 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
             "认证",     // 12
             "紧急联系", // 13
             "注册时间", // 14
+            "电车型号", // 15
+            "车架号",   // 16
         }
         rows = append(rows, title)
         for _, item := range items {
@@ -746,6 +748,13 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
                 }
                 row[9] = detail.Subscribe.Model
                 row[10] = detail.Subscribe.Remaining
+                bike := detail.Subscribe.Ebike
+                if bike != nil {
+                    row[15] = bike.Brand.Name
+                    if bike.SN != "" {
+                        row[16] = bike.SN
+                    }
+                }
             }
             if item.Contact != nil {
                 row[13] = item.Contact.String()

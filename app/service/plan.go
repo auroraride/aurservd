@@ -450,7 +450,6 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
             plan.HasCitiesWith(
                 city.ID(req.CityID),
             ),
-            plan.Type(req.Type.Value()),
         ).
         WithBrand().
         WithCities().
@@ -535,15 +534,12 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
         }
     }
 
-    switch req.Type {
-    case model.PlanTypeBattery:
-        for _, m := range mmap {
-            res.Models = append(res.Models, m)
-        }
-    case model.PlanTypeEbikeWithBattery:
-        for _, b := range bmap {
-            res.Brands = append(res.Brands, b)
-        }
+    for _, m := range mmap {
+        res.Models = append(res.Models, m)
+    }
+
+    for _, b := range bmap {
+        res.Brands = append(res.Brands, b)
     }
 
     return res

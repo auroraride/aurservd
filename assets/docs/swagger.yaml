@@ -14753,11 +14753,6 @@ paths:
         name: cityId
         required: true
         type: integer
-      - description: '骑士卡类别 骑士卡类别 '
-        in: query
-        name: type
-        required: true
-        type: integer
       produces:
       - application/json
       responses:
