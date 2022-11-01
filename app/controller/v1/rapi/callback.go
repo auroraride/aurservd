@@ -12,6 +12,7 @@ import (
     jsoniter "github.com/json-iterator/go"
     "github.com/labstack/echo/v4"
     log "github.com/sirupsen/logrus"
+    "io"
     "net/http"
 )
 
@@ -32,8 +33,15 @@ func (*callback) RiderCallback(c echo.Context) error {
 }
 
 // ESignCallback E签宝回调
-func (*callback) ESignCallback(c echo.Context) error {
-    go service.NewContract().Notice(c.Request())
+func (*callback) ESignCallback(c echo.Context) (err error) {
+    var b []byte
+    b, err = io.ReadAll(c.Request().Body)
+    if err != nil {
+        log.Errorf("合同回调内容读取失败: %v", err)
+        return
+    }
+
+    go service.NewContract().Notice(b)
     return c.JSON(http.StatusOK, map[string]int{"code": 200})
 }
 

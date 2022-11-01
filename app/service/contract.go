@@ -22,9 +22,7 @@ import (
     "github.com/golang-module/carbon/v2"
     jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
-    "io"
     "math"
-    "net/http"
     "strings"
     "time"
 )
@@ -453,7 +451,6 @@ func (s *contractService) checkResult(flowID string) {
     ticker := time.NewTicker(10 * time.Second)
     defer ticker.Stop()
 
-    start := time.Now()
     for {
         select {
         case t := <-ticker.C:
@@ -467,7 +464,7 @@ func (s *contractService) checkResult(flowID string) {
             }
 
             // 签署是否过期
-            isExpired := t.Sub(start).Minutes() > model.ContractExpiration+1
+            isExpired := t.Sub(c.CreatedAt).Minutes() > model.ContractExpiration+5
             // 如果已过期, 直接结束
             if isExpired {
                 _ = c.Update().SetStatus(model.ContractStatusExpired.Value()).Exec(s.ctx)
@@ -478,10 +475,9 @@ func (s *contractService) checkResult(flowID string) {
     }
 }
 
-func (s *contractService) doResult(flowID string, isExpired bool) (stop, success bool) {
+func (s *contractService) doResult(flowID string) {
     defer func() {
         if v := recover(); v != nil {
-            stop = true
             log.Errorf("合同查询失败: %v", v)
             return
         }
@@ -490,7 +486,6 @@ func (s *contractService) doResult(flowID string, isExpired bool) (stop, success
     // 查询合同
     c, _ := s.orm.Query().Where(contract.FlowID(flowID)).WithRider().First(s.ctx)
     if c == nil {
-        stop = true
         return
     }
 
@@ -498,15 +493,12 @@ func (s *contractService) doResult(flowID string, isExpired bool) (stop, success
 
     // 合同流程是否结束
     if result.IsFinished() {
-        stop = true
-        success = result.IsSuccessed()
         return
     }
 
     // 查询骑手信息
     r := c.RiderInfo
     if r == nil {
-        stop = true
         return
     }
 
@@ -518,7 +510,6 @@ func (s *contractService) doResult(flowID string, isExpired bool) (stop, success
         // DEBUG START
         result = model.ContractStatusSuccess
         updater.SetStatus(model.ContractStatusSuccess.Value())
-        success = true
         endAt = time.Now()
         // DEBUG END
     } else {
@@ -527,35 +518,24 @@ func (s *contractService) doResult(flowID string, isExpired bool) (stop, success
         result, signResult = s.esign.Result(c.FlowID)
         endAt = signResult.EndAt()
 
-        // 是否过期
-        if isExpired {
-            result = model.ContractStatusExpired
-            updater.SetStatus(result.Value())
-        }
-
         // 是否成功
-        success = result.IsSuccessed()
-
-        if success {
+        if result.IsSuccessed() {
             // 获取合同并上传到阿里云
-            updater.SetSignedAt(endAt).SetStatus(model.ContractStatusSuccess.Value())
-            go s.downloadFile(c.ID, c.FlowID, r)
+            updater.SetSignedAt(endAt).SetStatus(model.ContractStatusSuccess.Value()).SetFiles(s.esign.DownloadDocument(fmt.Sprintf("%s-%s/contracts/", r.Name, r.IDCardNumber), flowID))
         }
     }
 
     // 流程是否终止
     if result.IsFinished() {
-        stop = true
         err := updater.Exec(context.Background())
         if err != nil {
             log.Errorf("合同更新失败 [id = %d]: %v", c.ID, err)
-            stop = true
             return
         }
     }
 
     // 成功签署合同
-    if success {
+    if result.IsSuccessed() {
         err := s.update(c)
         if err != nil {
             log.Errorf("已成功签署合同, 但更新失败 [id = %d] %v", c.ID, err)
@@ -648,16 +628,10 @@ func (s *contractService) Result(r *ent.Rider, sn string) model.StatusResponse {
 }
 
 // Notice 签约回调
-func (s *contractService) Notice(req *http.Request) {
-    b, err := io.ReadAll(req.Body)
-    if len(b) == 0 || err != nil {
-        log.Errorf("签约回调读取失败: %v", err)
-        return
-    }
-
+func (s *contractService) Notice(b []byte) {
     // 解析回调信息
     var result esign.Notice
-    err = jsoniter.Unmarshal(b, &result)
+    err := jsoniter.Unmarshal(b, &result)
     if err != nil {
         log.Errorf("签约回调解析失败: %v", err)
         return
@@ -666,7 +640,7 @@ func (s *contractService) Notice(req *http.Request) {
     switch result.Action {
     case "SIGN_FLOW_FINISH":
         if result.FlowId != "" {
-            s.doResult(result.FlowId, false)
+            s.doResult(result.FlowId)
         }
     }
 }
