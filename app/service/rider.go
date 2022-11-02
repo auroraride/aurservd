@@ -731,6 +731,8 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
                 detail.AuthStatus.String(),
                 "",
                 item.CreatedAt.Format(carbon.DateTimeLayout),
+                "",
+                "",
             }
             if detail.City != nil {
                 row[0] = detail.City.Name
