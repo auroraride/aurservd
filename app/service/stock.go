@@ -31,6 +31,7 @@ import (
     "math"
     "sort"
     "strings"
+    "time"
 )
 
 type stockService struct {
@@ -361,6 +362,8 @@ func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (s
     if err != nil {
         return
     }
+
+    time.Sleep(10 * time.Millisecond)
 
     if req.Ebike != nil {
         err = son.SetParent(sk).

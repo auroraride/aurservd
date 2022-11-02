@@ -75,6 +75,7 @@ type commonRes struct {
     Code    int         `json:"code,omitempty"`
     Message string      `json:"message,omitempty"`
     Data    interface{} `json:"data,omitempty"`
+    Success *bool       `json:"success,omitempty"`
 }
 
 func New() *Esign {
@@ -92,11 +93,10 @@ func New() *Esign {
         serialization: jsoniter.Config{SortMapKeys: true},
         Config:        config,
         headers: map[string]string{
-            "X-Tsign-Open-App-Id":       config.Appid,
-            "Content-Type":              headerContentType,
-            "Accept":                    headerAccept,
-            "X-Tsign-Open-Auth-Mode":    headerAuthMode,
-            "X-Tsign-Open-Ca-Timestamp": strconv.FormatInt(time.Now().UnixNano()/1e6, 10),
+            "X-Tsign-Open-App-Id":    config.Appid,
+            "Content-Type":           headerContentType,
+            "Accept":                 headerAccept,
+            "X-Tsign-Open-Auth-Mode": headerAuthMode,
         },
     }
 }
@@ -136,6 +136,7 @@ type reqLog struct {
 }
 
 // request 请求
+// TODO 优化请求
 func (e *Esign) request(api, method string, body interface{}, data interface{}) interface{} {
     var md5, bodyString string
     res := new(commonRes)
@@ -151,7 +152,8 @@ func (e *Esign) request(api, method string, body interface{}, data interface{}) 
         SetBody(bodyString).
         SetHeaders(e.headers).
         SetHeader("Content-MD5", md5).
-        SetHeader("X-Tsign-Open-Ca-Signature", singnature)
+        SetHeader("X-Tsign-Open-Ca-Signature", singnature).
+        SetHeader("X-Tsign-Open-Ca-Timestamp", strconv.FormatInt(time.Now().UnixNano()/1e6, 10))
     var err error
     var r *resty.Response
     switch method {
@@ -179,7 +181,7 @@ func (e *Esign) request(api, method string, body interface{}, data interface{}) 
             Secret:   e.Config.Secret,
             Sign:     singnature,
             Raw:      raw,
-            Response: r.Body(),
+            Response: string(r.Body()),
         }
         logstr, _ := e.serialization.Froze().MarshalToString(logdata)
         log.Info(logstr)

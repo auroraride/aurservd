@@ -21,6 +21,7 @@ func fixCommand() *cobra.Command {
         fix.Reminder(),
         fix.Assistance(),
         fix.Contract(),
+        fix.Sql(),
     )
 
     return cmd
