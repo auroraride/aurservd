@@ -46,7 +46,10 @@ func contractRider() *cobra.Command {
 }
 
 func contractStatus() *cobra.Command {
-    return &cobra.Command{
+    var (
+        sleep time.Duration
+    )
+    cmd := &cobra.Command{
         Use:   "status",
         Short: "修复签约状态",
         Run: func(_ *cobra.Command, _ []string) {
@@ -101,10 +104,12 @@ func contractStatus() *cobra.Command {
                     log.Println(err)
                 }
 
-                time.Sleep(10 * time.Second)
+                time.Sleep(sleep)
             }
         },
     }
+    cmd.Flags().DurationVarP(&sleep, "sleep", "s", 30*time.Second, "休眠时间")
+    return cmd
 }
 
 func Contract() *cobra.Command {
