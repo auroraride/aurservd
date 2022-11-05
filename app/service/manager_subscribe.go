@@ -52,6 +52,7 @@ func (s *managerSubscribeService) ChangeEBike(req *model.ManagerSubscribeChangeE
         Where(
             subscribe.Status(model.SubscribeStatusUsing),
             subscribe.EbikeIDNotNil(),
+            subscribe.ID(req.ID),
         ).
         WithBrand().
         First(s.ctx)
