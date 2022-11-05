@@ -561,7 +561,14 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 
     if req.Model != "" {
         info["电池型号"] = req.Model
-        q.Where(rider.HasSubscribesWith(subscribe.Model(req.Model)))
+        subarr := []predicate.Subscribe{
+            subscribe.Model(req.Model),
+        }
+        // 如果筛选了电池型号但是未筛选订阅状态时, 默认订阅状态为: 非退订且非取消
+        if req.SubscribeStatus == nil {
+            subarr = append(subarr, subscribe.StatusNotIn(model.SubscribeStatusCanceled, model.SubscribeStatusUnSubscribed))
+        }
+        q.Where(rider.HasSubscribesWith(subarr...))
     }
 
     if req.EbikeBrandID != 0 {
