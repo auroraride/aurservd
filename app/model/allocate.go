@@ -6,7 +6,7 @@
 package model
 
 const (
-    AllocateExpiration = 600 // 分配过期时间(s), 超过一定时间不签约后分配失效, 需要重新分配
+    AllocateExpiration = 1800 // 分配过期时间(s), 超过一定时间不签约后分配失效, 需要重新分配, 默认30分钟
 )
 
 type AllocateStatus uint8
