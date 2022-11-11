@@ -16,6 +16,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/commission"
     "github.com/auroraride/aurservd/internal/ent/contract"
     "github.com/auroraride/aurservd/internal/ent/ebike"
+    "github.com/auroraride/aurservd/internal/ent/orderrefund"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
     "github.com/auroraride/aurservd/pkg/silk"
@@ -545,6 +546,14 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
         if s.ebikeInfo != nil {
             // 更新电车所属
             err = tx.Ebike.UpdateOneID(s.ebikeInfo.ID).SetRiderID(sub.RiderID).SetStatus(model.EbikeStatusUsing).Exec(s.ctx)
+        }
+
+        // 更新退款失效
+        if sub.EnterpriseID == nil && sub.InitialOrderID != 0 {
+            of, _ := tx.OrderRefund.QueryNotDeleted().Where(orderrefund.OrderID(sub.InitialOrderID)).First(s.ctx)
+            if of != nil {
+                err = tx.OrderRefund.UpdateOne(of).SetReason("激活订阅, 自动拒绝退款").SetStatus(model.OrderStatusRefundRefused).Exec(s.ctx)
+            }
         }
     })
 
