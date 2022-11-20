@@ -21,3 +21,8 @@ prod:
 .PHONY: latest
 latest:
 	$(call deploy,latest)
+
+
+.PHONY: permisson
+permission:
+	go run ./cmd/permission

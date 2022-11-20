@@ -6903,7 +6903,7 @@
                             2
                         ],
                         "type": "integer",
-                        "description": "换电状态 0:全部 1:成功 2:失败",
+                        "description": "换电状态 0:进行中 1:成功 2:失败 (不携带此参数为全部)",
                         "name": "status",
                         "in": "query"
                     },
@@ -6917,6 +6917,12 @@
                         "type": "integer",
                         "description": "换电类别 0:全部 1:电柜 2:门店",
                         "name": "target",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "次数 (所选时间段内最小换电次数)",
+                        "name": "times",
                         "in": "query"
                     }
                 ],
@@ -7126,6 +7132,47 @@
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/export/exchange": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MF010 导出换电明细",
+                "operationId": "ManagerExportExchange",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "筛选条件",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ExchangeListExport"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ExportRes"
                         }
                     }
                 }
@@ -18131,6 +18178,92 @@
                 "time": {
                     "description": "换电时间",
                     "type": "string"
+                }
+            }
+        },
+        "model.ExchangeListExport": {
+            "type": "object",
+            "required": [
+                "remark"
+            ],
+            "properties": {
+                "aimed": {
+                    "description": "筛选对象 0:全部 1:个签 2:团签",
+                    "type": "integer"
+                },
+                "alternative": {
+                    "description": "换电方案 0:全部 1:满电 2:非满电",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                "brand": {
+                    "description": "电柜类型, KAIXIN(凯信) YUNDONG(云动)",
+                    "type": "string",
+                    "enum": [
+                        "KAIXIN",
+                        "YUNDONG"
+                    ]
+                },
+                "cabinetId": {
+                    "description": "选择电柜ID",
+                    "type": "integer"
+                },
+                "cityId": {
+                    "description": "城市",
+                    "type": "integer"
+                },
+                "employee": {
+                    "description": "筛选店员(手机号或姓名)",
+                    "type": "string"
+                },
+                "end": {
+                    "description": "筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
+                    "type": "string"
+                },
+                "keyword": {
+                    "description": "筛选骑手姓名或电话",
+                    "type": "string"
+                },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注 ",
+                    "type": "string"
+                },
+                "serial": {
+                    "description": "电柜编号",
+                    "type": "string"
+                },
+                "start": {
+                    "description": "筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "换电状态 0:进行中 1:成功 2:失败 (不携带此参数为全部)",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                "storeId": {
+                    "description": "选择门店ID",
+                    "type": "integer"
+                },
+                "target": {
+                    "description": "换电类别 0:全部 1:电柜 2:门店",
+                    "type": "integer"
+                },
+                "times": {
+                    "description": "次数 (所选时间段内最小换电次数)",
+                    "type": "integer"
                 }
             }
         },

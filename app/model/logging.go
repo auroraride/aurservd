@@ -69,7 +69,7 @@ func (o Operate) String() string {
     case OperateRefund:
         return "处理退款"
     case OperateUnsubscribe:
-        return "骑手门店退租"
+        return "骑手退租"
     case OperateAssistanceAllocate:
         return "救援分配"
     case OperateAssistanceFree:

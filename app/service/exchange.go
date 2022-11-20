@@ -7,13 +7,17 @@ package service
 
 import (
     "context"
+    "entgo.io/ent/dialect/sql"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
+    "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/internal/ent/exchange"
     "github.com/auroraride/aurservd/internal/ent/rider"
+    "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -200,24 +204,29 @@ func (s *exchangeService) RiderList(riderID uint64, req model.PaginationReq) *mo
 }
 
 // listBasicQuery 列表基础查询语句
-func (s *exchangeService) listBasicQuery(req model.ExchangeListReq) *ent.ExchangeQuery {
+func (s *exchangeService) listBasicQuery(req model.ExchangeListBasicFilter) (q *ent.ExchangeQuery, info ar.Map) {
     tt := tools.NewTime()
 
-    q := ent.Database.Exchange.
+    info = make(ar.Map)
+
+    q = ent.Database.Exchange.
         QueryNotDeleted().
         WithRider().
         WithEnterprise().
         Order(ent.Desc(exchange.FieldCreatedAt))
 
     if req.Start != nil {
+        info["开始时间"] = *req.Start
         q.Where(exchange.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
     }
 
     if req.End != nil {
+        info["结束时间"] = *req.End
         q.Where(exchange.CreatedAtLTE(tt.ParseNextDateStringX(*req.End)))
     }
 
     if req.Keyword != nil {
+        info["关键词"] = *req.Keyword
         q.Where(
             exchange.HasRiderWith(
                 rider.Or(
@@ -228,6 +237,7 @@ func (s *exchangeService) listBasicQuery(req model.ExchangeListReq) *ent.Exchang
         )
     }
 
+    info["对象"] = []string{"全部", "个签", "团签"}[req.Aimed]
     switch req.Aimed {
     case model.BusinessAimedPersonal:
         q.Where(exchange.EnterpriseIDIsNil())
@@ -237,14 +247,14 @@ func (s *exchangeService) listBasicQuery(req model.ExchangeListReq) *ent.Exchang
         break
     }
 
-    return q
+    return
 }
 
-func (s *exchangeService) EmployeeList(req *model.ExchangeListReq) *model.PaginationRes {
-    q := s.listBasicQuery(*req).
-        WithSubscribe(func(sq *ent.SubscribeQuery) {
-            sq.WithPlan()
-        }).
+func (s *exchangeService) EmployeeList(req *model.ExchangeEmployeeListReq) *model.PaginationRes {
+    q, _ := s.listBasicQuery(req.ExchangeListBasicFilter)
+    q.WithSubscribe(func(sq *ent.SubscribeQuery) {
+        sq.WithPlan()
+    }).
         Where(exchange.EmployeeID(s.employee.ID))
 
     return model.ParsePaginationResponse(
@@ -284,13 +294,13 @@ func (s *exchangeService) EmployeeList(req *model.ExchangeListReq) *model.Pagina
     )
 }
 
-func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.PaginationRes {
+func (s *exchangeService) listFilter(req model.ExchangeListFilter) (q *ent.ExchangeQuery, info ar.Map) {
     if s.modifier != nil && s.modifier.Phone == "15537112255" {
         req.CityID = 410100
     }
 
-    q := s.listBasicQuery(req.ExchangeListReq).
-        WithCity().
+    q, info = s.listBasicQuery(req.ExchangeListBasicFilter)
+    q.WithCity().
         WithStore().
         WithCabinet()
 
@@ -303,11 +313,15 @@ func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.Paginat
         break
     }
 
+    info["换电类别"] = []string{"全部", "电柜", "门店"}[req.Target]
+
     if req.CityID != 0 {
         q.Where(exchange.CityID(req.CityID))
+        info["城市"] = ent.NewExportInfo(req.CityID, city.Table)
     }
 
     if req.Employee != "" {
+        info["店员"] = req.Employee
         q.Where(
             exchange.HasEmployeeWith(
                 employee.Or(
@@ -318,102 +332,204 @@ func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.Paginat
         )
     }
 
-    if req.Status != 0 {
+    if req.Status != nil {
+        info["状态"] = []string{"进行中", "成功", "失败"}[*req.Status]
         q.Where(
-            exchange.Success(req.Status == 1),
-            exchange.FinishAtNotNil(),
+            exchange.Success(*req.Status == 1),
         )
+        if *req.Status != 0 {
+            q.Where(
+                exchange.FinishAtNotNil(),
+            )
+        }
     }
 
     if req.Serial != "" {
+        info["电柜编码"] = req.Serial
         q.Where(exchange.HasCabinetWith(cabinet.Serial(req.Serial)))
     }
 
     if req.Brand != "" {
+        info["电柜品牌"] = req.Brand
         q.Where(exchange.HasCabinetWith(cabinet.Brand(req.Brand)))
     }
 
     // 是否备用方案 1是 2否
+    info["备选方案"] = []string{"全部", "满电", "非满电"}[req.Alternative]
     if req.Alternative != 0 {
         q.Where(exchange.Alternative(req.Alternative == 2))
     }
 
     if req.CabinetID != 0 {
         q.Where(exchange.CabinetID(req.CabinetID))
+        info["电柜"] = ent.NewExportInfo(req.CabinetID, cabinet.Table)
     }
 
     if req.StoreID != 0 {
         q.Where(exchange.StoreID(req.StoreID))
+        info["门店"] = ent.NewExportInfo(req.StoreID, store.Table)
     }
 
     if req.Model != "" {
+        info["电池型号"] = req.Model
         q.Where(exchange.Model(req.Model))
     }
 
-    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Exchange) model.ExchangeManagerListRes {
-        res := model.ExchangeManagerListRes{
-            ID:          item.ID,
-            Name:        item.Edges.Rider.Name,
-            Phone:       item.Edges.Rider.Phone,
-            Time:        item.CreatedAt.Format(carbon.DateTimeLayout),
-            Model:       item.Model,
-            Alternative: item.Alternative,
-        }
+    if req.Times > 0 {
+        info["换电次数"] = req.Times
+        q.Where(func(sel *sql.Selector) {
+            sel.Where(
+                sql.In(
+                    exchange.FieldRiderID,
+                    sql.Select(exchange.FieldRiderID).
+                        From(sql.Table(exchange.Table)).
+                        GroupBy(exchange.FieldRiderID).
+                        Having(sql.GTE("COUNT(1)", req.Times)),
+                ),
+            )
+        })
+    }
 
-        if item.FinishAt.IsZero() && item.CabinetID != 0 {
-            res.Status = 0
+    return
+}
+
+func (s *exchangeService) listDetail(item *ent.Exchange) (res model.ExchangeManagerListRes) {
+    if item.Edges.Rider == nil {
+        return
+    }
+    res = model.ExchangeManagerListRes{
+        ID:          item.ID,
+        Name:        item.Edges.Rider.Name,
+        Phone:       item.Edges.Rider.Phone,
+        Time:        item.CreatedAt.Format(carbon.DateTimeLayout),
+        Model:       item.Model,
+        Alternative: item.Alternative,
+    }
+
+    if item.FinishAt.IsZero() && item.CabinetID != 0 {
+        res.Status = 0
+    } else {
+        if item.Success {
+            res.Status = 1
         } else {
-            if item.Success {
-                res.Status = 1
+            res.Status = 2
+        }
+    }
+
+    e := item.Edges.Enterprise
+    if e != nil {
+        res.Enterprise = &model.Enterprise{
+            ID:    e.ID,
+            Name:  e.Name,
+            Agent: e.Agent,
+        }
+    }
+
+    es := item.Edges.Store
+    if es != nil {
+        res.Store = &model.Store{
+            ID:   es.ID,
+            Name: es.Name,
+        }
+    }
+
+    ec := item.Edges.City
+    if ec != nil {
+        res.City = model.City{ID: ec.ID, Name: ec.Name}
+    }
+
+    cab := item.Edges.Cabinet
+    if cab != nil {
+        res.Cabinet = &model.CabinetBasicInfo{
+            ID:     cab.ID,
+            Brand:  model.CabinetBrand(cab.Brand),
+            Serial: cab.Serial,
+            Name:   cab.Name,
+        }
+    }
+
+    if item.Info != nil && item.Info.Exchange != nil {
+        ex := item.Info.Exchange
+        res.Full = fmt.Sprintf("%d号仓, %.2f%%", ex.Fully.Index+1, ex.Fully.Electricity)
+        res.Empty = fmt.Sprintf("%d号仓, %.2f%%", ex.Empty.Index+1, ex.Empty.Electricity)
+        if !item.Success && !item.FinishAt.IsZero() {
+            if len(ex.Steps) > 0 {
+                res.Error = fmt.Sprintf("%s [%s]", item.Info.Message, ex.CurrentStep().Step)
             } else {
-                res.Status = 2
+                res.Error = "未找到换电信息"
             }
         }
+    }
+    return res
+}
 
-        e := item.Edges.Enterprise
-        if e != nil {
-            res.Enterprise = &model.Enterprise{
-                ID:    e.ID,
-                Name:  e.Name,
-                Agent: e.Agent,
+func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.PaginationRes {
+    q, _ := s.listFilter(req.ExchangeListFilter)
+
+    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Exchange) model.ExchangeManagerListRes {
+        return s.listDetail(item)
+    })
+}
+
+func (s *exchangeService) Export(req *model.ExchangeListExport) model.ExportRes {
+    q, info := s.listFilter(req.ExchangeListFilter)
+    return NewExportWithModifier(s.modifier).Start("换电明细", req.ExchangeListFilter, info, req.Remark, func(path string) {
+        items, _ := q.All(s.ctx)
+        var rows tools.ExcelItems
+        title := []any{
+            "城市",
+            "状态",
+            "姓名",
+            "电话",
+            "型号",
+            "团签",
+            "门店",
+            "电柜",
+            "方案",
+            "满仓",
+            "空仓",
+            "失败原因",
+            "开始时间",
+            "结束时间",
+            "耗时 (秒)",
+        }
+        rows = append(rows, title)
+        for _, item := range items {
+            detail := s.listDetail(item)
+            row := []any{
+                detail.City.Name,
+                []string{"进行中", "成功", "失败"}[detail.Status],
+                detail.Name,
+                detail.Phone,
+                detail.Model,
+                "", // 团签
+                "", // 门店
+                "", // 电柜
+                "满电",
+                detail.Full,
+                detail.Empty,
+                detail.Error,
+                detail.Time,
+                "", // 结束时间
+                "", // 耗时
             }
-        }
-
-        es := item.Edges.Store
-        if es != nil {
-            res.Store = &model.Store{
-                ID:   es.ID,
-                Name: es.Name,
+            if detail.Enterprise != nil {
+                row[5] = detail.Enterprise.Name
             }
-        }
-
-        ec := item.Edges.City
-        if ec != nil {
-            res.City = model.City{ID: ec.ID, Name: ec.Name}
-        }
-
-        cab := item.Edges.Cabinet
-        if cab != nil {
-            res.Cabinet = &model.CabinetBasicInfo{
-                ID:     cab.ID,
-                Brand:  model.CabinetBrand(cab.Brand),
-                Serial: cab.Serial,
-                Name:   cab.Name,
+            if detail.Store != nil {
+                row[6] = detail.Store.Name
             }
-        }
-
-        if item.Info != nil && item.Info.Exchange != nil {
-            ex := item.Info.Exchange
-            res.Full = fmt.Sprintf("%d号仓, %.2f%%", ex.Fully.Index+1, ex.Fully.Electricity)
-            res.Empty = fmt.Sprintf("%d号仓, %.2f%%", ex.Empty.Index+1, ex.Empty.Electricity)
-            if !item.Success && !item.FinishAt.IsZero() {
-                if len(ex.Steps) > 0 {
-                    res.Error = fmt.Sprintf("%s [%s]", item.Info.Message, ex.CurrentStep().Step)
-                } else {
-                    res.Error = "未找到换电信息"
-                }
+            if detail.Cabinet != nil {
+                row[7] = fmt.Sprintf("[%s]%s - %s", detail.Cabinet.Brand, detail.Cabinet.Name, detail.Cabinet.Serial)
             }
+            if !detail.Alternative {
+                row[8] = "非满电"
+            }
+            if !item.FinishAt.IsZero() {
+                row[13] = item.FinishAt.Format(carbon.DateTimeLayout)
+                row[14] = item.Duration
+            }
+            rows = append(rows, row)
         }
-        return res
     })
 }

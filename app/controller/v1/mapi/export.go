@@ -150,3 +150,18 @@ func (*export) StockDetail(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.StockDetailExportReq](c)
     return ctx.SendResponse(service.NewStockWithModifier(ctx.Modifier).Export(req))
 }
+
+// Exchange
+// @ID           ManagerExportExchange
+// @Router       /manager/v1/export/exchange [POST]
+// @Summary      MF010 导出换电明细
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token header string true "管理员校验token"
+// @Param        body  body     model.ExchangeListExport  true  "筛选条件"
+// @Success      200  {object}  model.ExportRes  "请求成功"
+func (*export) Exchange(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.ExchangeListExport](c)
+    return ctx.SendResponse(service.NewExchangeWithModifier(ctx.Modifier).Export(req))
+}

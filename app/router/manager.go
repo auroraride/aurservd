@@ -200,6 +200,7 @@ func loadManagerRoutes() {
     export.POST("/commission", mapi.Export.Commission)
     export.POST("/business", mapi.Export.Business)
     export.POST("/stock-detail", mapi.Export.StockDetail)
+    export.POST("/exchange", mapi.Export.Exchange)
 
     // 积分
     g.POST("/point/modify", mapi.Point.Modify)
