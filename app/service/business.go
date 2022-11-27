@@ -237,11 +237,15 @@ func (s *businessService) listFilter(req model.BusinessFilter) (q *ent.BusinessQ
 
 func (s *businessService) basicDetail(item *ent.Business) (res model.BusinessEmployeeListRes) {
     res = model.BusinessEmployeeListRes{
-        ID:    item.ID,
-        Name:  item.Edges.Rider.Name,
-        Phone: item.Edges.Rider.Phone,
-        Type:  s.Text(item.Type),
-        Time:  item.CreatedAt.Format(carbon.DateTimeLayout),
+        ID:   item.ID,
+        Type: s.Text(item.Type),
+        Time: item.CreatedAt.Format(carbon.DateTimeLayout),
+    }
+
+    r := item.Edges.Rider
+    if r != nil {
+        res.Name = r.Name
+        res.Phone = r.Phone
     }
 
     cit := item.Edges.City
