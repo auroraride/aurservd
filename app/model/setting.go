@@ -116,10 +116,10 @@ var Settings = map[string]SettingItem{
         Desc:    "满电电量百分比",
         Default: "80",
     },
-    SettingPauseMaxDays: {
-        Desc:    "最大寄存时间",
-        Default: "31",
-    },
+    // SettingPauseMaxDays: {
+    //     Desc:    "最大寄存时间",
+    //     Default: "31",
+    // },
     SettingExchangeInterval: {
         Desc:    "限制换电间隔",
         Default: "20",

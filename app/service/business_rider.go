@@ -670,39 +670,38 @@ func (s *businessRiderService) Continue(subscribeID uint64) {
         snag.Panic("骑士卡更新失败")
     }
 
+    pr, _ := s.subscribe.GetAdditionalItems()
+
     sp, _ := ent.Database.SubscribePause.QueryNotDeleted().
         Where(subscribepause.SubscribeID(s.subscribe.ID), subscribepause.EndAtIsNil()).
         Order(ent.Desc(subscribepause.FieldCreatedAt)).
         First(s.ctx)
 
-    if sp == nil {
+    if sp == nil || pr.Current == nil || pr.Current.ID != sp.ID {
         snag.Panic("未找到寄存信息")
     }
 
     // 当前时间
     now := time.Now()
 
-    // 已寄存天数
-    days, overdue, duplicate, _ := sp.GetAdditionalDays()
-
     s.do(business.TypeContinue, func(tx *ent.Tx) {
         _, err = tx.SubscribePause.
             UpdateOne(sp).
-            SetDays(days).
+            SetDays(pr.CurrentDays).
             SetEndAt(now).
             SetNillableEndEmployeeID(s.employeeID).
             SetEndModifier(s.modifier).
-            SetOverdueDays(overdue).
+            SetOverdueDays(pr.CurrentOverdueDays).
             SetNillableEndStoreID(s.storeID).
             SetNillableEndCabinetID(s.cabinetID).
-            SetSuspendDays(duplicate).
+            SetSuspendDays(pr.CurrentDuplicateDays).
             Save(s.ctx)
         snag.PanicIfError(err)
 
         // 更新订阅
         _, err = tx.Subscribe.UpdateOne(s.subscribe).
             SetStatus(model.SubscribeStatusUsing).
-            AddPauseDays(days).
+            SetPauseDays(pr.Days).
             ClearPausedAt().
             Save(s.ctx)
         snag.PanicIfError(err)

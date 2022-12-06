@@ -300,17 +300,11 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe, notice bool) error 
     pastDays := tt.UsedDaysToNow(*item.StartAt)
     status := item.Status
 
-    // 计算寄存
-    pauses, suspends := item.AdditionalItems()
-
-    // 当寄存中生效的时候暂停扣费会产生重复天数, 需要计算并扣除该部分重复的天数
-    // 计算暂停计费和寄存之间的重复天数
-    pause := ent.SubscribeAdditionalCalculate[*ent.SubscribePause](pauses)
-
-    suspend := ent.SubscribeAdditionalCalculate[*ent.SubscribeSuspend](suspends)
+    // 计算寄存和暂停
+    pr, sr := item.GetAdditionalItems()
 
     // 剩余天数
-    remaining := item.InitialDays + item.AlterDays + item.OverdueDays + item.RenewalDays + pause.TotalDays + suspend.TotalDays - pastDays
+    remaining := item.InitialDays + item.AlterDays + item.OverdueDays + item.RenewalDays + pr.Days + sr.Days - pastDays
     formula := fmt.Sprintf(
         "剩余时间(%d) = 初始天数(%d) + 调整天数(%d) + 已缴滞纳金天数(%d) + 续费天数(%d) + 寄存天数(%d) + 暂停天数(%d) - 已过天数(%d)",
         remaining,
@@ -318,8 +312,8 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe, notice bool) error 
         item.AlterDays,
         item.OverdueDays,
         item.RenewalDays,
-        pause.TotalDays,
-        suspend.TotalDays,
+        pr.Days,
+        sr.Days,
         pastDays,
     )
 
@@ -328,14 +322,14 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe, notice bool) error 
     }
 
     return ent.WithTx(s.ctx, func(tx *ent.Tx) error {
-        up := tx.Subscribe.UpdateOne(item).SetPauseDays(pause.TotalDays).SetSuspendDays(suspend.TotalDays).SetRemaining(remaining).SetFormula(formula)
+        up := tx.Subscribe.UpdateOne(item).SetPauseDays(pr.Days).SetSuspendDays(sr.Days).SetRemaining(remaining).SetFormula(formula)
 
         // 寄存中的如果欠费则自动退租: 超过寄存设置的最大时间继续计费, 直到欠费自动退租
         var unsub bool
-        if pause.Current != nil {
-            pup := tx.SubscribePause.UpdateOne(pause.Current).SetDays(pause.CurrentDays).SetOverdueDays(pause.CurrentOverdue).SetSuspendDays(pause.CurrentDuplicateDays)
+        if pr.Current != nil {
+            pup := tx.SubscribePause.UpdateOne(pr.Current).SetDays(pr.CurrentDays).SetOverdueDays(pr.CurrentOverdueDays).SetSuspendDays(pr.CurrentDuplicateDays)
             // 查询当前寄存是否超期
-            if remaining < 0 && pause.CurrentOverdue > 0 {
+            if remaining < 0 && pr.CurrentOverdueDays > 0 {
                 status = model.SubscribeStatusUnSubscribed
                 unsub = true
                 reason := "寄存超期自动退租"
@@ -346,15 +340,15 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe, notice bool) error 
             }
             _, err := pup.Save(s.ctx)
             if err != nil {
-                log.Errorf("[SUBSCRIBE TASK PAUSE] %d 更新失败: %v", pause.Current.ID, err)
+                log.Errorf("[SUBSCRIBE TASK PAUSE] %d 更新失败: %v", pr.Current.ID, err)
                 return err
             }
         }
 
-        if suspend.Current != nil {
-            _, err := tx.SubscribeSuspend.UpdateOne(suspend.Current).SetDays(suspend.CurrentDays).Save(s.ctx)
+        if sr.Current != nil {
+            _, err := tx.SubscribeSuspend.UpdateOne(sr.Current).SetDays(sr.CurrentDays).Save(s.ctx)
             if err != nil {
-                log.Errorf("[SUBSCRIBE TASK SUSPEND] %d 更新失败: %v", suspend.Current.ID, err)
+                log.Errorf("[SUBSCRIBE TASK SUSPEND] %d 更新失败: %v", sr.Current.ID, err)
                 return err
             }
         }
