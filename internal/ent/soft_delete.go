@@ -9,6 +9,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/business"
@@ -158,6 +159,46 @@ func (c *AttendanceClient) GetNotDeleted(ctx context.Context, id uint64) (*Atten
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *AttendanceClient) GetNotDeletedX(ctx context.Context, id uint64) *Attendance {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for Battery.
+func (c *BatteryClient) SoftDelete() *BatteryUpdate {
+	mutation := newBatteryMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &BatteryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *BatteryClient) SoftDeleteOne(b *Battery) *BatteryUpdateOne {
+	mutation := newBatteryMutation(c.config, OpUpdateOne, withBattery(b))
+	mutation.SetDeletedAt(time.Now())
+	return &BatteryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *BatteryClient) SoftDeleteOneID(id uint64) *BatteryUpdateOne {
+	mutation := newBatteryMutation(c.config, OpUpdateOne, withBatteryID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &BatteryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for Battery.
+func (c *BatteryClient) QueryNotDeleted() *BatteryQuery {
+	return c.Query().Where(battery.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a Battery not deleted entity by its id.
+func (c *BatteryClient) GetNotDeleted(ctx context.Context, id uint64) (*Battery, error) {
+	return c.Query().Where(battery.ID(id), battery.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *BatteryClient) GetNotDeletedX(ctx context.Context, id uint64) *Battery {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

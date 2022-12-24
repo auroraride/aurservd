@@ -80,7 +80,12 @@ func newService(params ...any) (bs *BaseService) {
     return
 }
 
-func (s *BaseService) GetXlsxDataX(c echo.Context) (rows [][]string) {
+// GetXlsxRows 从xlsx文件中读取数据
+// start 从第几行开始为数据
+// columnsNumber 每行数据数量
+// pkIndex 主键下标(以此排重)
+func (s *BaseService) GetXlsxRows(c echo.Context, start, columnsNumber int, pkIndex int) (rows [][]string, pks, failed []string) {
+    failed = make([]string, 0)
     source, err := c.FormFile("file")
     if err != nil {
         log.Errorf("GetXlsxDataX error: %s", err)
@@ -124,10 +129,31 @@ func (s *BaseService) GetXlsxDataX(c echo.Context) (rows [][]string) {
         snag.Panic(err)
     }
 
+    // 主键 => 行数(i+1)
+    m := make(map[string]int)
     for i, columns := range rows {
-        for j, column := range columns {
-            rows[i][j] = strings.TrimSpace(column)
+        // 排错
+        if len(columns) < columnsNumber {
+            failed = append(failed, fmt.Sprintf("格式错误:%s", strings.Join(columns, ",")))
+            continue
         }
+        for j, column := range columns {
+            t := strings.TrimSpace(column)
+            // 去重
+            if j == pkIndex {
+                if target, ok := m[t]; ok {
+                    failed = append(failed, fmt.Sprintf("第%d行和第%d行重复", i+1, target))
+                    continue
+                }
+                m[t] = i + 1
+                pks = append(pks, t)
+            }
+            rows[i][j] = t
+        }
+    }
+
+    if len(rows) < start {
+        snag.Panic("至少有一条有效信息")
     }
 
     return

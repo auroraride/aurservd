@@ -79,6 +79,13 @@ func (c *AttendanceClient) ModifyOne(old *Attendance, data any) *AttendanceUpdat
 	return EntitySetAttributes[AttendanceUpdateOne, Attendance](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for Battery.
+func (c *BatteryClient) ModifyOne(old *Battery, data any) *BatteryUpdateOne {
+	mutation := newBatteryMutation(c.config, OpUpdateOne, withBattery(old))
+	up := &BatteryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[BatteryUpdateOne, Battery](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for BatteryModel.
 func (c *BatteryModelClient) ModifyOne(old *BatteryModel, data any) *BatteryModelUpdateOne {
 	mutation := newBatteryModelMutation(c.config, OpUpdateOne, withBatteryModel(old))

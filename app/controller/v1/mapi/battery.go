@@ -60,3 +60,67 @@ func (*battery) DeleteModel(c echo.Context) (err error) {
     service.NewBatteryModelWithModifier(ctx.Modifier).Delete(req)
     return ctx.SendResponse()
 }
+
+// List
+// @ID           ManagerBatteryList
+// @Router       /manager/v1/battery [GET]
+// @Summary      M4004 电池列表
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token header string true "管理员校验token"
+// @Param        qery query   model.BatteryListReq false "筛选条件"
+// @Success      200 {object} model.PaginationRes{items=[]model.BatteryListRes} "请求成功"
+func (*battery) List(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.BatteryListReq](c)
+    return ctx.SendResponse(service.NewBattery(ctx.Modifier).List(req))
+}
+
+// Create
+// @ID           ManagerBatteryCreate
+// @Router       /manager/v1/battery [POST]
+// @Summary      M4005 添加电池
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token header string true "管理员校验token"
+// @Param        body body    model.BatteryCreateReq true "电池信息"
+// @Success      200 {object} model.StatusResponse "请求成功"
+func (*battery) Create(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.BatteryCreateReq](c)
+    service.NewBattery(ctx.Modifier).Create(req)
+    return ctx.SendResponse()
+}
+
+// BatchCreate
+// @ID           ManagerBatteryBatchCreate
+// @Router       /manager/v1/battery/batch [POST]
+// @Summary      M4006 批量导入电池
+// @Description  参考 [MI007 批量导入电车]
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token header string true "管理员校验token"
+// @Param        file  formData  file  true  "电池信息"
+// @Success      200 {object} model.StatusResponse "请求成功"
+func (*battery) BatchCreate(c echo.Context) (err error) {
+    ctx := app.ContextX[app.ManagerContext](c)
+    return ctx.SendResponse(service.NewBattery(ctx.Modifier).BatchCreate(ctx.Context))
+}
+
+// Modify
+// @ID           ManagerBatteryModify
+// @Router       /manager/v1/battery/{id} [PUT]
+// @Summary      M4007 修改电池
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token header string true "管理员校验token"
+// @Param        id path uint64 true "电池ID"
+// @Param        body body model.BatteryModifyReq true "修改信息"
+// @Success      200 {object} model.StatusResponse "请求成功"
+func (*battery) Modify(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.BatteryModifyReq](c)
+    service.NewBattery(ctx.Modifier).Modify(req)
+    return ctx.SendResponse()
+}

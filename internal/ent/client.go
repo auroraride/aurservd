@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
@@ -78,6 +79,8 @@ type Client struct {
 	Assistance *AssistanceClient
 	// Attendance is the client for interacting with the Attendance builders.
 	Attendance *AttendanceClient
+	// Battery is the client for interacting with the Battery builders.
+	Battery *BatteryClient
 	// BatteryModel is the client for interacting with the BatteryModel builders.
 	BatteryModel *BatteryModelClient
 	// Branch is the client for interacting with the Branch builders.
@@ -185,6 +188,7 @@ func (c *Client) init() {
 	c.Allocate = NewAllocateClient(c.config)
 	c.Assistance = NewAssistanceClient(c.config)
 	c.Attendance = NewAttendanceClient(c.config)
+	c.Battery = NewBatteryClient(c.config)
 	c.BatteryModel = NewBatteryModelClient(c.config)
 	c.Branch = NewBranchClient(c.config)
 	c.BranchContract = NewBranchContractClient(c.config)
@@ -267,6 +271,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Allocate:             NewAllocateClient(cfg),
 		Assistance:           NewAssistanceClient(cfg),
 		Attendance:           NewAttendanceClient(cfg),
+		Battery:              NewBatteryClient(cfg),
 		BatteryModel:         NewBatteryModelClient(cfg),
 		Branch:               NewBranchClient(cfg),
 		BranchContract:       NewBranchContractClient(cfg),
@@ -335,6 +340,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Allocate:             NewAllocateClient(cfg),
 		Assistance:           NewAssistanceClient(cfg),
 		Attendance:           NewAttendanceClient(cfg),
+		Battery:              NewBatteryClient(cfg),
 		BatteryModel:         NewBatteryModelClient(cfg),
 		Branch:               NewBranchClient(cfg),
 		BranchContract:       NewBranchContractClient(cfg),
@@ -412,6 +418,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Allocate.Use(hooks...)
 	c.Assistance.Use(hooks...)
 	c.Attendance.Use(hooks...)
+	c.Battery.Use(hooks...)
 	c.BatteryModel.Use(hooks...)
 	c.Branch.Use(hooks...)
 	c.BranchContract.Use(hooks...)
@@ -1093,6 +1100,145 @@ func (c *AttendanceClient) QueryEmployee(a *Attendance) *EmployeeQuery {
 func (c *AttendanceClient) Hooks() []Hook {
 	hooks := c.hooks.Attendance
 	return append(hooks[:len(hooks):len(hooks)], attendance.Hooks[:]...)
+}
+
+// BatteryClient is a client for the Battery schema.
+type BatteryClient struct {
+	config
+}
+
+// NewBatteryClient returns a client for the Battery from the given config.
+func NewBatteryClient(c config) *BatteryClient {
+	return &BatteryClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `battery.Hooks(f(g(h())))`.
+func (c *BatteryClient) Use(hooks ...Hook) {
+	c.hooks.Battery = append(c.hooks.Battery, hooks...)
+}
+
+// Create returns a builder for creating a Battery entity.
+func (c *BatteryClient) Create() *BatteryCreate {
+	mutation := newBatteryMutation(c.config, OpCreate)
+	return &BatteryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Battery entities.
+func (c *BatteryClient) CreateBulk(builders ...*BatteryCreate) *BatteryCreateBulk {
+	return &BatteryCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Battery.
+func (c *BatteryClient) Update() *BatteryUpdate {
+	mutation := newBatteryMutation(c.config, OpUpdate)
+	return &BatteryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *BatteryClient) UpdateOne(b *Battery) *BatteryUpdateOne {
+	mutation := newBatteryMutation(c.config, OpUpdateOne, withBattery(b))
+	return &BatteryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *BatteryClient) UpdateOneID(id uint64) *BatteryUpdateOne {
+	mutation := newBatteryMutation(c.config, OpUpdateOne, withBatteryID(id))
+	return &BatteryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Battery.
+func (c *BatteryClient) Delete() *BatteryDelete {
+	mutation := newBatteryMutation(c.config, OpDelete)
+	return &BatteryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *BatteryClient) DeleteOne(b *Battery) *BatteryDeleteOne {
+	return c.DeleteOneID(b.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *BatteryClient) DeleteOneID(id uint64) *BatteryDeleteOne {
+	builder := c.Delete().Where(battery.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &BatteryDeleteOne{builder}
+}
+
+// Query returns a query builder for Battery.
+func (c *BatteryClient) Query() *BatteryQuery {
+	return &BatteryQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Battery entity by its id.
+func (c *BatteryClient) Get(ctx context.Context, id uint64) (*Battery, error) {
+	return c.Query().Where(battery.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *BatteryClient) GetX(ctx context.Context, id uint64) *Battery {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCity queries the city edge of a Battery.
+func (c *BatteryClient) QueryCity(b *Battery) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(battery.Table, battery.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, battery.CityTable, battery.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRider queries the rider edge of a Battery.
+func (c *BatteryClient) QueryRider(b *Battery) *RiderQuery {
+	query := &RiderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(battery.Table, battery.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, battery.RiderTable, battery.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCabinet queries the cabinet edge of a Battery.
+func (c *BatteryClient) QueryCabinet(b *Battery) *CabinetQuery {
+	query := &CabinetQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(battery.Table, battery.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, battery.CabinetTable, battery.CabinetColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *BatteryClient) Hooks() []Hook {
+	hooks := c.hooks.Battery
+	return append(hooks[:len(hooks):len(hooks)], battery.Hooks[:]...)
 }
 
 // BatteryModelClient is a client for the BatteryModel schema.

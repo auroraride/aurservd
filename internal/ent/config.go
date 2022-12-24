@@ -32,6 +32,7 @@ type hooks struct {
 	Allocate             []ent.Hook
 	Assistance           []ent.Hook
 	Attendance           []ent.Hook
+	Battery              []ent.Hook
 	BatteryModel         []ent.Hook
 	Branch               []ent.Hook
 	BranchContract       []ent.Hook

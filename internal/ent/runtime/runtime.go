@@ -10,6 +10,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
@@ -142,6 +143,27 @@ func init() {
 	attendance.DefaultUpdatedAt = attendanceDescUpdatedAt.Default.(func() time.Time)
 	// attendance.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	attendance.UpdateDefaultUpdatedAt = attendanceDescUpdatedAt.UpdateDefault.(func() time.Time)
+	batteryMixin := schema.Battery{}.Mixin()
+	batteryMixinHooks2 := batteryMixin[2].Hooks()
+	battery.Hooks[0] = batteryMixinHooks2[0]
+	batteryMixinFields0 := batteryMixin[0].Fields()
+	_ = batteryMixinFields0
+	batteryFields := schema.Battery{}.Fields()
+	_ = batteryFields
+	// batteryDescCreatedAt is the schema descriptor for created_at field.
+	batteryDescCreatedAt := batteryMixinFields0[0].Descriptor()
+	// battery.DefaultCreatedAt holds the default value on creation for the created_at field.
+	battery.DefaultCreatedAt = batteryDescCreatedAt.Default.(func() time.Time)
+	// batteryDescUpdatedAt is the schema descriptor for updated_at field.
+	batteryDescUpdatedAt := batteryMixinFields0[1].Descriptor()
+	// battery.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	battery.DefaultUpdatedAt = batteryDescUpdatedAt.Default.(func() time.Time)
+	// battery.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	battery.UpdateDefaultUpdatedAt = batteryDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// batteryDescEnable is the schema descriptor for enable field.
+	batteryDescEnable := batteryFields[1].Descriptor()
+	// battery.DefaultEnable holds the default value on creation for the enable field.
+	battery.DefaultEnable = batteryDescEnable.Default.(bool)
 	batterymodelFields := schema.BatteryModel{}.Fields()
 	_ = batterymodelFields
 	// batterymodelDescCreatedAt is the schema descriptor for created_at field.

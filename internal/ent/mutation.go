@@ -19,6 +19,7 @@ const (
 	TypeAllocate             = "Allocate"
 	TypeAssistance           = "Assistance"
 	TypeAttendance           = "Attendance"
+	TypeBattery              = "Battery"
 	TypeBatteryModel         = "BatteryModel"
 	TypeBranch               = "Branch"
 	TypeBranchContract       = "BranchContract"

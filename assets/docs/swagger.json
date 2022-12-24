@@ -2567,6 +2567,168 @@
                 }
             }
         },
+        "/manager/v1/battery": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M4004 电池列表",
+                "operationId": "ManagerBatteryList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "型号",
+                        "name": "model",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "编号",
+                        "name": "sn",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "状态 0:全部 1:启用(不携带默认为启用) 2:禁用",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.BatteryListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M4005 添加电池",
+                "operationId": "ManagerBatteryCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "电池信息",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BatteryCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/battery/batch": {
+            "post": {
+                "description": "参考 [MI007 批量导入电车]",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M4006 批量导入电池",
+                "operationId": "ManagerBatteryBatchCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "电池信息",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/battery/model": {
             "get": {
                 "consumes": [
@@ -2691,6 +2853,54 @@
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/model.BatteryModelReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/battery/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M4007 修改电池",
+                "operationId": "ManagerBatteryModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "电池ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "修改信息",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BatteryModifyReq"
                         }
                     }
                 ],
@@ -14799,6 +15009,76 @@
                 }
             }
         },
+        "model.BatteryCreateReq": {
+            "type": "object",
+            "required": [
+                "cityId",
+                "model",
+                "sn"
+            ],
+            "properties": {
+                "cityId": {
+                    "description": "城市 ",
+                    "type": "integer"
+                },
+                "enable": {
+                    "description": "是否启用, 需默认为`true`",
+                    "type": "boolean"
+                },
+                "model": {
+                    "description": "电池型号 ",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "电池编号 ",
+                    "type": "string"
+                }
+            }
+        },
+        "model.BatteryListRes": {
+            "type": "object",
+            "properties": {
+                "cabinet": {
+                    "description": "电柜",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CabinetBasicInfo"
+                        }
+                    ]
+                },
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "enable": {
+                    "description": "是否启用",
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "model": {
+                    "description": "型号",
+                    "type": "string"
+                },
+                "rider": {
+                    "description": "骑手",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Rider"
+                        }
+                    ]
+                },
+                "sn": {
+                    "description": "编号",
+                    "type": "string"
+                }
+            }
+        },
         "model.BatteryModel": {
             "type": "object",
             "properties": {
@@ -14817,6 +15097,19 @@
                 "model": {
                     "description": "电池型号(POST), 例如60V30AH",
                     "type": "string"
+                }
+            }
+        },
+        "model.BatteryModifyReq": {
+            "type": "object",
+            "properties": {
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
+                "enable": {
+                    "description": "是否启用",
+                    "type": "boolean"
                 }
             }
         },

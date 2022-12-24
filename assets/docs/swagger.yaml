@@ -1107,6 +1107,51 @@ definitions:
     - lng
     - sn
     type: object
+  model.BatteryCreateReq:
+    properties:
+      cityId:
+        description: '城市 '
+        type: integer
+      enable:
+        description: 是否启用, 需默认为`true`
+        type: boolean
+      model:
+        description: '电池型号 '
+        type: string
+      sn:
+        description: '电池编号 '
+        type: string
+    required:
+    - cityId
+    - model
+    - sn
+    type: object
+  model.BatteryListRes:
+    properties:
+      cabinet:
+        allOf:
+        - $ref: '#/definitions/model.CabinetBasicInfo'
+        description: 电柜
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      enable:
+        description: 是否启用
+        type: boolean
+      id:
+        type: integer
+      model:
+        description: 型号
+        type: string
+      rider:
+        allOf:
+        - $ref: '#/definitions/model.Rider'
+        description: 骑手
+      sn:
+        description: 编号
+        type: string
+    type: object
   model.BatteryModel:
     properties:
       id:
@@ -1120,6 +1165,15 @@ definitions:
       model:
         description: 电池型号(POST), 例如60V30AH
         type: string
+    type: object
+  model.BatteryModifyReq:
+    properties:
+      cityId:
+        description: 城市ID
+        type: integer
+      enable:
+        description: 是否启用
+        type: boolean
     type: object
   model.BillOverview:
     properties:
@@ -8216,6 +8270,143 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: MC006 拒绝救援
+      tags:
+      - '[M]管理接口'
+  /manager/v1/battery:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerBatteryList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 城市
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 型号
+        in: query
+        name: model
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 编号
+        in: query
+        name: sn
+        type: string
+      - description: 状态 0:全部 1:启用(不携带默认为启用) 2:禁用
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.BatteryListRes'
+                  type: array
+              type: object
+      summary: M4004 电池列表
+      tags:
+      - '[M]管理接口'
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerBatteryCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 电池信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BatteryCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M4005 添加电池
+      tags:
+      - '[M]管理接口'
+  /manager/v1/battery/{id}:
+    put:
+      consumes:
+      - application/json
+      operationId: ManagerBatteryModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 电池ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 修改信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BatteryModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M4007 修改电池
+      tags:
+      - '[M]管理接口'
+  /manager/v1/battery/batch:
+    post:
+      consumes:
+      - application/json
+      description: 参考 [MI007 批量导入电车]
+      operationId: ManagerBatteryBatchCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 电池信息
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M4006 批量导入电池
       tags:
       - '[M]管理接口'
   /manager/v1/battery/model:

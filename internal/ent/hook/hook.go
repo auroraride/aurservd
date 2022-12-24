@@ -61,6 +61,19 @@ func (f AttendanceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return f(ctx, mv)
 }
 
+// The BatteryFunc type is an adapter to allow the use of ordinary
+// function as Battery mutator.
+type BatteryFunc func(context.Context, *ent.BatteryMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f BatteryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.BatteryMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BatteryMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The BatteryModelFunc type is an adapter to allow the use of ordinary
 // function as BatteryModel mutator.
 type BatteryModelFunc func(context.Context, *ent.BatteryModelMutation) (ent.Value, error)

@@ -137,6 +137,38 @@ func (aq *AttendanceQuery) PaginationResult(req model.PaginationReq) model.Pagin
 	}
 }
 
+// Pagination returns pagination query builder for BatteryQuery.
+func (bq *BatteryQuery) Pagination(req model.PaginationReq) *BatteryQuery {
+	bq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return bq
+}
+
+// PaginationItems returns pagination query builder for BatteryQuery.
+func (bq *BatteryQuery) PaginationItemsX(req model.PaginationReq) any {
+	return bq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for BatteryQuery.
+func (bq *BatteryQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := bq.Clone()
+	query.order = nil
+	query.order = nil
+	query.limit = nil
+	query.offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for BatteryModelQuery.
 func (bmq *BatteryModelQuery) Pagination(req model.PaginationReq) *BatteryModelQuery {
 	bmq.Offset(req.GetOffset()).Limit(req.GetLimit())

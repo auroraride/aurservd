@@ -237,32 +237,15 @@ func (s *ebikeService) Modify(req *model.EbikeModifyReq) {
         ExecX(s.ctx)
 }
 
-func (s *ebikeService) BatchCreate(c echo.Context) (failed []string) {
-    xlsx := s.BaseService.GetXlsxDataX(c)
-    if len(xlsx) < 2 {
-        snag.Panic("至少有一条车辆信息")
-    }
+// BatchCreate 批量创建
+// 0-型号:brand(需查询) 1-车架号:sn 2-生产批次:exFactory 3-车牌号:plate 4-终端编号:machine 5-SIM卡:sim 6-颜色:color
+func (s *ebikeService) BatchCreate(c echo.Context) []string {
+    rows, sns, failed := s.BaseService.GetXlsxRows(c, 2, 3, 1)
     // 获取所有型号
     brands := NewEbikeBrand().All()
     bm := make(map[string]uint64)
     for _, brand := range brands {
         bm[brand.Name] = brand.ID
-    }
-
-    s.orm.CreateBulk()
-
-    failed = make([]string, 0)
-
-    // 轮询一遍去重
-    var sns []string
-    var rows [][]string
-    for _, columns := range xlsx[1:] {
-        if len(columns) < 3 {
-            failed = append(failed, fmt.Sprintf("格式错误:%s", strings.Join(columns, ",")))
-            continue
-        }
-        sns = append(sns, columns[1])
-        rows = append(rows, columns)
     }
 
     arr, _ := s.orm.Query().Where(ebike.SnIn(sns...)).All(s.ctx)
@@ -271,7 +254,6 @@ func (s *ebikeService) BatchCreate(c echo.Context) (failed []string) {
         exists[a.Sn] = true
     }
 
-    // 型号:brand(需查询) 车架号:sn 生产批次:exFactory 车牌号:plate 终端编号:machine SIM卡:sim 颜色:color
     for _, columns := range rows {
 
         bid, ok := bm[columns[0]]
@@ -311,7 +293,7 @@ func (s *ebikeService) BatchCreate(c echo.Context) (failed []string) {
         }
     }
 
-    return
+    return failed
 }
 
 func (s *ebikeService) Detail(bike *ent.Ebike, brand *ent.EbikeBrand) *model.Ebike {
