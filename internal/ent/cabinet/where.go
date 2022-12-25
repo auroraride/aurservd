@@ -165,13 +165,6 @@ func Status(v uint8) predicate.Cabinet {
 	})
 }
 
-// Health applies equality check predicate on the "health" field. It's identical to HealthEQ.
-func Health(v uint8) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldHealth), v))
-	})
-}
-
 // Lng applies equality check predicate on the "lng" field. It's identical to LngEQ.
 func Lng(v float64) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
@@ -211,6 +204,20 @@ func SimDate(v time.Time) predicate.Cabinet {
 func Transferred(v bool) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldTransferred), v))
+	})
+}
+
+// Intelligent applies equality check predicate on the "intelligent" field. It's identical to IntelligentEQ.
+func Intelligent(v bool) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldIntelligent), v))
+	})
+}
+
+// Health applies equality check predicate on the "health" field. It's identical to HealthEQ.
+func Health(v uint8) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldHealth), v))
 	})
 }
 
@@ -1220,84 +1227,6 @@ func StatusLTE(v uint8) predicate.Cabinet {
 	})
 }
 
-// HealthEQ applies the EQ predicate on the "health" field.
-func HealthEQ(v uint8) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldHealth), v))
-	})
-}
-
-// HealthNEQ applies the NEQ predicate on the "health" field.
-func HealthNEQ(v uint8) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldHealth), v))
-	})
-}
-
-// HealthIn applies the In predicate on the "health" field.
-func HealthIn(vs ...uint8) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldHealth), v...))
-	})
-}
-
-// HealthNotIn applies the NotIn predicate on the "health" field.
-func HealthNotIn(vs ...uint8) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldHealth), v...))
-	})
-}
-
-// HealthGT applies the GT predicate on the "health" field.
-func HealthGT(v uint8) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldHealth), v))
-	})
-}
-
-// HealthGTE applies the GTE predicate on the "health" field.
-func HealthGTE(v uint8) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldHealth), v))
-	})
-}
-
-// HealthLT applies the LT predicate on the "health" field.
-func HealthLT(v uint8) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldHealth), v))
-	})
-}
-
-// HealthLTE applies the LTE predicate on the "health" field.
-func HealthLTE(v uint8) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldHealth), v))
-	})
-}
-
-// BinIsNil applies the IsNil predicate on the "bin" field.
-func BinIsNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldBin)))
-	})
-}
-
-// BinNotNil applies the NotNil predicate on the "bin" field.
-func BinNotNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldBin)))
-	})
-}
-
 // LngEQ applies the EQ predicate on the "lng" field.
 func LngEQ(v float64) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
@@ -1769,6 +1698,98 @@ func TransferredEQ(v bool) predicate.Cabinet {
 func TransferredNEQ(v bool) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldTransferred), v))
+	})
+}
+
+// IntelligentEQ applies the EQ predicate on the "intelligent" field.
+func IntelligentEQ(v bool) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldIntelligent), v))
+	})
+}
+
+// IntelligentNEQ applies the NEQ predicate on the "intelligent" field.
+func IntelligentNEQ(v bool) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldIntelligent), v))
+	})
+}
+
+// HealthEQ applies the EQ predicate on the "health" field.
+func HealthEQ(v uint8) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldHealth), v))
+	})
+}
+
+// HealthNEQ applies the NEQ predicate on the "health" field.
+func HealthNEQ(v uint8) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldHealth), v))
+	})
+}
+
+// HealthIn applies the In predicate on the "health" field.
+func HealthIn(vs ...uint8) predicate.Cabinet {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldHealth), v...))
+	})
+}
+
+// HealthNotIn applies the NotIn predicate on the "health" field.
+func HealthNotIn(vs ...uint8) predicate.Cabinet {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldHealth), v...))
+	})
+}
+
+// HealthGT applies the GT predicate on the "health" field.
+func HealthGT(v uint8) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldHealth), v))
+	})
+}
+
+// HealthGTE applies the GTE predicate on the "health" field.
+func HealthGTE(v uint8) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldHealth), v))
+	})
+}
+
+// HealthLT applies the LT predicate on the "health" field.
+func HealthLT(v uint8) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldHealth), v))
+	})
+}
+
+// HealthLTE applies the LTE predicate on the "health" field.
+func HealthLTE(v uint8) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldHealth), v))
+	})
+}
+
+// BinIsNil applies the IsNil predicate on the "bin" field.
+func BinIsNil() predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldBin)))
+	})
+}
+
+// BinNotNil applies the NotNil predicate on the "bin" field.
+func BinNotNil() predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldBin)))
 	})
 }
 

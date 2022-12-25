@@ -502,7 +502,10 @@ func (bq *BatteryQuery) loadRider(ctx context.Context, query *RiderQuery, nodes 
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*Battery)
 	for i := range nodes {
-		fk := nodes[i].RiderID
+		if nodes[i].RiderID == nil {
+			continue
+		}
+		fk := *nodes[i].RiderID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -528,7 +531,10 @@ func (bq *BatteryQuery) loadCabinet(ctx context.Context, query *CabinetQuery, no
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*Battery)
 	for i := range nodes {
-		fk := nodes[i].CabinetID
+		if nodes[i].CabinetID == nil {
+			continue
+		}
+		fk := *nodes[i].CabinetID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}

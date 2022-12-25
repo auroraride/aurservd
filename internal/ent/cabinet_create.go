@@ -161,26 +161,6 @@ func (cc *CabinetCreate) SetStatus(u uint8) *CabinetCreate {
 	return cc
 }
 
-// SetHealth sets the "health" field.
-func (cc *CabinetCreate) SetHealth(u uint8) *CabinetCreate {
-	cc.mutation.SetHealth(u)
-	return cc
-}
-
-// SetNillableHealth sets the "health" field if the given value is not nil.
-func (cc *CabinetCreate) SetNillableHealth(u *uint8) *CabinetCreate {
-	if u != nil {
-		cc.SetHealth(*u)
-	}
-	return cc
-}
-
-// SetBin sets the "bin" field.
-func (cc *CabinetCreate) SetBin(mb model.CabinetBins) *CabinetCreate {
-	cc.mutation.SetBin(mb)
-	return cc
-}
-
 // SetLng sets the "lng" field.
 func (cc *CabinetCreate) SetLng(f float64) *CabinetCreate {
 	cc.mutation.SetLng(f)
@@ -262,6 +242,40 @@ func (cc *CabinetCreate) SetNillableTransferred(b *bool) *CabinetCreate {
 	if b != nil {
 		cc.SetTransferred(*b)
 	}
+	return cc
+}
+
+// SetIntelligent sets the "intelligent" field.
+func (cc *CabinetCreate) SetIntelligent(b bool) *CabinetCreate {
+	cc.mutation.SetIntelligent(b)
+	return cc
+}
+
+// SetNillableIntelligent sets the "intelligent" field if the given value is not nil.
+func (cc *CabinetCreate) SetNillableIntelligent(b *bool) *CabinetCreate {
+	if b != nil {
+		cc.SetIntelligent(*b)
+	}
+	return cc
+}
+
+// SetHealth sets the "health" field.
+func (cc *CabinetCreate) SetHealth(u uint8) *CabinetCreate {
+	cc.mutation.SetHealth(u)
+	return cc
+}
+
+// SetNillableHealth sets the "health" field if the given value is not nil.
+func (cc *CabinetCreate) SetNillableHealth(u *uint8) *CabinetCreate {
+	if u != nil {
+		cc.SetHealth(*u)
+	}
+	return cc
+}
+
+// SetBin sets the "bin" field.
+func (cc *CabinetCreate) SetBin(mb model.CabinetBins) *CabinetCreate {
+	cc.mutation.SetBin(mb)
 	return cc
 }
 
@@ -498,13 +512,17 @@ func (cc *CabinetCreate) defaults() error {
 		v := cabinet.DefaultUpdatedAt()
 		cc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := cc.mutation.Health(); !ok {
-		v := cabinet.DefaultHealth
-		cc.mutation.SetHealth(v)
-	}
 	if _, ok := cc.mutation.Transferred(); !ok {
 		v := cabinet.DefaultTransferred
 		cc.mutation.SetTransferred(v)
+	}
+	if _, ok := cc.mutation.Intelligent(); !ok {
+		v := cabinet.DefaultIntelligent
+		cc.mutation.SetIntelligent(v)
+	}
+	if _, ok := cc.mutation.Health(); !ok {
+		v := cabinet.DefaultHealth
+		cc.mutation.SetHealth(v)
 	}
 	if _, ok := cc.mutation.BatteryNum(); !ok {
 		v := cabinet.DefaultBatteryNum
@@ -555,11 +573,14 @@ func (cc *CabinetCreate) check() error {
 	if _, ok := cc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Cabinet.status"`)}
 	}
-	if _, ok := cc.mutation.Health(); !ok {
-		return &ValidationError{Name: "health", err: errors.New(`ent: missing required field "Cabinet.health"`)}
-	}
 	if _, ok := cc.mutation.Transferred(); !ok {
 		return &ValidationError{Name: "transferred", err: errors.New(`ent: missing required field "Cabinet.transferred"`)}
+	}
+	if _, ok := cc.mutation.Intelligent(); !ok {
+		return &ValidationError{Name: "intelligent", err: errors.New(`ent: missing required field "Cabinet.intelligent"`)}
+	}
+	if _, ok := cc.mutation.Health(); !ok {
+		return &ValidationError{Name: "health", err: errors.New(`ent: missing required field "Cabinet.health"`)}
 	}
 	if _, ok := cc.mutation.BatteryNum(); !ok {
 		return &ValidationError{Name: "battery_num", err: errors.New(`ent: missing required field "Cabinet.battery_num"`)}
@@ -700,22 +721,6 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 		})
 		_node.Status = value
 	}
-	if value, ok := cc.mutation.Health(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: cabinet.FieldHealth,
-		})
-		_node.Health = value
-	}
-	if value, ok := cc.mutation.Bin(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinet.FieldBin,
-		})
-		_node.Bin = value
-	}
 	if value, ok := cc.mutation.Lng(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
@@ -763,6 +768,30 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 			Column: cabinet.FieldTransferred,
 		})
 		_node.Transferred = value
+	}
+	if value, ok := cc.mutation.Intelligent(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: cabinet.FieldIntelligent,
+		})
+		_node.Intelligent = value
+	}
+	if value, ok := cc.mutation.Health(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: cabinet.FieldHealth,
+		})
+		_node.Health = value
+	}
+	if value, ok := cc.mutation.Bin(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: cabinet.FieldBin,
+		})
+		_node.Bin = value
 	}
 	if value, ok := cc.mutation.BatteryNum(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -1158,42 +1187,6 @@ func (u *CabinetUpsert) AddStatus(v uint8) *CabinetUpsert {
 	return u
 }
 
-// SetHealth sets the "health" field.
-func (u *CabinetUpsert) SetHealth(v uint8) *CabinetUpsert {
-	u.Set(cabinet.FieldHealth, v)
-	return u
-}
-
-// UpdateHealth sets the "health" field to the value that was provided on create.
-func (u *CabinetUpsert) UpdateHealth() *CabinetUpsert {
-	u.SetExcluded(cabinet.FieldHealth)
-	return u
-}
-
-// AddHealth adds v to the "health" field.
-func (u *CabinetUpsert) AddHealth(v uint8) *CabinetUpsert {
-	u.Add(cabinet.FieldHealth, v)
-	return u
-}
-
-// SetBin sets the "bin" field.
-func (u *CabinetUpsert) SetBin(v model.CabinetBins) *CabinetUpsert {
-	u.Set(cabinet.FieldBin, v)
-	return u
-}
-
-// UpdateBin sets the "bin" field to the value that was provided on create.
-func (u *CabinetUpsert) UpdateBin() *CabinetUpsert {
-	u.SetExcluded(cabinet.FieldBin)
-	return u
-}
-
-// ClearBin clears the value of the "bin" field.
-func (u *CabinetUpsert) ClearBin() *CabinetUpsert {
-	u.SetNull(cabinet.FieldBin)
-	return u
-}
-
 // SetLng sets the "lng" field.
 func (u *CabinetUpsert) SetLng(v float64) *CabinetUpsert {
 	u.Set(cabinet.FieldLng, v)
@@ -1305,6 +1298,54 @@ func (u *CabinetUpsert) SetTransferred(v bool) *CabinetUpsert {
 // UpdateTransferred sets the "transferred" field to the value that was provided on create.
 func (u *CabinetUpsert) UpdateTransferred() *CabinetUpsert {
 	u.SetExcluded(cabinet.FieldTransferred)
+	return u
+}
+
+// SetIntelligent sets the "intelligent" field.
+func (u *CabinetUpsert) SetIntelligent(v bool) *CabinetUpsert {
+	u.Set(cabinet.FieldIntelligent, v)
+	return u
+}
+
+// UpdateIntelligent sets the "intelligent" field to the value that was provided on create.
+func (u *CabinetUpsert) UpdateIntelligent() *CabinetUpsert {
+	u.SetExcluded(cabinet.FieldIntelligent)
+	return u
+}
+
+// SetHealth sets the "health" field.
+func (u *CabinetUpsert) SetHealth(v uint8) *CabinetUpsert {
+	u.Set(cabinet.FieldHealth, v)
+	return u
+}
+
+// UpdateHealth sets the "health" field to the value that was provided on create.
+func (u *CabinetUpsert) UpdateHealth() *CabinetUpsert {
+	u.SetExcluded(cabinet.FieldHealth)
+	return u
+}
+
+// AddHealth adds v to the "health" field.
+func (u *CabinetUpsert) AddHealth(v uint8) *CabinetUpsert {
+	u.Add(cabinet.FieldHealth, v)
+	return u
+}
+
+// SetBin sets the "bin" field.
+func (u *CabinetUpsert) SetBin(v model.CabinetBins) *CabinetUpsert {
+	u.Set(cabinet.FieldBin, v)
+	return u
+}
+
+// UpdateBin sets the "bin" field to the value that was provided on create.
+func (u *CabinetUpsert) UpdateBin() *CabinetUpsert {
+	u.SetExcluded(cabinet.FieldBin)
+	return u
+}
+
+// ClearBin clears the value of the "bin" field.
+func (u *CabinetUpsert) ClearBin() *CabinetUpsert {
+	u.SetNull(cabinet.FieldBin)
 	return u
 }
 
@@ -1663,48 +1704,6 @@ func (u *CabinetUpsertOne) UpdateStatus() *CabinetUpsertOne {
 	})
 }
 
-// SetHealth sets the "health" field.
-func (u *CabinetUpsertOne) SetHealth(v uint8) *CabinetUpsertOne {
-	return u.Update(func(s *CabinetUpsert) {
-		s.SetHealth(v)
-	})
-}
-
-// AddHealth adds v to the "health" field.
-func (u *CabinetUpsertOne) AddHealth(v uint8) *CabinetUpsertOne {
-	return u.Update(func(s *CabinetUpsert) {
-		s.AddHealth(v)
-	})
-}
-
-// UpdateHealth sets the "health" field to the value that was provided on create.
-func (u *CabinetUpsertOne) UpdateHealth() *CabinetUpsertOne {
-	return u.Update(func(s *CabinetUpsert) {
-		s.UpdateHealth()
-	})
-}
-
-// SetBin sets the "bin" field.
-func (u *CabinetUpsertOne) SetBin(v model.CabinetBins) *CabinetUpsertOne {
-	return u.Update(func(s *CabinetUpsert) {
-		s.SetBin(v)
-	})
-}
-
-// UpdateBin sets the "bin" field to the value that was provided on create.
-func (u *CabinetUpsertOne) UpdateBin() *CabinetUpsertOne {
-	return u.Update(func(s *CabinetUpsert) {
-		s.UpdateBin()
-	})
-}
-
-// ClearBin clears the value of the "bin" field.
-func (u *CabinetUpsertOne) ClearBin() *CabinetUpsertOne {
-	return u.Update(func(s *CabinetUpsert) {
-		s.ClearBin()
-	})
-}
-
 // SetLng sets the "lng" field.
 func (u *CabinetUpsertOne) SetLng(v float64) *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
@@ -1835,6 +1834,62 @@ func (u *CabinetUpsertOne) SetTransferred(v bool) *CabinetUpsertOne {
 func (u *CabinetUpsertOne) UpdateTransferred() *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
 		s.UpdateTransferred()
+	})
+}
+
+// SetIntelligent sets the "intelligent" field.
+func (u *CabinetUpsertOne) SetIntelligent(v bool) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetIntelligent(v)
+	})
+}
+
+// UpdateIntelligent sets the "intelligent" field to the value that was provided on create.
+func (u *CabinetUpsertOne) UpdateIntelligent() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateIntelligent()
+	})
+}
+
+// SetHealth sets the "health" field.
+func (u *CabinetUpsertOne) SetHealth(v uint8) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetHealth(v)
+	})
+}
+
+// AddHealth adds v to the "health" field.
+func (u *CabinetUpsertOne) AddHealth(v uint8) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.AddHealth(v)
+	})
+}
+
+// UpdateHealth sets the "health" field to the value that was provided on create.
+func (u *CabinetUpsertOne) UpdateHealth() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateHealth()
+	})
+}
+
+// SetBin sets the "bin" field.
+func (u *CabinetUpsertOne) SetBin(v model.CabinetBins) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetBin(v)
+	})
+}
+
+// UpdateBin sets the "bin" field to the value that was provided on create.
+func (u *CabinetUpsertOne) UpdateBin() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateBin()
+	})
+}
+
+// ClearBin clears the value of the "bin" field.
+func (u *CabinetUpsertOne) ClearBin() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.ClearBin()
 	})
 }
 
@@ -2370,48 +2425,6 @@ func (u *CabinetUpsertBulk) UpdateStatus() *CabinetUpsertBulk {
 	})
 }
 
-// SetHealth sets the "health" field.
-func (u *CabinetUpsertBulk) SetHealth(v uint8) *CabinetUpsertBulk {
-	return u.Update(func(s *CabinetUpsert) {
-		s.SetHealth(v)
-	})
-}
-
-// AddHealth adds v to the "health" field.
-func (u *CabinetUpsertBulk) AddHealth(v uint8) *CabinetUpsertBulk {
-	return u.Update(func(s *CabinetUpsert) {
-		s.AddHealth(v)
-	})
-}
-
-// UpdateHealth sets the "health" field to the value that was provided on create.
-func (u *CabinetUpsertBulk) UpdateHealth() *CabinetUpsertBulk {
-	return u.Update(func(s *CabinetUpsert) {
-		s.UpdateHealth()
-	})
-}
-
-// SetBin sets the "bin" field.
-func (u *CabinetUpsertBulk) SetBin(v model.CabinetBins) *CabinetUpsertBulk {
-	return u.Update(func(s *CabinetUpsert) {
-		s.SetBin(v)
-	})
-}
-
-// UpdateBin sets the "bin" field to the value that was provided on create.
-func (u *CabinetUpsertBulk) UpdateBin() *CabinetUpsertBulk {
-	return u.Update(func(s *CabinetUpsert) {
-		s.UpdateBin()
-	})
-}
-
-// ClearBin clears the value of the "bin" field.
-func (u *CabinetUpsertBulk) ClearBin() *CabinetUpsertBulk {
-	return u.Update(func(s *CabinetUpsert) {
-		s.ClearBin()
-	})
-}
-
 // SetLng sets the "lng" field.
 func (u *CabinetUpsertBulk) SetLng(v float64) *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
@@ -2542,6 +2555,62 @@ func (u *CabinetUpsertBulk) SetTransferred(v bool) *CabinetUpsertBulk {
 func (u *CabinetUpsertBulk) UpdateTransferred() *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
 		s.UpdateTransferred()
+	})
+}
+
+// SetIntelligent sets the "intelligent" field.
+func (u *CabinetUpsertBulk) SetIntelligent(v bool) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetIntelligent(v)
+	})
+}
+
+// UpdateIntelligent sets the "intelligent" field to the value that was provided on create.
+func (u *CabinetUpsertBulk) UpdateIntelligent() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateIntelligent()
+	})
+}
+
+// SetHealth sets the "health" field.
+func (u *CabinetUpsertBulk) SetHealth(v uint8) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetHealth(v)
+	})
+}
+
+// AddHealth adds v to the "health" field.
+func (u *CabinetUpsertBulk) AddHealth(v uint8) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.AddHealth(v)
+	})
+}
+
+// UpdateHealth sets the "health" field to the value that was provided on create.
+func (u *CabinetUpsertBulk) UpdateHealth() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateHealth()
+	})
+}
+
+// SetBin sets the "bin" field.
+func (u *CabinetUpsertBulk) SetBin(v model.CabinetBins) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetBin(v)
+	})
+}
+
+// UpdateBin sets the "bin" field to the value that was provided on create.
+func (u *CabinetUpsertBulk) UpdateBin() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateBin()
+	})
+}
+
+// ClearBin clears the value of the "bin" field.
+func (u *CabinetUpsertBulk) ClearBin() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.ClearBin()
 	})
 }
 

@@ -13,6 +13,7 @@ require (
 	github.com/aliyun/alibaba-cloud-sdk-go v1.61.1799
 	github.com/aliyun/aliyun-log-go-sdk v0.1.38
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.5+incompatible
+	github.com/auroraride/bridge v0.0.0
 	github.com/fsnotify/fsnotify v1.5.4
 	github.com/getkin/kin-openapi v0.103.0
 	github.com/go-playground/locales v0.14.0
@@ -157,8 +158,10 @@ require (
 	golang.org/x/net v0.0.0-20221004154528-8021a29435af // indirect
 	golang.org/x/sync v0.0.0-20220929204114-8fcdb60fdcc0 // indirect
 	golang.org/x/sys v0.0.0-20220928140112-f11e5e49a4ec // indirect
-	golang.org/x/text v0.3.7 // indirect
+	golang.org/x/text v0.4.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/genproto v0.0.0-20220519153652-3a47de7e79bd // indirect
+	google.golang.org/grpc v1.51.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
@@ -170,3 +173,5 @@ replace github.com/swaggo/swag => github.com/liasica/swag v1.8.7-0.2022093001003
 
 //replace entgo.io/ent => github.com/CharlesGe129/ent v0.10.2-0.20220520130033-5886b54e4875
 replace entgo.io/ent => github.com/liasica/ent v0.11.3-0.20220926082554-08715525d2cf
+
+replace github.com/auroraride/bridge => ../bridge

@@ -45,10 +45,15 @@ func (s *batteryService) QueryIDX(id uint64) (b *ent.Battery) {
 
 // Create 创建电池
 func (s *batteryService) Create(req *model.BatteryCreateReq) {
+    enable := true
+    if req.Enable != nil {
+        enable = *req.Enable
+    }
     _, err := s.orm.Create().
         SetSn(req.SN).
         SetModel(req.Model).
-        SetEnable(req.Enable).
+        SetEnable(enable).
+        SetCityID(req.CityID).
         Save(s.ctx)
     if err != nil {
         snag.Panic("电池创建失败: " + err.Error())
@@ -140,10 +145,10 @@ func (s *batteryService) listFilter(req model.BatteryFilter) (q *ent.BatteryQuer
     }
     info["状态"] = statusText[status]
     switch status {
-    case 0:
-        q.Where(battery.Enable(false))
     case 1:
         q.Where(battery.Enable(true))
+    case 2:
+        q.Where(battery.Enable(false))
     default:
         info["状态"] = "-"
     }

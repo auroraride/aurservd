@@ -184,39 +184,6 @@ func (cu *CabinetUpdate) AddStatus(u int8) *CabinetUpdate {
 	return cu
 }
 
-// SetHealth sets the "health" field.
-func (cu *CabinetUpdate) SetHealth(u uint8) *CabinetUpdate {
-	cu.mutation.ResetHealth()
-	cu.mutation.SetHealth(u)
-	return cu
-}
-
-// SetNillableHealth sets the "health" field if the given value is not nil.
-func (cu *CabinetUpdate) SetNillableHealth(u *uint8) *CabinetUpdate {
-	if u != nil {
-		cu.SetHealth(*u)
-	}
-	return cu
-}
-
-// AddHealth adds u to the "health" field.
-func (cu *CabinetUpdate) AddHealth(u int8) *CabinetUpdate {
-	cu.mutation.AddHealth(u)
-	return cu
-}
-
-// SetBin sets the "bin" field.
-func (cu *CabinetUpdate) SetBin(mb model.CabinetBins) *CabinetUpdate {
-	cu.mutation.SetBin(mb)
-	return cu
-}
-
-// ClearBin clears the value of the "bin" field.
-func (cu *CabinetUpdate) ClearBin() *CabinetUpdate {
-	cu.mutation.ClearBin()
-	return cu
-}
-
 // SetLng sets the "lng" field.
 func (cu *CabinetUpdate) SetLng(f float64) *CabinetUpdate {
 	cu.mutation.ResetLng()
@@ -342,6 +309,53 @@ func (cu *CabinetUpdate) SetNillableTransferred(b *bool) *CabinetUpdate {
 	if b != nil {
 		cu.SetTransferred(*b)
 	}
+	return cu
+}
+
+// SetIntelligent sets the "intelligent" field.
+func (cu *CabinetUpdate) SetIntelligent(b bool) *CabinetUpdate {
+	cu.mutation.SetIntelligent(b)
+	return cu
+}
+
+// SetNillableIntelligent sets the "intelligent" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableIntelligent(b *bool) *CabinetUpdate {
+	if b != nil {
+		cu.SetIntelligent(*b)
+	}
+	return cu
+}
+
+// SetHealth sets the "health" field.
+func (cu *CabinetUpdate) SetHealth(u uint8) *CabinetUpdate {
+	cu.mutation.ResetHealth()
+	cu.mutation.SetHealth(u)
+	return cu
+}
+
+// SetNillableHealth sets the "health" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableHealth(u *uint8) *CabinetUpdate {
+	if u != nil {
+		cu.SetHealth(*u)
+	}
+	return cu
+}
+
+// AddHealth adds u to the "health" field.
+func (cu *CabinetUpdate) AddHealth(u int8) *CabinetUpdate {
+	cu.mutation.AddHealth(u)
+	return cu
+}
+
+// SetBin sets the "bin" field.
+func (cu *CabinetUpdate) SetBin(mb model.CabinetBins) *CabinetUpdate {
+	cu.mutation.SetBin(mb)
+	return cu
+}
+
+// ClearBin clears the value of the "bin" field.
+func (cu *CabinetUpdate) ClearBin() *CabinetUpdate {
+	cu.mutation.ClearBin()
 	return cu
 }
 
@@ -822,33 +836,6 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: cabinet.FieldStatus,
 		})
 	}
-	if value, ok := cu.mutation.Health(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: cabinet.FieldHealth,
-		})
-	}
-	if value, ok := cu.mutation.AddedHealth(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: cabinet.FieldHealth,
-		})
-	}
-	if value, ok := cu.mutation.Bin(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinet.FieldBin,
-		})
-	}
-	if cu.mutation.BinCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: cabinet.FieldBin,
-		})
-	}
 	if value, ok := cu.mutation.Lng(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
@@ -933,6 +920,40 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: cabinet.FieldTransferred,
+		})
+	}
+	if value, ok := cu.mutation.Intelligent(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: cabinet.FieldIntelligent,
+		})
+	}
+	if value, ok := cu.mutation.Health(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: cabinet.FieldHealth,
+		})
+	}
+	if value, ok := cu.mutation.AddedHealth(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: cabinet.FieldHealth,
+		})
+	}
+	if value, ok := cu.mutation.Bin(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: cabinet.FieldBin,
+		})
+	}
+	if cu.mutation.BinCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: cabinet.FieldBin,
 		})
 	}
 	if value, ok := cu.mutation.BatteryNum(); ok {
@@ -1460,39 +1481,6 @@ func (cuo *CabinetUpdateOne) AddStatus(u int8) *CabinetUpdateOne {
 	return cuo
 }
 
-// SetHealth sets the "health" field.
-func (cuo *CabinetUpdateOne) SetHealth(u uint8) *CabinetUpdateOne {
-	cuo.mutation.ResetHealth()
-	cuo.mutation.SetHealth(u)
-	return cuo
-}
-
-// SetNillableHealth sets the "health" field if the given value is not nil.
-func (cuo *CabinetUpdateOne) SetNillableHealth(u *uint8) *CabinetUpdateOne {
-	if u != nil {
-		cuo.SetHealth(*u)
-	}
-	return cuo
-}
-
-// AddHealth adds u to the "health" field.
-func (cuo *CabinetUpdateOne) AddHealth(u int8) *CabinetUpdateOne {
-	cuo.mutation.AddHealth(u)
-	return cuo
-}
-
-// SetBin sets the "bin" field.
-func (cuo *CabinetUpdateOne) SetBin(mb model.CabinetBins) *CabinetUpdateOne {
-	cuo.mutation.SetBin(mb)
-	return cuo
-}
-
-// ClearBin clears the value of the "bin" field.
-func (cuo *CabinetUpdateOne) ClearBin() *CabinetUpdateOne {
-	cuo.mutation.ClearBin()
-	return cuo
-}
-
 // SetLng sets the "lng" field.
 func (cuo *CabinetUpdateOne) SetLng(f float64) *CabinetUpdateOne {
 	cuo.mutation.ResetLng()
@@ -1618,6 +1606,53 @@ func (cuo *CabinetUpdateOne) SetNillableTransferred(b *bool) *CabinetUpdateOne {
 	if b != nil {
 		cuo.SetTransferred(*b)
 	}
+	return cuo
+}
+
+// SetIntelligent sets the "intelligent" field.
+func (cuo *CabinetUpdateOne) SetIntelligent(b bool) *CabinetUpdateOne {
+	cuo.mutation.SetIntelligent(b)
+	return cuo
+}
+
+// SetNillableIntelligent sets the "intelligent" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableIntelligent(b *bool) *CabinetUpdateOne {
+	if b != nil {
+		cuo.SetIntelligent(*b)
+	}
+	return cuo
+}
+
+// SetHealth sets the "health" field.
+func (cuo *CabinetUpdateOne) SetHealth(u uint8) *CabinetUpdateOne {
+	cuo.mutation.ResetHealth()
+	cuo.mutation.SetHealth(u)
+	return cuo
+}
+
+// SetNillableHealth sets the "health" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableHealth(u *uint8) *CabinetUpdateOne {
+	if u != nil {
+		cuo.SetHealth(*u)
+	}
+	return cuo
+}
+
+// AddHealth adds u to the "health" field.
+func (cuo *CabinetUpdateOne) AddHealth(u int8) *CabinetUpdateOne {
+	cuo.mutation.AddHealth(u)
+	return cuo
+}
+
+// SetBin sets the "bin" field.
+func (cuo *CabinetUpdateOne) SetBin(mb model.CabinetBins) *CabinetUpdateOne {
+	cuo.mutation.SetBin(mb)
+	return cuo
+}
+
+// ClearBin clears the value of the "bin" field.
+func (cuo *CabinetUpdateOne) ClearBin() *CabinetUpdateOne {
+	cuo.mutation.ClearBin()
 	return cuo
 }
 
@@ -2128,33 +2163,6 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 			Column: cabinet.FieldStatus,
 		})
 	}
-	if value, ok := cuo.mutation.Health(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: cabinet.FieldHealth,
-		})
-	}
-	if value, ok := cuo.mutation.AddedHealth(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: cabinet.FieldHealth,
-		})
-	}
-	if value, ok := cuo.mutation.Bin(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinet.FieldBin,
-		})
-	}
-	if cuo.mutation.BinCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: cabinet.FieldBin,
-		})
-	}
 	if value, ok := cuo.mutation.Lng(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
@@ -2239,6 +2247,40 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: cabinet.FieldTransferred,
+		})
+	}
+	if value, ok := cuo.mutation.Intelligent(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: cabinet.FieldIntelligent,
+		})
+	}
+	if value, ok := cuo.mutation.Health(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: cabinet.FieldHealth,
+		})
+	}
+	if value, ok := cuo.mutation.AddedHealth(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: cabinet.FieldHealth,
+		})
+	}
+	if value, ok := cuo.mutation.Bin(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: cabinet.FieldBin,
+		})
+	}
+	if cuo.mutation.BinCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: cabinet.FieldBin,
 		})
 	}
 	if value, ok := cuo.mutation.BatteryNum(); ok {

@@ -106,9 +106,25 @@ func (bc *BatteryCreate) SetRiderID(u uint64) *BatteryCreate {
 	return bc
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (bc *BatteryCreate) SetNillableRiderID(u *uint64) *BatteryCreate {
+	if u != nil {
+		bc.SetRiderID(*u)
+	}
+	return bc
+}
+
 // SetCabinetID sets the "cabinet_id" field.
 func (bc *BatteryCreate) SetCabinetID(u uint64) *BatteryCreate {
 	bc.mutation.SetCabinetID(u)
+	return bc
+}
+
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (bc *BatteryCreate) SetNillableCabinetID(u *uint64) *BatteryCreate {
+	if u != nil {
+		bc.SetCabinetID(*u)
+	}
 	return bc
 }
 
@@ -264,12 +280,6 @@ func (bc *BatteryCreate) check() error {
 	if _, ok := bc.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city_id", err: errors.New(`ent: missing required field "Battery.city_id"`)}
 	}
-	if _, ok := bc.mutation.RiderID(); !ok {
-		return &ValidationError{Name: "rider_id", err: errors.New(`ent: missing required field "Battery.rider_id"`)}
-	}
-	if _, ok := bc.mutation.CabinetID(); !ok {
-		return &ValidationError{Name: "cabinet_id", err: errors.New(`ent: missing required field "Battery.cabinet_id"`)}
-	}
 	if _, ok := bc.mutation.Sn(); !ok {
 		return &ValidationError{Name: "sn", err: errors.New(`ent: missing required field "Battery.sn"`)}
 	}
@@ -281,12 +291,6 @@ func (bc *BatteryCreate) check() error {
 	}
 	if _, ok := bc.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Battery.city"`)}
-	}
-	if _, ok := bc.mutation.RiderID(); !ok {
-		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Battery.rider"`)}
-	}
-	if _, ok := bc.mutation.CabinetID(); !ok {
-		return &ValidationError{Name: "cabinet", err: errors.New(`ent: missing required edge "Battery.cabinet"`)}
 	}
 	return nil
 }
@@ -425,7 +429,7 @@ func (bc *BatteryCreate) createSpec() (*Battery, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.RiderID = nodes[0]
+		_node.RiderID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := bc.mutation.CabinetIDs(); len(nodes) > 0 {
@@ -445,7 +449,7 @@ func (bc *BatteryCreate) createSpec() (*Battery, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.CabinetID = nodes[0]
+		_node.CabinetID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -590,6 +594,12 @@ func (u *BatteryUpsert) UpdateRiderID() *BatteryUpsert {
 	return u
 }
 
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *BatteryUpsert) ClearRiderID() *BatteryUpsert {
+	u.SetNull(battery.FieldRiderID)
+	return u
+}
+
 // SetCabinetID sets the "cabinet_id" field.
 func (u *BatteryUpsert) SetCabinetID(v uint64) *BatteryUpsert {
 	u.Set(battery.FieldCabinetID, v)
@@ -599,6 +609,12 @@ func (u *BatteryUpsert) SetCabinetID(v uint64) *BatteryUpsert {
 // UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
 func (u *BatteryUpsert) UpdateCabinetID() *BatteryUpsert {
 	u.SetExcluded(battery.FieldCabinetID)
+	return u
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *BatteryUpsert) ClearCabinetID() *BatteryUpsert {
+	u.SetNull(battery.FieldCabinetID)
 	return u
 }
 
@@ -791,6 +807,13 @@ func (u *BatteryUpsertOne) UpdateRiderID() *BatteryUpsertOne {
 	})
 }
 
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *BatteryUpsertOne) ClearRiderID() *BatteryUpsertOne {
+	return u.Update(func(s *BatteryUpsert) {
+		s.ClearRiderID()
+	})
+}
+
 // SetCabinetID sets the "cabinet_id" field.
 func (u *BatteryUpsertOne) SetCabinetID(v uint64) *BatteryUpsertOne {
 	return u.Update(func(s *BatteryUpsert) {
@@ -802,6 +825,13 @@ func (u *BatteryUpsertOne) SetCabinetID(v uint64) *BatteryUpsertOne {
 func (u *BatteryUpsertOne) UpdateCabinetID() *BatteryUpsertOne {
 	return u.Update(func(s *BatteryUpsert) {
 		s.UpdateCabinetID()
+	})
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *BatteryUpsertOne) ClearCabinetID() *BatteryUpsertOne {
+	return u.Update(func(s *BatteryUpsert) {
+		s.ClearCabinetID()
 	})
 }
 
@@ -1162,6 +1192,13 @@ func (u *BatteryUpsertBulk) UpdateRiderID() *BatteryUpsertBulk {
 	})
 }
 
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *BatteryUpsertBulk) ClearRiderID() *BatteryUpsertBulk {
+	return u.Update(func(s *BatteryUpsert) {
+		s.ClearRiderID()
+	})
+}
+
 // SetCabinetID sets the "cabinet_id" field.
 func (u *BatteryUpsertBulk) SetCabinetID(v uint64) *BatteryUpsertBulk {
 	return u.Update(func(s *BatteryUpsert) {
@@ -1173,6 +1210,13 @@ func (u *BatteryUpsertBulk) SetCabinetID(v uint64) *BatteryUpsertBulk {
 func (u *BatteryUpsertBulk) UpdateCabinetID() *BatteryUpsertBulk {
 	return u.Update(func(s *BatteryUpsert) {
 		s.UpdateCabinetID()
+	})
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *BatteryUpsertBulk) ClearCabinetID() *BatteryUpsertBulk {
+	return u.Update(func(s *BatteryUpsert) {
+		s.ClearCabinetID()
 	})
 }
 

@@ -7,6 +7,7 @@ package script
 
 import (
     "context"
+    "github.com/auroraride/aurservd/app/bridge"
     "github.com/auroraride/aurservd/app/ec"
     pvd "github.com/auroraride/aurservd/app/provider"
     "github.com/auroraride/aurservd/app/router"
@@ -55,6 +56,9 @@ func serverCommand() *cobra.Command {
 
             // 启动 任务补偿
             compensate()
+
+            // 启动bridge
+            go bridge.RunCabinet()
 
             // 启动服务器
             router.Run()

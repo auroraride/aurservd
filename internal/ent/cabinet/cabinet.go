@@ -41,10 +41,6 @@ const (
 	FieldDoors = "doors"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
-	// FieldHealth holds the string denoting the health field in the database.
-	FieldHealth = "health"
-	// FieldBin holds the string denoting the bin field in the database.
-	FieldBin = "bin"
 	// FieldLng holds the string denoting the lng field in the database.
 	FieldLng = "lng"
 	// FieldLat holds the string denoting the lat field in the database.
@@ -57,6 +53,12 @@ const (
 	FieldSimDate = "sim_date"
 	// FieldTransferred holds the string denoting the transferred field in the database.
 	FieldTransferred = "transferred"
+	// FieldIntelligent holds the string denoting the intelligent field in the database.
+	FieldIntelligent = "intelligent"
+	// FieldHealth holds the string denoting the health field in the database.
+	FieldHealth = "health"
+	// FieldBin holds the string denoting the bin field in the database.
+	FieldBin = "bin"
 	// FieldBatteryNum holds the string denoting the battery_num field in the database.
 	FieldBatteryNum = "battery_num"
 	// FieldBatteryFullNum holds the string denoting the battery_full_num field in the database.
@@ -140,14 +142,15 @@ var Columns = []string{
 	FieldName,
 	FieldDoors,
 	FieldStatus,
-	FieldHealth,
-	FieldBin,
 	FieldLng,
 	FieldLat,
 	FieldAddress,
 	FieldSimSn,
 	FieldSimDate,
 	FieldTransferred,
+	FieldIntelligent,
+	FieldHealth,
+	FieldBin,
 	FieldBatteryNum,
 	FieldBatteryFullNum,
 	FieldBatteryChargingNum,
@@ -184,10 +187,12 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// DefaultHealth holds the default value on creation for the "health" field.
-	DefaultHealth uint8
 	// DefaultTransferred holds the default value on creation for the "transferred" field.
 	DefaultTransferred bool
+	// DefaultIntelligent holds the default value on creation for the "intelligent" field.
+	DefaultIntelligent bool
+	// DefaultHealth holds the default value on creation for the "health" field.
+	DefaultHealth uint8
 	// DefaultBatteryNum holds the default value on creation for the "battery_num" field.
 	DefaultBatteryNum int
 	// DefaultBatteryFullNum holds the default value on creation for the "battery_full_num" field.

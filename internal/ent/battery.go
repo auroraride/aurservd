@@ -36,9 +36,9 @@ type Battery struct {
 	// 城市ID
 	CityID uint64 `json:"city_id,omitempty"`
 	// 骑手ID
-	RiderID uint64 `json:"rider_id,omitempty"`
+	RiderID *uint64 `json:"rider_id,omitempty"`
 	// 电柜ID
-	CabinetID uint64 `json:"cabinet_id,omitempty"`
+	CabinetID *uint64 `json:"cabinet_id,omitempty"`
 	// 电池编号
 	Sn string `json:"sn,omitempty"`
 	// 是否启用
@@ -189,13 +189,15 @@ func (b *Battery) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field rider_id", values[i])
 			} else if value.Valid {
-				b.RiderID = uint64(value.Int64)
+				b.RiderID = new(uint64)
+				*b.RiderID = uint64(value.Int64)
 			}
 		case battery.FieldCabinetID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field cabinet_id", values[i])
 			} else if value.Valid {
-				b.CabinetID = uint64(value.Int64)
+				b.CabinetID = new(uint64)
+				*b.CabinetID = uint64(value.Int64)
 			}
 		case battery.FieldSn:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -281,11 +283,15 @@ func (b *Battery) String() string {
 	builder.WriteString("city_id=")
 	builder.WriteString(fmt.Sprintf("%v", b.CityID))
 	builder.WriteString(", ")
-	builder.WriteString("rider_id=")
-	builder.WriteString(fmt.Sprintf("%v", b.RiderID))
+	if v := b.RiderID; v != nil {
+		builder.WriteString("rider_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
-	builder.WriteString("cabinet_id=")
-	builder.WriteString(fmt.Sprintf("%v", b.CabinetID))
+	if v := b.CabinetID; v != nil {
+		builder.WriteString("cabinet_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("sn=")
 	builder.WriteString(b.Sn)

@@ -48,10 +48,6 @@ type Cabinet struct {
 	Doors int `json:"doors,omitempty"`
 	// 投放状态
 	Status uint8 `json:"status,omitempty"`
-	// 健康状态 0未知 1正常 2离线 3故障
-	Health uint8 `json:"health,omitempty"`
-	// 仓位信息
-	Bin model.CabinetBins `json:"bin,omitempty"`
 	// 经度
 	Lng float64 `json:"lng,omitempty"`
 	// 纬度
@@ -64,6 +60,12 @@ type Cabinet struct {
 	SimDate time.Time `json:"sim_date,omitempty"`
 	// 电池是否已调拨
 	Transferred bool `json:"transferred,omitempty"`
+	// 是否智能柜
+	Intelligent bool `json:"intelligent,omitempty"`
+	// 健康状态 0未知 1正常 2离线 3故障
+	Health uint8 `json:"health,omitempty"`
+	// 仓位信息
+	Bin model.CabinetBins `json:"bin,omitempty"`
 	// 电池总数
 	BatteryNum int `json:"battery_num,omitempty"`
 	// 满电总数
@@ -167,7 +169,7 @@ func (*Cabinet) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case cabinet.FieldCreator, cabinet.FieldLastModifier, cabinet.FieldBin:
 			values[i] = new([]byte)
-		case cabinet.FieldTransferred:
+		case cabinet.FieldTransferred, cabinet.FieldIntelligent:
 			values[i] = new(sql.NullBool)
 		case cabinet.FieldLng, cabinet.FieldLat:
 			values[i] = new(sql.NullFloat64)
@@ -289,20 +291,6 @@ func (c *Cabinet) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.Status = uint8(value.Int64)
 			}
-		case cabinet.FieldHealth:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field health", values[i])
-			} else if value.Valid {
-				c.Health = uint8(value.Int64)
-			}
-		case cabinet.FieldBin:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field bin", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &c.Bin); err != nil {
-					return fmt.Errorf("unmarshal field bin: %w", err)
-				}
-			}
 		case cabinet.FieldLng:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field lng", values[i])
@@ -338,6 +326,26 @@ func (c *Cabinet) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field transferred", values[i])
 			} else if value.Valid {
 				c.Transferred = value.Bool
+			}
+		case cabinet.FieldIntelligent:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field intelligent", values[i])
+			} else if value.Valid {
+				c.Intelligent = value.Bool
+			}
+		case cabinet.FieldHealth:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field health", values[i])
+			} else if value.Valid {
+				c.Health = uint8(value.Int64)
+			}
+		case cabinet.FieldBin:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field bin", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &c.Bin); err != nil {
+					return fmt.Errorf("unmarshal field bin: %w", err)
+				}
 			}
 		case cabinet.FieldBatteryNum:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -475,12 +483,6 @@ func (c *Cabinet) String() string {
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", c.Status))
 	builder.WriteString(", ")
-	builder.WriteString("health=")
-	builder.WriteString(fmt.Sprintf("%v", c.Health))
-	builder.WriteString(", ")
-	builder.WriteString("bin=")
-	builder.WriteString(fmt.Sprintf("%v", c.Bin))
-	builder.WriteString(", ")
 	builder.WriteString("lng=")
 	builder.WriteString(fmt.Sprintf("%v", c.Lng))
 	builder.WriteString(", ")
@@ -498,6 +500,15 @@ func (c *Cabinet) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("transferred=")
 	builder.WriteString(fmt.Sprintf("%v", c.Transferred))
+	builder.WriteString(", ")
+	builder.WriteString("intelligent=")
+	builder.WriteString(fmt.Sprintf("%v", c.Intelligent))
+	builder.WriteString(", ")
+	builder.WriteString("health=")
+	builder.WriteString(fmt.Sprintf("%v", c.Health))
+	builder.WriteString(", ")
+	builder.WriteString("bin=")
+	builder.WriteString(fmt.Sprintf("%v", c.Bin))
 	builder.WriteString(", ")
 	builder.WriteString("battery_num=")
 	builder.WriteString(fmt.Sprintf("%v", c.BatteryNum))

@@ -79,14 +79,19 @@ func (Cabinet) Fields() []ent.Field {
         field.String("name").Comment("名称"),
         field.Int("doors").Comment("柜门数量"),
         field.Uint8("status").Comment("投放状态"),
-        field.Uint8("health").Default(0).Comment("健康状态 0未知 1正常 2离线 3故障"),
-        field.JSON("bin", model.CabinetBins{}).Optional().Comment("仓位信息"),
+
         field.Float("lng").Optional().Comment("经度"),
         field.Float("lat").Optional().Comment("纬度"),
         field.String("address").Optional().Comment("详细地址"),
         field.String("sim_sn").Optional().Comment("SIM卡号"),
         field.Time("sim_date").Optional().Comment("SIM卡到期日期"),
         field.Bool("transferred").Default(false).Comment("电池是否已调拨"),
+
+        field.Bool("intelligent").Default(false).Comment("是否智能柜"),
+
+        // 以下字段仅非智能柜有效
+        field.Uint8("health").Default(0).Comment("健康状态 0未知 1正常 2离线 3故障"),
+        field.JSON("bin", model.CabinetBins{}).Optional().Comment("仓位信息"),
         field.Int("battery_num").Default(0).Comment("电池总数"),
         field.Int("battery_full_num").Default(0).Comment("满电总数"),
         field.Int("battery_charging_num").Default(0).Comment("充电总数"),

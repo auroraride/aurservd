@@ -462,7 +462,7 @@ func (m *BatteryMutation) RiderID() (r uint64, exists bool) {
 // OldRiderID returns the old "rider_id" field's value of the Battery entity.
 // If the Battery object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BatteryMutation) OldRiderID(ctx context.Context) (v uint64, err error) {
+func (m *BatteryMutation) OldRiderID(ctx context.Context) (v *uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRiderID is only allowed on UpdateOne operations")
 	}
@@ -476,9 +476,22 @@ func (m *BatteryMutation) OldRiderID(ctx context.Context) (v uint64, err error) 
 	return oldValue.RiderID, nil
 }
 
+// ClearRiderID clears the value of the "rider_id" field.
+func (m *BatteryMutation) ClearRiderID() {
+	m.rider = nil
+	m.clearedFields[battery.FieldRiderID] = struct{}{}
+}
+
+// RiderIDCleared returns if the "rider_id" field was cleared in this mutation.
+func (m *BatteryMutation) RiderIDCleared() bool {
+	_, ok := m.clearedFields[battery.FieldRiderID]
+	return ok
+}
+
 // ResetRiderID resets all changes to the "rider_id" field.
 func (m *BatteryMutation) ResetRiderID() {
 	m.rider = nil
+	delete(m.clearedFields, battery.FieldRiderID)
 }
 
 // SetCabinetID sets the "cabinet_id" field.
@@ -498,7 +511,7 @@ func (m *BatteryMutation) CabinetID() (r uint64, exists bool) {
 // OldCabinetID returns the old "cabinet_id" field's value of the Battery entity.
 // If the Battery object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BatteryMutation) OldCabinetID(ctx context.Context) (v uint64, err error) {
+func (m *BatteryMutation) OldCabinetID(ctx context.Context) (v *uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCabinetID is only allowed on UpdateOne operations")
 	}
@@ -512,9 +525,22 @@ func (m *BatteryMutation) OldCabinetID(ctx context.Context) (v uint64, err error
 	return oldValue.CabinetID, nil
 }
 
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (m *BatteryMutation) ClearCabinetID() {
+	m.cabinet = nil
+	m.clearedFields[battery.FieldCabinetID] = struct{}{}
+}
+
+// CabinetIDCleared returns if the "cabinet_id" field was cleared in this mutation.
+func (m *BatteryMutation) CabinetIDCleared() bool {
+	_, ok := m.clearedFields[battery.FieldCabinetID]
+	return ok
+}
+
 // ResetCabinetID resets all changes to the "cabinet_id" field.
 func (m *BatteryMutation) ResetCabinetID() {
 	m.cabinet = nil
+	delete(m.clearedFields, battery.FieldCabinetID)
 }
 
 // SetSn sets the "sn" field.
@@ -658,7 +684,7 @@ func (m *BatteryMutation) ClearRider() {
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
 func (m *BatteryMutation) RiderCleared() bool {
-	return m.clearedrider
+	return m.RiderIDCleared() || m.clearedrider
 }
 
 // RiderIDs returns the "rider" edge IDs in the mutation.
@@ -684,7 +710,7 @@ func (m *BatteryMutation) ClearCabinet() {
 
 // CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
 func (m *BatteryMutation) CabinetCleared() bool {
-	return m.clearedcabinet
+	return m.CabinetIDCleared() || m.clearedcabinet
 }
 
 // CabinetIDs returns the "cabinet" edge IDs in the mutation.
@@ -962,6 +988,12 @@ func (m *BatteryMutation) ClearedFields() []string {
 	if m.FieldCleared(battery.FieldRemark) {
 		fields = append(fields, battery.FieldRemark)
 	}
+	if m.FieldCleared(battery.FieldRiderID) {
+		fields = append(fields, battery.FieldRiderID)
+	}
+	if m.FieldCleared(battery.FieldCabinetID) {
+		fields = append(fields, battery.FieldCabinetID)
+	}
 	return fields
 }
 
@@ -987,6 +1019,12 @@ func (m *BatteryMutation) ClearField(name string) error {
 		return nil
 	case battery.FieldRemark:
 		m.ClearRemark()
+		return nil
+	case battery.FieldRiderID:
+		m.ClearRiderID()
+		return nil
+	case battery.FieldCabinetID:
+		m.ClearCabinetID()
 		return nil
 	}
 	return fmt.Errorf("unknown Battery nullable field %s", name)

@@ -238,32 +238,36 @@ func init() {
 	cabinet.DefaultUpdatedAt = cabinetDescUpdatedAt.Default.(func() time.Time)
 	// cabinet.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	cabinet.UpdateDefaultUpdatedAt = cabinetDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// cabinetDescHealth is the schema descriptor for health field.
-	cabinetDescHealth := cabinetFields[7].Descriptor()
-	// cabinet.DefaultHealth holds the default value on creation for the health field.
-	cabinet.DefaultHealth = cabinetDescHealth.Default.(uint8)
 	// cabinetDescTransferred is the schema descriptor for transferred field.
-	cabinetDescTransferred := cabinetFields[14].Descriptor()
+	cabinetDescTransferred := cabinetFields[12].Descriptor()
 	// cabinet.DefaultTransferred holds the default value on creation for the transferred field.
 	cabinet.DefaultTransferred = cabinetDescTransferred.Default.(bool)
+	// cabinetDescIntelligent is the schema descriptor for intelligent field.
+	cabinetDescIntelligent := cabinetFields[13].Descriptor()
+	// cabinet.DefaultIntelligent holds the default value on creation for the intelligent field.
+	cabinet.DefaultIntelligent = cabinetDescIntelligent.Default.(bool)
+	// cabinetDescHealth is the schema descriptor for health field.
+	cabinetDescHealth := cabinetFields[14].Descriptor()
+	// cabinet.DefaultHealth holds the default value on creation for the health field.
+	cabinet.DefaultHealth = cabinetDescHealth.Default.(uint8)
 	// cabinetDescBatteryNum is the schema descriptor for battery_num field.
-	cabinetDescBatteryNum := cabinetFields[15].Descriptor()
+	cabinetDescBatteryNum := cabinetFields[16].Descriptor()
 	// cabinet.DefaultBatteryNum holds the default value on creation for the battery_num field.
 	cabinet.DefaultBatteryNum = cabinetDescBatteryNum.Default.(int)
 	// cabinetDescBatteryFullNum is the schema descriptor for battery_full_num field.
-	cabinetDescBatteryFullNum := cabinetFields[16].Descriptor()
+	cabinetDescBatteryFullNum := cabinetFields[17].Descriptor()
 	// cabinet.DefaultBatteryFullNum holds the default value on creation for the battery_full_num field.
 	cabinet.DefaultBatteryFullNum = cabinetDescBatteryFullNum.Default.(int)
 	// cabinetDescBatteryChargingNum is the schema descriptor for battery_charging_num field.
-	cabinetDescBatteryChargingNum := cabinetFields[17].Descriptor()
+	cabinetDescBatteryChargingNum := cabinetFields[18].Descriptor()
 	// cabinet.DefaultBatteryChargingNum holds the default value on creation for the battery_charging_num field.
 	cabinet.DefaultBatteryChargingNum = cabinetDescBatteryChargingNum.Default.(int)
 	// cabinetDescEmptyBinNum is the schema descriptor for empty_bin_num field.
-	cabinetDescEmptyBinNum := cabinetFields[18].Descriptor()
+	cabinetDescEmptyBinNum := cabinetFields[19].Descriptor()
 	// cabinet.DefaultEmptyBinNum holds the default value on creation for the empty_bin_num field.
 	cabinet.DefaultEmptyBinNum = cabinetDescEmptyBinNum.Default.(int)
 	// cabinetDescLockedBinNum is the schema descriptor for locked_bin_num field.
-	cabinetDescLockedBinNum := cabinetFields[19].Descriptor()
+	cabinetDescLockedBinNum := cabinetFields[20].Descriptor()
 	// cabinet.DefaultLockedBinNum holds the default value on creation for the locked_bin_num field.
 	cabinet.DefaultLockedBinNum = cabinetDescLockedBinNum.Default.(int)
 	cabinetfaultMixin := schema.CabinetFault{}.Mixin()

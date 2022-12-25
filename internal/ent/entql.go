@@ -350,14 +350,15 @@ var schemaGraph = func() *sqlgraph.Schema {
 			cabinet.FieldName:               {Type: field.TypeString, Column: cabinet.FieldName},
 			cabinet.FieldDoors:              {Type: field.TypeInt, Column: cabinet.FieldDoors},
 			cabinet.FieldStatus:             {Type: field.TypeUint8, Column: cabinet.FieldStatus},
-			cabinet.FieldHealth:             {Type: field.TypeUint8, Column: cabinet.FieldHealth},
-			cabinet.FieldBin:                {Type: field.TypeJSON, Column: cabinet.FieldBin},
 			cabinet.FieldLng:                {Type: field.TypeFloat64, Column: cabinet.FieldLng},
 			cabinet.FieldLat:                {Type: field.TypeFloat64, Column: cabinet.FieldLat},
 			cabinet.FieldAddress:            {Type: field.TypeString, Column: cabinet.FieldAddress},
 			cabinet.FieldSimSn:              {Type: field.TypeString, Column: cabinet.FieldSimSn},
 			cabinet.FieldSimDate:            {Type: field.TypeTime, Column: cabinet.FieldSimDate},
 			cabinet.FieldTransferred:        {Type: field.TypeBool, Column: cabinet.FieldTransferred},
+			cabinet.FieldIntelligent:        {Type: field.TypeBool, Column: cabinet.FieldIntelligent},
+			cabinet.FieldHealth:             {Type: field.TypeUint8, Column: cabinet.FieldHealth},
+			cabinet.FieldBin:                {Type: field.TypeJSON, Column: cabinet.FieldBin},
 			cabinet.FieldBatteryNum:         {Type: field.TypeInt, Column: cabinet.FieldBatteryNum},
 			cabinet.FieldBatteryFullNum:     {Type: field.TypeInt, Column: cabinet.FieldBatteryFullNum},
 			cabinet.FieldBatteryChargingNum: {Type: field.TypeInt, Column: cabinet.FieldBatteryChargingNum},
@@ -5606,16 +5607,6 @@ func (f *CabinetFilter) WhereStatus(p entql.Uint8P) {
 	f.Where(p.Field(cabinet.FieldStatus))
 }
 
-// WhereHealth applies the entql uint8 predicate on the health field.
-func (f *CabinetFilter) WhereHealth(p entql.Uint8P) {
-	f.Where(p.Field(cabinet.FieldHealth))
-}
-
-// WhereBin applies the entql json.RawMessage predicate on the bin field.
-func (f *CabinetFilter) WhereBin(p entql.BytesP) {
-	f.Where(p.Field(cabinet.FieldBin))
-}
-
 // WhereLng applies the entql float64 predicate on the lng field.
 func (f *CabinetFilter) WhereLng(p entql.Float64P) {
 	f.Where(p.Field(cabinet.FieldLng))
@@ -5644,6 +5635,21 @@ func (f *CabinetFilter) WhereSimDate(p entql.TimeP) {
 // WhereTransferred applies the entql bool predicate on the transferred field.
 func (f *CabinetFilter) WhereTransferred(p entql.BoolP) {
 	f.Where(p.Field(cabinet.FieldTransferred))
+}
+
+// WhereIntelligent applies the entql bool predicate on the intelligent field.
+func (f *CabinetFilter) WhereIntelligent(p entql.BoolP) {
+	f.Where(p.Field(cabinet.FieldIntelligent))
+}
+
+// WhereHealth applies the entql uint8 predicate on the health field.
+func (f *CabinetFilter) WhereHealth(p entql.Uint8P) {
+	f.Where(p.Field(cabinet.FieldHealth))
+}
+
+// WhereBin applies the entql json.RawMessage predicate on the bin field.
+func (f *CabinetFilter) WhereBin(p entql.BytesP) {
+	f.Where(p.Field(cabinet.FieldBin))
 }
 
 // WhereBatteryNum applies the entql int predicate on the battery_num field.

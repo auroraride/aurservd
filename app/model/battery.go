@@ -10,7 +10,7 @@ type BatteryCreateReq struct {
     SN     string `json:"sn" validate:"required" trans:"电池编号"`
     CityID uint64 `json:"cityId" validate:"required" trans:"城市"`
 
-    Enable bool `json:"enable"` // 是否启用, 需默认为`true`
+    Enable *bool `json:"enable"` // 是否启用, 需默认为`true`
 }
 
 type BatteryModifyReq struct {

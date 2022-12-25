@@ -103,9 +103,37 @@ func (bu *BatteryUpdate) SetRiderID(u uint64) *BatteryUpdate {
 	return bu
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (bu *BatteryUpdate) SetNillableRiderID(u *uint64) *BatteryUpdate {
+	if u != nil {
+		bu.SetRiderID(*u)
+	}
+	return bu
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (bu *BatteryUpdate) ClearRiderID() *BatteryUpdate {
+	bu.mutation.ClearRiderID()
+	return bu
+}
+
 // SetCabinetID sets the "cabinet_id" field.
 func (bu *BatteryUpdate) SetCabinetID(u uint64) *BatteryUpdate {
 	bu.mutation.SetCabinetID(u)
+	return bu
+}
+
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (bu *BatteryUpdate) SetNillableCabinetID(u *uint64) *BatteryUpdate {
+	if u != nil {
+		bu.SetCabinetID(*u)
+	}
+	return bu
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (bu *BatteryUpdate) ClearCabinetID() *BatteryUpdate {
+	bu.mutation.ClearCabinetID()
 	return bu
 }
 
@@ -252,12 +280,6 @@ func (bu *BatteryUpdate) defaults() error {
 func (bu *BatteryUpdate) check() error {
 	if _, ok := bu.mutation.CityID(); bu.mutation.CityCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Battery.city"`)
-	}
-	if _, ok := bu.mutation.RiderID(); bu.mutation.RiderCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Battery.rider"`)
-	}
-	if _, ok := bu.mutation.CabinetID(); bu.mutation.CabinetCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Battery.cabinet"`)
 	}
 	return nil
 }
@@ -555,9 +577,37 @@ func (buo *BatteryUpdateOne) SetRiderID(u uint64) *BatteryUpdateOne {
 	return buo
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (buo *BatteryUpdateOne) SetNillableRiderID(u *uint64) *BatteryUpdateOne {
+	if u != nil {
+		buo.SetRiderID(*u)
+	}
+	return buo
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (buo *BatteryUpdateOne) ClearRiderID() *BatteryUpdateOne {
+	buo.mutation.ClearRiderID()
+	return buo
+}
+
 // SetCabinetID sets the "cabinet_id" field.
 func (buo *BatteryUpdateOne) SetCabinetID(u uint64) *BatteryUpdateOne {
 	buo.mutation.SetCabinetID(u)
+	return buo
+}
+
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (buo *BatteryUpdateOne) SetNillableCabinetID(u *uint64) *BatteryUpdateOne {
+	if u != nil {
+		buo.SetCabinetID(*u)
+	}
+	return buo
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (buo *BatteryUpdateOne) ClearCabinetID() *BatteryUpdateOne {
+	buo.mutation.ClearCabinetID()
 	return buo
 }
 
@@ -717,12 +767,6 @@ func (buo *BatteryUpdateOne) defaults() error {
 func (buo *BatteryUpdateOne) check() error {
 	if _, ok := buo.mutation.CityID(); buo.mutation.CityCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Battery.city"`)
-	}
-	if _, ok := buo.mutation.RiderID(); buo.mutation.RiderCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Battery.rider"`)
-	}
-	if _, ok := buo.mutation.CabinetID(); buo.mutation.CabinetCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Battery.cabinet"`)
 	}
 	return nil
 }

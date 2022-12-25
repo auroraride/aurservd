@@ -570,6 +570,20 @@ func RiderIDNotIn(vs ...uint64) predicate.Battery {
 	})
 }
 
+// RiderIDIsNil applies the IsNil predicate on the "rider_id" field.
+func RiderIDIsNil() predicate.Battery {
+	return predicate.Battery(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldRiderID)))
+	})
+}
+
+// RiderIDNotNil applies the NotNil predicate on the "rider_id" field.
+func RiderIDNotNil() predicate.Battery {
+	return predicate.Battery(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldRiderID)))
+	})
+}
+
 // CabinetIDEQ applies the EQ predicate on the "cabinet_id" field.
 func CabinetIDEQ(v uint64) predicate.Battery {
 	return predicate.Battery(func(s *sql.Selector) {
@@ -603,6 +617,20 @@ func CabinetIDNotIn(vs ...uint64) predicate.Battery {
 	}
 	return predicate.Battery(func(s *sql.Selector) {
 		s.Where(sql.NotIn(s.C(FieldCabinetID), v...))
+	})
+}
+
+// CabinetIDIsNil applies the IsNil predicate on the "cabinet_id" field.
+func CabinetIDIsNil() predicate.Battery {
+	return predicate.Battery(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldCabinetID)))
+	})
+}
+
+// CabinetIDNotNil applies the NotNil predicate on the "cabinet_id" field.
+func CabinetIDNotNil() predicate.Battery {
+	return predicate.Battery(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldCabinetID)))
 	})
 }
 

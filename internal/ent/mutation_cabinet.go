@@ -36,9 +36,6 @@ type CabinetMutation struct {
 	adddoors                *int
 	status                  *uint8
 	addstatus               *int8
-	health                  *uint8
-	addhealth               *int8
-	bin                     *model.CabinetBins
 	lng                     *float64
 	addlng                  *float64
 	lat                     *float64
@@ -47,6 +44,10 @@ type CabinetMutation struct {
 	sim_sn                  *string
 	sim_date                *time.Time
 	transferred             *bool
+	intelligent             *bool
+	health                  *uint8
+	addhealth               *int8
+	bin                     *model.CabinetBins
 	battery_num             *int
 	addbattery_num          *int
 	battery_full_num        *int
@@ -799,111 +800,6 @@ func (m *CabinetMutation) ResetStatus() {
 	m.addstatus = nil
 }
 
-// SetHealth sets the "health" field.
-func (m *CabinetMutation) SetHealth(u uint8) {
-	m.health = &u
-	m.addhealth = nil
-}
-
-// Health returns the value of the "health" field in the mutation.
-func (m *CabinetMutation) Health() (r uint8, exists bool) {
-	v := m.health
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldHealth returns the old "health" field's value of the Cabinet entity.
-// If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetMutation) OldHealth(ctx context.Context) (v uint8, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldHealth is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldHealth requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldHealth: %w", err)
-	}
-	return oldValue.Health, nil
-}
-
-// AddHealth adds u to the "health" field.
-func (m *CabinetMutation) AddHealth(u int8) {
-	if m.addhealth != nil {
-		*m.addhealth += u
-	} else {
-		m.addhealth = &u
-	}
-}
-
-// AddedHealth returns the value that was added to the "health" field in this mutation.
-func (m *CabinetMutation) AddedHealth() (r int8, exists bool) {
-	v := m.addhealth
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetHealth resets all changes to the "health" field.
-func (m *CabinetMutation) ResetHealth() {
-	m.health = nil
-	m.addhealth = nil
-}
-
-// SetBin sets the "bin" field.
-func (m *CabinetMutation) SetBin(mb model.CabinetBins) {
-	m.bin = &mb
-}
-
-// Bin returns the value of the "bin" field in the mutation.
-func (m *CabinetMutation) Bin() (r model.CabinetBins, exists bool) {
-	v := m.bin
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldBin returns the old "bin" field's value of the Cabinet entity.
-// If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetMutation) OldBin(ctx context.Context) (v model.CabinetBins, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBin is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBin requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBin: %w", err)
-	}
-	return oldValue.Bin, nil
-}
-
-// ClearBin clears the value of the "bin" field.
-func (m *CabinetMutation) ClearBin() {
-	m.bin = nil
-	m.clearedFields[cabinet.FieldBin] = struct{}{}
-}
-
-// BinCleared returns if the "bin" field was cleared in this mutation.
-func (m *CabinetMutation) BinCleared() bool {
-	_, ok := m.clearedFields[cabinet.FieldBin]
-	return ok
-}
-
-// ResetBin resets all changes to the "bin" field.
-func (m *CabinetMutation) ResetBin() {
-	m.bin = nil
-	delete(m.clearedFields, cabinet.FieldBin)
-}
-
 // SetLng sets the "lng" field.
 func (m *CabinetMutation) SetLng(f float64) {
 	m.lng = &f
@@ -1225,6 +1121,147 @@ func (m *CabinetMutation) OldTransferred(ctx context.Context) (v bool, err error
 // ResetTransferred resets all changes to the "transferred" field.
 func (m *CabinetMutation) ResetTransferred() {
 	m.transferred = nil
+}
+
+// SetIntelligent sets the "intelligent" field.
+func (m *CabinetMutation) SetIntelligent(b bool) {
+	m.intelligent = &b
+}
+
+// Intelligent returns the value of the "intelligent" field in the mutation.
+func (m *CabinetMutation) Intelligent() (r bool, exists bool) {
+	v := m.intelligent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIntelligent returns the old "intelligent" field's value of the Cabinet entity.
+// If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CabinetMutation) OldIntelligent(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIntelligent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIntelligent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIntelligent: %w", err)
+	}
+	return oldValue.Intelligent, nil
+}
+
+// ResetIntelligent resets all changes to the "intelligent" field.
+func (m *CabinetMutation) ResetIntelligent() {
+	m.intelligent = nil
+}
+
+// SetHealth sets the "health" field.
+func (m *CabinetMutation) SetHealth(u uint8) {
+	m.health = &u
+	m.addhealth = nil
+}
+
+// Health returns the value of the "health" field in the mutation.
+func (m *CabinetMutation) Health() (r uint8, exists bool) {
+	v := m.health
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHealth returns the old "health" field's value of the Cabinet entity.
+// If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CabinetMutation) OldHealth(ctx context.Context) (v uint8, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHealth is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHealth requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHealth: %w", err)
+	}
+	return oldValue.Health, nil
+}
+
+// AddHealth adds u to the "health" field.
+func (m *CabinetMutation) AddHealth(u int8) {
+	if m.addhealth != nil {
+		*m.addhealth += u
+	} else {
+		m.addhealth = &u
+	}
+}
+
+// AddedHealth returns the value that was added to the "health" field in this mutation.
+func (m *CabinetMutation) AddedHealth() (r int8, exists bool) {
+	v := m.addhealth
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetHealth resets all changes to the "health" field.
+func (m *CabinetMutation) ResetHealth() {
+	m.health = nil
+	m.addhealth = nil
+}
+
+// SetBin sets the "bin" field.
+func (m *CabinetMutation) SetBin(mb model.CabinetBins) {
+	m.bin = &mb
+}
+
+// Bin returns the value of the "bin" field in the mutation.
+func (m *CabinetMutation) Bin() (r model.CabinetBins, exists bool) {
+	v := m.bin
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBin returns the old "bin" field's value of the Cabinet entity.
+// If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CabinetMutation) OldBin(ctx context.Context) (v model.CabinetBins, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBin is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBin requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBin: %w", err)
+	}
+	return oldValue.Bin, nil
+}
+
+// ClearBin clears the value of the "bin" field.
+func (m *CabinetMutation) ClearBin() {
+	m.bin = nil
+	m.clearedFields[cabinet.FieldBin] = struct{}{}
+}
+
+// BinCleared returns if the "bin" field was cleared in this mutation.
+func (m *CabinetMutation) BinCleared() bool {
+	_, ok := m.clearedFields[cabinet.FieldBin]
+	return ok
+}
+
+// ResetBin resets all changes to the "bin" field.
+func (m *CabinetMutation) ResetBin() {
+	m.bin = nil
+	delete(m.clearedFields, cabinet.FieldBin)
 }
 
 // SetBatteryNum sets the "battery_num" field.
@@ -1794,7 +1831,7 @@ func (m *CabinetMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CabinetMutation) Fields() []string {
-	fields := make([]string, 0, 27)
+	fields := make([]string, 0, 28)
 	if m.created_at != nil {
 		fields = append(fields, cabinet.FieldCreatedAt)
 	}
@@ -1837,12 +1874,6 @@ func (m *CabinetMutation) Fields() []string {
 	if m.status != nil {
 		fields = append(fields, cabinet.FieldStatus)
 	}
-	if m.health != nil {
-		fields = append(fields, cabinet.FieldHealth)
-	}
-	if m.bin != nil {
-		fields = append(fields, cabinet.FieldBin)
-	}
 	if m.lng != nil {
 		fields = append(fields, cabinet.FieldLng)
 	}
@@ -1860,6 +1891,15 @@ func (m *CabinetMutation) Fields() []string {
 	}
 	if m.transferred != nil {
 		fields = append(fields, cabinet.FieldTransferred)
+	}
+	if m.intelligent != nil {
+		fields = append(fields, cabinet.FieldIntelligent)
+	}
+	if m.health != nil {
+		fields = append(fields, cabinet.FieldHealth)
+	}
+	if m.bin != nil {
+		fields = append(fields, cabinet.FieldBin)
 	}
 	if m.battery_num != nil {
 		fields = append(fields, cabinet.FieldBatteryNum)
@@ -1912,10 +1952,6 @@ func (m *CabinetMutation) Field(name string) (ent.Value, bool) {
 		return m.Doors()
 	case cabinet.FieldStatus:
 		return m.Status()
-	case cabinet.FieldHealth:
-		return m.Health()
-	case cabinet.FieldBin:
-		return m.Bin()
 	case cabinet.FieldLng:
 		return m.Lng()
 	case cabinet.FieldLat:
@@ -1928,6 +1964,12 @@ func (m *CabinetMutation) Field(name string) (ent.Value, bool) {
 		return m.SimDate()
 	case cabinet.FieldTransferred:
 		return m.Transferred()
+	case cabinet.FieldIntelligent:
+		return m.Intelligent()
+	case cabinet.FieldHealth:
+		return m.Health()
+	case cabinet.FieldBin:
+		return m.Bin()
 	case cabinet.FieldBatteryNum:
 		return m.BatteryNum()
 	case cabinet.FieldBatteryFullNum:
@@ -1975,10 +2017,6 @@ func (m *CabinetMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldDoors(ctx)
 	case cabinet.FieldStatus:
 		return m.OldStatus(ctx)
-	case cabinet.FieldHealth:
-		return m.OldHealth(ctx)
-	case cabinet.FieldBin:
-		return m.OldBin(ctx)
 	case cabinet.FieldLng:
 		return m.OldLng(ctx)
 	case cabinet.FieldLat:
@@ -1991,6 +2029,12 @@ func (m *CabinetMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldSimDate(ctx)
 	case cabinet.FieldTransferred:
 		return m.OldTransferred(ctx)
+	case cabinet.FieldIntelligent:
+		return m.OldIntelligent(ctx)
+	case cabinet.FieldHealth:
+		return m.OldHealth(ctx)
+	case cabinet.FieldBin:
+		return m.OldBin(ctx)
 	case cabinet.FieldBatteryNum:
 		return m.OldBatteryNum(ctx)
 	case cabinet.FieldBatteryFullNum:
@@ -2108,20 +2152,6 @@ func (m *CabinetMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetStatus(v)
 		return nil
-	case cabinet.FieldHealth:
-		v, ok := value.(uint8)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetHealth(v)
-		return nil
-	case cabinet.FieldBin:
-		v, ok := value.(model.CabinetBins)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetBin(v)
-		return nil
 	case cabinet.FieldLng:
 		v, ok := value.(float64)
 		if !ok {
@@ -2163,6 +2193,27 @@ func (m *CabinetMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTransferred(v)
+		return nil
+	case cabinet.FieldIntelligent:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIntelligent(v)
+		return nil
+	case cabinet.FieldHealth:
+		v, ok := value.(uint8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHealth(v)
+		return nil
+	case cabinet.FieldBin:
+		v, ok := value.(model.CabinetBins)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBin(v)
 		return nil
 	case cabinet.FieldBatteryNum:
 		v, ok := value.(int)
@@ -2213,14 +2264,14 @@ func (m *CabinetMutation) AddedFields() []string {
 	if m.addstatus != nil {
 		fields = append(fields, cabinet.FieldStatus)
 	}
-	if m.addhealth != nil {
-		fields = append(fields, cabinet.FieldHealth)
-	}
 	if m.addlng != nil {
 		fields = append(fields, cabinet.FieldLng)
 	}
 	if m.addlat != nil {
 		fields = append(fields, cabinet.FieldLat)
+	}
+	if m.addhealth != nil {
+		fields = append(fields, cabinet.FieldHealth)
 	}
 	if m.addbattery_num != nil {
 		fields = append(fields, cabinet.FieldBatteryNum)
@@ -2249,12 +2300,12 @@ func (m *CabinetMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedDoors()
 	case cabinet.FieldStatus:
 		return m.AddedStatus()
-	case cabinet.FieldHealth:
-		return m.AddedHealth()
 	case cabinet.FieldLng:
 		return m.AddedLng()
 	case cabinet.FieldLat:
 		return m.AddedLat()
+	case cabinet.FieldHealth:
+		return m.AddedHealth()
 	case cabinet.FieldBatteryNum:
 		return m.AddedBatteryNum()
 	case cabinet.FieldBatteryFullNum:
@@ -2288,13 +2339,6 @@ func (m *CabinetMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddStatus(v)
 		return nil
-	case cabinet.FieldHealth:
-		v, ok := value.(int8)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddHealth(v)
-		return nil
 	case cabinet.FieldLng:
 		v, ok := value.(float64)
 		if !ok {
@@ -2308,6 +2352,13 @@ func (m *CabinetMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddLat(v)
+		return nil
+	case cabinet.FieldHealth:
+		v, ok := value.(int8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddHealth(v)
 		return nil
 	case cabinet.FieldBatteryNum:
 		v, ok := value.(int)
@@ -2370,9 +2421,6 @@ func (m *CabinetMutation) ClearedFields() []string {
 	if m.FieldCleared(cabinet.FieldBranchID) {
 		fields = append(fields, cabinet.FieldBranchID)
 	}
-	if m.FieldCleared(cabinet.FieldBin) {
-		fields = append(fields, cabinet.FieldBin)
-	}
 	if m.FieldCleared(cabinet.FieldLng) {
 		fields = append(fields, cabinet.FieldLng)
 	}
@@ -2387,6 +2435,9 @@ func (m *CabinetMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(cabinet.FieldSimDate) {
 		fields = append(fields, cabinet.FieldSimDate)
+	}
+	if m.FieldCleared(cabinet.FieldBin) {
+		fields = append(fields, cabinet.FieldBin)
 	}
 	return fields
 }
@@ -2420,9 +2471,6 @@ func (m *CabinetMutation) ClearField(name string) error {
 	case cabinet.FieldBranchID:
 		m.ClearBranchID()
 		return nil
-	case cabinet.FieldBin:
-		m.ClearBin()
-		return nil
 	case cabinet.FieldLng:
 		m.ClearLng()
 		return nil
@@ -2437,6 +2485,9 @@ func (m *CabinetMutation) ClearField(name string) error {
 		return nil
 	case cabinet.FieldSimDate:
 		m.ClearSimDate()
+		return nil
+	case cabinet.FieldBin:
+		m.ClearBin()
 		return nil
 	}
 	return fmt.Errorf("unknown Cabinet nullable field %s", name)
@@ -2488,12 +2539,6 @@ func (m *CabinetMutation) ResetField(name string) error {
 	case cabinet.FieldStatus:
 		m.ResetStatus()
 		return nil
-	case cabinet.FieldHealth:
-		m.ResetHealth()
-		return nil
-	case cabinet.FieldBin:
-		m.ResetBin()
-		return nil
 	case cabinet.FieldLng:
 		m.ResetLng()
 		return nil
@@ -2511,6 +2556,15 @@ func (m *CabinetMutation) ResetField(name string) error {
 		return nil
 	case cabinet.FieldTransferred:
 		m.ResetTransferred()
+		return nil
+	case cabinet.FieldIntelligent:
+		m.ResetIntelligent()
+		return nil
+	case cabinet.FieldHealth:
+		m.ResetHealth()
+		return nil
+	case cabinet.FieldBin:
+		m.ResetBin()
 		return nil
 	case cabinet.FieldBatteryNum:
 		m.ResetBatteryNum()

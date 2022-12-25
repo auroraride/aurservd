@@ -382,8 +382,8 @@ var (
 		{Name: "enable", Type: field.TypeBool, Comment: "是否启用", Default: true},
 		{Name: "model", Type: field.TypeString, Comment: "电池型号"},
 		{Name: "city_id", Type: field.TypeUint64},
-		{Name: "rider_id", Type: field.TypeUint64},
-		{Name: "cabinet_id", Type: field.TypeUint64},
+		{Name: "rider_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// BatteryTable holds the schema information for the "battery" table.
 	BatteryTable = &schema.Table{
@@ -401,13 +401,13 @@ var (
 				Symbol:     "battery_rider_rider",
 				Columns:    []*schema.Column{BatteryColumns[11]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "battery_cabinet_cabinet",
 				Columns:    []*schema.Column{BatteryColumns[12]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
@@ -777,14 +777,15 @@ var (
 		{Name: "name", Type: field.TypeString, Comment: "名称"},
 		{Name: "doors", Type: field.TypeInt, Comment: "柜门数量"},
 		{Name: "status", Type: field.TypeUint8, Comment: "投放状态"},
-		{Name: "health", Type: field.TypeUint8, Comment: "健康状态 0未知 1正常 2离线 3故障", Default: 0},
-		{Name: "bin", Type: field.TypeJSON, Comment: "仓位信息", Nullable: true},
 		{Name: "lng", Type: field.TypeFloat64, Comment: "经度", Nullable: true},
 		{Name: "lat", Type: field.TypeFloat64, Comment: "纬度", Nullable: true},
 		{Name: "address", Type: field.TypeString, Comment: "详细地址", Nullable: true},
 		{Name: "sim_sn", Type: field.TypeString, Comment: "SIM卡号", Nullable: true},
 		{Name: "sim_date", Type: field.TypeTime, Comment: "SIM卡到期日期", Nullable: true},
 		{Name: "transferred", Type: field.TypeBool, Comment: "电池是否已调拨", Default: false},
+		{Name: "intelligent", Type: field.TypeBool, Comment: "是否智能柜", Default: false},
+		{Name: "health", Type: field.TypeUint8, Comment: "健康状态 0未知 1正常 2离线 3故障", Default: 0},
+		{Name: "bin", Type: field.TypeJSON, Comment: "仓位信息", Nullable: true},
 		{Name: "battery_num", Type: field.TypeInt, Comment: "电池总数", Default: 0},
 		{Name: "battery_full_num", Type: field.TypeInt, Comment: "满电总数", Default: 0},
 		{Name: "battery_charging_num", Type: field.TypeInt, Comment: "充电总数", Default: 0},
@@ -801,13 +802,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cabinet_branch_cabinets",
-				Columns:    []*schema.Column{CabinetColumns[26]},
+				Columns:    []*schema.Column{CabinetColumns[27]},
 				RefColumns: []*schema.Column{BranchColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "cabinet_city_city",
-				Columns:    []*schema.Column{CabinetColumns[27]},
+				Columns:    []*schema.Column{CabinetColumns[28]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -826,12 +827,12 @@ var (
 			{
 				Name:    "cabinet_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[27]},
+				Columns: []*schema.Column{CabinetColumns[28]},
 			},
 			{
 				Name:    "cabinet_branch_id",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[26]},
+				Columns: []*schema.Column{CabinetColumns[27]},
 			},
 			{
 				Name:    "cabinet_brand",
@@ -861,7 +862,7 @@ var (
 			{
 				Name:    "cabinet_bin",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[14]},
+				Columns: []*schema.Column{CabinetColumns[21]},
 				Annotation: &entsql.IndexAnnotation{
 					Types: map[string]string{
 						"postgres": "GIN",
@@ -871,7 +872,7 @@ var (
 			{
 				Name:    "cabinet_sim_date",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[19]},
+				Columns: []*schema.Column{CabinetColumns[17]},
 			},
 		},
 	}
