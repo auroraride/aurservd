@@ -6,17 +6,16 @@
 package bridge
 
 import (
+    "fmt"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/bridge"
     "github.com/auroraride/bridge/pb"
     log "github.com/sirupsen/logrus"
 )
 
-func RunCabinet() {
-    err := bridge.NewCabinet(log.StandardLogger()).RunServer(ar.Config.Bridge.Cabinet, func(data *pb.CabinetSyncRequest) {
+func cabinet() {
+    log.Fatal(bridge.NewCabinet(log.StandardLogger()).RunServer(ar.Config.Bridge.Cabinet, func(data *pb.CabinetSyncRequest) {
         // 保存
-    })
-    if err != nil {
-        log.Fatal(err)
-    }
+        fmt.Println(data)
+    }))
 }

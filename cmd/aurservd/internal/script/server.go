@@ -58,7 +58,7 @@ func serverCommand() *cobra.Command {
             compensate()
 
             // 启动bridge
-            go bridge.RunCabinet()
+            go bridge.Run()
 
             // 启动服务器
             router.Run()
