@@ -7,15 +7,16 @@ package bridge
 
 import (
     "fmt"
+    "github.com/auroraride/adapter/codec"
+    "github.com/auroraride/adapter/tcp"
     "github.com/auroraride/aurservd/internal/ar"
-    "github.com/auroraride/bridge"
-    "github.com/auroraride/bridge/pb"
     log "github.com/sirupsen/logrus"
 )
 
 func cabinet() {
-    log.Fatal(bridge.NewCabinet(log.StandardLogger()).RunServer(ar.Config.Bridge.Cabinet, func(data *pb.CabinetSyncRequest) {
-        // 保存
-        fmt.Println(data)
-    }))
+    addr := ar.Config.Adapter.Cabinet
+    s := tcp.NewServer(addr, log.StandardLogger(), &codec.HeaderLength{}, func(b []byte) {
+        fmt.Println(string(b))
+    })
+    log.Fatal(s.Run())
 }

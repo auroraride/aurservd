@@ -55,8 +55,8 @@ type EsignConfig struct {
 }
 
 type config struct {
-    Debug  bool
-    Bridge struct {
+    Debug   bool
+    Adapter struct {
         Cabinet string
     }
     App struct {
