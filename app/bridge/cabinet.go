@@ -6,7 +6,6 @@
 package bridge
 
 import (
-    "fmt"
     "github.com/auroraride/adapter/codec"
     "github.com/auroraride/adapter/tcp"
     "github.com/auroraride/aurservd/internal/ar"
@@ -16,7 +15,10 @@ import (
 func cabinet() {
     addr := ar.Config.Adapter.Cabinet
     s := tcp.NewServer(addr, log.StandardLogger(), &codec.HeaderLength{}, func(b []byte) {
-        fmt.Println(string(b))
+        // fmt.Println(string(b))
+        // req := new(model.CabinetSyncRequest)
+        // _ = json.Unmarshal(b, req)
+        // service.NewCabinet().Sync(req)
     })
     log.Fatal(s.Run())
 }

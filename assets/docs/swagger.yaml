@@ -1900,6 +1900,9 @@ definitions:
       health:
         description: 在线状态 0离线 1在线 2故障
         type: integer
+      intelligent:
+        description: 是否智能柜
+        type: boolean
       models:
         description: '电池型号 '
         items:
@@ -2025,6 +2028,9 @@ definitions:
       id:
         description: 电柜ID
         type: integer
+      intelligent:
+        description: 是否智能柜
+        type: boolean
       models:
         description: 电池型号
         items:
@@ -2213,6 +2219,9 @@ definitions:
       id:
         description: 电柜ID
         type: integer
+      intelligent:
+        description: 是否智能柜
+        type: boolean
       models:
         description: 电池型号
         items:
@@ -9023,6 +9032,10 @@ paths:
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
+        type: integer
+      - description: 是否智能柜 0:全部 1:是 2:否
+        in: query
+        name: intelligent
         type: integer
       - description: 电池型号
         in: query

@@ -3746,6 +3746,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "是否智能柜 0:全部 1:是 2:否",
+                        "name": "intelligent",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "电池型号",
                         "name": "model",
@@ -16158,6 +16164,10 @@ const docTemplate = `{
                     "description": "在线状态 0离线 1在线 2故障",
                     "type": "integer"
                 },
+                "intelligent": {
+                    "description": "是否智能柜",
+                    "type": "boolean"
+                },
                 "models": {
                     "description": "电池型号 ",
                     "type": "array",
@@ -16328,6 +16338,10 @@ const docTemplate = `{
                 "id": {
                     "description": "电柜ID",
                     "type": "integer"
+                },
+                "intelligent": {
+                    "description": "是否智能柜",
+                    "type": "boolean"
                 },
                 "models": {
                     "description": "电池型号",
@@ -16595,6 +16609,10 @@ const docTemplate = `{
                 "id": {
                     "description": "电柜ID",
                     "type": "integer"
+                },
+                "intelligent": {
+                    "description": "是否智能柜",
+                    "type": "boolean"
                 },
                 "models": {
                     "description": "电池型号",
