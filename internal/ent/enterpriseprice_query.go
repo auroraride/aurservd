@@ -24,6 +24,7 @@ type EnterprisePriceQuery struct {
 	unique         *bool
 	order          []OrderFunc
 	fields         []string
+	inters         []Interceptor
 	predicates     []predicate.EnterprisePrice
 	withCity       *CityQuery
 	withEnterprise *EnterpriseQuery
@@ -39,13 +40,13 @@ func (epq *EnterprisePriceQuery) Where(ps ...predicate.EnterprisePrice) *Enterpr
 	return epq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (epq *EnterprisePriceQuery) Limit(limit int) *EnterprisePriceQuery {
 	epq.limit = &limit
 	return epq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (epq *EnterprisePriceQuery) Offset(offset int) *EnterprisePriceQuery {
 	epq.offset = &offset
 	return epq
@@ -58,7 +59,7 @@ func (epq *EnterprisePriceQuery) Unique(unique bool) *EnterprisePriceQuery {
 	return epq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (epq *EnterprisePriceQuery) Order(o ...OrderFunc) *EnterprisePriceQuery {
 	epq.order = append(epq.order, o...)
 	return epq
@@ -66,7 +67,7 @@ func (epq *EnterprisePriceQuery) Order(o ...OrderFunc) *EnterprisePriceQuery {
 
 // QueryCity chains the current query on the "city" edge.
 func (epq *EnterprisePriceQuery) QueryCity() *CityQuery {
-	query := &CityQuery{config: epq.config}
+	query := (&CityClient{config: epq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := epq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -88,7 +89,7 @@ func (epq *EnterprisePriceQuery) QueryCity() *CityQuery {
 
 // QueryEnterprise chains the current query on the "enterprise" edge.
 func (epq *EnterprisePriceQuery) QueryEnterprise() *EnterpriseQuery {
-	query := &EnterpriseQuery{config: epq.config}
+	query := (&EnterpriseClient{config: epq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := epq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -111,7 +112,7 @@ func (epq *EnterprisePriceQuery) QueryEnterprise() *EnterpriseQuery {
 // First returns the first EnterprisePrice entity from the query.
 // Returns a *NotFoundError when no EnterprisePrice was found.
 func (epq *EnterprisePriceQuery) First(ctx context.Context) (*EnterprisePrice, error) {
-	nodes, err := epq.Limit(1).All(ctx)
+	nodes, err := epq.Limit(1).All(newQueryContext(ctx, TypeEnterprisePrice, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +135,7 @@ func (epq *EnterprisePriceQuery) FirstX(ctx context.Context) *EnterprisePrice {
 // Returns a *NotFoundError when no EnterprisePrice ID was found.
 func (epq *EnterprisePriceQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = epq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = epq.Limit(1).IDs(newQueryContext(ctx, TypeEnterprisePrice, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -157,7 +158,7 @@ func (epq *EnterprisePriceQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one EnterprisePrice entity is found.
 // Returns a *NotFoundError when no EnterprisePrice entities are found.
 func (epq *EnterprisePriceQuery) Only(ctx context.Context) (*EnterprisePrice, error) {
-	nodes, err := epq.Limit(2).All(ctx)
+	nodes, err := epq.Limit(2).All(newQueryContext(ctx, TypeEnterprisePrice, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -185,7 +186,7 @@ func (epq *EnterprisePriceQuery) OnlyX(ctx context.Context) *EnterprisePrice {
 // Returns a *NotFoundError when no entities are found.
 func (epq *EnterprisePriceQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = epq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = epq.Limit(2).IDs(newQueryContext(ctx, TypeEnterprisePrice, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -210,10 +211,12 @@ func (epq *EnterprisePriceQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of EnterprisePrices.
 func (epq *EnterprisePriceQuery) All(ctx context.Context) ([]*EnterprisePrice, error) {
+	ctx = newQueryContext(ctx, TypeEnterprisePrice, "All")
 	if err := epq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return epq.sqlAll(ctx)
+	qr := querierAll[[]*EnterprisePrice, *EnterprisePriceQuery]()
+	return withInterceptors[[]*EnterprisePrice](ctx, epq, qr, epq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -228,6 +231,7 @@ func (epq *EnterprisePriceQuery) AllX(ctx context.Context) []*EnterprisePrice {
 // IDs executes the query and returns a list of EnterprisePrice IDs.
 func (epq *EnterprisePriceQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeEnterprisePrice, "IDs")
 	if err := epq.Select(enterpriseprice.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -245,10 +249,11 @@ func (epq *EnterprisePriceQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (epq *EnterprisePriceQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeEnterprisePrice, "Count")
 	if err := epq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return epq.sqlCount(ctx)
+	return withInterceptors[int](ctx, epq, querierCount[*EnterprisePriceQuery](), epq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -262,10 +267,15 @@ func (epq *EnterprisePriceQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (epq *EnterprisePriceQuery) Exist(ctx context.Context) (bool, error) {
-	if err := epq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeEnterprisePrice, "Exist")
+	switch _, err := epq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return epq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -301,7 +311,7 @@ func (epq *EnterprisePriceQuery) Clone() *EnterprisePriceQuery {
 // WithCity tells the query-builder to eager-load the nodes that are connected to
 // the "city" edge. The optional arguments are used to configure the query builder of the edge.
 func (epq *EnterprisePriceQuery) WithCity(opts ...func(*CityQuery)) *EnterprisePriceQuery {
-	query := &CityQuery{config: epq.config}
+	query := (&CityClient{config: epq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -312,7 +322,7 @@ func (epq *EnterprisePriceQuery) WithCity(opts ...func(*CityQuery)) *EnterpriseP
 // WithEnterprise tells the query-builder to eager-load the nodes that are connected to
 // the "enterprise" edge. The optional arguments are used to configure the query builder of the edge.
 func (epq *EnterprisePriceQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *EnterprisePriceQuery {
-	query := &EnterpriseQuery{config: epq.config}
+	query := (&EnterpriseClient{config: epq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -335,16 +345,11 @@ func (epq *EnterprisePriceQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) 
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (epq *EnterprisePriceQuery) GroupBy(field string, fields ...string) *EnterprisePriceGroupBy {
-	grbuild := &EnterprisePriceGroupBy{config: epq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := epq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return epq.sqlQuery(ctx), nil
-	}
+	epq.fields = append([]string{field}, fields...)
+	grbuild := &EnterprisePriceGroupBy{build: epq}
+	grbuild.flds = &epq.fields
 	grbuild.label = enterpriseprice.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -362,13 +367,28 @@ func (epq *EnterprisePriceQuery) GroupBy(field string, fields ...string) *Enterp
 //		Scan(ctx, &v)
 func (epq *EnterprisePriceQuery) Select(fields ...string) *EnterprisePriceSelect {
 	epq.fields = append(epq.fields, fields...)
-	selbuild := &EnterprisePriceSelect{EnterprisePriceQuery: epq}
-	selbuild.label = enterpriseprice.Label
-	selbuild.flds, selbuild.scan = &epq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &EnterprisePriceSelect{EnterprisePriceQuery: epq}
+	sbuild.label = enterpriseprice.Label
+	sbuild.flds, sbuild.scan = &epq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a EnterprisePriceSelect configured with the given aggregations.
+func (epq *EnterprisePriceQuery) Aggregate(fns ...AggregateFunc) *EnterprisePriceSelect {
+	return epq.Select().Aggregate(fns...)
 }
 
 func (epq *EnterprisePriceQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range epq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, epq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range epq.fields {
 		if !enterpriseprice.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -494,17 +514,6 @@ func (epq *EnterprisePriceQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, epq.driver, _spec)
 }
 
-func (epq *EnterprisePriceQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := epq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (epq *EnterprisePriceQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -596,13 +605,8 @@ func (epq *EnterprisePriceQuery) Modify(modifiers ...func(s *sql.Selector)) *Ent
 
 // EnterprisePriceGroupBy is the group-by builder for EnterprisePrice entities.
 type EnterprisePriceGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *EnterprisePriceQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -611,74 +615,77 @@ func (epgb *EnterprisePriceGroupBy) Aggregate(fns ...AggregateFunc) *EnterpriseP
 	return epgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (epgb *EnterprisePriceGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := epgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeEnterprisePrice, "GroupBy")
+	if err := epgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	epgb.sql = query
-	return epgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*EnterprisePriceQuery, *EnterprisePriceGroupBy](ctx, epgb.build, epgb, epgb.build.inters, v)
 }
 
-func (epgb *EnterprisePriceGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range epgb.fields {
-		if !enterpriseprice.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (epgb *EnterprisePriceGroupBy) sqlScan(ctx context.Context, root *EnterprisePriceQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(epgb.fns))
+	for _, fn := range epgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := epgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*epgb.flds)+len(epgb.fns))
+		for _, f := range *epgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*epgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := epgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := epgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (epgb *EnterprisePriceGroupBy) sqlQuery() *sql.Selector {
-	selector := epgb.sql.Select()
-	aggregation := make([]string, 0, len(epgb.fns))
-	for _, fn := range epgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(epgb.fields)+len(epgb.fns))
-		for _, f := range epgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(epgb.fields...)...)
-}
-
 // EnterprisePriceSelect is the builder for selecting fields of EnterprisePrice entities.
 type EnterprisePriceSelect struct {
 	*EnterprisePriceQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (eps *EnterprisePriceSelect) Aggregate(fns ...AggregateFunc) *EnterprisePriceSelect {
+	eps.fns = append(eps.fns, fns...)
+	return eps
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (eps *EnterprisePriceSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeEnterprisePrice, "Select")
 	if err := eps.prepareQuery(ctx); err != nil {
 		return err
 	}
-	eps.sql = eps.EnterprisePriceQuery.sqlQuery(ctx)
-	return eps.sqlScan(ctx, v)
+	return scanWithInterceptors[*EnterprisePriceQuery, *EnterprisePriceSelect](ctx, eps.EnterprisePriceQuery, eps, eps.inters, v)
 }
 
-func (eps *EnterprisePriceSelect) sqlScan(ctx context.Context, v any) error {
+func (eps *EnterprisePriceSelect) sqlScan(ctx context.Context, root *EnterprisePriceQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(eps.fns))
+	for _, fn := range eps.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*eps.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := eps.sql.Query()
+	query, args := selector.Query()
 	if err := eps.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

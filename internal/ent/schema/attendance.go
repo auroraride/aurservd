@@ -20,6 +20,7 @@ type Attendance struct {
 func (Attendance) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "attendance"},
+        entsql.WithComments(true),
     }
 }
 

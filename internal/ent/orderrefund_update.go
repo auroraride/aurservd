@@ -171,43 +171,10 @@ func (oru *OrderRefundUpdate) ClearOrder() *OrderRefundUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (oru *OrderRefundUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := oru.defaults(); err != nil {
 		return 0, err
 	}
-	if len(oru.hooks) == 0 {
-		if err = oru.check(); err != nil {
-			return 0, err
-		}
-		affected, err = oru.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*OrderRefundMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = oru.check(); err != nil {
-				return 0, err
-			}
-			oru.mutation = mutation
-			affected, err = oru.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(oru.hooks) - 1; i >= 0; i-- {
-			if oru.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = oru.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, oru.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, OrderRefundMutation](ctx, oru.sqlSave, oru.mutation, oru.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -259,6 +226,9 @@ func (oru *OrderRefundUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *O
 }
 
 func (oru *OrderRefundUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := oru.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   orderrefund.Table,
@@ -277,111 +247,52 @@ func (oru *OrderRefundUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := oru.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: orderrefund.FieldUpdatedAt,
-		})
+		_spec.SetField(orderrefund.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := oru.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: orderrefund.FieldDeletedAt,
-		})
+		_spec.SetField(orderrefund.FieldDeletedAt, field.TypeTime, value)
 	}
 	if oru.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: orderrefund.FieldDeletedAt,
-		})
+		_spec.ClearField(orderrefund.FieldDeletedAt, field.TypeTime)
 	}
 	if oru.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: orderrefund.FieldCreator,
-		})
+		_spec.ClearField(orderrefund.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := oru.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: orderrefund.FieldLastModifier,
-		})
+		_spec.SetField(orderrefund.FieldLastModifier, field.TypeJSON, value)
 	}
 	if oru.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: orderrefund.FieldLastModifier,
-		})
+		_spec.ClearField(orderrefund.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := oru.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: orderrefund.FieldRemark,
-		})
+		_spec.SetField(orderrefund.FieldRemark, field.TypeString, value)
 	}
 	if oru.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: orderrefund.FieldRemark,
-		})
+		_spec.ClearField(orderrefund.FieldRemark, field.TypeString)
 	}
 	if value, ok := oru.mutation.Status(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: orderrefund.FieldStatus,
-		})
+		_spec.SetField(orderrefund.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := oru.mutation.AddedStatus(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: orderrefund.FieldStatus,
-		})
+		_spec.AddField(orderrefund.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := oru.mutation.Amount(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: orderrefund.FieldAmount,
-		})
+		_spec.SetField(orderrefund.FieldAmount, field.TypeFloat64, value)
 	}
 	if value, ok := oru.mutation.AddedAmount(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: orderrefund.FieldAmount,
-		})
+		_spec.AddField(orderrefund.FieldAmount, field.TypeFloat64, value)
 	}
 	if value, ok := oru.mutation.OutRefundNo(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: orderrefund.FieldOutRefundNo,
-		})
+		_spec.SetField(orderrefund.FieldOutRefundNo, field.TypeString, value)
 	}
 	if value, ok := oru.mutation.Reason(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: orderrefund.FieldReason,
-		})
+		_spec.SetField(orderrefund.FieldReason, field.TypeString, value)
 	}
 	if value, ok := oru.mutation.RefundAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: orderrefund.FieldRefundAt,
-		})
+		_spec.SetField(orderrefund.FieldRefundAt, field.TypeTime, value)
 	}
 	if oru.mutation.RefundAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: orderrefund.FieldRefundAt,
-		})
+		_spec.ClearField(orderrefund.FieldRefundAt, field.TypeTime)
 	}
 	if oru.mutation.OrderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -418,7 +329,7 @@ func (oru *OrderRefundUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = oru.modifiers
+	_spec.AddModifiers(oru.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, oru.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{orderrefund.Label}
@@ -427,6 +338,7 @@ func (oru *OrderRefundUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	oru.mutation.done = true
 	return n, nil
 }
 
@@ -586,49 +498,10 @@ func (oruo *OrderRefundUpdateOne) Select(field string, fields ...string) *OrderR
 
 // Save executes the query and returns the updated OrderRefund entity.
 func (oruo *OrderRefundUpdateOne) Save(ctx context.Context) (*OrderRefund, error) {
-	var (
-		err  error
-		node *OrderRefund
-	)
 	if err := oruo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(oruo.hooks) == 0 {
-		if err = oruo.check(); err != nil {
-			return nil, err
-		}
-		node, err = oruo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*OrderRefundMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = oruo.check(); err != nil {
-				return nil, err
-			}
-			oruo.mutation = mutation
-			node, err = oruo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(oruo.hooks) - 1; i >= 0; i-- {
-			if oruo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = oruo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, oruo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*OrderRefund)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from OrderRefundMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*OrderRefund, OrderRefundMutation](ctx, oruo.sqlSave, oruo.mutation, oruo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -680,6 +553,9 @@ func (oruo *OrderRefundUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)
 }
 
 func (oruo *OrderRefundUpdateOne) sqlSave(ctx context.Context) (_node *OrderRefund, err error) {
+	if err := oruo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   orderrefund.Table,
@@ -715,111 +591,52 @@ func (oruo *OrderRefundUpdateOne) sqlSave(ctx context.Context) (_node *OrderRefu
 		}
 	}
 	if value, ok := oruo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: orderrefund.FieldUpdatedAt,
-		})
+		_spec.SetField(orderrefund.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := oruo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: orderrefund.FieldDeletedAt,
-		})
+		_spec.SetField(orderrefund.FieldDeletedAt, field.TypeTime, value)
 	}
 	if oruo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: orderrefund.FieldDeletedAt,
-		})
+		_spec.ClearField(orderrefund.FieldDeletedAt, field.TypeTime)
 	}
 	if oruo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: orderrefund.FieldCreator,
-		})
+		_spec.ClearField(orderrefund.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := oruo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: orderrefund.FieldLastModifier,
-		})
+		_spec.SetField(orderrefund.FieldLastModifier, field.TypeJSON, value)
 	}
 	if oruo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: orderrefund.FieldLastModifier,
-		})
+		_spec.ClearField(orderrefund.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := oruo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: orderrefund.FieldRemark,
-		})
+		_spec.SetField(orderrefund.FieldRemark, field.TypeString, value)
 	}
 	if oruo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: orderrefund.FieldRemark,
-		})
+		_spec.ClearField(orderrefund.FieldRemark, field.TypeString)
 	}
 	if value, ok := oruo.mutation.Status(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: orderrefund.FieldStatus,
-		})
+		_spec.SetField(orderrefund.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := oruo.mutation.AddedStatus(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: orderrefund.FieldStatus,
-		})
+		_spec.AddField(orderrefund.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := oruo.mutation.Amount(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: orderrefund.FieldAmount,
-		})
+		_spec.SetField(orderrefund.FieldAmount, field.TypeFloat64, value)
 	}
 	if value, ok := oruo.mutation.AddedAmount(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: orderrefund.FieldAmount,
-		})
+		_spec.AddField(orderrefund.FieldAmount, field.TypeFloat64, value)
 	}
 	if value, ok := oruo.mutation.OutRefundNo(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: orderrefund.FieldOutRefundNo,
-		})
+		_spec.SetField(orderrefund.FieldOutRefundNo, field.TypeString, value)
 	}
 	if value, ok := oruo.mutation.Reason(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: orderrefund.FieldReason,
-		})
+		_spec.SetField(orderrefund.FieldReason, field.TypeString, value)
 	}
 	if value, ok := oruo.mutation.RefundAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: orderrefund.FieldRefundAt,
-		})
+		_spec.SetField(orderrefund.FieldRefundAt, field.TypeTime, value)
 	}
 	if oruo.mutation.RefundAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: orderrefund.FieldRefundAt,
-		})
+		_spec.ClearField(orderrefund.FieldRefundAt, field.TypeTime)
 	}
 	if oruo.mutation.OrderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -856,7 +673,7 @@ func (oruo *OrderRefundUpdateOne) sqlSave(ctx context.Context) (_node *OrderRefu
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = oruo.modifiers
+	_spec.AddModifiers(oruo.modifiers...)
 	_node = &OrderRefund{config: oruo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -868,5 +685,6 @@ func (oruo *OrderRefundUpdateOne) sqlSave(ctx context.Context) (_node *OrderRefu
 		}
 		return nil, err
 	}
+	oruo.mutation.done = true
 	return _node, nil
 }

@@ -28,6 +28,7 @@ type AssistanceQuery struct {
 	unique        *bool
 	order         []OrderFunc
 	fields        []string
+	inters        []Interceptor
 	predicates    []predicate.Assistance
 	withStore     *StoreQuery
 	withRider     *RiderQuery
@@ -47,13 +48,13 @@ func (aq *AssistanceQuery) Where(ps ...predicate.Assistance) *AssistanceQuery {
 	return aq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (aq *AssistanceQuery) Limit(limit int) *AssistanceQuery {
 	aq.limit = &limit
 	return aq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (aq *AssistanceQuery) Offset(offset int) *AssistanceQuery {
 	aq.offset = &offset
 	return aq
@@ -66,7 +67,7 @@ func (aq *AssistanceQuery) Unique(unique bool) *AssistanceQuery {
 	return aq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (aq *AssistanceQuery) Order(o ...OrderFunc) *AssistanceQuery {
 	aq.order = append(aq.order, o...)
 	return aq
@@ -74,7 +75,7 @@ func (aq *AssistanceQuery) Order(o ...OrderFunc) *AssistanceQuery {
 
 // QueryStore chains the current query on the "store" edge.
 func (aq *AssistanceQuery) QueryStore() *StoreQuery {
-	query := &StoreQuery{config: aq.config}
+	query := (&StoreClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -96,7 +97,7 @@ func (aq *AssistanceQuery) QueryStore() *StoreQuery {
 
 // QueryRider chains the current query on the "rider" edge.
 func (aq *AssistanceQuery) QueryRider() *RiderQuery {
-	query := &RiderQuery{config: aq.config}
+	query := (&RiderClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -118,7 +119,7 @@ func (aq *AssistanceQuery) QueryRider() *RiderQuery {
 
 // QuerySubscribe chains the current query on the "subscribe" edge.
 func (aq *AssistanceQuery) QuerySubscribe() *SubscribeQuery {
-	query := &SubscribeQuery{config: aq.config}
+	query := (&SubscribeClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -140,7 +141,7 @@ func (aq *AssistanceQuery) QuerySubscribe() *SubscribeQuery {
 
 // QueryCity chains the current query on the "city" edge.
 func (aq *AssistanceQuery) QueryCity() *CityQuery {
-	query := &CityQuery{config: aq.config}
+	query := (&CityClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -162,7 +163,7 @@ func (aq *AssistanceQuery) QueryCity() *CityQuery {
 
 // QueryOrder chains the current query on the "order" edge.
 func (aq *AssistanceQuery) QueryOrder() *OrderQuery {
-	query := &OrderQuery{config: aq.config}
+	query := (&OrderClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -184,7 +185,7 @@ func (aq *AssistanceQuery) QueryOrder() *OrderQuery {
 
 // QueryEmployee chains the current query on the "employee" edge.
 func (aq *AssistanceQuery) QueryEmployee() *EmployeeQuery {
-	query := &EmployeeQuery{config: aq.config}
+	query := (&EmployeeClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -207,7 +208,7 @@ func (aq *AssistanceQuery) QueryEmployee() *EmployeeQuery {
 // First returns the first Assistance entity from the query.
 // Returns a *NotFoundError when no Assistance was found.
 func (aq *AssistanceQuery) First(ctx context.Context) (*Assistance, error) {
-	nodes, err := aq.Limit(1).All(ctx)
+	nodes, err := aq.Limit(1).All(newQueryContext(ctx, TypeAssistance, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -230,7 +231,7 @@ func (aq *AssistanceQuery) FirstX(ctx context.Context) *Assistance {
 // Returns a *NotFoundError when no Assistance ID was found.
 func (aq *AssistanceQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = aq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = aq.Limit(1).IDs(newQueryContext(ctx, TypeAssistance, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -253,7 +254,7 @@ func (aq *AssistanceQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Assistance entity is found.
 // Returns a *NotFoundError when no Assistance entities are found.
 func (aq *AssistanceQuery) Only(ctx context.Context) (*Assistance, error) {
-	nodes, err := aq.Limit(2).All(ctx)
+	nodes, err := aq.Limit(2).All(newQueryContext(ctx, TypeAssistance, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -281,7 +282,7 @@ func (aq *AssistanceQuery) OnlyX(ctx context.Context) *Assistance {
 // Returns a *NotFoundError when no entities are found.
 func (aq *AssistanceQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = aq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = aq.Limit(2).IDs(newQueryContext(ctx, TypeAssistance, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -306,10 +307,12 @@ func (aq *AssistanceQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Assistances.
 func (aq *AssistanceQuery) All(ctx context.Context) ([]*Assistance, error) {
+	ctx = newQueryContext(ctx, TypeAssistance, "All")
 	if err := aq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return aq.sqlAll(ctx)
+	qr := querierAll[[]*Assistance, *AssistanceQuery]()
+	return withInterceptors[[]*Assistance](ctx, aq, qr, aq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -324,6 +327,7 @@ func (aq *AssistanceQuery) AllX(ctx context.Context) []*Assistance {
 // IDs executes the query and returns a list of Assistance IDs.
 func (aq *AssistanceQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeAssistance, "IDs")
 	if err := aq.Select(assistance.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -341,10 +345,11 @@ func (aq *AssistanceQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (aq *AssistanceQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeAssistance, "Count")
 	if err := aq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return aq.sqlCount(ctx)
+	return withInterceptors[int](ctx, aq, querierCount[*AssistanceQuery](), aq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -358,10 +363,15 @@ func (aq *AssistanceQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (aq *AssistanceQuery) Exist(ctx context.Context) (bool, error) {
-	if err := aq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeAssistance, "Exist")
+	switch _, err := aq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return aq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -401,7 +411,7 @@ func (aq *AssistanceQuery) Clone() *AssistanceQuery {
 // WithStore tells the query-builder to eager-load the nodes that are connected to
 // the "store" edge. The optional arguments are used to configure the query builder of the edge.
 func (aq *AssistanceQuery) WithStore(opts ...func(*StoreQuery)) *AssistanceQuery {
-	query := &StoreQuery{config: aq.config}
+	query := (&StoreClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -412,7 +422,7 @@ func (aq *AssistanceQuery) WithStore(opts ...func(*StoreQuery)) *AssistanceQuery
 // WithRider tells the query-builder to eager-load the nodes that are connected to
 // the "rider" edge. The optional arguments are used to configure the query builder of the edge.
 func (aq *AssistanceQuery) WithRider(opts ...func(*RiderQuery)) *AssistanceQuery {
-	query := &RiderQuery{config: aq.config}
+	query := (&RiderClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -423,7 +433,7 @@ func (aq *AssistanceQuery) WithRider(opts ...func(*RiderQuery)) *AssistanceQuery
 // WithSubscribe tells the query-builder to eager-load the nodes that are connected to
 // the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
 func (aq *AssistanceQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *AssistanceQuery {
-	query := &SubscribeQuery{config: aq.config}
+	query := (&SubscribeClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -434,7 +444,7 @@ func (aq *AssistanceQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *Assista
 // WithCity tells the query-builder to eager-load the nodes that are connected to
 // the "city" edge. The optional arguments are used to configure the query builder of the edge.
 func (aq *AssistanceQuery) WithCity(opts ...func(*CityQuery)) *AssistanceQuery {
-	query := &CityQuery{config: aq.config}
+	query := (&CityClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -445,7 +455,7 @@ func (aq *AssistanceQuery) WithCity(opts ...func(*CityQuery)) *AssistanceQuery {
 // WithOrder tells the query-builder to eager-load the nodes that are connected to
 // the "order" edge. The optional arguments are used to configure the query builder of the edge.
 func (aq *AssistanceQuery) WithOrder(opts ...func(*OrderQuery)) *AssistanceQuery {
-	query := &OrderQuery{config: aq.config}
+	query := (&OrderClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -456,7 +466,7 @@ func (aq *AssistanceQuery) WithOrder(opts ...func(*OrderQuery)) *AssistanceQuery
 // WithEmployee tells the query-builder to eager-load the nodes that are connected to
 // the "employee" edge. The optional arguments are used to configure the query builder of the edge.
 func (aq *AssistanceQuery) WithEmployee(opts ...func(*EmployeeQuery)) *AssistanceQuery {
-	query := &EmployeeQuery{config: aq.config}
+	query := (&EmployeeClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -479,16 +489,11 @@ func (aq *AssistanceQuery) WithEmployee(opts ...func(*EmployeeQuery)) *Assistanc
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (aq *AssistanceQuery) GroupBy(field string, fields ...string) *AssistanceGroupBy {
-	grbuild := &AssistanceGroupBy{config: aq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := aq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return aq.sqlQuery(ctx), nil
-	}
+	aq.fields = append([]string{field}, fields...)
+	grbuild := &AssistanceGroupBy{build: aq}
+	grbuild.flds = &aq.fields
 	grbuild.label = assistance.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -506,13 +511,28 @@ func (aq *AssistanceQuery) GroupBy(field string, fields ...string) *AssistanceGr
 //		Scan(ctx, &v)
 func (aq *AssistanceQuery) Select(fields ...string) *AssistanceSelect {
 	aq.fields = append(aq.fields, fields...)
-	selbuild := &AssistanceSelect{AssistanceQuery: aq}
-	selbuild.label = assistance.Label
-	selbuild.flds, selbuild.scan = &aq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &AssistanceSelect{AssistanceQuery: aq}
+	sbuild.label = assistance.Label
+	sbuild.flds, sbuild.scan = &aq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a AssistanceSelect configured with the given aggregations.
+func (aq *AssistanceQuery) Aggregate(fns ...AggregateFunc) *AssistanceSelect {
+	return aq.Select().Aggregate(fns...)
 }
 
 func (aq *AssistanceQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range aq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, aq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range aq.fields {
 		if !assistance.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -779,17 +799,6 @@ func (aq *AssistanceQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, aq.driver, _spec)
 }
 
-func (aq *AssistanceQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := aq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (aq *AssistanceQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -881,13 +890,8 @@ func (aq *AssistanceQuery) Modify(modifiers ...func(s *sql.Selector)) *Assistanc
 
 // AssistanceGroupBy is the group-by builder for Assistance entities.
 type AssistanceGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *AssistanceQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -896,74 +900,77 @@ func (agb *AssistanceGroupBy) Aggregate(fns ...AggregateFunc) *AssistanceGroupBy
 	return agb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (agb *AssistanceGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := agb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeAssistance, "GroupBy")
+	if err := agb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	agb.sql = query
-	return agb.sqlScan(ctx, v)
+	return scanWithInterceptors[*AssistanceQuery, *AssistanceGroupBy](ctx, agb.build, agb, agb.build.inters, v)
 }
 
-func (agb *AssistanceGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range agb.fields {
-		if !assistance.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (agb *AssistanceGroupBy) sqlScan(ctx context.Context, root *AssistanceQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(agb.fns))
+	for _, fn := range agb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := agb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*agb.flds)+len(agb.fns))
+		for _, f := range *agb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*agb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := agb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := agb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (agb *AssistanceGroupBy) sqlQuery() *sql.Selector {
-	selector := agb.sql.Select()
-	aggregation := make([]string, 0, len(agb.fns))
-	for _, fn := range agb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(agb.fields)+len(agb.fns))
-		for _, f := range agb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(agb.fields...)...)
-}
-
 // AssistanceSelect is the builder for selecting fields of Assistance entities.
 type AssistanceSelect struct {
 	*AssistanceQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (as *AssistanceSelect) Aggregate(fns ...AggregateFunc) *AssistanceSelect {
+	as.fns = append(as.fns, fns...)
+	return as
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (as *AssistanceSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeAssistance, "Select")
 	if err := as.prepareQuery(ctx); err != nil {
 		return err
 	}
-	as.sql = as.AssistanceQuery.sqlQuery(ctx)
-	return as.sqlScan(ctx, v)
+	return scanWithInterceptors[*AssistanceQuery, *AssistanceSelect](ctx, as.AssistanceQuery, as, as.inters, v)
 }
 
-func (as *AssistanceSelect) sqlScan(ctx context.Context, v any) error {
+func (as *AssistanceSelect) sqlScan(ctx context.Context, root *AssistanceQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(as.fns))
+	for _, fn := range as.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*as.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := as.sql.Query()
+	query, args := selector.Query()
 	if err := as.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

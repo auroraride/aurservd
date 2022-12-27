@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
@@ -254,6 +255,12 @@ func (au *AssistanceUpdate) ClearBreakdownDesc() *AssistanceUpdate {
 // SetBreakdownPhotos sets the "breakdown_photos" field.
 func (au *AssistanceUpdate) SetBreakdownPhotos(s []string) *AssistanceUpdate {
 	au.mutation.SetBreakdownPhotos(s)
+	return au
+}
+
+// AppendBreakdownPhotos appends s to the "breakdown_photos" field.
+func (au *AssistanceUpdate) AppendBreakdownPhotos(s []string) *AssistanceUpdate {
+	au.mutation.AppendBreakdownPhotos(s)
 	return au
 }
 
@@ -612,6 +619,12 @@ func (au *AssistanceUpdate) SetNaviPolylines(s []string) *AssistanceUpdate {
 	return au
 }
 
+// AppendNaviPolylines appends s to the "navi_polylines" field.
+func (au *AssistanceUpdate) AppendNaviPolylines(s []string) *AssistanceUpdate {
+	au.mutation.AppendNaviPolylines(s)
+	return au
+}
+
 // ClearNaviPolylines clears the value of the "navi_polylines" field.
 func (au *AssistanceUpdate) ClearNaviPolylines() *AssistanceUpdate {
 	au.mutation.ClearNaviPolylines()
@@ -691,43 +704,10 @@ func (au *AssistanceUpdate) ClearEmployee() *AssistanceUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (au *AssistanceUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := au.defaults(); err != nil {
 		return 0, err
 	}
-	if len(au.hooks) == 0 {
-		if err = au.check(); err != nil {
-			return 0, err
-		}
-		affected, err = au.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*AssistanceMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = au.check(); err != nil {
-				return 0, err
-			}
-			au.mutation = mutation
-			affected, err = au.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(au.hooks) - 1; i >= 0; i-- {
-			if au.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = au.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, au.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, AssistanceMutation](ctx, au.sqlSave, au.mutation, au.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -785,6 +765,9 @@ func (au *AssistanceUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Ass
 }
 
 func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := au.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   assistance.Table,
@@ -803,382 +786,185 @@ func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := au.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: assistance.FieldUpdatedAt,
-		})
+		_spec.SetField(assistance.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := au.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: assistance.FieldDeletedAt,
-		})
+		_spec.SetField(assistance.FieldDeletedAt, field.TypeTime, value)
 	}
 	if au.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: assistance.FieldDeletedAt,
-		})
+		_spec.ClearField(assistance.FieldDeletedAt, field.TypeTime)
 	}
 	if au.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: assistance.FieldCreator,
-		})
+		_spec.ClearField(assistance.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := au.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: assistance.FieldLastModifier,
-		})
+		_spec.SetField(assistance.FieldLastModifier, field.TypeJSON, value)
 	}
 	if au.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: assistance.FieldLastModifier,
-		})
+		_spec.ClearField(assistance.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := au.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldRemark,
-		})
+		_spec.SetField(assistance.FieldRemark, field.TypeString, value)
 	}
 	if au.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: assistance.FieldRemark,
-		})
+		_spec.ClearField(assistance.FieldRemark, field.TypeString)
 	}
 	if value, ok := au.mutation.Status(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: assistance.FieldStatus,
-		})
+		_spec.SetField(assistance.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := au.mutation.AddedStatus(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: assistance.FieldStatus,
-		})
+		_spec.AddField(assistance.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := au.mutation.Lng(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldLng,
-		})
+		_spec.SetField(assistance.FieldLng, field.TypeFloat64, value)
 	}
 	if value, ok := au.mutation.AddedLng(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldLng,
-		})
+		_spec.AddField(assistance.FieldLng, field.TypeFloat64, value)
 	}
 	if value, ok := au.mutation.Lat(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldLat,
-		})
+		_spec.SetField(assistance.FieldLat, field.TypeFloat64, value)
 	}
 	if value, ok := au.mutation.AddedLat(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldLat,
-		})
+		_spec.AddField(assistance.FieldLat, field.TypeFloat64, value)
 	}
 	if value, ok := au.mutation.Address(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldAddress,
-		})
+		_spec.SetField(assistance.FieldAddress, field.TypeString, value)
 	}
 	if value, ok := au.mutation.Breakdown(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldBreakdown,
-		})
+		_spec.SetField(assistance.FieldBreakdown, field.TypeString, value)
 	}
 	if value, ok := au.mutation.BreakdownDesc(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldBreakdownDesc,
-		})
+		_spec.SetField(assistance.FieldBreakdownDesc, field.TypeString, value)
 	}
 	if au.mutation.BreakdownDescCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: assistance.FieldBreakdownDesc,
-		})
+		_spec.ClearField(assistance.FieldBreakdownDesc, field.TypeString)
 	}
 	if value, ok := au.mutation.BreakdownPhotos(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: assistance.FieldBreakdownPhotos,
+		_spec.SetField(assistance.FieldBreakdownPhotos, field.TypeJSON, value)
+	}
+	if value, ok := au.mutation.AppendedBreakdownPhotos(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, assistance.FieldBreakdownPhotos, value)
 		})
 	}
 	if value, ok := au.mutation.CancelReason(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldCancelReason,
-		})
+		_spec.SetField(assistance.FieldCancelReason, field.TypeString, value)
 	}
 	if au.mutation.CancelReasonCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: assistance.FieldCancelReason,
-		})
+		_spec.ClearField(assistance.FieldCancelReason, field.TypeString)
 	}
 	if value, ok := au.mutation.CancelReasonDesc(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldCancelReasonDesc,
-		})
+		_spec.SetField(assistance.FieldCancelReasonDesc, field.TypeString, value)
 	}
 	if au.mutation.CancelReasonDescCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: assistance.FieldCancelReasonDesc,
-		})
+		_spec.ClearField(assistance.FieldCancelReasonDesc, field.TypeString)
 	}
 	if value, ok := au.mutation.Distance(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldDistance,
-		})
+		_spec.SetField(assistance.FieldDistance, field.TypeFloat64, value)
 	}
 	if value, ok := au.mutation.AddedDistance(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldDistance,
-		})
+		_spec.AddField(assistance.FieldDistance, field.TypeFloat64, value)
 	}
 	if au.mutation.DistanceCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: assistance.FieldDistance,
-		})
+		_spec.ClearField(assistance.FieldDistance, field.TypeFloat64)
 	}
 	if value, ok := au.mutation.Reason(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldReason,
-		})
+		_spec.SetField(assistance.FieldReason, field.TypeString, value)
 	}
 	if au.mutation.ReasonCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: assistance.FieldReason,
-		})
+		_spec.ClearField(assistance.FieldReason, field.TypeString)
 	}
 	if value, ok := au.mutation.DetectPhoto(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldDetectPhoto,
-		})
+		_spec.SetField(assistance.FieldDetectPhoto, field.TypeString, value)
 	}
 	if au.mutation.DetectPhotoCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: assistance.FieldDetectPhoto,
-		})
+		_spec.ClearField(assistance.FieldDetectPhoto, field.TypeString)
 	}
 	if value, ok := au.mutation.JointPhoto(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldJointPhoto,
-		})
+		_spec.SetField(assistance.FieldJointPhoto, field.TypeString, value)
 	}
 	if au.mutation.JointPhotoCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: assistance.FieldJointPhoto,
-		})
+		_spec.ClearField(assistance.FieldJointPhoto, field.TypeString)
 	}
 	if value, ok := au.mutation.Cost(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldCost,
-		})
+		_spec.SetField(assistance.FieldCost, field.TypeFloat64, value)
 	}
 	if value, ok := au.mutation.AddedCost(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldCost,
-		})
+		_spec.AddField(assistance.FieldCost, field.TypeFloat64, value)
 	}
 	if au.mutation.CostCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: assistance.FieldCost,
-		})
+		_spec.ClearField(assistance.FieldCost, field.TypeFloat64)
 	}
 	if value, ok := au.mutation.RefusedDesc(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldRefusedDesc,
-		})
+		_spec.SetField(assistance.FieldRefusedDesc, field.TypeString, value)
 	}
 	if au.mutation.RefusedDescCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: assistance.FieldRefusedDesc,
-		})
+		_spec.ClearField(assistance.FieldRefusedDesc, field.TypeString)
 	}
 	if value, ok := au.mutation.PayAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: assistance.FieldPayAt,
-		})
+		_spec.SetField(assistance.FieldPayAt, field.TypeTime, value)
 	}
 	if au.mutation.PayAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: assistance.FieldPayAt,
-		})
+		_spec.ClearField(assistance.FieldPayAt, field.TypeTime)
 	}
 	if value, ok := au.mutation.AllocateAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: assistance.FieldAllocateAt,
-		})
+		_spec.SetField(assistance.FieldAllocateAt, field.TypeTime, value)
 	}
 	if au.mutation.AllocateAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: assistance.FieldAllocateAt,
-		})
+		_spec.ClearField(assistance.FieldAllocateAt, field.TypeTime)
 	}
 	if value, ok := au.mutation.Wait(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: assistance.FieldWait,
-		})
+		_spec.SetField(assistance.FieldWait, field.TypeInt, value)
 	}
 	if value, ok := au.mutation.AddedWait(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: assistance.FieldWait,
-		})
+		_spec.AddField(assistance.FieldWait, field.TypeInt, value)
 	}
 	if value, ok := au.mutation.FreeReason(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldFreeReason,
-		})
+		_spec.SetField(assistance.FieldFreeReason, field.TypeString, value)
 	}
 	if au.mutation.FreeReasonCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: assistance.FieldFreeReason,
-		})
+		_spec.ClearField(assistance.FieldFreeReason, field.TypeString)
 	}
 	if value, ok := au.mutation.FailReason(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldFailReason,
-		})
+		_spec.SetField(assistance.FieldFailReason, field.TypeString, value)
 	}
 	if au.mutation.FailReasonCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: assistance.FieldFailReason,
-		})
+		_spec.ClearField(assistance.FieldFailReason, field.TypeString)
 	}
 	if value, ok := au.mutation.ProcessAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: assistance.FieldProcessAt,
-		})
+		_spec.SetField(assistance.FieldProcessAt, field.TypeTime, value)
 	}
 	if au.mutation.ProcessAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: assistance.FieldProcessAt,
-		})
+		_spec.ClearField(assistance.FieldProcessAt, field.TypeTime)
 	}
 	if value, ok := au.mutation.Price(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldPrice,
-		})
+		_spec.SetField(assistance.FieldPrice, field.TypeFloat64, value)
 	}
 	if value, ok := au.mutation.AddedPrice(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldPrice,
-		})
+		_spec.AddField(assistance.FieldPrice, field.TypeFloat64, value)
 	}
 	if au.mutation.PriceCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: assistance.FieldPrice,
-		})
+		_spec.ClearField(assistance.FieldPrice, field.TypeFloat64)
 	}
 	if value, ok := au.mutation.NaviDuration(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: assistance.FieldNaviDuration,
-		})
+		_spec.SetField(assistance.FieldNaviDuration, field.TypeInt, value)
 	}
 	if value, ok := au.mutation.AddedNaviDuration(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: assistance.FieldNaviDuration,
-		})
+		_spec.AddField(assistance.FieldNaviDuration, field.TypeInt, value)
 	}
 	if au.mutation.NaviDurationCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Column: assistance.FieldNaviDuration,
-		})
+		_spec.ClearField(assistance.FieldNaviDuration, field.TypeInt)
 	}
 	if value, ok := au.mutation.NaviPolylines(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: assistance.FieldNaviPolylines,
+		_spec.SetField(assistance.FieldNaviPolylines, field.TypeJSON, value)
+	}
+	if value, ok := au.mutation.AppendedNaviPolylines(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, assistance.FieldNaviPolylines, value)
 		})
 	}
 	if au.mutation.NaviPolylinesCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: assistance.FieldNaviPolylines,
-		})
+		_spec.ClearField(assistance.FieldNaviPolylines, field.TypeJSON)
 	}
 	if au.mutation.StoreCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1390,7 +1176,7 @@ func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = au.modifiers
+	_spec.AddModifiers(au.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{assistance.Label}
@@ -1399,6 +1185,7 @@ func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	au.mutation.done = true
 	return n, nil
 }
 
@@ -1629,6 +1416,12 @@ func (auo *AssistanceUpdateOne) ClearBreakdownDesc() *AssistanceUpdateOne {
 // SetBreakdownPhotos sets the "breakdown_photos" field.
 func (auo *AssistanceUpdateOne) SetBreakdownPhotos(s []string) *AssistanceUpdateOne {
 	auo.mutation.SetBreakdownPhotos(s)
+	return auo
+}
+
+// AppendBreakdownPhotos appends s to the "breakdown_photos" field.
+func (auo *AssistanceUpdateOne) AppendBreakdownPhotos(s []string) *AssistanceUpdateOne {
+	auo.mutation.AppendBreakdownPhotos(s)
 	return auo
 }
 
@@ -1987,6 +1780,12 @@ func (auo *AssistanceUpdateOne) SetNaviPolylines(s []string) *AssistanceUpdateOn
 	return auo
 }
 
+// AppendNaviPolylines appends s to the "navi_polylines" field.
+func (auo *AssistanceUpdateOne) AppendNaviPolylines(s []string) *AssistanceUpdateOne {
+	auo.mutation.AppendNaviPolylines(s)
+	return auo
+}
+
 // ClearNaviPolylines clears the value of the "navi_polylines" field.
 func (auo *AssistanceUpdateOne) ClearNaviPolylines() *AssistanceUpdateOne {
 	auo.mutation.ClearNaviPolylines()
@@ -2073,49 +1872,10 @@ func (auo *AssistanceUpdateOne) Select(field string, fields ...string) *Assistan
 
 // Save executes the query and returns the updated Assistance entity.
 func (auo *AssistanceUpdateOne) Save(ctx context.Context) (*Assistance, error) {
-	var (
-		err  error
-		node *Assistance
-	)
 	if err := auo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(auo.hooks) == 0 {
-		if err = auo.check(); err != nil {
-			return nil, err
-		}
-		node, err = auo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*AssistanceMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = auo.check(); err != nil {
-				return nil, err
-			}
-			auo.mutation = mutation
-			node, err = auo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(auo.hooks) - 1; i >= 0; i-- {
-			if auo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = auo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, auo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Assistance)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from AssistanceMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Assistance, AssistanceMutation](ctx, auo.sqlSave, auo.mutation, auo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -2173,6 +1933,9 @@ func (auo *AssistanceUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) 
 }
 
 func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance, err error) {
+	if err := auo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   assistance.Table,
@@ -2208,382 +1971,185 @@ func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance,
 		}
 	}
 	if value, ok := auo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: assistance.FieldUpdatedAt,
-		})
+		_spec.SetField(assistance.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := auo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: assistance.FieldDeletedAt,
-		})
+		_spec.SetField(assistance.FieldDeletedAt, field.TypeTime, value)
 	}
 	if auo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: assistance.FieldDeletedAt,
-		})
+		_spec.ClearField(assistance.FieldDeletedAt, field.TypeTime)
 	}
 	if auo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: assistance.FieldCreator,
-		})
+		_spec.ClearField(assistance.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := auo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: assistance.FieldLastModifier,
-		})
+		_spec.SetField(assistance.FieldLastModifier, field.TypeJSON, value)
 	}
 	if auo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: assistance.FieldLastModifier,
-		})
+		_spec.ClearField(assistance.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := auo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldRemark,
-		})
+		_spec.SetField(assistance.FieldRemark, field.TypeString, value)
 	}
 	if auo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: assistance.FieldRemark,
-		})
+		_spec.ClearField(assistance.FieldRemark, field.TypeString)
 	}
 	if value, ok := auo.mutation.Status(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: assistance.FieldStatus,
-		})
+		_spec.SetField(assistance.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := auo.mutation.AddedStatus(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: assistance.FieldStatus,
-		})
+		_spec.AddField(assistance.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := auo.mutation.Lng(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldLng,
-		})
+		_spec.SetField(assistance.FieldLng, field.TypeFloat64, value)
 	}
 	if value, ok := auo.mutation.AddedLng(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldLng,
-		})
+		_spec.AddField(assistance.FieldLng, field.TypeFloat64, value)
 	}
 	if value, ok := auo.mutation.Lat(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldLat,
-		})
+		_spec.SetField(assistance.FieldLat, field.TypeFloat64, value)
 	}
 	if value, ok := auo.mutation.AddedLat(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldLat,
-		})
+		_spec.AddField(assistance.FieldLat, field.TypeFloat64, value)
 	}
 	if value, ok := auo.mutation.Address(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldAddress,
-		})
+		_spec.SetField(assistance.FieldAddress, field.TypeString, value)
 	}
 	if value, ok := auo.mutation.Breakdown(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldBreakdown,
-		})
+		_spec.SetField(assistance.FieldBreakdown, field.TypeString, value)
 	}
 	if value, ok := auo.mutation.BreakdownDesc(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldBreakdownDesc,
-		})
+		_spec.SetField(assistance.FieldBreakdownDesc, field.TypeString, value)
 	}
 	if auo.mutation.BreakdownDescCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: assistance.FieldBreakdownDesc,
-		})
+		_spec.ClearField(assistance.FieldBreakdownDesc, field.TypeString)
 	}
 	if value, ok := auo.mutation.BreakdownPhotos(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: assistance.FieldBreakdownPhotos,
+		_spec.SetField(assistance.FieldBreakdownPhotos, field.TypeJSON, value)
+	}
+	if value, ok := auo.mutation.AppendedBreakdownPhotos(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, assistance.FieldBreakdownPhotos, value)
 		})
 	}
 	if value, ok := auo.mutation.CancelReason(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldCancelReason,
-		})
+		_spec.SetField(assistance.FieldCancelReason, field.TypeString, value)
 	}
 	if auo.mutation.CancelReasonCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: assistance.FieldCancelReason,
-		})
+		_spec.ClearField(assistance.FieldCancelReason, field.TypeString)
 	}
 	if value, ok := auo.mutation.CancelReasonDesc(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldCancelReasonDesc,
-		})
+		_spec.SetField(assistance.FieldCancelReasonDesc, field.TypeString, value)
 	}
 	if auo.mutation.CancelReasonDescCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: assistance.FieldCancelReasonDesc,
-		})
+		_spec.ClearField(assistance.FieldCancelReasonDesc, field.TypeString)
 	}
 	if value, ok := auo.mutation.Distance(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldDistance,
-		})
+		_spec.SetField(assistance.FieldDistance, field.TypeFloat64, value)
 	}
 	if value, ok := auo.mutation.AddedDistance(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldDistance,
-		})
+		_spec.AddField(assistance.FieldDistance, field.TypeFloat64, value)
 	}
 	if auo.mutation.DistanceCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: assistance.FieldDistance,
-		})
+		_spec.ClearField(assistance.FieldDistance, field.TypeFloat64)
 	}
 	if value, ok := auo.mutation.Reason(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldReason,
-		})
+		_spec.SetField(assistance.FieldReason, field.TypeString, value)
 	}
 	if auo.mutation.ReasonCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: assistance.FieldReason,
-		})
+		_spec.ClearField(assistance.FieldReason, field.TypeString)
 	}
 	if value, ok := auo.mutation.DetectPhoto(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldDetectPhoto,
-		})
+		_spec.SetField(assistance.FieldDetectPhoto, field.TypeString, value)
 	}
 	if auo.mutation.DetectPhotoCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: assistance.FieldDetectPhoto,
-		})
+		_spec.ClearField(assistance.FieldDetectPhoto, field.TypeString)
 	}
 	if value, ok := auo.mutation.JointPhoto(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldJointPhoto,
-		})
+		_spec.SetField(assistance.FieldJointPhoto, field.TypeString, value)
 	}
 	if auo.mutation.JointPhotoCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: assistance.FieldJointPhoto,
-		})
+		_spec.ClearField(assistance.FieldJointPhoto, field.TypeString)
 	}
 	if value, ok := auo.mutation.Cost(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldCost,
-		})
+		_spec.SetField(assistance.FieldCost, field.TypeFloat64, value)
 	}
 	if value, ok := auo.mutation.AddedCost(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldCost,
-		})
+		_spec.AddField(assistance.FieldCost, field.TypeFloat64, value)
 	}
 	if auo.mutation.CostCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: assistance.FieldCost,
-		})
+		_spec.ClearField(assistance.FieldCost, field.TypeFloat64)
 	}
 	if value, ok := auo.mutation.RefusedDesc(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldRefusedDesc,
-		})
+		_spec.SetField(assistance.FieldRefusedDesc, field.TypeString, value)
 	}
 	if auo.mutation.RefusedDescCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: assistance.FieldRefusedDesc,
-		})
+		_spec.ClearField(assistance.FieldRefusedDesc, field.TypeString)
 	}
 	if value, ok := auo.mutation.PayAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: assistance.FieldPayAt,
-		})
+		_spec.SetField(assistance.FieldPayAt, field.TypeTime, value)
 	}
 	if auo.mutation.PayAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: assistance.FieldPayAt,
-		})
+		_spec.ClearField(assistance.FieldPayAt, field.TypeTime)
 	}
 	if value, ok := auo.mutation.AllocateAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: assistance.FieldAllocateAt,
-		})
+		_spec.SetField(assistance.FieldAllocateAt, field.TypeTime, value)
 	}
 	if auo.mutation.AllocateAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: assistance.FieldAllocateAt,
-		})
+		_spec.ClearField(assistance.FieldAllocateAt, field.TypeTime)
 	}
 	if value, ok := auo.mutation.Wait(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: assistance.FieldWait,
-		})
+		_spec.SetField(assistance.FieldWait, field.TypeInt, value)
 	}
 	if value, ok := auo.mutation.AddedWait(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: assistance.FieldWait,
-		})
+		_spec.AddField(assistance.FieldWait, field.TypeInt, value)
 	}
 	if value, ok := auo.mutation.FreeReason(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldFreeReason,
-		})
+		_spec.SetField(assistance.FieldFreeReason, field.TypeString, value)
 	}
 	if auo.mutation.FreeReasonCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: assistance.FieldFreeReason,
-		})
+		_spec.ClearField(assistance.FieldFreeReason, field.TypeString)
 	}
 	if value, ok := auo.mutation.FailReason(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldFailReason,
-		})
+		_spec.SetField(assistance.FieldFailReason, field.TypeString, value)
 	}
 	if auo.mutation.FailReasonCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: assistance.FieldFailReason,
-		})
+		_spec.ClearField(assistance.FieldFailReason, field.TypeString)
 	}
 	if value, ok := auo.mutation.ProcessAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: assistance.FieldProcessAt,
-		})
+		_spec.SetField(assistance.FieldProcessAt, field.TypeTime, value)
 	}
 	if auo.mutation.ProcessAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: assistance.FieldProcessAt,
-		})
+		_spec.ClearField(assistance.FieldProcessAt, field.TypeTime)
 	}
 	if value, ok := auo.mutation.Price(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldPrice,
-		})
+		_spec.SetField(assistance.FieldPrice, field.TypeFloat64, value)
 	}
 	if value, ok := auo.mutation.AddedPrice(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldPrice,
-		})
+		_spec.AddField(assistance.FieldPrice, field.TypeFloat64, value)
 	}
 	if auo.mutation.PriceCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: assistance.FieldPrice,
-		})
+		_spec.ClearField(assistance.FieldPrice, field.TypeFloat64)
 	}
 	if value, ok := auo.mutation.NaviDuration(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: assistance.FieldNaviDuration,
-		})
+		_spec.SetField(assistance.FieldNaviDuration, field.TypeInt, value)
 	}
 	if value, ok := auo.mutation.AddedNaviDuration(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: assistance.FieldNaviDuration,
-		})
+		_spec.AddField(assistance.FieldNaviDuration, field.TypeInt, value)
 	}
 	if auo.mutation.NaviDurationCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Column: assistance.FieldNaviDuration,
-		})
+		_spec.ClearField(assistance.FieldNaviDuration, field.TypeInt)
 	}
 	if value, ok := auo.mutation.NaviPolylines(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: assistance.FieldNaviPolylines,
+		_spec.SetField(assistance.FieldNaviPolylines, field.TypeJSON, value)
+	}
+	if value, ok := auo.mutation.AppendedNaviPolylines(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, assistance.FieldNaviPolylines, value)
 		})
 	}
 	if auo.mutation.NaviPolylinesCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: assistance.FieldNaviPolylines,
-		})
+		_spec.ClearField(assistance.FieldNaviPolylines, field.TypeJSON)
 	}
 	if auo.mutation.StoreCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -2795,7 +2361,7 @@ func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance,
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = auo.modifiers
+	_spec.AddModifiers(auo.modifiers...)
 	_node = &Assistance{config: auo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -2807,5 +2373,6 @@ func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance,
 		}
 		return nil, err
 	}
+	auo.mutation.done = true
 	return _node, nil
 }

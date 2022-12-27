@@ -27,6 +27,7 @@ type CouponQuery struct {
 	unique       *bool
 	order        []OrderFunc
 	fields       []string
+	inters       []Interceptor
 	predicates   []predicate.Coupon
 	withRider    *RiderQuery
 	withAssembly *CouponAssemblyQuery
@@ -45,13 +46,13 @@ func (cq *CouponQuery) Where(ps ...predicate.Coupon) *CouponQuery {
 	return cq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (cq *CouponQuery) Limit(limit int) *CouponQuery {
 	cq.limit = &limit
 	return cq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (cq *CouponQuery) Offset(offset int) *CouponQuery {
 	cq.offset = &offset
 	return cq
@@ -64,7 +65,7 @@ func (cq *CouponQuery) Unique(unique bool) *CouponQuery {
 	return cq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (cq *CouponQuery) Order(o ...OrderFunc) *CouponQuery {
 	cq.order = append(cq.order, o...)
 	return cq
@@ -72,7 +73,7 @@ func (cq *CouponQuery) Order(o ...OrderFunc) *CouponQuery {
 
 // QueryRider chains the current query on the "rider" edge.
 func (cq *CouponQuery) QueryRider() *RiderQuery {
-	query := &RiderQuery{config: cq.config}
+	query := (&RiderClient{config: cq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -94,7 +95,7 @@ func (cq *CouponQuery) QueryRider() *RiderQuery {
 
 // QueryAssembly chains the current query on the "assembly" edge.
 func (cq *CouponQuery) QueryAssembly() *CouponAssemblyQuery {
-	query := &CouponAssemblyQuery{config: cq.config}
+	query := (&CouponAssemblyClient{config: cq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -116,7 +117,7 @@ func (cq *CouponQuery) QueryAssembly() *CouponAssemblyQuery {
 
 // QueryPlan chains the current query on the "plan" edge.
 func (cq *CouponQuery) QueryPlan() *PlanQuery {
-	query := &PlanQuery{config: cq.config}
+	query := (&PlanClient{config: cq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -138,7 +139,7 @@ func (cq *CouponQuery) QueryPlan() *PlanQuery {
 
 // QueryTemplate chains the current query on the "template" edge.
 func (cq *CouponQuery) QueryTemplate() *CouponTemplateQuery {
-	query := &CouponTemplateQuery{config: cq.config}
+	query := (&CouponTemplateClient{config: cq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -160,7 +161,7 @@ func (cq *CouponQuery) QueryTemplate() *CouponTemplateQuery {
 
 // QueryOrder chains the current query on the "order" edge.
 func (cq *CouponQuery) QueryOrder() *OrderQuery {
-	query := &OrderQuery{config: cq.config}
+	query := (&OrderClient{config: cq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -183,7 +184,7 @@ func (cq *CouponQuery) QueryOrder() *OrderQuery {
 // First returns the first Coupon entity from the query.
 // Returns a *NotFoundError when no Coupon was found.
 func (cq *CouponQuery) First(ctx context.Context) (*Coupon, error) {
-	nodes, err := cq.Limit(1).All(ctx)
+	nodes, err := cq.Limit(1).All(newQueryContext(ctx, TypeCoupon, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -206,7 +207,7 @@ func (cq *CouponQuery) FirstX(ctx context.Context) *Coupon {
 // Returns a *NotFoundError when no Coupon ID was found.
 func (cq *CouponQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = cq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = cq.Limit(1).IDs(newQueryContext(ctx, TypeCoupon, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -229,7 +230,7 @@ func (cq *CouponQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Coupon entity is found.
 // Returns a *NotFoundError when no Coupon entities are found.
 func (cq *CouponQuery) Only(ctx context.Context) (*Coupon, error) {
-	nodes, err := cq.Limit(2).All(ctx)
+	nodes, err := cq.Limit(2).All(newQueryContext(ctx, TypeCoupon, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -257,7 +258,7 @@ func (cq *CouponQuery) OnlyX(ctx context.Context) *Coupon {
 // Returns a *NotFoundError when no entities are found.
 func (cq *CouponQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = cq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = cq.Limit(2).IDs(newQueryContext(ctx, TypeCoupon, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -282,10 +283,12 @@ func (cq *CouponQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Coupons.
 func (cq *CouponQuery) All(ctx context.Context) ([]*Coupon, error) {
+	ctx = newQueryContext(ctx, TypeCoupon, "All")
 	if err := cq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return cq.sqlAll(ctx)
+	qr := querierAll[[]*Coupon, *CouponQuery]()
+	return withInterceptors[[]*Coupon](ctx, cq, qr, cq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -300,6 +303,7 @@ func (cq *CouponQuery) AllX(ctx context.Context) []*Coupon {
 // IDs executes the query and returns a list of Coupon IDs.
 func (cq *CouponQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeCoupon, "IDs")
 	if err := cq.Select(coupon.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -317,10 +321,11 @@ func (cq *CouponQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (cq *CouponQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeCoupon, "Count")
 	if err := cq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return cq.sqlCount(ctx)
+	return withInterceptors[int](ctx, cq, querierCount[*CouponQuery](), cq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -334,10 +339,15 @@ func (cq *CouponQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (cq *CouponQuery) Exist(ctx context.Context) (bool, error) {
-	if err := cq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeCoupon, "Exist")
+	switch _, err := cq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return cq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -376,7 +386,7 @@ func (cq *CouponQuery) Clone() *CouponQuery {
 // WithRider tells the query-builder to eager-load the nodes that are connected to
 // the "rider" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *CouponQuery) WithRider(opts ...func(*RiderQuery)) *CouponQuery {
-	query := &RiderQuery{config: cq.config}
+	query := (&RiderClient{config: cq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -387,7 +397,7 @@ func (cq *CouponQuery) WithRider(opts ...func(*RiderQuery)) *CouponQuery {
 // WithAssembly tells the query-builder to eager-load the nodes that are connected to
 // the "assembly" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *CouponQuery) WithAssembly(opts ...func(*CouponAssemblyQuery)) *CouponQuery {
-	query := &CouponAssemblyQuery{config: cq.config}
+	query := (&CouponAssemblyClient{config: cq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -398,7 +408,7 @@ func (cq *CouponQuery) WithAssembly(opts ...func(*CouponAssemblyQuery)) *CouponQ
 // WithPlan tells the query-builder to eager-load the nodes that are connected to
 // the "plan" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *CouponQuery) WithPlan(opts ...func(*PlanQuery)) *CouponQuery {
-	query := &PlanQuery{config: cq.config}
+	query := (&PlanClient{config: cq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -409,7 +419,7 @@ func (cq *CouponQuery) WithPlan(opts ...func(*PlanQuery)) *CouponQuery {
 // WithTemplate tells the query-builder to eager-load the nodes that are connected to
 // the "template" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *CouponQuery) WithTemplate(opts ...func(*CouponTemplateQuery)) *CouponQuery {
-	query := &CouponTemplateQuery{config: cq.config}
+	query := (&CouponTemplateClient{config: cq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -420,7 +430,7 @@ func (cq *CouponQuery) WithTemplate(opts ...func(*CouponTemplateQuery)) *CouponQ
 // WithOrder tells the query-builder to eager-load the nodes that are connected to
 // the "order" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *CouponQuery) WithOrder(opts ...func(*OrderQuery)) *CouponQuery {
-	query := &OrderQuery{config: cq.config}
+	query := (&OrderClient{config: cq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -443,16 +453,11 @@ func (cq *CouponQuery) WithOrder(opts ...func(*OrderQuery)) *CouponQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (cq *CouponQuery) GroupBy(field string, fields ...string) *CouponGroupBy {
-	grbuild := &CouponGroupBy{config: cq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := cq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return cq.sqlQuery(ctx), nil
-	}
+	cq.fields = append([]string{field}, fields...)
+	grbuild := &CouponGroupBy{build: cq}
+	grbuild.flds = &cq.fields
 	grbuild.label = coupon.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -470,13 +475,28 @@ func (cq *CouponQuery) GroupBy(field string, fields ...string) *CouponGroupBy {
 //		Scan(ctx, &v)
 func (cq *CouponQuery) Select(fields ...string) *CouponSelect {
 	cq.fields = append(cq.fields, fields...)
-	selbuild := &CouponSelect{CouponQuery: cq}
-	selbuild.label = coupon.Label
-	selbuild.flds, selbuild.scan = &cq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &CouponSelect{CouponQuery: cq}
+	sbuild.label = coupon.Label
+	sbuild.flds, sbuild.scan = &cq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a CouponSelect configured with the given aggregations.
+func (cq *CouponQuery) Aggregate(fns ...AggregateFunc) *CouponSelect {
+	return cq.Select().Aggregate(fns...)
 }
 
 func (cq *CouponQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range cq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, cq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range cq.fields {
 		if !coupon.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -710,17 +730,6 @@ func (cq *CouponQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, cq.driver, _spec)
 }
 
-func (cq *CouponQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := cq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (cq *CouponQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -812,13 +821,8 @@ func (cq *CouponQuery) Modify(modifiers ...func(s *sql.Selector)) *CouponSelect 
 
 // CouponGroupBy is the group-by builder for Coupon entities.
 type CouponGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *CouponQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -827,74 +831,77 @@ func (cgb *CouponGroupBy) Aggregate(fns ...AggregateFunc) *CouponGroupBy {
 	return cgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (cgb *CouponGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := cgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeCoupon, "GroupBy")
+	if err := cgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	cgb.sql = query
-	return cgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*CouponQuery, *CouponGroupBy](ctx, cgb.build, cgb, cgb.build.inters, v)
 }
 
-func (cgb *CouponGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range cgb.fields {
-		if !coupon.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (cgb *CouponGroupBy) sqlScan(ctx context.Context, root *CouponQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(cgb.fns))
+	for _, fn := range cgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := cgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*cgb.flds)+len(cgb.fns))
+		for _, f := range *cgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*cgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := cgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := cgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (cgb *CouponGroupBy) sqlQuery() *sql.Selector {
-	selector := cgb.sql.Select()
-	aggregation := make([]string, 0, len(cgb.fns))
-	for _, fn := range cgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(cgb.fields)+len(cgb.fns))
-		for _, f := range cgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(cgb.fields...)...)
-}
-
 // CouponSelect is the builder for selecting fields of Coupon entities.
 type CouponSelect struct {
 	*CouponQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (cs *CouponSelect) Aggregate(fns ...AggregateFunc) *CouponSelect {
+	cs.fns = append(cs.fns, fns...)
+	return cs
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (cs *CouponSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeCoupon, "Select")
 	if err := cs.prepareQuery(ctx); err != nil {
 		return err
 	}
-	cs.sql = cs.CouponQuery.sqlQuery(ctx)
-	return cs.sqlScan(ctx, v)
+	return scanWithInterceptors[*CouponQuery, *CouponSelect](ctx, cs.CouponQuery, cs, cs.inters, v)
 }
 
-func (cs *CouponSelect) sqlScan(ctx context.Context, v any) error {
+func (cs *CouponSelect) sqlScan(ctx context.Context, root *CouponQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(cs.fns))
+	for _, fn := range cs.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*cs.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := cs.sql.Query()
+	query, args := selector.Query()
 	if err := cs.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

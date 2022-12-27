@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"fmt"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -28,34 +27,7 @@ func (srd *SubscribeReminderDelete) Where(ps ...predicate.SubscribeReminder) *Su
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (srd *SubscribeReminderDelete) Exec(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(srd.hooks) == 0 {
-		affected, err = srd.sqlExec(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*SubscribeReminderMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			srd.mutation = mutation
-			affected, err = srd.sqlExec(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(srd.hooks) - 1; i >= 0; i-- {
-			if srd.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = srd.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, srd.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, SubscribeReminderMutation](ctx, srd.sqlExec, srd.mutation, srd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
@@ -88,6 +60,7 @@ func (srd *SubscribeReminderDelete) sqlExec(ctx context.Context) (int, error) {
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
+	srd.mutation.done = true
 	return affected, err
 }
 

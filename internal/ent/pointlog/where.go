@@ -12,690 +12,442 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uint64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.PointLog(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uint64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.PointLog(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uint64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.PointLog(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.PointLog(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.PointLog(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uint64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.PointLog(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uint64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.PointLog(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uint64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.PointLog(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uint64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.PointLog(sql.FieldLTE(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.PointLog(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.PointLog(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
 func RiderID(v uint64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRiderID), v))
-	})
+	return predicate.PointLog(sql.FieldEQ(FieldRiderID, v))
 }
 
 // OrderID applies equality check predicate on the "order_id" field. It's identical to OrderIDEQ.
 func OrderID(v uint64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldOrderID), v))
-	})
+	return predicate.PointLog(sql.FieldEQ(FieldOrderID, v))
 }
 
 // Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
 func Type(v uint8) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldType), v))
-	})
+	return predicate.PointLog(sql.FieldEQ(FieldType, v))
 }
 
 // Points applies equality check predicate on the "points" field. It's identical to PointsEQ.
 func Points(v int64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPoints), v))
-	})
+	return predicate.PointLog(sql.FieldEQ(FieldPoints, v))
 }
 
 // After applies equality check predicate on the "after" field. It's identical to AfterEQ.
 func After(v int64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAfter), v))
-	})
+	return predicate.PointLog(sql.FieldEQ(FieldAfter, v))
 }
 
 // Reason applies equality check predicate on the "reason" field. It's identical to ReasonEQ.
 func Reason(v string) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldReason), v))
-	})
+	return predicate.PointLog(sql.FieldEQ(FieldReason, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.PointLog(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
 func CreatedAtNEQ(v time.Time) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.PointLog(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.PointLog {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.PointLog(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.PointLog {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.PointLog(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtGT applies the GT predicate on the "created_at" field.
 func CreatedAtGT(v time.Time) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.PointLog(sql.FieldGT(FieldCreatedAt, v))
 }
 
 // CreatedAtGTE applies the GTE predicate on the "created_at" field.
 func CreatedAtGTE(v time.Time) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.PointLog(sql.FieldGTE(FieldCreatedAt, v))
 }
 
 // CreatedAtLT applies the LT predicate on the "created_at" field.
 func CreatedAtLT(v time.Time) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.PointLog(sql.FieldLT(FieldCreatedAt, v))
 }
 
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.PointLog(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
 func UpdatedAtEQ(v time.Time) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.PointLog(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
 func UpdatedAtNEQ(v time.Time) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.PointLog(sql.FieldNEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.PointLog {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.PointLog(sql.FieldIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.PointLog {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.PointLog(sql.FieldNotIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtGT applies the GT predicate on the "updated_at" field.
 func UpdatedAtGT(v time.Time) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.PointLog(sql.FieldGT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
 func UpdatedAtGTE(v time.Time) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.PointLog(sql.FieldGTE(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLT applies the LT predicate on the "updated_at" field.
 func UpdatedAtLT(v time.Time) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.PointLog(sql.FieldLT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.PointLog(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // RiderIDEQ applies the EQ predicate on the "rider_id" field.
 func RiderIDEQ(v uint64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRiderID), v))
-	})
+	return predicate.PointLog(sql.FieldEQ(FieldRiderID, v))
 }
 
 // RiderIDNEQ applies the NEQ predicate on the "rider_id" field.
 func RiderIDNEQ(v uint64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRiderID), v))
-	})
+	return predicate.PointLog(sql.FieldNEQ(FieldRiderID, v))
 }
 
 // RiderIDIn applies the In predicate on the "rider_id" field.
 func RiderIDIn(vs ...uint64) predicate.PointLog {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRiderID), v...))
-	})
+	return predicate.PointLog(sql.FieldIn(FieldRiderID, vs...))
 }
 
 // RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
 func RiderIDNotIn(vs ...uint64) predicate.PointLog {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRiderID), v...))
-	})
+	return predicate.PointLog(sql.FieldNotIn(FieldRiderID, vs...))
 }
 
 // OrderIDEQ applies the EQ predicate on the "order_id" field.
 func OrderIDEQ(v uint64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldOrderID), v))
-	})
+	return predicate.PointLog(sql.FieldEQ(FieldOrderID, v))
 }
 
 // OrderIDNEQ applies the NEQ predicate on the "order_id" field.
 func OrderIDNEQ(v uint64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldOrderID), v))
-	})
+	return predicate.PointLog(sql.FieldNEQ(FieldOrderID, v))
 }
 
 // OrderIDIn applies the In predicate on the "order_id" field.
 func OrderIDIn(vs ...uint64) predicate.PointLog {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldOrderID), v...))
-	})
+	return predicate.PointLog(sql.FieldIn(FieldOrderID, vs...))
 }
 
 // OrderIDNotIn applies the NotIn predicate on the "order_id" field.
 func OrderIDNotIn(vs ...uint64) predicate.PointLog {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldOrderID), v...))
-	})
+	return predicate.PointLog(sql.FieldNotIn(FieldOrderID, vs...))
 }
 
 // OrderIDIsNil applies the IsNil predicate on the "order_id" field.
 func OrderIDIsNil() predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldOrderID)))
-	})
+	return predicate.PointLog(sql.FieldIsNull(FieldOrderID))
 }
 
 // OrderIDNotNil applies the NotNil predicate on the "order_id" field.
 func OrderIDNotNil() predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldOrderID)))
-	})
+	return predicate.PointLog(sql.FieldNotNull(FieldOrderID))
 }
 
 // ModifierIsNil applies the IsNil predicate on the "modifier" field.
 func ModifierIsNil() predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldModifier)))
-	})
+	return predicate.PointLog(sql.FieldIsNull(FieldModifier))
 }
 
 // ModifierNotNil applies the NotNil predicate on the "modifier" field.
 func ModifierNotNil() predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldModifier)))
-	})
+	return predicate.PointLog(sql.FieldNotNull(FieldModifier))
 }
 
 // EmployeeInfoIsNil applies the IsNil predicate on the "employee_info" field.
 func EmployeeInfoIsNil() predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldEmployeeInfo)))
-	})
+	return predicate.PointLog(sql.FieldIsNull(FieldEmployeeInfo))
 }
 
 // EmployeeInfoNotNil applies the NotNil predicate on the "employee_info" field.
 func EmployeeInfoNotNil() predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldEmployeeInfo)))
-	})
+	return predicate.PointLog(sql.FieldNotNull(FieldEmployeeInfo))
 }
 
 // TypeEQ applies the EQ predicate on the "type" field.
 func TypeEQ(v uint8) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldType), v))
-	})
+	return predicate.PointLog(sql.FieldEQ(FieldType, v))
 }
 
 // TypeNEQ applies the NEQ predicate on the "type" field.
 func TypeNEQ(v uint8) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldType), v))
-	})
+	return predicate.PointLog(sql.FieldNEQ(FieldType, v))
 }
 
 // TypeIn applies the In predicate on the "type" field.
 func TypeIn(vs ...uint8) predicate.PointLog {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldType), v...))
-	})
+	return predicate.PointLog(sql.FieldIn(FieldType, vs...))
 }
 
 // TypeNotIn applies the NotIn predicate on the "type" field.
 func TypeNotIn(vs ...uint8) predicate.PointLog {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldType), v...))
-	})
+	return predicate.PointLog(sql.FieldNotIn(FieldType, vs...))
 }
 
 // TypeGT applies the GT predicate on the "type" field.
 func TypeGT(v uint8) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldType), v))
-	})
+	return predicate.PointLog(sql.FieldGT(FieldType, v))
 }
 
 // TypeGTE applies the GTE predicate on the "type" field.
 func TypeGTE(v uint8) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldType), v))
-	})
+	return predicate.PointLog(sql.FieldGTE(FieldType, v))
 }
 
 // TypeLT applies the LT predicate on the "type" field.
 func TypeLT(v uint8) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldType), v))
-	})
+	return predicate.PointLog(sql.FieldLT(FieldType, v))
 }
 
 // TypeLTE applies the LTE predicate on the "type" field.
 func TypeLTE(v uint8) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldType), v))
-	})
+	return predicate.PointLog(sql.FieldLTE(FieldType, v))
 }
 
 // PointsEQ applies the EQ predicate on the "points" field.
 func PointsEQ(v int64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPoints), v))
-	})
+	return predicate.PointLog(sql.FieldEQ(FieldPoints, v))
 }
 
 // PointsNEQ applies the NEQ predicate on the "points" field.
 func PointsNEQ(v int64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPoints), v))
-	})
+	return predicate.PointLog(sql.FieldNEQ(FieldPoints, v))
 }
 
 // PointsIn applies the In predicate on the "points" field.
 func PointsIn(vs ...int64) predicate.PointLog {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldPoints), v...))
-	})
+	return predicate.PointLog(sql.FieldIn(FieldPoints, vs...))
 }
 
 // PointsNotIn applies the NotIn predicate on the "points" field.
 func PointsNotIn(vs ...int64) predicate.PointLog {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldPoints), v...))
-	})
+	return predicate.PointLog(sql.FieldNotIn(FieldPoints, vs...))
 }
 
 // PointsGT applies the GT predicate on the "points" field.
 func PointsGT(v int64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldPoints), v))
-	})
+	return predicate.PointLog(sql.FieldGT(FieldPoints, v))
 }
 
 // PointsGTE applies the GTE predicate on the "points" field.
 func PointsGTE(v int64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldPoints), v))
-	})
+	return predicate.PointLog(sql.FieldGTE(FieldPoints, v))
 }
 
 // PointsLT applies the LT predicate on the "points" field.
 func PointsLT(v int64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldPoints), v))
-	})
+	return predicate.PointLog(sql.FieldLT(FieldPoints, v))
 }
 
 // PointsLTE applies the LTE predicate on the "points" field.
 func PointsLTE(v int64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldPoints), v))
-	})
+	return predicate.PointLog(sql.FieldLTE(FieldPoints, v))
 }
 
 // AfterEQ applies the EQ predicate on the "after" field.
 func AfterEQ(v int64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAfter), v))
-	})
+	return predicate.PointLog(sql.FieldEQ(FieldAfter, v))
 }
 
 // AfterNEQ applies the NEQ predicate on the "after" field.
 func AfterNEQ(v int64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAfter), v))
-	})
+	return predicate.PointLog(sql.FieldNEQ(FieldAfter, v))
 }
 
 // AfterIn applies the In predicate on the "after" field.
 func AfterIn(vs ...int64) predicate.PointLog {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAfter), v...))
-	})
+	return predicate.PointLog(sql.FieldIn(FieldAfter, vs...))
 }
 
 // AfterNotIn applies the NotIn predicate on the "after" field.
 func AfterNotIn(vs ...int64) predicate.PointLog {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAfter), v...))
-	})
+	return predicate.PointLog(sql.FieldNotIn(FieldAfter, vs...))
 }
 
 // AfterGT applies the GT predicate on the "after" field.
 func AfterGT(v int64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAfter), v))
-	})
+	return predicate.PointLog(sql.FieldGT(FieldAfter, v))
 }
 
 // AfterGTE applies the GTE predicate on the "after" field.
 func AfterGTE(v int64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAfter), v))
-	})
+	return predicate.PointLog(sql.FieldGTE(FieldAfter, v))
 }
 
 // AfterLT applies the LT predicate on the "after" field.
 func AfterLT(v int64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAfter), v))
-	})
+	return predicate.PointLog(sql.FieldLT(FieldAfter, v))
 }
 
 // AfterLTE applies the LTE predicate on the "after" field.
 func AfterLTE(v int64) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAfter), v))
-	})
+	return predicate.PointLog(sql.FieldLTE(FieldAfter, v))
 }
 
 // ReasonEQ applies the EQ predicate on the "reason" field.
 func ReasonEQ(v string) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldReason), v))
-	})
+	return predicate.PointLog(sql.FieldEQ(FieldReason, v))
 }
 
 // ReasonNEQ applies the NEQ predicate on the "reason" field.
 func ReasonNEQ(v string) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldReason), v))
-	})
+	return predicate.PointLog(sql.FieldNEQ(FieldReason, v))
 }
 
 // ReasonIn applies the In predicate on the "reason" field.
 func ReasonIn(vs ...string) predicate.PointLog {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldReason), v...))
-	})
+	return predicate.PointLog(sql.FieldIn(FieldReason, vs...))
 }
 
 // ReasonNotIn applies the NotIn predicate on the "reason" field.
 func ReasonNotIn(vs ...string) predicate.PointLog {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldReason), v...))
-	})
+	return predicate.PointLog(sql.FieldNotIn(FieldReason, vs...))
 }
 
 // ReasonGT applies the GT predicate on the "reason" field.
 func ReasonGT(v string) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldReason), v))
-	})
+	return predicate.PointLog(sql.FieldGT(FieldReason, v))
 }
 
 // ReasonGTE applies the GTE predicate on the "reason" field.
 func ReasonGTE(v string) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldReason), v))
-	})
+	return predicate.PointLog(sql.FieldGTE(FieldReason, v))
 }
 
 // ReasonLT applies the LT predicate on the "reason" field.
 func ReasonLT(v string) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldReason), v))
-	})
+	return predicate.PointLog(sql.FieldLT(FieldReason, v))
 }
 
 // ReasonLTE applies the LTE predicate on the "reason" field.
 func ReasonLTE(v string) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldReason), v))
-	})
+	return predicate.PointLog(sql.FieldLTE(FieldReason, v))
 }
 
 // ReasonContains applies the Contains predicate on the "reason" field.
 func ReasonContains(v string) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldReason), v))
-	})
+	return predicate.PointLog(sql.FieldContains(FieldReason, v))
 }
 
 // ReasonHasPrefix applies the HasPrefix predicate on the "reason" field.
 func ReasonHasPrefix(v string) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldReason), v))
-	})
+	return predicate.PointLog(sql.FieldHasPrefix(FieldReason, v))
 }
 
 // ReasonHasSuffix applies the HasSuffix predicate on the "reason" field.
 func ReasonHasSuffix(v string) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldReason), v))
-	})
+	return predicate.PointLog(sql.FieldHasSuffix(FieldReason, v))
 }
 
 // ReasonIsNil applies the IsNil predicate on the "reason" field.
 func ReasonIsNil() predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldReason)))
-	})
+	return predicate.PointLog(sql.FieldIsNull(FieldReason))
 }
 
 // ReasonNotNil applies the NotNil predicate on the "reason" field.
 func ReasonNotNil() predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldReason)))
-	})
+	return predicate.PointLog(sql.FieldNotNull(FieldReason))
 }
 
 // ReasonEqualFold applies the EqualFold predicate on the "reason" field.
 func ReasonEqualFold(v string) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldReason), v))
-	})
+	return predicate.PointLog(sql.FieldEqualFold(FieldReason, v))
 }
 
 // ReasonContainsFold applies the ContainsFold predicate on the "reason" field.
 func ReasonContainsFold(v string) predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldReason), v))
-	})
+	return predicate.PointLog(sql.FieldContainsFold(FieldReason, v))
 }
 
 // AttachIsNil applies the IsNil predicate on the "attach" field.
 func AttachIsNil() predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldAttach)))
-	})
+	return predicate.PointLog(sql.FieldIsNull(FieldAttach))
 }
 
 // AttachNotNil applies the NotNil predicate on the "attach" field.
 func AttachNotNil() predicate.PointLog {
-	return predicate.PointLog(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldAttach)))
-	})
+	return predicate.PointLog(sql.FieldNotNull(FieldAttach))
 }
 
 // HasRider applies the HasEdge predicate on the "rider" edge.
@@ -703,7 +455,6 @@ func HasRider() predicate.PointLog {
 	return predicate.PointLog(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RiderTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -731,7 +482,6 @@ func HasOrder() predicate.PointLog {
 	return predicate.PointLog(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(OrderTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, OrderTable, OrderColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

@@ -25,6 +25,7 @@ type PlanQuery struct {
 	unique        *bool
 	order         []OrderFunc
 	fields        []string
+	inters        []Interceptor
 	predicates    []predicate.Plan
 	withBrand     *EbikeBrandQuery
 	withCities    *CityQuery
@@ -42,13 +43,13 @@ func (pq *PlanQuery) Where(ps ...predicate.Plan) *PlanQuery {
 	return pq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (pq *PlanQuery) Limit(limit int) *PlanQuery {
 	pq.limit = &limit
 	return pq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (pq *PlanQuery) Offset(offset int) *PlanQuery {
 	pq.offset = &offset
 	return pq
@@ -61,7 +62,7 @@ func (pq *PlanQuery) Unique(unique bool) *PlanQuery {
 	return pq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (pq *PlanQuery) Order(o ...OrderFunc) *PlanQuery {
 	pq.order = append(pq.order, o...)
 	return pq
@@ -69,7 +70,7 @@ func (pq *PlanQuery) Order(o ...OrderFunc) *PlanQuery {
 
 // QueryBrand chains the current query on the "brand" edge.
 func (pq *PlanQuery) QueryBrand() *EbikeBrandQuery {
-	query := &EbikeBrandQuery{config: pq.config}
+	query := (&EbikeBrandClient{config: pq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := pq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -91,7 +92,7 @@ func (pq *PlanQuery) QueryBrand() *EbikeBrandQuery {
 
 // QueryCities chains the current query on the "cities" edge.
 func (pq *PlanQuery) QueryCities() *CityQuery {
-	query := &CityQuery{config: pq.config}
+	query := (&CityClient{config: pq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := pq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -113,7 +114,7 @@ func (pq *PlanQuery) QueryCities() *CityQuery {
 
 // QueryParent chains the current query on the "parent" edge.
 func (pq *PlanQuery) QueryParent() *PlanQuery {
-	query := &PlanQuery{config: pq.config}
+	query := (&PlanClient{config: pq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := pq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -135,7 +136,7 @@ func (pq *PlanQuery) QueryParent() *PlanQuery {
 
 // QueryComplexes chains the current query on the "complexes" edge.
 func (pq *PlanQuery) QueryComplexes() *PlanQuery {
-	query := &PlanQuery{config: pq.config}
+	query := (&PlanClient{config: pq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := pq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -158,7 +159,7 @@ func (pq *PlanQuery) QueryComplexes() *PlanQuery {
 // First returns the first Plan entity from the query.
 // Returns a *NotFoundError when no Plan was found.
 func (pq *PlanQuery) First(ctx context.Context) (*Plan, error) {
-	nodes, err := pq.Limit(1).All(ctx)
+	nodes, err := pq.Limit(1).All(newQueryContext(ctx, TypePlan, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -181,7 +182,7 @@ func (pq *PlanQuery) FirstX(ctx context.Context) *Plan {
 // Returns a *NotFoundError when no Plan ID was found.
 func (pq *PlanQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = pq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = pq.Limit(1).IDs(newQueryContext(ctx, TypePlan, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -204,7 +205,7 @@ func (pq *PlanQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Plan entity is found.
 // Returns a *NotFoundError when no Plan entities are found.
 func (pq *PlanQuery) Only(ctx context.Context) (*Plan, error) {
-	nodes, err := pq.Limit(2).All(ctx)
+	nodes, err := pq.Limit(2).All(newQueryContext(ctx, TypePlan, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -232,7 +233,7 @@ func (pq *PlanQuery) OnlyX(ctx context.Context) *Plan {
 // Returns a *NotFoundError when no entities are found.
 func (pq *PlanQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = pq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = pq.Limit(2).IDs(newQueryContext(ctx, TypePlan, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -257,10 +258,12 @@ func (pq *PlanQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Plans.
 func (pq *PlanQuery) All(ctx context.Context) ([]*Plan, error) {
+	ctx = newQueryContext(ctx, TypePlan, "All")
 	if err := pq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return pq.sqlAll(ctx)
+	qr := querierAll[[]*Plan, *PlanQuery]()
+	return withInterceptors[[]*Plan](ctx, pq, qr, pq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -275,6 +278,7 @@ func (pq *PlanQuery) AllX(ctx context.Context) []*Plan {
 // IDs executes the query and returns a list of Plan IDs.
 func (pq *PlanQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypePlan, "IDs")
 	if err := pq.Select(plan.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -292,10 +296,11 @@ func (pq *PlanQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (pq *PlanQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypePlan, "Count")
 	if err := pq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return pq.sqlCount(ctx)
+	return withInterceptors[int](ctx, pq, querierCount[*PlanQuery](), pq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -309,10 +314,15 @@ func (pq *PlanQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (pq *PlanQuery) Exist(ctx context.Context) (bool, error) {
-	if err := pq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypePlan, "Exist")
+	switch _, err := pq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return pq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -350,7 +360,7 @@ func (pq *PlanQuery) Clone() *PlanQuery {
 // WithBrand tells the query-builder to eager-load the nodes that are connected to
 // the "brand" edge. The optional arguments are used to configure the query builder of the edge.
 func (pq *PlanQuery) WithBrand(opts ...func(*EbikeBrandQuery)) *PlanQuery {
-	query := &EbikeBrandQuery{config: pq.config}
+	query := (&EbikeBrandClient{config: pq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -361,7 +371,7 @@ func (pq *PlanQuery) WithBrand(opts ...func(*EbikeBrandQuery)) *PlanQuery {
 // WithCities tells the query-builder to eager-load the nodes that are connected to
 // the "cities" edge. The optional arguments are used to configure the query builder of the edge.
 func (pq *PlanQuery) WithCities(opts ...func(*CityQuery)) *PlanQuery {
-	query := &CityQuery{config: pq.config}
+	query := (&CityClient{config: pq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -372,7 +382,7 @@ func (pq *PlanQuery) WithCities(opts ...func(*CityQuery)) *PlanQuery {
 // WithParent tells the query-builder to eager-load the nodes that are connected to
 // the "parent" edge. The optional arguments are used to configure the query builder of the edge.
 func (pq *PlanQuery) WithParent(opts ...func(*PlanQuery)) *PlanQuery {
-	query := &PlanQuery{config: pq.config}
+	query := (&PlanClient{config: pq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -383,7 +393,7 @@ func (pq *PlanQuery) WithParent(opts ...func(*PlanQuery)) *PlanQuery {
 // WithComplexes tells the query-builder to eager-load the nodes that are connected to
 // the "complexes" edge. The optional arguments are used to configure the query builder of the edge.
 func (pq *PlanQuery) WithComplexes(opts ...func(*PlanQuery)) *PlanQuery {
-	query := &PlanQuery{config: pq.config}
+	query := (&PlanClient{config: pq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -406,16 +416,11 @@ func (pq *PlanQuery) WithComplexes(opts ...func(*PlanQuery)) *PlanQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (pq *PlanQuery) GroupBy(field string, fields ...string) *PlanGroupBy {
-	grbuild := &PlanGroupBy{config: pq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := pq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return pq.sqlQuery(ctx), nil
-	}
+	pq.fields = append([]string{field}, fields...)
+	grbuild := &PlanGroupBy{build: pq}
+	grbuild.flds = &pq.fields
 	grbuild.label = plan.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -433,13 +438,28 @@ func (pq *PlanQuery) GroupBy(field string, fields ...string) *PlanGroupBy {
 //		Scan(ctx, &v)
 func (pq *PlanQuery) Select(fields ...string) *PlanSelect {
 	pq.fields = append(pq.fields, fields...)
-	selbuild := &PlanSelect{PlanQuery: pq}
-	selbuild.label = plan.Label
-	selbuild.flds, selbuild.scan = &pq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &PlanSelect{PlanQuery: pq}
+	sbuild.label = plan.Label
+	sbuild.flds, sbuild.scan = &pq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a PlanSelect configured with the given aggregations.
+func (pq *PlanQuery) Aggregate(fns ...AggregateFunc) *PlanSelect {
+	return pq.Select().Aggregate(fns...)
 }
 
 func (pq *PlanQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range pq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, pq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range pq.fields {
 		if !plan.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -582,7 +602,7 @@ func (pq *PlanQuery) loadCities(ctx context.Context, query *CityQuery, nodes []*
 			outValue := uint64(values[0].(*sql.NullInt64).Int64)
 			inValue := uint64(values[1].(*sql.NullInt64).Int64)
 			if nids[inValue] == nil {
-				nids[inValue] = map[*Plan]struct{}{byID[outValue]: struct{}{}}
+				nids[inValue] = map[*Plan]struct{}{byID[outValue]: {}}
 				return assign(columns[1:], values[1:])
 			}
 			nids[inValue][byID[outValue]] = struct{}{}
@@ -673,17 +693,6 @@ func (pq *PlanQuery) sqlCount(ctx context.Context) (int, error) {
 		_spec.Unique = pq.unique != nil && *pq.unique
 	}
 	return sqlgraph.CountNodes(ctx, pq.driver, _spec)
-}
-
-func (pq *PlanQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := pq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
 }
 
 func (pq *PlanQuery) querySpec() *sqlgraph.QuerySpec {
@@ -777,13 +786,8 @@ func (pq *PlanQuery) Modify(modifiers ...func(s *sql.Selector)) *PlanSelect {
 
 // PlanGroupBy is the group-by builder for Plan entities.
 type PlanGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *PlanQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -792,74 +796,77 @@ func (pgb *PlanGroupBy) Aggregate(fns ...AggregateFunc) *PlanGroupBy {
 	return pgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (pgb *PlanGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := pgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypePlan, "GroupBy")
+	if err := pgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	pgb.sql = query
-	return pgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*PlanQuery, *PlanGroupBy](ctx, pgb.build, pgb, pgb.build.inters, v)
 }
 
-func (pgb *PlanGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range pgb.fields {
-		if !plan.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (pgb *PlanGroupBy) sqlScan(ctx context.Context, root *PlanQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(pgb.fns))
+	for _, fn := range pgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := pgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*pgb.flds)+len(pgb.fns))
+		for _, f := range *pgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*pgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := pgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := pgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (pgb *PlanGroupBy) sqlQuery() *sql.Selector {
-	selector := pgb.sql.Select()
-	aggregation := make([]string, 0, len(pgb.fns))
-	for _, fn := range pgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(pgb.fields)+len(pgb.fns))
-		for _, f := range pgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(pgb.fields...)...)
-}
-
 // PlanSelect is the builder for selecting fields of Plan entities.
 type PlanSelect struct {
 	*PlanQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (ps *PlanSelect) Aggregate(fns ...AggregateFunc) *PlanSelect {
+	ps.fns = append(ps.fns, fns...)
+	return ps
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (ps *PlanSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypePlan, "Select")
 	if err := ps.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ps.sql = ps.PlanQuery.sqlQuery(ctx)
-	return ps.sqlScan(ctx, v)
+	return scanWithInterceptors[*PlanQuery, *PlanSelect](ctx, ps.PlanQuery, ps, ps.inters, v)
 }
 
-func (ps *PlanSelect) sqlScan(ctx context.Context, v any) error {
+func (ps *PlanSelect) sqlScan(ctx context.Context, root *PlanQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(ps.fns))
+	for _, fn := range ps.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*ps.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := ps.sql.Query()
+	query, args := selector.Query()
 	if err := ps.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

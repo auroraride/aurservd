@@ -19,6 +19,7 @@ type Role struct {
 func (Role) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "role"},
+        entsql.WithComments(true),
     }
 }
 

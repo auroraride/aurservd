@@ -7,10 +7,9 @@ package mob
 
 import (
     "github.com/auroraride/aurservd/internal/ar"
-    "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/go-resty/resty/v2"
-    jsoniter "github.com/json-iterator/go"
+    "github.com/goccy/go-json"
     log "github.com/sirupsen/logrus"
 )
 
@@ -127,11 +126,8 @@ func (m *mobPush) SendMessage(req Req) {
         data.PushNotify.ExtrasMapList = append(data.PushNotify.ExtrasMapList, d)
     }
     // 排序并转换json字符串
-    jc := jsoniter.Config{SortMapKeys: true}
-    s, err := jc.Froze().MarshalToString(data)
-    if err != nil {
-        snag.Panic(err)
-    }
+    b, _ := json.Marshal(data)
+    s := string(b)
     // client.SetHeaders()
     // 生成sign
     sign := utils.Md5String(s + m.appSecret)

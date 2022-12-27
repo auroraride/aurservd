@@ -12,776 +12,492 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.SubscribeAlter(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.SubscribeAlter(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.SubscribeAlter(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.SubscribeAlter(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.SubscribeAlter(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.SubscribeAlter(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.SubscribeAlter(sql.FieldLTE(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
 func DeletedAt(v time.Time) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
 func Remark(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldRemark, v))
 }
 
 // RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
 func RiderID(v uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRiderID), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldRiderID, v))
 }
 
 // ManagerID applies equality check predicate on the "manager_id" field. It's identical to ManagerIDEQ.
 func ManagerID(v uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldManagerID), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldManagerID, v))
 }
 
 // EnterpriseID applies equality check predicate on the "enterprise_id" field. It's identical to EnterpriseIDEQ.
 func EnterpriseID(v uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEnterpriseID), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldEnterpriseID, v))
 }
 
 // AgentID applies equality check predicate on the "agent_id" field. It's identical to AgentIDEQ.
 func AgentID(v uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAgentID), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldAgentID, v))
 }
 
 // SubscribeID applies equality check predicate on the "subscribe_id" field. It's identical to SubscribeIDEQ.
 func SubscribeID(v uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldSubscribeID, v))
 }
 
 // Days applies equality check predicate on the "days" field. It's identical to DaysEQ.
 func Days(v int) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDays), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldDays, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
 func CreatedAtNEQ(v time.Time) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.SubscribeAlter {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.SubscribeAlter(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.SubscribeAlter {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.SubscribeAlter(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtGT applies the GT predicate on the "created_at" field.
 func CreatedAtGT(v time.Time) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldGT(FieldCreatedAt, v))
 }
 
 // CreatedAtGTE applies the GTE predicate on the "created_at" field.
 func CreatedAtGTE(v time.Time) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldGTE(FieldCreatedAt, v))
 }
 
 // CreatedAtLT applies the LT predicate on the "created_at" field.
 func CreatedAtLT(v time.Time) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldLT(FieldCreatedAt, v))
 }
 
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
 func UpdatedAtEQ(v time.Time) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
 func UpdatedAtNEQ(v time.Time) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldNEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.SubscribeAlter {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.SubscribeAlter(sql.FieldIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.SubscribeAlter {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.SubscribeAlter(sql.FieldNotIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtGT applies the GT predicate on the "updated_at" field.
 func UpdatedAtGT(v time.Time) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldGT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
 func UpdatedAtGTE(v time.Time) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldGTE(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLT applies the LT predicate on the "updated_at" field.
 func UpdatedAtLT(v time.Time) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldLT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
 func DeletedAtEQ(v time.Time) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
 func DeletedAtNEQ(v time.Time) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldNEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.SubscribeAlter {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.SubscribeAlter(sql.FieldIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.SubscribeAlter {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.SubscribeAlter(sql.FieldNotIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtGT applies the GT predicate on the "deleted_at" field.
 func DeletedAtGT(v time.Time) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldGT(FieldDeletedAt, v))
 }
 
 // DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
 func DeletedAtGTE(v time.Time) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldGTE(FieldDeletedAt, v))
 }
 
 // DeletedAtLT applies the LT predicate on the "deleted_at" field.
 func DeletedAtLT(v time.Time) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldLT(FieldDeletedAt, v))
 }
 
 // DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
 func DeletedAtLTE(v time.Time) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldLTE(FieldDeletedAt, v))
 }
 
 // DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
 func DeletedAtIsNil() predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.SubscribeAlter(sql.FieldIsNull(FieldDeletedAt))
 }
 
 // DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
 func DeletedAtNotNil() predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.SubscribeAlter(sql.FieldNotNull(FieldDeletedAt))
 }
 
 // CreatorIsNil applies the IsNil predicate on the "creator" field.
 func CreatorIsNil() predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCreator)))
-	})
+	return predicate.SubscribeAlter(sql.FieldIsNull(FieldCreator))
 }
 
 // CreatorNotNil applies the NotNil predicate on the "creator" field.
 func CreatorNotNil() predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCreator)))
-	})
+	return predicate.SubscribeAlter(sql.FieldNotNull(FieldCreator))
 }
 
 // LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
 func LastModifierIsNil() predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLastModifier)))
-	})
+	return predicate.SubscribeAlter(sql.FieldIsNull(FieldLastModifier))
 }
 
 // LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
 func LastModifierNotNil() predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLastModifier)))
-	})
+	return predicate.SubscribeAlter(sql.FieldNotNull(FieldLastModifier))
 }
 
 // RemarkEQ applies the EQ predicate on the "remark" field.
 func RemarkEQ(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldRemark, v))
 }
 
 // RemarkNEQ applies the NEQ predicate on the "remark" field.
 func RemarkNEQ(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldNEQ(FieldRemark, v))
 }
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.SubscribeAlter {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRemark), v...))
-	})
+	return predicate.SubscribeAlter(sql.FieldIn(FieldRemark, vs...))
 }
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.SubscribeAlter {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRemark), v...))
-	})
+	return predicate.SubscribeAlter(sql.FieldNotIn(FieldRemark, vs...))
 }
 
 // RemarkGT applies the GT predicate on the "remark" field.
 func RemarkGT(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldGT(FieldRemark, v))
 }
 
 // RemarkGTE applies the GTE predicate on the "remark" field.
 func RemarkGTE(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldGTE(FieldRemark, v))
 }
 
 // RemarkLT applies the LT predicate on the "remark" field.
 func RemarkLT(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldLT(FieldRemark, v))
 }
 
 // RemarkLTE applies the LTE predicate on the "remark" field.
 func RemarkLTE(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldLTE(FieldRemark, v))
 }
 
 // RemarkContains applies the Contains predicate on the "remark" field.
 func RemarkContains(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldContains(FieldRemark, v))
 }
 
 // RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
 func RemarkHasPrefix(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldHasPrefix(FieldRemark, v))
 }
 
 // RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
 func RemarkHasSuffix(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldHasSuffix(FieldRemark, v))
 }
 
 // RemarkIsNil applies the IsNil predicate on the "remark" field.
 func RemarkIsNil() predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRemark)))
-	})
+	return predicate.SubscribeAlter(sql.FieldIsNull(FieldRemark))
 }
 
 // RemarkNotNil applies the NotNil predicate on the "remark" field.
 func RemarkNotNil() predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRemark)))
-	})
+	return predicate.SubscribeAlter(sql.FieldNotNull(FieldRemark))
 }
 
 // RemarkEqualFold applies the EqualFold predicate on the "remark" field.
 func RemarkEqualFold(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldEqualFold(FieldRemark, v))
 }
 
 // RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
 func RemarkContainsFold(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldContainsFold(FieldRemark, v))
 }
 
 // RiderIDEQ applies the EQ predicate on the "rider_id" field.
 func RiderIDEQ(v uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRiderID), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldRiderID, v))
 }
 
 // RiderIDNEQ applies the NEQ predicate on the "rider_id" field.
 func RiderIDNEQ(v uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRiderID), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldNEQ(FieldRiderID, v))
 }
 
 // RiderIDIn applies the In predicate on the "rider_id" field.
 func RiderIDIn(vs ...uint64) predicate.SubscribeAlter {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRiderID), v...))
-	})
+	return predicate.SubscribeAlter(sql.FieldIn(FieldRiderID, vs...))
 }
 
 // RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
 func RiderIDNotIn(vs ...uint64) predicate.SubscribeAlter {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRiderID), v...))
-	})
+	return predicate.SubscribeAlter(sql.FieldNotIn(FieldRiderID, vs...))
 }
 
 // ManagerIDEQ applies the EQ predicate on the "manager_id" field.
 func ManagerIDEQ(v uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldManagerID), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldManagerID, v))
 }
 
 // ManagerIDNEQ applies the NEQ predicate on the "manager_id" field.
 func ManagerIDNEQ(v uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldManagerID), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldNEQ(FieldManagerID, v))
 }
 
 // ManagerIDIn applies the In predicate on the "manager_id" field.
 func ManagerIDIn(vs ...uint64) predicate.SubscribeAlter {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldManagerID), v...))
-	})
+	return predicate.SubscribeAlter(sql.FieldIn(FieldManagerID, vs...))
 }
 
 // ManagerIDNotIn applies the NotIn predicate on the "manager_id" field.
 func ManagerIDNotIn(vs ...uint64) predicate.SubscribeAlter {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldManagerID), v...))
-	})
+	return predicate.SubscribeAlter(sql.FieldNotIn(FieldManagerID, vs...))
 }
 
 // ManagerIDIsNil applies the IsNil predicate on the "manager_id" field.
 func ManagerIDIsNil() predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldManagerID)))
-	})
+	return predicate.SubscribeAlter(sql.FieldIsNull(FieldManagerID))
 }
 
 // ManagerIDNotNil applies the NotNil predicate on the "manager_id" field.
 func ManagerIDNotNil() predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldManagerID)))
-	})
+	return predicate.SubscribeAlter(sql.FieldNotNull(FieldManagerID))
 }
 
 // EnterpriseIDEQ applies the EQ predicate on the "enterprise_id" field.
 func EnterpriseIDEQ(v uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEnterpriseID), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldEnterpriseID, v))
 }
 
 // EnterpriseIDNEQ applies the NEQ predicate on the "enterprise_id" field.
 func EnterpriseIDNEQ(v uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEnterpriseID), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldNEQ(FieldEnterpriseID, v))
 }
 
 // EnterpriseIDIn applies the In predicate on the "enterprise_id" field.
 func EnterpriseIDIn(vs ...uint64) predicate.SubscribeAlter {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEnterpriseID), v...))
-	})
+	return predicate.SubscribeAlter(sql.FieldIn(FieldEnterpriseID, vs...))
 }
 
 // EnterpriseIDNotIn applies the NotIn predicate on the "enterprise_id" field.
 func EnterpriseIDNotIn(vs ...uint64) predicate.SubscribeAlter {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEnterpriseID), v...))
-	})
+	return predicate.SubscribeAlter(sql.FieldNotIn(FieldEnterpriseID, vs...))
 }
 
 // EnterpriseIDIsNil applies the IsNil predicate on the "enterprise_id" field.
 func EnterpriseIDIsNil() predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldEnterpriseID)))
-	})
+	return predicate.SubscribeAlter(sql.FieldIsNull(FieldEnterpriseID))
 }
 
 // EnterpriseIDNotNil applies the NotNil predicate on the "enterprise_id" field.
 func EnterpriseIDNotNil() predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldEnterpriseID)))
-	})
+	return predicate.SubscribeAlter(sql.FieldNotNull(FieldEnterpriseID))
 }
 
 // AgentIDEQ applies the EQ predicate on the "agent_id" field.
 func AgentIDEQ(v uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAgentID), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldAgentID, v))
 }
 
 // AgentIDNEQ applies the NEQ predicate on the "agent_id" field.
 func AgentIDNEQ(v uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAgentID), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldNEQ(FieldAgentID, v))
 }
 
 // AgentIDIn applies the In predicate on the "agent_id" field.
 func AgentIDIn(vs ...uint64) predicate.SubscribeAlter {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAgentID), v...))
-	})
+	return predicate.SubscribeAlter(sql.FieldIn(FieldAgentID, vs...))
 }
 
 // AgentIDNotIn applies the NotIn predicate on the "agent_id" field.
 func AgentIDNotIn(vs ...uint64) predicate.SubscribeAlter {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAgentID), v...))
-	})
+	return predicate.SubscribeAlter(sql.FieldNotIn(FieldAgentID, vs...))
 }
 
 // AgentIDIsNil applies the IsNil predicate on the "agent_id" field.
 func AgentIDIsNil() predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldAgentID)))
-	})
+	return predicate.SubscribeAlter(sql.FieldIsNull(FieldAgentID))
 }
 
 // AgentIDNotNil applies the NotNil predicate on the "agent_id" field.
 func AgentIDNotNil() predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldAgentID)))
-	})
+	return predicate.SubscribeAlter(sql.FieldNotNull(FieldAgentID))
 }
 
 // SubscribeIDEQ applies the EQ predicate on the "subscribe_id" field.
 func SubscribeIDEQ(v uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldSubscribeID, v))
 }
 
 // SubscribeIDNEQ applies the NEQ predicate on the "subscribe_id" field.
 func SubscribeIDNEQ(v uint64) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldNEQ(FieldSubscribeID, v))
 }
 
 // SubscribeIDIn applies the In predicate on the "subscribe_id" field.
 func SubscribeIDIn(vs ...uint64) predicate.SubscribeAlter {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldSubscribeID), v...))
-	})
+	return predicate.SubscribeAlter(sql.FieldIn(FieldSubscribeID, vs...))
 }
 
 // SubscribeIDNotIn applies the NotIn predicate on the "subscribe_id" field.
 func SubscribeIDNotIn(vs ...uint64) predicate.SubscribeAlter {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldSubscribeID), v...))
-	})
+	return predicate.SubscribeAlter(sql.FieldNotIn(FieldSubscribeID, vs...))
 }
 
 // DaysEQ applies the EQ predicate on the "days" field.
 func DaysEQ(v int) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDays), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldDays, v))
 }
 
 // DaysNEQ applies the NEQ predicate on the "days" field.
 func DaysNEQ(v int) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDays), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldNEQ(FieldDays, v))
 }
 
 // DaysIn applies the In predicate on the "days" field.
 func DaysIn(vs ...int) predicate.SubscribeAlter {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDays), v...))
-	})
+	return predicate.SubscribeAlter(sql.FieldIn(FieldDays, vs...))
 }
 
 // DaysNotIn applies the NotIn predicate on the "days" field.
 func DaysNotIn(vs ...int) predicate.SubscribeAlter {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDays), v...))
-	})
+	return predicate.SubscribeAlter(sql.FieldNotIn(FieldDays, vs...))
 }
 
 // DaysGT applies the GT predicate on the "days" field.
 func DaysGT(v int) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDays), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldGT(FieldDays, v))
 }
 
 // DaysGTE applies the GTE predicate on the "days" field.
 func DaysGTE(v int) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDays), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldGTE(FieldDays, v))
 }
 
 // DaysLT applies the LT predicate on the "days" field.
 func DaysLT(v int) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDays), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldLT(FieldDays, v))
 }
 
 // DaysLTE applies the LTE predicate on the "days" field.
 func DaysLTE(v int) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDays), v))
-	})
+	return predicate.SubscribeAlter(sql.FieldLTE(FieldDays, v))
 }
 
 // HasRider applies the HasEdge predicate on the "rider" edge.
@@ -789,7 +505,6 @@ func HasRider() predicate.SubscribeAlter {
 	return predicate.SubscribeAlter(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RiderTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -817,7 +532,6 @@ func HasManager() predicate.SubscribeAlter {
 	return predicate.SubscribeAlter(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ManagerTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, ManagerTable, ManagerColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -845,7 +559,6 @@ func HasEnterprise() predicate.SubscribeAlter {
 	return predicate.SubscribeAlter(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EnterpriseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, EnterpriseTable, EnterpriseColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -873,7 +586,6 @@ func HasAgent() predicate.SubscribeAlter {
 	return predicate.SubscribeAlter(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AgentTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, AgentTable, AgentColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -901,7 +613,6 @@ func HasSubscribe() predicate.SubscribeAlter {
 	return predicate.SubscribeAlter(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SubscribeTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, SubscribeTable, SubscribeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

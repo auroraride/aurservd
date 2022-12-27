@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
@@ -105,6 +106,12 @@ func (au *AttendanceUpdate) SetEmployeeID(u uint64) *AttendanceUpdate {
 // SetInventory sets the "inventory" field.
 func (au *AttendanceUpdate) SetInventory(mi []model.AttendanceInventory) *AttendanceUpdate {
 	au.mutation.SetInventory(mi)
+	return au
+}
+
+// AppendInventory appends mi to the "inventory" field.
+func (au *AttendanceUpdate) AppendInventory(mi []model.AttendanceInventory) *AttendanceUpdate {
+	au.mutation.AppendInventory(mi)
 	return au
 }
 
@@ -276,43 +283,10 @@ func (au *AttendanceUpdate) ClearEmployee() *AttendanceUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (au *AttendanceUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := au.defaults(); err != nil {
 		return 0, err
 	}
-	if len(au.hooks) == 0 {
-		if err = au.check(); err != nil {
-			return 0, err
-		}
-		affected, err = au.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*AttendanceMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = au.check(); err != nil {
-				return 0, err
-			}
-			au.mutation = mutation
-			affected, err = au.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(au.hooks) - 1; i >= 0; i-- {
-			if au.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = au.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, au.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, AttendanceMutation](ctx, au.sqlSave, au.mutation, au.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -367,6 +341,9 @@ func (au *AttendanceUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Att
 }
 
 func (au *AttendanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := au.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   attendance.Table,
@@ -385,169 +362,84 @@ func (au *AttendanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := au.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: attendance.FieldUpdatedAt,
-		})
+		_spec.SetField(attendance.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := au.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: attendance.FieldDeletedAt,
-		})
+		_spec.SetField(attendance.FieldDeletedAt, field.TypeTime, value)
 	}
 	if au.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: attendance.FieldDeletedAt,
-		})
+		_spec.ClearField(attendance.FieldDeletedAt, field.TypeTime)
 	}
 	if au.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: attendance.FieldCreator,
-		})
+		_spec.ClearField(attendance.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := au.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: attendance.FieldLastModifier,
-		})
+		_spec.SetField(attendance.FieldLastModifier, field.TypeJSON, value)
 	}
 	if au.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: attendance.FieldLastModifier,
-		})
+		_spec.ClearField(attendance.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := au.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: attendance.FieldRemark,
-		})
+		_spec.SetField(attendance.FieldRemark, field.TypeString, value)
 	}
 	if au.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: attendance.FieldRemark,
-		})
+		_spec.ClearField(attendance.FieldRemark, field.TypeString)
 	}
 	if value, ok := au.mutation.Inventory(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: attendance.FieldInventory,
+		_spec.SetField(attendance.FieldInventory, field.TypeJSON, value)
+	}
+	if value, ok := au.mutation.AppendedInventory(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, attendance.FieldInventory, value)
 		})
 	}
 	if au.mutation.InventoryCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: attendance.FieldInventory,
-		})
+		_spec.ClearField(attendance.FieldInventory, field.TypeJSON)
 	}
 	if value, ok := au.mutation.Photo(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: attendance.FieldPhoto,
-		})
+		_spec.SetField(attendance.FieldPhoto, field.TypeString, value)
 	}
 	if au.mutation.PhotoCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: attendance.FieldPhoto,
-		})
+		_spec.ClearField(attendance.FieldPhoto, field.TypeString)
 	}
 	if value, ok := au.mutation.Duty(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: attendance.FieldDuty,
-		})
+		_spec.SetField(attendance.FieldDuty, field.TypeBool, value)
 	}
 	if value, ok := au.mutation.Date(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: attendance.FieldDate,
-		})
+		_spec.SetField(attendance.FieldDate, field.TypeTime, value)
 	}
 	if value, ok := au.mutation.Lng(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: attendance.FieldLng,
-		})
+		_spec.SetField(attendance.FieldLng, field.TypeFloat64, value)
 	}
 	if value, ok := au.mutation.AddedLng(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: attendance.FieldLng,
-		})
+		_spec.AddField(attendance.FieldLng, field.TypeFloat64, value)
 	}
 	if au.mutation.LngCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: attendance.FieldLng,
-		})
+		_spec.ClearField(attendance.FieldLng, field.TypeFloat64)
 	}
 	if value, ok := au.mutation.Lat(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: attendance.FieldLat,
-		})
+		_spec.SetField(attendance.FieldLat, field.TypeFloat64, value)
 	}
 	if value, ok := au.mutation.AddedLat(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: attendance.FieldLat,
-		})
+		_spec.AddField(attendance.FieldLat, field.TypeFloat64, value)
 	}
 	if au.mutation.LatCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: attendance.FieldLat,
-		})
+		_spec.ClearField(attendance.FieldLat, field.TypeFloat64)
 	}
 	if value, ok := au.mutation.Address(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: attendance.FieldAddress,
-		})
+		_spec.SetField(attendance.FieldAddress, field.TypeString, value)
 	}
 	if au.mutation.AddressCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: attendance.FieldAddress,
-		})
+		_spec.ClearField(attendance.FieldAddress, field.TypeString)
 	}
 	if value, ok := au.mutation.Distance(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: attendance.FieldDistance,
-		})
+		_spec.SetField(attendance.FieldDistance, field.TypeFloat64, value)
 	}
 	if value, ok := au.mutation.AddedDistance(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: attendance.FieldDistance,
-		})
+		_spec.AddField(attendance.FieldDistance, field.TypeFloat64, value)
 	}
 	if au.mutation.DistanceCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: attendance.FieldDistance,
-		})
+		_spec.ClearField(attendance.FieldDistance, field.TypeFloat64)
 	}
 	if au.mutation.StoreCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -619,7 +511,7 @@ func (au *AttendanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = au.modifiers
+	_spec.AddModifiers(au.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{attendance.Label}
@@ -628,6 +520,7 @@ func (au *AttendanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	au.mutation.done = true
 	return n, nil
 }
 
@@ -713,6 +606,12 @@ func (auo *AttendanceUpdateOne) SetEmployeeID(u uint64) *AttendanceUpdateOne {
 // SetInventory sets the "inventory" field.
 func (auo *AttendanceUpdateOne) SetInventory(mi []model.AttendanceInventory) *AttendanceUpdateOne {
 	auo.mutation.SetInventory(mi)
+	return auo
+}
+
+// AppendInventory appends mi to the "inventory" field.
+func (auo *AttendanceUpdateOne) AppendInventory(mi []model.AttendanceInventory) *AttendanceUpdateOne {
+	auo.mutation.AppendInventory(mi)
 	return auo
 }
 
@@ -891,49 +790,10 @@ func (auo *AttendanceUpdateOne) Select(field string, fields ...string) *Attendan
 
 // Save executes the query and returns the updated Attendance entity.
 func (auo *AttendanceUpdateOne) Save(ctx context.Context) (*Attendance, error) {
-	var (
-		err  error
-		node *Attendance
-	)
 	if err := auo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(auo.hooks) == 0 {
-		if err = auo.check(); err != nil {
-			return nil, err
-		}
-		node, err = auo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*AttendanceMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = auo.check(); err != nil {
-				return nil, err
-			}
-			auo.mutation = mutation
-			node, err = auo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(auo.hooks) - 1; i >= 0; i-- {
-			if auo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = auo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, auo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Attendance)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from AttendanceMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Attendance, AttendanceMutation](ctx, auo.sqlSave, auo.mutation, auo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -988,6 +848,9 @@ func (auo *AttendanceUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) 
 }
 
 func (auo *AttendanceUpdateOne) sqlSave(ctx context.Context) (_node *Attendance, err error) {
+	if err := auo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   attendance.Table,
@@ -1023,169 +886,84 @@ func (auo *AttendanceUpdateOne) sqlSave(ctx context.Context) (_node *Attendance,
 		}
 	}
 	if value, ok := auo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: attendance.FieldUpdatedAt,
-		})
+		_spec.SetField(attendance.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := auo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: attendance.FieldDeletedAt,
-		})
+		_spec.SetField(attendance.FieldDeletedAt, field.TypeTime, value)
 	}
 	if auo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: attendance.FieldDeletedAt,
-		})
+		_spec.ClearField(attendance.FieldDeletedAt, field.TypeTime)
 	}
 	if auo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: attendance.FieldCreator,
-		})
+		_spec.ClearField(attendance.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := auo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: attendance.FieldLastModifier,
-		})
+		_spec.SetField(attendance.FieldLastModifier, field.TypeJSON, value)
 	}
 	if auo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: attendance.FieldLastModifier,
-		})
+		_spec.ClearField(attendance.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := auo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: attendance.FieldRemark,
-		})
+		_spec.SetField(attendance.FieldRemark, field.TypeString, value)
 	}
 	if auo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: attendance.FieldRemark,
-		})
+		_spec.ClearField(attendance.FieldRemark, field.TypeString)
 	}
 	if value, ok := auo.mutation.Inventory(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: attendance.FieldInventory,
+		_spec.SetField(attendance.FieldInventory, field.TypeJSON, value)
+	}
+	if value, ok := auo.mutation.AppendedInventory(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, attendance.FieldInventory, value)
 		})
 	}
 	if auo.mutation.InventoryCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: attendance.FieldInventory,
-		})
+		_spec.ClearField(attendance.FieldInventory, field.TypeJSON)
 	}
 	if value, ok := auo.mutation.Photo(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: attendance.FieldPhoto,
-		})
+		_spec.SetField(attendance.FieldPhoto, field.TypeString, value)
 	}
 	if auo.mutation.PhotoCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: attendance.FieldPhoto,
-		})
+		_spec.ClearField(attendance.FieldPhoto, field.TypeString)
 	}
 	if value, ok := auo.mutation.Duty(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: attendance.FieldDuty,
-		})
+		_spec.SetField(attendance.FieldDuty, field.TypeBool, value)
 	}
 	if value, ok := auo.mutation.Date(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: attendance.FieldDate,
-		})
+		_spec.SetField(attendance.FieldDate, field.TypeTime, value)
 	}
 	if value, ok := auo.mutation.Lng(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: attendance.FieldLng,
-		})
+		_spec.SetField(attendance.FieldLng, field.TypeFloat64, value)
 	}
 	if value, ok := auo.mutation.AddedLng(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: attendance.FieldLng,
-		})
+		_spec.AddField(attendance.FieldLng, field.TypeFloat64, value)
 	}
 	if auo.mutation.LngCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: attendance.FieldLng,
-		})
+		_spec.ClearField(attendance.FieldLng, field.TypeFloat64)
 	}
 	if value, ok := auo.mutation.Lat(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: attendance.FieldLat,
-		})
+		_spec.SetField(attendance.FieldLat, field.TypeFloat64, value)
 	}
 	if value, ok := auo.mutation.AddedLat(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: attendance.FieldLat,
-		})
+		_spec.AddField(attendance.FieldLat, field.TypeFloat64, value)
 	}
 	if auo.mutation.LatCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: attendance.FieldLat,
-		})
+		_spec.ClearField(attendance.FieldLat, field.TypeFloat64)
 	}
 	if value, ok := auo.mutation.Address(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: attendance.FieldAddress,
-		})
+		_spec.SetField(attendance.FieldAddress, field.TypeString, value)
 	}
 	if auo.mutation.AddressCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: attendance.FieldAddress,
-		})
+		_spec.ClearField(attendance.FieldAddress, field.TypeString)
 	}
 	if value, ok := auo.mutation.Distance(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: attendance.FieldDistance,
-		})
+		_spec.SetField(attendance.FieldDistance, field.TypeFloat64, value)
 	}
 	if value, ok := auo.mutation.AddedDistance(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: attendance.FieldDistance,
-		})
+		_spec.AddField(attendance.FieldDistance, field.TypeFloat64, value)
 	}
 	if auo.mutation.DistanceCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: attendance.FieldDistance,
-		})
+		_spec.ClearField(attendance.FieldDistance, field.TypeFloat64)
 	}
 	if auo.mutation.StoreCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1257,7 +1035,7 @@ func (auo *AttendanceUpdateOne) sqlSave(ctx context.Context) (_node *Attendance,
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = auo.modifiers
+	_spec.AddModifiers(auo.modifiers...)
 	_node = &Attendance{config: auo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -1269,5 +1047,6 @@ func (auo *AttendanceUpdateOne) sqlSave(ctx context.Context) (_node *Attendance,
 		}
 		return nil, err
 	}
+	auo.mutation.done = true
 	return _node, nil
 }

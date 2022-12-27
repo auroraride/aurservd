@@ -122,52 +122,10 @@ func (ic *InventoryCreate) Mutation() *InventoryMutation {
 
 // Save creates the Inventory in the database.
 func (ic *InventoryCreate) Save(ctx context.Context) (*Inventory, error) {
-	var (
-		err  error
-		node *Inventory
-	)
 	if err := ic.defaults(); err != nil {
 		return nil, err
 	}
-	if len(ic.hooks) == 0 {
-		if err = ic.check(); err != nil {
-			return nil, err
-		}
-		node, err = ic.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*InventoryMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ic.check(); err != nil {
-				return nil, err
-			}
-			ic.mutation = mutation
-			if node, err = ic.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ic.hooks) - 1; i >= 0; i-- {
-			if ic.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ic.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ic.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Inventory)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from InventoryMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Inventory, InventoryMutation](ctx, ic.sqlSave, ic.mutation, ic.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -235,6 +193,9 @@ func (ic *InventoryCreate) check() error {
 }
 
 func (ic *InventoryCreate) sqlSave(ctx context.Context) (*Inventory, error) {
+	if err := ic.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := ic.createSpec()
 	if err := sqlgraph.CreateNode(ctx, ic.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -244,6 +205,8 @@ func (ic *InventoryCreate) sqlSave(ctx context.Context) (*Inventory, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	ic.mutation.id = &_node.ID
+	ic.mutation.done = true
 	return _node, nil
 }
 
@@ -260,83 +223,43 @@ func (ic *InventoryCreate) createSpec() (*Inventory, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = ic.conflict
 	if value, ok := ic.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: inventory.FieldCreatedAt,
-		})
+		_spec.SetField(inventory.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := ic.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: inventory.FieldUpdatedAt,
-		})
+		_spec.SetField(inventory.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := ic.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: inventory.FieldDeletedAt,
-		})
+		_spec.SetField(inventory.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := ic.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: inventory.FieldCreator,
-		})
+		_spec.SetField(inventory.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := ic.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: inventory.FieldLastModifier,
-		})
+		_spec.SetField(inventory.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := ic.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: inventory.FieldRemark,
-		})
+		_spec.SetField(inventory.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := ic.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: inventory.FieldName,
-		})
+		_spec.SetField(inventory.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := ic.mutation.Count(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: inventory.FieldCount,
-		})
+		_spec.SetField(inventory.FieldCount, field.TypeBool, value)
 		_node.Count = value
 	}
 	if value, ok := ic.mutation.Transfer(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: inventory.FieldTransfer,
-		})
+		_spec.SetField(inventory.FieldTransfer, field.TypeBool, value)
 		_node.Transfer = value
 	}
 	if value, ok := ic.mutation.Purchase(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: inventory.FieldPurchase,
-		})
+		_spec.SetField(inventory.FieldPurchase, field.TypeBool, value)
 		_node.Purchase = value
 	}
 	return _node, _spec

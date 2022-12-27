@@ -422,52 +422,10 @@ func (rc *RiderCreate) Mutation() *RiderMutation {
 
 // Save creates the Rider in the database.
 func (rc *RiderCreate) Save(ctx context.Context) (*Rider, error) {
-	var (
-		err  error
-		node *Rider
-	)
 	if err := rc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(rc.hooks) == 0 {
-		if err = rc.check(); err != nil {
-			return nil, err
-		}
-		node, err = rc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*RiderMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = rc.check(); err != nil {
-				return nil, err
-			}
-			rc.mutation = mutation
-			if node, err = rc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(rc.hooks) - 1; i >= 0; i-- {
-			if rc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = rc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, rc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Rider)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from RiderMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Rider, RiderMutation](ctx, rc.sqlSave, rc.mutation, rc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -562,6 +520,9 @@ func (rc *RiderCreate) check() error {
 }
 
 func (rc *RiderCreate) sqlSave(ctx context.Context) (*Rider, error) {
+	if err := rc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := rc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, rc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -571,6 +532,8 @@ func (rc *RiderCreate) sqlSave(ctx context.Context) (*Rider, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	rc.mutation.id = &_node.ID
+	rc.mutation.done = true
 	return _node, nil
 }
 
@@ -587,147 +550,75 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = rc.conflict
 	if value, ok := rc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: rider.FieldCreatedAt,
-		})
+		_spec.SetField(rider.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := rc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: rider.FieldUpdatedAt,
-		})
+		_spec.SetField(rider.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := rc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: rider.FieldDeletedAt,
-		})
+		_spec.SetField(rider.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := rc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: rider.FieldCreator,
-		})
+		_spec.SetField(rider.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := rc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: rider.FieldLastModifier,
-		})
+		_spec.SetField(rider.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := rc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldRemark,
-		})
+		_spec.SetField(rider.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := rc.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldName,
-		})
+		_spec.SetField(rider.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := rc.mutation.IDCardNumber(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldIDCardNumber,
-		})
+		_spec.SetField(rider.FieldIDCardNumber, field.TypeString, value)
 		_node.IDCardNumber = value
 	}
 	if value, ok := rc.mutation.Phone(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldPhone,
-		})
+		_spec.SetField(rider.FieldPhone, field.TypeString, value)
 		_node.Phone = value
 	}
 	if value, ok := rc.mutation.Contact(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: rider.FieldContact,
-		})
+		_spec.SetField(rider.FieldContact, field.TypeJSON, value)
 		_node.Contact = value
 	}
 	if value, ok := rc.mutation.DeviceType(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: rider.FieldDeviceType,
-		})
+		_spec.SetField(rider.FieldDeviceType, field.TypeUint8, value)
 		_node.DeviceType = value
 	}
 	if value, ok := rc.mutation.LastDevice(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldLastDevice,
-		})
+		_spec.SetField(rider.FieldLastDevice, field.TypeString, value)
 		_node.LastDevice = value
 	}
 	if value, ok := rc.mutation.IsNewDevice(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: rider.FieldIsNewDevice,
-		})
+		_spec.SetField(rider.FieldIsNewDevice, field.TypeBool, value)
 		_node.IsNewDevice = value
 	}
 	if value, ok := rc.mutation.LastFace(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldLastFace,
-		})
+		_spec.SetField(rider.FieldLastFace, field.TypeString, value)
 		_node.LastFace = &value
 	}
 	if value, ok := rc.mutation.PushID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldPushID,
-		})
+		_spec.SetField(rider.FieldPushID, field.TypeString, value)
 		_node.PushID = value
 	}
 	if value, ok := rc.mutation.LastSigninAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: rider.FieldLastSigninAt,
-		})
+		_spec.SetField(rider.FieldLastSigninAt, field.TypeTime, value)
 		_node.LastSigninAt = &value
 	}
 	if value, ok := rc.mutation.Blocked(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: rider.FieldBlocked,
-		})
+		_spec.SetField(rider.FieldBlocked, field.TypeBool, value)
 		_node.Blocked = value
 	}
 	if value, ok := rc.mutation.Points(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: rider.FieldPoints,
-		})
+		_spec.SetField(rider.FieldPoints, field.TypeInt64, value)
 		_node.Points = value
 	}
 	if nodes := rc.mutation.StationIDs(); len(nodes) > 0 {

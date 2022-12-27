@@ -361,43 +361,10 @@ func (su *StoreUpdate) RemoveExceptions(e ...*Exception) *StoreUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (su *StoreUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := su.defaults(); err != nil {
 		return 0, err
 	}
-	if len(su.hooks) == 0 {
-		if err = su.check(); err != nil {
-			return 0, err
-		}
-		affected, err = su.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*StoreMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = su.check(); err != nil {
-				return 0, err
-			}
-			su.mutation = mutation
-			affected, err = su.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(su.hooks) - 1; i >= 0; i-- {
-			if su.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = su.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, su.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, StoreMutation](ctx, su.sqlSave, su.mutation, su.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -452,6 +419,9 @@ func (su *StoreUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *StoreUpd
 }
 
 func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := su.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   store.Table,
@@ -470,126 +440,58 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := su.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: store.FieldUpdatedAt,
-		})
+		_spec.SetField(store.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := su.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: store.FieldDeletedAt,
-		})
+		_spec.SetField(store.FieldDeletedAt, field.TypeTime, value)
 	}
 	if su.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: store.FieldDeletedAt,
-		})
+		_spec.ClearField(store.FieldDeletedAt, field.TypeTime)
 	}
 	if su.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: store.FieldCreator,
-		})
+		_spec.ClearField(store.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := su.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: store.FieldLastModifier,
-		})
+		_spec.SetField(store.FieldLastModifier, field.TypeJSON, value)
 	}
 	if su.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: store.FieldLastModifier,
-		})
+		_spec.ClearField(store.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := su.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: store.FieldRemark,
-		})
+		_spec.SetField(store.FieldRemark, field.TypeString, value)
 	}
 	if su.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: store.FieldRemark,
-		})
+		_spec.ClearField(store.FieldRemark, field.TypeString)
 	}
 	if value, ok := su.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: store.FieldName,
-		})
+		_spec.SetField(store.FieldName, field.TypeString, value)
 	}
 	if value, ok := su.mutation.Status(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: store.FieldStatus,
-		})
+		_spec.SetField(store.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := su.mutation.AddedStatus(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: store.FieldStatus,
-		})
+		_spec.AddField(store.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := su.mutation.Lng(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: store.FieldLng,
-		})
+		_spec.SetField(store.FieldLng, field.TypeFloat64, value)
 	}
 	if value, ok := su.mutation.AddedLng(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: store.FieldLng,
-		})
+		_spec.AddField(store.FieldLng, field.TypeFloat64, value)
 	}
 	if value, ok := su.mutation.Lat(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: store.FieldLat,
-		})
+		_spec.SetField(store.FieldLat, field.TypeFloat64, value)
 	}
 	if value, ok := su.mutation.AddedLat(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: store.FieldLat,
-		})
+		_spec.AddField(store.FieldLat, field.TypeFloat64, value)
 	}
 	if value, ok := su.mutation.Address(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: store.FieldAddress,
-		})
+		_spec.SetField(store.FieldAddress, field.TypeString, value)
 	}
 	if value, ok := su.mutation.EbikeObtain(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: store.FieldEbikeObtain,
-		})
+		_spec.SetField(store.FieldEbikeObtain, field.TypeBool, value)
 	}
 	if value, ok := su.mutation.EbikeRepair(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: store.FieldEbikeRepair,
-		})
+		_spec.SetField(store.FieldEbikeRepair, field.TypeBool, value)
 	}
 	if su.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -858,7 +760,7 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = su.modifiers
+	_spec.AddModifiers(su.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, su.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{store.Label}
@@ -867,6 +769,7 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	su.mutation.done = true
 	return n, nil
 }
 
@@ -1211,49 +1114,10 @@ func (suo *StoreUpdateOne) Select(field string, fields ...string) *StoreUpdateOn
 
 // Save executes the query and returns the updated Store entity.
 func (suo *StoreUpdateOne) Save(ctx context.Context) (*Store, error) {
-	var (
-		err  error
-		node *Store
-	)
 	if err := suo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(suo.hooks) == 0 {
-		if err = suo.check(); err != nil {
-			return nil, err
-		}
-		node, err = suo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*StoreMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = suo.check(); err != nil {
-				return nil, err
-			}
-			suo.mutation = mutation
-			node, err = suo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(suo.hooks) - 1; i >= 0; i-- {
-			if suo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = suo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, suo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Store)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from StoreMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Store, StoreMutation](ctx, suo.sqlSave, suo.mutation, suo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -1308,6 +1172,9 @@ func (suo *StoreUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Stor
 }
 
 func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error) {
+	if err := suo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   store.Table,
@@ -1343,126 +1210,58 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 		}
 	}
 	if value, ok := suo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: store.FieldUpdatedAt,
-		})
+		_spec.SetField(store.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := suo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: store.FieldDeletedAt,
-		})
+		_spec.SetField(store.FieldDeletedAt, field.TypeTime, value)
 	}
 	if suo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: store.FieldDeletedAt,
-		})
+		_spec.ClearField(store.FieldDeletedAt, field.TypeTime)
 	}
 	if suo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: store.FieldCreator,
-		})
+		_spec.ClearField(store.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := suo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: store.FieldLastModifier,
-		})
+		_spec.SetField(store.FieldLastModifier, field.TypeJSON, value)
 	}
 	if suo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: store.FieldLastModifier,
-		})
+		_spec.ClearField(store.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := suo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: store.FieldRemark,
-		})
+		_spec.SetField(store.FieldRemark, field.TypeString, value)
 	}
 	if suo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: store.FieldRemark,
-		})
+		_spec.ClearField(store.FieldRemark, field.TypeString)
 	}
 	if value, ok := suo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: store.FieldName,
-		})
+		_spec.SetField(store.FieldName, field.TypeString, value)
 	}
 	if value, ok := suo.mutation.Status(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: store.FieldStatus,
-		})
+		_spec.SetField(store.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := suo.mutation.AddedStatus(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: store.FieldStatus,
-		})
+		_spec.AddField(store.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := suo.mutation.Lng(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: store.FieldLng,
-		})
+		_spec.SetField(store.FieldLng, field.TypeFloat64, value)
 	}
 	if value, ok := suo.mutation.AddedLng(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: store.FieldLng,
-		})
+		_spec.AddField(store.FieldLng, field.TypeFloat64, value)
 	}
 	if value, ok := suo.mutation.Lat(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: store.FieldLat,
-		})
+		_spec.SetField(store.FieldLat, field.TypeFloat64, value)
 	}
 	if value, ok := suo.mutation.AddedLat(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: store.FieldLat,
-		})
+		_spec.AddField(store.FieldLat, field.TypeFloat64, value)
 	}
 	if value, ok := suo.mutation.Address(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: store.FieldAddress,
-		})
+		_spec.SetField(store.FieldAddress, field.TypeString, value)
 	}
 	if value, ok := suo.mutation.EbikeObtain(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: store.FieldEbikeObtain,
-		})
+		_spec.SetField(store.FieldEbikeObtain, field.TypeBool, value)
 	}
 	if value, ok := suo.mutation.EbikeRepair(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: store.FieldEbikeRepair,
-		})
+		_spec.SetField(store.FieldEbikeRepair, field.TypeBool, value)
 	}
 	if suo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1731,7 +1530,7 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = suo.modifiers
+	_spec.AddModifiers(suo.modifiers...)
 	_node = &Store{config: suo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -1743,5 +1542,6 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 		}
 		return nil, err
 	}
+	suo.mutation.done = true
 	return _node, nil
 }

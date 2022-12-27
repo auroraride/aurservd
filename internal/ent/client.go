@@ -175,7 +175,7 @@ type Client struct {
 
 // NewClient creates a new client configured with the given options.
 func NewClient(opts ...Option) *Client {
-	cfg := config{log: log.Println, hooks: &hooks{}}
+	cfg := config{log: log.Println, hooks: &hooks{}, inters: &inters{}}
 	cfg.options(opts...)
 	client := &Client{config: cfg}
 	client.init()
@@ -466,6 +466,169 @@ func (c *Client) Use(hooks ...Hook) {
 	c.SubscribeSuspend.Use(hooks...)
 }
 
+// Intercept adds the query interceptors to all the entity clients.
+// In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
+func (c *Client) Intercept(interceptors ...Interceptor) {
+	c.Agent.Intercept(interceptors...)
+	c.Allocate.Intercept(interceptors...)
+	c.Assistance.Intercept(interceptors...)
+	c.Attendance.Intercept(interceptors...)
+	c.Battery.Intercept(interceptors...)
+	c.BatteryModel.Intercept(interceptors...)
+	c.Branch.Intercept(interceptors...)
+	c.BranchContract.Intercept(interceptors...)
+	c.Business.Intercept(interceptors...)
+	c.Cabinet.Intercept(interceptors...)
+	c.CabinetFault.Intercept(interceptors...)
+	c.City.Intercept(interceptors...)
+	c.Commission.Intercept(interceptors...)
+	c.Contract.Intercept(interceptors...)
+	c.Coupon.Intercept(interceptors...)
+	c.CouponAssembly.Intercept(interceptors...)
+	c.CouponTemplate.Intercept(interceptors...)
+	c.Ebike.Intercept(interceptors...)
+	c.EbikeBrand.Intercept(interceptors...)
+	c.Employee.Intercept(interceptors...)
+	c.Enterprise.Intercept(interceptors...)
+	c.EnterpriseBill.Intercept(interceptors...)
+	c.EnterpriseContract.Intercept(interceptors...)
+	c.EnterprisePrepayment.Intercept(interceptors...)
+	c.EnterprisePrice.Intercept(interceptors...)
+	c.EnterpriseStatement.Intercept(interceptors...)
+	c.EnterpriseStation.Intercept(interceptors...)
+	c.Exception.Intercept(interceptors...)
+	c.Exchange.Intercept(interceptors...)
+	c.Export.Intercept(interceptors...)
+	c.Inventory.Intercept(interceptors...)
+	c.Manager.Intercept(interceptors...)
+	c.Order.Intercept(interceptors...)
+	c.OrderRefund.Intercept(interceptors...)
+	c.Person.Intercept(interceptors...)
+	c.Plan.Intercept(interceptors...)
+	c.PlanIntroduce.Intercept(interceptors...)
+	c.PointLog.Intercept(interceptors...)
+	c.Reserve.Intercept(interceptors...)
+	c.Rider.Intercept(interceptors...)
+	c.RiderFollowUp.Intercept(interceptors...)
+	c.Role.Intercept(interceptors...)
+	c.Setting.Intercept(interceptors...)
+	c.Stock.Intercept(interceptors...)
+	c.Store.Intercept(interceptors...)
+	c.Subscribe.Intercept(interceptors...)
+	c.SubscribeAlter.Intercept(interceptors...)
+	c.SubscribePause.Intercept(interceptors...)
+	c.SubscribeReminder.Intercept(interceptors...)
+	c.SubscribeSuspend.Intercept(interceptors...)
+}
+
+// Mutate implements the ent.Mutator interface.
+func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
+	switch m := m.(type) {
+	case *AgentMutation:
+		return c.Agent.mutate(ctx, m)
+	case *AllocateMutation:
+		return c.Allocate.mutate(ctx, m)
+	case *AssistanceMutation:
+		return c.Assistance.mutate(ctx, m)
+	case *AttendanceMutation:
+		return c.Attendance.mutate(ctx, m)
+	case *BatteryMutation:
+		return c.Battery.mutate(ctx, m)
+	case *BatteryModelMutation:
+		return c.BatteryModel.mutate(ctx, m)
+	case *BranchMutation:
+		return c.Branch.mutate(ctx, m)
+	case *BranchContractMutation:
+		return c.BranchContract.mutate(ctx, m)
+	case *BusinessMutation:
+		return c.Business.mutate(ctx, m)
+	case *CabinetMutation:
+		return c.Cabinet.mutate(ctx, m)
+	case *CabinetFaultMutation:
+		return c.CabinetFault.mutate(ctx, m)
+	case *CityMutation:
+		return c.City.mutate(ctx, m)
+	case *CommissionMutation:
+		return c.Commission.mutate(ctx, m)
+	case *ContractMutation:
+		return c.Contract.mutate(ctx, m)
+	case *CouponMutation:
+		return c.Coupon.mutate(ctx, m)
+	case *CouponAssemblyMutation:
+		return c.CouponAssembly.mutate(ctx, m)
+	case *CouponTemplateMutation:
+		return c.CouponTemplate.mutate(ctx, m)
+	case *EbikeMutation:
+		return c.Ebike.mutate(ctx, m)
+	case *EbikeBrandMutation:
+		return c.EbikeBrand.mutate(ctx, m)
+	case *EmployeeMutation:
+		return c.Employee.mutate(ctx, m)
+	case *EnterpriseMutation:
+		return c.Enterprise.mutate(ctx, m)
+	case *EnterpriseBillMutation:
+		return c.EnterpriseBill.mutate(ctx, m)
+	case *EnterpriseContractMutation:
+		return c.EnterpriseContract.mutate(ctx, m)
+	case *EnterprisePrepaymentMutation:
+		return c.EnterprisePrepayment.mutate(ctx, m)
+	case *EnterprisePriceMutation:
+		return c.EnterprisePrice.mutate(ctx, m)
+	case *EnterpriseStatementMutation:
+		return c.EnterpriseStatement.mutate(ctx, m)
+	case *EnterpriseStationMutation:
+		return c.EnterpriseStation.mutate(ctx, m)
+	case *ExceptionMutation:
+		return c.Exception.mutate(ctx, m)
+	case *ExchangeMutation:
+		return c.Exchange.mutate(ctx, m)
+	case *ExportMutation:
+		return c.Export.mutate(ctx, m)
+	case *InventoryMutation:
+		return c.Inventory.mutate(ctx, m)
+	case *ManagerMutation:
+		return c.Manager.mutate(ctx, m)
+	case *OrderMutation:
+		return c.Order.mutate(ctx, m)
+	case *OrderRefundMutation:
+		return c.OrderRefund.mutate(ctx, m)
+	case *PersonMutation:
+		return c.Person.mutate(ctx, m)
+	case *PlanMutation:
+		return c.Plan.mutate(ctx, m)
+	case *PlanIntroduceMutation:
+		return c.PlanIntroduce.mutate(ctx, m)
+	case *PointLogMutation:
+		return c.PointLog.mutate(ctx, m)
+	case *ReserveMutation:
+		return c.Reserve.mutate(ctx, m)
+	case *RiderMutation:
+		return c.Rider.mutate(ctx, m)
+	case *RiderFollowUpMutation:
+		return c.RiderFollowUp.mutate(ctx, m)
+	case *RoleMutation:
+		return c.Role.mutate(ctx, m)
+	case *SettingMutation:
+		return c.Setting.mutate(ctx, m)
+	case *StockMutation:
+		return c.Stock.mutate(ctx, m)
+	case *StoreMutation:
+		return c.Store.mutate(ctx, m)
+	case *SubscribeMutation:
+		return c.Subscribe.mutate(ctx, m)
+	case *SubscribeAlterMutation:
+		return c.SubscribeAlter.mutate(ctx, m)
+	case *SubscribePauseMutation:
+		return c.SubscribePause.mutate(ctx, m)
+	case *SubscribeReminderMutation:
+		return c.SubscribeReminder.mutate(ctx, m)
+	case *SubscribeSuspendMutation:
+		return c.SubscribeSuspend.mutate(ctx, m)
+	default:
+		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
+	}
+}
+
 // AgentClient is a client for the Agent schema.
 type AgentClient struct {
 	config
@@ -480,6 +643,12 @@ func NewAgentClient(c config) *AgentClient {
 // A call to `Use(f, g, h)` equals to `agent.Hooks(f(g(h())))`.
 func (c *AgentClient) Use(hooks ...Hook) {
 	c.hooks.Agent = append(c.hooks.Agent, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `agent.Intercept(f(g(h())))`.
+func (c *AgentClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Agent = append(c.inters.Agent, interceptors...)
 }
 
 // Create returns a builder for creating a Agent entity.
@@ -522,7 +691,7 @@ func (c *AgentClient) DeleteOne(a *Agent) *AgentDeleteOne {
 	return c.DeleteOneID(a.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *AgentClient) DeleteOneID(id uint64) *AgentDeleteOne {
 	builder := c.Delete().Where(agent.ID(id))
 	builder.mutation.id = &id
@@ -534,6 +703,7 @@ func (c *AgentClient) DeleteOneID(id uint64) *AgentDeleteOne {
 func (c *AgentClient) Query() *AgentQuery {
 	return &AgentQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -553,8 +723,8 @@ func (c *AgentClient) GetX(ctx context.Context, id uint64) *Agent {
 
 // QueryEnterprise queries the enterprise edge of a Agent.
 func (c *AgentClient) QueryEnterprise(a *Agent) *EnterpriseQuery {
-	query := &EnterpriseQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(agent.Table, agent.FieldID, id),
@@ -573,6 +743,26 @@ func (c *AgentClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], agent.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *AgentClient) Interceptors() []Interceptor {
+	return c.inters.Agent
+}
+
+func (c *AgentClient) mutate(ctx context.Context, m *AgentMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AgentCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AgentUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AgentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AgentDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Agent mutation op: %q", m.Op())
+	}
+}
+
 // AllocateClient is a client for the Allocate schema.
 type AllocateClient struct {
 	config
@@ -587,6 +777,12 @@ func NewAllocateClient(c config) *AllocateClient {
 // A call to `Use(f, g, h)` equals to `allocate.Hooks(f(g(h())))`.
 func (c *AllocateClient) Use(hooks ...Hook) {
 	c.hooks.Allocate = append(c.hooks.Allocate, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `allocate.Intercept(f(g(h())))`.
+func (c *AllocateClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Allocate = append(c.inters.Allocate, interceptors...)
 }
 
 // Create returns a builder for creating a Allocate entity.
@@ -629,7 +825,7 @@ func (c *AllocateClient) DeleteOne(a *Allocate) *AllocateDeleteOne {
 	return c.DeleteOneID(a.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *AllocateClient) DeleteOneID(id uint64) *AllocateDeleteOne {
 	builder := c.Delete().Where(allocate.ID(id))
 	builder.mutation.id = &id
@@ -641,6 +837,7 @@ func (c *AllocateClient) DeleteOneID(id uint64) *AllocateDeleteOne {
 func (c *AllocateClient) Query() *AllocateQuery {
 	return &AllocateQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -660,8 +857,8 @@ func (c *AllocateClient) GetX(ctx context.Context, id uint64) *Allocate {
 
 // QueryRider queries the rider edge of a Allocate.
 func (c *AllocateClient) QueryRider(a *Allocate) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(allocate.Table, allocate.FieldID, id),
@@ -676,8 +873,8 @@ func (c *AllocateClient) QueryRider(a *Allocate) *RiderQuery {
 
 // QuerySubscribe queries the subscribe edge of a Allocate.
 func (c *AllocateClient) QuerySubscribe(a *Allocate) *SubscribeQuery {
-	query := &SubscribeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&SubscribeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(allocate.Table, allocate.FieldID, id),
@@ -692,8 +889,8 @@ func (c *AllocateClient) QuerySubscribe(a *Allocate) *SubscribeQuery {
 
 // QueryEmployee queries the employee edge of a Allocate.
 func (c *AllocateClient) QueryEmployee(a *Allocate) *EmployeeQuery {
-	query := &EmployeeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EmployeeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(allocate.Table, allocate.FieldID, id),
@@ -708,8 +905,8 @@ func (c *AllocateClient) QueryEmployee(a *Allocate) *EmployeeQuery {
 
 // QueryCabinet queries the cabinet edge of a Allocate.
 func (c *AllocateClient) QueryCabinet(a *Allocate) *CabinetQuery {
-	query := &CabinetQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(allocate.Table, allocate.FieldID, id),
@@ -724,8 +921,8 @@ func (c *AllocateClient) QueryCabinet(a *Allocate) *CabinetQuery {
 
 // QueryStore queries the store edge of a Allocate.
 func (c *AllocateClient) QueryStore(a *Allocate) *StoreQuery {
-	query := &StoreQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(allocate.Table, allocate.FieldID, id),
@@ -740,8 +937,8 @@ func (c *AllocateClient) QueryStore(a *Allocate) *StoreQuery {
 
 // QueryEbike queries the ebike edge of a Allocate.
 func (c *AllocateClient) QueryEbike(a *Allocate) *EbikeQuery {
-	query := &EbikeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EbikeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(allocate.Table, allocate.FieldID, id),
@@ -756,8 +953,8 @@ func (c *AllocateClient) QueryEbike(a *Allocate) *EbikeQuery {
 
 // QueryBrand queries the brand edge of a Allocate.
 func (c *AllocateClient) QueryBrand(a *Allocate) *EbikeBrandQuery {
-	query := &EbikeBrandQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EbikeBrandClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(allocate.Table, allocate.FieldID, id),
@@ -772,8 +969,8 @@ func (c *AllocateClient) QueryBrand(a *Allocate) *EbikeBrandQuery {
 
 // QueryContract queries the contract edge of a Allocate.
 func (c *AllocateClient) QueryContract(a *Allocate) *ContractQuery {
-	query := &ContractQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&ContractClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(allocate.Table, allocate.FieldID, id),
@@ -792,6 +989,26 @@ func (c *AllocateClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], allocate.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *AllocateClient) Interceptors() []Interceptor {
+	return c.inters.Allocate
+}
+
+func (c *AllocateClient) mutate(ctx context.Context, m *AllocateMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AllocateCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AllocateUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AllocateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AllocateDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Allocate mutation op: %q", m.Op())
+	}
+}
+
 // AssistanceClient is a client for the Assistance schema.
 type AssistanceClient struct {
 	config
@@ -806,6 +1023,12 @@ func NewAssistanceClient(c config) *AssistanceClient {
 // A call to `Use(f, g, h)` equals to `assistance.Hooks(f(g(h())))`.
 func (c *AssistanceClient) Use(hooks ...Hook) {
 	c.hooks.Assistance = append(c.hooks.Assistance, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `assistance.Intercept(f(g(h())))`.
+func (c *AssistanceClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Assistance = append(c.inters.Assistance, interceptors...)
 }
 
 // Create returns a builder for creating a Assistance entity.
@@ -848,7 +1071,7 @@ func (c *AssistanceClient) DeleteOne(a *Assistance) *AssistanceDeleteOne {
 	return c.DeleteOneID(a.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *AssistanceClient) DeleteOneID(id uint64) *AssistanceDeleteOne {
 	builder := c.Delete().Where(assistance.ID(id))
 	builder.mutation.id = &id
@@ -860,6 +1083,7 @@ func (c *AssistanceClient) DeleteOneID(id uint64) *AssistanceDeleteOne {
 func (c *AssistanceClient) Query() *AssistanceQuery {
 	return &AssistanceQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -879,8 +1103,8 @@ func (c *AssistanceClient) GetX(ctx context.Context, id uint64) *Assistance {
 
 // QueryStore queries the store edge of a Assistance.
 func (c *AssistanceClient) QueryStore(a *Assistance) *StoreQuery {
-	query := &StoreQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assistance.Table, assistance.FieldID, id),
@@ -895,8 +1119,8 @@ func (c *AssistanceClient) QueryStore(a *Assistance) *StoreQuery {
 
 // QueryRider queries the rider edge of a Assistance.
 func (c *AssistanceClient) QueryRider(a *Assistance) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assistance.Table, assistance.FieldID, id),
@@ -911,8 +1135,8 @@ func (c *AssistanceClient) QueryRider(a *Assistance) *RiderQuery {
 
 // QuerySubscribe queries the subscribe edge of a Assistance.
 func (c *AssistanceClient) QuerySubscribe(a *Assistance) *SubscribeQuery {
-	query := &SubscribeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&SubscribeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assistance.Table, assistance.FieldID, id),
@@ -927,8 +1151,8 @@ func (c *AssistanceClient) QuerySubscribe(a *Assistance) *SubscribeQuery {
 
 // QueryCity queries the city edge of a Assistance.
 func (c *AssistanceClient) QueryCity(a *Assistance) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assistance.Table, assistance.FieldID, id),
@@ -943,8 +1167,8 @@ func (c *AssistanceClient) QueryCity(a *Assistance) *CityQuery {
 
 // QueryOrder queries the order edge of a Assistance.
 func (c *AssistanceClient) QueryOrder(a *Assistance) *OrderQuery {
-	query := &OrderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&OrderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assistance.Table, assistance.FieldID, id),
@@ -959,8 +1183,8 @@ func (c *AssistanceClient) QueryOrder(a *Assistance) *OrderQuery {
 
 // QueryEmployee queries the employee edge of a Assistance.
 func (c *AssistanceClient) QueryEmployee(a *Assistance) *EmployeeQuery {
-	query := &EmployeeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EmployeeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assistance.Table, assistance.FieldID, id),
@@ -979,6 +1203,26 @@ func (c *AssistanceClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], assistance.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *AssistanceClient) Interceptors() []Interceptor {
+	return c.inters.Assistance
+}
+
+func (c *AssistanceClient) mutate(ctx context.Context, m *AssistanceMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AssistanceCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AssistanceUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AssistanceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AssistanceDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Assistance mutation op: %q", m.Op())
+	}
+}
+
 // AttendanceClient is a client for the Attendance schema.
 type AttendanceClient struct {
 	config
@@ -993,6 +1237,12 @@ func NewAttendanceClient(c config) *AttendanceClient {
 // A call to `Use(f, g, h)` equals to `attendance.Hooks(f(g(h())))`.
 func (c *AttendanceClient) Use(hooks ...Hook) {
 	c.hooks.Attendance = append(c.hooks.Attendance, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `attendance.Intercept(f(g(h())))`.
+func (c *AttendanceClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Attendance = append(c.inters.Attendance, interceptors...)
 }
 
 // Create returns a builder for creating a Attendance entity.
@@ -1035,7 +1285,7 @@ func (c *AttendanceClient) DeleteOne(a *Attendance) *AttendanceDeleteOne {
 	return c.DeleteOneID(a.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *AttendanceClient) DeleteOneID(id uint64) *AttendanceDeleteOne {
 	builder := c.Delete().Where(attendance.ID(id))
 	builder.mutation.id = &id
@@ -1047,6 +1297,7 @@ func (c *AttendanceClient) DeleteOneID(id uint64) *AttendanceDeleteOne {
 func (c *AttendanceClient) Query() *AttendanceQuery {
 	return &AttendanceQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -1066,8 +1317,8 @@ func (c *AttendanceClient) GetX(ctx context.Context, id uint64) *Attendance {
 
 // QueryStore queries the store edge of a Attendance.
 func (c *AttendanceClient) QueryStore(a *Attendance) *StoreQuery {
-	query := &StoreQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(attendance.Table, attendance.FieldID, id),
@@ -1082,8 +1333,8 @@ func (c *AttendanceClient) QueryStore(a *Attendance) *StoreQuery {
 
 // QueryEmployee queries the employee edge of a Attendance.
 func (c *AttendanceClient) QueryEmployee(a *Attendance) *EmployeeQuery {
-	query := &EmployeeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EmployeeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(attendance.Table, attendance.FieldID, id),
@@ -1102,6 +1353,26 @@ func (c *AttendanceClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], attendance.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *AttendanceClient) Interceptors() []Interceptor {
+	return c.inters.Attendance
+}
+
+func (c *AttendanceClient) mutate(ctx context.Context, m *AttendanceMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AttendanceCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AttendanceUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AttendanceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AttendanceDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Attendance mutation op: %q", m.Op())
+	}
+}
+
 // BatteryClient is a client for the Battery schema.
 type BatteryClient struct {
 	config
@@ -1116,6 +1387,12 @@ func NewBatteryClient(c config) *BatteryClient {
 // A call to `Use(f, g, h)` equals to `battery.Hooks(f(g(h())))`.
 func (c *BatteryClient) Use(hooks ...Hook) {
 	c.hooks.Battery = append(c.hooks.Battery, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `battery.Intercept(f(g(h())))`.
+func (c *BatteryClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Battery = append(c.inters.Battery, interceptors...)
 }
 
 // Create returns a builder for creating a Battery entity.
@@ -1158,7 +1435,7 @@ func (c *BatteryClient) DeleteOne(b *Battery) *BatteryDeleteOne {
 	return c.DeleteOneID(b.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *BatteryClient) DeleteOneID(id uint64) *BatteryDeleteOne {
 	builder := c.Delete().Where(battery.ID(id))
 	builder.mutation.id = &id
@@ -1170,6 +1447,7 @@ func (c *BatteryClient) DeleteOneID(id uint64) *BatteryDeleteOne {
 func (c *BatteryClient) Query() *BatteryQuery {
 	return &BatteryQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -1189,8 +1467,8 @@ func (c *BatteryClient) GetX(ctx context.Context, id uint64) *Battery {
 
 // QueryCity queries the city edge of a Battery.
 func (c *BatteryClient) QueryCity(b *Battery) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := b.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(battery.Table, battery.FieldID, id),
@@ -1205,8 +1483,8 @@ func (c *BatteryClient) QueryCity(b *Battery) *CityQuery {
 
 // QueryRider queries the rider edge of a Battery.
 func (c *BatteryClient) QueryRider(b *Battery) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := b.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(battery.Table, battery.FieldID, id),
@@ -1221,8 +1499,8 @@ func (c *BatteryClient) QueryRider(b *Battery) *RiderQuery {
 
 // QueryCabinet queries the cabinet edge of a Battery.
 func (c *BatteryClient) QueryCabinet(b *Battery) *CabinetQuery {
-	query := &CabinetQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := b.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(battery.Table, battery.FieldID, id),
@@ -1241,6 +1519,26 @@ func (c *BatteryClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], battery.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *BatteryClient) Interceptors() []Interceptor {
+	return c.inters.Battery
+}
+
+func (c *BatteryClient) mutate(ctx context.Context, m *BatteryMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&BatteryCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&BatteryUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&BatteryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&BatteryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Battery mutation op: %q", m.Op())
+	}
+}
+
 // BatteryModelClient is a client for the BatteryModel schema.
 type BatteryModelClient struct {
 	config
@@ -1255,6 +1553,12 @@ func NewBatteryModelClient(c config) *BatteryModelClient {
 // A call to `Use(f, g, h)` equals to `batterymodel.Hooks(f(g(h())))`.
 func (c *BatteryModelClient) Use(hooks ...Hook) {
 	c.hooks.BatteryModel = append(c.hooks.BatteryModel, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `batterymodel.Intercept(f(g(h())))`.
+func (c *BatteryModelClient) Intercept(interceptors ...Interceptor) {
+	c.inters.BatteryModel = append(c.inters.BatteryModel, interceptors...)
 }
 
 // Create returns a builder for creating a BatteryModel entity.
@@ -1297,7 +1601,7 @@ func (c *BatteryModelClient) DeleteOne(bm *BatteryModel) *BatteryModelDeleteOne 
 	return c.DeleteOneID(bm.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *BatteryModelClient) DeleteOneID(id uint64) *BatteryModelDeleteOne {
 	builder := c.Delete().Where(batterymodel.ID(id))
 	builder.mutation.id = &id
@@ -1309,6 +1613,7 @@ func (c *BatteryModelClient) DeleteOneID(id uint64) *BatteryModelDeleteOne {
 func (c *BatteryModelClient) Query() *BatteryModelQuery {
 	return &BatteryModelQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -1328,8 +1633,8 @@ func (c *BatteryModelClient) GetX(ctx context.Context, id uint64) *BatteryModel 
 
 // QueryCabinets queries the cabinets edge of a BatteryModel.
 func (c *BatteryModelClient) QueryCabinets(bm *BatteryModel) *CabinetQuery {
-	query := &CabinetQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := bm.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(batterymodel.Table, batterymodel.FieldID, id),
@@ -1347,6 +1652,26 @@ func (c *BatteryModelClient) Hooks() []Hook {
 	return c.hooks.BatteryModel
 }
 
+// Interceptors returns the client interceptors.
+func (c *BatteryModelClient) Interceptors() []Interceptor {
+	return c.inters.BatteryModel
+}
+
+func (c *BatteryModelClient) mutate(ctx context.Context, m *BatteryModelMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&BatteryModelCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&BatteryModelUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&BatteryModelUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&BatteryModelDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown BatteryModel mutation op: %q", m.Op())
+	}
+}
+
 // BranchClient is a client for the Branch schema.
 type BranchClient struct {
 	config
@@ -1361,6 +1686,12 @@ func NewBranchClient(c config) *BranchClient {
 // A call to `Use(f, g, h)` equals to `branch.Hooks(f(g(h())))`.
 func (c *BranchClient) Use(hooks ...Hook) {
 	c.hooks.Branch = append(c.hooks.Branch, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `branch.Intercept(f(g(h())))`.
+func (c *BranchClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Branch = append(c.inters.Branch, interceptors...)
 }
 
 // Create returns a builder for creating a Branch entity.
@@ -1403,7 +1734,7 @@ func (c *BranchClient) DeleteOne(b *Branch) *BranchDeleteOne {
 	return c.DeleteOneID(b.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *BranchClient) DeleteOneID(id uint64) *BranchDeleteOne {
 	builder := c.Delete().Where(branch.ID(id))
 	builder.mutation.id = &id
@@ -1415,6 +1746,7 @@ func (c *BranchClient) DeleteOneID(id uint64) *BranchDeleteOne {
 func (c *BranchClient) Query() *BranchQuery {
 	return &BranchQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -1434,8 +1766,8 @@ func (c *BranchClient) GetX(ctx context.Context, id uint64) *Branch {
 
 // QueryCity queries the city edge of a Branch.
 func (c *BranchClient) QueryCity(b *Branch) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := b.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(branch.Table, branch.FieldID, id),
@@ -1450,8 +1782,8 @@ func (c *BranchClient) QueryCity(b *Branch) *CityQuery {
 
 // QueryContracts queries the contracts edge of a Branch.
 func (c *BranchClient) QueryContracts(b *Branch) *BranchContractQuery {
-	query := &BranchContractQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&BranchContractClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := b.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(branch.Table, branch.FieldID, id),
@@ -1466,8 +1798,8 @@ func (c *BranchClient) QueryContracts(b *Branch) *BranchContractQuery {
 
 // QueryCabinets queries the cabinets edge of a Branch.
 func (c *BranchClient) QueryCabinets(b *Branch) *CabinetQuery {
-	query := &CabinetQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := b.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(branch.Table, branch.FieldID, id),
@@ -1482,8 +1814,8 @@ func (c *BranchClient) QueryCabinets(b *Branch) *CabinetQuery {
 
 // QueryFaults queries the faults edge of a Branch.
 func (c *BranchClient) QueryFaults(b *Branch) *CabinetFaultQuery {
-	query := &CabinetFaultQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CabinetFaultClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := b.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(branch.Table, branch.FieldID, id),
@@ -1498,8 +1830,8 @@ func (c *BranchClient) QueryFaults(b *Branch) *CabinetFaultQuery {
 
 // QueryStores queries the stores edge of a Branch.
 func (c *BranchClient) QueryStores(b *Branch) *StoreQuery {
-	query := &StoreQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := b.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(branch.Table, branch.FieldID, id),
@@ -1518,6 +1850,26 @@ func (c *BranchClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], branch.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *BranchClient) Interceptors() []Interceptor {
+	return c.inters.Branch
+}
+
+func (c *BranchClient) mutate(ctx context.Context, m *BranchMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&BranchCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&BranchUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&BranchUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&BranchDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Branch mutation op: %q", m.Op())
+	}
+}
+
 // BranchContractClient is a client for the BranchContract schema.
 type BranchContractClient struct {
 	config
@@ -1532,6 +1884,12 @@ func NewBranchContractClient(c config) *BranchContractClient {
 // A call to `Use(f, g, h)` equals to `branchcontract.Hooks(f(g(h())))`.
 func (c *BranchContractClient) Use(hooks ...Hook) {
 	c.hooks.BranchContract = append(c.hooks.BranchContract, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `branchcontract.Intercept(f(g(h())))`.
+func (c *BranchContractClient) Intercept(interceptors ...Interceptor) {
+	c.inters.BranchContract = append(c.inters.BranchContract, interceptors...)
 }
 
 // Create returns a builder for creating a BranchContract entity.
@@ -1574,7 +1932,7 @@ func (c *BranchContractClient) DeleteOne(bc *BranchContract) *BranchContractDele
 	return c.DeleteOneID(bc.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *BranchContractClient) DeleteOneID(id uint64) *BranchContractDeleteOne {
 	builder := c.Delete().Where(branchcontract.ID(id))
 	builder.mutation.id = &id
@@ -1586,6 +1944,7 @@ func (c *BranchContractClient) DeleteOneID(id uint64) *BranchContractDeleteOne {
 func (c *BranchContractClient) Query() *BranchContractQuery {
 	return &BranchContractQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -1605,8 +1964,8 @@ func (c *BranchContractClient) GetX(ctx context.Context, id uint64) *BranchContr
 
 // QueryBranch queries the branch edge of a BranchContract.
 func (c *BranchContractClient) QueryBranch(bc *BranchContract) *BranchQuery {
-	query := &BranchQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&BranchClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := bc.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(branchcontract.Table, branchcontract.FieldID, id),
@@ -1625,6 +1984,26 @@ func (c *BranchContractClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], branchcontract.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *BranchContractClient) Interceptors() []Interceptor {
+	return c.inters.BranchContract
+}
+
+func (c *BranchContractClient) mutate(ctx context.Context, m *BranchContractMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&BranchContractCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&BranchContractUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&BranchContractUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&BranchContractDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown BranchContract mutation op: %q", m.Op())
+	}
+}
+
 // BusinessClient is a client for the Business schema.
 type BusinessClient struct {
 	config
@@ -1639,6 +2018,12 @@ func NewBusinessClient(c config) *BusinessClient {
 // A call to `Use(f, g, h)` equals to `business.Hooks(f(g(h())))`.
 func (c *BusinessClient) Use(hooks ...Hook) {
 	c.hooks.Business = append(c.hooks.Business, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `business.Intercept(f(g(h())))`.
+func (c *BusinessClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Business = append(c.inters.Business, interceptors...)
 }
 
 // Create returns a builder for creating a Business entity.
@@ -1681,7 +2066,7 @@ func (c *BusinessClient) DeleteOne(b *Business) *BusinessDeleteOne {
 	return c.DeleteOneID(b.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *BusinessClient) DeleteOneID(id uint64) *BusinessDeleteOne {
 	builder := c.Delete().Where(business.ID(id))
 	builder.mutation.id = &id
@@ -1693,6 +2078,7 @@ func (c *BusinessClient) DeleteOneID(id uint64) *BusinessDeleteOne {
 func (c *BusinessClient) Query() *BusinessQuery {
 	return &BusinessQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -1712,8 +2098,8 @@ func (c *BusinessClient) GetX(ctx context.Context, id uint64) *Business {
 
 // QueryRider queries the rider edge of a Business.
 func (c *BusinessClient) QueryRider(b *Business) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := b.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(business.Table, business.FieldID, id),
@@ -1728,8 +2114,8 @@ func (c *BusinessClient) QueryRider(b *Business) *RiderQuery {
 
 // QueryCity queries the city edge of a Business.
 func (c *BusinessClient) QueryCity(b *Business) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := b.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(business.Table, business.FieldID, id),
@@ -1744,8 +2130,8 @@ func (c *BusinessClient) QueryCity(b *Business) *CityQuery {
 
 // QuerySubscribe queries the subscribe edge of a Business.
 func (c *BusinessClient) QuerySubscribe(b *Business) *SubscribeQuery {
-	query := &SubscribeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&SubscribeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := b.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(business.Table, business.FieldID, id),
@@ -1760,8 +2146,8 @@ func (c *BusinessClient) QuerySubscribe(b *Business) *SubscribeQuery {
 
 // QueryEmployee queries the employee edge of a Business.
 func (c *BusinessClient) QueryEmployee(b *Business) *EmployeeQuery {
-	query := &EmployeeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EmployeeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := b.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(business.Table, business.FieldID, id),
@@ -1776,8 +2162,8 @@ func (c *BusinessClient) QueryEmployee(b *Business) *EmployeeQuery {
 
 // QueryStore queries the store edge of a Business.
 func (c *BusinessClient) QueryStore(b *Business) *StoreQuery {
-	query := &StoreQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := b.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(business.Table, business.FieldID, id),
@@ -1792,8 +2178,8 @@ func (c *BusinessClient) QueryStore(b *Business) *StoreQuery {
 
 // QueryPlan queries the plan edge of a Business.
 func (c *BusinessClient) QueryPlan(b *Business) *PlanQuery {
-	query := &PlanQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&PlanClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := b.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(business.Table, business.FieldID, id),
@@ -1808,8 +2194,8 @@ func (c *BusinessClient) QueryPlan(b *Business) *PlanQuery {
 
 // QueryEnterprise queries the enterprise edge of a Business.
 func (c *BusinessClient) QueryEnterprise(b *Business) *EnterpriseQuery {
-	query := &EnterpriseQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := b.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(business.Table, business.FieldID, id),
@@ -1824,8 +2210,8 @@ func (c *BusinessClient) QueryEnterprise(b *Business) *EnterpriseQuery {
 
 // QueryStation queries the station edge of a Business.
 func (c *BusinessClient) QueryStation(b *Business) *EnterpriseStationQuery {
-	query := &EnterpriseStationQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := b.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(business.Table, business.FieldID, id),
@@ -1840,8 +2226,8 @@ func (c *BusinessClient) QueryStation(b *Business) *EnterpriseStationQuery {
 
 // QueryCabinet queries the cabinet edge of a Business.
 func (c *BusinessClient) QueryCabinet(b *Business) *CabinetQuery {
-	query := &CabinetQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := b.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(business.Table, business.FieldID, id),
@@ -1860,6 +2246,26 @@ func (c *BusinessClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], business.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *BusinessClient) Interceptors() []Interceptor {
+	return c.inters.Business
+}
+
+func (c *BusinessClient) mutate(ctx context.Context, m *BusinessMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&BusinessCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&BusinessUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&BusinessUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&BusinessDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Business mutation op: %q", m.Op())
+	}
+}
+
 // CabinetClient is a client for the Cabinet schema.
 type CabinetClient struct {
 	config
@@ -1874,6 +2280,12 @@ func NewCabinetClient(c config) *CabinetClient {
 // A call to `Use(f, g, h)` equals to `cabinet.Hooks(f(g(h())))`.
 func (c *CabinetClient) Use(hooks ...Hook) {
 	c.hooks.Cabinet = append(c.hooks.Cabinet, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `cabinet.Intercept(f(g(h())))`.
+func (c *CabinetClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Cabinet = append(c.inters.Cabinet, interceptors...)
 }
 
 // Create returns a builder for creating a Cabinet entity.
@@ -1916,7 +2328,7 @@ func (c *CabinetClient) DeleteOne(ca *Cabinet) *CabinetDeleteOne {
 	return c.DeleteOneID(ca.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *CabinetClient) DeleteOneID(id uint64) *CabinetDeleteOne {
 	builder := c.Delete().Where(cabinet.ID(id))
 	builder.mutation.id = &id
@@ -1928,6 +2340,7 @@ func (c *CabinetClient) DeleteOneID(id uint64) *CabinetDeleteOne {
 func (c *CabinetClient) Query() *CabinetQuery {
 	return &CabinetQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -1947,8 +2360,8 @@ func (c *CabinetClient) GetX(ctx context.Context, id uint64) *Cabinet {
 
 // QueryCity queries the city edge of a Cabinet.
 func (c *CabinetClient) QueryCity(ca *Cabinet) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ca.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(cabinet.Table, cabinet.FieldID, id),
@@ -1963,8 +2376,8 @@ func (c *CabinetClient) QueryCity(ca *Cabinet) *CityQuery {
 
 // QueryBranch queries the branch edge of a Cabinet.
 func (c *CabinetClient) QueryBranch(ca *Cabinet) *BranchQuery {
-	query := &BranchQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&BranchClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ca.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(cabinet.Table, cabinet.FieldID, id),
@@ -1979,8 +2392,8 @@ func (c *CabinetClient) QueryBranch(ca *Cabinet) *BranchQuery {
 
 // QueryModels queries the models edge of a Cabinet.
 func (c *CabinetClient) QueryModels(ca *Cabinet) *BatteryModelQuery {
-	query := &BatteryModelQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&BatteryModelClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ca.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(cabinet.Table, cabinet.FieldID, id),
@@ -1995,8 +2408,8 @@ func (c *CabinetClient) QueryModels(ca *Cabinet) *BatteryModelQuery {
 
 // QueryFaults queries the faults edge of a Cabinet.
 func (c *CabinetClient) QueryFaults(ca *Cabinet) *CabinetFaultQuery {
-	query := &CabinetFaultQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CabinetFaultClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ca.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(cabinet.Table, cabinet.FieldID, id),
@@ -2011,8 +2424,8 @@ func (c *CabinetClient) QueryFaults(ca *Cabinet) *CabinetFaultQuery {
 
 // QueryExchanges queries the exchanges edge of a Cabinet.
 func (c *CabinetClient) QueryExchanges(ca *Cabinet) *ExchangeQuery {
-	query := &ExchangeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&ExchangeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ca.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(cabinet.Table, cabinet.FieldID, id),
@@ -2027,8 +2440,8 @@ func (c *CabinetClient) QueryExchanges(ca *Cabinet) *ExchangeQuery {
 
 // QueryStocks queries the stocks edge of a Cabinet.
 func (c *CabinetClient) QueryStocks(ca *Cabinet) *StockQuery {
-	query := &StockQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&StockClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ca.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(cabinet.Table, cabinet.FieldID, id),
@@ -2047,6 +2460,26 @@ func (c *CabinetClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], cabinet.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *CabinetClient) Interceptors() []Interceptor {
+	return c.inters.Cabinet
+}
+
+func (c *CabinetClient) mutate(ctx context.Context, m *CabinetMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CabinetCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CabinetUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CabinetUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CabinetDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Cabinet mutation op: %q", m.Op())
+	}
+}
+
 // CabinetFaultClient is a client for the CabinetFault schema.
 type CabinetFaultClient struct {
 	config
@@ -2061,6 +2494,12 @@ func NewCabinetFaultClient(c config) *CabinetFaultClient {
 // A call to `Use(f, g, h)` equals to `cabinetfault.Hooks(f(g(h())))`.
 func (c *CabinetFaultClient) Use(hooks ...Hook) {
 	c.hooks.CabinetFault = append(c.hooks.CabinetFault, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `cabinetfault.Intercept(f(g(h())))`.
+func (c *CabinetFaultClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CabinetFault = append(c.inters.CabinetFault, interceptors...)
 }
 
 // Create returns a builder for creating a CabinetFault entity.
@@ -2103,7 +2542,7 @@ func (c *CabinetFaultClient) DeleteOne(cf *CabinetFault) *CabinetFaultDeleteOne 
 	return c.DeleteOneID(cf.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *CabinetFaultClient) DeleteOneID(id uint64) *CabinetFaultDeleteOne {
 	builder := c.Delete().Where(cabinetfault.ID(id))
 	builder.mutation.id = &id
@@ -2115,6 +2554,7 @@ func (c *CabinetFaultClient) DeleteOneID(id uint64) *CabinetFaultDeleteOne {
 func (c *CabinetFaultClient) Query() *CabinetFaultQuery {
 	return &CabinetFaultQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -2134,8 +2574,8 @@ func (c *CabinetFaultClient) GetX(ctx context.Context, id uint64) *CabinetFault 
 
 // QueryCity queries the city edge of a CabinetFault.
 func (c *CabinetFaultClient) QueryCity(cf *CabinetFault) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := cf.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(cabinetfault.Table, cabinetfault.FieldID, id),
@@ -2150,8 +2590,8 @@ func (c *CabinetFaultClient) QueryCity(cf *CabinetFault) *CityQuery {
 
 // QueryBranch queries the branch edge of a CabinetFault.
 func (c *CabinetFaultClient) QueryBranch(cf *CabinetFault) *BranchQuery {
-	query := &BranchQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&BranchClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := cf.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(cabinetfault.Table, cabinetfault.FieldID, id),
@@ -2166,8 +2606,8 @@ func (c *CabinetFaultClient) QueryBranch(cf *CabinetFault) *BranchQuery {
 
 // QueryCabinet queries the cabinet edge of a CabinetFault.
 func (c *CabinetFaultClient) QueryCabinet(cf *CabinetFault) *CabinetQuery {
-	query := &CabinetQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := cf.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(cabinetfault.Table, cabinetfault.FieldID, id),
@@ -2182,8 +2622,8 @@ func (c *CabinetFaultClient) QueryCabinet(cf *CabinetFault) *CabinetQuery {
 
 // QueryRider queries the rider edge of a CabinetFault.
 func (c *CabinetFaultClient) QueryRider(cf *CabinetFault) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := cf.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(cabinetfault.Table, cabinetfault.FieldID, id),
@@ -2202,6 +2642,26 @@ func (c *CabinetFaultClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], cabinetfault.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *CabinetFaultClient) Interceptors() []Interceptor {
+	return c.inters.CabinetFault
+}
+
+func (c *CabinetFaultClient) mutate(ctx context.Context, m *CabinetFaultMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CabinetFaultCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CabinetFaultUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CabinetFaultUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CabinetFaultDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CabinetFault mutation op: %q", m.Op())
+	}
+}
+
 // CityClient is a client for the City schema.
 type CityClient struct {
 	config
@@ -2216,6 +2676,12 @@ func NewCityClient(c config) *CityClient {
 // A call to `Use(f, g, h)` equals to `city.Hooks(f(g(h())))`.
 func (c *CityClient) Use(hooks ...Hook) {
 	c.hooks.City = append(c.hooks.City, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `city.Intercept(f(g(h())))`.
+func (c *CityClient) Intercept(interceptors ...Interceptor) {
+	c.inters.City = append(c.inters.City, interceptors...)
 }
 
 // Create returns a builder for creating a City entity.
@@ -2258,7 +2724,7 @@ func (c *CityClient) DeleteOne(ci *City) *CityDeleteOne {
 	return c.DeleteOneID(ci.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *CityClient) DeleteOneID(id uint64) *CityDeleteOne {
 	builder := c.Delete().Where(city.ID(id))
 	builder.mutation.id = &id
@@ -2270,6 +2736,7 @@ func (c *CityClient) DeleteOneID(id uint64) *CityDeleteOne {
 func (c *CityClient) Query() *CityQuery {
 	return &CityQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -2289,8 +2756,8 @@ func (c *CityClient) GetX(ctx context.Context, id uint64) *City {
 
 // QueryParent queries the parent edge of a City.
 func (c *CityClient) QueryParent(ci *City) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ci.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(city.Table, city.FieldID, id),
@@ -2305,8 +2772,8 @@ func (c *CityClient) QueryParent(ci *City) *CityQuery {
 
 // QueryChildren queries the children edge of a City.
 func (c *CityClient) QueryChildren(ci *City) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ci.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(city.Table, city.FieldID, id),
@@ -2321,8 +2788,8 @@ func (c *CityClient) QueryChildren(ci *City) *CityQuery {
 
 // QueryPlans queries the plans edge of a City.
 func (c *CityClient) QueryPlans(ci *City) *PlanQuery {
-	query := &PlanQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&PlanClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ci.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(city.Table, city.FieldID, id),
@@ -2341,6 +2808,26 @@ func (c *CityClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], city.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *CityClient) Interceptors() []Interceptor {
+	return c.inters.City
+}
+
+func (c *CityClient) mutate(ctx context.Context, m *CityMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CityCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CityUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CityDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown City mutation op: %q", m.Op())
+	}
+}
+
 // CommissionClient is a client for the Commission schema.
 type CommissionClient struct {
 	config
@@ -2355,6 +2842,12 @@ func NewCommissionClient(c config) *CommissionClient {
 // A call to `Use(f, g, h)` equals to `commission.Hooks(f(g(h())))`.
 func (c *CommissionClient) Use(hooks ...Hook) {
 	c.hooks.Commission = append(c.hooks.Commission, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `commission.Intercept(f(g(h())))`.
+func (c *CommissionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Commission = append(c.inters.Commission, interceptors...)
 }
 
 // Create returns a builder for creating a Commission entity.
@@ -2397,7 +2890,7 @@ func (c *CommissionClient) DeleteOne(co *Commission) *CommissionDeleteOne {
 	return c.DeleteOneID(co.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *CommissionClient) DeleteOneID(id uint64) *CommissionDeleteOne {
 	builder := c.Delete().Where(commission.ID(id))
 	builder.mutation.id = &id
@@ -2409,6 +2902,7 @@ func (c *CommissionClient) DeleteOneID(id uint64) *CommissionDeleteOne {
 func (c *CommissionClient) Query() *CommissionQuery {
 	return &CommissionQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -2428,8 +2922,8 @@ func (c *CommissionClient) GetX(ctx context.Context, id uint64) *Commission {
 
 // QueryBusiness queries the business edge of a Commission.
 func (c *CommissionClient) QueryBusiness(co *Commission) *BusinessQuery {
-	query := &BusinessQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&BusinessClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(commission.Table, commission.FieldID, id),
@@ -2444,8 +2938,8 @@ func (c *CommissionClient) QueryBusiness(co *Commission) *BusinessQuery {
 
 // QuerySubscribe queries the subscribe edge of a Commission.
 func (c *CommissionClient) QuerySubscribe(co *Commission) *SubscribeQuery {
-	query := &SubscribeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&SubscribeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(commission.Table, commission.FieldID, id),
@@ -2460,8 +2954,8 @@ func (c *CommissionClient) QuerySubscribe(co *Commission) *SubscribeQuery {
 
 // QueryPlan queries the plan edge of a Commission.
 func (c *CommissionClient) QueryPlan(co *Commission) *PlanQuery {
-	query := &PlanQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&PlanClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(commission.Table, commission.FieldID, id),
@@ -2476,8 +2970,8 @@ func (c *CommissionClient) QueryPlan(co *Commission) *PlanQuery {
 
 // QueryRider queries the rider edge of a Commission.
 func (c *CommissionClient) QueryRider(co *Commission) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(commission.Table, commission.FieldID, id),
@@ -2492,8 +2986,8 @@ func (c *CommissionClient) QueryRider(co *Commission) *RiderQuery {
 
 // QueryOrder queries the order edge of a Commission.
 func (c *CommissionClient) QueryOrder(co *Commission) *OrderQuery {
-	query := &OrderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&OrderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(commission.Table, commission.FieldID, id),
@@ -2508,8 +3002,8 @@ func (c *CommissionClient) QueryOrder(co *Commission) *OrderQuery {
 
 // QueryEmployee queries the employee edge of a Commission.
 func (c *CommissionClient) QueryEmployee(co *Commission) *EmployeeQuery {
-	query := &EmployeeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EmployeeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(commission.Table, commission.FieldID, id),
@@ -2528,6 +3022,26 @@ func (c *CommissionClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], commission.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *CommissionClient) Interceptors() []Interceptor {
+	return c.inters.Commission
+}
+
+func (c *CommissionClient) mutate(ctx context.Context, m *CommissionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CommissionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CommissionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CommissionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CommissionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Commission mutation op: %q", m.Op())
+	}
+}
+
 // ContractClient is a client for the Contract schema.
 type ContractClient struct {
 	config
@@ -2542,6 +3056,12 @@ func NewContractClient(c config) *ContractClient {
 // A call to `Use(f, g, h)` equals to `contract.Hooks(f(g(h())))`.
 func (c *ContractClient) Use(hooks ...Hook) {
 	c.hooks.Contract = append(c.hooks.Contract, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `contract.Intercept(f(g(h())))`.
+func (c *ContractClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Contract = append(c.inters.Contract, interceptors...)
 }
 
 // Create returns a builder for creating a Contract entity.
@@ -2584,7 +3104,7 @@ func (c *ContractClient) DeleteOne(co *Contract) *ContractDeleteOne {
 	return c.DeleteOneID(co.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *ContractClient) DeleteOneID(id uint64) *ContractDeleteOne {
 	builder := c.Delete().Where(contract.ID(id))
 	builder.mutation.id = &id
@@ -2596,6 +3116,7 @@ func (c *ContractClient) DeleteOneID(id uint64) *ContractDeleteOne {
 func (c *ContractClient) Query() *ContractQuery {
 	return &ContractQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -2615,8 +3136,8 @@ func (c *ContractClient) GetX(ctx context.Context, id uint64) *Contract {
 
 // QuerySubscribe queries the subscribe edge of a Contract.
 func (c *ContractClient) QuerySubscribe(co *Contract) *SubscribeQuery {
-	query := &SubscribeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&SubscribeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(contract.Table, contract.FieldID, id),
@@ -2631,8 +3152,8 @@ func (c *ContractClient) QuerySubscribe(co *Contract) *SubscribeQuery {
 
 // QueryEmployee queries the employee edge of a Contract.
 func (c *ContractClient) QueryEmployee(co *Contract) *EmployeeQuery {
-	query := &EmployeeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EmployeeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(contract.Table, contract.FieldID, id),
@@ -2647,8 +3168,8 @@ func (c *ContractClient) QueryEmployee(co *Contract) *EmployeeQuery {
 
 // QueryRider queries the rider edge of a Contract.
 func (c *ContractClient) QueryRider(co *Contract) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(contract.Table, contract.FieldID, id),
@@ -2663,8 +3184,8 @@ func (c *ContractClient) QueryRider(co *Contract) *RiderQuery {
 
 // QueryAllocate queries the allocate edge of a Contract.
 func (c *ContractClient) QueryAllocate(co *Contract) *AllocateQuery {
-	query := &AllocateQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&AllocateClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(contract.Table, contract.FieldID, id),
@@ -2683,6 +3204,26 @@ func (c *ContractClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], contract.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *ContractClient) Interceptors() []Interceptor {
+	return c.inters.Contract
+}
+
+func (c *ContractClient) mutate(ctx context.Context, m *ContractMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ContractCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ContractUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ContractUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ContractDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Contract mutation op: %q", m.Op())
+	}
+}
+
 // CouponClient is a client for the Coupon schema.
 type CouponClient struct {
 	config
@@ -2697,6 +3238,12 @@ func NewCouponClient(c config) *CouponClient {
 // A call to `Use(f, g, h)` equals to `coupon.Hooks(f(g(h())))`.
 func (c *CouponClient) Use(hooks ...Hook) {
 	c.hooks.Coupon = append(c.hooks.Coupon, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `coupon.Intercept(f(g(h())))`.
+func (c *CouponClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Coupon = append(c.inters.Coupon, interceptors...)
 }
 
 // Create returns a builder for creating a Coupon entity.
@@ -2739,7 +3286,7 @@ func (c *CouponClient) DeleteOne(co *Coupon) *CouponDeleteOne {
 	return c.DeleteOneID(co.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *CouponClient) DeleteOneID(id uint64) *CouponDeleteOne {
 	builder := c.Delete().Where(coupon.ID(id))
 	builder.mutation.id = &id
@@ -2751,6 +3298,7 @@ func (c *CouponClient) DeleteOneID(id uint64) *CouponDeleteOne {
 func (c *CouponClient) Query() *CouponQuery {
 	return &CouponQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -2770,8 +3318,8 @@ func (c *CouponClient) GetX(ctx context.Context, id uint64) *Coupon {
 
 // QueryRider queries the rider edge of a Coupon.
 func (c *CouponClient) QueryRider(co *Coupon) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(coupon.Table, coupon.FieldID, id),
@@ -2786,8 +3334,8 @@ func (c *CouponClient) QueryRider(co *Coupon) *RiderQuery {
 
 // QueryAssembly queries the assembly edge of a Coupon.
 func (c *CouponClient) QueryAssembly(co *Coupon) *CouponAssemblyQuery {
-	query := &CouponAssemblyQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CouponAssemblyClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(coupon.Table, coupon.FieldID, id),
@@ -2802,8 +3350,8 @@ func (c *CouponClient) QueryAssembly(co *Coupon) *CouponAssemblyQuery {
 
 // QueryPlan queries the plan edge of a Coupon.
 func (c *CouponClient) QueryPlan(co *Coupon) *PlanQuery {
-	query := &PlanQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&PlanClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(coupon.Table, coupon.FieldID, id),
@@ -2818,8 +3366,8 @@ func (c *CouponClient) QueryPlan(co *Coupon) *PlanQuery {
 
 // QueryTemplate queries the template edge of a Coupon.
 func (c *CouponClient) QueryTemplate(co *Coupon) *CouponTemplateQuery {
-	query := &CouponTemplateQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CouponTemplateClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(coupon.Table, coupon.FieldID, id),
@@ -2834,8 +3382,8 @@ func (c *CouponClient) QueryTemplate(co *Coupon) *CouponTemplateQuery {
 
 // QueryOrder queries the order edge of a Coupon.
 func (c *CouponClient) QueryOrder(co *Coupon) *OrderQuery {
-	query := &OrderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&OrderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(coupon.Table, coupon.FieldID, id),
@@ -2854,6 +3402,26 @@ func (c *CouponClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], coupon.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *CouponClient) Interceptors() []Interceptor {
+	return c.inters.Coupon
+}
+
+func (c *CouponClient) mutate(ctx context.Context, m *CouponMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CouponCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CouponUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CouponUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CouponDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Coupon mutation op: %q", m.Op())
+	}
+}
+
 // CouponAssemblyClient is a client for the CouponAssembly schema.
 type CouponAssemblyClient struct {
 	config
@@ -2868,6 +3436,12 @@ func NewCouponAssemblyClient(c config) *CouponAssemblyClient {
 // A call to `Use(f, g, h)` equals to `couponassembly.Hooks(f(g(h())))`.
 func (c *CouponAssemblyClient) Use(hooks ...Hook) {
 	c.hooks.CouponAssembly = append(c.hooks.CouponAssembly, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `couponassembly.Intercept(f(g(h())))`.
+func (c *CouponAssemblyClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CouponAssembly = append(c.inters.CouponAssembly, interceptors...)
 }
 
 // Create returns a builder for creating a CouponAssembly entity.
@@ -2910,7 +3484,7 @@ func (c *CouponAssemblyClient) DeleteOne(ca *CouponAssembly) *CouponAssemblyDele
 	return c.DeleteOneID(ca.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *CouponAssemblyClient) DeleteOneID(id uint64) *CouponAssemblyDeleteOne {
 	builder := c.Delete().Where(couponassembly.ID(id))
 	builder.mutation.id = &id
@@ -2922,6 +3496,7 @@ func (c *CouponAssemblyClient) DeleteOneID(id uint64) *CouponAssemblyDeleteOne {
 func (c *CouponAssemblyClient) Query() *CouponAssemblyQuery {
 	return &CouponAssemblyQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -2941,8 +3516,8 @@ func (c *CouponAssemblyClient) GetX(ctx context.Context, id uint64) *CouponAssem
 
 // QueryTemplate queries the template edge of a CouponAssembly.
 func (c *CouponAssemblyClient) QueryTemplate(ca *CouponAssembly) *CouponTemplateQuery {
-	query := &CouponTemplateQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CouponTemplateClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ca.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(couponassembly.Table, couponassembly.FieldID, id),
@@ -2961,6 +3536,26 @@ func (c *CouponAssemblyClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], couponassembly.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *CouponAssemblyClient) Interceptors() []Interceptor {
+	return c.inters.CouponAssembly
+}
+
+func (c *CouponAssemblyClient) mutate(ctx context.Context, m *CouponAssemblyMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CouponAssemblyCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CouponAssemblyUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CouponAssemblyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CouponAssemblyDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CouponAssembly mutation op: %q", m.Op())
+	}
+}
+
 // CouponTemplateClient is a client for the CouponTemplate schema.
 type CouponTemplateClient struct {
 	config
@@ -2975,6 +3570,12 @@ func NewCouponTemplateClient(c config) *CouponTemplateClient {
 // A call to `Use(f, g, h)` equals to `coupontemplate.Hooks(f(g(h())))`.
 func (c *CouponTemplateClient) Use(hooks ...Hook) {
 	c.hooks.CouponTemplate = append(c.hooks.CouponTemplate, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `coupontemplate.Intercept(f(g(h())))`.
+func (c *CouponTemplateClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CouponTemplate = append(c.inters.CouponTemplate, interceptors...)
 }
 
 // Create returns a builder for creating a CouponTemplate entity.
@@ -3017,7 +3618,7 @@ func (c *CouponTemplateClient) DeleteOne(ct *CouponTemplate) *CouponTemplateDele
 	return c.DeleteOneID(ct.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *CouponTemplateClient) DeleteOneID(id uint64) *CouponTemplateDeleteOne {
 	builder := c.Delete().Where(coupontemplate.ID(id))
 	builder.mutation.id = &id
@@ -3029,6 +3630,7 @@ func (c *CouponTemplateClient) DeleteOneID(id uint64) *CouponTemplateDeleteOne {
 func (c *CouponTemplateClient) Query() *CouponTemplateQuery {
 	return &CouponTemplateQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -3048,8 +3650,8 @@ func (c *CouponTemplateClient) GetX(ctx context.Context, id uint64) *CouponTempl
 
 // QueryCoupons queries the coupons edge of a CouponTemplate.
 func (c *CouponTemplateClient) QueryCoupons(ct *CouponTemplate) *CouponQuery {
-	query := &CouponQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CouponClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ct.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(coupontemplate.Table, coupontemplate.FieldID, id),
@@ -3068,6 +3670,26 @@ func (c *CouponTemplateClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], coupontemplate.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *CouponTemplateClient) Interceptors() []Interceptor {
+	return c.inters.CouponTemplate
+}
+
+func (c *CouponTemplateClient) mutate(ctx context.Context, m *CouponTemplateMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CouponTemplateCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CouponTemplateUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CouponTemplateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CouponTemplateDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CouponTemplate mutation op: %q", m.Op())
+	}
+}
+
 // EbikeClient is a client for the Ebike schema.
 type EbikeClient struct {
 	config
@@ -3082,6 +3704,12 @@ func NewEbikeClient(c config) *EbikeClient {
 // A call to `Use(f, g, h)` equals to `ebike.Hooks(f(g(h())))`.
 func (c *EbikeClient) Use(hooks ...Hook) {
 	c.hooks.Ebike = append(c.hooks.Ebike, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `ebike.Intercept(f(g(h())))`.
+func (c *EbikeClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Ebike = append(c.inters.Ebike, interceptors...)
 }
 
 // Create returns a builder for creating a Ebike entity.
@@ -3124,7 +3752,7 @@ func (c *EbikeClient) DeleteOne(e *Ebike) *EbikeDeleteOne {
 	return c.DeleteOneID(e.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *EbikeClient) DeleteOneID(id uint64) *EbikeDeleteOne {
 	builder := c.Delete().Where(ebike.ID(id))
 	builder.mutation.id = &id
@@ -3136,6 +3764,7 @@ func (c *EbikeClient) DeleteOneID(id uint64) *EbikeDeleteOne {
 func (c *EbikeClient) Query() *EbikeQuery {
 	return &EbikeQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -3155,8 +3784,8 @@ func (c *EbikeClient) GetX(ctx context.Context, id uint64) *Ebike {
 
 // QueryBrand queries the brand edge of a Ebike.
 func (c *EbikeClient) QueryBrand(e *Ebike) *EbikeBrandQuery {
-	query := &EbikeBrandQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EbikeBrandClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(ebike.Table, ebike.FieldID, id),
@@ -3171,8 +3800,8 @@ func (c *EbikeClient) QueryBrand(e *Ebike) *EbikeBrandQuery {
 
 // QueryRider queries the rider edge of a Ebike.
 func (c *EbikeClient) QueryRider(e *Ebike) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(ebike.Table, ebike.FieldID, id),
@@ -3187,8 +3816,8 @@ func (c *EbikeClient) QueryRider(e *Ebike) *RiderQuery {
 
 // QueryStore queries the store edge of a Ebike.
 func (c *EbikeClient) QueryStore(e *Ebike) *StoreQuery {
-	query := &StoreQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(ebike.Table, ebike.FieldID, id),
@@ -3207,6 +3836,26 @@ func (c *EbikeClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], ebike.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *EbikeClient) Interceptors() []Interceptor {
+	return c.inters.Ebike
+}
+
+func (c *EbikeClient) mutate(ctx context.Context, m *EbikeMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EbikeCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EbikeUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EbikeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EbikeDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Ebike mutation op: %q", m.Op())
+	}
+}
+
 // EbikeBrandClient is a client for the EbikeBrand schema.
 type EbikeBrandClient struct {
 	config
@@ -3221,6 +3870,12 @@ func NewEbikeBrandClient(c config) *EbikeBrandClient {
 // A call to `Use(f, g, h)` equals to `ebikebrand.Hooks(f(g(h())))`.
 func (c *EbikeBrandClient) Use(hooks ...Hook) {
 	c.hooks.EbikeBrand = append(c.hooks.EbikeBrand, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `ebikebrand.Intercept(f(g(h())))`.
+func (c *EbikeBrandClient) Intercept(interceptors ...Interceptor) {
+	c.inters.EbikeBrand = append(c.inters.EbikeBrand, interceptors...)
 }
 
 // Create returns a builder for creating a EbikeBrand entity.
@@ -3263,7 +3918,7 @@ func (c *EbikeBrandClient) DeleteOne(eb *EbikeBrand) *EbikeBrandDeleteOne {
 	return c.DeleteOneID(eb.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *EbikeBrandClient) DeleteOneID(id uint64) *EbikeBrandDeleteOne {
 	builder := c.Delete().Where(ebikebrand.ID(id))
 	builder.mutation.id = &id
@@ -3275,6 +3930,7 @@ func (c *EbikeBrandClient) DeleteOneID(id uint64) *EbikeBrandDeleteOne {
 func (c *EbikeBrandClient) Query() *EbikeBrandQuery {
 	return &EbikeBrandQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -3298,6 +3954,26 @@ func (c *EbikeBrandClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], ebikebrand.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *EbikeBrandClient) Interceptors() []Interceptor {
+	return c.inters.EbikeBrand
+}
+
+func (c *EbikeBrandClient) mutate(ctx context.Context, m *EbikeBrandMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EbikeBrandCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EbikeBrandUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EbikeBrandUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EbikeBrandDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown EbikeBrand mutation op: %q", m.Op())
+	}
+}
+
 // EmployeeClient is a client for the Employee schema.
 type EmployeeClient struct {
 	config
@@ -3312,6 +3988,12 @@ func NewEmployeeClient(c config) *EmployeeClient {
 // A call to `Use(f, g, h)` equals to `employee.Hooks(f(g(h())))`.
 func (c *EmployeeClient) Use(hooks ...Hook) {
 	c.hooks.Employee = append(c.hooks.Employee, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `employee.Intercept(f(g(h())))`.
+func (c *EmployeeClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Employee = append(c.inters.Employee, interceptors...)
 }
 
 // Create returns a builder for creating a Employee entity.
@@ -3354,7 +4036,7 @@ func (c *EmployeeClient) DeleteOne(e *Employee) *EmployeeDeleteOne {
 	return c.DeleteOneID(e.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *EmployeeClient) DeleteOneID(id uint64) *EmployeeDeleteOne {
 	builder := c.Delete().Where(employee.ID(id))
 	builder.mutation.id = &id
@@ -3366,6 +4048,7 @@ func (c *EmployeeClient) DeleteOneID(id uint64) *EmployeeDeleteOne {
 func (c *EmployeeClient) Query() *EmployeeQuery {
 	return &EmployeeQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -3385,8 +4068,8 @@ func (c *EmployeeClient) GetX(ctx context.Context, id uint64) *Employee {
 
 // QueryCity queries the city edge of a Employee.
 func (c *EmployeeClient) QueryCity(e *Employee) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(employee.Table, employee.FieldID, id),
@@ -3401,8 +4084,8 @@ func (c *EmployeeClient) QueryCity(e *Employee) *CityQuery {
 
 // QueryStore queries the store edge of a Employee.
 func (c *EmployeeClient) QueryStore(e *Employee) *StoreQuery {
-	query := &StoreQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(employee.Table, employee.FieldID, id),
@@ -3417,8 +4100,8 @@ func (c *EmployeeClient) QueryStore(e *Employee) *StoreQuery {
 
 // QueryAttendances queries the attendances edge of a Employee.
 func (c *EmployeeClient) QueryAttendances(e *Employee) *AttendanceQuery {
-	query := &AttendanceQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&AttendanceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(employee.Table, employee.FieldID, id),
@@ -3433,8 +4116,8 @@ func (c *EmployeeClient) QueryAttendances(e *Employee) *AttendanceQuery {
 
 // QueryStocks queries the stocks edge of a Employee.
 func (c *EmployeeClient) QueryStocks(e *Employee) *StockQuery {
-	query := &StockQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&StockClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(employee.Table, employee.FieldID, id),
@@ -3449,8 +4132,8 @@ func (c *EmployeeClient) QueryStocks(e *Employee) *StockQuery {
 
 // QueryExchanges queries the exchanges edge of a Employee.
 func (c *EmployeeClient) QueryExchanges(e *Employee) *ExchangeQuery {
-	query := &ExchangeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&ExchangeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(employee.Table, employee.FieldID, id),
@@ -3465,8 +4148,8 @@ func (c *EmployeeClient) QueryExchanges(e *Employee) *ExchangeQuery {
 
 // QueryCommissions queries the commissions edge of a Employee.
 func (c *EmployeeClient) QueryCommissions(e *Employee) *CommissionQuery {
-	query := &CommissionQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CommissionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(employee.Table, employee.FieldID, id),
@@ -3481,8 +4164,8 @@ func (c *EmployeeClient) QueryCommissions(e *Employee) *CommissionQuery {
 
 // QueryAssistances queries the assistances edge of a Employee.
 func (c *EmployeeClient) QueryAssistances(e *Employee) *AssistanceQuery {
-	query := &AssistanceQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&AssistanceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(employee.Table, employee.FieldID, id),
@@ -3501,6 +4184,26 @@ func (c *EmployeeClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], employee.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *EmployeeClient) Interceptors() []Interceptor {
+	return c.inters.Employee
+}
+
+func (c *EmployeeClient) mutate(ctx context.Context, m *EmployeeMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EmployeeCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EmployeeUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EmployeeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EmployeeDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Employee mutation op: %q", m.Op())
+	}
+}
+
 // EnterpriseClient is a client for the Enterprise schema.
 type EnterpriseClient struct {
 	config
@@ -3515,6 +4218,12 @@ func NewEnterpriseClient(c config) *EnterpriseClient {
 // A call to `Use(f, g, h)` equals to `enterprise.Hooks(f(g(h())))`.
 func (c *EnterpriseClient) Use(hooks ...Hook) {
 	c.hooks.Enterprise = append(c.hooks.Enterprise, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `enterprise.Intercept(f(g(h())))`.
+func (c *EnterpriseClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Enterprise = append(c.inters.Enterprise, interceptors...)
 }
 
 // Create returns a builder for creating a Enterprise entity.
@@ -3557,7 +4266,7 @@ func (c *EnterpriseClient) DeleteOne(e *Enterprise) *EnterpriseDeleteOne {
 	return c.DeleteOneID(e.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *EnterpriseClient) DeleteOneID(id uint64) *EnterpriseDeleteOne {
 	builder := c.Delete().Where(enterprise.ID(id))
 	builder.mutation.id = &id
@@ -3569,6 +4278,7 @@ func (c *EnterpriseClient) DeleteOneID(id uint64) *EnterpriseDeleteOne {
 func (c *EnterpriseClient) Query() *EnterpriseQuery {
 	return &EnterpriseQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -3588,8 +4298,8 @@ func (c *EnterpriseClient) GetX(ctx context.Context, id uint64) *Enterprise {
 
 // QueryCity queries the city edge of a Enterprise.
 func (c *EnterpriseClient) QueryCity(e *Enterprise) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
@@ -3604,8 +4314,8 @@ func (c *EnterpriseClient) QueryCity(e *Enterprise) *CityQuery {
 
 // QueryRiders queries the riders edge of a Enterprise.
 func (c *EnterpriseClient) QueryRiders(e *Enterprise) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
@@ -3620,8 +4330,8 @@ func (c *EnterpriseClient) QueryRiders(e *Enterprise) *RiderQuery {
 
 // QueryContracts queries the contracts edge of a Enterprise.
 func (c *EnterpriseClient) QueryContracts(e *Enterprise) *EnterpriseContractQuery {
-	query := &EnterpriseContractQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseContractClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
@@ -3636,8 +4346,8 @@ func (c *EnterpriseClient) QueryContracts(e *Enterprise) *EnterpriseContractQuer
 
 // QueryPrices queries the prices edge of a Enterprise.
 func (c *EnterpriseClient) QueryPrices(e *Enterprise) *EnterprisePriceQuery {
-	query := &EnterprisePriceQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterprisePriceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
@@ -3652,8 +4362,8 @@ func (c *EnterpriseClient) QueryPrices(e *Enterprise) *EnterprisePriceQuery {
 
 // QuerySubscribes queries the subscribes edge of a Enterprise.
 func (c *EnterpriseClient) QuerySubscribes(e *Enterprise) *SubscribeQuery {
-	query := &SubscribeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&SubscribeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
@@ -3668,8 +4378,8 @@ func (c *EnterpriseClient) QuerySubscribes(e *Enterprise) *SubscribeQuery {
 
 // QueryStatements queries the statements edge of a Enterprise.
 func (c *EnterpriseClient) QueryStatements(e *Enterprise) *EnterpriseStatementQuery {
-	query := &EnterpriseStatementQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseStatementClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
@@ -3684,8 +4394,8 @@ func (c *EnterpriseClient) QueryStatements(e *Enterprise) *EnterpriseStatementQu
 
 // QueryStations queries the stations edge of a Enterprise.
 func (c *EnterpriseClient) QueryStations(e *Enterprise) *EnterpriseStationQuery {
-	query := &EnterpriseStationQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
@@ -3700,8 +4410,8 @@ func (c *EnterpriseClient) QueryStations(e *Enterprise) *EnterpriseStationQuery 
 
 // QueryBills queries the bills edge of a Enterprise.
 func (c *EnterpriseClient) QueryBills(e *Enterprise) *EnterpriseBillQuery {
-	query := &EnterpriseBillQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseBillClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
@@ -3720,6 +4430,26 @@ func (c *EnterpriseClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], enterprise.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *EnterpriseClient) Interceptors() []Interceptor {
+	return c.inters.Enterprise
+}
+
+func (c *EnterpriseClient) mutate(ctx context.Context, m *EnterpriseMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EnterpriseCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EnterpriseUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EnterpriseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EnterpriseDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Enterprise mutation op: %q", m.Op())
+	}
+}
+
 // EnterpriseBillClient is a client for the EnterpriseBill schema.
 type EnterpriseBillClient struct {
 	config
@@ -3734,6 +4464,12 @@ func NewEnterpriseBillClient(c config) *EnterpriseBillClient {
 // A call to `Use(f, g, h)` equals to `enterprisebill.Hooks(f(g(h())))`.
 func (c *EnterpriseBillClient) Use(hooks ...Hook) {
 	c.hooks.EnterpriseBill = append(c.hooks.EnterpriseBill, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `enterprisebill.Intercept(f(g(h())))`.
+func (c *EnterpriseBillClient) Intercept(interceptors ...Interceptor) {
+	c.inters.EnterpriseBill = append(c.inters.EnterpriseBill, interceptors...)
 }
 
 // Create returns a builder for creating a EnterpriseBill entity.
@@ -3776,7 +4512,7 @@ func (c *EnterpriseBillClient) DeleteOne(eb *EnterpriseBill) *EnterpriseBillDele
 	return c.DeleteOneID(eb.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *EnterpriseBillClient) DeleteOneID(id uint64) *EnterpriseBillDeleteOne {
 	builder := c.Delete().Where(enterprisebill.ID(id))
 	builder.mutation.id = &id
@@ -3788,6 +4524,7 @@ func (c *EnterpriseBillClient) DeleteOneID(id uint64) *EnterpriseBillDeleteOne {
 func (c *EnterpriseBillClient) Query() *EnterpriseBillQuery {
 	return &EnterpriseBillQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -3807,8 +4544,8 @@ func (c *EnterpriseBillClient) GetX(ctx context.Context, id uint64) *EnterpriseB
 
 // QueryRider queries the rider edge of a EnterpriseBill.
 func (c *EnterpriseBillClient) QueryRider(eb *EnterpriseBill) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := eb.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprisebill.Table, enterprisebill.FieldID, id),
@@ -3823,8 +4560,8 @@ func (c *EnterpriseBillClient) QueryRider(eb *EnterpriseBill) *RiderQuery {
 
 // QueryCity queries the city edge of a EnterpriseBill.
 func (c *EnterpriseBillClient) QueryCity(eb *EnterpriseBill) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := eb.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprisebill.Table, enterprisebill.FieldID, id),
@@ -3839,8 +4576,8 @@ func (c *EnterpriseBillClient) QueryCity(eb *EnterpriseBill) *CityQuery {
 
 // QueryStation queries the station edge of a EnterpriseBill.
 func (c *EnterpriseBillClient) QueryStation(eb *EnterpriseBill) *EnterpriseStationQuery {
-	query := &EnterpriseStationQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := eb.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprisebill.Table, enterprisebill.FieldID, id),
@@ -3855,8 +4592,8 @@ func (c *EnterpriseBillClient) QueryStation(eb *EnterpriseBill) *EnterpriseStati
 
 // QueryEnterprise queries the enterprise edge of a EnterpriseBill.
 func (c *EnterpriseBillClient) QueryEnterprise(eb *EnterpriseBill) *EnterpriseQuery {
-	query := &EnterpriseQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := eb.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprisebill.Table, enterprisebill.FieldID, id),
@@ -3871,8 +4608,8 @@ func (c *EnterpriseBillClient) QueryEnterprise(eb *EnterpriseBill) *EnterpriseQu
 
 // QueryStatement queries the statement edge of a EnterpriseBill.
 func (c *EnterpriseBillClient) QueryStatement(eb *EnterpriseBill) *EnterpriseStatementQuery {
-	query := &EnterpriseStatementQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseStatementClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := eb.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprisebill.Table, enterprisebill.FieldID, id),
@@ -3887,8 +4624,8 @@ func (c *EnterpriseBillClient) QueryStatement(eb *EnterpriseBill) *EnterpriseSta
 
 // QuerySubscribe queries the subscribe edge of a EnterpriseBill.
 func (c *EnterpriseBillClient) QuerySubscribe(eb *EnterpriseBill) *SubscribeQuery {
-	query := &SubscribeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&SubscribeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := eb.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprisebill.Table, enterprisebill.FieldID, id),
@@ -3907,6 +4644,26 @@ func (c *EnterpriseBillClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], enterprisebill.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *EnterpriseBillClient) Interceptors() []Interceptor {
+	return c.inters.EnterpriseBill
+}
+
+func (c *EnterpriseBillClient) mutate(ctx context.Context, m *EnterpriseBillMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EnterpriseBillCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EnterpriseBillUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EnterpriseBillUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EnterpriseBillDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown EnterpriseBill mutation op: %q", m.Op())
+	}
+}
+
 // EnterpriseContractClient is a client for the EnterpriseContract schema.
 type EnterpriseContractClient struct {
 	config
@@ -3921,6 +4678,12 @@ func NewEnterpriseContractClient(c config) *EnterpriseContractClient {
 // A call to `Use(f, g, h)` equals to `enterprisecontract.Hooks(f(g(h())))`.
 func (c *EnterpriseContractClient) Use(hooks ...Hook) {
 	c.hooks.EnterpriseContract = append(c.hooks.EnterpriseContract, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `enterprisecontract.Intercept(f(g(h())))`.
+func (c *EnterpriseContractClient) Intercept(interceptors ...Interceptor) {
+	c.inters.EnterpriseContract = append(c.inters.EnterpriseContract, interceptors...)
 }
 
 // Create returns a builder for creating a EnterpriseContract entity.
@@ -3963,7 +4726,7 @@ func (c *EnterpriseContractClient) DeleteOne(ec *EnterpriseContract) *Enterprise
 	return c.DeleteOneID(ec.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *EnterpriseContractClient) DeleteOneID(id uint64) *EnterpriseContractDeleteOne {
 	builder := c.Delete().Where(enterprisecontract.ID(id))
 	builder.mutation.id = &id
@@ -3975,6 +4738,7 @@ func (c *EnterpriseContractClient) DeleteOneID(id uint64) *EnterpriseContractDel
 func (c *EnterpriseContractClient) Query() *EnterpriseContractQuery {
 	return &EnterpriseContractQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -3994,8 +4758,8 @@ func (c *EnterpriseContractClient) GetX(ctx context.Context, id uint64) *Enterpr
 
 // QueryEnterprise queries the enterprise edge of a EnterpriseContract.
 func (c *EnterpriseContractClient) QueryEnterprise(ec *EnterpriseContract) *EnterpriseQuery {
-	query := &EnterpriseQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ec.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprisecontract.Table, enterprisecontract.FieldID, id),
@@ -4014,6 +4778,26 @@ func (c *EnterpriseContractClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], enterprisecontract.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *EnterpriseContractClient) Interceptors() []Interceptor {
+	return c.inters.EnterpriseContract
+}
+
+func (c *EnterpriseContractClient) mutate(ctx context.Context, m *EnterpriseContractMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EnterpriseContractCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EnterpriseContractUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EnterpriseContractUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EnterpriseContractDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown EnterpriseContract mutation op: %q", m.Op())
+	}
+}
+
 // EnterprisePrepaymentClient is a client for the EnterprisePrepayment schema.
 type EnterprisePrepaymentClient struct {
 	config
@@ -4028,6 +4812,12 @@ func NewEnterprisePrepaymentClient(c config) *EnterprisePrepaymentClient {
 // A call to `Use(f, g, h)` equals to `enterpriseprepayment.Hooks(f(g(h())))`.
 func (c *EnterprisePrepaymentClient) Use(hooks ...Hook) {
 	c.hooks.EnterprisePrepayment = append(c.hooks.EnterprisePrepayment, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `enterpriseprepayment.Intercept(f(g(h())))`.
+func (c *EnterprisePrepaymentClient) Intercept(interceptors ...Interceptor) {
+	c.inters.EnterprisePrepayment = append(c.inters.EnterprisePrepayment, interceptors...)
 }
 
 // Create returns a builder for creating a EnterprisePrepayment entity.
@@ -4070,7 +4860,7 @@ func (c *EnterprisePrepaymentClient) DeleteOne(ep *EnterprisePrepayment) *Enterp
 	return c.DeleteOneID(ep.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *EnterprisePrepaymentClient) DeleteOneID(id uint64) *EnterprisePrepaymentDeleteOne {
 	builder := c.Delete().Where(enterpriseprepayment.ID(id))
 	builder.mutation.id = &id
@@ -4082,6 +4872,7 @@ func (c *EnterprisePrepaymentClient) DeleteOneID(id uint64) *EnterprisePrepaymen
 func (c *EnterprisePrepaymentClient) Query() *EnterprisePrepaymentQuery {
 	return &EnterprisePrepaymentQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -4101,8 +4892,8 @@ func (c *EnterprisePrepaymentClient) GetX(ctx context.Context, id uint64) *Enter
 
 // QueryEnterprise queries the enterprise edge of a EnterprisePrepayment.
 func (c *EnterprisePrepaymentClient) QueryEnterprise(ep *EnterprisePrepayment) *EnterpriseQuery {
-	query := &EnterpriseQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ep.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterpriseprepayment.Table, enterpriseprepayment.FieldID, id),
@@ -4121,6 +4912,26 @@ func (c *EnterprisePrepaymentClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], enterpriseprepayment.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *EnterprisePrepaymentClient) Interceptors() []Interceptor {
+	return c.inters.EnterprisePrepayment
+}
+
+func (c *EnterprisePrepaymentClient) mutate(ctx context.Context, m *EnterprisePrepaymentMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EnterprisePrepaymentCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EnterprisePrepaymentUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EnterprisePrepaymentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EnterprisePrepaymentDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown EnterprisePrepayment mutation op: %q", m.Op())
+	}
+}
+
 // EnterprisePriceClient is a client for the EnterprisePrice schema.
 type EnterprisePriceClient struct {
 	config
@@ -4135,6 +4946,12 @@ func NewEnterprisePriceClient(c config) *EnterprisePriceClient {
 // A call to `Use(f, g, h)` equals to `enterpriseprice.Hooks(f(g(h())))`.
 func (c *EnterprisePriceClient) Use(hooks ...Hook) {
 	c.hooks.EnterprisePrice = append(c.hooks.EnterprisePrice, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `enterpriseprice.Intercept(f(g(h())))`.
+func (c *EnterprisePriceClient) Intercept(interceptors ...Interceptor) {
+	c.inters.EnterprisePrice = append(c.inters.EnterprisePrice, interceptors...)
 }
 
 // Create returns a builder for creating a EnterprisePrice entity.
@@ -4177,7 +4994,7 @@ func (c *EnterprisePriceClient) DeleteOne(ep *EnterprisePrice) *EnterprisePriceD
 	return c.DeleteOneID(ep.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *EnterprisePriceClient) DeleteOneID(id uint64) *EnterprisePriceDeleteOne {
 	builder := c.Delete().Where(enterpriseprice.ID(id))
 	builder.mutation.id = &id
@@ -4189,6 +5006,7 @@ func (c *EnterprisePriceClient) DeleteOneID(id uint64) *EnterprisePriceDeleteOne
 func (c *EnterprisePriceClient) Query() *EnterprisePriceQuery {
 	return &EnterprisePriceQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -4208,8 +5026,8 @@ func (c *EnterprisePriceClient) GetX(ctx context.Context, id uint64) *Enterprise
 
 // QueryCity queries the city edge of a EnterprisePrice.
 func (c *EnterprisePriceClient) QueryCity(ep *EnterprisePrice) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ep.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterpriseprice.Table, enterpriseprice.FieldID, id),
@@ -4224,8 +5042,8 @@ func (c *EnterprisePriceClient) QueryCity(ep *EnterprisePrice) *CityQuery {
 
 // QueryEnterprise queries the enterprise edge of a EnterprisePrice.
 func (c *EnterprisePriceClient) QueryEnterprise(ep *EnterprisePrice) *EnterpriseQuery {
-	query := &EnterpriseQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ep.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterpriseprice.Table, enterpriseprice.FieldID, id),
@@ -4244,6 +5062,26 @@ func (c *EnterprisePriceClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], enterpriseprice.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *EnterprisePriceClient) Interceptors() []Interceptor {
+	return c.inters.EnterprisePrice
+}
+
+func (c *EnterprisePriceClient) mutate(ctx context.Context, m *EnterprisePriceMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EnterprisePriceCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EnterprisePriceUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EnterprisePriceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EnterprisePriceDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown EnterprisePrice mutation op: %q", m.Op())
+	}
+}
+
 // EnterpriseStatementClient is a client for the EnterpriseStatement schema.
 type EnterpriseStatementClient struct {
 	config
@@ -4258,6 +5096,12 @@ func NewEnterpriseStatementClient(c config) *EnterpriseStatementClient {
 // A call to `Use(f, g, h)` equals to `enterprisestatement.Hooks(f(g(h())))`.
 func (c *EnterpriseStatementClient) Use(hooks ...Hook) {
 	c.hooks.EnterpriseStatement = append(c.hooks.EnterpriseStatement, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `enterprisestatement.Intercept(f(g(h())))`.
+func (c *EnterpriseStatementClient) Intercept(interceptors ...Interceptor) {
+	c.inters.EnterpriseStatement = append(c.inters.EnterpriseStatement, interceptors...)
 }
 
 // Create returns a builder for creating a EnterpriseStatement entity.
@@ -4300,7 +5144,7 @@ func (c *EnterpriseStatementClient) DeleteOne(es *EnterpriseStatement) *Enterpri
 	return c.DeleteOneID(es.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *EnterpriseStatementClient) DeleteOneID(id uint64) *EnterpriseStatementDeleteOne {
 	builder := c.Delete().Where(enterprisestatement.ID(id))
 	builder.mutation.id = &id
@@ -4312,6 +5156,7 @@ func (c *EnterpriseStatementClient) DeleteOneID(id uint64) *EnterpriseStatementD
 func (c *EnterpriseStatementClient) Query() *EnterpriseStatementQuery {
 	return &EnterpriseStatementQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -4331,8 +5176,8 @@ func (c *EnterpriseStatementClient) GetX(ctx context.Context, id uint64) *Enterp
 
 // QueryEnterprise queries the enterprise edge of a EnterpriseStatement.
 func (c *EnterpriseStatementClient) QueryEnterprise(es *EnterpriseStatement) *EnterpriseQuery {
-	query := &EnterpriseQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := es.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprisestatement.Table, enterprisestatement.FieldID, id),
@@ -4347,8 +5192,8 @@ func (c *EnterpriseStatementClient) QueryEnterprise(es *EnterpriseStatement) *En
 
 // QueryBills queries the bills edge of a EnterpriseStatement.
 func (c *EnterpriseStatementClient) QueryBills(es *EnterpriseStatement) *EnterpriseBillQuery {
-	query := &EnterpriseBillQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseBillClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := es.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprisestatement.Table, enterprisestatement.FieldID, id),
@@ -4367,6 +5212,26 @@ func (c *EnterpriseStatementClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], enterprisestatement.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *EnterpriseStatementClient) Interceptors() []Interceptor {
+	return c.inters.EnterpriseStatement
+}
+
+func (c *EnterpriseStatementClient) mutate(ctx context.Context, m *EnterpriseStatementMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EnterpriseStatementCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EnterpriseStatementUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EnterpriseStatementUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EnterpriseStatementDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown EnterpriseStatement mutation op: %q", m.Op())
+	}
+}
+
 // EnterpriseStationClient is a client for the EnterpriseStation schema.
 type EnterpriseStationClient struct {
 	config
@@ -4381,6 +5246,12 @@ func NewEnterpriseStationClient(c config) *EnterpriseStationClient {
 // A call to `Use(f, g, h)` equals to `enterprisestation.Hooks(f(g(h())))`.
 func (c *EnterpriseStationClient) Use(hooks ...Hook) {
 	c.hooks.EnterpriseStation = append(c.hooks.EnterpriseStation, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `enterprisestation.Intercept(f(g(h())))`.
+func (c *EnterpriseStationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.EnterpriseStation = append(c.inters.EnterpriseStation, interceptors...)
 }
 
 // Create returns a builder for creating a EnterpriseStation entity.
@@ -4423,7 +5294,7 @@ func (c *EnterpriseStationClient) DeleteOne(es *EnterpriseStation) *EnterpriseSt
 	return c.DeleteOneID(es.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *EnterpriseStationClient) DeleteOneID(id uint64) *EnterpriseStationDeleteOne {
 	builder := c.Delete().Where(enterprisestation.ID(id))
 	builder.mutation.id = &id
@@ -4435,6 +5306,7 @@ func (c *EnterpriseStationClient) DeleteOneID(id uint64) *EnterpriseStationDelet
 func (c *EnterpriseStationClient) Query() *EnterpriseStationQuery {
 	return &EnterpriseStationQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -4454,8 +5326,8 @@ func (c *EnterpriseStationClient) GetX(ctx context.Context, id uint64) *Enterpri
 
 // QueryEnterprise queries the enterprise edge of a EnterpriseStation.
 func (c *EnterpriseStationClient) QueryEnterprise(es *EnterpriseStation) *EnterpriseQuery {
-	query := &EnterpriseQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := es.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, id),
@@ -4474,6 +5346,26 @@ func (c *EnterpriseStationClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], enterprisestation.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *EnterpriseStationClient) Interceptors() []Interceptor {
+	return c.inters.EnterpriseStation
+}
+
+func (c *EnterpriseStationClient) mutate(ctx context.Context, m *EnterpriseStationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EnterpriseStationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EnterpriseStationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EnterpriseStationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EnterpriseStationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown EnterpriseStation mutation op: %q", m.Op())
+	}
+}
+
 // ExceptionClient is a client for the Exception schema.
 type ExceptionClient struct {
 	config
@@ -4488,6 +5380,12 @@ func NewExceptionClient(c config) *ExceptionClient {
 // A call to `Use(f, g, h)` equals to `exception.Hooks(f(g(h())))`.
 func (c *ExceptionClient) Use(hooks ...Hook) {
 	c.hooks.Exception = append(c.hooks.Exception, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `exception.Intercept(f(g(h())))`.
+func (c *ExceptionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Exception = append(c.inters.Exception, interceptors...)
 }
 
 // Create returns a builder for creating a Exception entity.
@@ -4530,7 +5428,7 @@ func (c *ExceptionClient) DeleteOne(e *Exception) *ExceptionDeleteOne {
 	return c.DeleteOneID(e.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *ExceptionClient) DeleteOneID(id uint64) *ExceptionDeleteOne {
 	builder := c.Delete().Where(exception.ID(id))
 	builder.mutation.id = &id
@@ -4542,6 +5440,7 @@ func (c *ExceptionClient) DeleteOneID(id uint64) *ExceptionDeleteOne {
 func (c *ExceptionClient) Query() *ExceptionQuery {
 	return &ExceptionQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -4561,8 +5460,8 @@ func (c *ExceptionClient) GetX(ctx context.Context, id uint64) *Exception {
 
 // QueryCity queries the city edge of a Exception.
 func (c *ExceptionClient) QueryCity(e *Exception) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(exception.Table, exception.FieldID, id),
@@ -4577,8 +5476,8 @@ func (c *ExceptionClient) QueryCity(e *Exception) *CityQuery {
 
 // QueryEmployee queries the employee edge of a Exception.
 func (c *ExceptionClient) QueryEmployee(e *Exception) *EmployeeQuery {
-	query := &EmployeeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EmployeeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(exception.Table, exception.FieldID, id),
@@ -4593,8 +5492,8 @@ func (c *ExceptionClient) QueryEmployee(e *Exception) *EmployeeQuery {
 
 // QueryStore queries the store edge of a Exception.
 func (c *ExceptionClient) QueryStore(e *Exception) *StoreQuery {
-	query := &StoreQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(exception.Table, exception.FieldID, id),
@@ -4613,6 +5512,26 @@ func (c *ExceptionClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], exception.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *ExceptionClient) Interceptors() []Interceptor {
+	return c.inters.Exception
+}
+
+func (c *ExceptionClient) mutate(ctx context.Context, m *ExceptionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ExceptionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ExceptionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ExceptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ExceptionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Exception mutation op: %q", m.Op())
+	}
+}
+
 // ExchangeClient is a client for the Exchange schema.
 type ExchangeClient struct {
 	config
@@ -4627,6 +5546,12 @@ func NewExchangeClient(c config) *ExchangeClient {
 // A call to `Use(f, g, h)` equals to `exchange.Hooks(f(g(h())))`.
 func (c *ExchangeClient) Use(hooks ...Hook) {
 	c.hooks.Exchange = append(c.hooks.Exchange, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `exchange.Intercept(f(g(h())))`.
+func (c *ExchangeClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Exchange = append(c.inters.Exchange, interceptors...)
 }
 
 // Create returns a builder for creating a Exchange entity.
@@ -4669,7 +5594,7 @@ func (c *ExchangeClient) DeleteOne(e *Exchange) *ExchangeDeleteOne {
 	return c.DeleteOneID(e.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *ExchangeClient) DeleteOneID(id uint64) *ExchangeDeleteOne {
 	builder := c.Delete().Where(exchange.ID(id))
 	builder.mutation.id = &id
@@ -4681,6 +5606,7 @@ func (c *ExchangeClient) DeleteOneID(id uint64) *ExchangeDeleteOne {
 func (c *ExchangeClient) Query() *ExchangeQuery {
 	return &ExchangeQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -4700,8 +5626,8 @@ func (c *ExchangeClient) GetX(ctx context.Context, id uint64) *Exchange {
 
 // QuerySubscribe queries the subscribe edge of a Exchange.
 func (c *ExchangeClient) QuerySubscribe(e *Exchange) *SubscribeQuery {
-	query := &SubscribeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&SubscribeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(exchange.Table, exchange.FieldID, id),
@@ -4716,8 +5642,8 @@ func (c *ExchangeClient) QuerySubscribe(e *Exchange) *SubscribeQuery {
 
 // QueryCity queries the city edge of a Exchange.
 func (c *ExchangeClient) QueryCity(e *Exchange) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(exchange.Table, exchange.FieldID, id),
@@ -4732,8 +5658,8 @@ func (c *ExchangeClient) QueryCity(e *Exchange) *CityQuery {
 
 // QueryStore queries the store edge of a Exchange.
 func (c *ExchangeClient) QueryStore(e *Exchange) *StoreQuery {
-	query := &StoreQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(exchange.Table, exchange.FieldID, id),
@@ -4748,8 +5674,8 @@ func (c *ExchangeClient) QueryStore(e *Exchange) *StoreQuery {
 
 // QueryEnterprise queries the enterprise edge of a Exchange.
 func (c *ExchangeClient) QueryEnterprise(e *Exchange) *EnterpriseQuery {
-	query := &EnterpriseQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(exchange.Table, exchange.FieldID, id),
@@ -4764,8 +5690,8 @@ func (c *ExchangeClient) QueryEnterprise(e *Exchange) *EnterpriseQuery {
 
 // QueryStation queries the station edge of a Exchange.
 func (c *ExchangeClient) QueryStation(e *Exchange) *EnterpriseStationQuery {
-	query := &EnterpriseStationQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(exchange.Table, exchange.FieldID, id),
@@ -4780,8 +5706,8 @@ func (c *ExchangeClient) QueryStation(e *Exchange) *EnterpriseStationQuery {
 
 // QueryCabinet queries the cabinet edge of a Exchange.
 func (c *ExchangeClient) QueryCabinet(e *Exchange) *CabinetQuery {
-	query := &CabinetQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(exchange.Table, exchange.FieldID, id),
@@ -4796,8 +5722,8 @@ func (c *ExchangeClient) QueryCabinet(e *Exchange) *CabinetQuery {
 
 // QueryRider queries the rider edge of a Exchange.
 func (c *ExchangeClient) QueryRider(e *Exchange) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(exchange.Table, exchange.FieldID, id),
@@ -4812,8 +5738,8 @@ func (c *ExchangeClient) QueryRider(e *Exchange) *RiderQuery {
 
 // QueryEmployee queries the employee edge of a Exchange.
 func (c *ExchangeClient) QueryEmployee(e *Exchange) *EmployeeQuery {
-	query := &EmployeeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EmployeeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(exchange.Table, exchange.FieldID, id),
@@ -4832,6 +5758,26 @@ func (c *ExchangeClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], exchange.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *ExchangeClient) Interceptors() []Interceptor {
+	return c.inters.Exchange
+}
+
+func (c *ExchangeClient) mutate(ctx context.Context, m *ExchangeMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ExchangeCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ExchangeUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ExchangeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ExchangeDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Exchange mutation op: %q", m.Op())
+	}
+}
+
 // ExportClient is a client for the Export schema.
 type ExportClient struct {
 	config
@@ -4846,6 +5792,12 @@ func NewExportClient(c config) *ExportClient {
 // A call to `Use(f, g, h)` equals to `export.Hooks(f(g(h())))`.
 func (c *ExportClient) Use(hooks ...Hook) {
 	c.hooks.Export = append(c.hooks.Export, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `export.Intercept(f(g(h())))`.
+func (c *ExportClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Export = append(c.inters.Export, interceptors...)
 }
 
 // Create returns a builder for creating a Export entity.
@@ -4888,7 +5840,7 @@ func (c *ExportClient) DeleteOne(e *Export) *ExportDeleteOne {
 	return c.DeleteOneID(e.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *ExportClient) DeleteOneID(id uint64) *ExportDeleteOne {
 	builder := c.Delete().Where(export.ID(id))
 	builder.mutation.id = &id
@@ -4900,6 +5852,7 @@ func (c *ExportClient) DeleteOneID(id uint64) *ExportDeleteOne {
 func (c *ExportClient) Query() *ExportQuery {
 	return &ExportQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -4919,8 +5872,8 @@ func (c *ExportClient) GetX(ctx context.Context, id uint64) *Export {
 
 // QueryManager queries the manager edge of a Export.
 func (c *ExportClient) QueryManager(e *Export) *ManagerQuery {
-	query := &ManagerQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&ManagerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(export.Table, export.FieldID, id),
@@ -4938,6 +5891,26 @@ func (c *ExportClient) Hooks() []Hook {
 	return c.hooks.Export
 }
 
+// Interceptors returns the client interceptors.
+func (c *ExportClient) Interceptors() []Interceptor {
+	return c.inters.Export
+}
+
+func (c *ExportClient) mutate(ctx context.Context, m *ExportMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ExportCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ExportUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ExportUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ExportDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Export mutation op: %q", m.Op())
+	}
+}
+
 // InventoryClient is a client for the Inventory schema.
 type InventoryClient struct {
 	config
@@ -4952,6 +5925,12 @@ func NewInventoryClient(c config) *InventoryClient {
 // A call to `Use(f, g, h)` equals to `inventory.Hooks(f(g(h())))`.
 func (c *InventoryClient) Use(hooks ...Hook) {
 	c.hooks.Inventory = append(c.hooks.Inventory, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `inventory.Intercept(f(g(h())))`.
+func (c *InventoryClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Inventory = append(c.inters.Inventory, interceptors...)
 }
 
 // Create returns a builder for creating a Inventory entity.
@@ -4994,7 +5973,7 @@ func (c *InventoryClient) DeleteOne(i *Inventory) *InventoryDeleteOne {
 	return c.DeleteOneID(i.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *InventoryClient) DeleteOneID(id uint64) *InventoryDeleteOne {
 	builder := c.Delete().Where(inventory.ID(id))
 	builder.mutation.id = &id
@@ -5006,6 +5985,7 @@ func (c *InventoryClient) DeleteOneID(id uint64) *InventoryDeleteOne {
 func (c *InventoryClient) Query() *InventoryQuery {
 	return &InventoryQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -5029,6 +6009,26 @@ func (c *InventoryClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], inventory.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *InventoryClient) Interceptors() []Interceptor {
+	return c.inters.Inventory
+}
+
+func (c *InventoryClient) mutate(ctx context.Context, m *InventoryMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&InventoryCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&InventoryUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&InventoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&InventoryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Inventory mutation op: %q", m.Op())
+	}
+}
+
 // ManagerClient is a client for the Manager schema.
 type ManagerClient struct {
 	config
@@ -5043,6 +6043,12 @@ func NewManagerClient(c config) *ManagerClient {
 // A call to `Use(f, g, h)` equals to `manager.Hooks(f(g(h())))`.
 func (c *ManagerClient) Use(hooks ...Hook) {
 	c.hooks.Manager = append(c.hooks.Manager, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `manager.Intercept(f(g(h())))`.
+func (c *ManagerClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Manager = append(c.inters.Manager, interceptors...)
 }
 
 // Create returns a builder for creating a Manager entity.
@@ -5085,7 +6091,7 @@ func (c *ManagerClient) DeleteOne(m *Manager) *ManagerDeleteOne {
 	return c.DeleteOneID(m.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *ManagerClient) DeleteOneID(id uint64) *ManagerDeleteOne {
 	builder := c.Delete().Where(manager.ID(id))
 	builder.mutation.id = &id
@@ -5097,6 +6103,7 @@ func (c *ManagerClient) DeleteOneID(id uint64) *ManagerDeleteOne {
 func (c *ManagerClient) Query() *ManagerQuery {
 	return &ManagerQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -5116,8 +6123,8 @@ func (c *ManagerClient) GetX(ctx context.Context, id uint64) *Manager {
 
 // QueryRole queries the role edge of a Manager.
 func (c *ManagerClient) QueryRole(m *Manager) *RoleQuery {
-	query := &RoleQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RoleClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(manager.Table, manager.FieldID, id),
@@ -5136,6 +6143,26 @@ func (c *ManagerClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], manager.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *ManagerClient) Interceptors() []Interceptor {
+	return c.inters.Manager
+}
+
+func (c *ManagerClient) mutate(ctx context.Context, m *ManagerMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ManagerCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ManagerUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ManagerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ManagerDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Manager mutation op: %q", m.Op())
+	}
+}
+
 // OrderClient is a client for the Order schema.
 type OrderClient struct {
 	config
@@ -5150,6 +6177,12 @@ func NewOrderClient(c config) *OrderClient {
 // A call to `Use(f, g, h)` equals to `order.Hooks(f(g(h())))`.
 func (c *OrderClient) Use(hooks ...Hook) {
 	c.hooks.Order = append(c.hooks.Order, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `order.Intercept(f(g(h())))`.
+func (c *OrderClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Order = append(c.inters.Order, interceptors...)
 }
 
 // Create returns a builder for creating a Order entity.
@@ -5192,7 +6225,7 @@ func (c *OrderClient) DeleteOne(o *Order) *OrderDeleteOne {
 	return c.DeleteOneID(o.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *OrderClient) DeleteOneID(id uint64) *OrderDeleteOne {
 	builder := c.Delete().Where(order.ID(id))
 	builder.mutation.id = &id
@@ -5204,6 +6237,7 @@ func (c *OrderClient) DeleteOneID(id uint64) *OrderDeleteOne {
 func (c *OrderClient) Query() *OrderQuery {
 	return &OrderQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -5223,8 +6257,8 @@ func (c *OrderClient) GetX(ctx context.Context, id uint64) *Order {
 
 // QueryPlan queries the plan edge of a Order.
 func (c *OrderClient) QueryPlan(o *Order) *PlanQuery {
-	query := &PlanQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&PlanClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := o.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(order.Table, order.FieldID, id),
@@ -5239,8 +6273,8 @@ func (c *OrderClient) QueryPlan(o *Order) *PlanQuery {
 
 // QueryCity queries the city edge of a Order.
 func (c *OrderClient) QueryCity(o *Order) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := o.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(order.Table, order.FieldID, id),
@@ -5255,8 +6289,8 @@ func (c *OrderClient) QueryCity(o *Order) *CityQuery {
 
 // QueryBrand queries the brand edge of a Order.
 func (c *OrderClient) QueryBrand(o *Order) *EbikeBrandQuery {
-	query := &EbikeBrandQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EbikeBrandClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := o.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(order.Table, order.FieldID, id),
@@ -5271,8 +6305,8 @@ func (c *OrderClient) QueryBrand(o *Order) *EbikeBrandQuery {
 
 // QueryEbike queries the ebike edge of a Order.
 func (c *OrderClient) QueryEbike(o *Order) *EbikeQuery {
-	query := &EbikeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EbikeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := o.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(order.Table, order.FieldID, id),
@@ -5287,8 +6321,8 @@ func (c *OrderClient) QueryEbike(o *Order) *EbikeQuery {
 
 // QueryRider queries the rider edge of a Order.
 func (c *OrderClient) QueryRider(o *Order) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := o.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(order.Table, order.FieldID, id),
@@ -5303,8 +6337,8 @@ func (c *OrderClient) QueryRider(o *Order) *RiderQuery {
 
 // QuerySubscribe queries the subscribe edge of a Order.
 func (c *OrderClient) QuerySubscribe(o *Order) *SubscribeQuery {
-	query := &SubscribeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&SubscribeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := o.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(order.Table, order.FieldID, id),
@@ -5319,8 +6353,8 @@ func (c *OrderClient) QuerySubscribe(o *Order) *SubscribeQuery {
 
 // QueryCommission queries the commission edge of a Order.
 func (c *OrderClient) QueryCommission(o *Order) *CommissionQuery {
-	query := &CommissionQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CommissionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := o.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(order.Table, order.FieldID, id),
@@ -5335,8 +6369,8 @@ func (c *OrderClient) QueryCommission(o *Order) *CommissionQuery {
 
 // QueryParent queries the parent edge of a Order.
 func (c *OrderClient) QueryParent(o *Order) *OrderQuery {
-	query := &OrderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&OrderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := o.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(order.Table, order.FieldID, id),
@@ -5351,8 +6385,8 @@ func (c *OrderClient) QueryParent(o *Order) *OrderQuery {
 
 // QueryChildren queries the children edge of a Order.
 func (c *OrderClient) QueryChildren(o *Order) *OrderQuery {
-	query := &OrderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&OrderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := o.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(order.Table, order.FieldID, id),
@@ -5367,8 +6401,8 @@ func (c *OrderClient) QueryChildren(o *Order) *OrderQuery {
 
 // QueryRefund queries the refund edge of a Order.
 func (c *OrderClient) QueryRefund(o *Order) *OrderRefundQuery {
-	query := &OrderRefundQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&OrderRefundClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := o.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(order.Table, order.FieldID, id),
@@ -5383,8 +6417,8 @@ func (c *OrderClient) QueryRefund(o *Order) *OrderRefundQuery {
 
 // QueryAssistance queries the assistance edge of a Order.
 func (c *OrderClient) QueryAssistance(o *Order) *AssistanceQuery {
-	query := &AssistanceQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&AssistanceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := o.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(order.Table, order.FieldID, id),
@@ -5399,8 +6433,8 @@ func (c *OrderClient) QueryAssistance(o *Order) *AssistanceQuery {
 
 // QueryCoupons queries the coupons edge of a Order.
 func (c *OrderClient) QueryCoupons(o *Order) *CouponQuery {
-	query := &CouponQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CouponClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := o.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(order.Table, order.FieldID, id),
@@ -5419,6 +6453,26 @@ func (c *OrderClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], order.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *OrderClient) Interceptors() []Interceptor {
+	return c.inters.Order
+}
+
+func (c *OrderClient) mutate(ctx context.Context, m *OrderMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&OrderCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&OrderUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&OrderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&OrderDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Order mutation op: %q", m.Op())
+	}
+}
+
 // OrderRefundClient is a client for the OrderRefund schema.
 type OrderRefundClient struct {
 	config
@@ -5433,6 +6487,12 @@ func NewOrderRefundClient(c config) *OrderRefundClient {
 // A call to `Use(f, g, h)` equals to `orderrefund.Hooks(f(g(h())))`.
 func (c *OrderRefundClient) Use(hooks ...Hook) {
 	c.hooks.OrderRefund = append(c.hooks.OrderRefund, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `orderrefund.Intercept(f(g(h())))`.
+func (c *OrderRefundClient) Intercept(interceptors ...Interceptor) {
+	c.inters.OrderRefund = append(c.inters.OrderRefund, interceptors...)
 }
 
 // Create returns a builder for creating a OrderRefund entity.
@@ -5475,7 +6535,7 @@ func (c *OrderRefundClient) DeleteOne(or *OrderRefund) *OrderRefundDeleteOne {
 	return c.DeleteOneID(or.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *OrderRefundClient) DeleteOneID(id uint64) *OrderRefundDeleteOne {
 	builder := c.Delete().Where(orderrefund.ID(id))
 	builder.mutation.id = &id
@@ -5487,6 +6547,7 @@ func (c *OrderRefundClient) DeleteOneID(id uint64) *OrderRefundDeleteOne {
 func (c *OrderRefundClient) Query() *OrderRefundQuery {
 	return &OrderRefundQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -5506,8 +6567,8 @@ func (c *OrderRefundClient) GetX(ctx context.Context, id uint64) *OrderRefund {
 
 // QueryOrder queries the order edge of a OrderRefund.
 func (c *OrderRefundClient) QueryOrder(or *OrderRefund) *OrderQuery {
-	query := &OrderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&OrderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := or.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(orderrefund.Table, orderrefund.FieldID, id),
@@ -5526,6 +6587,26 @@ func (c *OrderRefundClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], orderrefund.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *OrderRefundClient) Interceptors() []Interceptor {
+	return c.inters.OrderRefund
+}
+
+func (c *OrderRefundClient) mutate(ctx context.Context, m *OrderRefundMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&OrderRefundCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&OrderRefundUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&OrderRefundUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&OrderRefundDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown OrderRefund mutation op: %q", m.Op())
+	}
+}
+
 // PersonClient is a client for the Person schema.
 type PersonClient struct {
 	config
@@ -5540,6 +6621,12 @@ func NewPersonClient(c config) *PersonClient {
 // A call to `Use(f, g, h)` equals to `person.Hooks(f(g(h())))`.
 func (c *PersonClient) Use(hooks ...Hook) {
 	c.hooks.Person = append(c.hooks.Person, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `person.Intercept(f(g(h())))`.
+func (c *PersonClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Person = append(c.inters.Person, interceptors...)
 }
 
 // Create returns a builder for creating a Person entity.
@@ -5582,7 +6669,7 @@ func (c *PersonClient) DeleteOne(pe *Person) *PersonDeleteOne {
 	return c.DeleteOneID(pe.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *PersonClient) DeleteOneID(id uint64) *PersonDeleteOne {
 	builder := c.Delete().Where(person.ID(id))
 	builder.mutation.id = &id
@@ -5594,6 +6681,7 @@ func (c *PersonClient) DeleteOneID(id uint64) *PersonDeleteOne {
 func (c *PersonClient) Query() *PersonQuery {
 	return &PersonQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -5613,8 +6701,8 @@ func (c *PersonClient) GetX(ctx context.Context, id uint64) *Person {
 
 // QueryRider queries the rider edge of a Person.
 func (c *PersonClient) QueryRider(pe *Person) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := pe.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(person.Table, person.FieldID, id),
@@ -5633,6 +6721,26 @@ func (c *PersonClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], person.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *PersonClient) Interceptors() []Interceptor {
+	return c.inters.Person
+}
+
+func (c *PersonClient) mutate(ctx context.Context, m *PersonMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PersonCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PersonUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PersonUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PersonDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Person mutation op: %q", m.Op())
+	}
+}
+
 // PlanClient is a client for the Plan schema.
 type PlanClient struct {
 	config
@@ -5647,6 +6755,12 @@ func NewPlanClient(c config) *PlanClient {
 // A call to `Use(f, g, h)` equals to `plan.Hooks(f(g(h())))`.
 func (c *PlanClient) Use(hooks ...Hook) {
 	c.hooks.Plan = append(c.hooks.Plan, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `plan.Intercept(f(g(h())))`.
+func (c *PlanClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Plan = append(c.inters.Plan, interceptors...)
 }
 
 // Create returns a builder for creating a Plan entity.
@@ -5689,7 +6803,7 @@ func (c *PlanClient) DeleteOne(pl *Plan) *PlanDeleteOne {
 	return c.DeleteOneID(pl.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *PlanClient) DeleteOneID(id uint64) *PlanDeleteOne {
 	builder := c.Delete().Where(plan.ID(id))
 	builder.mutation.id = &id
@@ -5701,6 +6815,7 @@ func (c *PlanClient) DeleteOneID(id uint64) *PlanDeleteOne {
 func (c *PlanClient) Query() *PlanQuery {
 	return &PlanQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -5720,8 +6835,8 @@ func (c *PlanClient) GetX(ctx context.Context, id uint64) *Plan {
 
 // QueryBrand queries the brand edge of a Plan.
 func (c *PlanClient) QueryBrand(pl *Plan) *EbikeBrandQuery {
-	query := &EbikeBrandQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EbikeBrandClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := pl.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(plan.Table, plan.FieldID, id),
@@ -5736,8 +6851,8 @@ func (c *PlanClient) QueryBrand(pl *Plan) *EbikeBrandQuery {
 
 // QueryCities queries the cities edge of a Plan.
 func (c *PlanClient) QueryCities(pl *Plan) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := pl.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(plan.Table, plan.FieldID, id),
@@ -5752,8 +6867,8 @@ func (c *PlanClient) QueryCities(pl *Plan) *CityQuery {
 
 // QueryParent queries the parent edge of a Plan.
 func (c *PlanClient) QueryParent(pl *Plan) *PlanQuery {
-	query := &PlanQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&PlanClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := pl.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(plan.Table, plan.FieldID, id),
@@ -5768,8 +6883,8 @@ func (c *PlanClient) QueryParent(pl *Plan) *PlanQuery {
 
 // QueryComplexes queries the complexes edge of a Plan.
 func (c *PlanClient) QueryComplexes(pl *Plan) *PlanQuery {
-	query := &PlanQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&PlanClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := pl.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(plan.Table, plan.FieldID, id),
@@ -5788,6 +6903,26 @@ func (c *PlanClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], plan.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *PlanClient) Interceptors() []Interceptor {
+	return c.inters.Plan
+}
+
+func (c *PlanClient) mutate(ctx context.Context, m *PlanMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PlanCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PlanUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PlanUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PlanDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Plan mutation op: %q", m.Op())
+	}
+}
+
 // PlanIntroduceClient is a client for the PlanIntroduce schema.
 type PlanIntroduceClient struct {
 	config
@@ -5802,6 +6937,12 @@ func NewPlanIntroduceClient(c config) *PlanIntroduceClient {
 // A call to `Use(f, g, h)` equals to `planintroduce.Hooks(f(g(h())))`.
 func (c *PlanIntroduceClient) Use(hooks ...Hook) {
 	c.hooks.PlanIntroduce = append(c.hooks.PlanIntroduce, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `planintroduce.Intercept(f(g(h())))`.
+func (c *PlanIntroduceClient) Intercept(interceptors ...Interceptor) {
+	c.inters.PlanIntroduce = append(c.inters.PlanIntroduce, interceptors...)
 }
 
 // Create returns a builder for creating a PlanIntroduce entity.
@@ -5844,7 +6985,7 @@ func (c *PlanIntroduceClient) DeleteOne(pi *PlanIntroduce) *PlanIntroduceDeleteO
 	return c.DeleteOneID(pi.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *PlanIntroduceClient) DeleteOneID(id uint64) *PlanIntroduceDeleteOne {
 	builder := c.Delete().Where(planintroduce.ID(id))
 	builder.mutation.id = &id
@@ -5856,6 +6997,7 @@ func (c *PlanIntroduceClient) DeleteOneID(id uint64) *PlanIntroduceDeleteOne {
 func (c *PlanIntroduceClient) Query() *PlanIntroduceQuery {
 	return &PlanIntroduceQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -5875,8 +7017,8 @@ func (c *PlanIntroduceClient) GetX(ctx context.Context, id uint64) *PlanIntroduc
 
 // QueryBrand queries the brand edge of a PlanIntroduce.
 func (c *PlanIntroduceClient) QueryBrand(pi *PlanIntroduce) *EbikeBrandQuery {
-	query := &EbikeBrandQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EbikeBrandClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := pi.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(planintroduce.Table, planintroduce.FieldID, id),
@@ -5894,6 +7036,26 @@ func (c *PlanIntroduceClient) Hooks() []Hook {
 	return c.hooks.PlanIntroduce
 }
 
+// Interceptors returns the client interceptors.
+func (c *PlanIntroduceClient) Interceptors() []Interceptor {
+	return c.inters.PlanIntroduce
+}
+
+func (c *PlanIntroduceClient) mutate(ctx context.Context, m *PlanIntroduceMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PlanIntroduceCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PlanIntroduceUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PlanIntroduceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PlanIntroduceDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown PlanIntroduce mutation op: %q", m.Op())
+	}
+}
+
 // PointLogClient is a client for the PointLog schema.
 type PointLogClient struct {
 	config
@@ -5908,6 +7070,12 @@ func NewPointLogClient(c config) *PointLogClient {
 // A call to `Use(f, g, h)` equals to `pointlog.Hooks(f(g(h())))`.
 func (c *PointLogClient) Use(hooks ...Hook) {
 	c.hooks.PointLog = append(c.hooks.PointLog, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `pointlog.Intercept(f(g(h())))`.
+func (c *PointLogClient) Intercept(interceptors ...Interceptor) {
+	c.inters.PointLog = append(c.inters.PointLog, interceptors...)
 }
 
 // Create returns a builder for creating a PointLog entity.
@@ -5950,7 +7118,7 @@ func (c *PointLogClient) DeleteOne(pl *PointLog) *PointLogDeleteOne {
 	return c.DeleteOneID(pl.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *PointLogClient) DeleteOneID(id uint64) *PointLogDeleteOne {
 	builder := c.Delete().Where(pointlog.ID(id))
 	builder.mutation.id = &id
@@ -5962,6 +7130,7 @@ func (c *PointLogClient) DeleteOneID(id uint64) *PointLogDeleteOne {
 func (c *PointLogClient) Query() *PointLogQuery {
 	return &PointLogQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -5981,8 +7150,8 @@ func (c *PointLogClient) GetX(ctx context.Context, id uint64) *PointLog {
 
 // QueryRider queries the rider edge of a PointLog.
 func (c *PointLogClient) QueryRider(pl *PointLog) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := pl.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(pointlog.Table, pointlog.FieldID, id),
@@ -5997,8 +7166,8 @@ func (c *PointLogClient) QueryRider(pl *PointLog) *RiderQuery {
 
 // QueryOrder queries the order edge of a PointLog.
 func (c *PointLogClient) QueryOrder(pl *PointLog) *OrderQuery {
-	query := &OrderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&OrderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := pl.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(pointlog.Table, pointlog.FieldID, id),
@@ -6017,6 +7186,26 @@ func (c *PointLogClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], pointlog.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *PointLogClient) Interceptors() []Interceptor {
+	return c.inters.PointLog
+}
+
+func (c *PointLogClient) mutate(ctx context.Context, m *PointLogMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PointLogCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PointLogUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PointLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PointLogDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown PointLog mutation op: %q", m.Op())
+	}
+}
+
 // ReserveClient is a client for the Reserve schema.
 type ReserveClient struct {
 	config
@@ -6031,6 +7220,12 @@ func NewReserveClient(c config) *ReserveClient {
 // A call to `Use(f, g, h)` equals to `reserve.Hooks(f(g(h())))`.
 func (c *ReserveClient) Use(hooks ...Hook) {
 	c.hooks.Reserve = append(c.hooks.Reserve, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `reserve.Intercept(f(g(h())))`.
+func (c *ReserveClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Reserve = append(c.inters.Reserve, interceptors...)
 }
 
 // Create returns a builder for creating a Reserve entity.
@@ -6073,7 +7268,7 @@ func (c *ReserveClient) DeleteOne(r *Reserve) *ReserveDeleteOne {
 	return c.DeleteOneID(r.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *ReserveClient) DeleteOneID(id uint64) *ReserveDeleteOne {
 	builder := c.Delete().Where(reserve.ID(id))
 	builder.mutation.id = &id
@@ -6085,6 +7280,7 @@ func (c *ReserveClient) DeleteOneID(id uint64) *ReserveDeleteOne {
 func (c *ReserveClient) Query() *ReserveQuery {
 	return &ReserveQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -6104,8 +7300,8 @@ func (c *ReserveClient) GetX(ctx context.Context, id uint64) *Reserve {
 
 // QueryCabinet queries the cabinet edge of a Reserve.
 func (c *ReserveClient) QueryCabinet(r *Reserve) *CabinetQuery {
-	query := &CabinetQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(reserve.Table, reserve.FieldID, id),
@@ -6120,8 +7316,8 @@ func (c *ReserveClient) QueryCabinet(r *Reserve) *CabinetQuery {
 
 // QueryRider queries the rider edge of a Reserve.
 func (c *ReserveClient) QueryRider(r *Reserve) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(reserve.Table, reserve.FieldID, id),
@@ -6136,8 +7332,8 @@ func (c *ReserveClient) QueryRider(r *Reserve) *RiderQuery {
 
 // QueryCity queries the city edge of a Reserve.
 func (c *ReserveClient) QueryCity(r *Reserve) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(reserve.Table, reserve.FieldID, id),
@@ -6152,8 +7348,8 @@ func (c *ReserveClient) QueryCity(r *Reserve) *CityQuery {
 
 // QueryBusiness queries the business edge of a Reserve.
 func (c *ReserveClient) QueryBusiness(r *Reserve) *BusinessQuery {
-	query := &BusinessQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&BusinessClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(reserve.Table, reserve.FieldID, id),
@@ -6172,6 +7368,26 @@ func (c *ReserveClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], reserve.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *ReserveClient) Interceptors() []Interceptor {
+	return c.inters.Reserve
+}
+
+func (c *ReserveClient) mutate(ctx context.Context, m *ReserveMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ReserveCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ReserveUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ReserveUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ReserveDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Reserve mutation op: %q", m.Op())
+	}
+}
+
 // RiderClient is a client for the Rider schema.
 type RiderClient struct {
 	config
@@ -6186,6 +7402,12 @@ func NewRiderClient(c config) *RiderClient {
 // A call to `Use(f, g, h)` equals to `rider.Hooks(f(g(h())))`.
 func (c *RiderClient) Use(hooks ...Hook) {
 	c.hooks.Rider = append(c.hooks.Rider, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `rider.Intercept(f(g(h())))`.
+func (c *RiderClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Rider = append(c.inters.Rider, interceptors...)
 }
 
 // Create returns a builder for creating a Rider entity.
@@ -6228,7 +7450,7 @@ func (c *RiderClient) DeleteOne(r *Rider) *RiderDeleteOne {
 	return c.DeleteOneID(r.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *RiderClient) DeleteOneID(id uint64) *RiderDeleteOne {
 	builder := c.Delete().Where(rider.ID(id))
 	builder.mutation.id = &id
@@ -6240,6 +7462,7 @@ func (c *RiderClient) DeleteOneID(id uint64) *RiderDeleteOne {
 func (c *RiderClient) Query() *RiderQuery {
 	return &RiderQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -6259,8 +7482,8 @@ func (c *RiderClient) GetX(ctx context.Context, id uint64) *Rider {
 
 // QueryStation queries the station edge of a Rider.
 func (c *RiderClient) QueryStation(r *Rider) *EnterpriseStationQuery {
-	query := &EnterpriseStationQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(rider.Table, rider.FieldID, id),
@@ -6275,8 +7498,8 @@ func (c *RiderClient) QueryStation(r *Rider) *EnterpriseStationQuery {
 
 // QueryPerson queries the person edge of a Rider.
 func (c *RiderClient) QueryPerson(r *Rider) *PersonQuery {
-	query := &PersonQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&PersonClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(rider.Table, rider.FieldID, id),
@@ -6291,8 +7514,8 @@ func (c *RiderClient) QueryPerson(r *Rider) *PersonQuery {
 
 // QueryEnterprise queries the enterprise edge of a Rider.
 func (c *RiderClient) QueryEnterprise(r *Rider) *EnterpriseQuery {
-	query := &EnterpriseQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(rider.Table, rider.FieldID, id),
@@ -6307,8 +7530,8 @@ func (c *RiderClient) QueryEnterprise(r *Rider) *EnterpriseQuery {
 
 // QueryContracts queries the contracts edge of a Rider.
 func (c *RiderClient) QueryContracts(r *Rider) *ContractQuery {
-	query := &ContractQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&ContractClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(rider.Table, rider.FieldID, id),
@@ -6323,8 +7546,8 @@ func (c *RiderClient) QueryContracts(r *Rider) *ContractQuery {
 
 // QueryFaults queries the faults edge of a Rider.
 func (c *RiderClient) QueryFaults(r *Rider) *CabinetFaultQuery {
-	query := &CabinetFaultQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CabinetFaultClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(rider.Table, rider.FieldID, id),
@@ -6339,8 +7562,8 @@ func (c *RiderClient) QueryFaults(r *Rider) *CabinetFaultQuery {
 
 // QueryOrders queries the orders edge of a Rider.
 func (c *RiderClient) QueryOrders(r *Rider) *OrderQuery {
-	query := &OrderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&OrderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(rider.Table, rider.FieldID, id),
@@ -6355,8 +7578,8 @@ func (c *RiderClient) QueryOrders(r *Rider) *OrderQuery {
 
 // QueryExchanges queries the exchanges edge of a Rider.
 func (c *RiderClient) QueryExchanges(r *Rider) *ExchangeQuery {
-	query := &ExchangeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&ExchangeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(rider.Table, rider.FieldID, id),
@@ -6371,8 +7594,8 @@ func (c *RiderClient) QueryExchanges(r *Rider) *ExchangeQuery {
 
 // QuerySubscribes queries the subscribes edge of a Rider.
 func (c *RiderClient) QuerySubscribes(r *Rider) *SubscribeQuery {
-	query := &SubscribeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&SubscribeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(rider.Table, rider.FieldID, id),
@@ -6387,8 +7610,8 @@ func (c *RiderClient) QuerySubscribes(r *Rider) *SubscribeQuery {
 
 // QueryStocks queries the stocks edge of a Rider.
 func (c *RiderClient) QueryStocks(r *Rider) *StockQuery {
-	query := &StockQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&StockClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(rider.Table, rider.FieldID, id),
@@ -6403,8 +7626,8 @@ func (c *RiderClient) QueryStocks(r *Rider) *StockQuery {
 
 // QueryFollowups queries the followups edge of a Rider.
 func (c *RiderClient) QueryFollowups(r *Rider) *RiderFollowUpQuery {
-	query := &RiderFollowUpQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderFollowUpClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(rider.Table, rider.FieldID, id),
@@ -6423,6 +7646,26 @@ func (c *RiderClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], rider.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *RiderClient) Interceptors() []Interceptor {
+	return c.inters.Rider
+}
+
+func (c *RiderClient) mutate(ctx context.Context, m *RiderMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&RiderCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&RiderUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&RiderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&RiderDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Rider mutation op: %q", m.Op())
+	}
+}
+
 // RiderFollowUpClient is a client for the RiderFollowUp schema.
 type RiderFollowUpClient struct {
 	config
@@ -6437,6 +7680,12 @@ func NewRiderFollowUpClient(c config) *RiderFollowUpClient {
 // A call to `Use(f, g, h)` equals to `riderfollowup.Hooks(f(g(h())))`.
 func (c *RiderFollowUpClient) Use(hooks ...Hook) {
 	c.hooks.RiderFollowUp = append(c.hooks.RiderFollowUp, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `riderfollowup.Intercept(f(g(h())))`.
+func (c *RiderFollowUpClient) Intercept(interceptors ...Interceptor) {
+	c.inters.RiderFollowUp = append(c.inters.RiderFollowUp, interceptors...)
 }
 
 // Create returns a builder for creating a RiderFollowUp entity.
@@ -6479,7 +7728,7 @@ func (c *RiderFollowUpClient) DeleteOne(rfu *RiderFollowUp) *RiderFollowUpDelete
 	return c.DeleteOneID(rfu.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *RiderFollowUpClient) DeleteOneID(id uint64) *RiderFollowUpDeleteOne {
 	builder := c.Delete().Where(riderfollowup.ID(id))
 	builder.mutation.id = &id
@@ -6491,6 +7740,7 @@ func (c *RiderFollowUpClient) DeleteOneID(id uint64) *RiderFollowUpDeleteOne {
 func (c *RiderFollowUpClient) Query() *RiderFollowUpQuery {
 	return &RiderFollowUpQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -6510,8 +7760,8 @@ func (c *RiderFollowUpClient) GetX(ctx context.Context, id uint64) *RiderFollowU
 
 // QueryManager queries the manager edge of a RiderFollowUp.
 func (c *RiderFollowUpClient) QueryManager(rfu *RiderFollowUp) *ManagerQuery {
-	query := &ManagerQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&ManagerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := rfu.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(riderfollowup.Table, riderfollowup.FieldID, id),
@@ -6526,8 +7776,8 @@ func (c *RiderFollowUpClient) QueryManager(rfu *RiderFollowUp) *ManagerQuery {
 
 // QueryRider queries the rider edge of a RiderFollowUp.
 func (c *RiderFollowUpClient) QueryRider(rfu *RiderFollowUp) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := rfu.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(riderfollowup.Table, riderfollowup.FieldID, id),
@@ -6546,6 +7796,26 @@ func (c *RiderFollowUpClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], riderfollowup.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *RiderFollowUpClient) Interceptors() []Interceptor {
+	return c.inters.RiderFollowUp
+}
+
+func (c *RiderFollowUpClient) mutate(ctx context.Context, m *RiderFollowUpMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&RiderFollowUpCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&RiderFollowUpUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&RiderFollowUpUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&RiderFollowUpDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown RiderFollowUp mutation op: %q", m.Op())
+	}
+}
+
 // RoleClient is a client for the Role schema.
 type RoleClient struct {
 	config
@@ -6560,6 +7830,12 @@ func NewRoleClient(c config) *RoleClient {
 // A call to `Use(f, g, h)` equals to `role.Hooks(f(g(h())))`.
 func (c *RoleClient) Use(hooks ...Hook) {
 	c.hooks.Role = append(c.hooks.Role, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `role.Intercept(f(g(h())))`.
+func (c *RoleClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Role = append(c.inters.Role, interceptors...)
 }
 
 // Create returns a builder for creating a Role entity.
@@ -6602,7 +7878,7 @@ func (c *RoleClient) DeleteOne(r *Role) *RoleDeleteOne {
 	return c.DeleteOneID(r.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *RoleClient) DeleteOneID(id uint64) *RoleDeleteOne {
 	builder := c.Delete().Where(role.ID(id))
 	builder.mutation.id = &id
@@ -6614,6 +7890,7 @@ func (c *RoleClient) DeleteOneID(id uint64) *RoleDeleteOne {
 func (c *RoleClient) Query() *RoleQuery {
 	return &RoleQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -6633,8 +7910,8 @@ func (c *RoleClient) GetX(ctx context.Context, id uint64) *Role {
 
 // QueryManagers queries the managers edge of a Role.
 func (c *RoleClient) QueryManagers(r *Role) *ManagerQuery {
-	query := &ManagerQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&ManagerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(role.Table, role.FieldID, id),
@@ -6652,6 +7929,26 @@ func (c *RoleClient) Hooks() []Hook {
 	return c.hooks.Role
 }
 
+// Interceptors returns the client interceptors.
+func (c *RoleClient) Interceptors() []Interceptor {
+	return c.inters.Role
+}
+
+func (c *RoleClient) mutate(ctx context.Context, m *RoleMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&RoleCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&RoleUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&RoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&RoleDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Role mutation op: %q", m.Op())
+	}
+}
+
 // SettingClient is a client for the Setting schema.
 type SettingClient struct {
 	config
@@ -6666,6 +7963,12 @@ func NewSettingClient(c config) *SettingClient {
 // A call to `Use(f, g, h)` equals to `setting.Hooks(f(g(h())))`.
 func (c *SettingClient) Use(hooks ...Hook) {
 	c.hooks.Setting = append(c.hooks.Setting, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `setting.Intercept(f(g(h())))`.
+func (c *SettingClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Setting = append(c.inters.Setting, interceptors...)
 }
 
 // Create returns a builder for creating a Setting entity.
@@ -6708,7 +8011,7 @@ func (c *SettingClient) DeleteOne(s *Setting) *SettingDeleteOne {
 	return c.DeleteOneID(s.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *SettingClient) DeleteOneID(id uint64) *SettingDeleteOne {
 	builder := c.Delete().Where(setting.ID(id))
 	builder.mutation.id = &id
@@ -6720,6 +8023,7 @@ func (c *SettingClient) DeleteOneID(id uint64) *SettingDeleteOne {
 func (c *SettingClient) Query() *SettingQuery {
 	return &SettingQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -6743,6 +8047,26 @@ func (c *SettingClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], setting.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *SettingClient) Interceptors() []Interceptor {
+	return c.inters.Setting
+}
+
+func (c *SettingClient) mutate(ctx context.Context, m *SettingMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SettingCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SettingUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SettingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SettingDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Setting mutation op: %q", m.Op())
+	}
+}
+
 // StockClient is a client for the Stock schema.
 type StockClient struct {
 	config
@@ -6757,6 +8081,12 @@ func NewStockClient(c config) *StockClient {
 // A call to `Use(f, g, h)` equals to `stock.Hooks(f(g(h())))`.
 func (c *StockClient) Use(hooks ...Hook) {
 	c.hooks.Stock = append(c.hooks.Stock, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `stock.Intercept(f(g(h())))`.
+func (c *StockClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Stock = append(c.inters.Stock, interceptors...)
 }
 
 // Create returns a builder for creating a Stock entity.
@@ -6799,7 +8129,7 @@ func (c *StockClient) DeleteOne(s *Stock) *StockDeleteOne {
 	return c.DeleteOneID(s.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *StockClient) DeleteOneID(id uint64) *StockDeleteOne {
 	builder := c.Delete().Where(stock.ID(id))
 	builder.mutation.id = &id
@@ -6811,6 +8141,7 @@ func (c *StockClient) DeleteOneID(id uint64) *StockDeleteOne {
 func (c *StockClient) Query() *StockQuery {
 	return &StockQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -6830,8 +8161,8 @@ func (c *StockClient) GetX(ctx context.Context, id uint64) *Stock {
 
 // QueryCity queries the city edge of a Stock.
 func (c *StockClient) QueryCity(s *Stock) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(stock.Table, stock.FieldID, id),
@@ -6846,8 +8177,8 @@ func (c *StockClient) QueryCity(s *Stock) *CityQuery {
 
 // QuerySubscribe queries the subscribe edge of a Stock.
 func (c *StockClient) QuerySubscribe(s *Stock) *SubscribeQuery {
-	query := &SubscribeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&SubscribeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(stock.Table, stock.FieldID, id),
@@ -6862,8 +8193,8 @@ func (c *StockClient) QuerySubscribe(s *Stock) *SubscribeQuery {
 
 // QueryEbike queries the ebike edge of a Stock.
 func (c *StockClient) QueryEbike(s *Stock) *EbikeQuery {
-	query := &EbikeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EbikeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(stock.Table, stock.FieldID, id),
@@ -6878,8 +8209,8 @@ func (c *StockClient) QueryEbike(s *Stock) *EbikeQuery {
 
 // QueryBrand queries the brand edge of a Stock.
 func (c *StockClient) QueryBrand(s *Stock) *EbikeBrandQuery {
-	query := &EbikeBrandQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EbikeBrandClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(stock.Table, stock.FieldID, id),
@@ -6894,8 +8225,8 @@ func (c *StockClient) QueryBrand(s *Stock) *EbikeBrandQuery {
 
 // QueryStore queries the store edge of a Stock.
 func (c *StockClient) QueryStore(s *Stock) *StoreQuery {
-	query := &StoreQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(stock.Table, stock.FieldID, id),
@@ -6910,8 +8241,8 @@ func (c *StockClient) QueryStore(s *Stock) *StoreQuery {
 
 // QueryCabinet queries the cabinet edge of a Stock.
 func (c *StockClient) QueryCabinet(s *Stock) *CabinetQuery {
-	query := &CabinetQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(stock.Table, stock.FieldID, id),
@@ -6926,8 +8257,8 @@ func (c *StockClient) QueryCabinet(s *Stock) *CabinetQuery {
 
 // QueryRider queries the rider edge of a Stock.
 func (c *StockClient) QueryRider(s *Stock) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(stock.Table, stock.FieldID, id),
@@ -6942,8 +8273,8 @@ func (c *StockClient) QueryRider(s *Stock) *RiderQuery {
 
 // QueryEmployee queries the employee edge of a Stock.
 func (c *StockClient) QueryEmployee(s *Stock) *EmployeeQuery {
-	query := &EmployeeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EmployeeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(stock.Table, stock.FieldID, id),
@@ -6958,8 +8289,8 @@ func (c *StockClient) QueryEmployee(s *Stock) *EmployeeQuery {
 
 // QuerySpouse queries the spouse edge of a Stock.
 func (c *StockClient) QuerySpouse(s *Stock) *StockQuery {
-	query := &StockQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&StockClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(stock.Table, stock.FieldID, id),
@@ -6974,8 +8305,8 @@ func (c *StockClient) QuerySpouse(s *Stock) *StockQuery {
 
 // QueryParent queries the parent edge of a Stock.
 func (c *StockClient) QueryParent(s *Stock) *StockQuery {
-	query := &StockQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&StockClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(stock.Table, stock.FieldID, id),
@@ -6990,8 +8321,8 @@ func (c *StockClient) QueryParent(s *Stock) *StockQuery {
 
 // QueryChildren queries the children edge of a Stock.
 func (c *StockClient) QueryChildren(s *Stock) *StockQuery {
-	query := &StockQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&StockClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(stock.Table, stock.FieldID, id),
@@ -7010,6 +8341,26 @@ func (c *StockClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], stock.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *StockClient) Interceptors() []Interceptor {
+	return c.inters.Stock
+}
+
+func (c *StockClient) mutate(ctx context.Context, m *StockMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&StockCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&StockUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&StockUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&StockDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Stock mutation op: %q", m.Op())
+	}
+}
+
 // StoreClient is a client for the Store schema.
 type StoreClient struct {
 	config
@@ -7024,6 +8375,12 @@ func NewStoreClient(c config) *StoreClient {
 // A call to `Use(f, g, h)` equals to `store.Hooks(f(g(h())))`.
 func (c *StoreClient) Use(hooks ...Hook) {
 	c.hooks.Store = append(c.hooks.Store, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `store.Intercept(f(g(h())))`.
+func (c *StoreClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Store = append(c.inters.Store, interceptors...)
 }
 
 // Create returns a builder for creating a Store entity.
@@ -7066,7 +8423,7 @@ func (c *StoreClient) DeleteOne(s *Store) *StoreDeleteOne {
 	return c.DeleteOneID(s.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *StoreClient) DeleteOneID(id uint64) *StoreDeleteOne {
 	builder := c.Delete().Where(store.ID(id))
 	builder.mutation.id = &id
@@ -7078,6 +8435,7 @@ func (c *StoreClient) DeleteOneID(id uint64) *StoreDeleteOne {
 func (c *StoreClient) Query() *StoreQuery {
 	return &StoreQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -7097,8 +8455,8 @@ func (c *StoreClient) GetX(ctx context.Context, id uint64) *Store {
 
 // QueryCity queries the city edge of a Store.
 func (c *StoreClient) QueryCity(s *Store) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(store.Table, store.FieldID, id),
@@ -7113,8 +8471,8 @@ func (c *StoreClient) QueryCity(s *Store) *CityQuery {
 
 // QueryBranch queries the branch edge of a Store.
 func (c *StoreClient) QueryBranch(s *Store) *BranchQuery {
-	query := &BranchQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&BranchClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(store.Table, store.FieldID, id),
@@ -7129,8 +8487,8 @@ func (c *StoreClient) QueryBranch(s *Store) *BranchQuery {
 
 // QueryEmployee queries the employee edge of a Store.
 func (c *StoreClient) QueryEmployee(s *Store) *EmployeeQuery {
-	query := &EmployeeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EmployeeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(store.Table, store.FieldID, id),
@@ -7145,8 +8503,8 @@ func (c *StoreClient) QueryEmployee(s *Store) *EmployeeQuery {
 
 // QueryStocks queries the stocks edge of a Store.
 func (c *StoreClient) QueryStocks(s *Store) *StockQuery {
-	query := &StockQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&StockClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(store.Table, store.FieldID, id),
@@ -7161,8 +8519,8 @@ func (c *StoreClient) QueryStocks(s *Store) *StockQuery {
 
 // QueryAttendances queries the attendances edge of a Store.
 func (c *StoreClient) QueryAttendances(s *Store) *AttendanceQuery {
-	query := &AttendanceQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&AttendanceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(store.Table, store.FieldID, id),
@@ -7177,8 +8535,8 @@ func (c *StoreClient) QueryAttendances(s *Store) *AttendanceQuery {
 
 // QueryExceptions queries the exceptions edge of a Store.
 func (c *StoreClient) QueryExceptions(s *Store) *ExceptionQuery {
-	query := &ExceptionQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&ExceptionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(store.Table, store.FieldID, id),
@@ -7197,6 +8555,26 @@ func (c *StoreClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], store.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *StoreClient) Interceptors() []Interceptor {
+	return c.inters.Store
+}
+
+func (c *StoreClient) mutate(ctx context.Context, m *StoreMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&StoreCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&StoreUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&StoreUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&StoreDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Store mutation op: %q", m.Op())
+	}
+}
+
 // SubscribeClient is a client for the Subscribe schema.
 type SubscribeClient struct {
 	config
@@ -7211,6 +8589,12 @@ func NewSubscribeClient(c config) *SubscribeClient {
 // A call to `Use(f, g, h)` equals to `subscribe.Hooks(f(g(h())))`.
 func (c *SubscribeClient) Use(hooks ...Hook) {
 	c.hooks.Subscribe = append(c.hooks.Subscribe, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `subscribe.Intercept(f(g(h())))`.
+func (c *SubscribeClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Subscribe = append(c.inters.Subscribe, interceptors...)
 }
 
 // Create returns a builder for creating a Subscribe entity.
@@ -7253,7 +8637,7 @@ func (c *SubscribeClient) DeleteOne(s *Subscribe) *SubscribeDeleteOne {
 	return c.DeleteOneID(s.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *SubscribeClient) DeleteOneID(id uint64) *SubscribeDeleteOne {
 	builder := c.Delete().Where(subscribe.ID(id))
 	builder.mutation.id = &id
@@ -7265,6 +8649,7 @@ func (c *SubscribeClient) DeleteOneID(id uint64) *SubscribeDeleteOne {
 func (c *SubscribeClient) Query() *SubscribeQuery {
 	return &SubscribeQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -7284,8 +8669,8 @@ func (c *SubscribeClient) GetX(ctx context.Context, id uint64) *Subscribe {
 
 // QueryPlan queries the plan edge of a Subscribe.
 func (c *SubscribeClient) QueryPlan(s *Subscribe) *PlanQuery {
-	query := &PlanQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&PlanClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
@@ -7300,8 +8685,8 @@ func (c *SubscribeClient) QueryPlan(s *Subscribe) *PlanQuery {
 
 // QueryEmployee queries the employee edge of a Subscribe.
 func (c *SubscribeClient) QueryEmployee(s *Subscribe) *EmployeeQuery {
-	query := &EmployeeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EmployeeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
@@ -7316,8 +8701,8 @@ func (c *SubscribeClient) QueryEmployee(s *Subscribe) *EmployeeQuery {
 
 // QueryCity queries the city edge of a Subscribe.
 func (c *SubscribeClient) QueryCity(s *Subscribe) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
@@ -7332,8 +8717,8 @@ func (c *SubscribeClient) QueryCity(s *Subscribe) *CityQuery {
 
 // QueryStation queries the station edge of a Subscribe.
 func (c *SubscribeClient) QueryStation(s *Subscribe) *EnterpriseStationQuery {
-	query := &EnterpriseStationQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
@@ -7348,8 +8733,8 @@ func (c *SubscribeClient) QueryStation(s *Subscribe) *EnterpriseStationQuery {
 
 // QueryStore queries the store edge of a Subscribe.
 func (c *SubscribeClient) QueryStore(s *Subscribe) *StoreQuery {
-	query := &StoreQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
@@ -7364,8 +8749,8 @@ func (c *SubscribeClient) QueryStore(s *Subscribe) *StoreQuery {
 
 // QueryCabinet queries the cabinet edge of a Subscribe.
 func (c *SubscribeClient) QueryCabinet(s *Subscribe) *CabinetQuery {
-	query := &CabinetQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
@@ -7380,8 +8765,8 @@ func (c *SubscribeClient) QueryCabinet(s *Subscribe) *CabinetQuery {
 
 // QueryBrand queries the brand edge of a Subscribe.
 func (c *SubscribeClient) QueryBrand(s *Subscribe) *EbikeBrandQuery {
-	query := &EbikeBrandQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EbikeBrandClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
@@ -7396,8 +8781,8 @@ func (c *SubscribeClient) QueryBrand(s *Subscribe) *EbikeBrandQuery {
 
 // QueryEbike queries the ebike edge of a Subscribe.
 func (c *SubscribeClient) QueryEbike(s *Subscribe) *EbikeQuery {
-	query := &EbikeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EbikeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
@@ -7412,8 +8797,8 @@ func (c *SubscribeClient) QueryEbike(s *Subscribe) *EbikeQuery {
 
 // QueryRider queries the rider edge of a Subscribe.
 func (c *SubscribeClient) QueryRider(s *Subscribe) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
@@ -7428,8 +8813,8 @@ func (c *SubscribeClient) QueryRider(s *Subscribe) *RiderQuery {
 
 // QueryEnterprise queries the enterprise edge of a Subscribe.
 func (c *SubscribeClient) QueryEnterprise(s *Subscribe) *EnterpriseQuery {
-	query := &EnterpriseQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
@@ -7444,8 +8829,8 @@ func (c *SubscribeClient) QueryEnterprise(s *Subscribe) *EnterpriseQuery {
 
 // QueryPauses queries the pauses edge of a Subscribe.
 func (c *SubscribeClient) QueryPauses(s *Subscribe) *SubscribePauseQuery {
-	query := &SubscribePauseQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&SubscribePauseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
@@ -7460,8 +8845,8 @@ func (c *SubscribeClient) QueryPauses(s *Subscribe) *SubscribePauseQuery {
 
 // QuerySuspends queries the suspends edge of a Subscribe.
 func (c *SubscribeClient) QuerySuspends(s *Subscribe) *SubscribeSuspendQuery {
-	query := &SubscribeSuspendQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&SubscribeSuspendClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
@@ -7476,8 +8861,8 @@ func (c *SubscribeClient) QuerySuspends(s *Subscribe) *SubscribeSuspendQuery {
 
 // QueryAlters queries the alters edge of a Subscribe.
 func (c *SubscribeClient) QueryAlters(s *Subscribe) *SubscribeAlterQuery {
-	query := &SubscribeAlterQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&SubscribeAlterClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
@@ -7492,8 +8877,8 @@ func (c *SubscribeClient) QueryAlters(s *Subscribe) *SubscribeAlterQuery {
 
 // QueryOrders queries the orders edge of a Subscribe.
 func (c *SubscribeClient) QueryOrders(s *Subscribe) *OrderQuery {
-	query := &OrderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&OrderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
@@ -7508,8 +8893,8 @@ func (c *SubscribeClient) QueryOrders(s *Subscribe) *OrderQuery {
 
 // QueryInitialOrder queries the initial_order edge of a Subscribe.
 func (c *SubscribeClient) QueryInitialOrder(s *Subscribe) *OrderQuery {
-	query := &OrderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&OrderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
@@ -7524,8 +8909,8 @@ func (c *SubscribeClient) QueryInitialOrder(s *Subscribe) *OrderQuery {
 
 // QueryBills queries the bills edge of a Subscribe.
 func (c *SubscribeClient) QueryBills(s *Subscribe) *EnterpriseBillQuery {
-	query := &EnterpriseBillQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseBillClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
@@ -7544,6 +8929,26 @@ func (c *SubscribeClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], subscribe.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *SubscribeClient) Interceptors() []Interceptor {
+	return c.inters.Subscribe
+}
+
+func (c *SubscribeClient) mutate(ctx context.Context, m *SubscribeMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SubscribeCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SubscribeUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SubscribeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SubscribeDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Subscribe mutation op: %q", m.Op())
+	}
+}
+
 // SubscribeAlterClient is a client for the SubscribeAlter schema.
 type SubscribeAlterClient struct {
 	config
@@ -7558,6 +8963,12 @@ func NewSubscribeAlterClient(c config) *SubscribeAlterClient {
 // A call to `Use(f, g, h)` equals to `subscribealter.Hooks(f(g(h())))`.
 func (c *SubscribeAlterClient) Use(hooks ...Hook) {
 	c.hooks.SubscribeAlter = append(c.hooks.SubscribeAlter, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `subscribealter.Intercept(f(g(h())))`.
+func (c *SubscribeAlterClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SubscribeAlter = append(c.inters.SubscribeAlter, interceptors...)
 }
 
 // Create returns a builder for creating a SubscribeAlter entity.
@@ -7600,7 +9011,7 @@ func (c *SubscribeAlterClient) DeleteOne(sa *SubscribeAlter) *SubscribeAlterDele
 	return c.DeleteOneID(sa.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *SubscribeAlterClient) DeleteOneID(id uint64) *SubscribeAlterDeleteOne {
 	builder := c.Delete().Where(subscribealter.ID(id))
 	builder.mutation.id = &id
@@ -7612,6 +9023,7 @@ func (c *SubscribeAlterClient) DeleteOneID(id uint64) *SubscribeAlterDeleteOne {
 func (c *SubscribeAlterClient) Query() *SubscribeAlterQuery {
 	return &SubscribeAlterQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -7631,8 +9043,8 @@ func (c *SubscribeAlterClient) GetX(ctx context.Context, id uint64) *SubscribeAl
 
 // QueryRider queries the rider edge of a SubscribeAlter.
 func (c *SubscribeAlterClient) QueryRider(sa *SubscribeAlter) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := sa.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribealter.Table, subscribealter.FieldID, id),
@@ -7647,8 +9059,8 @@ func (c *SubscribeAlterClient) QueryRider(sa *SubscribeAlter) *RiderQuery {
 
 // QueryManager queries the manager edge of a SubscribeAlter.
 func (c *SubscribeAlterClient) QueryManager(sa *SubscribeAlter) *ManagerQuery {
-	query := &ManagerQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&ManagerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := sa.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribealter.Table, subscribealter.FieldID, id),
@@ -7663,8 +9075,8 @@ func (c *SubscribeAlterClient) QueryManager(sa *SubscribeAlter) *ManagerQuery {
 
 // QueryEnterprise queries the enterprise edge of a SubscribeAlter.
 func (c *SubscribeAlterClient) QueryEnterprise(sa *SubscribeAlter) *EnterpriseQuery {
-	query := &EnterpriseQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EnterpriseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := sa.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribealter.Table, subscribealter.FieldID, id),
@@ -7679,8 +9091,8 @@ func (c *SubscribeAlterClient) QueryEnterprise(sa *SubscribeAlter) *EnterpriseQu
 
 // QueryAgent queries the agent edge of a SubscribeAlter.
 func (c *SubscribeAlterClient) QueryAgent(sa *SubscribeAlter) *AgentQuery {
-	query := &AgentQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&AgentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := sa.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribealter.Table, subscribealter.FieldID, id),
@@ -7695,8 +9107,8 @@ func (c *SubscribeAlterClient) QueryAgent(sa *SubscribeAlter) *AgentQuery {
 
 // QuerySubscribe queries the subscribe edge of a SubscribeAlter.
 func (c *SubscribeAlterClient) QuerySubscribe(sa *SubscribeAlter) *SubscribeQuery {
-	query := &SubscribeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&SubscribeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := sa.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribealter.Table, subscribealter.FieldID, id),
@@ -7715,6 +9127,26 @@ func (c *SubscribeAlterClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], subscribealter.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *SubscribeAlterClient) Interceptors() []Interceptor {
+	return c.inters.SubscribeAlter
+}
+
+func (c *SubscribeAlterClient) mutate(ctx context.Context, m *SubscribeAlterMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SubscribeAlterCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SubscribeAlterUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SubscribeAlterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SubscribeAlterDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SubscribeAlter mutation op: %q", m.Op())
+	}
+}
+
 // SubscribePauseClient is a client for the SubscribePause schema.
 type SubscribePauseClient struct {
 	config
@@ -7729,6 +9161,12 @@ func NewSubscribePauseClient(c config) *SubscribePauseClient {
 // A call to `Use(f, g, h)` equals to `subscribepause.Hooks(f(g(h())))`.
 func (c *SubscribePauseClient) Use(hooks ...Hook) {
 	c.hooks.SubscribePause = append(c.hooks.SubscribePause, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `subscribepause.Intercept(f(g(h())))`.
+func (c *SubscribePauseClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SubscribePause = append(c.inters.SubscribePause, interceptors...)
 }
 
 // Create returns a builder for creating a SubscribePause entity.
@@ -7771,7 +9209,7 @@ func (c *SubscribePauseClient) DeleteOne(sp *SubscribePause) *SubscribePauseDele
 	return c.DeleteOneID(sp.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *SubscribePauseClient) DeleteOneID(id uint64) *SubscribePauseDeleteOne {
 	builder := c.Delete().Where(subscribepause.ID(id))
 	builder.mutation.id = &id
@@ -7783,6 +9221,7 @@ func (c *SubscribePauseClient) DeleteOneID(id uint64) *SubscribePauseDeleteOne {
 func (c *SubscribePauseClient) Query() *SubscribePauseQuery {
 	return &SubscribePauseQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -7802,8 +9241,8 @@ func (c *SubscribePauseClient) GetX(ctx context.Context, id uint64) *SubscribePa
 
 // QueryRider queries the rider edge of a SubscribePause.
 func (c *SubscribePauseClient) QueryRider(sp *SubscribePause) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := sp.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, id),
@@ -7818,8 +9257,8 @@ func (c *SubscribePauseClient) QueryRider(sp *SubscribePause) *RiderQuery {
 
 // QueryEmployee queries the employee edge of a SubscribePause.
 func (c *SubscribePauseClient) QueryEmployee(sp *SubscribePause) *EmployeeQuery {
-	query := &EmployeeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EmployeeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := sp.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, id),
@@ -7834,8 +9273,8 @@ func (c *SubscribePauseClient) QueryEmployee(sp *SubscribePause) *EmployeeQuery 
 
 // QueryCity queries the city edge of a SubscribePause.
 func (c *SubscribePauseClient) QueryCity(sp *SubscribePause) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := sp.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, id),
@@ -7850,8 +9289,8 @@ func (c *SubscribePauseClient) QueryCity(sp *SubscribePause) *CityQuery {
 
 // QueryStore queries the store edge of a SubscribePause.
 func (c *SubscribePauseClient) QueryStore(sp *SubscribePause) *StoreQuery {
-	query := &StoreQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := sp.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, id),
@@ -7866,8 +9305,8 @@ func (c *SubscribePauseClient) QueryStore(sp *SubscribePause) *StoreQuery {
 
 // QueryEndStore queries the endStore edge of a SubscribePause.
 func (c *SubscribePauseClient) QueryEndStore(sp *SubscribePause) *StoreQuery {
-	query := &StoreQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := sp.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, id),
@@ -7882,8 +9321,8 @@ func (c *SubscribePauseClient) QueryEndStore(sp *SubscribePause) *StoreQuery {
 
 // QueryCabinet queries the cabinet edge of a SubscribePause.
 func (c *SubscribePauseClient) QueryCabinet(sp *SubscribePause) *CabinetQuery {
-	query := &CabinetQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := sp.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, id),
@@ -7898,8 +9337,8 @@ func (c *SubscribePauseClient) QueryCabinet(sp *SubscribePause) *CabinetQuery {
 
 // QueryEndCabinet queries the endCabinet edge of a SubscribePause.
 func (c *SubscribePauseClient) QueryEndCabinet(sp *SubscribePause) *CabinetQuery {
-	query := &CabinetQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := sp.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, id),
@@ -7914,8 +9353,8 @@ func (c *SubscribePauseClient) QueryEndCabinet(sp *SubscribePause) *CabinetQuery
 
 // QuerySubscribe queries the subscribe edge of a SubscribePause.
 func (c *SubscribePauseClient) QuerySubscribe(sp *SubscribePause) *SubscribeQuery {
-	query := &SubscribeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&SubscribeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := sp.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, id),
@@ -7930,8 +9369,8 @@ func (c *SubscribePauseClient) QuerySubscribe(sp *SubscribePause) *SubscribeQuer
 
 // QueryEndEmployee queries the end_employee edge of a SubscribePause.
 func (c *SubscribePauseClient) QueryEndEmployee(sp *SubscribePause) *EmployeeQuery {
-	query := &EmployeeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&EmployeeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := sp.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, id),
@@ -7946,8 +9385,8 @@ func (c *SubscribePauseClient) QueryEndEmployee(sp *SubscribePause) *EmployeeQue
 
 // QuerySuspends queries the suspends edge of a SubscribePause.
 func (c *SubscribePauseClient) QuerySuspends(sp *SubscribePause) *SubscribeSuspendQuery {
-	query := &SubscribeSuspendQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&SubscribeSuspendClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := sp.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, id),
@@ -7966,6 +9405,26 @@ func (c *SubscribePauseClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], subscribepause.Hooks[:]...)
 }
 
+// Interceptors returns the client interceptors.
+func (c *SubscribePauseClient) Interceptors() []Interceptor {
+	return c.inters.SubscribePause
+}
+
+func (c *SubscribePauseClient) mutate(ctx context.Context, m *SubscribePauseMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SubscribePauseCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SubscribePauseUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SubscribePauseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SubscribePauseDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SubscribePause mutation op: %q", m.Op())
+	}
+}
+
 // SubscribeReminderClient is a client for the SubscribeReminder schema.
 type SubscribeReminderClient struct {
 	config
@@ -7980,6 +9439,12 @@ func NewSubscribeReminderClient(c config) *SubscribeReminderClient {
 // A call to `Use(f, g, h)` equals to `subscribereminder.Hooks(f(g(h())))`.
 func (c *SubscribeReminderClient) Use(hooks ...Hook) {
 	c.hooks.SubscribeReminder = append(c.hooks.SubscribeReminder, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `subscribereminder.Intercept(f(g(h())))`.
+func (c *SubscribeReminderClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SubscribeReminder = append(c.inters.SubscribeReminder, interceptors...)
 }
 
 // Create returns a builder for creating a SubscribeReminder entity.
@@ -8022,7 +9487,7 @@ func (c *SubscribeReminderClient) DeleteOne(sr *SubscribeReminder) *SubscribeRem
 	return c.DeleteOneID(sr.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *SubscribeReminderClient) DeleteOneID(id uint64) *SubscribeReminderDeleteOne {
 	builder := c.Delete().Where(subscribereminder.ID(id))
 	builder.mutation.id = &id
@@ -8034,6 +9499,7 @@ func (c *SubscribeReminderClient) DeleteOneID(id uint64) *SubscribeReminderDelet
 func (c *SubscribeReminderClient) Query() *SubscribeReminderQuery {
 	return &SubscribeReminderQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -8053,8 +9519,8 @@ func (c *SubscribeReminderClient) GetX(ctx context.Context, id uint64) *Subscrib
 
 // QuerySubscribe queries the subscribe edge of a SubscribeReminder.
 func (c *SubscribeReminderClient) QuerySubscribe(sr *SubscribeReminder) *SubscribeQuery {
-	query := &SubscribeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&SubscribeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := sr.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribereminder.Table, subscribereminder.FieldID, id),
@@ -8069,8 +9535,8 @@ func (c *SubscribeReminderClient) QuerySubscribe(sr *SubscribeReminder) *Subscri
 
 // QueryPlan queries the plan edge of a SubscribeReminder.
 func (c *SubscribeReminderClient) QueryPlan(sr *SubscribeReminder) *PlanQuery {
-	query := &PlanQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&PlanClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := sr.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribereminder.Table, subscribereminder.FieldID, id),
@@ -8085,8 +9551,8 @@ func (c *SubscribeReminderClient) QueryPlan(sr *SubscribeReminder) *PlanQuery {
 
 // QueryRider queries the rider edge of a SubscribeReminder.
 func (c *SubscribeReminderClient) QueryRider(sr *SubscribeReminder) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := sr.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribereminder.Table, subscribereminder.FieldID, id),
@@ -8104,6 +9570,26 @@ func (c *SubscribeReminderClient) Hooks() []Hook {
 	return c.hooks.SubscribeReminder
 }
 
+// Interceptors returns the client interceptors.
+func (c *SubscribeReminderClient) Interceptors() []Interceptor {
+	return c.inters.SubscribeReminder
+}
+
+func (c *SubscribeReminderClient) mutate(ctx context.Context, m *SubscribeReminderMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SubscribeReminderCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SubscribeReminderUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SubscribeReminderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SubscribeReminderDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SubscribeReminder mutation op: %q", m.Op())
+	}
+}
+
 // SubscribeSuspendClient is a client for the SubscribeSuspend schema.
 type SubscribeSuspendClient struct {
 	config
@@ -8118,6 +9604,12 @@ func NewSubscribeSuspendClient(c config) *SubscribeSuspendClient {
 // A call to `Use(f, g, h)` equals to `subscribesuspend.Hooks(f(g(h())))`.
 func (c *SubscribeSuspendClient) Use(hooks ...Hook) {
 	c.hooks.SubscribeSuspend = append(c.hooks.SubscribeSuspend, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `subscribesuspend.Intercept(f(g(h())))`.
+func (c *SubscribeSuspendClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SubscribeSuspend = append(c.inters.SubscribeSuspend, interceptors...)
 }
 
 // Create returns a builder for creating a SubscribeSuspend entity.
@@ -8160,7 +9652,7 @@ func (c *SubscribeSuspendClient) DeleteOne(ss *SubscribeSuspend) *SubscribeSuspe
 	return c.DeleteOneID(ss.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *SubscribeSuspendClient) DeleteOneID(id uint64) *SubscribeSuspendDeleteOne {
 	builder := c.Delete().Where(subscribesuspend.ID(id))
 	builder.mutation.id = &id
@@ -8172,6 +9664,7 @@ func (c *SubscribeSuspendClient) DeleteOneID(id uint64) *SubscribeSuspendDeleteO
 func (c *SubscribeSuspendClient) Query() *SubscribeSuspendQuery {
 	return &SubscribeSuspendQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -8191,8 +9684,8 @@ func (c *SubscribeSuspendClient) GetX(ctx context.Context, id uint64) *Subscribe
 
 // QueryCity queries the city edge of a SubscribeSuspend.
 func (c *SubscribeSuspendClient) QueryCity(ss *SubscribeSuspend) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ss.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribesuspend.Table, subscribesuspend.FieldID, id),
@@ -8207,8 +9700,8 @@ func (c *SubscribeSuspendClient) QueryCity(ss *SubscribeSuspend) *CityQuery {
 
 // QueryRider queries the rider edge of a SubscribeSuspend.
 func (c *SubscribeSuspendClient) QueryRider(ss *SubscribeSuspend) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ss.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribesuspend.Table, subscribesuspend.FieldID, id),
@@ -8223,8 +9716,8 @@ func (c *SubscribeSuspendClient) QueryRider(ss *SubscribeSuspend) *RiderQuery {
 
 // QuerySubscribe queries the subscribe edge of a SubscribeSuspend.
 func (c *SubscribeSuspendClient) QuerySubscribe(ss *SubscribeSuspend) *SubscribeQuery {
-	query := &SubscribeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&SubscribeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ss.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribesuspend.Table, subscribesuspend.FieldID, id),
@@ -8239,8 +9732,8 @@ func (c *SubscribeSuspendClient) QuerySubscribe(ss *SubscribeSuspend) *Subscribe
 
 // QueryPause queries the pause edge of a SubscribeSuspend.
 func (c *SubscribeSuspendClient) QueryPause(ss *SubscribeSuspend) *SubscribePauseQuery {
-	query := &SubscribePauseQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query := (&SubscribePauseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ss.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribesuspend.Table, subscribesuspend.FieldID, id),
@@ -8257,4 +9750,24 @@ func (c *SubscribeSuspendClient) QueryPause(ss *SubscribeSuspend) *SubscribePaus
 func (c *SubscribeSuspendClient) Hooks() []Hook {
 	hooks := c.hooks.SubscribeSuspend
 	return append(hooks[:len(hooks):len(hooks)], subscribesuspend.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *SubscribeSuspendClient) Interceptors() []Interceptor {
+	return c.inters.SubscribeSuspend
+}
+
+func (c *SubscribeSuspendClient) mutate(ctx context.Context, m *SubscribeSuspendMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SubscribeSuspendCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SubscribeSuspendUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SubscribeSuspendUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SubscribeSuspendDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SubscribeSuspend mutation op: %q", m.Op())
+	}
 }

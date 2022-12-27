@@ -65,50 +65,8 @@ func (bmc *BatteryModelCreate) Mutation() *BatteryModelMutation {
 
 // Save creates the BatteryModel in the database.
 func (bmc *BatteryModelCreate) Save(ctx context.Context) (*BatteryModel, error) {
-	var (
-		err  error
-		node *BatteryModel
-	)
 	bmc.defaults()
-	if len(bmc.hooks) == 0 {
-		if err = bmc.check(); err != nil {
-			return nil, err
-		}
-		node, err = bmc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*BatteryModelMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = bmc.check(); err != nil {
-				return nil, err
-			}
-			bmc.mutation = mutation
-			if node, err = bmc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(bmc.hooks) - 1; i >= 0; i-- {
-			if bmc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = bmc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, bmc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*BatteryModel)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from BatteryModelMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*BatteryModel, BatteryModelMutation](ctx, bmc.sqlSave, bmc.mutation, bmc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -153,6 +111,9 @@ func (bmc *BatteryModelCreate) check() error {
 }
 
 func (bmc *BatteryModelCreate) sqlSave(ctx context.Context) (*BatteryModel, error) {
+	if err := bmc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := bmc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, bmc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -162,6 +123,8 @@ func (bmc *BatteryModelCreate) sqlSave(ctx context.Context) (*BatteryModel, erro
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	bmc.mutation.id = &_node.ID
+	bmc.mutation.done = true
 	return _node, nil
 }
 
@@ -178,19 +141,11 @@ func (bmc *BatteryModelCreate) createSpec() (*BatteryModel, *sqlgraph.CreateSpec
 	)
 	_spec.OnConflict = bmc.conflict
 	if value, ok := bmc.mutation.Model(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: batterymodel.FieldModel,
-		})
+		_spec.SetField(batterymodel.FieldModel, field.TypeString, value)
 		_node.Model = value
 	}
 	if value, ok := bmc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: batterymodel.FieldCreatedAt,
-		})
+		_spec.SetField(batterymodel.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if nodes := bmc.mutation.CabinetsIDs(); len(nodes) > 0 {

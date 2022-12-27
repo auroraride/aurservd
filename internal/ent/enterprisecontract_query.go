@@ -23,6 +23,7 @@ type EnterpriseContractQuery struct {
 	unique         *bool
 	order          []OrderFunc
 	fields         []string
+	inters         []Interceptor
 	predicates     []predicate.EnterpriseContract
 	withEnterprise *EnterpriseQuery
 	modifiers      []func(*sql.Selector)
@@ -37,13 +38,13 @@ func (ecq *EnterpriseContractQuery) Where(ps ...predicate.EnterpriseContract) *E
 	return ecq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (ecq *EnterpriseContractQuery) Limit(limit int) *EnterpriseContractQuery {
 	ecq.limit = &limit
 	return ecq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (ecq *EnterpriseContractQuery) Offset(offset int) *EnterpriseContractQuery {
 	ecq.offset = &offset
 	return ecq
@@ -56,7 +57,7 @@ func (ecq *EnterpriseContractQuery) Unique(unique bool) *EnterpriseContractQuery
 	return ecq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (ecq *EnterpriseContractQuery) Order(o ...OrderFunc) *EnterpriseContractQuery {
 	ecq.order = append(ecq.order, o...)
 	return ecq
@@ -64,7 +65,7 @@ func (ecq *EnterpriseContractQuery) Order(o ...OrderFunc) *EnterpriseContractQue
 
 // QueryEnterprise chains the current query on the "enterprise" edge.
 func (ecq *EnterpriseContractQuery) QueryEnterprise() *EnterpriseQuery {
-	query := &EnterpriseQuery{config: ecq.config}
+	query := (&EnterpriseClient{config: ecq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := ecq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -87,7 +88,7 @@ func (ecq *EnterpriseContractQuery) QueryEnterprise() *EnterpriseQuery {
 // First returns the first EnterpriseContract entity from the query.
 // Returns a *NotFoundError when no EnterpriseContract was found.
 func (ecq *EnterpriseContractQuery) First(ctx context.Context) (*EnterpriseContract, error) {
-	nodes, err := ecq.Limit(1).All(ctx)
+	nodes, err := ecq.Limit(1).All(newQueryContext(ctx, TypeEnterpriseContract, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +111,7 @@ func (ecq *EnterpriseContractQuery) FirstX(ctx context.Context) *EnterpriseContr
 // Returns a *NotFoundError when no EnterpriseContract ID was found.
 func (ecq *EnterpriseContractQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ecq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = ecq.Limit(1).IDs(newQueryContext(ctx, TypeEnterpriseContract, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -133,7 +134,7 @@ func (ecq *EnterpriseContractQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one EnterpriseContract entity is found.
 // Returns a *NotFoundError when no EnterpriseContract entities are found.
 func (ecq *EnterpriseContractQuery) Only(ctx context.Context) (*EnterpriseContract, error) {
-	nodes, err := ecq.Limit(2).All(ctx)
+	nodes, err := ecq.Limit(2).All(newQueryContext(ctx, TypeEnterpriseContract, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +162,7 @@ func (ecq *EnterpriseContractQuery) OnlyX(ctx context.Context) *EnterpriseContra
 // Returns a *NotFoundError when no entities are found.
 func (ecq *EnterpriseContractQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ecq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = ecq.Limit(2).IDs(newQueryContext(ctx, TypeEnterpriseContract, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -186,10 +187,12 @@ func (ecq *EnterpriseContractQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of EnterpriseContracts.
 func (ecq *EnterpriseContractQuery) All(ctx context.Context) ([]*EnterpriseContract, error) {
+	ctx = newQueryContext(ctx, TypeEnterpriseContract, "All")
 	if err := ecq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return ecq.sqlAll(ctx)
+	qr := querierAll[[]*EnterpriseContract, *EnterpriseContractQuery]()
+	return withInterceptors[[]*EnterpriseContract](ctx, ecq, qr, ecq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -204,6 +207,7 @@ func (ecq *EnterpriseContractQuery) AllX(ctx context.Context) []*EnterpriseContr
 // IDs executes the query and returns a list of EnterpriseContract IDs.
 func (ecq *EnterpriseContractQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeEnterpriseContract, "IDs")
 	if err := ecq.Select(enterprisecontract.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -221,10 +225,11 @@ func (ecq *EnterpriseContractQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (ecq *EnterpriseContractQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeEnterpriseContract, "Count")
 	if err := ecq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return ecq.sqlCount(ctx)
+	return withInterceptors[int](ctx, ecq, querierCount[*EnterpriseContractQuery](), ecq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -238,10 +243,15 @@ func (ecq *EnterpriseContractQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (ecq *EnterpriseContractQuery) Exist(ctx context.Context) (bool, error) {
-	if err := ecq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeEnterpriseContract, "Exist")
+	switch _, err := ecq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return ecq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -276,7 +286,7 @@ func (ecq *EnterpriseContractQuery) Clone() *EnterpriseContractQuery {
 // WithEnterprise tells the query-builder to eager-load the nodes that are connected to
 // the "enterprise" edge. The optional arguments are used to configure the query builder of the edge.
 func (ecq *EnterpriseContractQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *EnterpriseContractQuery {
-	query := &EnterpriseQuery{config: ecq.config}
+	query := (&EnterpriseClient{config: ecq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -299,16 +309,11 @@ func (ecq *EnterpriseContractQuery) WithEnterprise(opts ...func(*EnterpriseQuery
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (ecq *EnterpriseContractQuery) GroupBy(field string, fields ...string) *EnterpriseContractGroupBy {
-	grbuild := &EnterpriseContractGroupBy{config: ecq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := ecq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return ecq.sqlQuery(ctx), nil
-	}
+	ecq.fields = append([]string{field}, fields...)
+	grbuild := &EnterpriseContractGroupBy{build: ecq}
+	grbuild.flds = &ecq.fields
 	grbuild.label = enterprisecontract.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -326,13 +331,28 @@ func (ecq *EnterpriseContractQuery) GroupBy(field string, fields ...string) *Ent
 //		Scan(ctx, &v)
 func (ecq *EnterpriseContractQuery) Select(fields ...string) *EnterpriseContractSelect {
 	ecq.fields = append(ecq.fields, fields...)
-	selbuild := &EnterpriseContractSelect{EnterpriseContractQuery: ecq}
-	selbuild.label = enterprisecontract.Label
-	selbuild.flds, selbuild.scan = &ecq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &EnterpriseContractSelect{EnterpriseContractQuery: ecq}
+	sbuild.label = enterprisecontract.Label
+	sbuild.flds, sbuild.scan = &ecq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a EnterpriseContractSelect configured with the given aggregations.
+func (ecq *EnterpriseContractQuery) Aggregate(fns ...AggregateFunc) *EnterpriseContractSelect {
+	return ecq.Select().Aggregate(fns...)
 }
 
 func (ecq *EnterpriseContractQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range ecq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, ecq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range ecq.fields {
 		if !enterprisecontract.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -423,17 +443,6 @@ func (ecq *EnterpriseContractQuery) sqlCount(ctx context.Context) (int, error) {
 		_spec.Unique = ecq.unique != nil && *ecq.unique
 	}
 	return sqlgraph.CountNodes(ctx, ecq.driver, _spec)
-}
-
-func (ecq *EnterpriseContractQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := ecq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
 }
 
 func (ecq *EnterpriseContractQuery) querySpec() *sqlgraph.QuerySpec {
@@ -527,13 +536,8 @@ func (ecq *EnterpriseContractQuery) Modify(modifiers ...func(s *sql.Selector)) *
 
 // EnterpriseContractGroupBy is the group-by builder for EnterpriseContract entities.
 type EnterpriseContractGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *EnterpriseContractQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -542,74 +546,77 @@ func (ecgb *EnterpriseContractGroupBy) Aggregate(fns ...AggregateFunc) *Enterpri
 	return ecgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (ecgb *EnterpriseContractGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := ecgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeEnterpriseContract, "GroupBy")
+	if err := ecgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ecgb.sql = query
-	return ecgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*EnterpriseContractQuery, *EnterpriseContractGroupBy](ctx, ecgb.build, ecgb, ecgb.build.inters, v)
 }
 
-func (ecgb *EnterpriseContractGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range ecgb.fields {
-		if !enterprisecontract.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (ecgb *EnterpriseContractGroupBy) sqlScan(ctx context.Context, root *EnterpriseContractQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(ecgb.fns))
+	for _, fn := range ecgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := ecgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*ecgb.flds)+len(ecgb.fns))
+		for _, f := range *ecgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*ecgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := ecgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := ecgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (ecgb *EnterpriseContractGroupBy) sqlQuery() *sql.Selector {
-	selector := ecgb.sql.Select()
-	aggregation := make([]string, 0, len(ecgb.fns))
-	for _, fn := range ecgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(ecgb.fields)+len(ecgb.fns))
-		for _, f := range ecgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(ecgb.fields...)...)
-}
-
 // EnterpriseContractSelect is the builder for selecting fields of EnterpriseContract entities.
 type EnterpriseContractSelect struct {
 	*EnterpriseContractQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (ecs *EnterpriseContractSelect) Aggregate(fns ...AggregateFunc) *EnterpriseContractSelect {
+	ecs.fns = append(ecs.fns, fns...)
+	return ecs
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (ecs *EnterpriseContractSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeEnterpriseContract, "Select")
 	if err := ecs.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ecs.sql = ecs.EnterpriseContractQuery.sqlQuery(ctx)
-	return ecs.sqlScan(ctx, v)
+	return scanWithInterceptors[*EnterpriseContractQuery, *EnterpriseContractSelect](ctx, ecs.EnterpriseContractQuery, ecs, ecs.inters, v)
 }
 
-func (ecs *EnterpriseContractSelect) sqlScan(ctx context.Context, v any) error {
+func (ecs *EnterpriseContractSelect) sqlScan(ctx context.Context, root *EnterpriseContractQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(ecs.fns))
+	for _, fn := range ecs.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*ecs.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := ecs.sql.Query()
+	query, args := selector.Query()
 	if err := ecs.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

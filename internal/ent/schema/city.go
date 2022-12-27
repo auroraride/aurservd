@@ -49,6 +49,7 @@ type City struct {
 func (City) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "city"},
+        entsql.WithComments(true),
     }
 }
 

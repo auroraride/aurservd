@@ -53,6 +53,7 @@ type Coupon struct {
 func (Coupon) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "coupon"},
+        entsql.WithComments(true),
     }
 }
 

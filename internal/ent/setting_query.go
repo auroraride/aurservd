@@ -22,6 +22,7 @@ type SettingQuery struct {
 	unique     *bool
 	order      []OrderFunc
 	fields     []string
+	inters     []Interceptor
 	predicates []predicate.Setting
 	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -35,13 +36,13 @@ func (sq *SettingQuery) Where(ps ...predicate.Setting) *SettingQuery {
 	return sq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (sq *SettingQuery) Limit(limit int) *SettingQuery {
 	sq.limit = &limit
 	return sq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (sq *SettingQuery) Offset(offset int) *SettingQuery {
 	sq.offset = &offset
 	return sq
@@ -54,7 +55,7 @@ func (sq *SettingQuery) Unique(unique bool) *SettingQuery {
 	return sq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (sq *SettingQuery) Order(o ...OrderFunc) *SettingQuery {
 	sq.order = append(sq.order, o...)
 	return sq
@@ -63,7 +64,7 @@ func (sq *SettingQuery) Order(o ...OrderFunc) *SettingQuery {
 // First returns the first Setting entity from the query.
 // Returns a *NotFoundError when no Setting was found.
 func (sq *SettingQuery) First(ctx context.Context) (*Setting, error) {
-	nodes, err := sq.Limit(1).All(ctx)
+	nodes, err := sq.Limit(1).All(newQueryContext(ctx, TypeSetting, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +87,7 @@ func (sq *SettingQuery) FirstX(ctx context.Context) *Setting {
 // Returns a *NotFoundError when no Setting ID was found.
 func (sq *SettingQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = sq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = sq.Limit(1).IDs(newQueryContext(ctx, TypeSetting, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -109,7 +110,7 @@ func (sq *SettingQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Setting entity is found.
 // Returns a *NotFoundError when no Setting entities are found.
 func (sq *SettingQuery) Only(ctx context.Context) (*Setting, error) {
-	nodes, err := sq.Limit(2).All(ctx)
+	nodes, err := sq.Limit(2).All(newQueryContext(ctx, TypeSetting, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +138,7 @@ func (sq *SettingQuery) OnlyX(ctx context.Context) *Setting {
 // Returns a *NotFoundError when no entities are found.
 func (sq *SettingQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = sq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = sq.Limit(2).IDs(newQueryContext(ctx, TypeSetting, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -162,10 +163,12 @@ func (sq *SettingQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Settings.
 func (sq *SettingQuery) All(ctx context.Context) ([]*Setting, error) {
+	ctx = newQueryContext(ctx, TypeSetting, "All")
 	if err := sq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return sq.sqlAll(ctx)
+	qr := querierAll[[]*Setting, *SettingQuery]()
+	return withInterceptors[[]*Setting](ctx, sq, qr, sq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -180,6 +183,7 @@ func (sq *SettingQuery) AllX(ctx context.Context) []*Setting {
 // IDs executes the query and returns a list of Setting IDs.
 func (sq *SettingQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeSetting, "IDs")
 	if err := sq.Select(setting.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -197,10 +201,11 @@ func (sq *SettingQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (sq *SettingQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeSetting, "Count")
 	if err := sq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return sq.sqlCount(ctx)
+	return withInterceptors[int](ctx, sq, querierCount[*SettingQuery](), sq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -214,10 +219,15 @@ func (sq *SettingQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (sq *SettingQuery) Exist(ctx context.Context) (bool, error) {
-	if err := sq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeSetting, "Exist")
+	switch _, err := sq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return sq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -263,16 +273,11 @@ func (sq *SettingQuery) Clone() *SettingQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (sq *SettingQuery) GroupBy(field string, fields ...string) *SettingGroupBy {
-	grbuild := &SettingGroupBy{config: sq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := sq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return sq.sqlQuery(ctx), nil
-	}
+	sq.fields = append([]string{field}, fields...)
+	grbuild := &SettingGroupBy{build: sq}
+	grbuild.flds = &sq.fields
 	grbuild.label = setting.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -290,13 +295,28 @@ func (sq *SettingQuery) GroupBy(field string, fields ...string) *SettingGroupBy 
 //		Scan(ctx, &v)
 func (sq *SettingQuery) Select(fields ...string) *SettingSelect {
 	sq.fields = append(sq.fields, fields...)
-	selbuild := &SettingSelect{SettingQuery: sq}
-	selbuild.label = setting.Label
-	selbuild.flds, selbuild.scan = &sq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &SettingSelect{SettingQuery: sq}
+	sbuild.label = setting.Label
+	sbuild.flds, sbuild.scan = &sq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a SettingSelect configured with the given aggregations.
+func (sq *SettingQuery) Aggregate(fns ...AggregateFunc) *SettingSelect {
+	return sq.Select().Aggregate(fns...)
 }
 
 func (sq *SettingQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range sq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, sq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range sq.fields {
 		if !setting.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -350,17 +370,6 @@ func (sq *SettingQuery) sqlCount(ctx context.Context) (int, error) {
 		_spec.Unique = sq.unique != nil && *sq.unique
 	}
 	return sqlgraph.CountNodes(ctx, sq.driver, _spec)
-}
-
-func (sq *SettingQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := sq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
 }
 
 func (sq *SettingQuery) querySpec() *sqlgraph.QuerySpec {
@@ -454,13 +463,8 @@ func (sq *SettingQuery) Modify(modifiers ...func(s *sql.Selector)) *SettingSelec
 
 // SettingGroupBy is the group-by builder for Setting entities.
 type SettingGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *SettingQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -469,74 +473,77 @@ func (sgb *SettingGroupBy) Aggregate(fns ...AggregateFunc) *SettingGroupBy {
 	return sgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (sgb *SettingGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := sgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeSetting, "GroupBy")
+	if err := sgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	sgb.sql = query
-	return sgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*SettingQuery, *SettingGroupBy](ctx, sgb.build, sgb, sgb.build.inters, v)
 }
 
-func (sgb *SettingGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range sgb.fields {
-		if !setting.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (sgb *SettingGroupBy) sqlScan(ctx context.Context, root *SettingQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(sgb.fns))
+	for _, fn := range sgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := sgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*sgb.flds)+len(sgb.fns))
+		for _, f := range *sgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*sgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := sgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := sgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (sgb *SettingGroupBy) sqlQuery() *sql.Selector {
-	selector := sgb.sql.Select()
-	aggregation := make([]string, 0, len(sgb.fns))
-	for _, fn := range sgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(sgb.fields)+len(sgb.fns))
-		for _, f := range sgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(sgb.fields...)...)
-}
-
 // SettingSelect is the builder for selecting fields of Setting entities.
 type SettingSelect struct {
 	*SettingQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (ss *SettingSelect) Aggregate(fns ...AggregateFunc) *SettingSelect {
+	ss.fns = append(ss.fns, fns...)
+	return ss
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (ss *SettingSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeSetting, "Select")
 	if err := ss.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ss.sql = ss.SettingQuery.sqlQuery(ctx)
-	return ss.sqlScan(ctx, v)
+	return scanWithInterceptors[*SettingQuery, *SettingSelect](ctx, ss.SettingQuery, ss, ss.inters, v)
 }
 
-func (ss *SettingSelect) sqlScan(ctx context.Context, v any) error {
+func (ss *SettingSelect) sqlScan(ctx context.Context, root *SettingQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(ss.fns))
+	for _, fn := range ss.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*ss.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := ss.sql.Query()
+	query, args := selector.Query()
 	if err := ss.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

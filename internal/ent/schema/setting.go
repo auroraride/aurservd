@@ -17,6 +17,7 @@ type Setting struct {
 func (Setting) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "setting"},
+        entsql.WithComments(true),
     }
 }
 

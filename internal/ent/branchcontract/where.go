@@ -12,1624 +12,1052 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uint64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uint64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uint64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.BranchContract(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.BranchContract(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.BranchContract(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uint64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.BranchContract(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uint64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.BranchContract(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uint64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.BranchContract(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uint64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.BranchContract(sql.FieldLTE(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
 func DeletedAt(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
 func Remark(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldRemark, v))
 }
 
 // BranchID applies equality check predicate on the "branch_id" field. It's identical to BranchIDEQ.
 func BranchID(v uint64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBranchID), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldBranchID, v))
 }
 
 // LandlordName applies equality check predicate on the "landlord_name" field. It's identical to LandlordNameEQ.
 func LandlordName(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLandlordName), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldLandlordName, v))
 }
 
 // IDCardNumber applies equality check predicate on the "id_card_number" field. It's identical to IDCardNumberEQ.
 func IDCardNumber(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldIDCardNumber, v))
 }
 
 // Phone applies equality check predicate on the "phone" field. It's identical to PhoneEQ.
 func Phone(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPhone), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldPhone, v))
 }
 
 // BankNumber applies equality check predicate on the "bank_number" field. It's identical to BankNumberEQ.
 func BankNumber(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBankNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldBankNumber, v))
 }
 
 // Pledge applies equality check predicate on the "pledge" field. It's identical to PledgeEQ.
 func Pledge(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPledge), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldPledge, v))
 }
 
 // Rent applies equality check predicate on the "rent" field. It's identical to RentEQ.
 func Rent(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRent), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldRent, v))
 }
 
 // Lease applies equality check predicate on the "lease" field. It's identical to LeaseEQ.
 func Lease(v uint) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLease), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldLease, v))
 }
 
 // ElectricityPledge applies equality check predicate on the "electricity_pledge" field. It's identical to ElectricityPledgeEQ.
 func ElectricityPledge(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldElectricityPledge), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldElectricityPledge, v))
 }
 
 // Electricity applies equality check predicate on the "electricity" field. It's identical to ElectricityEQ.
 func Electricity(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldElectricity), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldElectricity, v))
 }
 
 // Area applies equality check predicate on the "area" field. It's identical to AreaEQ.
 func Area(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldArea), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldArea, v))
 }
 
 // StartTime applies equality check predicate on the "start_time" field. It's identical to StartTimeEQ.
 func StartTime(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStartTime), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldStartTime, v))
 }
 
 // EndTime applies equality check predicate on the "end_time" field. It's identical to EndTimeEQ.
 func EndTime(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEndTime), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldEndTime, v))
 }
 
 // File applies equality check predicate on the "file" field. It's identical to FileEQ.
 func File(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldFile), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldFile, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
 func CreatedAtNEQ(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.BranchContract(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.BranchContract(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.BranchContract(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtGT applies the GT predicate on the "created_at" field.
 func CreatedAtGT(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.BranchContract(sql.FieldGT(FieldCreatedAt, v))
 }
 
 // CreatedAtGTE applies the GTE predicate on the "created_at" field.
 func CreatedAtGTE(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.BranchContract(sql.FieldGTE(FieldCreatedAt, v))
 }
 
 // CreatedAtLT applies the LT predicate on the "created_at" field.
 func CreatedAtLT(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.BranchContract(sql.FieldLT(FieldCreatedAt, v))
 }
 
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.BranchContract(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
 func UpdatedAtEQ(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
 func UpdatedAtNEQ(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.BranchContract(sql.FieldNEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.BranchContract(sql.FieldIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.BranchContract(sql.FieldNotIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtGT applies the GT predicate on the "updated_at" field.
 func UpdatedAtGT(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.BranchContract(sql.FieldGT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
 func UpdatedAtGTE(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.BranchContract(sql.FieldGTE(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLT applies the LT predicate on the "updated_at" field.
 func UpdatedAtLT(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.BranchContract(sql.FieldLT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.BranchContract(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
 func DeletedAtEQ(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
 func DeletedAtNEQ(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.BranchContract(sql.FieldNEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.BranchContract(sql.FieldIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.BranchContract(sql.FieldNotIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtGT applies the GT predicate on the "deleted_at" field.
 func DeletedAtGT(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.BranchContract(sql.FieldGT(FieldDeletedAt, v))
 }
 
 // DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
 func DeletedAtGTE(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.BranchContract(sql.FieldGTE(FieldDeletedAt, v))
 }
 
 // DeletedAtLT applies the LT predicate on the "deleted_at" field.
 func DeletedAtLT(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.BranchContract(sql.FieldLT(FieldDeletedAt, v))
 }
 
 // DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
 func DeletedAtLTE(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.BranchContract(sql.FieldLTE(FieldDeletedAt, v))
 }
 
 // DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
 func DeletedAtIsNil() predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.BranchContract(sql.FieldIsNull(FieldDeletedAt))
 }
 
 // DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
 func DeletedAtNotNil() predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.BranchContract(sql.FieldNotNull(FieldDeletedAt))
 }
 
 // CreatorIsNil applies the IsNil predicate on the "creator" field.
 func CreatorIsNil() predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCreator)))
-	})
+	return predicate.BranchContract(sql.FieldIsNull(FieldCreator))
 }
 
 // CreatorNotNil applies the NotNil predicate on the "creator" field.
 func CreatorNotNil() predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCreator)))
-	})
+	return predicate.BranchContract(sql.FieldNotNull(FieldCreator))
 }
 
 // LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
 func LastModifierIsNil() predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLastModifier)))
-	})
+	return predicate.BranchContract(sql.FieldIsNull(FieldLastModifier))
 }
 
 // LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
 func LastModifierNotNil() predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLastModifier)))
-	})
+	return predicate.BranchContract(sql.FieldNotNull(FieldLastModifier))
 }
 
 // RemarkEQ applies the EQ predicate on the "remark" field.
 func RemarkEQ(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldRemark, v))
 }
 
 // RemarkNEQ applies the NEQ predicate on the "remark" field.
 func RemarkNEQ(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRemark), v))
-	})
+	return predicate.BranchContract(sql.FieldNEQ(FieldRemark, v))
 }
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRemark), v...))
-	})
+	return predicate.BranchContract(sql.FieldIn(FieldRemark, vs...))
 }
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRemark), v...))
-	})
+	return predicate.BranchContract(sql.FieldNotIn(FieldRemark, vs...))
 }
 
 // RemarkGT applies the GT predicate on the "remark" field.
 func RemarkGT(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRemark), v))
-	})
+	return predicate.BranchContract(sql.FieldGT(FieldRemark, v))
 }
 
 // RemarkGTE applies the GTE predicate on the "remark" field.
 func RemarkGTE(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRemark), v))
-	})
+	return predicate.BranchContract(sql.FieldGTE(FieldRemark, v))
 }
 
 // RemarkLT applies the LT predicate on the "remark" field.
 func RemarkLT(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRemark), v))
-	})
+	return predicate.BranchContract(sql.FieldLT(FieldRemark, v))
 }
 
 // RemarkLTE applies the LTE predicate on the "remark" field.
 func RemarkLTE(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRemark), v))
-	})
+	return predicate.BranchContract(sql.FieldLTE(FieldRemark, v))
 }
 
 // RemarkContains applies the Contains predicate on the "remark" field.
 func RemarkContains(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRemark), v))
-	})
+	return predicate.BranchContract(sql.FieldContains(FieldRemark, v))
 }
 
 // RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
 func RemarkHasPrefix(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRemark), v))
-	})
+	return predicate.BranchContract(sql.FieldHasPrefix(FieldRemark, v))
 }
 
 // RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
 func RemarkHasSuffix(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRemark), v))
-	})
+	return predicate.BranchContract(sql.FieldHasSuffix(FieldRemark, v))
 }
 
 // RemarkIsNil applies the IsNil predicate on the "remark" field.
 func RemarkIsNil() predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRemark)))
-	})
+	return predicate.BranchContract(sql.FieldIsNull(FieldRemark))
 }
 
 // RemarkNotNil applies the NotNil predicate on the "remark" field.
 func RemarkNotNil() predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRemark)))
-	})
+	return predicate.BranchContract(sql.FieldNotNull(FieldRemark))
 }
 
 // RemarkEqualFold applies the EqualFold predicate on the "remark" field.
 func RemarkEqualFold(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRemark), v))
-	})
+	return predicate.BranchContract(sql.FieldEqualFold(FieldRemark, v))
 }
 
 // RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
 func RemarkContainsFold(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
-	})
+	return predicate.BranchContract(sql.FieldContainsFold(FieldRemark, v))
 }
 
 // BranchIDEQ applies the EQ predicate on the "branch_id" field.
 func BranchIDEQ(v uint64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBranchID), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldBranchID, v))
 }
 
 // BranchIDNEQ applies the NEQ predicate on the "branch_id" field.
 func BranchIDNEQ(v uint64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBranchID), v))
-	})
+	return predicate.BranchContract(sql.FieldNEQ(FieldBranchID, v))
 }
 
 // BranchIDIn applies the In predicate on the "branch_id" field.
 func BranchIDIn(vs ...uint64) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldBranchID), v...))
-	})
+	return predicate.BranchContract(sql.FieldIn(FieldBranchID, vs...))
 }
 
 // BranchIDNotIn applies the NotIn predicate on the "branch_id" field.
 func BranchIDNotIn(vs ...uint64) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldBranchID), v...))
-	})
+	return predicate.BranchContract(sql.FieldNotIn(FieldBranchID, vs...))
 }
 
 // LandlordNameEQ applies the EQ predicate on the "landlord_name" field.
 func LandlordNameEQ(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLandlordName), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldLandlordName, v))
 }
 
 // LandlordNameNEQ applies the NEQ predicate on the "landlord_name" field.
 func LandlordNameNEQ(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldLandlordName), v))
-	})
+	return predicate.BranchContract(sql.FieldNEQ(FieldLandlordName, v))
 }
 
 // LandlordNameIn applies the In predicate on the "landlord_name" field.
 func LandlordNameIn(vs ...string) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldLandlordName), v...))
-	})
+	return predicate.BranchContract(sql.FieldIn(FieldLandlordName, vs...))
 }
 
 // LandlordNameNotIn applies the NotIn predicate on the "landlord_name" field.
 func LandlordNameNotIn(vs ...string) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldLandlordName), v...))
-	})
+	return predicate.BranchContract(sql.FieldNotIn(FieldLandlordName, vs...))
 }
 
 // LandlordNameGT applies the GT predicate on the "landlord_name" field.
 func LandlordNameGT(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldLandlordName), v))
-	})
+	return predicate.BranchContract(sql.FieldGT(FieldLandlordName, v))
 }
 
 // LandlordNameGTE applies the GTE predicate on the "landlord_name" field.
 func LandlordNameGTE(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldLandlordName), v))
-	})
+	return predicate.BranchContract(sql.FieldGTE(FieldLandlordName, v))
 }
 
 // LandlordNameLT applies the LT predicate on the "landlord_name" field.
 func LandlordNameLT(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldLandlordName), v))
-	})
+	return predicate.BranchContract(sql.FieldLT(FieldLandlordName, v))
 }
 
 // LandlordNameLTE applies the LTE predicate on the "landlord_name" field.
 func LandlordNameLTE(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldLandlordName), v))
-	})
+	return predicate.BranchContract(sql.FieldLTE(FieldLandlordName, v))
 }
 
 // LandlordNameContains applies the Contains predicate on the "landlord_name" field.
 func LandlordNameContains(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldLandlordName), v))
-	})
+	return predicate.BranchContract(sql.FieldContains(FieldLandlordName, v))
 }
 
 // LandlordNameHasPrefix applies the HasPrefix predicate on the "landlord_name" field.
 func LandlordNameHasPrefix(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldLandlordName), v))
-	})
+	return predicate.BranchContract(sql.FieldHasPrefix(FieldLandlordName, v))
 }
 
 // LandlordNameHasSuffix applies the HasSuffix predicate on the "landlord_name" field.
 func LandlordNameHasSuffix(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldLandlordName), v))
-	})
+	return predicate.BranchContract(sql.FieldHasSuffix(FieldLandlordName, v))
 }
 
 // LandlordNameEqualFold applies the EqualFold predicate on the "landlord_name" field.
 func LandlordNameEqualFold(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldLandlordName), v))
-	})
+	return predicate.BranchContract(sql.FieldEqualFold(FieldLandlordName, v))
 }
 
 // LandlordNameContainsFold applies the ContainsFold predicate on the "landlord_name" field.
 func LandlordNameContainsFold(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldLandlordName), v))
-	})
+	return predicate.BranchContract(sql.FieldContainsFold(FieldLandlordName, v))
 }
 
 // IDCardNumberEQ applies the EQ predicate on the "id_card_number" field.
 func IDCardNumberEQ(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldIDCardNumber, v))
 }
 
 // IDCardNumberNEQ applies the NEQ predicate on the "id_card_number" field.
 func IDCardNumberNEQ(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldNEQ(FieldIDCardNumber, v))
 }
 
 // IDCardNumberIn applies the In predicate on the "id_card_number" field.
 func IDCardNumberIn(vs ...string) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldIDCardNumber), v...))
-	})
+	return predicate.BranchContract(sql.FieldIn(FieldIDCardNumber, vs...))
 }
 
 // IDCardNumberNotIn applies the NotIn predicate on the "id_card_number" field.
 func IDCardNumberNotIn(vs ...string) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldIDCardNumber), v...))
-	})
+	return predicate.BranchContract(sql.FieldNotIn(FieldIDCardNumber, vs...))
 }
 
 // IDCardNumberGT applies the GT predicate on the "id_card_number" field.
 func IDCardNumberGT(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldGT(FieldIDCardNumber, v))
 }
 
 // IDCardNumberGTE applies the GTE predicate on the "id_card_number" field.
 func IDCardNumberGTE(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldGTE(FieldIDCardNumber, v))
 }
 
 // IDCardNumberLT applies the LT predicate on the "id_card_number" field.
 func IDCardNumberLT(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldLT(FieldIDCardNumber, v))
 }
 
 // IDCardNumberLTE applies the LTE predicate on the "id_card_number" field.
 func IDCardNumberLTE(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldLTE(FieldIDCardNumber, v))
 }
 
 // IDCardNumberContains applies the Contains predicate on the "id_card_number" field.
 func IDCardNumberContains(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldContains(FieldIDCardNumber, v))
 }
 
 // IDCardNumberHasPrefix applies the HasPrefix predicate on the "id_card_number" field.
 func IDCardNumberHasPrefix(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldHasPrefix(FieldIDCardNumber, v))
 }
 
 // IDCardNumberHasSuffix applies the HasSuffix predicate on the "id_card_number" field.
 func IDCardNumberHasSuffix(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldHasSuffix(FieldIDCardNumber, v))
 }
 
 // IDCardNumberEqualFold applies the EqualFold predicate on the "id_card_number" field.
 func IDCardNumberEqualFold(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldEqualFold(FieldIDCardNumber, v))
 }
 
 // IDCardNumberContainsFold applies the ContainsFold predicate on the "id_card_number" field.
 func IDCardNumberContainsFold(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldContainsFold(FieldIDCardNumber, v))
 }
 
 // PhoneEQ applies the EQ predicate on the "phone" field.
 func PhoneEQ(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPhone), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldPhone, v))
 }
 
 // PhoneNEQ applies the NEQ predicate on the "phone" field.
 func PhoneNEQ(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPhone), v))
-	})
+	return predicate.BranchContract(sql.FieldNEQ(FieldPhone, v))
 }
 
 // PhoneIn applies the In predicate on the "phone" field.
 func PhoneIn(vs ...string) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldPhone), v...))
-	})
+	return predicate.BranchContract(sql.FieldIn(FieldPhone, vs...))
 }
 
 // PhoneNotIn applies the NotIn predicate on the "phone" field.
 func PhoneNotIn(vs ...string) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldPhone), v...))
-	})
+	return predicate.BranchContract(sql.FieldNotIn(FieldPhone, vs...))
 }
 
 // PhoneGT applies the GT predicate on the "phone" field.
 func PhoneGT(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldPhone), v))
-	})
+	return predicate.BranchContract(sql.FieldGT(FieldPhone, v))
 }
 
 // PhoneGTE applies the GTE predicate on the "phone" field.
 func PhoneGTE(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldPhone), v))
-	})
+	return predicate.BranchContract(sql.FieldGTE(FieldPhone, v))
 }
 
 // PhoneLT applies the LT predicate on the "phone" field.
 func PhoneLT(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldPhone), v))
-	})
+	return predicate.BranchContract(sql.FieldLT(FieldPhone, v))
 }
 
 // PhoneLTE applies the LTE predicate on the "phone" field.
 func PhoneLTE(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldPhone), v))
-	})
+	return predicate.BranchContract(sql.FieldLTE(FieldPhone, v))
 }
 
 // PhoneContains applies the Contains predicate on the "phone" field.
 func PhoneContains(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldPhone), v))
-	})
+	return predicate.BranchContract(sql.FieldContains(FieldPhone, v))
 }
 
 // PhoneHasPrefix applies the HasPrefix predicate on the "phone" field.
 func PhoneHasPrefix(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldPhone), v))
-	})
+	return predicate.BranchContract(sql.FieldHasPrefix(FieldPhone, v))
 }
 
 // PhoneHasSuffix applies the HasSuffix predicate on the "phone" field.
 func PhoneHasSuffix(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldPhone), v))
-	})
+	return predicate.BranchContract(sql.FieldHasSuffix(FieldPhone, v))
 }
 
 // PhoneEqualFold applies the EqualFold predicate on the "phone" field.
 func PhoneEqualFold(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldPhone), v))
-	})
+	return predicate.BranchContract(sql.FieldEqualFold(FieldPhone, v))
 }
 
 // PhoneContainsFold applies the ContainsFold predicate on the "phone" field.
 func PhoneContainsFold(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldPhone), v))
-	})
+	return predicate.BranchContract(sql.FieldContainsFold(FieldPhone, v))
 }
 
 // BankNumberEQ applies the EQ predicate on the "bank_number" field.
 func BankNumberEQ(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBankNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldBankNumber, v))
 }
 
 // BankNumberNEQ applies the NEQ predicate on the "bank_number" field.
 func BankNumberNEQ(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBankNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldNEQ(FieldBankNumber, v))
 }
 
 // BankNumberIn applies the In predicate on the "bank_number" field.
 func BankNumberIn(vs ...string) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldBankNumber), v...))
-	})
+	return predicate.BranchContract(sql.FieldIn(FieldBankNumber, vs...))
 }
 
 // BankNumberNotIn applies the NotIn predicate on the "bank_number" field.
 func BankNumberNotIn(vs ...string) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldBankNumber), v...))
-	})
+	return predicate.BranchContract(sql.FieldNotIn(FieldBankNumber, vs...))
 }
 
 // BankNumberGT applies the GT predicate on the "bank_number" field.
 func BankNumberGT(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldBankNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldGT(FieldBankNumber, v))
 }
 
 // BankNumberGTE applies the GTE predicate on the "bank_number" field.
 func BankNumberGTE(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldBankNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldGTE(FieldBankNumber, v))
 }
 
 // BankNumberLT applies the LT predicate on the "bank_number" field.
 func BankNumberLT(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldBankNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldLT(FieldBankNumber, v))
 }
 
 // BankNumberLTE applies the LTE predicate on the "bank_number" field.
 func BankNumberLTE(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldBankNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldLTE(FieldBankNumber, v))
 }
 
 // BankNumberContains applies the Contains predicate on the "bank_number" field.
 func BankNumberContains(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldBankNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldContains(FieldBankNumber, v))
 }
 
 // BankNumberHasPrefix applies the HasPrefix predicate on the "bank_number" field.
 func BankNumberHasPrefix(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldBankNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldHasPrefix(FieldBankNumber, v))
 }
 
 // BankNumberHasSuffix applies the HasSuffix predicate on the "bank_number" field.
 func BankNumberHasSuffix(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldBankNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldHasSuffix(FieldBankNumber, v))
 }
 
 // BankNumberEqualFold applies the EqualFold predicate on the "bank_number" field.
 func BankNumberEqualFold(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldBankNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldEqualFold(FieldBankNumber, v))
 }
 
 // BankNumberContainsFold applies the ContainsFold predicate on the "bank_number" field.
 func BankNumberContainsFold(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldBankNumber), v))
-	})
+	return predicate.BranchContract(sql.FieldContainsFold(FieldBankNumber, v))
 }
 
 // PledgeEQ applies the EQ predicate on the "pledge" field.
 func PledgeEQ(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPledge), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldPledge, v))
 }
 
 // PledgeNEQ applies the NEQ predicate on the "pledge" field.
 func PledgeNEQ(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPledge), v))
-	})
+	return predicate.BranchContract(sql.FieldNEQ(FieldPledge, v))
 }
 
 // PledgeIn applies the In predicate on the "pledge" field.
 func PledgeIn(vs ...float64) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldPledge), v...))
-	})
+	return predicate.BranchContract(sql.FieldIn(FieldPledge, vs...))
 }
 
 // PledgeNotIn applies the NotIn predicate on the "pledge" field.
 func PledgeNotIn(vs ...float64) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldPledge), v...))
-	})
+	return predicate.BranchContract(sql.FieldNotIn(FieldPledge, vs...))
 }
 
 // PledgeGT applies the GT predicate on the "pledge" field.
 func PledgeGT(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldPledge), v))
-	})
+	return predicate.BranchContract(sql.FieldGT(FieldPledge, v))
 }
 
 // PledgeGTE applies the GTE predicate on the "pledge" field.
 func PledgeGTE(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldPledge), v))
-	})
+	return predicate.BranchContract(sql.FieldGTE(FieldPledge, v))
 }
 
 // PledgeLT applies the LT predicate on the "pledge" field.
 func PledgeLT(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldPledge), v))
-	})
+	return predicate.BranchContract(sql.FieldLT(FieldPledge, v))
 }
 
 // PledgeLTE applies the LTE predicate on the "pledge" field.
 func PledgeLTE(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldPledge), v))
-	})
+	return predicate.BranchContract(sql.FieldLTE(FieldPledge, v))
 }
 
 // RentEQ applies the EQ predicate on the "rent" field.
 func RentEQ(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRent), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldRent, v))
 }
 
 // RentNEQ applies the NEQ predicate on the "rent" field.
 func RentNEQ(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRent), v))
-	})
+	return predicate.BranchContract(sql.FieldNEQ(FieldRent, v))
 }
 
 // RentIn applies the In predicate on the "rent" field.
 func RentIn(vs ...float64) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRent), v...))
-	})
+	return predicate.BranchContract(sql.FieldIn(FieldRent, vs...))
 }
 
 // RentNotIn applies the NotIn predicate on the "rent" field.
 func RentNotIn(vs ...float64) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRent), v...))
-	})
+	return predicate.BranchContract(sql.FieldNotIn(FieldRent, vs...))
 }
 
 // RentGT applies the GT predicate on the "rent" field.
 func RentGT(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRent), v))
-	})
+	return predicate.BranchContract(sql.FieldGT(FieldRent, v))
 }
 
 // RentGTE applies the GTE predicate on the "rent" field.
 func RentGTE(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRent), v))
-	})
+	return predicate.BranchContract(sql.FieldGTE(FieldRent, v))
 }
 
 // RentLT applies the LT predicate on the "rent" field.
 func RentLT(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRent), v))
-	})
+	return predicate.BranchContract(sql.FieldLT(FieldRent, v))
 }
 
 // RentLTE applies the LTE predicate on the "rent" field.
 func RentLTE(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRent), v))
-	})
+	return predicate.BranchContract(sql.FieldLTE(FieldRent, v))
 }
 
 // LeaseEQ applies the EQ predicate on the "lease" field.
 func LeaseEQ(v uint) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLease), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldLease, v))
 }
 
 // LeaseNEQ applies the NEQ predicate on the "lease" field.
 func LeaseNEQ(v uint) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldLease), v))
-	})
+	return predicate.BranchContract(sql.FieldNEQ(FieldLease, v))
 }
 
 // LeaseIn applies the In predicate on the "lease" field.
 func LeaseIn(vs ...uint) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldLease), v...))
-	})
+	return predicate.BranchContract(sql.FieldIn(FieldLease, vs...))
 }
 
 // LeaseNotIn applies the NotIn predicate on the "lease" field.
 func LeaseNotIn(vs ...uint) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldLease), v...))
-	})
+	return predicate.BranchContract(sql.FieldNotIn(FieldLease, vs...))
 }
 
 // LeaseGT applies the GT predicate on the "lease" field.
 func LeaseGT(v uint) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldLease), v))
-	})
+	return predicate.BranchContract(sql.FieldGT(FieldLease, v))
 }
 
 // LeaseGTE applies the GTE predicate on the "lease" field.
 func LeaseGTE(v uint) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldLease), v))
-	})
+	return predicate.BranchContract(sql.FieldGTE(FieldLease, v))
 }
 
 // LeaseLT applies the LT predicate on the "lease" field.
 func LeaseLT(v uint) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldLease), v))
-	})
+	return predicate.BranchContract(sql.FieldLT(FieldLease, v))
 }
 
 // LeaseLTE applies the LTE predicate on the "lease" field.
 func LeaseLTE(v uint) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldLease), v))
-	})
+	return predicate.BranchContract(sql.FieldLTE(FieldLease, v))
 }
 
 // ElectricityPledgeEQ applies the EQ predicate on the "electricity_pledge" field.
 func ElectricityPledgeEQ(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldElectricityPledge), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldElectricityPledge, v))
 }
 
 // ElectricityPledgeNEQ applies the NEQ predicate on the "electricity_pledge" field.
 func ElectricityPledgeNEQ(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldElectricityPledge), v))
-	})
+	return predicate.BranchContract(sql.FieldNEQ(FieldElectricityPledge, v))
 }
 
 // ElectricityPledgeIn applies the In predicate on the "electricity_pledge" field.
 func ElectricityPledgeIn(vs ...float64) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldElectricityPledge), v...))
-	})
+	return predicate.BranchContract(sql.FieldIn(FieldElectricityPledge, vs...))
 }
 
 // ElectricityPledgeNotIn applies the NotIn predicate on the "electricity_pledge" field.
 func ElectricityPledgeNotIn(vs ...float64) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldElectricityPledge), v...))
-	})
+	return predicate.BranchContract(sql.FieldNotIn(FieldElectricityPledge, vs...))
 }
 
 // ElectricityPledgeGT applies the GT predicate on the "electricity_pledge" field.
 func ElectricityPledgeGT(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldElectricityPledge), v))
-	})
+	return predicate.BranchContract(sql.FieldGT(FieldElectricityPledge, v))
 }
 
 // ElectricityPledgeGTE applies the GTE predicate on the "electricity_pledge" field.
 func ElectricityPledgeGTE(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldElectricityPledge), v))
-	})
+	return predicate.BranchContract(sql.FieldGTE(FieldElectricityPledge, v))
 }
 
 // ElectricityPledgeLT applies the LT predicate on the "electricity_pledge" field.
 func ElectricityPledgeLT(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldElectricityPledge), v))
-	})
+	return predicate.BranchContract(sql.FieldLT(FieldElectricityPledge, v))
 }
 
 // ElectricityPledgeLTE applies the LTE predicate on the "electricity_pledge" field.
 func ElectricityPledgeLTE(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldElectricityPledge), v))
-	})
+	return predicate.BranchContract(sql.FieldLTE(FieldElectricityPledge, v))
 }
 
 // ElectricityEQ applies the EQ predicate on the "electricity" field.
 func ElectricityEQ(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldElectricity), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldElectricity, v))
 }
 
 // ElectricityNEQ applies the NEQ predicate on the "electricity" field.
 func ElectricityNEQ(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldElectricity), v))
-	})
+	return predicate.BranchContract(sql.FieldNEQ(FieldElectricity, v))
 }
 
 // ElectricityIn applies the In predicate on the "electricity" field.
 func ElectricityIn(vs ...string) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldElectricity), v...))
-	})
+	return predicate.BranchContract(sql.FieldIn(FieldElectricity, vs...))
 }
 
 // ElectricityNotIn applies the NotIn predicate on the "electricity" field.
 func ElectricityNotIn(vs ...string) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldElectricity), v...))
-	})
+	return predicate.BranchContract(sql.FieldNotIn(FieldElectricity, vs...))
 }
 
 // ElectricityGT applies the GT predicate on the "electricity" field.
 func ElectricityGT(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldElectricity), v))
-	})
+	return predicate.BranchContract(sql.FieldGT(FieldElectricity, v))
 }
 
 // ElectricityGTE applies the GTE predicate on the "electricity" field.
 func ElectricityGTE(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldElectricity), v))
-	})
+	return predicate.BranchContract(sql.FieldGTE(FieldElectricity, v))
 }
 
 // ElectricityLT applies the LT predicate on the "electricity" field.
 func ElectricityLT(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldElectricity), v))
-	})
+	return predicate.BranchContract(sql.FieldLT(FieldElectricity, v))
 }
 
 // ElectricityLTE applies the LTE predicate on the "electricity" field.
 func ElectricityLTE(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldElectricity), v))
-	})
+	return predicate.BranchContract(sql.FieldLTE(FieldElectricity, v))
 }
 
 // ElectricityContains applies the Contains predicate on the "electricity" field.
 func ElectricityContains(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldElectricity), v))
-	})
+	return predicate.BranchContract(sql.FieldContains(FieldElectricity, v))
 }
 
 // ElectricityHasPrefix applies the HasPrefix predicate on the "electricity" field.
 func ElectricityHasPrefix(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldElectricity), v))
-	})
+	return predicate.BranchContract(sql.FieldHasPrefix(FieldElectricity, v))
 }
 
 // ElectricityHasSuffix applies the HasSuffix predicate on the "electricity" field.
 func ElectricityHasSuffix(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldElectricity), v))
-	})
+	return predicate.BranchContract(sql.FieldHasSuffix(FieldElectricity, v))
 }
 
 // ElectricityEqualFold applies the EqualFold predicate on the "electricity" field.
 func ElectricityEqualFold(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldElectricity), v))
-	})
+	return predicate.BranchContract(sql.FieldEqualFold(FieldElectricity, v))
 }
 
 // ElectricityContainsFold applies the ContainsFold predicate on the "electricity" field.
 func ElectricityContainsFold(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldElectricity), v))
-	})
+	return predicate.BranchContract(sql.FieldContainsFold(FieldElectricity, v))
 }
 
 // AreaEQ applies the EQ predicate on the "area" field.
 func AreaEQ(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldArea), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldArea, v))
 }
 
 // AreaNEQ applies the NEQ predicate on the "area" field.
 func AreaNEQ(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldArea), v))
-	})
+	return predicate.BranchContract(sql.FieldNEQ(FieldArea, v))
 }
 
 // AreaIn applies the In predicate on the "area" field.
 func AreaIn(vs ...float64) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldArea), v...))
-	})
+	return predicate.BranchContract(sql.FieldIn(FieldArea, vs...))
 }
 
 // AreaNotIn applies the NotIn predicate on the "area" field.
 func AreaNotIn(vs ...float64) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldArea), v...))
-	})
+	return predicate.BranchContract(sql.FieldNotIn(FieldArea, vs...))
 }
 
 // AreaGT applies the GT predicate on the "area" field.
 func AreaGT(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldArea), v))
-	})
+	return predicate.BranchContract(sql.FieldGT(FieldArea, v))
 }
 
 // AreaGTE applies the GTE predicate on the "area" field.
 func AreaGTE(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldArea), v))
-	})
+	return predicate.BranchContract(sql.FieldGTE(FieldArea, v))
 }
 
 // AreaLT applies the LT predicate on the "area" field.
 func AreaLT(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldArea), v))
-	})
+	return predicate.BranchContract(sql.FieldLT(FieldArea, v))
 }
 
 // AreaLTE applies the LTE predicate on the "area" field.
 func AreaLTE(v float64) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldArea), v))
-	})
+	return predicate.BranchContract(sql.FieldLTE(FieldArea, v))
 }
 
 // StartTimeEQ applies the EQ predicate on the "start_time" field.
 func StartTimeEQ(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStartTime), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldStartTime, v))
 }
 
 // StartTimeNEQ applies the NEQ predicate on the "start_time" field.
 func StartTimeNEQ(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStartTime), v))
-	})
+	return predicate.BranchContract(sql.FieldNEQ(FieldStartTime, v))
 }
 
 // StartTimeIn applies the In predicate on the "start_time" field.
 func StartTimeIn(vs ...time.Time) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStartTime), v...))
-	})
+	return predicate.BranchContract(sql.FieldIn(FieldStartTime, vs...))
 }
 
 // StartTimeNotIn applies the NotIn predicate on the "start_time" field.
 func StartTimeNotIn(vs ...time.Time) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStartTime), v...))
-	})
+	return predicate.BranchContract(sql.FieldNotIn(FieldStartTime, vs...))
 }
 
 // StartTimeGT applies the GT predicate on the "start_time" field.
 func StartTimeGT(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldStartTime), v))
-	})
+	return predicate.BranchContract(sql.FieldGT(FieldStartTime, v))
 }
 
 // StartTimeGTE applies the GTE predicate on the "start_time" field.
 func StartTimeGTE(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldStartTime), v))
-	})
+	return predicate.BranchContract(sql.FieldGTE(FieldStartTime, v))
 }
 
 // StartTimeLT applies the LT predicate on the "start_time" field.
 func StartTimeLT(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldStartTime), v))
-	})
+	return predicate.BranchContract(sql.FieldLT(FieldStartTime, v))
 }
 
 // StartTimeLTE applies the LTE predicate on the "start_time" field.
 func StartTimeLTE(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldStartTime), v))
-	})
+	return predicate.BranchContract(sql.FieldLTE(FieldStartTime, v))
 }
 
 // EndTimeEQ applies the EQ predicate on the "end_time" field.
 func EndTimeEQ(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEndTime), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldEndTime, v))
 }
 
 // EndTimeNEQ applies the NEQ predicate on the "end_time" field.
 func EndTimeNEQ(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEndTime), v))
-	})
+	return predicate.BranchContract(sql.FieldNEQ(FieldEndTime, v))
 }
 
 // EndTimeIn applies the In predicate on the "end_time" field.
 func EndTimeIn(vs ...time.Time) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEndTime), v...))
-	})
+	return predicate.BranchContract(sql.FieldIn(FieldEndTime, vs...))
 }
 
 // EndTimeNotIn applies the NotIn predicate on the "end_time" field.
 func EndTimeNotIn(vs ...time.Time) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEndTime), v...))
-	})
+	return predicate.BranchContract(sql.FieldNotIn(FieldEndTime, vs...))
 }
 
 // EndTimeGT applies the GT predicate on the "end_time" field.
 func EndTimeGT(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldEndTime), v))
-	})
+	return predicate.BranchContract(sql.FieldGT(FieldEndTime, v))
 }
 
 // EndTimeGTE applies the GTE predicate on the "end_time" field.
 func EndTimeGTE(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldEndTime), v))
-	})
+	return predicate.BranchContract(sql.FieldGTE(FieldEndTime, v))
 }
 
 // EndTimeLT applies the LT predicate on the "end_time" field.
 func EndTimeLT(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldEndTime), v))
-	})
+	return predicate.BranchContract(sql.FieldLT(FieldEndTime, v))
 }
 
 // EndTimeLTE applies the LTE predicate on the "end_time" field.
 func EndTimeLTE(v time.Time) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldEndTime), v))
-	})
+	return predicate.BranchContract(sql.FieldLTE(FieldEndTime, v))
 }
 
 // FileEQ applies the EQ predicate on the "file" field.
 func FileEQ(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldFile), v))
-	})
+	return predicate.BranchContract(sql.FieldEQ(FieldFile, v))
 }
 
 // FileNEQ applies the NEQ predicate on the "file" field.
 func FileNEQ(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldFile), v))
-	})
+	return predicate.BranchContract(sql.FieldNEQ(FieldFile, v))
 }
 
 // FileIn applies the In predicate on the "file" field.
 func FileIn(vs ...string) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldFile), v...))
-	})
+	return predicate.BranchContract(sql.FieldIn(FieldFile, vs...))
 }
 
 // FileNotIn applies the NotIn predicate on the "file" field.
 func FileNotIn(vs ...string) predicate.BranchContract {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldFile), v...))
-	})
+	return predicate.BranchContract(sql.FieldNotIn(FieldFile, vs...))
 }
 
 // FileGT applies the GT predicate on the "file" field.
 func FileGT(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldFile), v))
-	})
+	return predicate.BranchContract(sql.FieldGT(FieldFile, v))
 }
 
 // FileGTE applies the GTE predicate on the "file" field.
 func FileGTE(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldFile), v))
-	})
+	return predicate.BranchContract(sql.FieldGTE(FieldFile, v))
 }
 
 // FileLT applies the LT predicate on the "file" field.
 func FileLT(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldFile), v))
-	})
+	return predicate.BranchContract(sql.FieldLT(FieldFile, v))
 }
 
 // FileLTE applies the LTE predicate on the "file" field.
 func FileLTE(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldFile), v))
-	})
+	return predicate.BranchContract(sql.FieldLTE(FieldFile, v))
 }
 
 // FileContains applies the Contains predicate on the "file" field.
 func FileContains(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldFile), v))
-	})
+	return predicate.BranchContract(sql.FieldContains(FieldFile, v))
 }
 
 // FileHasPrefix applies the HasPrefix predicate on the "file" field.
 func FileHasPrefix(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldFile), v))
-	})
+	return predicate.BranchContract(sql.FieldHasPrefix(FieldFile, v))
 }
 
 // FileHasSuffix applies the HasSuffix predicate on the "file" field.
 func FileHasSuffix(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldFile), v))
-	})
+	return predicate.BranchContract(sql.FieldHasSuffix(FieldFile, v))
 }
 
 // FileEqualFold applies the EqualFold predicate on the "file" field.
 func FileEqualFold(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldFile), v))
-	})
+	return predicate.BranchContract(sql.FieldEqualFold(FieldFile, v))
 }
 
 // FileContainsFold applies the ContainsFold predicate on the "file" field.
 func FileContainsFold(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldFile), v))
-	})
+	return predicate.BranchContract(sql.FieldContainsFold(FieldFile, v))
 }
 
 // HasBranch applies the HasEdge predicate on the "branch" edge.
@@ -1637,7 +1065,6 @@ func HasBranch() predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(BranchTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, BranchTable, BranchColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

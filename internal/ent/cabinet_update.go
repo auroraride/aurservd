@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
@@ -353,6 +354,12 @@ func (cu *CabinetUpdate) SetBin(mb model.CabinetBins) *CabinetUpdate {
 	return cu
 }
 
+// AppendBin appends mb to the "bin" field.
+func (cu *CabinetUpdate) AppendBin(mb model.CabinetBins) *CabinetUpdate {
+	cu.mutation.AppendBin(mb)
+	return cu
+}
+
 // ClearBin clears the value of the "bin" field.
 func (cu *CabinetUpdate) ClearBin() *CabinetUpdate {
 	cu.mutation.ClearBin()
@@ -637,37 +644,10 @@ func (cu *CabinetUpdate) RemoveStocks(s ...*Stock) *CabinetUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (cu *CabinetUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := cu.defaults(); err != nil {
 		return 0, err
 	}
-	if len(cu.hooks) == 0 {
-		affected, err = cu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CabinetMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			cu.mutation = mutation
-			affected, err = cu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(cu.hooks) - 1; i >= 0; i-- {
-			if cu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = cu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, cu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, CabinetMutation](ctx, cu.sqlSave, cu.mutation, cu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -729,302 +709,141 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := cu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: cabinet.FieldUpdatedAt,
-		})
+		_spec.SetField(cabinet.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := cu.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: cabinet.FieldDeletedAt,
-		})
+		_spec.SetField(cabinet.FieldDeletedAt, field.TypeTime, value)
 	}
 	if cu.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: cabinet.FieldDeletedAt,
-		})
+		_spec.ClearField(cabinet.FieldDeletedAt, field.TypeTime)
 	}
 	if cu.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: cabinet.FieldCreator,
-		})
+		_spec.ClearField(cabinet.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := cu.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinet.FieldLastModifier,
-		})
+		_spec.SetField(cabinet.FieldLastModifier, field.TypeJSON, value)
 	}
 	if cu.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: cabinet.FieldLastModifier,
-		})
+		_spec.ClearField(cabinet.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := cu.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinet.FieldRemark,
-		})
+		_spec.SetField(cabinet.FieldRemark, field.TypeString, value)
 	}
 	if cu.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: cabinet.FieldRemark,
-		})
+		_spec.ClearField(cabinet.FieldRemark, field.TypeString)
 	}
 	if value, ok := cu.mutation.Sn(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinet.FieldSn,
-		})
+		_spec.SetField(cabinet.FieldSn, field.TypeString, value)
 	}
 	if value, ok := cu.mutation.Brand(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinet.FieldBrand,
-		})
+		_spec.SetField(cabinet.FieldBrand, field.TypeString, value)
 	}
 	if value, ok := cu.mutation.Serial(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinet.FieldSerial,
-		})
+		_spec.SetField(cabinet.FieldSerial, field.TypeString, value)
 	}
 	if value, ok := cu.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinet.FieldName,
-		})
+		_spec.SetField(cabinet.FieldName, field.TypeString, value)
 	}
 	if value, ok := cu.mutation.Doors(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldDoors,
-		})
+		_spec.SetField(cabinet.FieldDoors, field.TypeInt, value)
 	}
 	if value, ok := cu.mutation.AddedDoors(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldDoors,
-		})
+		_spec.AddField(cabinet.FieldDoors, field.TypeInt, value)
 	}
 	if value, ok := cu.mutation.Status(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: cabinet.FieldStatus,
-		})
+		_spec.SetField(cabinet.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := cu.mutation.AddedStatus(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: cabinet.FieldStatus,
-		})
+		_spec.AddField(cabinet.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := cu.mutation.Lng(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: cabinet.FieldLng,
-		})
+		_spec.SetField(cabinet.FieldLng, field.TypeFloat64, value)
 	}
 	if value, ok := cu.mutation.AddedLng(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: cabinet.FieldLng,
-		})
+		_spec.AddField(cabinet.FieldLng, field.TypeFloat64, value)
 	}
 	if cu.mutation.LngCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: cabinet.FieldLng,
-		})
+		_spec.ClearField(cabinet.FieldLng, field.TypeFloat64)
 	}
 	if value, ok := cu.mutation.Lat(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: cabinet.FieldLat,
-		})
+		_spec.SetField(cabinet.FieldLat, field.TypeFloat64, value)
 	}
 	if value, ok := cu.mutation.AddedLat(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: cabinet.FieldLat,
-		})
+		_spec.AddField(cabinet.FieldLat, field.TypeFloat64, value)
 	}
 	if cu.mutation.LatCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: cabinet.FieldLat,
-		})
+		_spec.ClearField(cabinet.FieldLat, field.TypeFloat64)
 	}
 	if value, ok := cu.mutation.Address(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinet.FieldAddress,
-		})
+		_spec.SetField(cabinet.FieldAddress, field.TypeString, value)
 	}
 	if cu.mutation.AddressCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: cabinet.FieldAddress,
-		})
+		_spec.ClearField(cabinet.FieldAddress, field.TypeString)
 	}
 	if value, ok := cu.mutation.SimSn(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinet.FieldSimSn,
-		})
+		_spec.SetField(cabinet.FieldSimSn, field.TypeString, value)
 	}
 	if cu.mutation.SimSnCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: cabinet.FieldSimSn,
-		})
+		_spec.ClearField(cabinet.FieldSimSn, field.TypeString)
 	}
 	if value, ok := cu.mutation.SimDate(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: cabinet.FieldSimDate,
-		})
+		_spec.SetField(cabinet.FieldSimDate, field.TypeTime, value)
 	}
 	if cu.mutation.SimDateCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: cabinet.FieldSimDate,
-		})
+		_spec.ClearField(cabinet.FieldSimDate, field.TypeTime)
 	}
 	if value, ok := cu.mutation.Transferred(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: cabinet.FieldTransferred,
-		})
+		_spec.SetField(cabinet.FieldTransferred, field.TypeBool, value)
 	}
 	if value, ok := cu.mutation.Intelligent(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: cabinet.FieldIntelligent,
-		})
+		_spec.SetField(cabinet.FieldIntelligent, field.TypeBool, value)
 	}
 	if value, ok := cu.mutation.Health(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: cabinet.FieldHealth,
-		})
+		_spec.SetField(cabinet.FieldHealth, field.TypeUint8, value)
 	}
 	if value, ok := cu.mutation.AddedHealth(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: cabinet.FieldHealth,
-		})
+		_spec.AddField(cabinet.FieldHealth, field.TypeUint8, value)
 	}
 	if value, ok := cu.mutation.Bin(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinet.FieldBin,
+		_spec.SetField(cabinet.FieldBin, field.TypeJSON, value)
+	}
+	if value, ok := cu.mutation.AppendedBin(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, cabinet.FieldBin, value)
 		})
 	}
 	if cu.mutation.BinCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: cabinet.FieldBin,
-		})
+		_spec.ClearField(cabinet.FieldBin, field.TypeJSON)
 	}
 	if value, ok := cu.mutation.BatteryNum(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldBatteryNum,
-		})
+		_spec.SetField(cabinet.FieldBatteryNum, field.TypeInt, value)
 	}
 	if value, ok := cu.mutation.AddedBatteryNum(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldBatteryNum,
-		})
+		_spec.AddField(cabinet.FieldBatteryNum, field.TypeInt, value)
 	}
 	if value, ok := cu.mutation.BatteryFullNum(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldBatteryFullNum,
-		})
+		_spec.SetField(cabinet.FieldBatteryFullNum, field.TypeInt, value)
 	}
 	if value, ok := cu.mutation.AddedBatteryFullNum(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldBatteryFullNum,
-		})
+		_spec.AddField(cabinet.FieldBatteryFullNum, field.TypeInt, value)
 	}
 	if value, ok := cu.mutation.BatteryChargingNum(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldBatteryChargingNum,
-		})
+		_spec.SetField(cabinet.FieldBatteryChargingNum, field.TypeInt, value)
 	}
 	if value, ok := cu.mutation.AddedBatteryChargingNum(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldBatteryChargingNum,
-		})
+		_spec.AddField(cabinet.FieldBatteryChargingNum, field.TypeInt, value)
 	}
 	if value, ok := cu.mutation.EmptyBinNum(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldEmptyBinNum,
-		})
+		_spec.SetField(cabinet.FieldEmptyBinNum, field.TypeInt, value)
 	}
 	if value, ok := cu.mutation.AddedEmptyBinNum(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldEmptyBinNum,
-		})
+		_spec.AddField(cabinet.FieldEmptyBinNum, field.TypeInt, value)
 	}
 	if value, ok := cu.mutation.LockedBinNum(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldLockedBinNum,
-		})
+		_spec.SetField(cabinet.FieldLockedBinNum, field.TypeInt, value)
 	}
 	if value, ok := cu.mutation.AddedLockedBinNum(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldLockedBinNum,
-		})
+		_spec.AddField(cabinet.FieldLockedBinNum, field.TypeInt, value)
 	}
 	if cu.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1312,7 +1131,7 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = cu.modifiers
+	_spec.AddModifiers(cu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{cabinet.Label}
@@ -1321,6 +1140,7 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	cu.mutation.done = true
 	return n, nil
 }
 
@@ -1650,6 +1470,12 @@ func (cuo *CabinetUpdateOne) SetBin(mb model.CabinetBins) *CabinetUpdateOne {
 	return cuo
 }
 
+// AppendBin appends mb to the "bin" field.
+func (cuo *CabinetUpdateOne) AppendBin(mb model.CabinetBins) *CabinetUpdateOne {
+	cuo.mutation.AppendBin(mb)
+	return cuo
+}
+
 // ClearBin clears the value of the "bin" field.
 func (cuo *CabinetUpdateOne) ClearBin() *CabinetUpdateOne {
 	cuo.mutation.ClearBin()
@@ -1941,43 +1767,10 @@ func (cuo *CabinetUpdateOne) Select(field string, fields ...string) *CabinetUpda
 
 // Save executes the query and returns the updated Cabinet entity.
 func (cuo *CabinetUpdateOne) Save(ctx context.Context) (*Cabinet, error) {
-	var (
-		err  error
-		node *Cabinet
-	)
 	if err := cuo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(cuo.hooks) == 0 {
-		node, err = cuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CabinetMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			cuo.mutation = mutation
-			node, err = cuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(cuo.hooks) - 1; i >= 0; i-- {
-			if cuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = cuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, cuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Cabinet)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from CabinetMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Cabinet, CabinetMutation](ctx, cuo.sqlSave, cuo.mutation, cuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -2056,302 +1849,141 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 		}
 	}
 	if value, ok := cuo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: cabinet.FieldUpdatedAt,
-		})
+		_spec.SetField(cabinet.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := cuo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: cabinet.FieldDeletedAt,
-		})
+		_spec.SetField(cabinet.FieldDeletedAt, field.TypeTime, value)
 	}
 	if cuo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: cabinet.FieldDeletedAt,
-		})
+		_spec.ClearField(cabinet.FieldDeletedAt, field.TypeTime)
 	}
 	if cuo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: cabinet.FieldCreator,
-		})
+		_spec.ClearField(cabinet.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := cuo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinet.FieldLastModifier,
-		})
+		_spec.SetField(cabinet.FieldLastModifier, field.TypeJSON, value)
 	}
 	if cuo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: cabinet.FieldLastModifier,
-		})
+		_spec.ClearField(cabinet.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := cuo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinet.FieldRemark,
-		})
+		_spec.SetField(cabinet.FieldRemark, field.TypeString, value)
 	}
 	if cuo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: cabinet.FieldRemark,
-		})
+		_spec.ClearField(cabinet.FieldRemark, field.TypeString)
 	}
 	if value, ok := cuo.mutation.Sn(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinet.FieldSn,
-		})
+		_spec.SetField(cabinet.FieldSn, field.TypeString, value)
 	}
 	if value, ok := cuo.mutation.Brand(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinet.FieldBrand,
-		})
+		_spec.SetField(cabinet.FieldBrand, field.TypeString, value)
 	}
 	if value, ok := cuo.mutation.Serial(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinet.FieldSerial,
-		})
+		_spec.SetField(cabinet.FieldSerial, field.TypeString, value)
 	}
 	if value, ok := cuo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinet.FieldName,
-		})
+		_spec.SetField(cabinet.FieldName, field.TypeString, value)
 	}
 	if value, ok := cuo.mutation.Doors(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldDoors,
-		})
+		_spec.SetField(cabinet.FieldDoors, field.TypeInt, value)
 	}
 	if value, ok := cuo.mutation.AddedDoors(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldDoors,
-		})
+		_spec.AddField(cabinet.FieldDoors, field.TypeInt, value)
 	}
 	if value, ok := cuo.mutation.Status(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: cabinet.FieldStatus,
-		})
+		_spec.SetField(cabinet.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := cuo.mutation.AddedStatus(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: cabinet.FieldStatus,
-		})
+		_spec.AddField(cabinet.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := cuo.mutation.Lng(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: cabinet.FieldLng,
-		})
+		_spec.SetField(cabinet.FieldLng, field.TypeFloat64, value)
 	}
 	if value, ok := cuo.mutation.AddedLng(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: cabinet.FieldLng,
-		})
+		_spec.AddField(cabinet.FieldLng, field.TypeFloat64, value)
 	}
 	if cuo.mutation.LngCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: cabinet.FieldLng,
-		})
+		_spec.ClearField(cabinet.FieldLng, field.TypeFloat64)
 	}
 	if value, ok := cuo.mutation.Lat(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: cabinet.FieldLat,
-		})
+		_spec.SetField(cabinet.FieldLat, field.TypeFloat64, value)
 	}
 	if value, ok := cuo.mutation.AddedLat(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: cabinet.FieldLat,
-		})
+		_spec.AddField(cabinet.FieldLat, field.TypeFloat64, value)
 	}
 	if cuo.mutation.LatCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: cabinet.FieldLat,
-		})
+		_spec.ClearField(cabinet.FieldLat, field.TypeFloat64)
 	}
 	if value, ok := cuo.mutation.Address(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinet.FieldAddress,
-		})
+		_spec.SetField(cabinet.FieldAddress, field.TypeString, value)
 	}
 	if cuo.mutation.AddressCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: cabinet.FieldAddress,
-		})
+		_spec.ClearField(cabinet.FieldAddress, field.TypeString)
 	}
 	if value, ok := cuo.mutation.SimSn(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinet.FieldSimSn,
-		})
+		_spec.SetField(cabinet.FieldSimSn, field.TypeString, value)
 	}
 	if cuo.mutation.SimSnCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: cabinet.FieldSimSn,
-		})
+		_spec.ClearField(cabinet.FieldSimSn, field.TypeString)
 	}
 	if value, ok := cuo.mutation.SimDate(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: cabinet.FieldSimDate,
-		})
+		_spec.SetField(cabinet.FieldSimDate, field.TypeTime, value)
 	}
 	if cuo.mutation.SimDateCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: cabinet.FieldSimDate,
-		})
+		_spec.ClearField(cabinet.FieldSimDate, field.TypeTime)
 	}
 	if value, ok := cuo.mutation.Transferred(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: cabinet.FieldTransferred,
-		})
+		_spec.SetField(cabinet.FieldTransferred, field.TypeBool, value)
 	}
 	if value, ok := cuo.mutation.Intelligent(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: cabinet.FieldIntelligent,
-		})
+		_spec.SetField(cabinet.FieldIntelligent, field.TypeBool, value)
 	}
 	if value, ok := cuo.mutation.Health(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: cabinet.FieldHealth,
-		})
+		_spec.SetField(cabinet.FieldHealth, field.TypeUint8, value)
 	}
 	if value, ok := cuo.mutation.AddedHealth(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: cabinet.FieldHealth,
-		})
+		_spec.AddField(cabinet.FieldHealth, field.TypeUint8, value)
 	}
 	if value, ok := cuo.mutation.Bin(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinet.FieldBin,
+		_spec.SetField(cabinet.FieldBin, field.TypeJSON, value)
+	}
+	if value, ok := cuo.mutation.AppendedBin(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, cabinet.FieldBin, value)
 		})
 	}
 	if cuo.mutation.BinCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: cabinet.FieldBin,
-		})
+		_spec.ClearField(cabinet.FieldBin, field.TypeJSON)
 	}
 	if value, ok := cuo.mutation.BatteryNum(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldBatteryNum,
-		})
+		_spec.SetField(cabinet.FieldBatteryNum, field.TypeInt, value)
 	}
 	if value, ok := cuo.mutation.AddedBatteryNum(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldBatteryNum,
-		})
+		_spec.AddField(cabinet.FieldBatteryNum, field.TypeInt, value)
 	}
 	if value, ok := cuo.mutation.BatteryFullNum(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldBatteryFullNum,
-		})
+		_spec.SetField(cabinet.FieldBatteryFullNum, field.TypeInt, value)
 	}
 	if value, ok := cuo.mutation.AddedBatteryFullNum(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldBatteryFullNum,
-		})
+		_spec.AddField(cabinet.FieldBatteryFullNum, field.TypeInt, value)
 	}
 	if value, ok := cuo.mutation.BatteryChargingNum(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldBatteryChargingNum,
-		})
+		_spec.SetField(cabinet.FieldBatteryChargingNum, field.TypeInt, value)
 	}
 	if value, ok := cuo.mutation.AddedBatteryChargingNum(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldBatteryChargingNum,
-		})
+		_spec.AddField(cabinet.FieldBatteryChargingNum, field.TypeInt, value)
 	}
 	if value, ok := cuo.mutation.EmptyBinNum(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldEmptyBinNum,
-		})
+		_spec.SetField(cabinet.FieldEmptyBinNum, field.TypeInt, value)
 	}
 	if value, ok := cuo.mutation.AddedEmptyBinNum(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldEmptyBinNum,
-		})
+		_spec.AddField(cabinet.FieldEmptyBinNum, field.TypeInt, value)
 	}
 	if value, ok := cuo.mutation.LockedBinNum(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldLockedBinNum,
-		})
+		_spec.SetField(cabinet.FieldLockedBinNum, field.TypeInt, value)
 	}
 	if value, ok := cuo.mutation.AddedLockedBinNum(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldLockedBinNum,
-		})
+		_spec.AddField(cabinet.FieldLockedBinNum, field.TypeInt, value)
 	}
 	if cuo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -2639,7 +2271,7 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = cuo.modifiers
+	_spec.AddModifiers(cuo.modifiers...)
 	_node = &Cabinet{config: cuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -2651,5 +2283,6 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 		}
 		return nil, err
 	}
+	cuo.mutation.done = true
 	return _node, nil
 }

@@ -86,35 +86,8 @@ func (piu *PlanIntroduceUpdate) ClearBrand() *PlanIntroduceUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (piu *PlanIntroduceUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	piu.defaults()
-	if len(piu.hooks) == 0 {
-		affected, err = piu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*PlanIntroduceMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			piu.mutation = mutation
-			affected, err = piu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(piu.hooks) - 1; i >= 0; i-- {
-			if piu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = piu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, piu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, PlanIntroduceMutation](ctx, piu.sqlSave, piu.mutation, piu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -172,25 +145,13 @@ func (piu *PlanIntroduceUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 	}
 	if value, ok := piu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: planintroduce.FieldUpdatedAt,
-		})
+		_spec.SetField(planintroduce.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := piu.mutation.Model(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: planintroduce.FieldModel,
-		})
+		_spec.SetField(planintroduce.FieldModel, field.TypeString, value)
 	}
 	if value, ok := piu.mutation.Image(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: planintroduce.FieldImage,
-		})
+		_spec.SetField(planintroduce.FieldImage, field.TypeString, value)
 	}
 	if piu.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -227,7 +188,7 @@ func (piu *PlanIntroduceUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = piu.modifiers
+	_spec.AddModifiers(piu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, piu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{planintroduce.Label}
@@ -236,6 +197,7 @@ func (piu *PlanIntroduceUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		return 0, err
 	}
+	piu.mutation.done = true
 	return n, nil
 }
 
@@ -311,41 +273,8 @@ func (piuo *PlanIntroduceUpdateOne) Select(field string, fields ...string) *Plan
 
 // Save executes the query and returns the updated PlanIntroduce entity.
 func (piuo *PlanIntroduceUpdateOne) Save(ctx context.Context) (*PlanIntroduce, error) {
-	var (
-		err  error
-		node *PlanIntroduce
-	)
 	piuo.defaults()
-	if len(piuo.hooks) == 0 {
-		node, err = piuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*PlanIntroduceMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			piuo.mutation = mutation
-			node, err = piuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(piuo.hooks) - 1; i >= 0; i-- {
-			if piuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = piuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, piuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*PlanIntroduce)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from PlanIntroduceMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*PlanIntroduce, PlanIntroduceMutation](ctx, piuo.sqlSave, piuo.mutation, piuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -420,25 +349,13 @@ func (piuo *PlanIntroduceUpdateOne) sqlSave(ctx context.Context) (_node *PlanInt
 		}
 	}
 	if value, ok := piuo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: planintroduce.FieldUpdatedAt,
-		})
+		_spec.SetField(planintroduce.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := piuo.mutation.Model(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: planintroduce.FieldModel,
-		})
+		_spec.SetField(planintroduce.FieldModel, field.TypeString, value)
 	}
 	if value, ok := piuo.mutation.Image(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: planintroduce.FieldImage,
-		})
+		_spec.SetField(planintroduce.FieldImage, field.TypeString, value)
 	}
 	if piuo.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -475,7 +392,7 @@ func (piuo *PlanIntroduceUpdateOne) sqlSave(ctx context.Context) (_node *PlanInt
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = piuo.modifiers
+	_spec.AddModifiers(piuo.modifiers...)
 	_node = &PlanIntroduce{config: piuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -487,5 +404,6 @@ func (piuo *PlanIntroduceUpdateOne) sqlSave(ctx context.Context) (_node *PlanInt
 		}
 		return nil, err
 	}
+	piuo.mutation.done = true
 	return _node, nil
 }

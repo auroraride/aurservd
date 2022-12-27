@@ -128,52 +128,10 @@ func (ac *AgentCreate) Mutation() *AgentMutation {
 
 // Save creates the Agent in the database.
 func (ac *AgentCreate) Save(ctx context.Context) (*Agent, error) {
-	var (
-		err  error
-		node *Agent
-	)
 	if err := ac.defaults(); err != nil {
 		return nil, err
 	}
-	if len(ac.hooks) == 0 {
-		if err = ac.check(); err != nil {
-			return nil, err
-		}
-		node, err = ac.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*AgentMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ac.check(); err != nil {
-				return nil, err
-			}
-			ac.mutation = mutation
-			if node, err = ac.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ac.hooks) - 1; i >= 0; i-- {
-			if ac.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ac.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ac.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Agent)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from AgentMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Agent, AgentMutation](ctx, ac.sqlSave, ac.mutation, ac.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -244,6 +202,9 @@ func (ac *AgentCreate) check() error {
 }
 
 func (ac *AgentCreate) sqlSave(ctx context.Context) (*Agent, error) {
+	if err := ac.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := ac.createSpec()
 	if err := sqlgraph.CreateNode(ctx, ac.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -253,6 +214,8 @@ func (ac *AgentCreate) sqlSave(ctx context.Context) (*Agent, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	ac.mutation.id = &_node.ID
+	ac.mutation.done = true
 	return _node, nil
 }
 
@@ -269,75 +232,39 @@ func (ac *AgentCreate) createSpec() (*Agent, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = ac.conflict
 	if value, ok := ac.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: agent.FieldCreatedAt,
-		})
+		_spec.SetField(agent.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := ac.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: agent.FieldUpdatedAt,
-		})
+		_spec.SetField(agent.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := ac.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: agent.FieldDeletedAt,
-		})
+		_spec.SetField(agent.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := ac.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: agent.FieldCreator,
-		})
+		_spec.SetField(agent.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := ac.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: agent.FieldLastModifier,
-		})
+		_spec.SetField(agent.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := ac.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: agent.FieldRemark,
-		})
+		_spec.SetField(agent.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := ac.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: agent.FieldName,
-		})
+		_spec.SetField(agent.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := ac.mutation.Phone(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: agent.FieldPhone,
-		})
+		_spec.SetField(agent.FieldPhone, field.TypeString, value)
 		_node.Phone = value
 	}
 	if value, ok := ac.mutation.Password(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: agent.FieldPassword,
-		})
+		_spec.SetField(agent.FieldPassword, field.TypeString, value)
 		_node.Password = value
 	}
 	if nodes := ac.mutation.EnterpriseIDs(); len(nodes) > 0 {

@@ -12,7 +12,7 @@ import (
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
-    jsoniter "github.com/json-iterator/go"
+    "github.com/goccy/go-json"
 )
 
 func Demo() {
@@ -26,7 +26,7 @@ func demoOrder() {
     ctx := context.Background()
     fmt.Println(ent.Database.ExecContext(ctx, `TRUNCATE TABLE "subscribe"; TRUNCATE TABLE "order"; TRUNCATE TABLE "contract"; TRUNCATE TABLE "allocate"; UPDATE ebike SET status = 0, rider_id = NULL WHERE status IS NOT NULL;`))
     var result model.PaymentCache
-    _ = jsoniter.Unmarshal(demoEbikeOrder(), &result)
+    _ = json.Unmarshal(demoEbikeOrder(), &result)
     service.NewOrder().OrderPaid(result.Subscribe)
 }
 

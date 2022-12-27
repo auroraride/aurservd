@@ -363,52 +363,10 @@ func (sc *StockCreate) Mutation() *StockMutation {
 
 // Save creates the Stock in the database.
 func (sc *StockCreate) Save(ctx context.Context) (*Stock, error) {
-	var (
-		err  error
-		node *Stock
-	)
 	if err := sc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(sc.hooks) == 0 {
-		if err = sc.check(); err != nil {
-			return nil, err
-		}
-		node, err = sc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*StockMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = sc.check(); err != nil {
-				return nil, err
-			}
-			sc.mutation = mutation
-			if node, err = sc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(sc.hooks) - 1; i >= 0; i-- {
-			if sc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = sc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, sc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Stock)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from StockMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Stock, StockMutation](ctx, sc.sqlSave, sc.mutation, sc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -488,6 +446,9 @@ func (sc *StockCreate) check() error {
 }
 
 func (sc *StockCreate) sqlSave(ctx context.Context) (*Stock, error) {
+	if err := sc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := sc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, sc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -497,6 +458,8 @@ func (sc *StockCreate) sqlSave(ctx context.Context) (*Stock, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	sc.mutation.id = &_node.ID
+	sc.mutation.done = true
 	return _node, nil
 }
 
@@ -513,99 +476,51 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = sc.conflict
 	if value, ok := sc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: stock.FieldCreatedAt,
-		})
+		_spec.SetField(stock.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := sc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: stock.FieldUpdatedAt,
-		})
+		_spec.SetField(stock.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := sc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: stock.FieldDeletedAt,
-		})
+		_spec.SetField(stock.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := sc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: stock.FieldCreator,
-		})
+		_spec.SetField(stock.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := sc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: stock.FieldLastModifier,
-		})
+		_spec.SetField(stock.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := sc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: stock.FieldRemark,
-		})
+		_spec.SetField(stock.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := sc.mutation.Sn(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: stock.FieldSn,
-		})
+		_spec.SetField(stock.FieldSn, field.TypeString, value)
 		_node.Sn = value
 	}
 	if value, ok := sc.mutation.GetType(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: stock.FieldType,
-		})
+		_spec.SetField(stock.FieldType, field.TypeUint8, value)
 		_node.Type = value
 	}
 	if value, ok := sc.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: stock.FieldName,
-		})
+		_spec.SetField(stock.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := sc.mutation.Model(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: stock.FieldModel,
-		})
+		_spec.SetField(stock.FieldModel, field.TypeString, value)
 		_node.Model = &value
 	}
 	if value, ok := sc.mutation.Num(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: stock.FieldNum,
-		})
+		_spec.SetField(stock.FieldNum, field.TypeInt, value)
 		_node.Num = value
 	}
 	if value, ok := sc.mutation.Material(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: stock.FieldMaterial,
-		})
+		_spec.SetField(stock.FieldMaterial, field.TypeEnum, value)
 		_node.Material = value
 	}
 	if nodes := sc.mutation.CityIDs(); len(nodes) > 0 {

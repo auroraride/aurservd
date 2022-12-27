@@ -131,43 +131,10 @@ func (au *AgentUpdate) ClearEnterprise() *AgentUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (au *AgentUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := au.defaults(); err != nil {
 		return 0, err
 	}
-	if len(au.hooks) == 0 {
-		if err = au.check(); err != nil {
-			return 0, err
-		}
-		affected, err = au.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*AgentMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = au.check(); err != nil {
-				return 0, err
-			}
-			au.mutation = mutation
-			affected, err = au.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(au.hooks) - 1; i >= 0; i-- {
-			if au.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = au.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, au.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, AgentMutation](ctx, au.sqlSave, au.mutation, au.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -219,6 +186,9 @@ func (au *AgentUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *AgentUpd
 }
 
 func (au *AgentUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := au.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   agent.Table,
@@ -237,77 +207,37 @@ func (au *AgentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := au.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: agent.FieldUpdatedAt,
-		})
+		_spec.SetField(agent.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := au.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: agent.FieldDeletedAt,
-		})
+		_spec.SetField(agent.FieldDeletedAt, field.TypeTime, value)
 	}
 	if au.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: agent.FieldDeletedAt,
-		})
+		_spec.ClearField(agent.FieldDeletedAt, field.TypeTime)
 	}
 	if au.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: agent.FieldCreator,
-		})
+		_spec.ClearField(agent.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := au.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: agent.FieldLastModifier,
-		})
+		_spec.SetField(agent.FieldLastModifier, field.TypeJSON, value)
 	}
 	if au.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: agent.FieldLastModifier,
-		})
+		_spec.ClearField(agent.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := au.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: agent.FieldRemark,
-		})
+		_spec.SetField(agent.FieldRemark, field.TypeString, value)
 	}
 	if au.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: agent.FieldRemark,
-		})
+		_spec.ClearField(agent.FieldRemark, field.TypeString)
 	}
 	if value, ok := au.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: agent.FieldName,
-		})
+		_spec.SetField(agent.FieldName, field.TypeString, value)
 	}
 	if value, ok := au.mutation.Phone(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: agent.FieldPhone,
-		})
+		_spec.SetField(agent.FieldPhone, field.TypeString, value)
 	}
 	if value, ok := au.mutation.Password(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: agent.FieldPassword,
-		})
+		_spec.SetField(agent.FieldPassword, field.TypeString, value)
 	}
 	if au.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -344,7 +274,7 @@ func (au *AgentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = au.modifiers
+	_spec.AddModifiers(au.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{agent.Label}
@@ -353,6 +283,7 @@ func (au *AgentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	au.mutation.done = true
 	return n, nil
 }
 
@@ -472,49 +403,10 @@ func (auo *AgentUpdateOne) Select(field string, fields ...string) *AgentUpdateOn
 
 // Save executes the query and returns the updated Agent entity.
 func (auo *AgentUpdateOne) Save(ctx context.Context) (*Agent, error) {
-	var (
-		err  error
-		node *Agent
-	)
 	if err := auo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(auo.hooks) == 0 {
-		if err = auo.check(); err != nil {
-			return nil, err
-		}
-		node, err = auo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*AgentMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = auo.check(); err != nil {
-				return nil, err
-			}
-			auo.mutation = mutation
-			node, err = auo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(auo.hooks) - 1; i >= 0; i-- {
-			if auo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = auo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, auo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Agent)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from AgentMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Agent, AgentMutation](ctx, auo.sqlSave, auo.mutation, auo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -566,6 +458,9 @@ func (auo *AgentUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Agen
 }
 
 func (auo *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error) {
+	if err := auo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   agent.Table,
@@ -601,77 +496,37 @@ func (auo *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error
 		}
 	}
 	if value, ok := auo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: agent.FieldUpdatedAt,
-		})
+		_spec.SetField(agent.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := auo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: agent.FieldDeletedAt,
-		})
+		_spec.SetField(agent.FieldDeletedAt, field.TypeTime, value)
 	}
 	if auo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: agent.FieldDeletedAt,
-		})
+		_spec.ClearField(agent.FieldDeletedAt, field.TypeTime)
 	}
 	if auo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: agent.FieldCreator,
-		})
+		_spec.ClearField(agent.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := auo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: agent.FieldLastModifier,
-		})
+		_spec.SetField(agent.FieldLastModifier, field.TypeJSON, value)
 	}
 	if auo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: agent.FieldLastModifier,
-		})
+		_spec.ClearField(agent.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := auo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: agent.FieldRemark,
-		})
+		_spec.SetField(agent.FieldRemark, field.TypeString, value)
 	}
 	if auo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: agent.FieldRemark,
-		})
+		_spec.ClearField(agent.FieldRemark, field.TypeString)
 	}
 	if value, ok := auo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: agent.FieldName,
-		})
+		_spec.SetField(agent.FieldName, field.TypeString, value)
 	}
 	if value, ok := auo.mutation.Phone(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: agent.FieldPhone,
-		})
+		_spec.SetField(agent.FieldPhone, field.TypeString, value)
 	}
 	if value, ok := auo.mutation.Password(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: agent.FieldPassword,
-		})
+		_spec.SetField(agent.FieldPassword, field.TypeString, value)
 	}
 	if auo.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -708,7 +563,7 @@ func (auo *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = auo.modifiers
+	_spec.AddModifiers(auo.modifiers...)
 	_node = &Agent{config: auo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -720,5 +575,6 @@ func (auo *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error
 		}
 		return nil, err
 	}
+	auo.mutation.done = true
 	return _node, nil
 }

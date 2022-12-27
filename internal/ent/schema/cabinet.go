@@ -66,6 +66,7 @@ type Cabinet struct {
 func (Cabinet) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "cabinet"},
+        entsql.WithComments(true),
     }
 }
 

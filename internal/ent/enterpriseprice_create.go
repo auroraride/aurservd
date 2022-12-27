@@ -134,52 +134,10 @@ func (epc *EnterprisePriceCreate) Mutation() *EnterprisePriceMutation {
 
 // Save creates the EnterprisePrice in the database.
 func (epc *EnterprisePriceCreate) Save(ctx context.Context) (*EnterprisePrice, error) {
-	var (
-		err  error
-		node *EnterprisePrice
-	)
 	if err := epc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(epc.hooks) == 0 {
-		if err = epc.check(); err != nil {
-			return nil, err
-		}
-		node, err = epc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*EnterprisePriceMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = epc.check(); err != nil {
-				return nil, err
-			}
-			epc.mutation = mutation
-			if node, err = epc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(epc.hooks) - 1; i >= 0; i-- {
-			if epc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = epc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, epc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*EnterprisePrice)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from EnterprisePriceMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*EnterprisePrice, EnterprisePriceMutation](ctx, epc.sqlSave, epc.mutation, epc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -253,6 +211,9 @@ func (epc *EnterprisePriceCreate) check() error {
 }
 
 func (epc *EnterprisePriceCreate) sqlSave(ctx context.Context) (*EnterprisePrice, error) {
+	if err := epc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := epc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, epc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -262,6 +223,8 @@ func (epc *EnterprisePriceCreate) sqlSave(ctx context.Context) (*EnterprisePrice
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	epc.mutation.id = &_node.ID
+	epc.mutation.done = true
 	return _node, nil
 }
 
@@ -278,67 +241,35 @@ func (epc *EnterprisePriceCreate) createSpec() (*EnterprisePrice, *sqlgraph.Crea
 	)
 	_spec.OnConflict = epc.conflict
 	if value, ok := epc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterpriseprice.FieldCreatedAt,
-		})
+		_spec.SetField(enterpriseprice.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := epc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterpriseprice.FieldUpdatedAt,
-		})
+		_spec.SetField(enterpriseprice.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := epc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterpriseprice.FieldDeletedAt,
-		})
+		_spec.SetField(enterpriseprice.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := epc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: enterpriseprice.FieldCreator,
-		})
+		_spec.SetField(enterpriseprice.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := epc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: enterpriseprice.FieldLastModifier,
-		})
+		_spec.SetField(enterpriseprice.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := epc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: enterpriseprice.FieldRemark,
-		})
+		_spec.SetField(enterpriseprice.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := epc.mutation.Price(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterpriseprice.FieldPrice,
-		})
+		_spec.SetField(enterpriseprice.FieldPrice, field.TypeFloat64, value)
 		_node.Price = value
 	}
 	if value, ok := epc.mutation.Model(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: enterpriseprice.FieldModel,
-		})
+		_spec.SetField(enterpriseprice.FieldModel, field.TypeString, value)
 		_node.Model = value
 	}
 	if nodes := epc.mutation.CityIDs(); len(nodes) > 0 {

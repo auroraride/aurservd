@@ -285,43 +285,10 @@ func (cu *CityUpdate) RemovePlans(p ...*Plan) *CityUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (cu *CityUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := cu.defaults(); err != nil {
 		return 0, err
 	}
-	if len(cu.hooks) == 0 {
-		if err = cu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = cu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CityMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = cu.check(); err != nil {
-				return 0, err
-			}
-			cu.mutation = mutation
-			affected, err = cu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(cu.hooks) - 1; i >= 0; i-- {
-			if cu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = cu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, cu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, CityMutation](ctx, cu.sqlSave, cu.mutation, cu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -380,6 +347,9 @@ func (cu *CityUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *CityUpdat
 }
 
 func (cu *CityUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := cu.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   city.Table,
@@ -398,123 +368,58 @@ func (cu *CityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := cu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: city.FieldUpdatedAt,
-		})
+		_spec.SetField(city.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := cu.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: city.FieldDeletedAt,
-		})
+		_spec.SetField(city.FieldDeletedAt, field.TypeTime, value)
 	}
 	if cu.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: city.FieldDeletedAt,
-		})
+		_spec.ClearField(city.FieldDeletedAt, field.TypeTime)
 	}
 	if cu.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: city.FieldCreator,
-		})
+		_spec.ClearField(city.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := cu.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: city.FieldLastModifier,
-		})
+		_spec.SetField(city.FieldLastModifier, field.TypeJSON, value)
 	}
 	if cu.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: city.FieldLastModifier,
-		})
+		_spec.ClearField(city.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := cu.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: city.FieldRemark,
-		})
+		_spec.SetField(city.FieldRemark, field.TypeString, value)
 	}
 	if cu.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: city.FieldRemark,
-		})
+		_spec.ClearField(city.FieldRemark, field.TypeString)
 	}
 	if value, ok := cu.mutation.Open(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: city.FieldOpen,
-		})
+		_spec.SetField(city.FieldOpen, field.TypeBool, value)
 	}
 	if cu.mutation.OpenCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Column: city.FieldOpen,
-		})
+		_spec.ClearField(city.FieldOpen, field.TypeBool)
 	}
 	if value, ok := cu.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: city.FieldName,
-		})
+		_spec.SetField(city.FieldName, field.TypeString, value)
 	}
 	if value, ok := cu.mutation.Code(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: city.FieldCode,
-		})
+		_spec.SetField(city.FieldCode, field.TypeString, value)
 	}
 	if value, ok := cu.mutation.Lng(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: city.FieldLng,
-		})
+		_spec.SetField(city.FieldLng, field.TypeFloat64, value)
 	}
 	if value, ok := cu.mutation.AddedLng(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: city.FieldLng,
-		})
+		_spec.AddField(city.FieldLng, field.TypeFloat64, value)
 	}
 	if cu.mutation.LngCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: city.FieldLng,
-		})
+		_spec.ClearField(city.FieldLng, field.TypeFloat64)
 	}
 	if value, ok := cu.mutation.Lat(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: city.FieldLat,
-		})
+		_spec.SetField(city.FieldLat, field.TypeFloat64, value)
 	}
 	if value, ok := cu.mutation.AddedLat(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: city.FieldLat,
-		})
+		_spec.AddField(city.FieldLat, field.TypeFloat64, value)
 	}
 	if cu.mutation.LatCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: city.FieldLat,
-		})
+		_spec.ClearField(city.FieldLat, field.TypeFloat64)
 	}
 	if cu.mutation.ParentCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -659,7 +564,7 @@ func (cu *CityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = cu.modifiers
+	_spec.AddModifiers(cu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{city.Label}
@@ -668,6 +573,7 @@ func (cu *CityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	cu.mutation.done = true
 	return n, nil
 }
 
@@ -941,49 +847,10 @@ func (cuo *CityUpdateOne) Select(field string, fields ...string) *CityUpdateOne 
 
 // Save executes the query and returns the updated City entity.
 func (cuo *CityUpdateOne) Save(ctx context.Context) (*City, error) {
-	var (
-		err  error
-		node *City
-	)
 	if err := cuo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(cuo.hooks) == 0 {
-		if err = cuo.check(); err != nil {
-			return nil, err
-		}
-		node, err = cuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CityMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = cuo.check(); err != nil {
-				return nil, err
-			}
-			cuo.mutation = mutation
-			node, err = cuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(cuo.hooks) - 1; i >= 0; i-- {
-			if cuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = cuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, cuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*City)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from CityMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*City, CityMutation](ctx, cuo.sqlSave, cuo.mutation, cuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -1042,6 +909,9 @@ func (cuo *CityUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *CityU
 }
 
 func (cuo *CityUpdateOne) sqlSave(ctx context.Context) (_node *City, err error) {
+	if err := cuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   city.Table,
@@ -1077,123 +947,58 @@ func (cuo *CityUpdateOne) sqlSave(ctx context.Context) (_node *City, err error) 
 		}
 	}
 	if value, ok := cuo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: city.FieldUpdatedAt,
-		})
+		_spec.SetField(city.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := cuo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: city.FieldDeletedAt,
-		})
+		_spec.SetField(city.FieldDeletedAt, field.TypeTime, value)
 	}
 	if cuo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: city.FieldDeletedAt,
-		})
+		_spec.ClearField(city.FieldDeletedAt, field.TypeTime)
 	}
 	if cuo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: city.FieldCreator,
-		})
+		_spec.ClearField(city.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := cuo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: city.FieldLastModifier,
-		})
+		_spec.SetField(city.FieldLastModifier, field.TypeJSON, value)
 	}
 	if cuo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: city.FieldLastModifier,
-		})
+		_spec.ClearField(city.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := cuo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: city.FieldRemark,
-		})
+		_spec.SetField(city.FieldRemark, field.TypeString, value)
 	}
 	if cuo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: city.FieldRemark,
-		})
+		_spec.ClearField(city.FieldRemark, field.TypeString)
 	}
 	if value, ok := cuo.mutation.Open(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: city.FieldOpen,
-		})
+		_spec.SetField(city.FieldOpen, field.TypeBool, value)
 	}
 	if cuo.mutation.OpenCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Column: city.FieldOpen,
-		})
+		_spec.ClearField(city.FieldOpen, field.TypeBool)
 	}
 	if value, ok := cuo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: city.FieldName,
-		})
+		_spec.SetField(city.FieldName, field.TypeString, value)
 	}
 	if value, ok := cuo.mutation.Code(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: city.FieldCode,
-		})
+		_spec.SetField(city.FieldCode, field.TypeString, value)
 	}
 	if value, ok := cuo.mutation.Lng(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: city.FieldLng,
-		})
+		_spec.SetField(city.FieldLng, field.TypeFloat64, value)
 	}
 	if value, ok := cuo.mutation.AddedLng(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: city.FieldLng,
-		})
+		_spec.AddField(city.FieldLng, field.TypeFloat64, value)
 	}
 	if cuo.mutation.LngCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: city.FieldLng,
-		})
+		_spec.ClearField(city.FieldLng, field.TypeFloat64)
 	}
 	if value, ok := cuo.mutation.Lat(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: city.FieldLat,
-		})
+		_spec.SetField(city.FieldLat, field.TypeFloat64, value)
 	}
 	if value, ok := cuo.mutation.AddedLat(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: city.FieldLat,
-		})
+		_spec.AddField(city.FieldLat, field.TypeFloat64, value)
 	}
 	if cuo.mutation.LatCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: city.FieldLat,
-		})
+		_spec.ClearField(city.FieldLat, field.TypeFloat64)
 	}
 	if cuo.mutation.ParentCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1338,7 +1143,7 @@ func (cuo *CityUpdateOne) sqlSave(ctx context.Context) (_node *City, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = cuo.modifiers
+	_spec.AddModifiers(cuo.modifiers...)
 	_node = &City{config: cuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -1350,5 +1155,6 @@ func (cuo *CityUpdateOne) sqlSave(ctx context.Context) (_node *City, err error) 
 		}
 		return nil, err
 	}
+	cuo.mutation.done = true
 	return _node, nil
 }

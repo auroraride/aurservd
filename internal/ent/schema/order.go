@@ -52,6 +52,7 @@ type Order struct {
 func (Order) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "order"},
+        entsql.WithComments(true),
     }
 }
 

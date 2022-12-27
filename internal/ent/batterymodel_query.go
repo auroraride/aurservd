@@ -24,6 +24,7 @@ type BatteryModelQuery struct {
 	unique       *bool
 	order        []OrderFunc
 	fields       []string
+	inters       []Interceptor
 	predicates   []predicate.BatteryModel
 	withCabinets *CabinetQuery
 	modifiers    []func(*sql.Selector)
@@ -38,13 +39,13 @@ func (bmq *BatteryModelQuery) Where(ps ...predicate.BatteryModel) *BatteryModelQ
 	return bmq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (bmq *BatteryModelQuery) Limit(limit int) *BatteryModelQuery {
 	bmq.limit = &limit
 	return bmq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (bmq *BatteryModelQuery) Offset(offset int) *BatteryModelQuery {
 	bmq.offset = &offset
 	return bmq
@@ -57,7 +58,7 @@ func (bmq *BatteryModelQuery) Unique(unique bool) *BatteryModelQuery {
 	return bmq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (bmq *BatteryModelQuery) Order(o ...OrderFunc) *BatteryModelQuery {
 	bmq.order = append(bmq.order, o...)
 	return bmq
@@ -65,7 +66,7 @@ func (bmq *BatteryModelQuery) Order(o ...OrderFunc) *BatteryModelQuery {
 
 // QueryCabinets chains the current query on the "cabinets" edge.
 func (bmq *BatteryModelQuery) QueryCabinets() *CabinetQuery {
-	query := &CabinetQuery{config: bmq.config}
+	query := (&CabinetClient{config: bmq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := bmq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -88,7 +89,7 @@ func (bmq *BatteryModelQuery) QueryCabinets() *CabinetQuery {
 // First returns the first BatteryModel entity from the query.
 // Returns a *NotFoundError when no BatteryModel was found.
 func (bmq *BatteryModelQuery) First(ctx context.Context) (*BatteryModel, error) {
-	nodes, err := bmq.Limit(1).All(ctx)
+	nodes, err := bmq.Limit(1).All(newQueryContext(ctx, TypeBatteryModel, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +112,7 @@ func (bmq *BatteryModelQuery) FirstX(ctx context.Context) *BatteryModel {
 // Returns a *NotFoundError when no BatteryModel ID was found.
 func (bmq *BatteryModelQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = bmq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = bmq.Limit(1).IDs(newQueryContext(ctx, TypeBatteryModel, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -134,7 +135,7 @@ func (bmq *BatteryModelQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one BatteryModel entity is found.
 // Returns a *NotFoundError when no BatteryModel entities are found.
 func (bmq *BatteryModelQuery) Only(ctx context.Context) (*BatteryModel, error) {
-	nodes, err := bmq.Limit(2).All(ctx)
+	nodes, err := bmq.Limit(2).All(newQueryContext(ctx, TypeBatteryModel, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +163,7 @@ func (bmq *BatteryModelQuery) OnlyX(ctx context.Context) *BatteryModel {
 // Returns a *NotFoundError when no entities are found.
 func (bmq *BatteryModelQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = bmq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = bmq.Limit(2).IDs(newQueryContext(ctx, TypeBatteryModel, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -187,10 +188,12 @@ func (bmq *BatteryModelQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of BatteryModels.
 func (bmq *BatteryModelQuery) All(ctx context.Context) ([]*BatteryModel, error) {
+	ctx = newQueryContext(ctx, TypeBatteryModel, "All")
 	if err := bmq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return bmq.sqlAll(ctx)
+	qr := querierAll[[]*BatteryModel, *BatteryModelQuery]()
+	return withInterceptors[[]*BatteryModel](ctx, bmq, qr, bmq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -205,6 +208,7 @@ func (bmq *BatteryModelQuery) AllX(ctx context.Context) []*BatteryModel {
 // IDs executes the query and returns a list of BatteryModel IDs.
 func (bmq *BatteryModelQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeBatteryModel, "IDs")
 	if err := bmq.Select(batterymodel.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -222,10 +226,11 @@ func (bmq *BatteryModelQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (bmq *BatteryModelQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeBatteryModel, "Count")
 	if err := bmq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return bmq.sqlCount(ctx)
+	return withInterceptors[int](ctx, bmq, querierCount[*BatteryModelQuery](), bmq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -239,10 +244,15 @@ func (bmq *BatteryModelQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (bmq *BatteryModelQuery) Exist(ctx context.Context) (bool, error) {
-	if err := bmq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeBatteryModel, "Exist")
+	switch _, err := bmq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return bmq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -277,7 +287,7 @@ func (bmq *BatteryModelQuery) Clone() *BatteryModelQuery {
 // WithCabinets tells the query-builder to eager-load the nodes that are connected to
 // the "cabinets" edge. The optional arguments are used to configure the query builder of the edge.
 func (bmq *BatteryModelQuery) WithCabinets(opts ...func(*CabinetQuery)) *BatteryModelQuery {
-	query := &CabinetQuery{config: bmq.config}
+	query := (&CabinetClient{config: bmq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -300,16 +310,11 @@ func (bmq *BatteryModelQuery) WithCabinets(opts ...func(*CabinetQuery)) *Battery
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (bmq *BatteryModelQuery) GroupBy(field string, fields ...string) *BatteryModelGroupBy {
-	grbuild := &BatteryModelGroupBy{config: bmq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := bmq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return bmq.sqlQuery(ctx), nil
-	}
+	bmq.fields = append([]string{field}, fields...)
+	grbuild := &BatteryModelGroupBy{build: bmq}
+	grbuild.flds = &bmq.fields
 	grbuild.label = batterymodel.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -327,13 +332,28 @@ func (bmq *BatteryModelQuery) GroupBy(field string, fields ...string) *BatteryMo
 //		Scan(ctx, &v)
 func (bmq *BatteryModelQuery) Select(fields ...string) *BatteryModelSelect {
 	bmq.fields = append(bmq.fields, fields...)
-	selbuild := &BatteryModelSelect{BatteryModelQuery: bmq}
-	selbuild.label = batterymodel.Label
-	selbuild.flds, selbuild.scan = &bmq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &BatteryModelSelect{BatteryModelQuery: bmq}
+	sbuild.label = batterymodel.Label
+	sbuild.flds, sbuild.scan = &bmq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a BatteryModelSelect configured with the given aggregations.
+func (bmq *BatteryModelQuery) Aggregate(fns ...AggregateFunc) *BatteryModelSelect {
+	return bmq.Select().Aggregate(fns...)
 }
 
 func (bmq *BatteryModelQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range bmq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, bmq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range bmq.fields {
 		if !batterymodel.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -425,7 +445,7 @@ func (bmq *BatteryModelQuery) loadCabinets(ctx context.Context, query *CabinetQu
 			outValue := uint64(values[0].(*sql.NullInt64).Int64)
 			inValue := uint64(values[1].(*sql.NullInt64).Int64)
 			if nids[inValue] == nil {
-				nids[inValue] = map[*BatteryModel]struct{}{byID[outValue]: struct{}{}}
+				nids[inValue] = map[*BatteryModel]struct{}{byID[outValue]: {}}
 				return assign(columns[1:], values[1:])
 			}
 			nids[inValue][byID[outValue]] = struct{}{}
@@ -457,17 +477,6 @@ func (bmq *BatteryModelQuery) sqlCount(ctx context.Context) (int, error) {
 		_spec.Unique = bmq.unique != nil && *bmq.unique
 	}
 	return sqlgraph.CountNodes(ctx, bmq.driver, _spec)
-}
-
-func (bmq *BatteryModelQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := bmq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
 }
 
 func (bmq *BatteryModelQuery) querySpec() *sqlgraph.QuerySpec {
@@ -561,13 +570,8 @@ func (bmq *BatteryModelQuery) Modify(modifiers ...func(s *sql.Selector)) *Batter
 
 // BatteryModelGroupBy is the group-by builder for BatteryModel entities.
 type BatteryModelGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *BatteryModelQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -576,74 +580,77 @@ func (bmgb *BatteryModelGroupBy) Aggregate(fns ...AggregateFunc) *BatteryModelGr
 	return bmgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (bmgb *BatteryModelGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := bmgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeBatteryModel, "GroupBy")
+	if err := bmgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	bmgb.sql = query
-	return bmgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*BatteryModelQuery, *BatteryModelGroupBy](ctx, bmgb.build, bmgb, bmgb.build.inters, v)
 }
 
-func (bmgb *BatteryModelGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range bmgb.fields {
-		if !batterymodel.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (bmgb *BatteryModelGroupBy) sqlScan(ctx context.Context, root *BatteryModelQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(bmgb.fns))
+	for _, fn := range bmgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := bmgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*bmgb.flds)+len(bmgb.fns))
+		for _, f := range *bmgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*bmgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := bmgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := bmgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (bmgb *BatteryModelGroupBy) sqlQuery() *sql.Selector {
-	selector := bmgb.sql.Select()
-	aggregation := make([]string, 0, len(bmgb.fns))
-	for _, fn := range bmgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(bmgb.fields)+len(bmgb.fns))
-		for _, f := range bmgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(bmgb.fields...)...)
-}
-
 // BatteryModelSelect is the builder for selecting fields of BatteryModel entities.
 type BatteryModelSelect struct {
 	*BatteryModelQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (bms *BatteryModelSelect) Aggregate(fns ...AggregateFunc) *BatteryModelSelect {
+	bms.fns = append(bms.fns, fns...)
+	return bms
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (bms *BatteryModelSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeBatteryModel, "Select")
 	if err := bms.prepareQuery(ctx); err != nil {
 		return err
 	}
-	bms.sql = bms.BatteryModelQuery.sqlQuery(ctx)
-	return bms.sqlScan(ctx, v)
+	return scanWithInterceptors[*BatteryModelQuery, *BatteryModelSelect](ctx, bms.BatteryModelQuery, bms, bms.inters, v)
 }
 
-func (bms *BatteryModelSelect) sqlScan(ctx context.Context, v any) error {
+func (bms *BatteryModelSelect) sqlScan(ctx context.Context, root *BatteryModelQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(bms.fns))
+	for _, fn := range bms.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*bms.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := bms.sql.Query()
+	query, args := selector.Query()
 	if err := bms.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

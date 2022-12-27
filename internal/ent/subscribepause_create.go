@@ -357,52 +357,10 @@ func (spc *SubscribePauseCreate) Mutation() *SubscribePauseMutation {
 
 // Save creates the SubscribePause in the database.
 func (spc *SubscribePauseCreate) Save(ctx context.Context) (*SubscribePause, error) {
-	var (
-		err  error
-		node *SubscribePause
-	)
 	if err := spc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(spc.hooks) == 0 {
-		if err = spc.check(); err != nil {
-			return nil, err
-		}
-		node, err = spc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*SubscribePauseMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = spc.check(); err != nil {
-				return nil, err
-			}
-			spc.mutation = mutation
-			if node, err = spc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(spc.hooks) - 1; i >= 0; i-- {
-			if spc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = spc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, spc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*SubscribePause)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from SubscribePauseMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*SubscribePause, SubscribePauseMutation](ctx, spc.sqlSave, spc.mutation, spc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -494,6 +452,9 @@ func (spc *SubscribePauseCreate) check() error {
 }
 
 func (spc *SubscribePauseCreate) sqlSave(ctx context.Context) (*SubscribePause, error) {
+	if err := spc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := spc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, spc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -503,6 +464,8 @@ func (spc *SubscribePauseCreate) sqlSave(ctx context.Context) (*SubscribePause, 
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	spc.mutation.id = &_node.ID
+	spc.mutation.done = true
 	return _node, nil
 }
 
@@ -519,107 +482,55 @@ func (spc *SubscribePauseCreate) createSpec() (*SubscribePause, *sqlgraph.Create
 	)
 	_spec.OnConflict = spc.conflict
 	if value, ok := spc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribepause.FieldCreatedAt,
-		})
+		_spec.SetField(subscribepause.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := spc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribepause.FieldUpdatedAt,
-		})
+		_spec.SetField(subscribepause.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := spc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribepause.FieldDeletedAt,
-		})
+		_spec.SetField(subscribepause.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := spc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: subscribepause.FieldCreator,
-		})
+		_spec.SetField(subscribepause.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := spc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: subscribepause.FieldLastModifier,
-		})
+		_spec.SetField(subscribepause.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := spc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribepause.FieldRemark,
-		})
+		_spec.SetField(subscribepause.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := spc.mutation.StartAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribepause.FieldStartAt,
-		})
+		_spec.SetField(subscribepause.FieldStartAt, field.TypeTime, value)
 		_node.StartAt = value
 	}
 	if value, ok := spc.mutation.EndAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribepause.FieldEndAt,
-		})
+		_spec.SetField(subscribepause.FieldEndAt, field.TypeTime, value)
 		_node.EndAt = value
 	}
 	if value, ok := spc.mutation.Days(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribepause.FieldDays,
-		})
+		_spec.SetField(subscribepause.FieldDays, field.TypeInt, value)
 		_node.Days = value
 	}
 	if value, ok := spc.mutation.OverdueDays(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribepause.FieldOverdueDays,
-		})
+		_spec.SetField(subscribepause.FieldOverdueDays, field.TypeInt, value)
 		_node.OverdueDays = value
 	}
 	if value, ok := spc.mutation.EndModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: subscribepause.FieldEndModifier,
-		})
+		_spec.SetField(subscribepause.FieldEndModifier, field.TypeJSON, value)
 		_node.EndModifier = value
 	}
 	if value, ok := spc.mutation.PauseOverdue(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: subscribepause.FieldPauseOverdue,
-		})
+		_spec.SetField(subscribepause.FieldPauseOverdue, field.TypeBool, value)
 		_node.PauseOverdue = value
 	}
 	if value, ok := spc.mutation.SuspendDays(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribepause.FieldSuspendDays,
-		})
+		_spec.SetField(subscribepause.FieldSuspendDays, field.TypeInt, value)
 		_node.SuspendDays = value
 	}
 	if nodes := spc.mutation.RiderIDs(); len(nodes) > 0 {

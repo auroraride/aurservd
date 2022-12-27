@@ -10,7 +10,7 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/internal/mgo"
     "github.com/auroraride/aurservd/pkg/snag"
-    jsoniter "github.com/json-iterator/go"
+    "github.com/goccy/go-json"
     "github.com/qiniu/qmgo/operator"
     log "github.com/sirupsen/logrus"
     "go.mongodb.org/mongo-driver/bson"
@@ -116,11 +116,11 @@ type Task struct {
 }
 
 func (t *Task) MarshalBinary() ([]byte, error) {
-    return jsoniter.Marshal(t)
+    return json.Marshal(t)
 }
 
 func (t *Task) UnmarshalBinary(data []byte) error {
-    return jsoniter.Unmarshal(data, t)
+    return json.Unmarshal(data, t)
 }
 
 func (t *Task) String() string {

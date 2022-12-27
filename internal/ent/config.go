@@ -24,61 +24,117 @@ type config struct {
 	log func(...any)
 	// hooks to execute on mutations.
 	hooks *hooks
+	// interceptors to execute on queries.
+	inters *inters
 }
 
-// hooks per client, for fast access.
-type hooks struct {
-	Agent                []ent.Hook
-	Allocate             []ent.Hook
-	Assistance           []ent.Hook
-	Attendance           []ent.Hook
-	Battery              []ent.Hook
-	BatteryModel         []ent.Hook
-	Branch               []ent.Hook
-	BranchContract       []ent.Hook
-	Business             []ent.Hook
-	Cabinet              []ent.Hook
-	CabinetFault         []ent.Hook
-	City                 []ent.Hook
-	Commission           []ent.Hook
-	Contract             []ent.Hook
-	Coupon               []ent.Hook
-	CouponAssembly       []ent.Hook
-	CouponTemplate       []ent.Hook
-	Ebike                []ent.Hook
-	EbikeBrand           []ent.Hook
-	Employee             []ent.Hook
-	Enterprise           []ent.Hook
-	EnterpriseBill       []ent.Hook
-	EnterpriseContract   []ent.Hook
-	EnterprisePrepayment []ent.Hook
-	EnterprisePrice      []ent.Hook
-	EnterpriseStatement  []ent.Hook
-	EnterpriseStation    []ent.Hook
-	Exception            []ent.Hook
-	Exchange             []ent.Hook
-	Export               []ent.Hook
-	Inventory            []ent.Hook
-	Manager              []ent.Hook
-	Order                []ent.Hook
-	OrderRefund          []ent.Hook
-	Person               []ent.Hook
-	Plan                 []ent.Hook
-	PlanIntroduce        []ent.Hook
-	PointLog             []ent.Hook
-	Reserve              []ent.Hook
-	Rider                []ent.Hook
-	RiderFollowUp        []ent.Hook
-	Role                 []ent.Hook
-	Setting              []ent.Hook
-	Stock                []ent.Hook
-	Store                []ent.Hook
-	Subscribe            []ent.Hook
-	SubscribeAlter       []ent.Hook
-	SubscribePause       []ent.Hook
-	SubscribeReminder    []ent.Hook
-	SubscribeSuspend     []ent.Hook
-}
+// hooks and interceptors per client, for fast access.
+type (
+	hooks struct {
+		Agent                []ent.Hook
+		Allocate             []ent.Hook
+		Assistance           []ent.Hook
+		Attendance           []ent.Hook
+		Battery              []ent.Hook
+		BatteryModel         []ent.Hook
+		Branch               []ent.Hook
+		BranchContract       []ent.Hook
+		Business             []ent.Hook
+		Cabinet              []ent.Hook
+		CabinetFault         []ent.Hook
+		City                 []ent.Hook
+		Commission           []ent.Hook
+		Contract             []ent.Hook
+		Coupon               []ent.Hook
+		CouponAssembly       []ent.Hook
+		CouponTemplate       []ent.Hook
+		Ebike                []ent.Hook
+		EbikeBrand           []ent.Hook
+		Employee             []ent.Hook
+		Enterprise           []ent.Hook
+		EnterpriseBill       []ent.Hook
+		EnterpriseContract   []ent.Hook
+		EnterprisePrepayment []ent.Hook
+		EnterprisePrice      []ent.Hook
+		EnterpriseStatement  []ent.Hook
+		EnterpriseStation    []ent.Hook
+		Exception            []ent.Hook
+		Exchange             []ent.Hook
+		Export               []ent.Hook
+		Inventory            []ent.Hook
+		Manager              []ent.Hook
+		Order                []ent.Hook
+		OrderRefund          []ent.Hook
+		Person               []ent.Hook
+		Plan                 []ent.Hook
+		PlanIntroduce        []ent.Hook
+		PointLog             []ent.Hook
+		Reserve              []ent.Hook
+		Rider                []ent.Hook
+		RiderFollowUp        []ent.Hook
+		Role                 []ent.Hook
+		Setting              []ent.Hook
+		Stock                []ent.Hook
+		Store                []ent.Hook
+		Subscribe            []ent.Hook
+		SubscribeAlter       []ent.Hook
+		SubscribePause       []ent.Hook
+		SubscribeReminder    []ent.Hook
+		SubscribeSuspend     []ent.Hook
+	}
+	inters struct {
+		Agent                []ent.Interceptor
+		Allocate             []ent.Interceptor
+		Assistance           []ent.Interceptor
+		Attendance           []ent.Interceptor
+		Battery              []ent.Interceptor
+		BatteryModel         []ent.Interceptor
+		Branch               []ent.Interceptor
+		BranchContract       []ent.Interceptor
+		Business             []ent.Interceptor
+		Cabinet              []ent.Interceptor
+		CabinetFault         []ent.Interceptor
+		City                 []ent.Interceptor
+		Commission           []ent.Interceptor
+		Contract             []ent.Interceptor
+		Coupon               []ent.Interceptor
+		CouponAssembly       []ent.Interceptor
+		CouponTemplate       []ent.Interceptor
+		Ebike                []ent.Interceptor
+		EbikeBrand           []ent.Interceptor
+		Employee             []ent.Interceptor
+		Enterprise           []ent.Interceptor
+		EnterpriseBill       []ent.Interceptor
+		EnterpriseContract   []ent.Interceptor
+		EnterprisePrepayment []ent.Interceptor
+		EnterprisePrice      []ent.Interceptor
+		EnterpriseStatement  []ent.Interceptor
+		EnterpriseStation    []ent.Interceptor
+		Exception            []ent.Interceptor
+		Exchange             []ent.Interceptor
+		Export               []ent.Interceptor
+		Inventory            []ent.Interceptor
+		Manager              []ent.Interceptor
+		Order                []ent.Interceptor
+		OrderRefund          []ent.Interceptor
+		Person               []ent.Interceptor
+		Plan                 []ent.Interceptor
+		PlanIntroduce        []ent.Interceptor
+		PointLog             []ent.Interceptor
+		Reserve              []ent.Interceptor
+		Rider                []ent.Interceptor
+		RiderFollowUp        []ent.Interceptor
+		Role                 []ent.Interceptor
+		Setting              []ent.Interceptor
+		Stock                []ent.Interceptor
+		Store                []ent.Interceptor
+		Subscribe            []ent.Interceptor
+		SubscribeAlter       []ent.Interceptor
+		SubscribePause       []ent.Interceptor
+		SubscribeReminder    []ent.Interceptor
+		SubscribeSuspend     []ent.Interceptor
+	}
+)
 
 // Options applies the options on the config object.
 func (c *config) options(opts ...Option) {

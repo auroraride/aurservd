@@ -11,6 +11,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
@@ -242,6 +243,12 @@ func (eu *ExchangeUpdate) SetDetail(jm json.RawMessage) *ExchangeUpdate {
 	return eu
 }
 
+// AppendDetail appends jm to the "detail" field.
+func (eu *ExchangeUpdate) AppendDetail(jm json.RawMessage) *ExchangeUpdate {
+	eu.mutation.AppendDetail(jm)
+	return eu
+}
+
 // ClearDetail clears the value of the "detail" field.
 func (eu *ExchangeUpdate) ClearDetail() *ExchangeUpdate {
 	eu.mutation.ClearDetail()
@@ -442,43 +449,10 @@ func (eu *ExchangeUpdate) ClearEmployee() *ExchangeUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (eu *ExchangeUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := eu.defaults(); err != nil {
 		return 0, err
 	}
-	if len(eu.hooks) == 0 {
-		if err = eu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = eu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ExchangeMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = eu.check(); err != nil {
-				return 0, err
-			}
-			eu.mutation = mutation
-			affected, err = eu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(eu.hooks) - 1; i >= 0; i-- {
-			if eu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = eu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, eu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, ExchangeMutation](ctx, eu.sqlSave, eu.mutation, eu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -536,6 +510,9 @@ func (eu *ExchangeUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Excha
 }
 
 func (eu *ExchangeUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := eu.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   exchange.Table,
@@ -554,156 +531,78 @@ func (eu *ExchangeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := eu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: exchange.FieldUpdatedAt,
-		})
+		_spec.SetField(exchange.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := eu.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: exchange.FieldDeletedAt,
-		})
+		_spec.SetField(exchange.FieldDeletedAt, field.TypeTime, value)
 	}
 	if eu.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: exchange.FieldDeletedAt,
-		})
+		_spec.ClearField(exchange.FieldDeletedAt, field.TypeTime)
 	}
 	if eu.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: exchange.FieldCreator,
-		})
+		_spec.ClearField(exchange.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := eu.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: exchange.FieldLastModifier,
-		})
+		_spec.SetField(exchange.FieldLastModifier, field.TypeJSON, value)
 	}
 	if eu.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: exchange.FieldLastModifier,
-		})
+		_spec.ClearField(exchange.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := eu.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: exchange.FieldRemark,
-		})
+		_spec.SetField(exchange.FieldRemark, field.TypeString, value)
 	}
 	if eu.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: exchange.FieldRemark,
-		})
+		_spec.ClearField(exchange.FieldRemark, field.TypeString)
 	}
 	if value, ok := eu.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: exchange.FieldUUID,
-		})
+		_spec.SetField(exchange.FieldUUID, field.TypeString, value)
 	}
 	if value, ok := eu.mutation.Success(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: exchange.FieldSuccess,
-		})
+		_spec.SetField(exchange.FieldSuccess, field.TypeBool, value)
 	}
 	if value, ok := eu.mutation.Detail(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: exchange.FieldDetail,
+		_spec.SetField(exchange.FieldDetail, field.TypeJSON, value)
+	}
+	if value, ok := eu.mutation.AppendedDetail(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, exchange.FieldDetail, value)
 		})
 	}
 	if eu.mutation.DetailCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: exchange.FieldDetail,
-		})
+		_spec.ClearField(exchange.FieldDetail, field.TypeJSON)
 	}
 	if value, ok := eu.mutation.Info(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: exchange.FieldInfo,
-		})
+		_spec.SetField(exchange.FieldInfo, field.TypeJSON, value)
 	}
 	if eu.mutation.InfoCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: exchange.FieldInfo,
-		})
+		_spec.ClearField(exchange.FieldInfo, field.TypeJSON)
 	}
 	if value, ok := eu.mutation.Model(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: exchange.FieldModel,
-		})
+		_spec.SetField(exchange.FieldModel, field.TypeString, value)
 	}
 	if value, ok := eu.mutation.Alternative(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: exchange.FieldAlternative,
-		})
+		_spec.SetField(exchange.FieldAlternative, field.TypeBool, value)
 	}
 	if value, ok := eu.mutation.StartAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: exchange.FieldStartAt,
-		})
+		_spec.SetField(exchange.FieldStartAt, field.TypeTime, value)
 	}
 	if eu.mutation.StartAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: exchange.FieldStartAt,
-		})
+		_spec.ClearField(exchange.FieldStartAt, field.TypeTime)
 	}
 	if value, ok := eu.mutation.FinishAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: exchange.FieldFinishAt,
-		})
+		_spec.SetField(exchange.FieldFinishAt, field.TypeTime, value)
 	}
 	if eu.mutation.FinishAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: exchange.FieldFinishAt,
-		})
+		_spec.ClearField(exchange.FieldFinishAt, field.TypeTime)
 	}
 	if value, ok := eu.mutation.Duration(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: exchange.FieldDuration,
-		})
+		_spec.SetField(exchange.FieldDuration, field.TypeInt, value)
 	}
 	if value, ok := eu.mutation.AddedDuration(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: exchange.FieldDuration,
-		})
+		_spec.AddField(exchange.FieldDuration, field.TypeInt, value)
 	}
 	if eu.mutation.DurationCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Column: exchange.FieldDuration,
-		})
+		_spec.ClearField(exchange.FieldDuration, field.TypeInt)
 	}
 	if eu.mutation.SubscribeCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -985,7 +884,7 @@ func (eu *ExchangeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = eu.modifiers
+	_spec.AddModifiers(eu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, eu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{exchange.Label}
@@ -994,6 +893,7 @@ func (eu *ExchangeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	eu.mutation.done = true
 	return n, nil
 }
 
@@ -1208,6 +1108,12 @@ func (euo *ExchangeUpdateOne) SetDetail(jm json.RawMessage) *ExchangeUpdateOne {
 	return euo
 }
 
+// AppendDetail appends jm to the "detail" field.
+func (euo *ExchangeUpdateOne) AppendDetail(jm json.RawMessage) *ExchangeUpdateOne {
+	euo.mutation.AppendDetail(jm)
+	return euo
+}
+
 // ClearDetail clears the value of the "detail" field.
 func (euo *ExchangeUpdateOne) ClearDetail() *ExchangeUpdateOne {
 	euo.mutation.ClearDetail()
@@ -1415,49 +1321,10 @@ func (euo *ExchangeUpdateOne) Select(field string, fields ...string) *ExchangeUp
 
 // Save executes the query and returns the updated Exchange entity.
 func (euo *ExchangeUpdateOne) Save(ctx context.Context) (*Exchange, error) {
-	var (
-		err  error
-		node *Exchange
-	)
 	if err := euo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(euo.hooks) == 0 {
-		if err = euo.check(); err != nil {
-			return nil, err
-		}
-		node, err = euo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ExchangeMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = euo.check(); err != nil {
-				return nil, err
-			}
-			euo.mutation = mutation
-			node, err = euo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(euo.hooks) - 1; i >= 0; i-- {
-			if euo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = euo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, euo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Exchange)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from ExchangeMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Exchange, ExchangeMutation](ctx, euo.sqlSave, euo.mutation, euo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -1515,6 +1382,9 @@ func (euo *ExchangeUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *E
 }
 
 func (euo *ExchangeUpdateOne) sqlSave(ctx context.Context) (_node *Exchange, err error) {
+	if err := euo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   exchange.Table,
@@ -1550,156 +1420,78 @@ func (euo *ExchangeUpdateOne) sqlSave(ctx context.Context) (_node *Exchange, err
 		}
 	}
 	if value, ok := euo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: exchange.FieldUpdatedAt,
-		})
+		_spec.SetField(exchange.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := euo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: exchange.FieldDeletedAt,
-		})
+		_spec.SetField(exchange.FieldDeletedAt, field.TypeTime, value)
 	}
 	if euo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: exchange.FieldDeletedAt,
-		})
+		_spec.ClearField(exchange.FieldDeletedAt, field.TypeTime)
 	}
 	if euo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: exchange.FieldCreator,
-		})
+		_spec.ClearField(exchange.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := euo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: exchange.FieldLastModifier,
-		})
+		_spec.SetField(exchange.FieldLastModifier, field.TypeJSON, value)
 	}
 	if euo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: exchange.FieldLastModifier,
-		})
+		_spec.ClearField(exchange.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := euo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: exchange.FieldRemark,
-		})
+		_spec.SetField(exchange.FieldRemark, field.TypeString, value)
 	}
 	if euo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: exchange.FieldRemark,
-		})
+		_spec.ClearField(exchange.FieldRemark, field.TypeString)
 	}
 	if value, ok := euo.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: exchange.FieldUUID,
-		})
+		_spec.SetField(exchange.FieldUUID, field.TypeString, value)
 	}
 	if value, ok := euo.mutation.Success(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: exchange.FieldSuccess,
-		})
+		_spec.SetField(exchange.FieldSuccess, field.TypeBool, value)
 	}
 	if value, ok := euo.mutation.Detail(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: exchange.FieldDetail,
+		_spec.SetField(exchange.FieldDetail, field.TypeJSON, value)
+	}
+	if value, ok := euo.mutation.AppendedDetail(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, exchange.FieldDetail, value)
 		})
 	}
 	if euo.mutation.DetailCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: exchange.FieldDetail,
-		})
+		_spec.ClearField(exchange.FieldDetail, field.TypeJSON)
 	}
 	if value, ok := euo.mutation.Info(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: exchange.FieldInfo,
-		})
+		_spec.SetField(exchange.FieldInfo, field.TypeJSON, value)
 	}
 	if euo.mutation.InfoCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: exchange.FieldInfo,
-		})
+		_spec.ClearField(exchange.FieldInfo, field.TypeJSON)
 	}
 	if value, ok := euo.mutation.Model(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: exchange.FieldModel,
-		})
+		_spec.SetField(exchange.FieldModel, field.TypeString, value)
 	}
 	if value, ok := euo.mutation.Alternative(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: exchange.FieldAlternative,
-		})
+		_spec.SetField(exchange.FieldAlternative, field.TypeBool, value)
 	}
 	if value, ok := euo.mutation.StartAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: exchange.FieldStartAt,
-		})
+		_spec.SetField(exchange.FieldStartAt, field.TypeTime, value)
 	}
 	if euo.mutation.StartAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: exchange.FieldStartAt,
-		})
+		_spec.ClearField(exchange.FieldStartAt, field.TypeTime)
 	}
 	if value, ok := euo.mutation.FinishAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: exchange.FieldFinishAt,
-		})
+		_spec.SetField(exchange.FieldFinishAt, field.TypeTime, value)
 	}
 	if euo.mutation.FinishAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: exchange.FieldFinishAt,
-		})
+		_spec.ClearField(exchange.FieldFinishAt, field.TypeTime)
 	}
 	if value, ok := euo.mutation.Duration(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: exchange.FieldDuration,
-		})
+		_spec.SetField(exchange.FieldDuration, field.TypeInt, value)
 	}
 	if value, ok := euo.mutation.AddedDuration(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: exchange.FieldDuration,
-		})
+		_spec.AddField(exchange.FieldDuration, field.TypeInt, value)
 	}
 	if euo.mutation.DurationCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Column: exchange.FieldDuration,
-		})
+		_spec.ClearField(exchange.FieldDuration, field.TypeInt)
 	}
 	if euo.mutation.SubscribeCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1981,7 +1773,7 @@ func (euo *ExchangeUpdateOne) sqlSave(ctx context.Context) (_node *Exchange, err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = euo.modifiers
+	_spec.AddModifiers(euo.modifiers...)
 	_node = &Exchange{config: euo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -1993,5 +1785,6 @@ func (euo *ExchangeUpdateOne) sqlSave(ctx context.Context) (_node *Exchange, err
 		}
 		return nil, err
 	}
+	euo.mutation.done = true
 	return _node, nil
 }

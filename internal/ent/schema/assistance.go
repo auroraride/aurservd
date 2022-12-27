@@ -19,6 +19,7 @@ type Assistance struct {
 func (Assistance) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "assistance"},
+        entsql.WithComments(true),
     }
 }
 

@@ -89,50 +89,8 @@ func (pic *PlanIntroduceCreate) Mutation() *PlanIntroduceMutation {
 
 // Save creates the PlanIntroduce in the database.
 func (pic *PlanIntroduceCreate) Save(ctx context.Context) (*PlanIntroduce, error) {
-	var (
-		err  error
-		node *PlanIntroduce
-	)
 	pic.defaults()
-	if len(pic.hooks) == 0 {
-		if err = pic.check(); err != nil {
-			return nil, err
-		}
-		node, err = pic.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*PlanIntroduceMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = pic.check(); err != nil {
-				return nil, err
-			}
-			pic.mutation = mutation
-			if node, err = pic.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(pic.hooks) - 1; i >= 0; i-- {
-			if pic.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = pic.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, pic.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*PlanIntroduce)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from PlanIntroduceMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*PlanIntroduce, PlanIntroduceMutation](ctx, pic.sqlSave, pic.mutation, pic.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -187,6 +145,9 @@ func (pic *PlanIntroduceCreate) check() error {
 }
 
 func (pic *PlanIntroduceCreate) sqlSave(ctx context.Context) (*PlanIntroduce, error) {
+	if err := pic.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := pic.createSpec()
 	if err := sqlgraph.CreateNode(ctx, pic.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -196,6 +157,8 @@ func (pic *PlanIntroduceCreate) sqlSave(ctx context.Context) (*PlanIntroduce, er
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	pic.mutation.id = &_node.ID
+	pic.mutation.done = true
 	return _node, nil
 }
 
@@ -212,35 +175,19 @@ func (pic *PlanIntroduceCreate) createSpec() (*PlanIntroduce, *sqlgraph.CreateSp
 	)
 	_spec.OnConflict = pic.conflict
 	if value, ok := pic.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: planintroduce.FieldCreatedAt,
-		})
+		_spec.SetField(planintroduce.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := pic.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: planintroduce.FieldUpdatedAt,
-		})
+		_spec.SetField(planintroduce.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := pic.mutation.Model(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: planintroduce.FieldModel,
-		})
+		_spec.SetField(planintroduce.FieldModel, field.TypeString, value)
 		_node.Model = value
 	}
 	if value, ok := pic.mutation.Image(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: planintroduce.FieldImage,
-		})
+		_spec.SetField(planintroduce.FieldImage, field.TypeString, value)
 		_node.Image = value
 	}
 	if nodes := pic.mutation.BrandIDs(); len(nodes) > 0 {

@@ -166,52 +166,10 @@ func (ssc *SubscribeSuspendCreate) Mutation() *SubscribeSuspendMutation {
 
 // Save creates the SubscribeSuspend in the database.
 func (ssc *SubscribeSuspendCreate) Save(ctx context.Context) (*SubscribeSuspend, error) {
-	var (
-		err  error
-		node *SubscribeSuspend
-	)
 	if err := ssc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(ssc.hooks) == 0 {
-		if err = ssc.check(); err != nil {
-			return nil, err
-		}
-		node, err = ssc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*SubscribeSuspendMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ssc.check(); err != nil {
-				return nil, err
-			}
-			ssc.mutation = mutation
-			if node, err = ssc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ssc.hooks) - 1; i >= 0; i-- {
-			if ssc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ssc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ssc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*SubscribeSuspend)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from SubscribeSuspendMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*SubscribeSuspend, SubscribeSuspendMutation](ctx, ssc.sqlSave, ssc.mutation, ssc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -275,6 +233,9 @@ func (ssc *SubscribeSuspendCreate) check() error {
 }
 
 func (ssc *SubscribeSuspendCreate) sqlSave(ctx context.Context) (*SubscribeSuspend, error) {
+	if err := ssc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := ssc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, ssc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -284,6 +245,8 @@ func (ssc *SubscribeSuspendCreate) sqlSave(ctx context.Context) (*SubscribeSuspe
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	ssc.mutation.id = &_node.ID
+	ssc.mutation.done = true
 	return _node, nil
 }
 
@@ -300,67 +263,35 @@ func (ssc *SubscribeSuspendCreate) createSpec() (*SubscribeSuspend, *sqlgraph.Cr
 	)
 	_spec.OnConflict = ssc.conflict
 	if value, ok := ssc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: subscribesuspend.FieldCreator,
-		})
+		_spec.SetField(subscribesuspend.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := ssc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: subscribesuspend.FieldLastModifier,
-		})
+		_spec.SetField(subscribesuspend.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := ssc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribesuspend.FieldRemark,
-		})
+		_spec.SetField(subscribesuspend.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := ssc.mutation.Days(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribesuspend.FieldDays,
-		})
+		_spec.SetField(subscribesuspend.FieldDays, field.TypeInt, value)
 		_node.Days = value
 	}
 	if value, ok := ssc.mutation.StartAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribesuspend.FieldStartAt,
-		})
+		_spec.SetField(subscribesuspend.FieldStartAt, field.TypeTime, value)
 		_node.StartAt = value
 	}
 	if value, ok := ssc.mutation.EndAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribesuspend.FieldEndAt,
-		})
+		_spec.SetField(subscribesuspend.FieldEndAt, field.TypeTime, value)
 		_node.EndAt = value
 	}
 	if value, ok := ssc.mutation.EndReason(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribesuspend.FieldEndReason,
-		})
+		_spec.SetField(subscribesuspend.FieldEndReason, field.TypeString, value)
 		_node.EndReason = value
 	}
 	if value, ok := ssc.mutation.EndModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: subscribesuspend.FieldEndModifier,
-		})
+		_spec.SetField(subscribesuspend.FieldEndModifier, field.TypeJSON, value)
 		_node.EndModifier = value
 	}
 	if nodes := ssc.mutation.CityIDs(); len(nodes) > 0 {

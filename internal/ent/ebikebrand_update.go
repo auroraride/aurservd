@@ -107,37 +107,10 @@ func (ebu *EbikeBrandUpdate) Mutation() *EbikeBrandMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ebu *EbikeBrandUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := ebu.defaults(); err != nil {
 		return 0, err
 	}
-	if len(ebu.hooks) == 0 {
-		affected, err = ebu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*EbikeBrandMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			ebu.mutation = mutation
-			affected, err = ebu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(ebu.hooks) - 1; i >= 0; i-- {
-			if ebu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ebu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, ebu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, EbikeBrandMutation](ctx, ebu.sqlSave, ebu.mutation, ebu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -199,72 +172,36 @@ func (ebu *EbikeBrandUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := ebu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: ebikebrand.FieldUpdatedAt,
-		})
+		_spec.SetField(ebikebrand.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := ebu.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: ebikebrand.FieldDeletedAt,
-		})
+		_spec.SetField(ebikebrand.FieldDeletedAt, field.TypeTime, value)
 	}
 	if ebu.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: ebikebrand.FieldDeletedAt,
-		})
+		_spec.ClearField(ebikebrand.FieldDeletedAt, field.TypeTime)
 	}
 	if ebu.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: ebikebrand.FieldCreator,
-		})
+		_spec.ClearField(ebikebrand.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := ebu.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: ebikebrand.FieldLastModifier,
-		})
+		_spec.SetField(ebikebrand.FieldLastModifier, field.TypeJSON, value)
 	}
 	if ebu.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: ebikebrand.FieldLastModifier,
-		})
+		_spec.ClearField(ebikebrand.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := ebu.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: ebikebrand.FieldRemark,
-		})
+		_spec.SetField(ebikebrand.FieldRemark, field.TypeString, value)
 	}
 	if ebu.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: ebikebrand.FieldRemark,
-		})
+		_spec.ClearField(ebikebrand.FieldRemark, field.TypeString)
 	}
 	if value, ok := ebu.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: ebikebrand.FieldName,
-		})
+		_spec.SetField(ebikebrand.FieldName, field.TypeString, value)
 	}
 	if value, ok := ebu.mutation.Cover(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: ebikebrand.FieldCover,
-		})
+		_spec.SetField(ebikebrand.FieldCover, field.TypeString, value)
 	}
-	_spec.Modifiers = ebu.modifiers
+	_spec.AddModifiers(ebu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, ebu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{ebikebrand.Label}
@@ -273,6 +210,7 @@ func (ebu *EbikeBrandUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	ebu.mutation.done = true
 	return n, nil
 }
 
@@ -369,43 +307,10 @@ func (ebuo *EbikeBrandUpdateOne) Select(field string, fields ...string) *EbikeBr
 
 // Save executes the query and returns the updated EbikeBrand entity.
 func (ebuo *EbikeBrandUpdateOne) Save(ctx context.Context) (*EbikeBrand, error) {
-	var (
-		err  error
-		node *EbikeBrand
-	)
 	if err := ebuo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(ebuo.hooks) == 0 {
-		node, err = ebuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*EbikeBrandMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			ebuo.mutation = mutation
-			node, err = ebuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ebuo.hooks) - 1; i >= 0; i-- {
-			if ebuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ebuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ebuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*EbikeBrand)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from EbikeBrandMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*EbikeBrand, EbikeBrandMutation](ctx, ebuo.sqlSave, ebuo.mutation, ebuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -484,72 +389,36 @@ func (ebuo *EbikeBrandUpdateOne) sqlSave(ctx context.Context) (_node *EbikeBrand
 		}
 	}
 	if value, ok := ebuo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: ebikebrand.FieldUpdatedAt,
-		})
+		_spec.SetField(ebikebrand.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := ebuo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: ebikebrand.FieldDeletedAt,
-		})
+		_spec.SetField(ebikebrand.FieldDeletedAt, field.TypeTime, value)
 	}
 	if ebuo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: ebikebrand.FieldDeletedAt,
-		})
+		_spec.ClearField(ebikebrand.FieldDeletedAt, field.TypeTime)
 	}
 	if ebuo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: ebikebrand.FieldCreator,
-		})
+		_spec.ClearField(ebikebrand.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := ebuo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: ebikebrand.FieldLastModifier,
-		})
+		_spec.SetField(ebikebrand.FieldLastModifier, field.TypeJSON, value)
 	}
 	if ebuo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: ebikebrand.FieldLastModifier,
-		})
+		_spec.ClearField(ebikebrand.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := ebuo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: ebikebrand.FieldRemark,
-		})
+		_spec.SetField(ebikebrand.FieldRemark, field.TypeString, value)
 	}
 	if ebuo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: ebikebrand.FieldRemark,
-		})
+		_spec.ClearField(ebikebrand.FieldRemark, field.TypeString)
 	}
 	if value, ok := ebuo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: ebikebrand.FieldName,
-		})
+		_spec.SetField(ebikebrand.FieldName, field.TypeString, value)
 	}
 	if value, ok := ebuo.mutation.Cover(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: ebikebrand.FieldCover,
-		})
+		_spec.SetField(ebikebrand.FieldCover, field.TypeString, value)
 	}
-	_spec.Modifiers = ebuo.modifiers
+	_spec.AddModifiers(ebuo.modifiers...)
 	_node = &EbikeBrand{config: ebuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -561,5 +430,6 @@ func (ebuo *EbikeBrandUpdateOne) sqlSave(ctx context.Context) (_node *EbikeBrand
 		}
 		return nil, err
 	}
+	ebuo.mutation.done = true
 	return _node, nil
 }

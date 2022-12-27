@@ -23,6 +23,7 @@ type AgentQuery struct {
 	unique         *bool
 	order          []OrderFunc
 	fields         []string
+	inters         []Interceptor
 	predicates     []predicate.Agent
 	withEnterprise *EnterpriseQuery
 	modifiers      []func(*sql.Selector)
@@ -37,13 +38,13 @@ func (aq *AgentQuery) Where(ps ...predicate.Agent) *AgentQuery {
 	return aq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (aq *AgentQuery) Limit(limit int) *AgentQuery {
 	aq.limit = &limit
 	return aq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (aq *AgentQuery) Offset(offset int) *AgentQuery {
 	aq.offset = &offset
 	return aq
@@ -56,7 +57,7 @@ func (aq *AgentQuery) Unique(unique bool) *AgentQuery {
 	return aq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (aq *AgentQuery) Order(o ...OrderFunc) *AgentQuery {
 	aq.order = append(aq.order, o...)
 	return aq
@@ -64,7 +65,7 @@ func (aq *AgentQuery) Order(o ...OrderFunc) *AgentQuery {
 
 // QueryEnterprise chains the current query on the "enterprise" edge.
 func (aq *AgentQuery) QueryEnterprise() *EnterpriseQuery {
-	query := &EnterpriseQuery{config: aq.config}
+	query := (&EnterpriseClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -87,7 +88,7 @@ func (aq *AgentQuery) QueryEnterprise() *EnterpriseQuery {
 // First returns the first Agent entity from the query.
 // Returns a *NotFoundError when no Agent was found.
 func (aq *AgentQuery) First(ctx context.Context) (*Agent, error) {
-	nodes, err := aq.Limit(1).All(ctx)
+	nodes, err := aq.Limit(1).All(newQueryContext(ctx, TypeAgent, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +111,7 @@ func (aq *AgentQuery) FirstX(ctx context.Context) *Agent {
 // Returns a *NotFoundError when no Agent ID was found.
 func (aq *AgentQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = aq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = aq.Limit(1).IDs(newQueryContext(ctx, TypeAgent, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -133,7 +134,7 @@ func (aq *AgentQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Agent entity is found.
 // Returns a *NotFoundError when no Agent entities are found.
 func (aq *AgentQuery) Only(ctx context.Context) (*Agent, error) {
-	nodes, err := aq.Limit(2).All(ctx)
+	nodes, err := aq.Limit(2).All(newQueryContext(ctx, TypeAgent, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +162,7 @@ func (aq *AgentQuery) OnlyX(ctx context.Context) *Agent {
 // Returns a *NotFoundError when no entities are found.
 func (aq *AgentQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = aq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = aq.Limit(2).IDs(newQueryContext(ctx, TypeAgent, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -186,10 +187,12 @@ func (aq *AgentQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Agents.
 func (aq *AgentQuery) All(ctx context.Context) ([]*Agent, error) {
+	ctx = newQueryContext(ctx, TypeAgent, "All")
 	if err := aq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return aq.sqlAll(ctx)
+	qr := querierAll[[]*Agent, *AgentQuery]()
+	return withInterceptors[[]*Agent](ctx, aq, qr, aq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -204,6 +207,7 @@ func (aq *AgentQuery) AllX(ctx context.Context) []*Agent {
 // IDs executes the query and returns a list of Agent IDs.
 func (aq *AgentQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeAgent, "IDs")
 	if err := aq.Select(agent.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -221,10 +225,11 @@ func (aq *AgentQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (aq *AgentQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeAgent, "Count")
 	if err := aq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return aq.sqlCount(ctx)
+	return withInterceptors[int](ctx, aq, querierCount[*AgentQuery](), aq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -238,10 +243,15 @@ func (aq *AgentQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (aq *AgentQuery) Exist(ctx context.Context) (bool, error) {
-	if err := aq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeAgent, "Exist")
+	switch _, err := aq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return aq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -276,7 +286,7 @@ func (aq *AgentQuery) Clone() *AgentQuery {
 // WithEnterprise tells the query-builder to eager-load the nodes that are connected to
 // the "enterprise" edge. The optional arguments are used to configure the query builder of the edge.
 func (aq *AgentQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *AgentQuery {
-	query := &EnterpriseQuery{config: aq.config}
+	query := (&EnterpriseClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -299,16 +309,11 @@ func (aq *AgentQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *AgentQuery
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (aq *AgentQuery) GroupBy(field string, fields ...string) *AgentGroupBy {
-	grbuild := &AgentGroupBy{config: aq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := aq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return aq.sqlQuery(ctx), nil
-	}
+	aq.fields = append([]string{field}, fields...)
+	grbuild := &AgentGroupBy{build: aq}
+	grbuild.flds = &aq.fields
 	grbuild.label = agent.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -326,13 +331,28 @@ func (aq *AgentQuery) GroupBy(field string, fields ...string) *AgentGroupBy {
 //		Scan(ctx, &v)
 func (aq *AgentQuery) Select(fields ...string) *AgentSelect {
 	aq.fields = append(aq.fields, fields...)
-	selbuild := &AgentSelect{AgentQuery: aq}
-	selbuild.label = agent.Label
-	selbuild.flds, selbuild.scan = &aq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &AgentSelect{AgentQuery: aq}
+	sbuild.label = agent.Label
+	sbuild.flds, sbuild.scan = &aq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a AgentSelect configured with the given aggregations.
+func (aq *AgentQuery) Aggregate(fns ...AggregateFunc) *AgentSelect {
+	return aq.Select().Aggregate(fns...)
 }
 
 func (aq *AgentQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range aq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, aq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range aq.fields {
 		if !agent.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -423,17 +443,6 @@ func (aq *AgentQuery) sqlCount(ctx context.Context) (int, error) {
 		_spec.Unique = aq.unique != nil && *aq.unique
 	}
 	return sqlgraph.CountNodes(ctx, aq.driver, _spec)
-}
-
-func (aq *AgentQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := aq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
 }
 
 func (aq *AgentQuery) querySpec() *sqlgraph.QuerySpec {
@@ -527,13 +536,8 @@ func (aq *AgentQuery) Modify(modifiers ...func(s *sql.Selector)) *AgentSelect {
 
 // AgentGroupBy is the group-by builder for Agent entities.
 type AgentGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *AgentQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -542,74 +546,77 @@ func (agb *AgentGroupBy) Aggregate(fns ...AggregateFunc) *AgentGroupBy {
 	return agb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (agb *AgentGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := agb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeAgent, "GroupBy")
+	if err := agb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	agb.sql = query
-	return agb.sqlScan(ctx, v)
+	return scanWithInterceptors[*AgentQuery, *AgentGroupBy](ctx, agb.build, agb, agb.build.inters, v)
 }
 
-func (agb *AgentGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range agb.fields {
-		if !agent.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (agb *AgentGroupBy) sqlScan(ctx context.Context, root *AgentQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(agb.fns))
+	for _, fn := range agb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := agb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*agb.flds)+len(agb.fns))
+		for _, f := range *agb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*agb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := agb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := agb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (agb *AgentGroupBy) sqlQuery() *sql.Selector {
-	selector := agb.sql.Select()
-	aggregation := make([]string, 0, len(agb.fns))
-	for _, fn := range agb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(agb.fields)+len(agb.fns))
-		for _, f := range agb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(agb.fields...)...)
-}
-
 // AgentSelect is the builder for selecting fields of Agent entities.
 type AgentSelect struct {
 	*AgentQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (as *AgentSelect) Aggregate(fns ...AggregateFunc) *AgentSelect {
+	as.fns = append(as.fns, fns...)
+	return as
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (as *AgentSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeAgent, "Select")
 	if err := as.prepareQuery(ctx); err != nil {
 		return err
 	}
-	as.sql = as.AgentQuery.sqlQuery(ctx)
-	return as.sqlScan(ctx, v)
+	return scanWithInterceptors[*AgentQuery, *AgentSelect](ctx, as.AgentQuery, as, as.inters, v)
 }
 
-func (as *AgentSelect) sqlScan(ctx context.Context, v any) error {
+func (as *AgentSelect) sqlScan(ctx context.Context, root *AgentQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(as.fns))
+	for _, fn := range as.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*as.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := as.sql.Query()
+	query, args := selector.Query()
 	if err := as.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

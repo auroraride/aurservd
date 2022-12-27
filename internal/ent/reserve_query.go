@@ -26,6 +26,7 @@ type ReserveQuery struct {
 	unique       *bool
 	order        []OrderFunc
 	fields       []string
+	inters       []Interceptor
 	predicates   []predicate.Reserve
 	withCabinet  *CabinetQuery
 	withRider    *RiderQuery
@@ -43,13 +44,13 @@ func (rq *ReserveQuery) Where(ps ...predicate.Reserve) *ReserveQuery {
 	return rq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (rq *ReserveQuery) Limit(limit int) *ReserveQuery {
 	rq.limit = &limit
 	return rq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (rq *ReserveQuery) Offset(offset int) *ReserveQuery {
 	rq.offset = &offset
 	return rq
@@ -62,7 +63,7 @@ func (rq *ReserveQuery) Unique(unique bool) *ReserveQuery {
 	return rq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (rq *ReserveQuery) Order(o ...OrderFunc) *ReserveQuery {
 	rq.order = append(rq.order, o...)
 	return rq
@@ -70,7 +71,7 @@ func (rq *ReserveQuery) Order(o ...OrderFunc) *ReserveQuery {
 
 // QueryCabinet chains the current query on the "cabinet" edge.
 func (rq *ReserveQuery) QueryCabinet() *CabinetQuery {
-	query := &CabinetQuery{config: rq.config}
+	query := (&CabinetClient{config: rq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -92,7 +93,7 @@ func (rq *ReserveQuery) QueryCabinet() *CabinetQuery {
 
 // QueryRider chains the current query on the "rider" edge.
 func (rq *ReserveQuery) QueryRider() *RiderQuery {
-	query := &RiderQuery{config: rq.config}
+	query := (&RiderClient{config: rq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -114,7 +115,7 @@ func (rq *ReserveQuery) QueryRider() *RiderQuery {
 
 // QueryCity chains the current query on the "city" edge.
 func (rq *ReserveQuery) QueryCity() *CityQuery {
-	query := &CityQuery{config: rq.config}
+	query := (&CityClient{config: rq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -136,7 +137,7 @@ func (rq *ReserveQuery) QueryCity() *CityQuery {
 
 // QueryBusiness chains the current query on the "business" edge.
 func (rq *ReserveQuery) QueryBusiness() *BusinessQuery {
-	query := &BusinessQuery{config: rq.config}
+	query := (&BusinessClient{config: rq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -159,7 +160,7 @@ func (rq *ReserveQuery) QueryBusiness() *BusinessQuery {
 // First returns the first Reserve entity from the query.
 // Returns a *NotFoundError when no Reserve was found.
 func (rq *ReserveQuery) First(ctx context.Context) (*Reserve, error) {
-	nodes, err := rq.Limit(1).All(ctx)
+	nodes, err := rq.Limit(1).All(newQueryContext(ctx, TypeReserve, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -182,7 +183,7 @@ func (rq *ReserveQuery) FirstX(ctx context.Context) *Reserve {
 // Returns a *NotFoundError when no Reserve ID was found.
 func (rq *ReserveQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = rq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = rq.Limit(1).IDs(newQueryContext(ctx, TypeReserve, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -205,7 +206,7 @@ func (rq *ReserveQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Reserve entity is found.
 // Returns a *NotFoundError when no Reserve entities are found.
 func (rq *ReserveQuery) Only(ctx context.Context) (*Reserve, error) {
-	nodes, err := rq.Limit(2).All(ctx)
+	nodes, err := rq.Limit(2).All(newQueryContext(ctx, TypeReserve, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -233,7 +234,7 @@ func (rq *ReserveQuery) OnlyX(ctx context.Context) *Reserve {
 // Returns a *NotFoundError when no entities are found.
 func (rq *ReserveQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = rq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = rq.Limit(2).IDs(newQueryContext(ctx, TypeReserve, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -258,10 +259,12 @@ func (rq *ReserveQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Reserves.
 func (rq *ReserveQuery) All(ctx context.Context) ([]*Reserve, error) {
+	ctx = newQueryContext(ctx, TypeReserve, "All")
 	if err := rq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return rq.sqlAll(ctx)
+	qr := querierAll[[]*Reserve, *ReserveQuery]()
+	return withInterceptors[[]*Reserve](ctx, rq, qr, rq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -276,6 +279,7 @@ func (rq *ReserveQuery) AllX(ctx context.Context) []*Reserve {
 // IDs executes the query and returns a list of Reserve IDs.
 func (rq *ReserveQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeReserve, "IDs")
 	if err := rq.Select(reserve.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -293,10 +297,11 @@ func (rq *ReserveQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (rq *ReserveQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeReserve, "Count")
 	if err := rq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return rq.sqlCount(ctx)
+	return withInterceptors[int](ctx, rq, querierCount[*ReserveQuery](), rq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -310,10 +315,15 @@ func (rq *ReserveQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (rq *ReserveQuery) Exist(ctx context.Context) (bool, error) {
-	if err := rq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeReserve, "Exist")
+	switch _, err := rq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return rq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -351,7 +361,7 @@ func (rq *ReserveQuery) Clone() *ReserveQuery {
 // WithCabinet tells the query-builder to eager-load the nodes that are connected to
 // the "cabinet" edge. The optional arguments are used to configure the query builder of the edge.
 func (rq *ReserveQuery) WithCabinet(opts ...func(*CabinetQuery)) *ReserveQuery {
-	query := &CabinetQuery{config: rq.config}
+	query := (&CabinetClient{config: rq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -362,7 +372,7 @@ func (rq *ReserveQuery) WithCabinet(opts ...func(*CabinetQuery)) *ReserveQuery {
 // WithRider tells the query-builder to eager-load the nodes that are connected to
 // the "rider" edge. The optional arguments are used to configure the query builder of the edge.
 func (rq *ReserveQuery) WithRider(opts ...func(*RiderQuery)) *ReserveQuery {
-	query := &RiderQuery{config: rq.config}
+	query := (&RiderClient{config: rq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -373,7 +383,7 @@ func (rq *ReserveQuery) WithRider(opts ...func(*RiderQuery)) *ReserveQuery {
 // WithCity tells the query-builder to eager-load the nodes that are connected to
 // the "city" edge. The optional arguments are used to configure the query builder of the edge.
 func (rq *ReserveQuery) WithCity(opts ...func(*CityQuery)) *ReserveQuery {
-	query := &CityQuery{config: rq.config}
+	query := (&CityClient{config: rq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -384,7 +394,7 @@ func (rq *ReserveQuery) WithCity(opts ...func(*CityQuery)) *ReserveQuery {
 // WithBusiness tells the query-builder to eager-load the nodes that are connected to
 // the "business" edge. The optional arguments are used to configure the query builder of the edge.
 func (rq *ReserveQuery) WithBusiness(opts ...func(*BusinessQuery)) *ReserveQuery {
-	query := &BusinessQuery{config: rq.config}
+	query := (&BusinessClient{config: rq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -407,16 +417,11 @@ func (rq *ReserveQuery) WithBusiness(opts ...func(*BusinessQuery)) *ReserveQuery
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (rq *ReserveQuery) GroupBy(field string, fields ...string) *ReserveGroupBy {
-	grbuild := &ReserveGroupBy{config: rq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := rq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return rq.sqlQuery(ctx), nil
-	}
+	rq.fields = append([]string{field}, fields...)
+	grbuild := &ReserveGroupBy{build: rq}
+	grbuild.flds = &rq.fields
 	grbuild.label = reserve.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -434,13 +439,28 @@ func (rq *ReserveQuery) GroupBy(field string, fields ...string) *ReserveGroupBy 
 //		Scan(ctx, &v)
 func (rq *ReserveQuery) Select(fields ...string) *ReserveSelect {
 	rq.fields = append(rq.fields, fields...)
-	selbuild := &ReserveSelect{ReserveQuery: rq}
-	selbuild.label = reserve.Label
-	selbuild.flds, selbuild.scan = &rq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &ReserveSelect{ReserveQuery: rq}
+	sbuild.label = reserve.Label
+	sbuild.flds, sbuild.scan = &rq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a ReserveSelect configured with the given aggregations.
+func (rq *ReserveQuery) Aggregate(fns ...AggregateFunc) *ReserveSelect {
+	return rq.Select().Aggregate(fns...)
 }
 
 func (rq *ReserveQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range rq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, rq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range rq.fields {
 		if !reserve.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -635,17 +655,6 @@ func (rq *ReserveQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, rq.driver, _spec)
 }
 
-func (rq *ReserveQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := rq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (rq *ReserveQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -737,13 +746,8 @@ func (rq *ReserveQuery) Modify(modifiers ...func(s *sql.Selector)) *ReserveSelec
 
 // ReserveGroupBy is the group-by builder for Reserve entities.
 type ReserveGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *ReserveQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -752,74 +756,77 @@ func (rgb *ReserveGroupBy) Aggregate(fns ...AggregateFunc) *ReserveGroupBy {
 	return rgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (rgb *ReserveGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := rgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeReserve, "GroupBy")
+	if err := rgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	rgb.sql = query
-	return rgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*ReserveQuery, *ReserveGroupBy](ctx, rgb.build, rgb, rgb.build.inters, v)
 }
 
-func (rgb *ReserveGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range rgb.fields {
-		if !reserve.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (rgb *ReserveGroupBy) sqlScan(ctx context.Context, root *ReserveQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(rgb.fns))
+	for _, fn := range rgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := rgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*rgb.flds)+len(rgb.fns))
+		for _, f := range *rgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*rgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := rgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := rgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (rgb *ReserveGroupBy) sqlQuery() *sql.Selector {
-	selector := rgb.sql.Select()
-	aggregation := make([]string, 0, len(rgb.fns))
-	for _, fn := range rgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(rgb.fields)+len(rgb.fns))
-		for _, f := range rgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(rgb.fields...)...)
-}
-
 // ReserveSelect is the builder for selecting fields of Reserve entities.
 type ReserveSelect struct {
 	*ReserveQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (rs *ReserveSelect) Aggregate(fns ...AggregateFunc) *ReserveSelect {
+	rs.fns = append(rs.fns, fns...)
+	return rs
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (rs *ReserveSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeReserve, "Select")
 	if err := rs.prepareQuery(ctx); err != nil {
 		return err
 	}
-	rs.sql = rs.ReserveQuery.sqlQuery(ctx)
-	return rs.sqlScan(ctx, v)
+	return scanWithInterceptors[*ReserveQuery, *ReserveSelect](ctx, rs.ReserveQuery, rs, rs.inters, v)
 }
 
-func (rs *ReserveSelect) sqlScan(ctx context.Context, v any) error {
+func (rs *ReserveSelect) sqlScan(ctx context.Context, root *ReserveQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(rs.fns))
+	for _, fn := range rs.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*rs.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := rs.sql.Query()
+	query, args := selector.Query()
 	if err := rs.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

@@ -19,6 +19,7 @@ type OrderRefund struct {
 func (OrderRefund) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "order_refund"},
+        entsql.WithComments(true),
     }
 }
 

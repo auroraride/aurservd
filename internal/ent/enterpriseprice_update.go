@@ -150,43 +150,10 @@ func (epu *EnterprisePriceUpdate) ClearEnterprise() *EnterprisePriceUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (epu *EnterprisePriceUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := epu.defaults(); err != nil {
 		return 0, err
 	}
-	if len(epu.hooks) == 0 {
-		if err = epu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = epu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*EnterprisePriceMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = epu.check(); err != nil {
-				return 0, err
-			}
-			epu.mutation = mutation
-			affected, err = epu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(epu.hooks) - 1; i >= 0; i-- {
-			if epu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = epu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, epu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, EnterprisePriceMutation](ctx, epu.sqlSave, epu.mutation, epu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -241,6 +208,9 @@ func (epu *EnterprisePriceUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)
 }
 
 func (epu *EnterprisePriceUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := epu.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   enterpriseprice.Table,
@@ -259,77 +229,37 @@ func (epu *EnterprisePriceUpdate) sqlSave(ctx context.Context) (n int, err error
 		}
 	}
 	if value, ok := epu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterpriseprice.FieldUpdatedAt,
-		})
+		_spec.SetField(enterpriseprice.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := epu.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterpriseprice.FieldDeletedAt,
-		})
+		_spec.SetField(enterpriseprice.FieldDeletedAt, field.TypeTime, value)
 	}
 	if epu.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: enterpriseprice.FieldDeletedAt,
-		})
+		_spec.ClearField(enterpriseprice.FieldDeletedAt, field.TypeTime)
 	}
 	if epu.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: enterpriseprice.FieldCreator,
-		})
+		_spec.ClearField(enterpriseprice.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := epu.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: enterpriseprice.FieldLastModifier,
-		})
+		_spec.SetField(enterpriseprice.FieldLastModifier, field.TypeJSON, value)
 	}
 	if epu.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: enterpriseprice.FieldLastModifier,
-		})
+		_spec.ClearField(enterpriseprice.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := epu.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: enterpriseprice.FieldRemark,
-		})
+		_spec.SetField(enterpriseprice.FieldRemark, field.TypeString, value)
 	}
 	if epu.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: enterpriseprice.FieldRemark,
-		})
+		_spec.ClearField(enterpriseprice.FieldRemark, field.TypeString)
 	}
 	if value, ok := epu.mutation.Price(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterpriseprice.FieldPrice,
-		})
+		_spec.SetField(enterpriseprice.FieldPrice, field.TypeFloat64, value)
 	}
 	if value, ok := epu.mutation.AddedPrice(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterpriseprice.FieldPrice,
-		})
+		_spec.AddField(enterpriseprice.FieldPrice, field.TypeFloat64, value)
 	}
 	if value, ok := epu.mutation.Model(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: enterpriseprice.FieldModel,
-		})
+		_spec.SetField(enterpriseprice.FieldModel, field.TypeString, value)
 	}
 	if epu.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -401,7 +331,7 @@ func (epu *EnterprisePriceUpdate) sqlSave(ctx context.Context) (n int, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = epu.modifiers
+	_spec.AddModifiers(epu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, epu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{enterpriseprice.Label}
@@ -410,6 +340,7 @@ func (epu *EnterprisePriceUpdate) sqlSave(ctx context.Context) (n int, err error
 		}
 		return 0, err
 	}
+	epu.mutation.done = true
 	return n, nil
 }
 
@@ -547,49 +478,10 @@ func (epuo *EnterprisePriceUpdateOne) Select(field string, fields ...string) *En
 
 // Save executes the query and returns the updated EnterprisePrice entity.
 func (epuo *EnterprisePriceUpdateOne) Save(ctx context.Context) (*EnterprisePrice, error) {
-	var (
-		err  error
-		node *EnterprisePrice
-	)
 	if err := epuo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(epuo.hooks) == 0 {
-		if err = epuo.check(); err != nil {
-			return nil, err
-		}
-		node, err = epuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*EnterprisePriceMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = epuo.check(); err != nil {
-				return nil, err
-			}
-			epuo.mutation = mutation
-			node, err = epuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(epuo.hooks) - 1; i >= 0; i-- {
-			if epuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = epuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, epuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*EnterprisePrice)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from EnterprisePriceMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*EnterprisePrice, EnterprisePriceMutation](ctx, epuo.sqlSave, epuo.mutation, epuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -644,6 +536,9 @@ func (epuo *EnterprisePriceUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuil
 }
 
 func (epuo *EnterprisePriceUpdateOne) sqlSave(ctx context.Context) (_node *EnterprisePrice, err error) {
+	if err := epuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   enterpriseprice.Table,
@@ -679,77 +574,37 @@ func (epuo *EnterprisePriceUpdateOne) sqlSave(ctx context.Context) (_node *Enter
 		}
 	}
 	if value, ok := epuo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterpriseprice.FieldUpdatedAt,
-		})
+		_spec.SetField(enterpriseprice.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := epuo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterpriseprice.FieldDeletedAt,
-		})
+		_spec.SetField(enterpriseprice.FieldDeletedAt, field.TypeTime, value)
 	}
 	if epuo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: enterpriseprice.FieldDeletedAt,
-		})
+		_spec.ClearField(enterpriseprice.FieldDeletedAt, field.TypeTime)
 	}
 	if epuo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: enterpriseprice.FieldCreator,
-		})
+		_spec.ClearField(enterpriseprice.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := epuo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: enterpriseprice.FieldLastModifier,
-		})
+		_spec.SetField(enterpriseprice.FieldLastModifier, field.TypeJSON, value)
 	}
 	if epuo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: enterpriseprice.FieldLastModifier,
-		})
+		_spec.ClearField(enterpriseprice.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := epuo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: enterpriseprice.FieldRemark,
-		})
+		_spec.SetField(enterpriseprice.FieldRemark, field.TypeString, value)
 	}
 	if epuo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: enterpriseprice.FieldRemark,
-		})
+		_spec.ClearField(enterpriseprice.FieldRemark, field.TypeString)
 	}
 	if value, ok := epuo.mutation.Price(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterpriseprice.FieldPrice,
-		})
+		_spec.SetField(enterpriseprice.FieldPrice, field.TypeFloat64, value)
 	}
 	if value, ok := epuo.mutation.AddedPrice(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterpriseprice.FieldPrice,
-		})
+		_spec.AddField(enterpriseprice.FieldPrice, field.TypeFloat64, value)
 	}
 	if value, ok := epuo.mutation.Model(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: enterpriseprice.FieldModel,
-		})
+		_spec.SetField(enterpriseprice.FieldModel, field.TypeString, value)
 	}
 	if epuo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -821,7 +676,7 @@ func (epuo *EnterprisePriceUpdateOne) sqlSave(ctx context.Context) (_node *Enter
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = epuo.modifiers
+	_spec.AddModifiers(epuo.modifiers...)
 	_node = &EnterprisePrice{config: epuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -833,5 +688,6 @@ func (epuo *EnterprisePriceUpdateOne) sqlSave(ctx context.Context) (_node *Enter
 		}
 		return nil, err
 	}
+	epuo.mutation.done = true
 	return _node, nil
 }

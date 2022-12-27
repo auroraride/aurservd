@@ -19,6 +19,7 @@ type Reserve struct {
 func (Reserve) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "reserve"},
+        entsql.WithComments(true),
     }
 }
 

@@ -279,43 +279,10 @@ func (esu *EnterpriseStatementUpdate) RemoveBills(e ...*EnterpriseBill) *Enterpr
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (esu *EnterpriseStatementUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := esu.defaults(); err != nil {
 		return 0, err
 	}
-	if len(esu.hooks) == 0 {
-		if err = esu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = esu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*EnterpriseStatementMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = esu.check(); err != nil {
-				return 0, err
-			}
-			esu.mutation = mutation
-			affected, err = esu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(esu.hooks) - 1; i >= 0; i-- {
-			if esu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = esu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, esu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, EnterpriseStatementMutation](ctx, esu.sqlSave, esu.mutation, esu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -367,6 +334,9 @@ func (esu *EnterpriseStatementUpdate) Modify(modifiers ...func(u *sql.UpdateBuil
 }
 
 func (esu *EnterpriseStatementUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := esu.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   enterprisestatement.Table,
@@ -385,144 +355,67 @@ func (esu *EnterpriseStatementUpdate) sqlSave(ctx context.Context) (n int, err e
 		}
 	}
 	if value, ok := esu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisestatement.FieldUpdatedAt,
-		})
+		_spec.SetField(enterprisestatement.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := esu.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisestatement.FieldDeletedAt,
-		})
+		_spec.SetField(enterprisestatement.FieldDeletedAt, field.TypeTime, value)
 	}
 	if esu.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: enterprisestatement.FieldDeletedAt,
-		})
+		_spec.ClearField(enterprisestatement.FieldDeletedAt, field.TypeTime)
 	}
 	if esu.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: enterprisestatement.FieldCreator,
-		})
+		_spec.ClearField(enterprisestatement.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := esu.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: enterprisestatement.FieldLastModifier,
-		})
+		_spec.SetField(enterprisestatement.FieldLastModifier, field.TypeJSON, value)
 	}
 	if esu.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: enterprisestatement.FieldLastModifier,
-		})
+		_spec.ClearField(enterprisestatement.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := esu.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: enterprisestatement.FieldRemark,
-		})
+		_spec.SetField(enterprisestatement.FieldRemark, field.TypeString, value)
 	}
 	if esu.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: enterprisestatement.FieldRemark,
-		})
+		_spec.ClearField(enterprisestatement.FieldRemark, field.TypeString)
 	}
 	if value, ok := esu.mutation.Cost(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisestatement.FieldCost,
-		})
+		_spec.SetField(enterprisestatement.FieldCost, field.TypeFloat64, value)
 	}
 	if value, ok := esu.mutation.AddedCost(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisestatement.FieldCost,
-		})
+		_spec.AddField(enterprisestatement.FieldCost, field.TypeFloat64, value)
 	}
 	if value, ok := esu.mutation.SettledAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisestatement.FieldSettledAt,
-		})
+		_spec.SetField(enterprisestatement.FieldSettledAt, field.TypeTime, value)
 	}
 	if esu.mutation.SettledAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: enterprisestatement.FieldSettledAt,
-		})
+		_spec.ClearField(enterprisestatement.FieldSettledAt, field.TypeTime)
 	}
 	if value, ok := esu.mutation.Days(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: enterprisestatement.FieldDays,
-		})
+		_spec.SetField(enterprisestatement.FieldDays, field.TypeInt, value)
 	}
 	if value, ok := esu.mutation.AddedDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: enterprisestatement.FieldDays,
-		})
+		_spec.AddField(enterprisestatement.FieldDays, field.TypeInt, value)
 	}
 	if value, ok := esu.mutation.RiderNumber(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: enterprisestatement.FieldRiderNumber,
-		})
+		_spec.SetField(enterprisestatement.FieldRiderNumber, field.TypeInt, value)
 	}
 	if value, ok := esu.mutation.AddedRiderNumber(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: enterprisestatement.FieldRiderNumber,
-		})
+		_spec.AddField(enterprisestatement.FieldRiderNumber, field.TypeInt, value)
 	}
 	if value, ok := esu.mutation.Date(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisestatement.FieldDate,
-		})
+		_spec.SetField(enterprisestatement.FieldDate, field.TypeTime, value)
 	}
 	if esu.mutation.DateCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: enterprisestatement.FieldDate,
-		})
+		_spec.ClearField(enterprisestatement.FieldDate, field.TypeTime)
 	}
 	if value, ok := esu.mutation.Start(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisestatement.FieldStart,
-		})
+		_spec.SetField(enterprisestatement.FieldStart, field.TypeTime, value)
 	}
 	if value, ok := esu.mutation.End(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisestatement.FieldEnd,
-		})
+		_spec.SetField(enterprisestatement.FieldEnd, field.TypeTime, value)
 	}
 	if esu.mutation.EndCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: enterprisestatement.FieldEnd,
-		})
+		_spec.ClearField(enterprisestatement.FieldEnd, field.TypeTime)
 	}
 	if esu.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -613,7 +506,7 @@ func (esu *EnterpriseStatementUpdate) sqlSave(ctx context.Context) (n int, err e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = esu.modifiers
+	_spec.AddModifiers(esu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, esu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{enterprisestatement.Label}
@@ -622,6 +515,7 @@ func (esu *EnterpriseStatementUpdate) sqlSave(ctx context.Context) (n int, err e
 		}
 		return 0, err
 	}
+	esu.mutation.done = true
 	return n, nil
 }
 
@@ -888,49 +782,10 @@ func (esuo *EnterpriseStatementUpdateOne) Select(field string, fields ...string)
 
 // Save executes the query and returns the updated EnterpriseStatement entity.
 func (esuo *EnterpriseStatementUpdateOne) Save(ctx context.Context) (*EnterpriseStatement, error) {
-	var (
-		err  error
-		node *EnterpriseStatement
-	)
 	if err := esuo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(esuo.hooks) == 0 {
-		if err = esuo.check(); err != nil {
-			return nil, err
-		}
-		node, err = esuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*EnterpriseStatementMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = esuo.check(); err != nil {
-				return nil, err
-			}
-			esuo.mutation = mutation
-			node, err = esuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(esuo.hooks) - 1; i >= 0; i-- {
-			if esuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = esuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, esuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*EnterpriseStatement)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from EnterpriseStatementMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*EnterpriseStatement, EnterpriseStatementMutation](ctx, esuo.sqlSave, esuo.mutation, esuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -982,6 +837,9 @@ func (esuo *EnterpriseStatementUpdateOne) Modify(modifiers ...func(u *sql.Update
 }
 
 func (esuo *EnterpriseStatementUpdateOne) sqlSave(ctx context.Context) (_node *EnterpriseStatement, err error) {
+	if err := esuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   enterprisestatement.Table,
@@ -1017,144 +875,67 @@ func (esuo *EnterpriseStatementUpdateOne) sqlSave(ctx context.Context) (_node *E
 		}
 	}
 	if value, ok := esuo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisestatement.FieldUpdatedAt,
-		})
+		_spec.SetField(enterprisestatement.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := esuo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisestatement.FieldDeletedAt,
-		})
+		_spec.SetField(enterprisestatement.FieldDeletedAt, field.TypeTime, value)
 	}
 	if esuo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: enterprisestatement.FieldDeletedAt,
-		})
+		_spec.ClearField(enterprisestatement.FieldDeletedAt, field.TypeTime)
 	}
 	if esuo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: enterprisestatement.FieldCreator,
-		})
+		_spec.ClearField(enterprisestatement.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := esuo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: enterprisestatement.FieldLastModifier,
-		})
+		_spec.SetField(enterprisestatement.FieldLastModifier, field.TypeJSON, value)
 	}
 	if esuo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: enterprisestatement.FieldLastModifier,
-		})
+		_spec.ClearField(enterprisestatement.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := esuo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: enterprisestatement.FieldRemark,
-		})
+		_spec.SetField(enterprisestatement.FieldRemark, field.TypeString, value)
 	}
 	if esuo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: enterprisestatement.FieldRemark,
-		})
+		_spec.ClearField(enterprisestatement.FieldRemark, field.TypeString)
 	}
 	if value, ok := esuo.mutation.Cost(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisestatement.FieldCost,
-		})
+		_spec.SetField(enterprisestatement.FieldCost, field.TypeFloat64, value)
 	}
 	if value, ok := esuo.mutation.AddedCost(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisestatement.FieldCost,
-		})
+		_spec.AddField(enterprisestatement.FieldCost, field.TypeFloat64, value)
 	}
 	if value, ok := esuo.mutation.SettledAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisestatement.FieldSettledAt,
-		})
+		_spec.SetField(enterprisestatement.FieldSettledAt, field.TypeTime, value)
 	}
 	if esuo.mutation.SettledAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: enterprisestatement.FieldSettledAt,
-		})
+		_spec.ClearField(enterprisestatement.FieldSettledAt, field.TypeTime)
 	}
 	if value, ok := esuo.mutation.Days(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: enterprisestatement.FieldDays,
-		})
+		_spec.SetField(enterprisestatement.FieldDays, field.TypeInt, value)
 	}
 	if value, ok := esuo.mutation.AddedDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: enterprisestatement.FieldDays,
-		})
+		_spec.AddField(enterprisestatement.FieldDays, field.TypeInt, value)
 	}
 	if value, ok := esuo.mutation.RiderNumber(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: enterprisestatement.FieldRiderNumber,
-		})
+		_spec.SetField(enterprisestatement.FieldRiderNumber, field.TypeInt, value)
 	}
 	if value, ok := esuo.mutation.AddedRiderNumber(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: enterprisestatement.FieldRiderNumber,
-		})
+		_spec.AddField(enterprisestatement.FieldRiderNumber, field.TypeInt, value)
 	}
 	if value, ok := esuo.mutation.Date(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisestatement.FieldDate,
-		})
+		_spec.SetField(enterprisestatement.FieldDate, field.TypeTime, value)
 	}
 	if esuo.mutation.DateCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: enterprisestatement.FieldDate,
-		})
+		_spec.ClearField(enterprisestatement.FieldDate, field.TypeTime)
 	}
 	if value, ok := esuo.mutation.Start(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisestatement.FieldStart,
-		})
+		_spec.SetField(enterprisestatement.FieldStart, field.TypeTime, value)
 	}
 	if value, ok := esuo.mutation.End(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisestatement.FieldEnd,
-		})
+		_spec.SetField(enterprisestatement.FieldEnd, field.TypeTime, value)
 	}
 	if esuo.mutation.EndCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: enterprisestatement.FieldEnd,
-		})
+		_spec.ClearField(enterprisestatement.FieldEnd, field.TypeTime)
 	}
 	if esuo.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1245,7 +1026,7 @@ func (esuo *EnterpriseStatementUpdateOne) sqlSave(ctx context.Context) (_node *E
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = esuo.modifiers
+	_spec.AddModifiers(esuo.modifiers...)
 	_node = &EnterpriseStatement{config: esuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -1257,5 +1038,6 @@ func (esuo *EnterpriseStatementUpdateOne) sqlSave(ctx context.Context) (_node *E
 		}
 		return nil, err
 	}
+	esuo.mutation.done = true
 	return _node, nil
 }

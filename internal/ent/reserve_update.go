@@ -208,43 +208,10 @@ func (ru *ReserveUpdate) ClearBusiness() *ReserveUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ru *ReserveUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := ru.defaults(); err != nil {
 		return 0, err
 	}
-	if len(ru.hooks) == 0 {
-		if err = ru.check(); err != nil {
-			return 0, err
-		}
-		affected, err = ru.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ReserveMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ru.check(); err != nil {
-				return 0, err
-			}
-			ru.mutation = mutation
-			affected, err = ru.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(ru.hooks) - 1; i >= 0; i-- {
-			if ru.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ru.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, ru.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, ReserveMutation](ctx, ru.sqlSave, ru.mutation, ru.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -302,6 +269,9 @@ func (ru *ReserveUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Reserv
 }
 
 func (ru *ReserveUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := ru.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   reserve.Table,
@@ -320,77 +290,37 @@ func (ru *ReserveUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := ru.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: reserve.FieldUpdatedAt,
-		})
+		_spec.SetField(reserve.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := ru.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: reserve.FieldDeletedAt,
-		})
+		_spec.SetField(reserve.FieldDeletedAt, field.TypeTime, value)
 	}
 	if ru.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: reserve.FieldDeletedAt,
-		})
+		_spec.ClearField(reserve.FieldDeletedAt, field.TypeTime)
 	}
 	if ru.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: reserve.FieldCreator,
-		})
+		_spec.ClearField(reserve.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := ru.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: reserve.FieldLastModifier,
-		})
+		_spec.SetField(reserve.FieldLastModifier, field.TypeJSON, value)
 	}
 	if ru.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: reserve.FieldLastModifier,
-		})
+		_spec.ClearField(reserve.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := ru.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: reserve.FieldRemark,
-		})
+		_spec.SetField(reserve.FieldRemark, field.TypeString, value)
 	}
 	if ru.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: reserve.FieldRemark,
-		})
+		_spec.ClearField(reserve.FieldRemark, field.TypeString)
 	}
 	if value, ok := ru.mutation.Status(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: reserve.FieldStatus,
-		})
+		_spec.SetField(reserve.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := ru.mutation.AddedStatus(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: reserve.FieldStatus,
-		})
+		_spec.AddField(reserve.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := ru.mutation.GetType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: reserve.FieldType,
-		})
+		_spec.SetField(reserve.FieldType, field.TypeString, value)
 	}
 	if ru.mutation.CabinetCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -532,7 +462,7 @@ func (ru *ReserveUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = ru.modifiers
+	_spec.AddModifiers(ru.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, ru.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{reserve.Label}
@@ -541,6 +471,7 @@ func (ru *ReserveUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	ru.mutation.done = true
 	return n, nil
 }
 
@@ -734,49 +665,10 @@ func (ruo *ReserveUpdateOne) Select(field string, fields ...string) *ReserveUpda
 
 // Save executes the query and returns the updated Reserve entity.
 func (ruo *ReserveUpdateOne) Save(ctx context.Context) (*Reserve, error) {
-	var (
-		err  error
-		node *Reserve
-	)
 	if err := ruo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(ruo.hooks) == 0 {
-		if err = ruo.check(); err != nil {
-			return nil, err
-		}
-		node, err = ruo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ReserveMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ruo.check(); err != nil {
-				return nil, err
-			}
-			ruo.mutation = mutation
-			node, err = ruo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ruo.hooks) - 1; i >= 0; i-- {
-			if ruo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ruo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ruo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Reserve)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from ReserveMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Reserve, ReserveMutation](ctx, ruo.sqlSave, ruo.mutation, ruo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -834,6 +726,9 @@ func (ruo *ReserveUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Re
 }
 
 func (ruo *ReserveUpdateOne) sqlSave(ctx context.Context) (_node *Reserve, err error) {
+	if err := ruo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   reserve.Table,
@@ -869,77 +764,37 @@ func (ruo *ReserveUpdateOne) sqlSave(ctx context.Context) (_node *Reserve, err e
 		}
 	}
 	if value, ok := ruo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: reserve.FieldUpdatedAt,
-		})
+		_spec.SetField(reserve.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := ruo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: reserve.FieldDeletedAt,
-		})
+		_spec.SetField(reserve.FieldDeletedAt, field.TypeTime, value)
 	}
 	if ruo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: reserve.FieldDeletedAt,
-		})
+		_spec.ClearField(reserve.FieldDeletedAt, field.TypeTime)
 	}
 	if ruo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: reserve.FieldCreator,
-		})
+		_spec.ClearField(reserve.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := ruo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: reserve.FieldLastModifier,
-		})
+		_spec.SetField(reserve.FieldLastModifier, field.TypeJSON, value)
 	}
 	if ruo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: reserve.FieldLastModifier,
-		})
+		_spec.ClearField(reserve.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := ruo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: reserve.FieldRemark,
-		})
+		_spec.SetField(reserve.FieldRemark, field.TypeString, value)
 	}
 	if ruo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: reserve.FieldRemark,
-		})
+		_spec.ClearField(reserve.FieldRemark, field.TypeString)
 	}
 	if value, ok := ruo.mutation.Status(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: reserve.FieldStatus,
-		})
+		_spec.SetField(reserve.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := ruo.mutation.AddedStatus(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: reserve.FieldStatus,
-		})
+		_spec.AddField(reserve.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := ruo.mutation.GetType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: reserve.FieldType,
-		})
+		_spec.SetField(reserve.FieldType, field.TypeString, value)
 	}
 	if ruo.mutation.CabinetCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1081,7 +936,7 @@ func (ruo *ReserveUpdateOne) sqlSave(ctx context.Context) (_node *Reserve, err e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = ruo.modifiers
+	_spec.AddModifiers(ruo.modifiers...)
 	_node = &Reserve{config: ruo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -1093,5 +948,6 @@ func (ruo *ReserveUpdateOne) sqlSave(ctx context.Context) (_node *Reserve, err e
 		}
 		return nil, err
 	}
+	ruo.mutation.done = true
 	return _node, nil
 }

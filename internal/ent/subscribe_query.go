@@ -38,6 +38,7 @@ type SubscribeQuery struct {
 	unique           *bool
 	order            []OrderFunc
 	fields           []string
+	inters           []Interceptor
 	predicates       []predicate.Subscribe
 	withPlan         *PlanQuery
 	withEmployee     *EmployeeQuery
@@ -67,13 +68,13 @@ func (sq *SubscribeQuery) Where(ps ...predicate.Subscribe) *SubscribeQuery {
 	return sq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (sq *SubscribeQuery) Limit(limit int) *SubscribeQuery {
 	sq.limit = &limit
 	return sq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (sq *SubscribeQuery) Offset(offset int) *SubscribeQuery {
 	sq.offset = &offset
 	return sq
@@ -86,7 +87,7 @@ func (sq *SubscribeQuery) Unique(unique bool) *SubscribeQuery {
 	return sq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (sq *SubscribeQuery) Order(o ...OrderFunc) *SubscribeQuery {
 	sq.order = append(sq.order, o...)
 	return sq
@@ -94,7 +95,7 @@ func (sq *SubscribeQuery) Order(o ...OrderFunc) *SubscribeQuery {
 
 // QueryPlan chains the current query on the "plan" edge.
 func (sq *SubscribeQuery) QueryPlan() *PlanQuery {
-	query := &PlanQuery{config: sq.config}
+	query := (&PlanClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -116,7 +117,7 @@ func (sq *SubscribeQuery) QueryPlan() *PlanQuery {
 
 // QueryEmployee chains the current query on the "employee" edge.
 func (sq *SubscribeQuery) QueryEmployee() *EmployeeQuery {
-	query := &EmployeeQuery{config: sq.config}
+	query := (&EmployeeClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -138,7 +139,7 @@ func (sq *SubscribeQuery) QueryEmployee() *EmployeeQuery {
 
 // QueryCity chains the current query on the "city" edge.
 func (sq *SubscribeQuery) QueryCity() *CityQuery {
-	query := &CityQuery{config: sq.config}
+	query := (&CityClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -160,7 +161,7 @@ func (sq *SubscribeQuery) QueryCity() *CityQuery {
 
 // QueryStation chains the current query on the "station" edge.
 func (sq *SubscribeQuery) QueryStation() *EnterpriseStationQuery {
-	query := &EnterpriseStationQuery{config: sq.config}
+	query := (&EnterpriseStationClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -182,7 +183,7 @@ func (sq *SubscribeQuery) QueryStation() *EnterpriseStationQuery {
 
 // QueryStore chains the current query on the "store" edge.
 func (sq *SubscribeQuery) QueryStore() *StoreQuery {
-	query := &StoreQuery{config: sq.config}
+	query := (&StoreClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -204,7 +205,7 @@ func (sq *SubscribeQuery) QueryStore() *StoreQuery {
 
 // QueryCabinet chains the current query on the "cabinet" edge.
 func (sq *SubscribeQuery) QueryCabinet() *CabinetQuery {
-	query := &CabinetQuery{config: sq.config}
+	query := (&CabinetClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -226,7 +227,7 @@ func (sq *SubscribeQuery) QueryCabinet() *CabinetQuery {
 
 // QueryBrand chains the current query on the "brand" edge.
 func (sq *SubscribeQuery) QueryBrand() *EbikeBrandQuery {
-	query := &EbikeBrandQuery{config: sq.config}
+	query := (&EbikeBrandClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -248,7 +249,7 @@ func (sq *SubscribeQuery) QueryBrand() *EbikeBrandQuery {
 
 // QueryEbike chains the current query on the "ebike" edge.
 func (sq *SubscribeQuery) QueryEbike() *EbikeQuery {
-	query := &EbikeQuery{config: sq.config}
+	query := (&EbikeClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -270,7 +271,7 @@ func (sq *SubscribeQuery) QueryEbike() *EbikeQuery {
 
 // QueryRider chains the current query on the "rider" edge.
 func (sq *SubscribeQuery) QueryRider() *RiderQuery {
-	query := &RiderQuery{config: sq.config}
+	query := (&RiderClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -292,7 +293,7 @@ func (sq *SubscribeQuery) QueryRider() *RiderQuery {
 
 // QueryEnterprise chains the current query on the "enterprise" edge.
 func (sq *SubscribeQuery) QueryEnterprise() *EnterpriseQuery {
-	query := &EnterpriseQuery{config: sq.config}
+	query := (&EnterpriseClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -314,7 +315,7 @@ func (sq *SubscribeQuery) QueryEnterprise() *EnterpriseQuery {
 
 // QueryPauses chains the current query on the "pauses" edge.
 func (sq *SubscribeQuery) QueryPauses() *SubscribePauseQuery {
-	query := &SubscribePauseQuery{config: sq.config}
+	query := (&SubscribePauseClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -336,7 +337,7 @@ func (sq *SubscribeQuery) QueryPauses() *SubscribePauseQuery {
 
 // QuerySuspends chains the current query on the "suspends" edge.
 func (sq *SubscribeQuery) QuerySuspends() *SubscribeSuspendQuery {
-	query := &SubscribeSuspendQuery{config: sq.config}
+	query := (&SubscribeSuspendClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -358,7 +359,7 @@ func (sq *SubscribeQuery) QuerySuspends() *SubscribeSuspendQuery {
 
 // QueryAlters chains the current query on the "alters" edge.
 func (sq *SubscribeQuery) QueryAlters() *SubscribeAlterQuery {
-	query := &SubscribeAlterQuery{config: sq.config}
+	query := (&SubscribeAlterClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -380,7 +381,7 @@ func (sq *SubscribeQuery) QueryAlters() *SubscribeAlterQuery {
 
 // QueryOrders chains the current query on the "orders" edge.
 func (sq *SubscribeQuery) QueryOrders() *OrderQuery {
-	query := &OrderQuery{config: sq.config}
+	query := (&OrderClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -402,7 +403,7 @@ func (sq *SubscribeQuery) QueryOrders() *OrderQuery {
 
 // QueryInitialOrder chains the current query on the "initial_order" edge.
 func (sq *SubscribeQuery) QueryInitialOrder() *OrderQuery {
-	query := &OrderQuery{config: sq.config}
+	query := (&OrderClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -424,7 +425,7 @@ func (sq *SubscribeQuery) QueryInitialOrder() *OrderQuery {
 
 // QueryBills chains the current query on the "bills" edge.
 func (sq *SubscribeQuery) QueryBills() *EnterpriseBillQuery {
-	query := &EnterpriseBillQuery{config: sq.config}
+	query := (&EnterpriseBillClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -447,7 +448,7 @@ func (sq *SubscribeQuery) QueryBills() *EnterpriseBillQuery {
 // First returns the first Subscribe entity from the query.
 // Returns a *NotFoundError when no Subscribe was found.
 func (sq *SubscribeQuery) First(ctx context.Context) (*Subscribe, error) {
-	nodes, err := sq.Limit(1).All(ctx)
+	nodes, err := sq.Limit(1).All(newQueryContext(ctx, TypeSubscribe, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -470,7 +471,7 @@ func (sq *SubscribeQuery) FirstX(ctx context.Context) *Subscribe {
 // Returns a *NotFoundError when no Subscribe ID was found.
 func (sq *SubscribeQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = sq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = sq.Limit(1).IDs(newQueryContext(ctx, TypeSubscribe, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -493,7 +494,7 @@ func (sq *SubscribeQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Subscribe entity is found.
 // Returns a *NotFoundError when no Subscribe entities are found.
 func (sq *SubscribeQuery) Only(ctx context.Context) (*Subscribe, error) {
-	nodes, err := sq.Limit(2).All(ctx)
+	nodes, err := sq.Limit(2).All(newQueryContext(ctx, TypeSubscribe, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -521,7 +522,7 @@ func (sq *SubscribeQuery) OnlyX(ctx context.Context) *Subscribe {
 // Returns a *NotFoundError when no entities are found.
 func (sq *SubscribeQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = sq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = sq.Limit(2).IDs(newQueryContext(ctx, TypeSubscribe, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -546,10 +547,12 @@ func (sq *SubscribeQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Subscribes.
 func (sq *SubscribeQuery) All(ctx context.Context) ([]*Subscribe, error) {
+	ctx = newQueryContext(ctx, TypeSubscribe, "All")
 	if err := sq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return sq.sqlAll(ctx)
+	qr := querierAll[[]*Subscribe, *SubscribeQuery]()
+	return withInterceptors[[]*Subscribe](ctx, sq, qr, sq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -564,6 +567,7 @@ func (sq *SubscribeQuery) AllX(ctx context.Context) []*Subscribe {
 // IDs executes the query and returns a list of Subscribe IDs.
 func (sq *SubscribeQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeSubscribe, "IDs")
 	if err := sq.Select(subscribe.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -581,10 +585,11 @@ func (sq *SubscribeQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (sq *SubscribeQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeSubscribe, "Count")
 	if err := sq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return sq.sqlCount(ctx)
+	return withInterceptors[int](ctx, sq, querierCount[*SubscribeQuery](), sq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -598,10 +603,15 @@ func (sq *SubscribeQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (sq *SubscribeQuery) Exist(ctx context.Context) (bool, error) {
-	if err := sq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeSubscribe, "Exist")
+	switch _, err := sq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return sq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -651,7 +661,7 @@ func (sq *SubscribeQuery) Clone() *SubscribeQuery {
 // WithPlan tells the query-builder to eager-load the nodes that are connected to
 // the "plan" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *SubscribeQuery) WithPlan(opts ...func(*PlanQuery)) *SubscribeQuery {
-	query := &PlanQuery{config: sq.config}
+	query := (&PlanClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -662,7 +672,7 @@ func (sq *SubscribeQuery) WithPlan(opts ...func(*PlanQuery)) *SubscribeQuery {
 // WithEmployee tells the query-builder to eager-load the nodes that are connected to
 // the "employee" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *SubscribeQuery) WithEmployee(opts ...func(*EmployeeQuery)) *SubscribeQuery {
-	query := &EmployeeQuery{config: sq.config}
+	query := (&EmployeeClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -673,7 +683,7 @@ func (sq *SubscribeQuery) WithEmployee(opts ...func(*EmployeeQuery)) *SubscribeQ
 // WithCity tells the query-builder to eager-load the nodes that are connected to
 // the "city" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *SubscribeQuery) WithCity(opts ...func(*CityQuery)) *SubscribeQuery {
-	query := &CityQuery{config: sq.config}
+	query := (&CityClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -684,7 +694,7 @@ func (sq *SubscribeQuery) WithCity(opts ...func(*CityQuery)) *SubscribeQuery {
 // WithStation tells the query-builder to eager-load the nodes that are connected to
 // the "station" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *SubscribeQuery) WithStation(opts ...func(*EnterpriseStationQuery)) *SubscribeQuery {
-	query := &EnterpriseStationQuery{config: sq.config}
+	query := (&EnterpriseStationClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -695,7 +705,7 @@ func (sq *SubscribeQuery) WithStation(opts ...func(*EnterpriseStationQuery)) *Su
 // WithStore tells the query-builder to eager-load the nodes that are connected to
 // the "store" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *SubscribeQuery) WithStore(opts ...func(*StoreQuery)) *SubscribeQuery {
-	query := &StoreQuery{config: sq.config}
+	query := (&StoreClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -706,7 +716,7 @@ func (sq *SubscribeQuery) WithStore(opts ...func(*StoreQuery)) *SubscribeQuery {
 // WithCabinet tells the query-builder to eager-load the nodes that are connected to
 // the "cabinet" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *SubscribeQuery) WithCabinet(opts ...func(*CabinetQuery)) *SubscribeQuery {
-	query := &CabinetQuery{config: sq.config}
+	query := (&CabinetClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -717,7 +727,7 @@ func (sq *SubscribeQuery) WithCabinet(opts ...func(*CabinetQuery)) *SubscribeQue
 // WithBrand tells the query-builder to eager-load the nodes that are connected to
 // the "brand" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *SubscribeQuery) WithBrand(opts ...func(*EbikeBrandQuery)) *SubscribeQuery {
-	query := &EbikeBrandQuery{config: sq.config}
+	query := (&EbikeBrandClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -728,7 +738,7 @@ func (sq *SubscribeQuery) WithBrand(opts ...func(*EbikeBrandQuery)) *SubscribeQu
 // WithEbike tells the query-builder to eager-load the nodes that are connected to
 // the "ebike" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *SubscribeQuery) WithEbike(opts ...func(*EbikeQuery)) *SubscribeQuery {
-	query := &EbikeQuery{config: sq.config}
+	query := (&EbikeClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -739,7 +749,7 @@ func (sq *SubscribeQuery) WithEbike(opts ...func(*EbikeQuery)) *SubscribeQuery {
 // WithRider tells the query-builder to eager-load the nodes that are connected to
 // the "rider" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *SubscribeQuery) WithRider(opts ...func(*RiderQuery)) *SubscribeQuery {
-	query := &RiderQuery{config: sq.config}
+	query := (&RiderClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -750,7 +760,7 @@ func (sq *SubscribeQuery) WithRider(opts ...func(*RiderQuery)) *SubscribeQuery {
 // WithEnterprise tells the query-builder to eager-load the nodes that are connected to
 // the "enterprise" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *SubscribeQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *SubscribeQuery {
-	query := &EnterpriseQuery{config: sq.config}
+	query := (&EnterpriseClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -761,7 +771,7 @@ func (sq *SubscribeQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *Subscr
 // WithPauses tells the query-builder to eager-load the nodes that are connected to
 // the "pauses" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *SubscribeQuery) WithPauses(opts ...func(*SubscribePauseQuery)) *SubscribeQuery {
-	query := &SubscribePauseQuery{config: sq.config}
+	query := (&SubscribePauseClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -772,7 +782,7 @@ func (sq *SubscribeQuery) WithPauses(opts ...func(*SubscribePauseQuery)) *Subscr
 // WithSuspends tells the query-builder to eager-load the nodes that are connected to
 // the "suspends" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *SubscribeQuery) WithSuspends(opts ...func(*SubscribeSuspendQuery)) *SubscribeQuery {
-	query := &SubscribeSuspendQuery{config: sq.config}
+	query := (&SubscribeSuspendClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -783,7 +793,7 @@ func (sq *SubscribeQuery) WithSuspends(opts ...func(*SubscribeSuspendQuery)) *Su
 // WithAlters tells the query-builder to eager-load the nodes that are connected to
 // the "alters" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *SubscribeQuery) WithAlters(opts ...func(*SubscribeAlterQuery)) *SubscribeQuery {
-	query := &SubscribeAlterQuery{config: sq.config}
+	query := (&SubscribeAlterClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -794,7 +804,7 @@ func (sq *SubscribeQuery) WithAlters(opts ...func(*SubscribeAlterQuery)) *Subscr
 // WithOrders tells the query-builder to eager-load the nodes that are connected to
 // the "orders" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *SubscribeQuery) WithOrders(opts ...func(*OrderQuery)) *SubscribeQuery {
-	query := &OrderQuery{config: sq.config}
+	query := (&OrderClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -805,7 +815,7 @@ func (sq *SubscribeQuery) WithOrders(opts ...func(*OrderQuery)) *SubscribeQuery 
 // WithInitialOrder tells the query-builder to eager-load the nodes that are connected to
 // the "initial_order" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *SubscribeQuery) WithInitialOrder(opts ...func(*OrderQuery)) *SubscribeQuery {
-	query := &OrderQuery{config: sq.config}
+	query := (&OrderClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -816,7 +826,7 @@ func (sq *SubscribeQuery) WithInitialOrder(opts ...func(*OrderQuery)) *Subscribe
 // WithBills tells the query-builder to eager-load the nodes that are connected to
 // the "bills" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *SubscribeQuery) WithBills(opts ...func(*EnterpriseBillQuery)) *SubscribeQuery {
-	query := &EnterpriseBillQuery{config: sq.config}
+	query := (&EnterpriseBillClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -839,16 +849,11 @@ func (sq *SubscribeQuery) WithBills(opts ...func(*EnterpriseBillQuery)) *Subscri
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (sq *SubscribeQuery) GroupBy(field string, fields ...string) *SubscribeGroupBy {
-	grbuild := &SubscribeGroupBy{config: sq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := sq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return sq.sqlQuery(ctx), nil
-	}
+	sq.fields = append([]string{field}, fields...)
+	grbuild := &SubscribeGroupBy{build: sq}
+	grbuild.flds = &sq.fields
 	grbuild.label = subscribe.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -866,13 +871,28 @@ func (sq *SubscribeQuery) GroupBy(field string, fields ...string) *SubscribeGrou
 //		Scan(ctx, &v)
 func (sq *SubscribeQuery) Select(fields ...string) *SubscribeSelect {
 	sq.fields = append(sq.fields, fields...)
-	selbuild := &SubscribeSelect{SubscribeQuery: sq}
-	selbuild.label = subscribe.Label
-	selbuild.flds, selbuild.scan = &sq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &SubscribeSelect{SubscribeQuery: sq}
+	sbuild.label = subscribe.Label
+	sbuild.flds, sbuild.scan = &sq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a SubscribeSelect configured with the given aggregations.
+func (sq *SubscribeQuery) Aggregate(fns ...AggregateFunc) *SubscribeSelect {
+	return sq.Select().Aggregate(fns...)
 }
 
 func (sq *SubscribeQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range sq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, sq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range sq.fields {
 		if !subscribe.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -1494,17 +1514,6 @@ func (sq *SubscribeQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, sq.driver, _spec)
 }
 
-func (sq *SubscribeQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := sq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (sq *SubscribeQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -1596,13 +1605,8 @@ func (sq *SubscribeQuery) Modify(modifiers ...func(s *sql.Selector)) *SubscribeS
 
 // SubscribeGroupBy is the group-by builder for Subscribe entities.
 type SubscribeGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *SubscribeQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -1611,74 +1615,77 @@ func (sgb *SubscribeGroupBy) Aggregate(fns ...AggregateFunc) *SubscribeGroupBy {
 	return sgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (sgb *SubscribeGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := sgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeSubscribe, "GroupBy")
+	if err := sgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	sgb.sql = query
-	return sgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*SubscribeQuery, *SubscribeGroupBy](ctx, sgb.build, sgb, sgb.build.inters, v)
 }
 
-func (sgb *SubscribeGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range sgb.fields {
-		if !subscribe.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (sgb *SubscribeGroupBy) sqlScan(ctx context.Context, root *SubscribeQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(sgb.fns))
+	for _, fn := range sgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := sgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*sgb.flds)+len(sgb.fns))
+		for _, f := range *sgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*sgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := sgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := sgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (sgb *SubscribeGroupBy) sqlQuery() *sql.Selector {
-	selector := sgb.sql.Select()
-	aggregation := make([]string, 0, len(sgb.fns))
-	for _, fn := range sgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(sgb.fields)+len(sgb.fns))
-		for _, f := range sgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(sgb.fields...)...)
-}
-
 // SubscribeSelect is the builder for selecting fields of Subscribe entities.
 type SubscribeSelect struct {
 	*SubscribeQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (ss *SubscribeSelect) Aggregate(fns ...AggregateFunc) *SubscribeSelect {
+	ss.fns = append(ss.fns, fns...)
+	return ss
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (ss *SubscribeSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeSubscribe, "Select")
 	if err := ss.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ss.sql = ss.SubscribeQuery.sqlQuery(ctx)
-	return ss.sqlScan(ctx, v)
+	return scanWithInterceptors[*SubscribeQuery, *SubscribeSelect](ctx, ss.SubscribeQuery, ss, ss.inters, v)
 }
 
-func (ss *SubscribeSelect) sqlScan(ctx context.Context, v any) error {
+func (ss *SubscribeSelect) sqlScan(ctx context.Context, root *SubscribeQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(ss.fns))
+	for _, fn := range ss.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*ss.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := ss.sql.Query()
+	query, args := selector.Query()
 	if err := ss.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

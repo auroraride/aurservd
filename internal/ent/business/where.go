@@ -12,1089 +12,687 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Business(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Business(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.Business(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.Business(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.Business(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.Business(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.Business(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.Business(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.Business(sql.FieldLTE(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
 func DeletedAt(v time.Time) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
 func Remark(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldRemark, v))
 }
 
 // RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
 func RiderID(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRiderID), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldRiderID, v))
 }
 
 // CityID applies equality check predicate on the "city_id" field. It's identical to CityIDEQ.
 func CityID(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCityID), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldCityID, v))
 }
 
 // SubscribeID applies equality check predicate on the "subscribe_id" field. It's identical to SubscribeIDEQ.
 func SubscribeID(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldSubscribeID, v))
 }
 
 // EmployeeID applies equality check predicate on the "employee_id" field. It's identical to EmployeeIDEQ.
 func EmployeeID(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldEmployeeID, v))
 }
 
 // StoreID applies equality check predicate on the "store_id" field. It's identical to StoreIDEQ.
 func StoreID(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStoreID), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldStoreID, v))
 }
 
 // PlanID applies equality check predicate on the "plan_id" field. It's identical to PlanIDEQ.
 func PlanID(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPlanID), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldPlanID, v))
 }
 
 // EnterpriseID applies equality check predicate on the "enterprise_id" field. It's identical to EnterpriseIDEQ.
 func EnterpriseID(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEnterpriseID), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldEnterpriseID, v))
 }
 
 // StationID applies equality check predicate on the "station_id" field. It's identical to StationIDEQ.
 func StationID(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStationID), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldStationID, v))
 }
 
 // CabinetID applies equality check predicate on the "cabinet_id" field. It's identical to CabinetIDEQ.
 func CabinetID(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCabinetID), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldCabinetID, v))
 }
 
 // StockSn applies equality check predicate on the "stock_sn" field. It's identical to StockSnEQ.
 func StockSn(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStockSn), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldStockSn, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
 func CreatedAtNEQ(v time.Time) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Business(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Business(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Business(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtGT applies the GT predicate on the "created_at" field.
 func CreatedAtGT(v time.Time) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Business(sql.FieldGT(FieldCreatedAt, v))
 }
 
 // CreatedAtGTE applies the GTE predicate on the "created_at" field.
 func CreatedAtGTE(v time.Time) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Business(sql.FieldGTE(FieldCreatedAt, v))
 }
 
 // CreatedAtLT applies the LT predicate on the "created_at" field.
 func CreatedAtLT(v time.Time) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Business(sql.FieldLT(FieldCreatedAt, v))
 }
 
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Business(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
 func UpdatedAtEQ(v time.Time) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
 func UpdatedAtNEQ(v time.Time) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Business(sql.FieldNEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Business(sql.FieldIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Business(sql.FieldNotIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtGT applies the GT predicate on the "updated_at" field.
 func UpdatedAtGT(v time.Time) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Business(sql.FieldGT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
 func UpdatedAtGTE(v time.Time) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Business(sql.FieldGTE(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLT applies the LT predicate on the "updated_at" field.
 func UpdatedAtLT(v time.Time) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Business(sql.FieldLT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Business(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
 func DeletedAtEQ(v time.Time) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
 func DeletedAtNEQ(v time.Time) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Business(sql.FieldNEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.Business(sql.FieldIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.Business(sql.FieldNotIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtGT applies the GT predicate on the "deleted_at" field.
 func DeletedAtGT(v time.Time) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Business(sql.FieldGT(FieldDeletedAt, v))
 }
 
 // DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
 func DeletedAtGTE(v time.Time) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Business(sql.FieldGTE(FieldDeletedAt, v))
 }
 
 // DeletedAtLT applies the LT predicate on the "deleted_at" field.
 func DeletedAtLT(v time.Time) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Business(sql.FieldLT(FieldDeletedAt, v))
 }
 
 // DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
 func DeletedAtLTE(v time.Time) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Business(sql.FieldLTE(FieldDeletedAt, v))
 }
 
 // DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
 func DeletedAtIsNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.Business(sql.FieldIsNull(FieldDeletedAt))
 }
 
 // DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
 func DeletedAtNotNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.Business(sql.FieldNotNull(FieldDeletedAt))
 }
 
 // CreatorIsNil applies the IsNil predicate on the "creator" field.
 func CreatorIsNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCreator)))
-	})
+	return predicate.Business(sql.FieldIsNull(FieldCreator))
 }
 
 // CreatorNotNil applies the NotNil predicate on the "creator" field.
 func CreatorNotNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCreator)))
-	})
+	return predicate.Business(sql.FieldNotNull(FieldCreator))
 }
 
 // LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
 func LastModifierIsNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Business(sql.FieldIsNull(FieldLastModifier))
 }
 
 // LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
 func LastModifierNotNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Business(sql.FieldNotNull(FieldLastModifier))
 }
 
 // RemarkEQ applies the EQ predicate on the "remark" field.
 func RemarkEQ(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldRemark, v))
 }
 
 // RemarkNEQ applies the NEQ predicate on the "remark" field.
 func RemarkNEQ(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRemark), v))
-	})
+	return predicate.Business(sql.FieldNEQ(FieldRemark, v))
 }
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRemark), v...))
-	})
+	return predicate.Business(sql.FieldIn(FieldRemark, vs...))
 }
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRemark), v...))
-	})
+	return predicate.Business(sql.FieldNotIn(FieldRemark, vs...))
 }
 
 // RemarkGT applies the GT predicate on the "remark" field.
 func RemarkGT(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRemark), v))
-	})
+	return predicate.Business(sql.FieldGT(FieldRemark, v))
 }
 
 // RemarkGTE applies the GTE predicate on the "remark" field.
 func RemarkGTE(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRemark), v))
-	})
+	return predicate.Business(sql.FieldGTE(FieldRemark, v))
 }
 
 // RemarkLT applies the LT predicate on the "remark" field.
 func RemarkLT(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRemark), v))
-	})
+	return predicate.Business(sql.FieldLT(FieldRemark, v))
 }
 
 // RemarkLTE applies the LTE predicate on the "remark" field.
 func RemarkLTE(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRemark), v))
-	})
+	return predicate.Business(sql.FieldLTE(FieldRemark, v))
 }
 
 // RemarkContains applies the Contains predicate on the "remark" field.
 func RemarkContains(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRemark), v))
-	})
+	return predicate.Business(sql.FieldContains(FieldRemark, v))
 }
 
 // RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
 func RemarkHasPrefix(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRemark), v))
-	})
+	return predicate.Business(sql.FieldHasPrefix(FieldRemark, v))
 }
 
 // RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
 func RemarkHasSuffix(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRemark), v))
-	})
+	return predicate.Business(sql.FieldHasSuffix(FieldRemark, v))
 }
 
 // RemarkIsNil applies the IsNil predicate on the "remark" field.
 func RemarkIsNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRemark)))
-	})
+	return predicate.Business(sql.FieldIsNull(FieldRemark))
 }
 
 // RemarkNotNil applies the NotNil predicate on the "remark" field.
 func RemarkNotNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRemark)))
-	})
+	return predicate.Business(sql.FieldNotNull(FieldRemark))
 }
 
 // RemarkEqualFold applies the EqualFold predicate on the "remark" field.
 func RemarkEqualFold(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRemark), v))
-	})
+	return predicate.Business(sql.FieldEqualFold(FieldRemark, v))
 }
 
 // RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
 func RemarkContainsFold(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
-	})
+	return predicate.Business(sql.FieldContainsFold(FieldRemark, v))
 }
 
 // RiderIDEQ applies the EQ predicate on the "rider_id" field.
 func RiderIDEQ(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRiderID), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldRiderID, v))
 }
 
 // RiderIDNEQ applies the NEQ predicate on the "rider_id" field.
 func RiderIDNEQ(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRiderID), v))
-	})
+	return predicate.Business(sql.FieldNEQ(FieldRiderID, v))
 }
 
 // RiderIDIn applies the In predicate on the "rider_id" field.
 func RiderIDIn(vs ...uint64) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRiderID), v...))
-	})
+	return predicate.Business(sql.FieldIn(FieldRiderID, vs...))
 }
 
 // RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
 func RiderIDNotIn(vs ...uint64) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRiderID), v...))
-	})
+	return predicate.Business(sql.FieldNotIn(FieldRiderID, vs...))
 }
 
 // CityIDEQ applies the EQ predicate on the "city_id" field.
 func CityIDEQ(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCityID), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldCityID, v))
 }
 
 // CityIDNEQ applies the NEQ predicate on the "city_id" field.
 func CityIDNEQ(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCityID), v))
-	})
+	return predicate.Business(sql.FieldNEQ(FieldCityID, v))
 }
 
 // CityIDIn applies the In predicate on the "city_id" field.
 func CityIDIn(vs ...uint64) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCityID), v...))
-	})
+	return predicate.Business(sql.FieldIn(FieldCityID, vs...))
 }
 
 // CityIDNotIn applies the NotIn predicate on the "city_id" field.
 func CityIDNotIn(vs ...uint64) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCityID), v...))
-	})
+	return predicate.Business(sql.FieldNotIn(FieldCityID, vs...))
 }
 
 // SubscribeIDEQ applies the EQ predicate on the "subscribe_id" field.
 func SubscribeIDEQ(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldSubscribeID, v))
 }
 
 // SubscribeIDNEQ applies the NEQ predicate on the "subscribe_id" field.
 func SubscribeIDNEQ(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.Business(sql.FieldNEQ(FieldSubscribeID, v))
 }
 
 // SubscribeIDIn applies the In predicate on the "subscribe_id" field.
 func SubscribeIDIn(vs ...uint64) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldSubscribeID), v...))
-	})
+	return predicate.Business(sql.FieldIn(FieldSubscribeID, vs...))
 }
 
 // SubscribeIDNotIn applies the NotIn predicate on the "subscribe_id" field.
 func SubscribeIDNotIn(vs ...uint64) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldSubscribeID), v...))
-	})
+	return predicate.Business(sql.FieldNotIn(FieldSubscribeID, vs...))
 }
 
 // EmployeeIDEQ applies the EQ predicate on the "employee_id" field.
 func EmployeeIDEQ(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldEmployeeID, v))
 }
 
 // EmployeeIDNEQ applies the NEQ predicate on the "employee_id" field.
 func EmployeeIDNEQ(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEmployeeID), v))
-	})
+	return predicate.Business(sql.FieldNEQ(FieldEmployeeID, v))
 }
 
 // EmployeeIDIn applies the In predicate on the "employee_id" field.
 func EmployeeIDIn(vs ...uint64) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEmployeeID), v...))
-	})
+	return predicate.Business(sql.FieldIn(FieldEmployeeID, vs...))
 }
 
 // EmployeeIDNotIn applies the NotIn predicate on the "employee_id" field.
 func EmployeeIDNotIn(vs ...uint64) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEmployeeID), v...))
-	})
+	return predicate.Business(sql.FieldNotIn(FieldEmployeeID, vs...))
 }
 
 // EmployeeIDIsNil applies the IsNil predicate on the "employee_id" field.
 func EmployeeIDIsNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldEmployeeID)))
-	})
+	return predicate.Business(sql.FieldIsNull(FieldEmployeeID))
 }
 
 // EmployeeIDNotNil applies the NotNil predicate on the "employee_id" field.
 func EmployeeIDNotNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldEmployeeID)))
-	})
+	return predicate.Business(sql.FieldNotNull(FieldEmployeeID))
 }
 
 // StoreIDEQ applies the EQ predicate on the "store_id" field.
 func StoreIDEQ(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStoreID), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldStoreID, v))
 }
 
 // StoreIDNEQ applies the NEQ predicate on the "store_id" field.
 func StoreIDNEQ(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStoreID), v))
-	})
+	return predicate.Business(sql.FieldNEQ(FieldStoreID, v))
 }
 
 // StoreIDIn applies the In predicate on the "store_id" field.
 func StoreIDIn(vs ...uint64) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStoreID), v...))
-	})
+	return predicate.Business(sql.FieldIn(FieldStoreID, vs...))
 }
 
 // StoreIDNotIn applies the NotIn predicate on the "store_id" field.
 func StoreIDNotIn(vs ...uint64) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStoreID), v...))
-	})
+	return predicate.Business(sql.FieldNotIn(FieldStoreID, vs...))
 }
 
 // StoreIDIsNil applies the IsNil predicate on the "store_id" field.
 func StoreIDIsNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldStoreID)))
-	})
+	return predicate.Business(sql.FieldIsNull(FieldStoreID))
 }
 
 // StoreIDNotNil applies the NotNil predicate on the "store_id" field.
 func StoreIDNotNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldStoreID)))
-	})
+	return predicate.Business(sql.FieldNotNull(FieldStoreID))
 }
 
 // PlanIDEQ applies the EQ predicate on the "plan_id" field.
 func PlanIDEQ(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPlanID), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldPlanID, v))
 }
 
 // PlanIDNEQ applies the NEQ predicate on the "plan_id" field.
 func PlanIDNEQ(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPlanID), v))
-	})
+	return predicate.Business(sql.FieldNEQ(FieldPlanID, v))
 }
 
 // PlanIDIn applies the In predicate on the "plan_id" field.
 func PlanIDIn(vs ...uint64) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldPlanID), v...))
-	})
+	return predicate.Business(sql.FieldIn(FieldPlanID, vs...))
 }
 
 // PlanIDNotIn applies the NotIn predicate on the "plan_id" field.
 func PlanIDNotIn(vs ...uint64) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldPlanID), v...))
-	})
+	return predicate.Business(sql.FieldNotIn(FieldPlanID, vs...))
 }
 
 // PlanIDIsNil applies the IsNil predicate on the "plan_id" field.
 func PlanIDIsNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldPlanID)))
-	})
+	return predicate.Business(sql.FieldIsNull(FieldPlanID))
 }
 
 // PlanIDNotNil applies the NotNil predicate on the "plan_id" field.
 func PlanIDNotNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldPlanID)))
-	})
+	return predicate.Business(sql.FieldNotNull(FieldPlanID))
 }
 
 // EnterpriseIDEQ applies the EQ predicate on the "enterprise_id" field.
 func EnterpriseIDEQ(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEnterpriseID), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldEnterpriseID, v))
 }
 
 // EnterpriseIDNEQ applies the NEQ predicate on the "enterprise_id" field.
 func EnterpriseIDNEQ(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEnterpriseID), v))
-	})
+	return predicate.Business(sql.FieldNEQ(FieldEnterpriseID, v))
 }
 
 // EnterpriseIDIn applies the In predicate on the "enterprise_id" field.
 func EnterpriseIDIn(vs ...uint64) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEnterpriseID), v...))
-	})
+	return predicate.Business(sql.FieldIn(FieldEnterpriseID, vs...))
 }
 
 // EnterpriseIDNotIn applies the NotIn predicate on the "enterprise_id" field.
 func EnterpriseIDNotIn(vs ...uint64) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEnterpriseID), v...))
-	})
+	return predicate.Business(sql.FieldNotIn(FieldEnterpriseID, vs...))
 }
 
 // EnterpriseIDIsNil applies the IsNil predicate on the "enterprise_id" field.
 func EnterpriseIDIsNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldEnterpriseID)))
-	})
+	return predicate.Business(sql.FieldIsNull(FieldEnterpriseID))
 }
 
 // EnterpriseIDNotNil applies the NotNil predicate on the "enterprise_id" field.
 func EnterpriseIDNotNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldEnterpriseID)))
-	})
+	return predicate.Business(sql.FieldNotNull(FieldEnterpriseID))
 }
 
 // StationIDEQ applies the EQ predicate on the "station_id" field.
 func StationIDEQ(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStationID), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldStationID, v))
 }
 
 // StationIDNEQ applies the NEQ predicate on the "station_id" field.
 func StationIDNEQ(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStationID), v))
-	})
+	return predicate.Business(sql.FieldNEQ(FieldStationID, v))
 }
 
 // StationIDIn applies the In predicate on the "station_id" field.
 func StationIDIn(vs ...uint64) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStationID), v...))
-	})
+	return predicate.Business(sql.FieldIn(FieldStationID, vs...))
 }
 
 // StationIDNotIn applies the NotIn predicate on the "station_id" field.
 func StationIDNotIn(vs ...uint64) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStationID), v...))
-	})
+	return predicate.Business(sql.FieldNotIn(FieldStationID, vs...))
 }
 
 // StationIDIsNil applies the IsNil predicate on the "station_id" field.
 func StationIDIsNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldStationID)))
-	})
+	return predicate.Business(sql.FieldIsNull(FieldStationID))
 }
 
 // StationIDNotNil applies the NotNil predicate on the "station_id" field.
 func StationIDNotNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldStationID)))
-	})
+	return predicate.Business(sql.FieldNotNull(FieldStationID))
 }
 
 // CabinetIDEQ applies the EQ predicate on the "cabinet_id" field.
 func CabinetIDEQ(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCabinetID), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldCabinetID, v))
 }
 
 // CabinetIDNEQ applies the NEQ predicate on the "cabinet_id" field.
 func CabinetIDNEQ(v uint64) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCabinetID), v))
-	})
+	return predicate.Business(sql.FieldNEQ(FieldCabinetID, v))
 }
 
 // CabinetIDIn applies the In predicate on the "cabinet_id" field.
 func CabinetIDIn(vs ...uint64) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCabinetID), v...))
-	})
+	return predicate.Business(sql.FieldIn(FieldCabinetID, vs...))
 }
 
 // CabinetIDNotIn applies the NotIn predicate on the "cabinet_id" field.
 func CabinetIDNotIn(vs ...uint64) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCabinetID), v...))
-	})
+	return predicate.Business(sql.FieldNotIn(FieldCabinetID, vs...))
 }
 
 // CabinetIDIsNil applies the IsNil predicate on the "cabinet_id" field.
 func CabinetIDIsNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCabinetID)))
-	})
+	return predicate.Business(sql.FieldIsNull(FieldCabinetID))
 }
 
 // CabinetIDNotNil applies the NotNil predicate on the "cabinet_id" field.
 func CabinetIDNotNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCabinetID)))
-	})
+	return predicate.Business(sql.FieldNotNull(FieldCabinetID))
 }
 
 // TypeEQ applies the EQ predicate on the "type" field.
 func TypeEQ(v Type) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldType), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldType, v))
 }
 
 // TypeNEQ applies the NEQ predicate on the "type" field.
 func TypeNEQ(v Type) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldType), v))
-	})
+	return predicate.Business(sql.FieldNEQ(FieldType, v))
 }
 
 // TypeIn applies the In predicate on the "type" field.
 func TypeIn(vs ...Type) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldType), v...))
-	})
+	return predicate.Business(sql.FieldIn(FieldType, vs...))
 }
 
 // TypeNotIn applies the NotIn predicate on the "type" field.
 func TypeNotIn(vs ...Type) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldType), v...))
-	})
+	return predicate.Business(sql.FieldNotIn(FieldType, vs...))
 }
 
 // BinInfoIsNil applies the IsNil predicate on the "bin_info" field.
 func BinInfoIsNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldBinInfo)))
-	})
+	return predicate.Business(sql.FieldIsNull(FieldBinInfo))
 }
 
 // BinInfoNotNil applies the NotNil predicate on the "bin_info" field.
 func BinInfoNotNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldBinInfo)))
-	})
+	return predicate.Business(sql.FieldNotNull(FieldBinInfo))
 }
 
 // StockSnEQ applies the EQ predicate on the "stock_sn" field.
 func StockSnEQ(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStockSn), v))
-	})
+	return predicate.Business(sql.FieldEQ(FieldStockSn, v))
 }
 
 // StockSnNEQ applies the NEQ predicate on the "stock_sn" field.
 func StockSnNEQ(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStockSn), v))
-	})
+	return predicate.Business(sql.FieldNEQ(FieldStockSn, v))
 }
 
 // StockSnIn applies the In predicate on the "stock_sn" field.
 func StockSnIn(vs ...string) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStockSn), v...))
-	})
+	return predicate.Business(sql.FieldIn(FieldStockSn, vs...))
 }
 
 // StockSnNotIn applies the NotIn predicate on the "stock_sn" field.
 func StockSnNotIn(vs ...string) predicate.Business {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStockSn), v...))
-	})
+	return predicate.Business(sql.FieldNotIn(FieldStockSn, vs...))
 }
 
 // StockSnGT applies the GT predicate on the "stock_sn" field.
 func StockSnGT(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldStockSn), v))
-	})
+	return predicate.Business(sql.FieldGT(FieldStockSn, v))
 }
 
 // StockSnGTE applies the GTE predicate on the "stock_sn" field.
 func StockSnGTE(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldStockSn), v))
-	})
+	return predicate.Business(sql.FieldGTE(FieldStockSn, v))
 }
 
 // StockSnLT applies the LT predicate on the "stock_sn" field.
 func StockSnLT(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldStockSn), v))
-	})
+	return predicate.Business(sql.FieldLT(FieldStockSn, v))
 }
 
 // StockSnLTE applies the LTE predicate on the "stock_sn" field.
 func StockSnLTE(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldStockSn), v))
-	})
+	return predicate.Business(sql.FieldLTE(FieldStockSn, v))
 }
 
 // StockSnContains applies the Contains predicate on the "stock_sn" field.
 func StockSnContains(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldStockSn), v))
-	})
+	return predicate.Business(sql.FieldContains(FieldStockSn, v))
 }
 
 // StockSnHasPrefix applies the HasPrefix predicate on the "stock_sn" field.
 func StockSnHasPrefix(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldStockSn), v))
-	})
+	return predicate.Business(sql.FieldHasPrefix(FieldStockSn, v))
 }
 
 // StockSnHasSuffix applies the HasSuffix predicate on the "stock_sn" field.
 func StockSnHasSuffix(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldStockSn), v))
-	})
+	return predicate.Business(sql.FieldHasSuffix(FieldStockSn, v))
 }
 
 // StockSnIsNil applies the IsNil predicate on the "stock_sn" field.
 func StockSnIsNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldStockSn)))
-	})
+	return predicate.Business(sql.FieldIsNull(FieldStockSn))
 }
 
 // StockSnNotNil applies the NotNil predicate on the "stock_sn" field.
 func StockSnNotNil() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldStockSn)))
-	})
+	return predicate.Business(sql.FieldNotNull(FieldStockSn))
 }
 
 // StockSnEqualFold applies the EqualFold predicate on the "stock_sn" field.
 func StockSnEqualFold(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldStockSn), v))
-	})
+	return predicate.Business(sql.FieldEqualFold(FieldStockSn, v))
 }
 
 // StockSnContainsFold applies the ContainsFold predicate on the "stock_sn" field.
 func StockSnContainsFold(v string) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldStockSn), v))
-	})
+	return predicate.Business(sql.FieldContainsFold(FieldStockSn, v))
 }
 
 // HasRider applies the HasEdge predicate on the "rider" edge.
@@ -1102,7 +700,6 @@ func HasRider() predicate.Business {
 	return predicate.Business(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RiderTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1130,7 +727,6 @@ func HasCity() predicate.Business {
 	return predicate.Business(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CityTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1158,7 +754,6 @@ func HasSubscribe() predicate.Business {
 	return predicate.Business(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SubscribeTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1186,7 +781,6 @@ func HasEmployee() predicate.Business {
 	return predicate.Business(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EmployeeTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, EmployeeTable, EmployeeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1214,7 +808,6 @@ func HasStore() predicate.Business {
 	return predicate.Business(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StoreTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1242,7 +835,6 @@ func HasPlan() predicate.Business {
 	return predicate.Business(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PlanTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, PlanTable, PlanColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1270,7 +862,6 @@ func HasEnterprise() predicate.Business {
 	return predicate.Business(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EnterpriseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, EnterpriseTable, EnterpriseColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1298,7 +889,6 @@ func HasStation() predicate.Business {
 	return predicate.Business(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StationTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, StationTable, StationColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1326,7 +916,6 @@ func HasCabinet() predicate.Business {
 	return predicate.Business(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CabinetTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, CabinetTable, CabinetColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

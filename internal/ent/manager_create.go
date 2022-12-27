@@ -150,52 +150,10 @@ func (mc *ManagerCreate) Mutation() *ManagerMutation {
 
 // Save creates the Manager in the database.
 func (mc *ManagerCreate) Save(ctx context.Context) (*Manager, error) {
-	var (
-		err  error
-		node *Manager
-	)
 	if err := mc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(mc.hooks) == 0 {
-		if err = mc.check(); err != nil {
-			return nil, err
-		}
-		node, err = mc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ManagerMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = mc.check(); err != nil {
-				return nil, err
-			}
-			mc.mutation = mutation
-			if node, err = mc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(mc.hooks) - 1; i >= 0; i-- {
-			if mc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = mc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, mc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Manager)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from ManagerMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Manager, ManagerMutation](ctx, mc.sqlSave, mc.mutation, mc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -270,6 +228,9 @@ func (mc *ManagerCreate) check() error {
 }
 
 func (mc *ManagerCreate) sqlSave(ctx context.Context) (*Manager, error) {
+	if err := mc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := mc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, mc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -279,6 +240,8 @@ func (mc *ManagerCreate) sqlSave(ctx context.Context) (*Manager, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	mc.mutation.id = &_node.ID
+	mc.mutation.done = true
 	return _node, nil
 }
 
@@ -295,83 +258,43 @@ func (mc *ManagerCreate) createSpec() (*Manager, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = mc.conflict
 	if value, ok := mc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: manager.FieldCreatedAt,
-		})
+		_spec.SetField(manager.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := mc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: manager.FieldUpdatedAt,
-		})
+		_spec.SetField(manager.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := mc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: manager.FieldDeletedAt,
-		})
+		_spec.SetField(manager.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := mc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: manager.FieldCreator,
-		})
+		_spec.SetField(manager.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := mc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: manager.FieldLastModifier,
-		})
+		_spec.SetField(manager.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := mc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: manager.FieldRemark,
-		})
+		_spec.SetField(manager.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := mc.mutation.Phone(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: manager.FieldPhone,
-		})
+		_spec.SetField(manager.FieldPhone, field.TypeString, value)
 		_node.Phone = value
 	}
 	if value, ok := mc.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: manager.FieldName,
-		})
+		_spec.SetField(manager.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := mc.mutation.Password(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: manager.FieldPassword,
-		})
+		_spec.SetField(manager.FieldPassword, field.TypeString, value)
 		_node.Password = value
 	}
 	if value, ok := mc.mutation.LastSigninAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: manager.FieldLastSigninAt,
-		})
+		_spec.SetField(manager.FieldLastSigninAt, field.TypeTime, value)
 		_node.LastSigninAt = &value
 	}
 	if nodes := mc.mutation.RoleIDs(); len(nodes) > 0 {

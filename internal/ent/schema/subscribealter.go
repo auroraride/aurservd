@@ -19,6 +19,7 @@ type SubscribeAlter struct {
 func (SubscribeAlter) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "subscribe_alter"},
+        entsql.WithComments(true),
     }
 }
 

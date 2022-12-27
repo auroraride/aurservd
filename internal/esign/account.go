@@ -7,7 +7,7 @@ package esign
 
 import (
     "fmt"
-    jsoniter "github.com/json-iterator/go"
+    "github.com/goccy/go-json"
 )
 
 // PersonAccountReq 创建个人签署账号请求体
@@ -41,7 +41,7 @@ func (e *Esign) CreatePersonAccount(req PersonAccountReq) string {
 func (e *Esign) ModifyAccount(id string, req PersonAccountReq) string {
     res := new(CreatePersonAccountRes)
     e.request(fmt.Sprintf(modifyAccountUrl, id), "PUT", req, res)
-    b, _ := jsoniter.Marshal(res)
+    b, _ := json.Marshal(res)
     fmt.Printf("修改骑手信息: %s\n", b)
     return res.AccountId
 }

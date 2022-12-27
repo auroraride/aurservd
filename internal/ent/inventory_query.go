@@ -22,6 +22,7 @@ type InventoryQuery struct {
 	unique     *bool
 	order      []OrderFunc
 	fields     []string
+	inters     []Interceptor
 	predicates []predicate.Inventory
 	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -35,13 +36,13 @@ func (iq *InventoryQuery) Where(ps ...predicate.Inventory) *InventoryQuery {
 	return iq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (iq *InventoryQuery) Limit(limit int) *InventoryQuery {
 	iq.limit = &limit
 	return iq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (iq *InventoryQuery) Offset(offset int) *InventoryQuery {
 	iq.offset = &offset
 	return iq
@@ -54,7 +55,7 @@ func (iq *InventoryQuery) Unique(unique bool) *InventoryQuery {
 	return iq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (iq *InventoryQuery) Order(o ...OrderFunc) *InventoryQuery {
 	iq.order = append(iq.order, o...)
 	return iq
@@ -63,7 +64,7 @@ func (iq *InventoryQuery) Order(o ...OrderFunc) *InventoryQuery {
 // First returns the first Inventory entity from the query.
 // Returns a *NotFoundError when no Inventory was found.
 func (iq *InventoryQuery) First(ctx context.Context) (*Inventory, error) {
-	nodes, err := iq.Limit(1).All(ctx)
+	nodes, err := iq.Limit(1).All(newQueryContext(ctx, TypeInventory, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +87,7 @@ func (iq *InventoryQuery) FirstX(ctx context.Context) *Inventory {
 // Returns a *NotFoundError when no Inventory ID was found.
 func (iq *InventoryQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = iq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = iq.Limit(1).IDs(newQueryContext(ctx, TypeInventory, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -109,7 +110,7 @@ func (iq *InventoryQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Inventory entity is found.
 // Returns a *NotFoundError when no Inventory entities are found.
 func (iq *InventoryQuery) Only(ctx context.Context) (*Inventory, error) {
-	nodes, err := iq.Limit(2).All(ctx)
+	nodes, err := iq.Limit(2).All(newQueryContext(ctx, TypeInventory, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +138,7 @@ func (iq *InventoryQuery) OnlyX(ctx context.Context) *Inventory {
 // Returns a *NotFoundError when no entities are found.
 func (iq *InventoryQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = iq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = iq.Limit(2).IDs(newQueryContext(ctx, TypeInventory, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -162,10 +163,12 @@ func (iq *InventoryQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Inventories.
 func (iq *InventoryQuery) All(ctx context.Context) ([]*Inventory, error) {
+	ctx = newQueryContext(ctx, TypeInventory, "All")
 	if err := iq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return iq.sqlAll(ctx)
+	qr := querierAll[[]*Inventory, *InventoryQuery]()
+	return withInterceptors[[]*Inventory](ctx, iq, qr, iq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -180,6 +183,7 @@ func (iq *InventoryQuery) AllX(ctx context.Context) []*Inventory {
 // IDs executes the query and returns a list of Inventory IDs.
 func (iq *InventoryQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeInventory, "IDs")
 	if err := iq.Select(inventory.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -197,10 +201,11 @@ func (iq *InventoryQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (iq *InventoryQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeInventory, "Count")
 	if err := iq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return iq.sqlCount(ctx)
+	return withInterceptors[int](ctx, iq, querierCount[*InventoryQuery](), iq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -214,10 +219,15 @@ func (iq *InventoryQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (iq *InventoryQuery) Exist(ctx context.Context) (bool, error) {
-	if err := iq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeInventory, "Exist")
+	switch _, err := iq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return iq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -263,16 +273,11 @@ func (iq *InventoryQuery) Clone() *InventoryQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (iq *InventoryQuery) GroupBy(field string, fields ...string) *InventoryGroupBy {
-	grbuild := &InventoryGroupBy{config: iq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := iq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return iq.sqlQuery(ctx), nil
-	}
+	iq.fields = append([]string{field}, fields...)
+	grbuild := &InventoryGroupBy{build: iq}
+	grbuild.flds = &iq.fields
 	grbuild.label = inventory.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -290,13 +295,28 @@ func (iq *InventoryQuery) GroupBy(field string, fields ...string) *InventoryGrou
 //		Scan(ctx, &v)
 func (iq *InventoryQuery) Select(fields ...string) *InventorySelect {
 	iq.fields = append(iq.fields, fields...)
-	selbuild := &InventorySelect{InventoryQuery: iq}
-	selbuild.label = inventory.Label
-	selbuild.flds, selbuild.scan = &iq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &InventorySelect{InventoryQuery: iq}
+	sbuild.label = inventory.Label
+	sbuild.flds, sbuild.scan = &iq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a InventorySelect configured with the given aggregations.
+func (iq *InventoryQuery) Aggregate(fns ...AggregateFunc) *InventorySelect {
+	return iq.Select().Aggregate(fns...)
 }
 
 func (iq *InventoryQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range iq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, iq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range iq.fields {
 		if !inventory.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -350,17 +370,6 @@ func (iq *InventoryQuery) sqlCount(ctx context.Context) (int, error) {
 		_spec.Unique = iq.unique != nil && *iq.unique
 	}
 	return sqlgraph.CountNodes(ctx, iq.driver, _spec)
-}
-
-func (iq *InventoryQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := iq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
 }
 
 func (iq *InventoryQuery) querySpec() *sqlgraph.QuerySpec {
@@ -454,13 +463,8 @@ func (iq *InventoryQuery) Modify(modifiers ...func(s *sql.Selector)) *InventoryS
 
 // InventoryGroupBy is the group-by builder for Inventory entities.
 type InventoryGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *InventoryQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -469,74 +473,77 @@ func (igb *InventoryGroupBy) Aggregate(fns ...AggregateFunc) *InventoryGroupBy {
 	return igb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (igb *InventoryGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := igb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeInventory, "GroupBy")
+	if err := igb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	igb.sql = query
-	return igb.sqlScan(ctx, v)
+	return scanWithInterceptors[*InventoryQuery, *InventoryGroupBy](ctx, igb.build, igb, igb.build.inters, v)
 }
 
-func (igb *InventoryGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range igb.fields {
-		if !inventory.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (igb *InventoryGroupBy) sqlScan(ctx context.Context, root *InventoryQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(igb.fns))
+	for _, fn := range igb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := igb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*igb.flds)+len(igb.fns))
+		for _, f := range *igb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*igb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := igb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := igb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (igb *InventoryGroupBy) sqlQuery() *sql.Selector {
-	selector := igb.sql.Select()
-	aggregation := make([]string, 0, len(igb.fns))
-	for _, fn := range igb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(igb.fields)+len(igb.fns))
-		for _, f := range igb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(igb.fields...)...)
-}
-
 // InventorySelect is the builder for selecting fields of Inventory entities.
 type InventorySelect struct {
 	*InventoryQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (is *InventorySelect) Aggregate(fns ...AggregateFunc) *InventorySelect {
+	is.fns = append(is.fns, fns...)
+	return is
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (is *InventorySelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeInventory, "Select")
 	if err := is.prepareQuery(ctx); err != nil {
 		return err
 	}
-	is.sql = is.InventoryQuery.sqlQuery(ctx)
-	return is.sqlScan(ctx, v)
+	return scanWithInterceptors[*InventoryQuery, *InventorySelect](ctx, is.InventoryQuery, is, is.inters, v)
 }
 
-func (is *InventorySelect) sqlScan(ctx context.Context, v any) error {
+func (is *InventorySelect) sqlScan(ctx context.Context, root *InventoryQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(is.fns))
+	for _, fn := range is.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*is.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := is.sql.Query()
+	query, args := selector.Query()
 	if err := is.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

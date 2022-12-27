@@ -664,43 +664,10 @@ func (ru *RiderUpdate) RemoveFollowups(r ...*RiderFollowUp) *RiderUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ru *RiderUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := ru.defaults(); err != nil {
 		return 0, err
 	}
-	if len(ru.hooks) == 0 {
-		if err = ru.check(); err != nil {
-			return 0, err
-		}
-		affected, err = ru.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*RiderMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ru.check(); err != nil {
-				return 0, err
-			}
-			ru.mutation = mutation
-			affected, err = ru.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(ru.hooks) - 1; i >= 0; i-- {
-			if ru.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ru.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, ru.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, RiderMutation](ctx, ru.sqlSave, ru.mutation, ru.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -764,6 +731,9 @@ func (ru *RiderUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *RiderUpd
 }
 
 func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := ru.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   rider.Table,
@@ -782,202 +752,94 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := ru.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: rider.FieldUpdatedAt,
-		})
+		_spec.SetField(rider.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := ru.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: rider.FieldDeletedAt,
-		})
+		_spec.SetField(rider.FieldDeletedAt, field.TypeTime, value)
 	}
 	if ru.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: rider.FieldDeletedAt,
-		})
+		_spec.ClearField(rider.FieldDeletedAt, field.TypeTime)
 	}
 	if ru.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: rider.FieldCreator,
-		})
+		_spec.ClearField(rider.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := ru.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: rider.FieldLastModifier,
-		})
+		_spec.SetField(rider.FieldLastModifier, field.TypeJSON, value)
 	}
 	if ru.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: rider.FieldLastModifier,
-		})
+		_spec.ClearField(rider.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := ru.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldRemark,
-		})
+		_spec.SetField(rider.FieldRemark, field.TypeString, value)
 	}
 	if ru.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: rider.FieldRemark,
-		})
+		_spec.ClearField(rider.FieldRemark, field.TypeString)
 	}
 	if value, ok := ru.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldName,
-		})
+		_spec.SetField(rider.FieldName, field.TypeString, value)
 	}
 	if ru.mutation.NameCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: rider.FieldName,
-		})
+		_spec.ClearField(rider.FieldName, field.TypeString)
 	}
 	if value, ok := ru.mutation.IDCardNumber(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldIDCardNumber,
-		})
+		_spec.SetField(rider.FieldIDCardNumber, field.TypeString, value)
 	}
 	if ru.mutation.IDCardNumberCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: rider.FieldIDCardNumber,
-		})
+		_spec.ClearField(rider.FieldIDCardNumber, field.TypeString)
 	}
 	if value, ok := ru.mutation.Phone(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldPhone,
-		})
+		_spec.SetField(rider.FieldPhone, field.TypeString, value)
 	}
 	if value, ok := ru.mutation.Contact(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: rider.FieldContact,
-		})
+		_spec.SetField(rider.FieldContact, field.TypeJSON, value)
 	}
 	if ru.mutation.ContactCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: rider.FieldContact,
-		})
+		_spec.ClearField(rider.FieldContact, field.TypeJSON)
 	}
 	if value, ok := ru.mutation.DeviceType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: rider.FieldDeviceType,
-		})
+		_spec.SetField(rider.FieldDeviceType, field.TypeUint8, value)
 	}
 	if value, ok := ru.mutation.AddedDeviceType(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: rider.FieldDeviceType,
-		})
+		_spec.AddField(rider.FieldDeviceType, field.TypeUint8, value)
 	}
 	if ru.mutation.DeviceTypeCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Column: rider.FieldDeviceType,
-		})
+		_spec.ClearField(rider.FieldDeviceType, field.TypeUint8)
 	}
 	if value, ok := ru.mutation.LastDevice(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldLastDevice,
-		})
+		_spec.SetField(rider.FieldLastDevice, field.TypeString, value)
 	}
 	if ru.mutation.LastDeviceCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: rider.FieldLastDevice,
-		})
+		_spec.ClearField(rider.FieldLastDevice, field.TypeString)
 	}
 	if value, ok := ru.mutation.IsNewDevice(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: rider.FieldIsNewDevice,
-		})
+		_spec.SetField(rider.FieldIsNewDevice, field.TypeBool, value)
 	}
 	if value, ok := ru.mutation.LastFace(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldLastFace,
-		})
+		_spec.SetField(rider.FieldLastFace, field.TypeString, value)
 	}
 	if ru.mutation.LastFaceCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: rider.FieldLastFace,
-		})
+		_spec.ClearField(rider.FieldLastFace, field.TypeString)
 	}
 	if value, ok := ru.mutation.PushID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldPushID,
-		})
+		_spec.SetField(rider.FieldPushID, field.TypeString, value)
 	}
 	if ru.mutation.PushIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: rider.FieldPushID,
-		})
+		_spec.ClearField(rider.FieldPushID, field.TypeString)
 	}
 	if value, ok := ru.mutation.LastSigninAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: rider.FieldLastSigninAt,
-		})
+		_spec.SetField(rider.FieldLastSigninAt, field.TypeTime, value)
 	}
 	if ru.mutation.LastSigninAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: rider.FieldLastSigninAt,
-		})
+		_spec.ClearField(rider.FieldLastSigninAt, field.TypeTime)
 	}
 	if value, ok := ru.mutation.Blocked(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: rider.FieldBlocked,
-		})
+		_spec.SetField(rider.FieldBlocked, field.TypeBool, value)
 	}
 	if value, ok := ru.mutation.Points(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: rider.FieldPoints,
-		})
+		_spec.SetField(rider.FieldPoints, field.TypeInt64, value)
 	}
 	if value, ok := ru.mutation.AddedPoints(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: rider.FieldPoints,
-		})
+		_spec.AddField(rider.FieldPoints, field.TypeInt64, value)
 	}
 	if ru.mutation.StationCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1462,7 +1324,7 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = ru.modifiers
+	_spec.AddModifiers(ru.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, ru.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{rider.Label}
@@ -1471,6 +1333,7 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	ru.mutation.done = true
 	return n, nil
 }
 
@@ -2114,49 +1977,10 @@ func (ruo *RiderUpdateOne) Select(field string, fields ...string) *RiderUpdateOn
 
 // Save executes the query and returns the updated Rider entity.
 func (ruo *RiderUpdateOne) Save(ctx context.Context) (*Rider, error) {
-	var (
-		err  error
-		node *Rider
-	)
 	if err := ruo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(ruo.hooks) == 0 {
-		if err = ruo.check(); err != nil {
-			return nil, err
-		}
-		node, err = ruo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*RiderMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ruo.check(); err != nil {
-				return nil, err
-			}
-			ruo.mutation = mutation
-			node, err = ruo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ruo.hooks) - 1; i >= 0; i-- {
-			if ruo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ruo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ruo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Rider)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from RiderMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Rider, RiderMutation](ctx, ruo.sqlSave, ruo.mutation, ruo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -2220,6 +2044,9 @@ func (ruo *RiderUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Ride
 }
 
 func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error) {
+	if err := ruo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   rider.Table,
@@ -2255,202 +2082,94 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		}
 	}
 	if value, ok := ruo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: rider.FieldUpdatedAt,
-		})
+		_spec.SetField(rider.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := ruo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: rider.FieldDeletedAt,
-		})
+		_spec.SetField(rider.FieldDeletedAt, field.TypeTime, value)
 	}
 	if ruo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: rider.FieldDeletedAt,
-		})
+		_spec.ClearField(rider.FieldDeletedAt, field.TypeTime)
 	}
 	if ruo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: rider.FieldCreator,
-		})
+		_spec.ClearField(rider.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := ruo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: rider.FieldLastModifier,
-		})
+		_spec.SetField(rider.FieldLastModifier, field.TypeJSON, value)
 	}
 	if ruo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: rider.FieldLastModifier,
-		})
+		_spec.ClearField(rider.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := ruo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldRemark,
-		})
+		_spec.SetField(rider.FieldRemark, field.TypeString, value)
 	}
 	if ruo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: rider.FieldRemark,
-		})
+		_spec.ClearField(rider.FieldRemark, field.TypeString)
 	}
 	if value, ok := ruo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldName,
-		})
+		_spec.SetField(rider.FieldName, field.TypeString, value)
 	}
 	if ruo.mutation.NameCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: rider.FieldName,
-		})
+		_spec.ClearField(rider.FieldName, field.TypeString)
 	}
 	if value, ok := ruo.mutation.IDCardNumber(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldIDCardNumber,
-		})
+		_spec.SetField(rider.FieldIDCardNumber, field.TypeString, value)
 	}
 	if ruo.mutation.IDCardNumberCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: rider.FieldIDCardNumber,
-		})
+		_spec.ClearField(rider.FieldIDCardNumber, field.TypeString)
 	}
 	if value, ok := ruo.mutation.Phone(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldPhone,
-		})
+		_spec.SetField(rider.FieldPhone, field.TypeString, value)
 	}
 	if value, ok := ruo.mutation.Contact(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: rider.FieldContact,
-		})
+		_spec.SetField(rider.FieldContact, field.TypeJSON, value)
 	}
 	if ruo.mutation.ContactCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: rider.FieldContact,
-		})
+		_spec.ClearField(rider.FieldContact, field.TypeJSON)
 	}
 	if value, ok := ruo.mutation.DeviceType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: rider.FieldDeviceType,
-		})
+		_spec.SetField(rider.FieldDeviceType, field.TypeUint8, value)
 	}
 	if value, ok := ruo.mutation.AddedDeviceType(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: rider.FieldDeviceType,
-		})
+		_spec.AddField(rider.FieldDeviceType, field.TypeUint8, value)
 	}
 	if ruo.mutation.DeviceTypeCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Column: rider.FieldDeviceType,
-		})
+		_spec.ClearField(rider.FieldDeviceType, field.TypeUint8)
 	}
 	if value, ok := ruo.mutation.LastDevice(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldLastDevice,
-		})
+		_spec.SetField(rider.FieldLastDevice, field.TypeString, value)
 	}
 	if ruo.mutation.LastDeviceCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: rider.FieldLastDevice,
-		})
+		_spec.ClearField(rider.FieldLastDevice, field.TypeString)
 	}
 	if value, ok := ruo.mutation.IsNewDevice(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: rider.FieldIsNewDevice,
-		})
+		_spec.SetField(rider.FieldIsNewDevice, field.TypeBool, value)
 	}
 	if value, ok := ruo.mutation.LastFace(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldLastFace,
-		})
+		_spec.SetField(rider.FieldLastFace, field.TypeString, value)
 	}
 	if ruo.mutation.LastFaceCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: rider.FieldLastFace,
-		})
+		_spec.ClearField(rider.FieldLastFace, field.TypeString)
 	}
 	if value, ok := ruo.mutation.PushID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldPushID,
-		})
+		_spec.SetField(rider.FieldPushID, field.TypeString, value)
 	}
 	if ruo.mutation.PushIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: rider.FieldPushID,
-		})
+		_spec.ClearField(rider.FieldPushID, field.TypeString)
 	}
 	if value, ok := ruo.mutation.LastSigninAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: rider.FieldLastSigninAt,
-		})
+		_spec.SetField(rider.FieldLastSigninAt, field.TypeTime, value)
 	}
 	if ruo.mutation.LastSigninAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: rider.FieldLastSigninAt,
-		})
+		_spec.ClearField(rider.FieldLastSigninAt, field.TypeTime)
 	}
 	if value, ok := ruo.mutation.Blocked(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: rider.FieldBlocked,
-		})
+		_spec.SetField(rider.FieldBlocked, field.TypeBool, value)
 	}
 	if value, ok := ruo.mutation.Points(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: rider.FieldPoints,
-		})
+		_spec.SetField(rider.FieldPoints, field.TypeInt64, value)
 	}
 	if value, ok := ruo.mutation.AddedPoints(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: rider.FieldPoints,
-		})
+		_spec.AddField(rider.FieldPoints, field.TypeInt64, value)
 	}
 	if ruo.mutation.StationCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -2935,7 +2654,7 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = ruo.modifiers
+	_spec.AddModifiers(ruo.modifiers...)
 	_node = &Rider{config: ruo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -2947,5 +2666,6 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		}
 		return nil, err
 	}
+	ruo.mutation.done = true
 	return _node, nil
 }

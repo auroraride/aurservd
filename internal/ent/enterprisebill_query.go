@@ -28,6 +28,7 @@ type EnterpriseBillQuery struct {
 	unique         *bool
 	order          []OrderFunc
 	fields         []string
+	inters         []Interceptor
 	predicates     []predicate.EnterpriseBill
 	withRider      *RiderQuery
 	withCity       *CityQuery
@@ -47,13 +48,13 @@ func (ebq *EnterpriseBillQuery) Where(ps ...predicate.EnterpriseBill) *Enterpris
 	return ebq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (ebq *EnterpriseBillQuery) Limit(limit int) *EnterpriseBillQuery {
 	ebq.limit = &limit
 	return ebq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (ebq *EnterpriseBillQuery) Offset(offset int) *EnterpriseBillQuery {
 	ebq.offset = &offset
 	return ebq
@@ -66,7 +67,7 @@ func (ebq *EnterpriseBillQuery) Unique(unique bool) *EnterpriseBillQuery {
 	return ebq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (ebq *EnterpriseBillQuery) Order(o ...OrderFunc) *EnterpriseBillQuery {
 	ebq.order = append(ebq.order, o...)
 	return ebq
@@ -74,7 +75,7 @@ func (ebq *EnterpriseBillQuery) Order(o ...OrderFunc) *EnterpriseBillQuery {
 
 // QueryRider chains the current query on the "rider" edge.
 func (ebq *EnterpriseBillQuery) QueryRider() *RiderQuery {
-	query := &RiderQuery{config: ebq.config}
+	query := (&RiderClient{config: ebq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := ebq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -96,7 +97,7 @@ func (ebq *EnterpriseBillQuery) QueryRider() *RiderQuery {
 
 // QueryCity chains the current query on the "city" edge.
 func (ebq *EnterpriseBillQuery) QueryCity() *CityQuery {
-	query := &CityQuery{config: ebq.config}
+	query := (&CityClient{config: ebq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := ebq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -118,7 +119,7 @@ func (ebq *EnterpriseBillQuery) QueryCity() *CityQuery {
 
 // QueryStation chains the current query on the "station" edge.
 func (ebq *EnterpriseBillQuery) QueryStation() *EnterpriseStationQuery {
-	query := &EnterpriseStationQuery{config: ebq.config}
+	query := (&EnterpriseStationClient{config: ebq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := ebq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -140,7 +141,7 @@ func (ebq *EnterpriseBillQuery) QueryStation() *EnterpriseStationQuery {
 
 // QueryEnterprise chains the current query on the "enterprise" edge.
 func (ebq *EnterpriseBillQuery) QueryEnterprise() *EnterpriseQuery {
-	query := &EnterpriseQuery{config: ebq.config}
+	query := (&EnterpriseClient{config: ebq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := ebq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -162,7 +163,7 @@ func (ebq *EnterpriseBillQuery) QueryEnterprise() *EnterpriseQuery {
 
 // QueryStatement chains the current query on the "statement" edge.
 func (ebq *EnterpriseBillQuery) QueryStatement() *EnterpriseStatementQuery {
-	query := &EnterpriseStatementQuery{config: ebq.config}
+	query := (&EnterpriseStatementClient{config: ebq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := ebq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -184,7 +185,7 @@ func (ebq *EnterpriseBillQuery) QueryStatement() *EnterpriseStatementQuery {
 
 // QuerySubscribe chains the current query on the "subscribe" edge.
 func (ebq *EnterpriseBillQuery) QuerySubscribe() *SubscribeQuery {
-	query := &SubscribeQuery{config: ebq.config}
+	query := (&SubscribeClient{config: ebq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := ebq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -207,7 +208,7 @@ func (ebq *EnterpriseBillQuery) QuerySubscribe() *SubscribeQuery {
 // First returns the first EnterpriseBill entity from the query.
 // Returns a *NotFoundError when no EnterpriseBill was found.
 func (ebq *EnterpriseBillQuery) First(ctx context.Context) (*EnterpriseBill, error) {
-	nodes, err := ebq.Limit(1).All(ctx)
+	nodes, err := ebq.Limit(1).All(newQueryContext(ctx, TypeEnterpriseBill, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -230,7 +231,7 @@ func (ebq *EnterpriseBillQuery) FirstX(ctx context.Context) *EnterpriseBill {
 // Returns a *NotFoundError when no EnterpriseBill ID was found.
 func (ebq *EnterpriseBillQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ebq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = ebq.Limit(1).IDs(newQueryContext(ctx, TypeEnterpriseBill, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -253,7 +254,7 @@ func (ebq *EnterpriseBillQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one EnterpriseBill entity is found.
 // Returns a *NotFoundError when no EnterpriseBill entities are found.
 func (ebq *EnterpriseBillQuery) Only(ctx context.Context) (*EnterpriseBill, error) {
-	nodes, err := ebq.Limit(2).All(ctx)
+	nodes, err := ebq.Limit(2).All(newQueryContext(ctx, TypeEnterpriseBill, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -281,7 +282,7 @@ func (ebq *EnterpriseBillQuery) OnlyX(ctx context.Context) *EnterpriseBill {
 // Returns a *NotFoundError when no entities are found.
 func (ebq *EnterpriseBillQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ebq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = ebq.Limit(2).IDs(newQueryContext(ctx, TypeEnterpriseBill, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -306,10 +307,12 @@ func (ebq *EnterpriseBillQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of EnterpriseBills.
 func (ebq *EnterpriseBillQuery) All(ctx context.Context) ([]*EnterpriseBill, error) {
+	ctx = newQueryContext(ctx, TypeEnterpriseBill, "All")
 	if err := ebq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return ebq.sqlAll(ctx)
+	qr := querierAll[[]*EnterpriseBill, *EnterpriseBillQuery]()
+	return withInterceptors[[]*EnterpriseBill](ctx, ebq, qr, ebq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -324,6 +327,7 @@ func (ebq *EnterpriseBillQuery) AllX(ctx context.Context) []*EnterpriseBill {
 // IDs executes the query and returns a list of EnterpriseBill IDs.
 func (ebq *EnterpriseBillQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeEnterpriseBill, "IDs")
 	if err := ebq.Select(enterprisebill.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -341,10 +345,11 @@ func (ebq *EnterpriseBillQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (ebq *EnterpriseBillQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeEnterpriseBill, "Count")
 	if err := ebq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return ebq.sqlCount(ctx)
+	return withInterceptors[int](ctx, ebq, querierCount[*EnterpriseBillQuery](), ebq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -358,10 +363,15 @@ func (ebq *EnterpriseBillQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (ebq *EnterpriseBillQuery) Exist(ctx context.Context) (bool, error) {
-	if err := ebq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeEnterpriseBill, "Exist")
+	switch _, err := ebq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return ebq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -401,7 +411,7 @@ func (ebq *EnterpriseBillQuery) Clone() *EnterpriseBillQuery {
 // WithRider tells the query-builder to eager-load the nodes that are connected to
 // the "rider" edge. The optional arguments are used to configure the query builder of the edge.
 func (ebq *EnterpriseBillQuery) WithRider(opts ...func(*RiderQuery)) *EnterpriseBillQuery {
-	query := &RiderQuery{config: ebq.config}
+	query := (&RiderClient{config: ebq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -412,7 +422,7 @@ func (ebq *EnterpriseBillQuery) WithRider(opts ...func(*RiderQuery)) *Enterprise
 // WithCity tells the query-builder to eager-load the nodes that are connected to
 // the "city" edge. The optional arguments are used to configure the query builder of the edge.
 func (ebq *EnterpriseBillQuery) WithCity(opts ...func(*CityQuery)) *EnterpriseBillQuery {
-	query := &CityQuery{config: ebq.config}
+	query := (&CityClient{config: ebq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -423,7 +433,7 @@ func (ebq *EnterpriseBillQuery) WithCity(opts ...func(*CityQuery)) *EnterpriseBi
 // WithStation tells the query-builder to eager-load the nodes that are connected to
 // the "station" edge. The optional arguments are used to configure the query builder of the edge.
 func (ebq *EnterpriseBillQuery) WithStation(opts ...func(*EnterpriseStationQuery)) *EnterpriseBillQuery {
-	query := &EnterpriseStationQuery{config: ebq.config}
+	query := (&EnterpriseStationClient{config: ebq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -434,7 +444,7 @@ func (ebq *EnterpriseBillQuery) WithStation(opts ...func(*EnterpriseStationQuery
 // WithEnterprise tells the query-builder to eager-load the nodes that are connected to
 // the "enterprise" edge. The optional arguments are used to configure the query builder of the edge.
 func (ebq *EnterpriseBillQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *EnterpriseBillQuery {
-	query := &EnterpriseQuery{config: ebq.config}
+	query := (&EnterpriseClient{config: ebq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -445,7 +455,7 @@ func (ebq *EnterpriseBillQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *
 // WithStatement tells the query-builder to eager-load the nodes that are connected to
 // the "statement" edge. The optional arguments are used to configure the query builder of the edge.
 func (ebq *EnterpriseBillQuery) WithStatement(opts ...func(*EnterpriseStatementQuery)) *EnterpriseBillQuery {
-	query := &EnterpriseStatementQuery{config: ebq.config}
+	query := (&EnterpriseStatementClient{config: ebq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -456,7 +466,7 @@ func (ebq *EnterpriseBillQuery) WithStatement(opts ...func(*EnterpriseStatementQ
 // WithSubscribe tells the query-builder to eager-load the nodes that are connected to
 // the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
 func (ebq *EnterpriseBillQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *EnterpriseBillQuery {
-	query := &SubscribeQuery{config: ebq.config}
+	query := (&SubscribeClient{config: ebq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -479,16 +489,11 @@ func (ebq *EnterpriseBillQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *En
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (ebq *EnterpriseBillQuery) GroupBy(field string, fields ...string) *EnterpriseBillGroupBy {
-	grbuild := &EnterpriseBillGroupBy{config: ebq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := ebq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return ebq.sqlQuery(ctx), nil
-	}
+	ebq.fields = append([]string{field}, fields...)
+	grbuild := &EnterpriseBillGroupBy{build: ebq}
+	grbuild.flds = &ebq.fields
 	grbuild.label = enterprisebill.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -506,13 +511,28 @@ func (ebq *EnterpriseBillQuery) GroupBy(field string, fields ...string) *Enterpr
 //		Scan(ctx, &v)
 func (ebq *EnterpriseBillQuery) Select(fields ...string) *EnterpriseBillSelect {
 	ebq.fields = append(ebq.fields, fields...)
-	selbuild := &EnterpriseBillSelect{EnterpriseBillQuery: ebq}
-	selbuild.label = enterprisebill.Label
-	selbuild.flds, selbuild.scan = &ebq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &EnterpriseBillSelect{EnterpriseBillQuery: ebq}
+	sbuild.label = enterprisebill.Label
+	sbuild.flds, sbuild.scan = &ebq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a EnterpriseBillSelect configured with the given aggregations.
+func (ebq *EnterpriseBillQuery) Aggregate(fns ...AggregateFunc) *EnterpriseBillSelect {
+	return ebq.Select().Aggregate(fns...)
 }
 
 func (ebq *EnterpriseBillQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range ebq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, ebq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range ebq.fields {
 		if !enterprisebill.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -773,17 +793,6 @@ func (ebq *EnterpriseBillQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, ebq.driver, _spec)
 }
 
-func (ebq *EnterpriseBillQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := ebq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (ebq *EnterpriseBillQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -875,13 +884,8 @@ func (ebq *EnterpriseBillQuery) Modify(modifiers ...func(s *sql.Selector)) *Ente
 
 // EnterpriseBillGroupBy is the group-by builder for EnterpriseBill entities.
 type EnterpriseBillGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *EnterpriseBillQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -890,74 +894,77 @@ func (ebgb *EnterpriseBillGroupBy) Aggregate(fns ...AggregateFunc) *EnterpriseBi
 	return ebgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (ebgb *EnterpriseBillGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := ebgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeEnterpriseBill, "GroupBy")
+	if err := ebgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ebgb.sql = query
-	return ebgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*EnterpriseBillQuery, *EnterpriseBillGroupBy](ctx, ebgb.build, ebgb, ebgb.build.inters, v)
 }
 
-func (ebgb *EnterpriseBillGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range ebgb.fields {
-		if !enterprisebill.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (ebgb *EnterpriseBillGroupBy) sqlScan(ctx context.Context, root *EnterpriseBillQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(ebgb.fns))
+	for _, fn := range ebgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := ebgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*ebgb.flds)+len(ebgb.fns))
+		for _, f := range *ebgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*ebgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := ebgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := ebgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (ebgb *EnterpriseBillGroupBy) sqlQuery() *sql.Selector {
-	selector := ebgb.sql.Select()
-	aggregation := make([]string, 0, len(ebgb.fns))
-	for _, fn := range ebgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(ebgb.fields)+len(ebgb.fns))
-		for _, f := range ebgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(ebgb.fields...)...)
-}
-
 // EnterpriseBillSelect is the builder for selecting fields of EnterpriseBill entities.
 type EnterpriseBillSelect struct {
 	*EnterpriseBillQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (ebs *EnterpriseBillSelect) Aggregate(fns ...AggregateFunc) *EnterpriseBillSelect {
+	ebs.fns = append(ebs.fns, fns...)
+	return ebs
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (ebs *EnterpriseBillSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeEnterpriseBill, "Select")
 	if err := ebs.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ebs.sql = ebs.EnterpriseBillQuery.sqlQuery(ctx)
-	return ebs.sqlScan(ctx, v)
+	return scanWithInterceptors[*EnterpriseBillQuery, *EnterpriseBillSelect](ctx, ebs.EnterpriseBillQuery, ebs, ebs.inters, v)
 }
 
-func (ebs *EnterpriseBillSelect) sqlScan(ctx context.Context, v any) error {
+func (ebs *EnterpriseBillSelect) sqlScan(ctx context.Context, root *EnterpriseBillQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(ebs.fns))
+	for _, fn := range ebs.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*ebs.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := ebs.sql.Query()
+	query, args := selector.Query()
 	if err := ebs.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

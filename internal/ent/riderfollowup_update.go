@@ -131,43 +131,10 @@ func (rfuu *RiderFollowUpUpdate) ClearRider() *RiderFollowUpUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (rfuu *RiderFollowUpUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := rfuu.defaults(); err != nil {
 		return 0, err
 	}
-	if len(rfuu.hooks) == 0 {
-		if err = rfuu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = rfuu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*RiderFollowUpMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = rfuu.check(); err != nil {
-				return 0, err
-			}
-			rfuu.mutation = mutation
-			affected, err = rfuu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(rfuu.hooks) - 1; i >= 0; i-- {
-			if rfuu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = rfuu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, rfuu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, RiderFollowUpMutation](ctx, rfuu.sqlSave, rfuu.mutation, rfuu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -222,6 +189,9 @@ func (rfuu *RiderFollowUpUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder))
 }
 
 func (rfuu *RiderFollowUpUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := rfuu.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   riderfollowup.Table,
@@ -240,56 +210,28 @@ func (rfuu *RiderFollowUpUpdate) sqlSave(ctx context.Context) (n int, err error)
 		}
 	}
 	if value, ok := rfuu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: riderfollowup.FieldUpdatedAt,
-		})
+		_spec.SetField(riderfollowup.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := rfuu.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: riderfollowup.FieldDeletedAt,
-		})
+		_spec.SetField(riderfollowup.FieldDeletedAt, field.TypeTime, value)
 	}
 	if rfuu.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: riderfollowup.FieldDeletedAt,
-		})
+		_spec.ClearField(riderfollowup.FieldDeletedAt, field.TypeTime)
 	}
 	if rfuu.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: riderfollowup.FieldCreator,
-		})
+		_spec.ClearField(riderfollowup.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := rfuu.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: riderfollowup.FieldLastModifier,
-		})
+		_spec.SetField(riderfollowup.FieldLastModifier, field.TypeJSON, value)
 	}
 	if rfuu.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: riderfollowup.FieldLastModifier,
-		})
+		_spec.ClearField(riderfollowup.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := rfuu.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: riderfollowup.FieldRemark,
-		})
+		_spec.SetField(riderfollowup.FieldRemark, field.TypeString, value)
 	}
 	if rfuu.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: riderfollowup.FieldRemark,
-		})
+		_spec.ClearField(riderfollowup.FieldRemark, field.TypeString)
 	}
 	if rfuu.mutation.ManagerCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -361,7 +303,7 @@ func (rfuu *RiderFollowUpUpdate) sqlSave(ctx context.Context) (n int, err error)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = rfuu.modifiers
+	_spec.AddModifiers(rfuu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, rfuu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{riderfollowup.Label}
@@ -370,6 +312,7 @@ func (rfuu *RiderFollowUpUpdate) sqlSave(ctx context.Context) (n int, err error)
 		}
 		return 0, err
 	}
+	rfuu.mutation.done = true
 	return n, nil
 }
 
@@ -488,49 +431,10 @@ func (rfuuo *RiderFollowUpUpdateOne) Select(field string, fields ...string) *Rid
 
 // Save executes the query and returns the updated RiderFollowUp entity.
 func (rfuuo *RiderFollowUpUpdateOne) Save(ctx context.Context) (*RiderFollowUp, error) {
-	var (
-		err  error
-		node *RiderFollowUp
-	)
 	if err := rfuuo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(rfuuo.hooks) == 0 {
-		if err = rfuuo.check(); err != nil {
-			return nil, err
-		}
-		node, err = rfuuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*RiderFollowUpMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = rfuuo.check(); err != nil {
-				return nil, err
-			}
-			rfuuo.mutation = mutation
-			node, err = rfuuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(rfuuo.hooks) - 1; i >= 0; i-- {
-			if rfuuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = rfuuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, rfuuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*RiderFollowUp)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from RiderFollowUpMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*RiderFollowUp, RiderFollowUpMutation](ctx, rfuuo.sqlSave, rfuuo.mutation, rfuuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -585,6 +489,9 @@ func (rfuuo *RiderFollowUpUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuild
 }
 
 func (rfuuo *RiderFollowUpUpdateOne) sqlSave(ctx context.Context) (_node *RiderFollowUp, err error) {
+	if err := rfuuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   riderfollowup.Table,
@@ -620,56 +527,28 @@ func (rfuuo *RiderFollowUpUpdateOne) sqlSave(ctx context.Context) (_node *RiderF
 		}
 	}
 	if value, ok := rfuuo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: riderfollowup.FieldUpdatedAt,
-		})
+		_spec.SetField(riderfollowup.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := rfuuo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: riderfollowup.FieldDeletedAt,
-		})
+		_spec.SetField(riderfollowup.FieldDeletedAt, field.TypeTime, value)
 	}
 	if rfuuo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: riderfollowup.FieldDeletedAt,
-		})
+		_spec.ClearField(riderfollowup.FieldDeletedAt, field.TypeTime)
 	}
 	if rfuuo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: riderfollowup.FieldCreator,
-		})
+		_spec.ClearField(riderfollowup.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := rfuuo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: riderfollowup.FieldLastModifier,
-		})
+		_spec.SetField(riderfollowup.FieldLastModifier, field.TypeJSON, value)
 	}
 	if rfuuo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: riderfollowup.FieldLastModifier,
-		})
+		_spec.ClearField(riderfollowup.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := rfuuo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: riderfollowup.FieldRemark,
-		})
+		_spec.SetField(riderfollowup.FieldRemark, field.TypeString, value)
 	}
 	if rfuuo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: riderfollowup.FieldRemark,
-		})
+		_spec.ClearField(riderfollowup.FieldRemark, field.TypeString)
 	}
 	if rfuuo.mutation.ManagerCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -741,7 +620,7 @@ func (rfuuo *RiderFollowUpUpdateOne) sqlSave(ctx context.Context) (_node *RiderF
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = rfuuo.modifiers
+	_spec.AddModifiers(rfuuo.modifiers...)
 	_node = &RiderFollowUp{config: rfuuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -753,5 +632,6 @@ func (rfuuo *RiderFollowUpUpdateOne) sqlSave(ctx context.Context) (_node *RiderF
 		}
 		return nil, err
 	}
+	rfuuo.mutation.done = true
 	return _node, nil
 }

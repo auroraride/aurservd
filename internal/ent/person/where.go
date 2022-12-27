@@ -12,1656 +12,1092 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uint64) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Person(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uint64) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Person(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uint64) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.Person(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.Person(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.Person(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uint64) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.Person(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uint64) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.Person(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uint64) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.Person(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uint64) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.Person(sql.FieldLTE(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
 func DeletedAt(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
 func Remark(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldRemark, v))
 }
 
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v uint8) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStatus), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldStatus, v))
 }
 
 // Banned applies equality check predicate on the "banned" field. It's identical to BannedEQ.
 func Banned(v bool) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBanned), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldBanned, v))
 }
 
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldName, v))
 }
 
 // IDCardNumber applies equality check predicate on the "id_card_number" field. It's identical to IDCardNumberEQ.
 func IDCardNumber(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldIDCardNumber, v))
 }
 
 // IDCardType applies equality check predicate on the "id_card_type" field. It's identical to IDCardTypeEQ.
 func IDCardType(v uint8) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIDCardType), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldIDCardType, v))
 }
 
 // IDCardPortrait applies equality check predicate on the "id_card_portrait" field. It's identical to IDCardPortraitEQ.
 func IDCardPortrait(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIDCardPortrait), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldIDCardPortrait, v))
 }
 
 // IDCardNational applies equality check predicate on the "id_card_national" field. It's identical to IDCardNationalEQ.
 func IDCardNational(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIDCardNational), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldIDCardNational, v))
 }
 
 // AuthFace applies equality check predicate on the "auth_face" field. It's identical to AuthFaceEQ.
 func AuthFace(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAuthFace), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldAuthFace, v))
 }
 
 // AuthAt applies equality check predicate on the "auth_at" field. It's identical to AuthAtEQ.
 func AuthAt(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAuthAt), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldAuthAt, v))
 }
 
 // EsignAccountID applies equality check predicate on the "esign_account_id" field. It's identical to EsignAccountIDEQ.
 func EsignAccountID(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEsignAccountID), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldEsignAccountID, v))
 }
 
 // BaiduVerifyToken applies equality check predicate on the "baidu_verify_token" field. It's identical to BaiduVerifyTokenEQ.
 func BaiduVerifyToken(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBaiduVerifyToken), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldBaiduVerifyToken, v))
 }
 
 // BaiduLogID applies equality check predicate on the "baidu_log_id" field. It's identical to BaiduLogIDEQ.
 func BaiduLogID(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBaiduLogID), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldBaiduLogID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
 func CreatedAtNEQ(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Person(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Person(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Person(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtGT applies the GT predicate on the "created_at" field.
 func CreatedAtGT(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Person(sql.FieldGT(FieldCreatedAt, v))
 }
 
 // CreatedAtGTE applies the GTE predicate on the "created_at" field.
 func CreatedAtGTE(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Person(sql.FieldGTE(FieldCreatedAt, v))
 }
 
 // CreatedAtLT applies the LT predicate on the "created_at" field.
 func CreatedAtLT(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Person(sql.FieldLT(FieldCreatedAt, v))
 }
 
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Person(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
 func UpdatedAtEQ(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
 func UpdatedAtNEQ(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Person(sql.FieldNEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Person(sql.FieldIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Person(sql.FieldNotIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtGT applies the GT predicate on the "updated_at" field.
 func UpdatedAtGT(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Person(sql.FieldGT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
 func UpdatedAtGTE(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Person(sql.FieldGTE(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLT applies the LT predicate on the "updated_at" field.
 func UpdatedAtLT(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Person(sql.FieldLT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Person(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
 func DeletedAtEQ(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
 func DeletedAtNEQ(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Person(sql.FieldNEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.Person(sql.FieldIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.Person(sql.FieldNotIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtGT applies the GT predicate on the "deleted_at" field.
 func DeletedAtGT(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Person(sql.FieldGT(FieldDeletedAt, v))
 }
 
 // DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
 func DeletedAtGTE(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Person(sql.FieldGTE(FieldDeletedAt, v))
 }
 
 // DeletedAtLT applies the LT predicate on the "deleted_at" field.
 func DeletedAtLT(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Person(sql.FieldLT(FieldDeletedAt, v))
 }
 
 // DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
 func DeletedAtLTE(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Person(sql.FieldLTE(FieldDeletedAt, v))
 }
 
 // DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
 func DeletedAtIsNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.Person(sql.FieldIsNull(FieldDeletedAt))
 }
 
 // DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
 func DeletedAtNotNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.Person(sql.FieldNotNull(FieldDeletedAt))
 }
 
 // CreatorIsNil applies the IsNil predicate on the "creator" field.
 func CreatorIsNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCreator)))
-	})
+	return predicate.Person(sql.FieldIsNull(FieldCreator))
 }
 
 // CreatorNotNil applies the NotNil predicate on the "creator" field.
 func CreatorNotNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCreator)))
-	})
+	return predicate.Person(sql.FieldNotNull(FieldCreator))
 }
 
 // LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
 func LastModifierIsNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Person(sql.FieldIsNull(FieldLastModifier))
 }
 
 // LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
 func LastModifierNotNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Person(sql.FieldNotNull(FieldLastModifier))
 }
 
 // RemarkEQ applies the EQ predicate on the "remark" field.
 func RemarkEQ(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldRemark, v))
 }
 
 // RemarkNEQ applies the NEQ predicate on the "remark" field.
 func RemarkNEQ(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRemark), v))
-	})
+	return predicate.Person(sql.FieldNEQ(FieldRemark, v))
 }
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRemark), v...))
-	})
+	return predicate.Person(sql.FieldIn(FieldRemark, vs...))
 }
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRemark), v...))
-	})
+	return predicate.Person(sql.FieldNotIn(FieldRemark, vs...))
 }
 
 // RemarkGT applies the GT predicate on the "remark" field.
 func RemarkGT(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRemark), v))
-	})
+	return predicate.Person(sql.FieldGT(FieldRemark, v))
 }
 
 // RemarkGTE applies the GTE predicate on the "remark" field.
 func RemarkGTE(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRemark), v))
-	})
+	return predicate.Person(sql.FieldGTE(FieldRemark, v))
 }
 
 // RemarkLT applies the LT predicate on the "remark" field.
 func RemarkLT(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRemark), v))
-	})
+	return predicate.Person(sql.FieldLT(FieldRemark, v))
 }
 
 // RemarkLTE applies the LTE predicate on the "remark" field.
 func RemarkLTE(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRemark), v))
-	})
+	return predicate.Person(sql.FieldLTE(FieldRemark, v))
 }
 
 // RemarkContains applies the Contains predicate on the "remark" field.
 func RemarkContains(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRemark), v))
-	})
+	return predicate.Person(sql.FieldContains(FieldRemark, v))
 }
 
 // RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
 func RemarkHasPrefix(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRemark), v))
-	})
+	return predicate.Person(sql.FieldHasPrefix(FieldRemark, v))
 }
 
 // RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
 func RemarkHasSuffix(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRemark), v))
-	})
+	return predicate.Person(sql.FieldHasSuffix(FieldRemark, v))
 }
 
 // RemarkIsNil applies the IsNil predicate on the "remark" field.
 func RemarkIsNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRemark)))
-	})
+	return predicate.Person(sql.FieldIsNull(FieldRemark))
 }
 
 // RemarkNotNil applies the NotNil predicate on the "remark" field.
 func RemarkNotNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRemark)))
-	})
+	return predicate.Person(sql.FieldNotNull(FieldRemark))
 }
 
 // RemarkEqualFold applies the EqualFold predicate on the "remark" field.
 func RemarkEqualFold(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRemark), v))
-	})
+	return predicate.Person(sql.FieldEqualFold(FieldRemark, v))
 }
 
 // RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
 func RemarkContainsFold(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
-	})
+	return predicate.Person(sql.FieldContainsFold(FieldRemark, v))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.
 func StatusEQ(v uint8) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStatus), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldStatus, v))
 }
 
 // StatusNEQ applies the NEQ predicate on the "status" field.
 func StatusNEQ(v uint8) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStatus), v))
-	})
+	return predicate.Person(sql.FieldNEQ(FieldStatus, v))
 }
 
 // StatusIn applies the In predicate on the "status" field.
 func StatusIn(vs ...uint8) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStatus), v...))
-	})
+	return predicate.Person(sql.FieldIn(FieldStatus, vs...))
 }
 
 // StatusNotIn applies the NotIn predicate on the "status" field.
 func StatusNotIn(vs ...uint8) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStatus), v...))
-	})
+	return predicate.Person(sql.FieldNotIn(FieldStatus, vs...))
 }
 
 // StatusGT applies the GT predicate on the "status" field.
 func StatusGT(v uint8) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldStatus), v))
-	})
+	return predicate.Person(sql.FieldGT(FieldStatus, v))
 }
 
 // StatusGTE applies the GTE predicate on the "status" field.
 func StatusGTE(v uint8) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldStatus), v))
-	})
+	return predicate.Person(sql.FieldGTE(FieldStatus, v))
 }
 
 // StatusLT applies the LT predicate on the "status" field.
 func StatusLT(v uint8) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldStatus), v))
-	})
+	return predicate.Person(sql.FieldLT(FieldStatus, v))
 }
 
 // StatusLTE applies the LTE predicate on the "status" field.
 func StatusLTE(v uint8) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldStatus), v))
-	})
+	return predicate.Person(sql.FieldLTE(FieldStatus, v))
 }
 
 // BannedEQ applies the EQ predicate on the "banned" field.
 func BannedEQ(v bool) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBanned), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldBanned, v))
 }
 
 // BannedNEQ applies the NEQ predicate on the "banned" field.
 func BannedNEQ(v bool) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBanned), v))
-	})
+	return predicate.Person(sql.FieldNEQ(FieldBanned, v))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldName, v))
 }
 
 // NameNEQ applies the NEQ predicate on the "name" field.
 func NameNEQ(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldName), v))
-	})
+	return predicate.Person(sql.FieldNEQ(FieldName, v))
 }
 
 // NameIn applies the In predicate on the "name" field.
 func NameIn(vs ...string) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldName), v...))
-	})
+	return predicate.Person(sql.FieldIn(FieldName, vs...))
 }
 
 // NameNotIn applies the NotIn predicate on the "name" field.
 func NameNotIn(vs ...string) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldName), v...))
-	})
+	return predicate.Person(sql.FieldNotIn(FieldName, vs...))
 }
 
 // NameGT applies the GT predicate on the "name" field.
 func NameGT(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldName), v))
-	})
+	return predicate.Person(sql.FieldGT(FieldName, v))
 }
 
 // NameGTE applies the GTE predicate on the "name" field.
 func NameGTE(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldName), v))
-	})
+	return predicate.Person(sql.FieldGTE(FieldName, v))
 }
 
 // NameLT applies the LT predicate on the "name" field.
 func NameLT(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldName), v))
-	})
+	return predicate.Person(sql.FieldLT(FieldName, v))
 }
 
 // NameLTE applies the LTE predicate on the "name" field.
 func NameLTE(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldName), v))
-	})
+	return predicate.Person(sql.FieldLTE(FieldName, v))
 }
 
 // NameContains applies the Contains predicate on the "name" field.
 func NameContains(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldName), v))
-	})
+	return predicate.Person(sql.FieldContains(FieldName, v))
 }
 
 // NameHasPrefix applies the HasPrefix predicate on the "name" field.
 func NameHasPrefix(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldName), v))
-	})
+	return predicate.Person(sql.FieldHasPrefix(FieldName, v))
 }
 
 // NameHasSuffix applies the HasSuffix predicate on the "name" field.
 func NameHasSuffix(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldName), v))
-	})
+	return predicate.Person(sql.FieldHasSuffix(FieldName, v))
 }
 
 // NameEqualFold applies the EqualFold predicate on the "name" field.
 func NameEqualFold(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldName), v))
-	})
+	return predicate.Person(sql.FieldEqualFold(FieldName, v))
 }
 
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldName), v))
-	})
+	return predicate.Person(sql.FieldContainsFold(FieldName, v))
 }
 
 // IDCardNumberEQ applies the EQ predicate on the "id_card_number" field.
 func IDCardNumberEQ(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldIDCardNumber, v))
 }
 
 // IDCardNumberNEQ applies the NEQ predicate on the "id_card_number" field.
 func IDCardNumberNEQ(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Person(sql.FieldNEQ(FieldIDCardNumber, v))
 }
 
 // IDCardNumberIn applies the In predicate on the "id_card_number" field.
 func IDCardNumberIn(vs ...string) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldIDCardNumber), v...))
-	})
+	return predicate.Person(sql.FieldIn(FieldIDCardNumber, vs...))
 }
 
 // IDCardNumberNotIn applies the NotIn predicate on the "id_card_number" field.
 func IDCardNumberNotIn(vs ...string) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldIDCardNumber), v...))
-	})
+	return predicate.Person(sql.FieldNotIn(FieldIDCardNumber, vs...))
 }
 
 // IDCardNumberGT applies the GT predicate on the "id_card_number" field.
 func IDCardNumberGT(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Person(sql.FieldGT(FieldIDCardNumber, v))
 }
 
 // IDCardNumberGTE applies the GTE predicate on the "id_card_number" field.
 func IDCardNumberGTE(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Person(sql.FieldGTE(FieldIDCardNumber, v))
 }
 
 // IDCardNumberLT applies the LT predicate on the "id_card_number" field.
 func IDCardNumberLT(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Person(sql.FieldLT(FieldIDCardNumber, v))
 }
 
 // IDCardNumberLTE applies the LTE predicate on the "id_card_number" field.
 func IDCardNumberLTE(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Person(sql.FieldLTE(FieldIDCardNumber, v))
 }
 
 // IDCardNumberContains applies the Contains predicate on the "id_card_number" field.
 func IDCardNumberContains(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Person(sql.FieldContains(FieldIDCardNumber, v))
 }
 
 // IDCardNumberHasPrefix applies the HasPrefix predicate on the "id_card_number" field.
 func IDCardNumberHasPrefix(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Person(sql.FieldHasPrefix(FieldIDCardNumber, v))
 }
 
 // IDCardNumberHasSuffix applies the HasSuffix predicate on the "id_card_number" field.
 func IDCardNumberHasSuffix(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Person(sql.FieldHasSuffix(FieldIDCardNumber, v))
 }
 
 // IDCardNumberIsNil applies the IsNil predicate on the "id_card_number" field.
 func IDCardNumberIsNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldIDCardNumber)))
-	})
+	return predicate.Person(sql.FieldIsNull(FieldIDCardNumber))
 }
 
 // IDCardNumberNotNil applies the NotNil predicate on the "id_card_number" field.
 func IDCardNumberNotNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldIDCardNumber)))
-	})
+	return predicate.Person(sql.FieldNotNull(FieldIDCardNumber))
 }
 
 // IDCardNumberEqualFold applies the EqualFold predicate on the "id_card_number" field.
 func IDCardNumberEqualFold(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Person(sql.FieldEqualFold(FieldIDCardNumber, v))
 }
 
 // IDCardNumberContainsFold applies the ContainsFold predicate on the "id_card_number" field.
 func IDCardNumberContainsFold(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Person(sql.FieldContainsFold(FieldIDCardNumber, v))
 }
 
 // IDCardTypeEQ applies the EQ predicate on the "id_card_type" field.
 func IDCardTypeEQ(v uint8) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIDCardType), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldIDCardType, v))
 }
 
 // IDCardTypeNEQ applies the NEQ predicate on the "id_card_type" field.
 func IDCardTypeNEQ(v uint8) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldIDCardType), v))
-	})
+	return predicate.Person(sql.FieldNEQ(FieldIDCardType, v))
 }
 
 // IDCardTypeIn applies the In predicate on the "id_card_type" field.
 func IDCardTypeIn(vs ...uint8) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldIDCardType), v...))
-	})
+	return predicate.Person(sql.FieldIn(FieldIDCardType, vs...))
 }
 
 // IDCardTypeNotIn applies the NotIn predicate on the "id_card_type" field.
 func IDCardTypeNotIn(vs ...uint8) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldIDCardType), v...))
-	})
+	return predicate.Person(sql.FieldNotIn(FieldIDCardType, vs...))
 }
 
 // IDCardTypeGT applies the GT predicate on the "id_card_type" field.
 func IDCardTypeGT(v uint8) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldIDCardType), v))
-	})
+	return predicate.Person(sql.FieldGT(FieldIDCardType, v))
 }
 
 // IDCardTypeGTE applies the GTE predicate on the "id_card_type" field.
 func IDCardTypeGTE(v uint8) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldIDCardType), v))
-	})
+	return predicate.Person(sql.FieldGTE(FieldIDCardType, v))
 }
 
 // IDCardTypeLT applies the LT predicate on the "id_card_type" field.
 func IDCardTypeLT(v uint8) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldIDCardType), v))
-	})
+	return predicate.Person(sql.FieldLT(FieldIDCardType, v))
 }
 
 // IDCardTypeLTE applies the LTE predicate on the "id_card_type" field.
 func IDCardTypeLTE(v uint8) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldIDCardType), v))
-	})
+	return predicate.Person(sql.FieldLTE(FieldIDCardType, v))
 }
 
 // IDCardPortraitEQ applies the EQ predicate on the "id_card_portrait" field.
 func IDCardPortraitEQ(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIDCardPortrait), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldIDCardPortrait, v))
 }
 
 // IDCardPortraitNEQ applies the NEQ predicate on the "id_card_portrait" field.
 func IDCardPortraitNEQ(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldIDCardPortrait), v))
-	})
+	return predicate.Person(sql.FieldNEQ(FieldIDCardPortrait, v))
 }
 
 // IDCardPortraitIn applies the In predicate on the "id_card_portrait" field.
 func IDCardPortraitIn(vs ...string) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldIDCardPortrait), v...))
-	})
+	return predicate.Person(sql.FieldIn(FieldIDCardPortrait, vs...))
 }
 
 // IDCardPortraitNotIn applies the NotIn predicate on the "id_card_portrait" field.
 func IDCardPortraitNotIn(vs ...string) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldIDCardPortrait), v...))
-	})
+	return predicate.Person(sql.FieldNotIn(FieldIDCardPortrait, vs...))
 }
 
 // IDCardPortraitGT applies the GT predicate on the "id_card_portrait" field.
 func IDCardPortraitGT(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldIDCardPortrait), v))
-	})
+	return predicate.Person(sql.FieldGT(FieldIDCardPortrait, v))
 }
 
 // IDCardPortraitGTE applies the GTE predicate on the "id_card_portrait" field.
 func IDCardPortraitGTE(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldIDCardPortrait), v))
-	})
+	return predicate.Person(sql.FieldGTE(FieldIDCardPortrait, v))
 }
 
 // IDCardPortraitLT applies the LT predicate on the "id_card_portrait" field.
 func IDCardPortraitLT(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldIDCardPortrait), v))
-	})
+	return predicate.Person(sql.FieldLT(FieldIDCardPortrait, v))
 }
 
 // IDCardPortraitLTE applies the LTE predicate on the "id_card_portrait" field.
 func IDCardPortraitLTE(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldIDCardPortrait), v))
-	})
+	return predicate.Person(sql.FieldLTE(FieldIDCardPortrait, v))
 }
 
 // IDCardPortraitContains applies the Contains predicate on the "id_card_portrait" field.
 func IDCardPortraitContains(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldIDCardPortrait), v))
-	})
+	return predicate.Person(sql.FieldContains(FieldIDCardPortrait, v))
 }
 
 // IDCardPortraitHasPrefix applies the HasPrefix predicate on the "id_card_portrait" field.
 func IDCardPortraitHasPrefix(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldIDCardPortrait), v))
-	})
+	return predicate.Person(sql.FieldHasPrefix(FieldIDCardPortrait, v))
 }
 
 // IDCardPortraitHasSuffix applies the HasSuffix predicate on the "id_card_portrait" field.
 func IDCardPortraitHasSuffix(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldIDCardPortrait), v))
-	})
+	return predicate.Person(sql.FieldHasSuffix(FieldIDCardPortrait, v))
 }
 
 // IDCardPortraitIsNil applies the IsNil predicate on the "id_card_portrait" field.
 func IDCardPortraitIsNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldIDCardPortrait)))
-	})
+	return predicate.Person(sql.FieldIsNull(FieldIDCardPortrait))
 }
 
 // IDCardPortraitNotNil applies the NotNil predicate on the "id_card_portrait" field.
 func IDCardPortraitNotNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldIDCardPortrait)))
-	})
+	return predicate.Person(sql.FieldNotNull(FieldIDCardPortrait))
 }
 
 // IDCardPortraitEqualFold applies the EqualFold predicate on the "id_card_portrait" field.
 func IDCardPortraitEqualFold(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldIDCardPortrait), v))
-	})
+	return predicate.Person(sql.FieldEqualFold(FieldIDCardPortrait, v))
 }
 
 // IDCardPortraitContainsFold applies the ContainsFold predicate on the "id_card_portrait" field.
 func IDCardPortraitContainsFold(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldIDCardPortrait), v))
-	})
+	return predicate.Person(sql.FieldContainsFold(FieldIDCardPortrait, v))
 }
 
 // IDCardNationalEQ applies the EQ predicate on the "id_card_national" field.
 func IDCardNationalEQ(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIDCardNational), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldIDCardNational, v))
 }
 
 // IDCardNationalNEQ applies the NEQ predicate on the "id_card_national" field.
 func IDCardNationalNEQ(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldIDCardNational), v))
-	})
+	return predicate.Person(sql.FieldNEQ(FieldIDCardNational, v))
 }
 
 // IDCardNationalIn applies the In predicate on the "id_card_national" field.
 func IDCardNationalIn(vs ...string) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldIDCardNational), v...))
-	})
+	return predicate.Person(sql.FieldIn(FieldIDCardNational, vs...))
 }
 
 // IDCardNationalNotIn applies the NotIn predicate on the "id_card_national" field.
 func IDCardNationalNotIn(vs ...string) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldIDCardNational), v...))
-	})
+	return predicate.Person(sql.FieldNotIn(FieldIDCardNational, vs...))
 }
 
 // IDCardNationalGT applies the GT predicate on the "id_card_national" field.
 func IDCardNationalGT(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldIDCardNational), v))
-	})
+	return predicate.Person(sql.FieldGT(FieldIDCardNational, v))
 }
 
 // IDCardNationalGTE applies the GTE predicate on the "id_card_national" field.
 func IDCardNationalGTE(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldIDCardNational), v))
-	})
+	return predicate.Person(sql.FieldGTE(FieldIDCardNational, v))
 }
 
 // IDCardNationalLT applies the LT predicate on the "id_card_national" field.
 func IDCardNationalLT(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldIDCardNational), v))
-	})
+	return predicate.Person(sql.FieldLT(FieldIDCardNational, v))
 }
 
 // IDCardNationalLTE applies the LTE predicate on the "id_card_national" field.
 func IDCardNationalLTE(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldIDCardNational), v))
-	})
+	return predicate.Person(sql.FieldLTE(FieldIDCardNational, v))
 }
 
 // IDCardNationalContains applies the Contains predicate on the "id_card_national" field.
 func IDCardNationalContains(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldIDCardNational), v))
-	})
+	return predicate.Person(sql.FieldContains(FieldIDCardNational, v))
 }
 
 // IDCardNationalHasPrefix applies the HasPrefix predicate on the "id_card_national" field.
 func IDCardNationalHasPrefix(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldIDCardNational), v))
-	})
+	return predicate.Person(sql.FieldHasPrefix(FieldIDCardNational, v))
 }
 
 // IDCardNationalHasSuffix applies the HasSuffix predicate on the "id_card_national" field.
 func IDCardNationalHasSuffix(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldIDCardNational), v))
-	})
+	return predicate.Person(sql.FieldHasSuffix(FieldIDCardNational, v))
 }
 
 // IDCardNationalIsNil applies the IsNil predicate on the "id_card_national" field.
 func IDCardNationalIsNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldIDCardNational)))
-	})
+	return predicate.Person(sql.FieldIsNull(FieldIDCardNational))
 }
 
 // IDCardNationalNotNil applies the NotNil predicate on the "id_card_national" field.
 func IDCardNationalNotNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldIDCardNational)))
-	})
+	return predicate.Person(sql.FieldNotNull(FieldIDCardNational))
 }
 
 // IDCardNationalEqualFold applies the EqualFold predicate on the "id_card_national" field.
 func IDCardNationalEqualFold(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldIDCardNational), v))
-	})
+	return predicate.Person(sql.FieldEqualFold(FieldIDCardNational, v))
 }
 
 // IDCardNationalContainsFold applies the ContainsFold predicate on the "id_card_national" field.
 func IDCardNationalContainsFold(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldIDCardNational), v))
-	})
+	return predicate.Person(sql.FieldContainsFold(FieldIDCardNational, v))
 }
 
 // AuthFaceEQ applies the EQ predicate on the "auth_face" field.
 func AuthFaceEQ(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAuthFace), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldAuthFace, v))
 }
 
 // AuthFaceNEQ applies the NEQ predicate on the "auth_face" field.
 func AuthFaceNEQ(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAuthFace), v))
-	})
+	return predicate.Person(sql.FieldNEQ(FieldAuthFace, v))
 }
 
 // AuthFaceIn applies the In predicate on the "auth_face" field.
 func AuthFaceIn(vs ...string) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAuthFace), v...))
-	})
+	return predicate.Person(sql.FieldIn(FieldAuthFace, vs...))
 }
 
 // AuthFaceNotIn applies the NotIn predicate on the "auth_face" field.
 func AuthFaceNotIn(vs ...string) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAuthFace), v...))
-	})
+	return predicate.Person(sql.FieldNotIn(FieldAuthFace, vs...))
 }
 
 // AuthFaceGT applies the GT predicate on the "auth_face" field.
 func AuthFaceGT(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAuthFace), v))
-	})
+	return predicate.Person(sql.FieldGT(FieldAuthFace, v))
 }
 
 // AuthFaceGTE applies the GTE predicate on the "auth_face" field.
 func AuthFaceGTE(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAuthFace), v))
-	})
+	return predicate.Person(sql.FieldGTE(FieldAuthFace, v))
 }
 
 // AuthFaceLT applies the LT predicate on the "auth_face" field.
 func AuthFaceLT(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAuthFace), v))
-	})
+	return predicate.Person(sql.FieldLT(FieldAuthFace, v))
 }
 
 // AuthFaceLTE applies the LTE predicate on the "auth_face" field.
 func AuthFaceLTE(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAuthFace), v))
-	})
+	return predicate.Person(sql.FieldLTE(FieldAuthFace, v))
 }
 
 // AuthFaceContains applies the Contains predicate on the "auth_face" field.
 func AuthFaceContains(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldAuthFace), v))
-	})
+	return predicate.Person(sql.FieldContains(FieldAuthFace, v))
 }
 
 // AuthFaceHasPrefix applies the HasPrefix predicate on the "auth_face" field.
 func AuthFaceHasPrefix(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldAuthFace), v))
-	})
+	return predicate.Person(sql.FieldHasPrefix(FieldAuthFace, v))
 }
 
 // AuthFaceHasSuffix applies the HasSuffix predicate on the "auth_face" field.
 func AuthFaceHasSuffix(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldAuthFace), v))
-	})
+	return predicate.Person(sql.FieldHasSuffix(FieldAuthFace, v))
 }
 
 // AuthFaceIsNil applies the IsNil predicate on the "auth_face" field.
 func AuthFaceIsNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldAuthFace)))
-	})
+	return predicate.Person(sql.FieldIsNull(FieldAuthFace))
 }
 
 // AuthFaceNotNil applies the NotNil predicate on the "auth_face" field.
 func AuthFaceNotNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldAuthFace)))
-	})
+	return predicate.Person(sql.FieldNotNull(FieldAuthFace))
 }
 
 // AuthFaceEqualFold applies the EqualFold predicate on the "auth_face" field.
 func AuthFaceEqualFold(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldAuthFace), v))
-	})
+	return predicate.Person(sql.FieldEqualFold(FieldAuthFace, v))
 }
 
 // AuthFaceContainsFold applies the ContainsFold predicate on the "auth_face" field.
 func AuthFaceContainsFold(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldAuthFace), v))
-	})
+	return predicate.Person(sql.FieldContainsFold(FieldAuthFace, v))
 }
 
 // AuthResultIsNil applies the IsNil predicate on the "auth_result" field.
 func AuthResultIsNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldAuthResult)))
-	})
+	return predicate.Person(sql.FieldIsNull(FieldAuthResult))
 }
 
 // AuthResultNotNil applies the NotNil predicate on the "auth_result" field.
 func AuthResultNotNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldAuthResult)))
-	})
+	return predicate.Person(sql.FieldNotNull(FieldAuthResult))
 }
 
 // AuthAtEQ applies the EQ predicate on the "auth_at" field.
 func AuthAtEQ(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAuthAt), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldAuthAt, v))
 }
 
 // AuthAtNEQ applies the NEQ predicate on the "auth_at" field.
 func AuthAtNEQ(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAuthAt), v))
-	})
+	return predicate.Person(sql.FieldNEQ(FieldAuthAt, v))
 }
 
 // AuthAtIn applies the In predicate on the "auth_at" field.
 func AuthAtIn(vs ...time.Time) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAuthAt), v...))
-	})
+	return predicate.Person(sql.FieldIn(FieldAuthAt, vs...))
 }
 
 // AuthAtNotIn applies the NotIn predicate on the "auth_at" field.
 func AuthAtNotIn(vs ...time.Time) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAuthAt), v...))
-	})
+	return predicate.Person(sql.FieldNotIn(FieldAuthAt, vs...))
 }
 
 // AuthAtGT applies the GT predicate on the "auth_at" field.
 func AuthAtGT(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAuthAt), v))
-	})
+	return predicate.Person(sql.FieldGT(FieldAuthAt, v))
 }
 
 // AuthAtGTE applies the GTE predicate on the "auth_at" field.
 func AuthAtGTE(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAuthAt), v))
-	})
+	return predicate.Person(sql.FieldGTE(FieldAuthAt, v))
 }
 
 // AuthAtLT applies the LT predicate on the "auth_at" field.
 func AuthAtLT(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAuthAt), v))
-	})
+	return predicate.Person(sql.FieldLT(FieldAuthAt, v))
 }
 
 // AuthAtLTE applies the LTE predicate on the "auth_at" field.
 func AuthAtLTE(v time.Time) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAuthAt), v))
-	})
+	return predicate.Person(sql.FieldLTE(FieldAuthAt, v))
 }
 
 // AuthAtIsNil applies the IsNil predicate on the "auth_at" field.
 func AuthAtIsNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldAuthAt)))
-	})
+	return predicate.Person(sql.FieldIsNull(FieldAuthAt))
 }
 
 // AuthAtNotNil applies the NotNil predicate on the "auth_at" field.
 func AuthAtNotNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldAuthAt)))
-	})
+	return predicate.Person(sql.FieldNotNull(FieldAuthAt))
 }
 
 // EsignAccountIDEQ applies the EQ predicate on the "esign_account_id" field.
 func EsignAccountIDEQ(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEsignAccountID), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldEsignAccountID, v))
 }
 
 // EsignAccountIDNEQ applies the NEQ predicate on the "esign_account_id" field.
 func EsignAccountIDNEQ(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEsignAccountID), v))
-	})
+	return predicate.Person(sql.FieldNEQ(FieldEsignAccountID, v))
 }
 
 // EsignAccountIDIn applies the In predicate on the "esign_account_id" field.
 func EsignAccountIDIn(vs ...string) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEsignAccountID), v...))
-	})
+	return predicate.Person(sql.FieldIn(FieldEsignAccountID, vs...))
 }
 
 // EsignAccountIDNotIn applies the NotIn predicate on the "esign_account_id" field.
 func EsignAccountIDNotIn(vs ...string) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEsignAccountID), v...))
-	})
+	return predicate.Person(sql.FieldNotIn(FieldEsignAccountID, vs...))
 }
 
 // EsignAccountIDGT applies the GT predicate on the "esign_account_id" field.
 func EsignAccountIDGT(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldEsignAccountID), v))
-	})
+	return predicate.Person(sql.FieldGT(FieldEsignAccountID, v))
 }
 
 // EsignAccountIDGTE applies the GTE predicate on the "esign_account_id" field.
 func EsignAccountIDGTE(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldEsignAccountID), v))
-	})
+	return predicate.Person(sql.FieldGTE(FieldEsignAccountID, v))
 }
 
 // EsignAccountIDLT applies the LT predicate on the "esign_account_id" field.
 func EsignAccountIDLT(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldEsignAccountID), v))
-	})
+	return predicate.Person(sql.FieldLT(FieldEsignAccountID, v))
 }
 
 // EsignAccountIDLTE applies the LTE predicate on the "esign_account_id" field.
 func EsignAccountIDLTE(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldEsignAccountID), v))
-	})
+	return predicate.Person(sql.FieldLTE(FieldEsignAccountID, v))
 }
 
 // EsignAccountIDContains applies the Contains predicate on the "esign_account_id" field.
 func EsignAccountIDContains(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldEsignAccountID), v))
-	})
+	return predicate.Person(sql.FieldContains(FieldEsignAccountID, v))
 }
 
 // EsignAccountIDHasPrefix applies the HasPrefix predicate on the "esign_account_id" field.
 func EsignAccountIDHasPrefix(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldEsignAccountID), v))
-	})
+	return predicate.Person(sql.FieldHasPrefix(FieldEsignAccountID, v))
 }
 
 // EsignAccountIDHasSuffix applies the HasSuffix predicate on the "esign_account_id" field.
 func EsignAccountIDHasSuffix(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldEsignAccountID), v))
-	})
+	return predicate.Person(sql.FieldHasSuffix(FieldEsignAccountID, v))
 }
 
 // EsignAccountIDIsNil applies the IsNil predicate on the "esign_account_id" field.
 func EsignAccountIDIsNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldEsignAccountID)))
-	})
+	return predicate.Person(sql.FieldIsNull(FieldEsignAccountID))
 }
 
 // EsignAccountIDNotNil applies the NotNil predicate on the "esign_account_id" field.
 func EsignAccountIDNotNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldEsignAccountID)))
-	})
+	return predicate.Person(sql.FieldNotNull(FieldEsignAccountID))
 }
 
 // EsignAccountIDEqualFold applies the EqualFold predicate on the "esign_account_id" field.
 func EsignAccountIDEqualFold(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldEsignAccountID), v))
-	})
+	return predicate.Person(sql.FieldEqualFold(FieldEsignAccountID, v))
 }
 
 // EsignAccountIDContainsFold applies the ContainsFold predicate on the "esign_account_id" field.
 func EsignAccountIDContainsFold(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldEsignAccountID), v))
-	})
+	return predicate.Person(sql.FieldContainsFold(FieldEsignAccountID, v))
 }
 
 // BaiduVerifyTokenEQ applies the EQ predicate on the "baidu_verify_token" field.
 func BaiduVerifyTokenEQ(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBaiduVerifyToken), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldBaiduVerifyToken, v))
 }
 
 // BaiduVerifyTokenNEQ applies the NEQ predicate on the "baidu_verify_token" field.
 func BaiduVerifyTokenNEQ(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBaiduVerifyToken), v))
-	})
+	return predicate.Person(sql.FieldNEQ(FieldBaiduVerifyToken, v))
 }
 
 // BaiduVerifyTokenIn applies the In predicate on the "baidu_verify_token" field.
 func BaiduVerifyTokenIn(vs ...string) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldBaiduVerifyToken), v...))
-	})
+	return predicate.Person(sql.FieldIn(FieldBaiduVerifyToken, vs...))
 }
 
 // BaiduVerifyTokenNotIn applies the NotIn predicate on the "baidu_verify_token" field.
 func BaiduVerifyTokenNotIn(vs ...string) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldBaiduVerifyToken), v...))
-	})
+	return predicate.Person(sql.FieldNotIn(FieldBaiduVerifyToken, vs...))
 }
 
 // BaiduVerifyTokenGT applies the GT predicate on the "baidu_verify_token" field.
 func BaiduVerifyTokenGT(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldBaiduVerifyToken), v))
-	})
+	return predicate.Person(sql.FieldGT(FieldBaiduVerifyToken, v))
 }
 
 // BaiduVerifyTokenGTE applies the GTE predicate on the "baidu_verify_token" field.
 func BaiduVerifyTokenGTE(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldBaiduVerifyToken), v))
-	})
+	return predicate.Person(sql.FieldGTE(FieldBaiduVerifyToken, v))
 }
 
 // BaiduVerifyTokenLT applies the LT predicate on the "baidu_verify_token" field.
 func BaiduVerifyTokenLT(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldBaiduVerifyToken), v))
-	})
+	return predicate.Person(sql.FieldLT(FieldBaiduVerifyToken, v))
 }
 
 // BaiduVerifyTokenLTE applies the LTE predicate on the "baidu_verify_token" field.
 func BaiduVerifyTokenLTE(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldBaiduVerifyToken), v))
-	})
+	return predicate.Person(sql.FieldLTE(FieldBaiduVerifyToken, v))
 }
 
 // BaiduVerifyTokenContains applies the Contains predicate on the "baidu_verify_token" field.
 func BaiduVerifyTokenContains(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldBaiduVerifyToken), v))
-	})
+	return predicate.Person(sql.FieldContains(FieldBaiduVerifyToken, v))
 }
 
 // BaiduVerifyTokenHasPrefix applies the HasPrefix predicate on the "baidu_verify_token" field.
 func BaiduVerifyTokenHasPrefix(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldBaiduVerifyToken), v))
-	})
+	return predicate.Person(sql.FieldHasPrefix(FieldBaiduVerifyToken, v))
 }
 
 // BaiduVerifyTokenHasSuffix applies the HasSuffix predicate on the "baidu_verify_token" field.
 func BaiduVerifyTokenHasSuffix(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldBaiduVerifyToken), v))
-	})
+	return predicate.Person(sql.FieldHasSuffix(FieldBaiduVerifyToken, v))
 }
 
 // BaiduVerifyTokenIsNil applies the IsNil predicate on the "baidu_verify_token" field.
 func BaiduVerifyTokenIsNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldBaiduVerifyToken)))
-	})
+	return predicate.Person(sql.FieldIsNull(FieldBaiduVerifyToken))
 }
 
 // BaiduVerifyTokenNotNil applies the NotNil predicate on the "baidu_verify_token" field.
 func BaiduVerifyTokenNotNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldBaiduVerifyToken)))
-	})
+	return predicate.Person(sql.FieldNotNull(FieldBaiduVerifyToken))
 }
 
 // BaiduVerifyTokenEqualFold applies the EqualFold predicate on the "baidu_verify_token" field.
 func BaiduVerifyTokenEqualFold(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldBaiduVerifyToken), v))
-	})
+	return predicate.Person(sql.FieldEqualFold(FieldBaiduVerifyToken, v))
 }
 
 // BaiduVerifyTokenContainsFold applies the ContainsFold predicate on the "baidu_verify_token" field.
 func BaiduVerifyTokenContainsFold(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldBaiduVerifyToken), v))
-	})
+	return predicate.Person(sql.FieldContainsFold(FieldBaiduVerifyToken, v))
 }
 
 // BaiduLogIDEQ applies the EQ predicate on the "baidu_log_id" field.
 func BaiduLogIDEQ(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBaiduLogID), v))
-	})
+	return predicate.Person(sql.FieldEQ(FieldBaiduLogID, v))
 }
 
 // BaiduLogIDNEQ applies the NEQ predicate on the "baidu_log_id" field.
 func BaiduLogIDNEQ(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBaiduLogID), v))
-	})
+	return predicate.Person(sql.FieldNEQ(FieldBaiduLogID, v))
 }
 
 // BaiduLogIDIn applies the In predicate on the "baidu_log_id" field.
 func BaiduLogIDIn(vs ...string) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldBaiduLogID), v...))
-	})
+	return predicate.Person(sql.FieldIn(FieldBaiduLogID, vs...))
 }
 
 // BaiduLogIDNotIn applies the NotIn predicate on the "baidu_log_id" field.
 func BaiduLogIDNotIn(vs ...string) predicate.Person {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldBaiduLogID), v...))
-	})
+	return predicate.Person(sql.FieldNotIn(FieldBaiduLogID, vs...))
 }
 
 // BaiduLogIDGT applies the GT predicate on the "baidu_log_id" field.
 func BaiduLogIDGT(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldBaiduLogID), v))
-	})
+	return predicate.Person(sql.FieldGT(FieldBaiduLogID, v))
 }
 
 // BaiduLogIDGTE applies the GTE predicate on the "baidu_log_id" field.
 func BaiduLogIDGTE(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldBaiduLogID), v))
-	})
+	return predicate.Person(sql.FieldGTE(FieldBaiduLogID, v))
 }
 
 // BaiduLogIDLT applies the LT predicate on the "baidu_log_id" field.
 func BaiduLogIDLT(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldBaiduLogID), v))
-	})
+	return predicate.Person(sql.FieldLT(FieldBaiduLogID, v))
 }
 
 // BaiduLogIDLTE applies the LTE predicate on the "baidu_log_id" field.
 func BaiduLogIDLTE(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldBaiduLogID), v))
-	})
+	return predicate.Person(sql.FieldLTE(FieldBaiduLogID, v))
 }
 
 // BaiduLogIDContains applies the Contains predicate on the "baidu_log_id" field.
 func BaiduLogIDContains(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldBaiduLogID), v))
-	})
+	return predicate.Person(sql.FieldContains(FieldBaiduLogID, v))
 }
 
 // BaiduLogIDHasPrefix applies the HasPrefix predicate on the "baidu_log_id" field.
 func BaiduLogIDHasPrefix(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldBaiduLogID), v))
-	})
+	return predicate.Person(sql.FieldHasPrefix(FieldBaiduLogID, v))
 }
 
 // BaiduLogIDHasSuffix applies the HasSuffix predicate on the "baidu_log_id" field.
 func BaiduLogIDHasSuffix(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldBaiduLogID), v))
-	})
+	return predicate.Person(sql.FieldHasSuffix(FieldBaiduLogID, v))
 }
 
 // BaiduLogIDIsNil applies the IsNil predicate on the "baidu_log_id" field.
 func BaiduLogIDIsNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldBaiduLogID)))
-	})
+	return predicate.Person(sql.FieldIsNull(FieldBaiduLogID))
 }
 
 // BaiduLogIDNotNil applies the NotNil predicate on the "baidu_log_id" field.
 func BaiduLogIDNotNil() predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldBaiduLogID)))
-	})
+	return predicate.Person(sql.FieldNotNull(FieldBaiduLogID))
 }
 
 // BaiduLogIDEqualFold applies the EqualFold predicate on the "baidu_log_id" field.
 func BaiduLogIDEqualFold(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldBaiduLogID), v))
-	})
+	return predicate.Person(sql.FieldEqualFold(FieldBaiduLogID, v))
 }
 
 // BaiduLogIDContainsFold applies the ContainsFold predicate on the "baidu_log_id" field.
 func BaiduLogIDContainsFold(v string) predicate.Person {
-	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldBaiduLogID), v))
-	})
+	return predicate.Person(sql.FieldContainsFold(FieldBaiduLogID, v))
 }
 
 // HasRider applies the HasEdge predicate on the "rider" edge.
@@ -1669,7 +1105,6 @@ func HasRider() predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RiderTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, RiderTable, RiderColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

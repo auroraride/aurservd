@@ -52,6 +52,7 @@ type Allocate struct {
 func (Allocate) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "allocate"},
+        entsql.WithComments(true),
     }
 }
 

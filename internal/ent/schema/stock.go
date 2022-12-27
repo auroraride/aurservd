@@ -24,6 +24,7 @@ type Stock struct {
 func (Stock) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "stock"},
+        entsql.WithComments(true),
     }
 }
 

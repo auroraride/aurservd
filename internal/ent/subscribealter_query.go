@@ -27,6 +27,7 @@ type SubscribeAlterQuery struct {
 	unique         *bool
 	order          []OrderFunc
 	fields         []string
+	inters         []Interceptor
 	predicates     []predicate.SubscribeAlter
 	withRider      *RiderQuery
 	withManager    *ManagerQuery
@@ -45,13 +46,13 @@ func (saq *SubscribeAlterQuery) Where(ps ...predicate.SubscribeAlter) *Subscribe
 	return saq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (saq *SubscribeAlterQuery) Limit(limit int) *SubscribeAlterQuery {
 	saq.limit = &limit
 	return saq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (saq *SubscribeAlterQuery) Offset(offset int) *SubscribeAlterQuery {
 	saq.offset = &offset
 	return saq
@@ -64,7 +65,7 @@ func (saq *SubscribeAlterQuery) Unique(unique bool) *SubscribeAlterQuery {
 	return saq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (saq *SubscribeAlterQuery) Order(o ...OrderFunc) *SubscribeAlterQuery {
 	saq.order = append(saq.order, o...)
 	return saq
@@ -72,7 +73,7 @@ func (saq *SubscribeAlterQuery) Order(o ...OrderFunc) *SubscribeAlterQuery {
 
 // QueryRider chains the current query on the "rider" edge.
 func (saq *SubscribeAlterQuery) QueryRider() *RiderQuery {
-	query := &RiderQuery{config: saq.config}
+	query := (&RiderClient{config: saq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := saq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -94,7 +95,7 @@ func (saq *SubscribeAlterQuery) QueryRider() *RiderQuery {
 
 // QueryManager chains the current query on the "manager" edge.
 func (saq *SubscribeAlterQuery) QueryManager() *ManagerQuery {
-	query := &ManagerQuery{config: saq.config}
+	query := (&ManagerClient{config: saq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := saq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -116,7 +117,7 @@ func (saq *SubscribeAlterQuery) QueryManager() *ManagerQuery {
 
 // QueryEnterprise chains the current query on the "enterprise" edge.
 func (saq *SubscribeAlterQuery) QueryEnterprise() *EnterpriseQuery {
-	query := &EnterpriseQuery{config: saq.config}
+	query := (&EnterpriseClient{config: saq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := saq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -138,7 +139,7 @@ func (saq *SubscribeAlterQuery) QueryEnterprise() *EnterpriseQuery {
 
 // QueryAgent chains the current query on the "agent" edge.
 func (saq *SubscribeAlterQuery) QueryAgent() *AgentQuery {
-	query := &AgentQuery{config: saq.config}
+	query := (&AgentClient{config: saq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := saq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -160,7 +161,7 @@ func (saq *SubscribeAlterQuery) QueryAgent() *AgentQuery {
 
 // QuerySubscribe chains the current query on the "subscribe" edge.
 func (saq *SubscribeAlterQuery) QuerySubscribe() *SubscribeQuery {
-	query := &SubscribeQuery{config: saq.config}
+	query := (&SubscribeClient{config: saq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := saq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -183,7 +184,7 @@ func (saq *SubscribeAlterQuery) QuerySubscribe() *SubscribeQuery {
 // First returns the first SubscribeAlter entity from the query.
 // Returns a *NotFoundError when no SubscribeAlter was found.
 func (saq *SubscribeAlterQuery) First(ctx context.Context) (*SubscribeAlter, error) {
-	nodes, err := saq.Limit(1).All(ctx)
+	nodes, err := saq.Limit(1).All(newQueryContext(ctx, TypeSubscribeAlter, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -206,7 +207,7 @@ func (saq *SubscribeAlterQuery) FirstX(ctx context.Context) *SubscribeAlter {
 // Returns a *NotFoundError when no SubscribeAlter ID was found.
 func (saq *SubscribeAlterQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = saq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = saq.Limit(1).IDs(newQueryContext(ctx, TypeSubscribeAlter, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -229,7 +230,7 @@ func (saq *SubscribeAlterQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one SubscribeAlter entity is found.
 // Returns a *NotFoundError when no SubscribeAlter entities are found.
 func (saq *SubscribeAlterQuery) Only(ctx context.Context) (*SubscribeAlter, error) {
-	nodes, err := saq.Limit(2).All(ctx)
+	nodes, err := saq.Limit(2).All(newQueryContext(ctx, TypeSubscribeAlter, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -257,7 +258,7 @@ func (saq *SubscribeAlterQuery) OnlyX(ctx context.Context) *SubscribeAlter {
 // Returns a *NotFoundError when no entities are found.
 func (saq *SubscribeAlterQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = saq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = saq.Limit(2).IDs(newQueryContext(ctx, TypeSubscribeAlter, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -282,10 +283,12 @@ func (saq *SubscribeAlterQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of SubscribeAlters.
 func (saq *SubscribeAlterQuery) All(ctx context.Context) ([]*SubscribeAlter, error) {
+	ctx = newQueryContext(ctx, TypeSubscribeAlter, "All")
 	if err := saq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return saq.sqlAll(ctx)
+	qr := querierAll[[]*SubscribeAlter, *SubscribeAlterQuery]()
+	return withInterceptors[[]*SubscribeAlter](ctx, saq, qr, saq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -300,6 +303,7 @@ func (saq *SubscribeAlterQuery) AllX(ctx context.Context) []*SubscribeAlter {
 // IDs executes the query and returns a list of SubscribeAlter IDs.
 func (saq *SubscribeAlterQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeSubscribeAlter, "IDs")
 	if err := saq.Select(subscribealter.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -317,10 +321,11 @@ func (saq *SubscribeAlterQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (saq *SubscribeAlterQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeSubscribeAlter, "Count")
 	if err := saq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return saq.sqlCount(ctx)
+	return withInterceptors[int](ctx, saq, querierCount[*SubscribeAlterQuery](), saq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -334,10 +339,15 @@ func (saq *SubscribeAlterQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (saq *SubscribeAlterQuery) Exist(ctx context.Context) (bool, error) {
-	if err := saq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeSubscribeAlter, "Exist")
+	switch _, err := saq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return saq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -376,7 +386,7 @@ func (saq *SubscribeAlterQuery) Clone() *SubscribeAlterQuery {
 // WithRider tells the query-builder to eager-load the nodes that are connected to
 // the "rider" edge. The optional arguments are used to configure the query builder of the edge.
 func (saq *SubscribeAlterQuery) WithRider(opts ...func(*RiderQuery)) *SubscribeAlterQuery {
-	query := &RiderQuery{config: saq.config}
+	query := (&RiderClient{config: saq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -387,7 +397,7 @@ func (saq *SubscribeAlterQuery) WithRider(opts ...func(*RiderQuery)) *SubscribeA
 // WithManager tells the query-builder to eager-load the nodes that are connected to
 // the "manager" edge. The optional arguments are used to configure the query builder of the edge.
 func (saq *SubscribeAlterQuery) WithManager(opts ...func(*ManagerQuery)) *SubscribeAlterQuery {
-	query := &ManagerQuery{config: saq.config}
+	query := (&ManagerClient{config: saq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -398,7 +408,7 @@ func (saq *SubscribeAlterQuery) WithManager(opts ...func(*ManagerQuery)) *Subscr
 // WithEnterprise tells the query-builder to eager-load the nodes that are connected to
 // the "enterprise" edge. The optional arguments are used to configure the query builder of the edge.
 func (saq *SubscribeAlterQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *SubscribeAlterQuery {
-	query := &EnterpriseQuery{config: saq.config}
+	query := (&EnterpriseClient{config: saq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -409,7 +419,7 @@ func (saq *SubscribeAlterQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *
 // WithAgent tells the query-builder to eager-load the nodes that are connected to
 // the "agent" edge. The optional arguments are used to configure the query builder of the edge.
 func (saq *SubscribeAlterQuery) WithAgent(opts ...func(*AgentQuery)) *SubscribeAlterQuery {
-	query := &AgentQuery{config: saq.config}
+	query := (&AgentClient{config: saq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -420,7 +430,7 @@ func (saq *SubscribeAlterQuery) WithAgent(opts ...func(*AgentQuery)) *SubscribeA
 // WithSubscribe tells the query-builder to eager-load the nodes that are connected to
 // the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
 func (saq *SubscribeAlterQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *SubscribeAlterQuery {
-	query := &SubscribeQuery{config: saq.config}
+	query := (&SubscribeClient{config: saq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -443,16 +453,11 @@ func (saq *SubscribeAlterQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *Su
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (saq *SubscribeAlterQuery) GroupBy(field string, fields ...string) *SubscribeAlterGroupBy {
-	grbuild := &SubscribeAlterGroupBy{config: saq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := saq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return saq.sqlQuery(ctx), nil
-	}
+	saq.fields = append([]string{field}, fields...)
+	grbuild := &SubscribeAlterGroupBy{build: saq}
+	grbuild.flds = &saq.fields
 	grbuild.label = subscribealter.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -470,13 +475,28 @@ func (saq *SubscribeAlterQuery) GroupBy(field string, fields ...string) *Subscri
 //		Scan(ctx, &v)
 func (saq *SubscribeAlterQuery) Select(fields ...string) *SubscribeAlterSelect {
 	saq.fields = append(saq.fields, fields...)
-	selbuild := &SubscribeAlterSelect{SubscribeAlterQuery: saq}
-	selbuild.label = subscribealter.Label
-	selbuild.flds, selbuild.scan = &saq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &SubscribeAlterSelect{SubscribeAlterQuery: saq}
+	sbuild.label = subscribealter.Label
+	sbuild.flds, sbuild.scan = &saq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a SubscribeAlterSelect configured with the given aggregations.
+func (saq *SubscribeAlterQuery) Aggregate(fns ...AggregateFunc) *SubscribeAlterSelect {
+	return saq.Select().Aggregate(fns...)
 }
 
 func (saq *SubscribeAlterQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range saq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, saq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range saq.fields {
 		if !subscribealter.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -710,17 +730,6 @@ func (saq *SubscribeAlterQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, saq.driver, _spec)
 }
 
-func (saq *SubscribeAlterQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := saq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (saq *SubscribeAlterQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -812,13 +821,8 @@ func (saq *SubscribeAlterQuery) Modify(modifiers ...func(s *sql.Selector)) *Subs
 
 // SubscribeAlterGroupBy is the group-by builder for SubscribeAlter entities.
 type SubscribeAlterGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *SubscribeAlterQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -827,74 +831,77 @@ func (sagb *SubscribeAlterGroupBy) Aggregate(fns ...AggregateFunc) *SubscribeAlt
 	return sagb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (sagb *SubscribeAlterGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := sagb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeSubscribeAlter, "GroupBy")
+	if err := sagb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	sagb.sql = query
-	return sagb.sqlScan(ctx, v)
+	return scanWithInterceptors[*SubscribeAlterQuery, *SubscribeAlterGroupBy](ctx, sagb.build, sagb, sagb.build.inters, v)
 }
 
-func (sagb *SubscribeAlterGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range sagb.fields {
-		if !subscribealter.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (sagb *SubscribeAlterGroupBy) sqlScan(ctx context.Context, root *SubscribeAlterQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(sagb.fns))
+	for _, fn := range sagb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := sagb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*sagb.flds)+len(sagb.fns))
+		for _, f := range *sagb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*sagb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := sagb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := sagb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (sagb *SubscribeAlterGroupBy) sqlQuery() *sql.Selector {
-	selector := sagb.sql.Select()
-	aggregation := make([]string, 0, len(sagb.fns))
-	for _, fn := range sagb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(sagb.fields)+len(sagb.fns))
-		for _, f := range sagb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(sagb.fields...)...)
-}
-
 // SubscribeAlterSelect is the builder for selecting fields of SubscribeAlter entities.
 type SubscribeAlterSelect struct {
 	*SubscribeAlterQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (sas *SubscribeAlterSelect) Aggregate(fns ...AggregateFunc) *SubscribeAlterSelect {
+	sas.fns = append(sas.fns, fns...)
+	return sas
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (sas *SubscribeAlterSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeSubscribeAlter, "Select")
 	if err := sas.prepareQuery(ctx); err != nil {
 		return err
 	}
-	sas.sql = sas.SubscribeAlterQuery.sqlQuery(ctx)
-	return sas.sqlScan(ctx, v)
+	return scanWithInterceptors[*SubscribeAlterQuery, *SubscribeAlterSelect](ctx, sas.SubscribeAlterQuery, sas, sas.inters, v)
 }
 
-func (sas *SubscribeAlterSelect) sqlScan(ctx context.Context, v any) error {
+func (sas *SubscribeAlterSelect) sqlScan(ctx context.Context, root *SubscribeAlterQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(sas.fns))
+	for _, fn := range sas.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*sas.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := sas.sql.Query()
+	query, args := selector.Query()
 	if err := sas.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

@@ -234,40 +234,7 @@ func (ssu *SubscribeSuspendUpdate) ClearPause() *SubscribeSuspendUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ssu *SubscribeSuspendUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(ssu.hooks) == 0 {
-		if err = ssu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = ssu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*SubscribeSuspendMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ssu.check(); err != nil {
-				return 0, err
-			}
-			ssu.mutation = mutation
-			affected, err = ssu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(ssu.hooks) - 1; i >= 0; i-- {
-			if ssu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ssu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, ssu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, SubscribeSuspendMutation](ctx, ssu.sqlSave, ssu.mutation, ssu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -313,6 +280,9 @@ func (ssu *SubscribeSuspendUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder
 }
 
 func (ssu *SubscribeSuspendUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := ssu.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   subscribesuspend.Table,
@@ -331,96 +301,46 @@ func (ssu *SubscribeSuspendUpdate) sqlSave(ctx context.Context) (n int, err erro
 		}
 	}
 	if ssu.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: subscribesuspend.FieldCreator,
-		})
+		_spec.ClearField(subscribesuspend.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := ssu.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: subscribesuspend.FieldLastModifier,
-		})
+		_spec.SetField(subscribesuspend.FieldLastModifier, field.TypeJSON, value)
 	}
 	if ssu.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: subscribesuspend.FieldLastModifier,
-		})
+		_spec.ClearField(subscribesuspend.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := ssu.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribesuspend.FieldRemark,
-		})
+		_spec.SetField(subscribesuspend.FieldRemark, field.TypeString, value)
 	}
 	if ssu.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: subscribesuspend.FieldRemark,
-		})
+		_spec.ClearField(subscribesuspend.FieldRemark, field.TypeString)
 	}
 	if value, ok := ssu.mutation.Days(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribesuspend.FieldDays,
-		})
+		_spec.SetField(subscribesuspend.FieldDays, field.TypeInt, value)
 	}
 	if value, ok := ssu.mutation.AddedDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribesuspend.FieldDays,
-		})
+		_spec.AddField(subscribesuspend.FieldDays, field.TypeInt, value)
 	}
 	if value, ok := ssu.mutation.StartAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribesuspend.FieldStartAt,
-		})
+		_spec.SetField(subscribesuspend.FieldStartAt, field.TypeTime, value)
 	}
 	if value, ok := ssu.mutation.EndAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribesuspend.FieldEndAt,
-		})
+		_spec.SetField(subscribesuspend.FieldEndAt, field.TypeTime, value)
 	}
 	if ssu.mutation.EndAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: subscribesuspend.FieldEndAt,
-		})
+		_spec.ClearField(subscribesuspend.FieldEndAt, field.TypeTime)
 	}
 	if value, ok := ssu.mutation.EndReason(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribesuspend.FieldEndReason,
-		})
+		_spec.SetField(subscribesuspend.FieldEndReason, field.TypeString, value)
 	}
 	if ssu.mutation.EndReasonCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: subscribesuspend.FieldEndReason,
-		})
+		_spec.ClearField(subscribesuspend.FieldEndReason, field.TypeString)
 	}
 	if value, ok := ssu.mutation.EndModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: subscribesuspend.FieldEndModifier,
-		})
+		_spec.SetField(subscribesuspend.FieldEndModifier, field.TypeJSON, value)
 	}
 	if ssu.mutation.EndModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: subscribesuspend.FieldEndModifier,
-		})
+		_spec.ClearField(subscribesuspend.FieldEndModifier, field.TypeJSON)
 	}
 	if ssu.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -562,7 +482,7 @@ func (ssu *SubscribeSuspendUpdate) sqlSave(ctx context.Context) (n int, err erro
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = ssu.modifiers
+	_spec.AddModifiers(ssu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, ssu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{subscribesuspend.Label}
@@ -571,6 +491,7 @@ func (ssu *SubscribeSuspendUpdate) sqlSave(ctx context.Context) (n int, err erro
 		}
 		return 0, err
 	}
+	ssu.mutation.done = true
 	return n, nil
 }
 
@@ -790,46 +711,7 @@ func (ssuo *SubscribeSuspendUpdateOne) Select(field string, fields ...string) *S
 
 // Save executes the query and returns the updated SubscribeSuspend entity.
 func (ssuo *SubscribeSuspendUpdateOne) Save(ctx context.Context) (*SubscribeSuspend, error) {
-	var (
-		err  error
-		node *SubscribeSuspend
-	)
-	if len(ssuo.hooks) == 0 {
-		if err = ssuo.check(); err != nil {
-			return nil, err
-		}
-		node, err = ssuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*SubscribeSuspendMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ssuo.check(); err != nil {
-				return nil, err
-			}
-			ssuo.mutation = mutation
-			node, err = ssuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ssuo.hooks) - 1; i >= 0; i-- {
-			if ssuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ssuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ssuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*SubscribeSuspend)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from SubscribeSuspendMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*SubscribeSuspend, SubscribeSuspendMutation](ctx, ssuo.sqlSave, ssuo.mutation, ssuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -875,6 +757,9 @@ func (ssuo *SubscribeSuspendUpdateOne) Modify(modifiers ...func(u *sql.UpdateBui
 }
 
 func (ssuo *SubscribeSuspendUpdateOne) sqlSave(ctx context.Context) (_node *SubscribeSuspend, err error) {
+	if err := ssuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   subscribesuspend.Table,
@@ -910,96 +795,46 @@ func (ssuo *SubscribeSuspendUpdateOne) sqlSave(ctx context.Context) (_node *Subs
 		}
 	}
 	if ssuo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: subscribesuspend.FieldCreator,
-		})
+		_spec.ClearField(subscribesuspend.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := ssuo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: subscribesuspend.FieldLastModifier,
-		})
+		_spec.SetField(subscribesuspend.FieldLastModifier, field.TypeJSON, value)
 	}
 	if ssuo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: subscribesuspend.FieldLastModifier,
-		})
+		_spec.ClearField(subscribesuspend.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := ssuo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribesuspend.FieldRemark,
-		})
+		_spec.SetField(subscribesuspend.FieldRemark, field.TypeString, value)
 	}
 	if ssuo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: subscribesuspend.FieldRemark,
-		})
+		_spec.ClearField(subscribesuspend.FieldRemark, field.TypeString)
 	}
 	if value, ok := ssuo.mutation.Days(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribesuspend.FieldDays,
-		})
+		_spec.SetField(subscribesuspend.FieldDays, field.TypeInt, value)
 	}
 	if value, ok := ssuo.mutation.AddedDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribesuspend.FieldDays,
-		})
+		_spec.AddField(subscribesuspend.FieldDays, field.TypeInt, value)
 	}
 	if value, ok := ssuo.mutation.StartAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribesuspend.FieldStartAt,
-		})
+		_spec.SetField(subscribesuspend.FieldStartAt, field.TypeTime, value)
 	}
 	if value, ok := ssuo.mutation.EndAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribesuspend.FieldEndAt,
-		})
+		_spec.SetField(subscribesuspend.FieldEndAt, field.TypeTime, value)
 	}
 	if ssuo.mutation.EndAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: subscribesuspend.FieldEndAt,
-		})
+		_spec.ClearField(subscribesuspend.FieldEndAt, field.TypeTime)
 	}
 	if value, ok := ssuo.mutation.EndReason(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribesuspend.FieldEndReason,
-		})
+		_spec.SetField(subscribesuspend.FieldEndReason, field.TypeString, value)
 	}
 	if ssuo.mutation.EndReasonCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: subscribesuspend.FieldEndReason,
-		})
+		_spec.ClearField(subscribesuspend.FieldEndReason, field.TypeString)
 	}
 	if value, ok := ssuo.mutation.EndModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: subscribesuspend.FieldEndModifier,
-		})
+		_spec.SetField(subscribesuspend.FieldEndModifier, field.TypeJSON, value)
 	}
 	if ssuo.mutation.EndModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: subscribesuspend.FieldEndModifier,
-		})
+		_spec.ClearField(subscribesuspend.FieldEndModifier, field.TypeJSON)
 	}
 	if ssuo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1141,7 +976,7 @@ func (ssuo *SubscribeSuspendUpdateOne) sqlSave(ctx context.Context) (_node *Subs
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = ssuo.modifiers
+	_spec.AddModifiers(ssuo.modifiers...)
 	_node = &SubscribeSuspend{config: ssuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -1153,5 +988,6 @@ func (ssuo *SubscribeSuspendUpdateOne) sqlSave(ctx context.Context) (_node *Subs
 		}
 		return nil, err
 	}
+	ssuo.mutation.done = true
 	return _node, nil
 }

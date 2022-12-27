@@ -12,1651 +12,1077 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uint64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uint64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uint64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.Enterprise(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.Enterprise(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.Enterprise(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uint64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.Enterprise(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uint64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.Enterprise(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uint64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.Enterprise(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uint64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.Enterprise(sql.FieldLTE(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
 func DeletedAt(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
 func Remark(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldRemark, v))
 }
 
 // CityID applies equality check predicate on the "city_id" field. It's identical to CityIDEQ.
 func CityID(v uint64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCityID), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldCityID, v))
 }
 
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldName, v))
 }
 
 // CompanyName applies equality check predicate on the "company_name" field. It's identical to CompanyNameEQ.
 func CompanyName(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCompanyName), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldCompanyName, v))
 }
 
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v uint8) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStatus), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldStatus, v))
 }
 
 // ContactName applies equality check predicate on the "contact_name" field. It's identical to ContactNameEQ.
 func ContactName(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldContactName), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldContactName, v))
 }
 
 // ContactPhone applies equality check predicate on the "contact_phone" field. It's identical to ContactPhoneEQ.
 func ContactPhone(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldContactPhone), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldContactPhone, v))
 }
 
 // IdcardNumber applies equality check predicate on the "idcard_number" field. It's identical to IdcardNumberEQ.
 func IdcardNumber(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIdcardNumber), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldIdcardNumber, v))
 }
 
 // Address applies equality check predicate on the "address" field. It's identical to AddressEQ.
 func Address(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAddress), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldAddress, v))
 }
 
 // Payment applies equality check predicate on the "payment" field. It's identical to PaymentEQ.
 func Payment(v uint8) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPayment), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldPayment, v))
 }
 
 // Deposit applies equality check predicate on the "deposit" field. It's identical to DepositEQ.
 func Deposit(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeposit), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldDeposit, v))
 }
 
 // Balance applies equality check predicate on the "balance" field. It's identical to BalanceEQ.
 func Balance(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBalance), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldBalance, v))
 }
 
 // PrepaymentTotal applies equality check predicate on the "prepayment_total" field. It's identical to PrepaymentTotalEQ.
 func PrepaymentTotal(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPrepaymentTotal), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldPrepaymentTotal, v))
 }
 
 // SuspensedAt applies equality check predicate on the "suspensed_at" field. It's identical to SuspensedAtEQ.
 func SuspensedAt(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSuspensedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldSuspensedAt, v))
 }
 
 // Agent applies equality check predicate on the "agent" field. It's identical to AgentEQ.
 func Agent(v bool) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAgent), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldAgent, v))
 }
 
 // UseStore applies equality check predicate on the "use_store" field. It's identical to UseStoreEQ.
 func UseStore(v bool) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUseStore), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldUseStore, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
 func CreatedAtNEQ(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Enterprise(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Enterprise(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtGT applies the GT predicate on the "created_at" field.
 func CreatedAtGT(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldGT(FieldCreatedAt, v))
 }
 
 // CreatedAtGTE applies the GTE predicate on the "created_at" field.
 func CreatedAtGTE(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldGTE(FieldCreatedAt, v))
 }
 
 // CreatedAtLT applies the LT predicate on the "created_at" field.
 func CreatedAtLT(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldLT(FieldCreatedAt, v))
 }
 
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
 func UpdatedAtEQ(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
 func UpdatedAtNEQ(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldNEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Enterprise(sql.FieldIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Enterprise(sql.FieldNotIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtGT applies the GT predicate on the "updated_at" field.
 func UpdatedAtGT(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldGT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
 func UpdatedAtGTE(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldGTE(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLT applies the LT predicate on the "updated_at" field.
 func UpdatedAtLT(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldLT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
 func DeletedAtEQ(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
 func DeletedAtNEQ(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldNEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.Enterprise(sql.FieldIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.Enterprise(sql.FieldNotIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtGT applies the GT predicate on the "deleted_at" field.
 func DeletedAtGT(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldGT(FieldDeletedAt, v))
 }
 
 // DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
 func DeletedAtGTE(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldGTE(FieldDeletedAt, v))
 }
 
 // DeletedAtLT applies the LT predicate on the "deleted_at" field.
 func DeletedAtLT(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldLT(FieldDeletedAt, v))
 }
 
 // DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
 func DeletedAtLTE(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldLTE(FieldDeletedAt, v))
 }
 
 // DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
 func DeletedAtIsNil() predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.Enterprise(sql.FieldIsNull(FieldDeletedAt))
 }
 
 // DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
 func DeletedAtNotNil() predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.Enterprise(sql.FieldNotNull(FieldDeletedAt))
 }
 
 // CreatorIsNil applies the IsNil predicate on the "creator" field.
 func CreatorIsNil() predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCreator)))
-	})
+	return predicate.Enterprise(sql.FieldIsNull(FieldCreator))
 }
 
 // CreatorNotNil applies the NotNil predicate on the "creator" field.
 func CreatorNotNil() predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCreator)))
-	})
+	return predicate.Enterprise(sql.FieldNotNull(FieldCreator))
 }
 
 // LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
 func LastModifierIsNil() predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Enterprise(sql.FieldIsNull(FieldLastModifier))
 }
 
 // LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
 func LastModifierNotNil() predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Enterprise(sql.FieldNotNull(FieldLastModifier))
 }
 
 // RemarkEQ applies the EQ predicate on the "remark" field.
 func RemarkEQ(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldRemark, v))
 }
 
 // RemarkNEQ applies the NEQ predicate on the "remark" field.
 func RemarkNEQ(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRemark), v))
-	})
+	return predicate.Enterprise(sql.FieldNEQ(FieldRemark, v))
 }
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRemark), v...))
-	})
+	return predicate.Enterprise(sql.FieldIn(FieldRemark, vs...))
 }
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRemark), v...))
-	})
+	return predicate.Enterprise(sql.FieldNotIn(FieldRemark, vs...))
 }
 
 // RemarkGT applies the GT predicate on the "remark" field.
 func RemarkGT(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRemark), v))
-	})
+	return predicate.Enterprise(sql.FieldGT(FieldRemark, v))
 }
 
 // RemarkGTE applies the GTE predicate on the "remark" field.
 func RemarkGTE(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRemark), v))
-	})
+	return predicate.Enterprise(sql.FieldGTE(FieldRemark, v))
 }
 
 // RemarkLT applies the LT predicate on the "remark" field.
 func RemarkLT(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRemark), v))
-	})
+	return predicate.Enterprise(sql.FieldLT(FieldRemark, v))
 }
 
 // RemarkLTE applies the LTE predicate on the "remark" field.
 func RemarkLTE(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRemark), v))
-	})
+	return predicate.Enterprise(sql.FieldLTE(FieldRemark, v))
 }
 
 // RemarkContains applies the Contains predicate on the "remark" field.
 func RemarkContains(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRemark), v))
-	})
+	return predicate.Enterprise(sql.FieldContains(FieldRemark, v))
 }
 
 // RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
 func RemarkHasPrefix(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRemark), v))
-	})
+	return predicate.Enterprise(sql.FieldHasPrefix(FieldRemark, v))
 }
 
 // RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
 func RemarkHasSuffix(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRemark), v))
-	})
+	return predicate.Enterprise(sql.FieldHasSuffix(FieldRemark, v))
 }
 
 // RemarkIsNil applies the IsNil predicate on the "remark" field.
 func RemarkIsNil() predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRemark)))
-	})
+	return predicate.Enterprise(sql.FieldIsNull(FieldRemark))
 }
 
 // RemarkNotNil applies the NotNil predicate on the "remark" field.
 func RemarkNotNil() predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRemark)))
-	})
+	return predicate.Enterprise(sql.FieldNotNull(FieldRemark))
 }
 
 // RemarkEqualFold applies the EqualFold predicate on the "remark" field.
 func RemarkEqualFold(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRemark), v))
-	})
+	return predicate.Enterprise(sql.FieldEqualFold(FieldRemark, v))
 }
 
 // RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
 func RemarkContainsFold(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
-	})
+	return predicate.Enterprise(sql.FieldContainsFold(FieldRemark, v))
 }
 
 // CityIDEQ applies the EQ predicate on the "city_id" field.
 func CityIDEQ(v uint64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCityID), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldCityID, v))
 }
 
 // CityIDNEQ applies the NEQ predicate on the "city_id" field.
 func CityIDNEQ(v uint64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCityID), v))
-	})
+	return predicate.Enterprise(sql.FieldNEQ(FieldCityID, v))
 }
 
 // CityIDIn applies the In predicate on the "city_id" field.
 func CityIDIn(vs ...uint64) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCityID), v...))
-	})
+	return predicate.Enterprise(sql.FieldIn(FieldCityID, vs...))
 }
 
 // CityIDNotIn applies the NotIn predicate on the "city_id" field.
 func CityIDNotIn(vs ...uint64) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCityID), v...))
-	})
+	return predicate.Enterprise(sql.FieldNotIn(FieldCityID, vs...))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldName, v))
 }
 
 // NameNEQ applies the NEQ predicate on the "name" field.
 func NameNEQ(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldName), v))
-	})
+	return predicate.Enterprise(sql.FieldNEQ(FieldName, v))
 }
 
 // NameIn applies the In predicate on the "name" field.
 func NameIn(vs ...string) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldName), v...))
-	})
+	return predicate.Enterprise(sql.FieldIn(FieldName, vs...))
 }
 
 // NameNotIn applies the NotIn predicate on the "name" field.
 func NameNotIn(vs ...string) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldName), v...))
-	})
+	return predicate.Enterprise(sql.FieldNotIn(FieldName, vs...))
 }
 
 // NameGT applies the GT predicate on the "name" field.
 func NameGT(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldName), v))
-	})
+	return predicate.Enterprise(sql.FieldGT(FieldName, v))
 }
 
 // NameGTE applies the GTE predicate on the "name" field.
 func NameGTE(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldName), v))
-	})
+	return predicate.Enterprise(sql.FieldGTE(FieldName, v))
 }
 
 // NameLT applies the LT predicate on the "name" field.
 func NameLT(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldName), v))
-	})
+	return predicate.Enterprise(sql.FieldLT(FieldName, v))
 }
 
 // NameLTE applies the LTE predicate on the "name" field.
 func NameLTE(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldName), v))
-	})
+	return predicate.Enterprise(sql.FieldLTE(FieldName, v))
 }
 
 // NameContains applies the Contains predicate on the "name" field.
 func NameContains(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldName), v))
-	})
+	return predicate.Enterprise(sql.FieldContains(FieldName, v))
 }
 
 // NameHasPrefix applies the HasPrefix predicate on the "name" field.
 func NameHasPrefix(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldName), v))
-	})
+	return predicate.Enterprise(sql.FieldHasPrefix(FieldName, v))
 }
 
 // NameHasSuffix applies the HasSuffix predicate on the "name" field.
 func NameHasSuffix(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldName), v))
-	})
+	return predicate.Enterprise(sql.FieldHasSuffix(FieldName, v))
 }
 
 // NameEqualFold applies the EqualFold predicate on the "name" field.
 func NameEqualFold(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldName), v))
-	})
+	return predicate.Enterprise(sql.FieldEqualFold(FieldName, v))
 }
 
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldName), v))
-	})
+	return predicate.Enterprise(sql.FieldContainsFold(FieldName, v))
 }
 
 // CompanyNameEQ applies the EQ predicate on the "company_name" field.
 func CompanyNameEQ(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCompanyName), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldCompanyName, v))
 }
 
 // CompanyNameNEQ applies the NEQ predicate on the "company_name" field.
 func CompanyNameNEQ(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCompanyName), v))
-	})
+	return predicate.Enterprise(sql.FieldNEQ(FieldCompanyName, v))
 }
 
 // CompanyNameIn applies the In predicate on the "company_name" field.
 func CompanyNameIn(vs ...string) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCompanyName), v...))
-	})
+	return predicate.Enterprise(sql.FieldIn(FieldCompanyName, vs...))
 }
 
 // CompanyNameNotIn applies the NotIn predicate on the "company_name" field.
 func CompanyNameNotIn(vs ...string) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCompanyName), v...))
-	})
+	return predicate.Enterprise(sql.FieldNotIn(FieldCompanyName, vs...))
 }
 
 // CompanyNameGT applies the GT predicate on the "company_name" field.
 func CompanyNameGT(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCompanyName), v))
-	})
+	return predicate.Enterprise(sql.FieldGT(FieldCompanyName, v))
 }
 
 // CompanyNameGTE applies the GTE predicate on the "company_name" field.
 func CompanyNameGTE(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCompanyName), v))
-	})
+	return predicate.Enterprise(sql.FieldGTE(FieldCompanyName, v))
 }
 
 // CompanyNameLT applies the LT predicate on the "company_name" field.
 func CompanyNameLT(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCompanyName), v))
-	})
+	return predicate.Enterprise(sql.FieldLT(FieldCompanyName, v))
 }
 
 // CompanyNameLTE applies the LTE predicate on the "company_name" field.
 func CompanyNameLTE(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCompanyName), v))
-	})
+	return predicate.Enterprise(sql.FieldLTE(FieldCompanyName, v))
 }
 
 // CompanyNameContains applies the Contains predicate on the "company_name" field.
 func CompanyNameContains(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldCompanyName), v))
-	})
+	return predicate.Enterprise(sql.FieldContains(FieldCompanyName, v))
 }
 
 // CompanyNameHasPrefix applies the HasPrefix predicate on the "company_name" field.
 func CompanyNameHasPrefix(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldCompanyName), v))
-	})
+	return predicate.Enterprise(sql.FieldHasPrefix(FieldCompanyName, v))
 }
 
 // CompanyNameHasSuffix applies the HasSuffix predicate on the "company_name" field.
 func CompanyNameHasSuffix(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldCompanyName), v))
-	})
+	return predicate.Enterprise(sql.FieldHasSuffix(FieldCompanyName, v))
 }
 
 // CompanyNameIsNil applies the IsNil predicate on the "company_name" field.
 func CompanyNameIsNil() predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCompanyName)))
-	})
+	return predicate.Enterprise(sql.FieldIsNull(FieldCompanyName))
 }
 
 // CompanyNameNotNil applies the NotNil predicate on the "company_name" field.
 func CompanyNameNotNil() predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCompanyName)))
-	})
+	return predicate.Enterprise(sql.FieldNotNull(FieldCompanyName))
 }
 
 // CompanyNameEqualFold applies the EqualFold predicate on the "company_name" field.
 func CompanyNameEqualFold(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldCompanyName), v))
-	})
+	return predicate.Enterprise(sql.FieldEqualFold(FieldCompanyName, v))
 }
 
 // CompanyNameContainsFold applies the ContainsFold predicate on the "company_name" field.
 func CompanyNameContainsFold(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldCompanyName), v))
-	})
+	return predicate.Enterprise(sql.FieldContainsFold(FieldCompanyName, v))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.
 func StatusEQ(v uint8) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStatus), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldStatus, v))
 }
 
 // StatusNEQ applies the NEQ predicate on the "status" field.
 func StatusNEQ(v uint8) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStatus), v))
-	})
+	return predicate.Enterprise(sql.FieldNEQ(FieldStatus, v))
 }
 
 // StatusIn applies the In predicate on the "status" field.
 func StatusIn(vs ...uint8) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStatus), v...))
-	})
+	return predicate.Enterprise(sql.FieldIn(FieldStatus, vs...))
 }
 
 // StatusNotIn applies the NotIn predicate on the "status" field.
 func StatusNotIn(vs ...uint8) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStatus), v...))
-	})
+	return predicate.Enterprise(sql.FieldNotIn(FieldStatus, vs...))
 }
 
 // StatusGT applies the GT predicate on the "status" field.
 func StatusGT(v uint8) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldStatus), v))
-	})
+	return predicate.Enterprise(sql.FieldGT(FieldStatus, v))
 }
 
 // StatusGTE applies the GTE predicate on the "status" field.
 func StatusGTE(v uint8) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldStatus), v))
-	})
+	return predicate.Enterprise(sql.FieldGTE(FieldStatus, v))
 }
 
 // StatusLT applies the LT predicate on the "status" field.
 func StatusLT(v uint8) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldStatus), v))
-	})
+	return predicate.Enterprise(sql.FieldLT(FieldStatus, v))
 }
 
 // StatusLTE applies the LTE predicate on the "status" field.
 func StatusLTE(v uint8) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldStatus), v))
-	})
+	return predicate.Enterprise(sql.FieldLTE(FieldStatus, v))
 }
 
 // ContactNameEQ applies the EQ predicate on the "contact_name" field.
 func ContactNameEQ(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldContactName), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldContactName, v))
 }
 
 // ContactNameNEQ applies the NEQ predicate on the "contact_name" field.
 func ContactNameNEQ(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldContactName), v))
-	})
+	return predicate.Enterprise(sql.FieldNEQ(FieldContactName, v))
 }
 
 // ContactNameIn applies the In predicate on the "contact_name" field.
 func ContactNameIn(vs ...string) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldContactName), v...))
-	})
+	return predicate.Enterprise(sql.FieldIn(FieldContactName, vs...))
 }
 
 // ContactNameNotIn applies the NotIn predicate on the "contact_name" field.
 func ContactNameNotIn(vs ...string) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldContactName), v...))
-	})
+	return predicate.Enterprise(sql.FieldNotIn(FieldContactName, vs...))
 }
 
 // ContactNameGT applies the GT predicate on the "contact_name" field.
 func ContactNameGT(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldContactName), v))
-	})
+	return predicate.Enterprise(sql.FieldGT(FieldContactName, v))
 }
 
 // ContactNameGTE applies the GTE predicate on the "contact_name" field.
 func ContactNameGTE(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldContactName), v))
-	})
+	return predicate.Enterprise(sql.FieldGTE(FieldContactName, v))
 }
 
 // ContactNameLT applies the LT predicate on the "contact_name" field.
 func ContactNameLT(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldContactName), v))
-	})
+	return predicate.Enterprise(sql.FieldLT(FieldContactName, v))
 }
 
 // ContactNameLTE applies the LTE predicate on the "contact_name" field.
 func ContactNameLTE(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldContactName), v))
-	})
+	return predicate.Enterprise(sql.FieldLTE(FieldContactName, v))
 }
 
 // ContactNameContains applies the Contains predicate on the "contact_name" field.
 func ContactNameContains(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldContactName), v))
-	})
+	return predicate.Enterprise(sql.FieldContains(FieldContactName, v))
 }
 
 // ContactNameHasPrefix applies the HasPrefix predicate on the "contact_name" field.
 func ContactNameHasPrefix(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldContactName), v))
-	})
+	return predicate.Enterprise(sql.FieldHasPrefix(FieldContactName, v))
 }
 
 // ContactNameHasSuffix applies the HasSuffix predicate on the "contact_name" field.
 func ContactNameHasSuffix(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldContactName), v))
-	})
+	return predicate.Enterprise(sql.FieldHasSuffix(FieldContactName, v))
 }
 
 // ContactNameEqualFold applies the EqualFold predicate on the "contact_name" field.
 func ContactNameEqualFold(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldContactName), v))
-	})
+	return predicate.Enterprise(sql.FieldEqualFold(FieldContactName, v))
 }
 
 // ContactNameContainsFold applies the ContainsFold predicate on the "contact_name" field.
 func ContactNameContainsFold(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldContactName), v))
-	})
+	return predicate.Enterprise(sql.FieldContainsFold(FieldContactName, v))
 }
 
 // ContactPhoneEQ applies the EQ predicate on the "contact_phone" field.
 func ContactPhoneEQ(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldContactPhone), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldContactPhone, v))
 }
 
 // ContactPhoneNEQ applies the NEQ predicate on the "contact_phone" field.
 func ContactPhoneNEQ(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldContactPhone), v))
-	})
+	return predicate.Enterprise(sql.FieldNEQ(FieldContactPhone, v))
 }
 
 // ContactPhoneIn applies the In predicate on the "contact_phone" field.
 func ContactPhoneIn(vs ...string) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldContactPhone), v...))
-	})
+	return predicate.Enterprise(sql.FieldIn(FieldContactPhone, vs...))
 }
 
 // ContactPhoneNotIn applies the NotIn predicate on the "contact_phone" field.
 func ContactPhoneNotIn(vs ...string) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldContactPhone), v...))
-	})
+	return predicate.Enterprise(sql.FieldNotIn(FieldContactPhone, vs...))
 }
 
 // ContactPhoneGT applies the GT predicate on the "contact_phone" field.
 func ContactPhoneGT(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldContactPhone), v))
-	})
+	return predicate.Enterprise(sql.FieldGT(FieldContactPhone, v))
 }
 
 // ContactPhoneGTE applies the GTE predicate on the "contact_phone" field.
 func ContactPhoneGTE(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldContactPhone), v))
-	})
+	return predicate.Enterprise(sql.FieldGTE(FieldContactPhone, v))
 }
 
 // ContactPhoneLT applies the LT predicate on the "contact_phone" field.
 func ContactPhoneLT(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldContactPhone), v))
-	})
+	return predicate.Enterprise(sql.FieldLT(FieldContactPhone, v))
 }
 
 // ContactPhoneLTE applies the LTE predicate on the "contact_phone" field.
 func ContactPhoneLTE(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldContactPhone), v))
-	})
+	return predicate.Enterprise(sql.FieldLTE(FieldContactPhone, v))
 }
 
 // ContactPhoneContains applies the Contains predicate on the "contact_phone" field.
 func ContactPhoneContains(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldContactPhone), v))
-	})
+	return predicate.Enterprise(sql.FieldContains(FieldContactPhone, v))
 }
 
 // ContactPhoneHasPrefix applies the HasPrefix predicate on the "contact_phone" field.
 func ContactPhoneHasPrefix(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldContactPhone), v))
-	})
+	return predicate.Enterprise(sql.FieldHasPrefix(FieldContactPhone, v))
 }
 
 // ContactPhoneHasSuffix applies the HasSuffix predicate on the "contact_phone" field.
 func ContactPhoneHasSuffix(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldContactPhone), v))
-	})
+	return predicate.Enterprise(sql.FieldHasSuffix(FieldContactPhone, v))
 }
 
 // ContactPhoneEqualFold applies the EqualFold predicate on the "contact_phone" field.
 func ContactPhoneEqualFold(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldContactPhone), v))
-	})
+	return predicate.Enterprise(sql.FieldEqualFold(FieldContactPhone, v))
 }
 
 // ContactPhoneContainsFold applies the ContainsFold predicate on the "contact_phone" field.
 func ContactPhoneContainsFold(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldContactPhone), v))
-	})
+	return predicate.Enterprise(sql.FieldContainsFold(FieldContactPhone, v))
 }
 
 // IdcardNumberEQ applies the EQ predicate on the "idcard_number" field.
 func IdcardNumberEQ(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIdcardNumber), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldIdcardNumber, v))
 }
 
 // IdcardNumberNEQ applies the NEQ predicate on the "idcard_number" field.
 func IdcardNumberNEQ(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldIdcardNumber), v))
-	})
+	return predicate.Enterprise(sql.FieldNEQ(FieldIdcardNumber, v))
 }
 
 // IdcardNumberIn applies the In predicate on the "idcard_number" field.
 func IdcardNumberIn(vs ...string) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldIdcardNumber), v...))
-	})
+	return predicate.Enterprise(sql.FieldIn(FieldIdcardNumber, vs...))
 }
 
 // IdcardNumberNotIn applies the NotIn predicate on the "idcard_number" field.
 func IdcardNumberNotIn(vs ...string) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldIdcardNumber), v...))
-	})
+	return predicate.Enterprise(sql.FieldNotIn(FieldIdcardNumber, vs...))
 }
 
 // IdcardNumberGT applies the GT predicate on the "idcard_number" field.
 func IdcardNumberGT(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldIdcardNumber), v))
-	})
+	return predicate.Enterprise(sql.FieldGT(FieldIdcardNumber, v))
 }
 
 // IdcardNumberGTE applies the GTE predicate on the "idcard_number" field.
 func IdcardNumberGTE(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldIdcardNumber), v))
-	})
+	return predicate.Enterprise(sql.FieldGTE(FieldIdcardNumber, v))
 }
 
 // IdcardNumberLT applies the LT predicate on the "idcard_number" field.
 func IdcardNumberLT(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldIdcardNumber), v))
-	})
+	return predicate.Enterprise(sql.FieldLT(FieldIdcardNumber, v))
 }
 
 // IdcardNumberLTE applies the LTE predicate on the "idcard_number" field.
 func IdcardNumberLTE(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldIdcardNumber), v))
-	})
+	return predicate.Enterprise(sql.FieldLTE(FieldIdcardNumber, v))
 }
 
 // IdcardNumberContains applies the Contains predicate on the "idcard_number" field.
 func IdcardNumberContains(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldIdcardNumber), v))
-	})
+	return predicate.Enterprise(sql.FieldContains(FieldIdcardNumber, v))
 }
 
 // IdcardNumberHasPrefix applies the HasPrefix predicate on the "idcard_number" field.
 func IdcardNumberHasPrefix(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldIdcardNumber), v))
-	})
+	return predicate.Enterprise(sql.FieldHasPrefix(FieldIdcardNumber, v))
 }
 
 // IdcardNumberHasSuffix applies the HasSuffix predicate on the "idcard_number" field.
 func IdcardNumberHasSuffix(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldIdcardNumber), v))
-	})
+	return predicate.Enterprise(sql.FieldHasSuffix(FieldIdcardNumber, v))
 }
 
 // IdcardNumberEqualFold applies the EqualFold predicate on the "idcard_number" field.
 func IdcardNumberEqualFold(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldIdcardNumber), v))
-	})
+	return predicate.Enterprise(sql.FieldEqualFold(FieldIdcardNumber, v))
 }
 
 // IdcardNumberContainsFold applies the ContainsFold predicate on the "idcard_number" field.
 func IdcardNumberContainsFold(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldIdcardNumber), v))
-	})
+	return predicate.Enterprise(sql.FieldContainsFold(FieldIdcardNumber, v))
 }
 
 // AddressEQ applies the EQ predicate on the "address" field.
 func AddressEQ(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAddress), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldAddress, v))
 }
 
 // AddressNEQ applies the NEQ predicate on the "address" field.
 func AddressNEQ(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAddress), v))
-	})
+	return predicate.Enterprise(sql.FieldNEQ(FieldAddress, v))
 }
 
 // AddressIn applies the In predicate on the "address" field.
 func AddressIn(vs ...string) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAddress), v...))
-	})
+	return predicate.Enterprise(sql.FieldIn(FieldAddress, vs...))
 }
 
 // AddressNotIn applies the NotIn predicate on the "address" field.
 func AddressNotIn(vs ...string) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAddress), v...))
-	})
+	return predicate.Enterprise(sql.FieldNotIn(FieldAddress, vs...))
 }
 
 // AddressGT applies the GT predicate on the "address" field.
 func AddressGT(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAddress), v))
-	})
+	return predicate.Enterprise(sql.FieldGT(FieldAddress, v))
 }
 
 // AddressGTE applies the GTE predicate on the "address" field.
 func AddressGTE(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAddress), v))
-	})
+	return predicate.Enterprise(sql.FieldGTE(FieldAddress, v))
 }
 
 // AddressLT applies the LT predicate on the "address" field.
 func AddressLT(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAddress), v))
-	})
+	return predicate.Enterprise(sql.FieldLT(FieldAddress, v))
 }
 
 // AddressLTE applies the LTE predicate on the "address" field.
 func AddressLTE(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAddress), v))
-	})
+	return predicate.Enterprise(sql.FieldLTE(FieldAddress, v))
 }
 
 // AddressContains applies the Contains predicate on the "address" field.
 func AddressContains(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldAddress), v))
-	})
+	return predicate.Enterprise(sql.FieldContains(FieldAddress, v))
 }
 
 // AddressHasPrefix applies the HasPrefix predicate on the "address" field.
 func AddressHasPrefix(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldAddress), v))
-	})
+	return predicate.Enterprise(sql.FieldHasPrefix(FieldAddress, v))
 }
 
 // AddressHasSuffix applies the HasSuffix predicate on the "address" field.
 func AddressHasSuffix(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldAddress), v))
-	})
+	return predicate.Enterprise(sql.FieldHasSuffix(FieldAddress, v))
 }
 
 // AddressEqualFold applies the EqualFold predicate on the "address" field.
 func AddressEqualFold(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldAddress), v))
-	})
+	return predicate.Enterprise(sql.FieldEqualFold(FieldAddress, v))
 }
 
 // AddressContainsFold applies the ContainsFold predicate on the "address" field.
 func AddressContainsFold(v string) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldAddress), v))
-	})
+	return predicate.Enterprise(sql.FieldContainsFold(FieldAddress, v))
 }
 
 // PaymentEQ applies the EQ predicate on the "payment" field.
 func PaymentEQ(v uint8) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPayment), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldPayment, v))
 }
 
 // PaymentNEQ applies the NEQ predicate on the "payment" field.
 func PaymentNEQ(v uint8) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPayment), v))
-	})
+	return predicate.Enterprise(sql.FieldNEQ(FieldPayment, v))
 }
 
 // PaymentIn applies the In predicate on the "payment" field.
 func PaymentIn(vs ...uint8) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldPayment), v...))
-	})
+	return predicate.Enterprise(sql.FieldIn(FieldPayment, vs...))
 }
 
 // PaymentNotIn applies the NotIn predicate on the "payment" field.
 func PaymentNotIn(vs ...uint8) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldPayment), v...))
-	})
+	return predicate.Enterprise(sql.FieldNotIn(FieldPayment, vs...))
 }
 
 // PaymentGT applies the GT predicate on the "payment" field.
 func PaymentGT(v uint8) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldPayment), v))
-	})
+	return predicate.Enterprise(sql.FieldGT(FieldPayment, v))
 }
 
 // PaymentGTE applies the GTE predicate on the "payment" field.
 func PaymentGTE(v uint8) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldPayment), v))
-	})
+	return predicate.Enterprise(sql.FieldGTE(FieldPayment, v))
 }
 
 // PaymentLT applies the LT predicate on the "payment" field.
 func PaymentLT(v uint8) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldPayment), v))
-	})
+	return predicate.Enterprise(sql.FieldLT(FieldPayment, v))
 }
 
 // PaymentLTE applies the LTE predicate on the "payment" field.
 func PaymentLTE(v uint8) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldPayment), v))
-	})
+	return predicate.Enterprise(sql.FieldLTE(FieldPayment, v))
 }
 
 // DepositEQ applies the EQ predicate on the "deposit" field.
 func DepositEQ(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeposit), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldDeposit, v))
 }
 
 // DepositNEQ applies the NEQ predicate on the "deposit" field.
 func DepositNEQ(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDeposit), v))
-	})
+	return predicate.Enterprise(sql.FieldNEQ(FieldDeposit, v))
 }
 
 // DepositIn applies the In predicate on the "deposit" field.
 func DepositIn(vs ...float64) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDeposit), v...))
-	})
+	return predicate.Enterprise(sql.FieldIn(FieldDeposit, vs...))
 }
 
 // DepositNotIn applies the NotIn predicate on the "deposit" field.
 func DepositNotIn(vs ...float64) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDeposit), v...))
-	})
+	return predicate.Enterprise(sql.FieldNotIn(FieldDeposit, vs...))
 }
 
 // DepositGT applies the GT predicate on the "deposit" field.
 func DepositGT(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDeposit), v))
-	})
+	return predicate.Enterprise(sql.FieldGT(FieldDeposit, v))
 }
 
 // DepositGTE applies the GTE predicate on the "deposit" field.
 func DepositGTE(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDeposit), v))
-	})
+	return predicate.Enterprise(sql.FieldGTE(FieldDeposit, v))
 }
 
 // DepositLT applies the LT predicate on the "deposit" field.
 func DepositLT(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDeposit), v))
-	})
+	return predicate.Enterprise(sql.FieldLT(FieldDeposit, v))
 }
 
 // DepositLTE applies the LTE predicate on the "deposit" field.
 func DepositLTE(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDeposit), v))
-	})
+	return predicate.Enterprise(sql.FieldLTE(FieldDeposit, v))
 }
 
 // BalanceEQ applies the EQ predicate on the "balance" field.
 func BalanceEQ(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBalance), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldBalance, v))
 }
 
 // BalanceNEQ applies the NEQ predicate on the "balance" field.
 func BalanceNEQ(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBalance), v))
-	})
+	return predicate.Enterprise(sql.FieldNEQ(FieldBalance, v))
 }
 
 // BalanceIn applies the In predicate on the "balance" field.
 func BalanceIn(vs ...float64) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldBalance), v...))
-	})
+	return predicate.Enterprise(sql.FieldIn(FieldBalance, vs...))
 }
 
 // BalanceNotIn applies the NotIn predicate on the "balance" field.
 func BalanceNotIn(vs ...float64) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldBalance), v...))
-	})
+	return predicate.Enterprise(sql.FieldNotIn(FieldBalance, vs...))
 }
 
 // BalanceGT applies the GT predicate on the "balance" field.
 func BalanceGT(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldBalance), v))
-	})
+	return predicate.Enterprise(sql.FieldGT(FieldBalance, v))
 }
 
 // BalanceGTE applies the GTE predicate on the "balance" field.
 func BalanceGTE(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldBalance), v))
-	})
+	return predicate.Enterprise(sql.FieldGTE(FieldBalance, v))
 }
 
 // BalanceLT applies the LT predicate on the "balance" field.
 func BalanceLT(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldBalance), v))
-	})
+	return predicate.Enterprise(sql.FieldLT(FieldBalance, v))
 }
 
 // BalanceLTE applies the LTE predicate on the "balance" field.
 func BalanceLTE(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldBalance), v))
-	})
+	return predicate.Enterprise(sql.FieldLTE(FieldBalance, v))
 }
 
 // PrepaymentTotalEQ applies the EQ predicate on the "prepayment_total" field.
 func PrepaymentTotalEQ(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPrepaymentTotal), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldPrepaymentTotal, v))
 }
 
 // PrepaymentTotalNEQ applies the NEQ predicate on the "prepayment_total" field.
 func PrepaymentTotalNEQ(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPrepaymentTotal), v))
-	})
+	return predicate.Enterprise(sql.FieldNEQ(FieldPrepaymentTotal, v))
 }
 
 // PrepaymentTotalIn applies the In predicate on the "prepayment_total" field.
 func PrepaymentTotalIn(vs ...float64) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldPrepaymentTotal), v...))
-	})
+	return predicate.Enterprise(sql.FieldIn(FieldPrepaymentTotal, vs...))
 }
 
 // PrepaymentTotalNotIn applies the NotIn predicate on the "prepayment_total" field.
 func PrepaymentTotalNotIn(vs ...float64) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldPrepaymentTotal), v...))
-	})
+	return predicate.Enterprise(sql.FieldNotIn(FieldPrepaymentTotal, vs...))
 }
 
 // PrepaymentTotalGT applies the GT predicate on the "prepayment_total" field.
 func PrepaymentTotalGT(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldPrepaymentTotal), v))
-	})
+	return predicate.Enterprise(sql.FieldGT(FieldPrepaymentTotal, v))
 }
 
 // PrepaymentTotalGTE applies the GTE predicate on the "prepayment_total" field.
 func PrepaymentTotalGTE(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldPrepaymentTotal), v))
-	})
+	return predicate.Enterprise(sql.FieldGTE(FieldPrepaymentTotal, v))
 }
 
 // PrepaymentTotalLT applies the LT predicate on the "prepayment_total" field.
 func PrepaymentTotalLT(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldPrepaymentTotal), v))
-	})
+	return predicate.Enterprise(sql.FieldLT(FieldPrepaymentTotal, v))
 }
 
 // PrepaymentTotalLTE applies the LTE predicate on the "prepayment_total" field.
 func PrepaymentTotalLTE(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldPrepaymentTotal), v))
-	})
+	return predicate.Enterprise(sql.FieldLTE(FieldPrepaymentTotal, v))
 }
 
 // SuspensedAtEQ applies the EQ predicate on the "suspensed_at" field.
 func SuspensedAtEQ(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSuspensedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldSuspensedAt, v))
 }
 
 // SuspensedAtNEQ applies the NEQ predicate on the "suspensed_at" field.
 func SuspensedAtNEQ(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSuspensedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldNEQ(FieldSuspensedAt, v))
 }
 
 // SuspensedAtIn applies the In predicate on the "suspensed_at" field.
 func SuspensedAtIn(vs ...time.Time) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldSuspensedAt), v...))
-	})
+	return predicate.Enterprise(sql.FieldIn(FieldSuspensedAt, vs...))
 }
 
 // SuspensedAtNotIn applies the NotIn predicate on the "suspensed_at" field.
 func SuspensedAtNotIn(vs ...time.Time) predicate.Enterprise {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldSuspensedAt), v...))
-	})
+	return predicate.Enterprise(sql.FieldNotIn(FieldSuspensedAt, vs...))
 }
 
 // SuspensedAtGT applies the GT predicate on the "suspensed_at" field.
 func SuspensedAtGT(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldSuspensedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldGT(FieldSuspensedAt, v))
 }
 
 // SuspensedAtGTE applies the GTE predicate on the "suspensed_at" field.
 func SuspensedAtGTE(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldSuspensedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldGTE(FieldSuspensedAt, v))
 }
 
 // SuspensedAtLT applies the LT predicate on the "suspensed_at" field.
 func SuspensedAtLT(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldSuspensedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldLT(FieldSuspensedAt, v))
 }
 
 // SuspensedAtLTE applies the LTE predicate on the "suspensed_at" field.
 func SuspensedAtLTE(v time.Time) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldSuspensedAt), v))
-	})
+	return predicate.Enterprise(sql.FieldLTE(FieldSuspensedAt, v))
 }
 
 // SuspensedAtIsNil applies the IsNil predicate on the "suspensed_at" field.
 func SuspensedAtIsNil() predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldSuspensedAt)))
-	})
+	return predicate.Enterprise(sql.FieldIsNull(FieldSuspensedAt))
 }
 
 // SuspensedAtNotNil applies the NotNil predicate on the "suspensed_at" field.
 func SuspensedAtNotNil() predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldSuspensedAt)))
-	})
+	return predicate.Enterprise(sql.FieldNotNull(FieldSuspensedAt))
 }
 
 // AgentEQ applies the EQ predicate on the "agent" field.
 func AgentEQ(v bool) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAgent), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldAgent, v))
 }
 
 // AgentNEQ applies the NEQ predicate on the "agent" field.
 func AgentNEQ(v bool) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAgent), v))
-	})
+	return predicate.Enterprise(sql.FieldNEQ(FieldAgent, v))
 }
 
 // UseStoreEQ applies the EQ predicate on the "use_store" field.
 func UseStoreEQ(v bool) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUseStore), v))
-	})
+	return predicate.Enterprise(sql.FieldEQ(FieldUseStore, v))
 }
 
 // UseStoreNEQ applies the NEQ predicate on the "use_store" field.
 func UseStoreNEQ(v bool) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUseStore), v))
-	})
+	return predicate.Enterprise(sql.FieldNEQ(FieldUseStore, v))
 }
 
 // UseStoreIsNil applies the IsNil predicate on the "use_store" field.
 func UseStoreIsNil() predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldUseStore)))
-	})
+	return predicate.Enterprise(sql.FieldIsNull(FieldUseStore))
 }
 
 // UseStoreNotNil applies the NotNil predicate on the "use_store" field.
 func UseStoreNotNil() predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldUseStore)))
-	})
+	return predicate.Enterprise(sql.FieldNotNull(FieldUseStore))
 }
 
 // DaysIsNil applies the IsNil predicate on the "days" field.
 func DaysIsNil() predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDays)))
-	})
+	return predicate.Enterprise(sql.FieldIsNull(FieldDays))
 }
 
 // DaysNotNil applies the NotNil predicate on the "days" field.
 func DaysNotNil() predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDays)))
-	})
+	return predicate.Enterprise(sql.FieldNotNull(FieldDays))
 }
 
 // HasCity applies the HasEdge predicate on the "city" edge.
@@ -1664,7 +1090,6 @@ func HasCity() predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CityTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1692,7 +1117,6 @@ func HasRiders() predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RidersTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, RidersTable, RidersColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1720,7 +1144,6 @@ func HasContracts() predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ContractsTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, ContractsTable, ContractsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1748,7 +1171,6 @@ func HasPrices() predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PricesTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, PricesTable, PricesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1776,7 +1198,6 @@ func HasSubscribes() predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SubscribesTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, SubscribesTable, SubscribesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1804,7 +1225,6 @@ func HasStatements() predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StatementsTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, StatementsTable, StatementsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1832,7 +1252,6 @@ func HasStations() predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StationsTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, StationsTable, StationsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1860,7 +1279,6 @@ func HasBills() predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(BillsTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, BillsTable, BillsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

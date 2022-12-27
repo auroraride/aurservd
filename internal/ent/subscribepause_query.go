@@ -30,6 +30,7 @@ type SubscribePauseQuery struct {
 	unique          *bool
 	order           []OrderFunc
 	fields          []string
+	inters          []Interceptor
 	predicates      []predicate.SubscribePause
 	withRider       *RiderQuery
 	withEmployee    *EmployeeQuery
@@ -53,13 +54,13 @@ func (spq *SubscribePauseQuery) Where(ps ...predicate.SubscribePause) *Subscribe
 	return spq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (spq *SubscribePauseQuery) Limit(limit int) *SubscribePauseQuery {
 	spq.limit = &limit
 	return spq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (spq *SubscribePauseQuery) Offset(offset int) *SubscribePauseQuery {
 	spq.offset = &offset
 	return spq
@@ -72,7 +73,7 @@ func (spq *SubscribePauseQuery) Unique(unique bool) *SubscribePauseQuery {
 	return spq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (spq *SubscribePauseQuery) Order(o ...OrderFunc) *SubscribePauseQuery {
 	spq.order = append(spq.order, o...)
 	return spq
@@ -80,7 +81,7 @@ func (spq *SubscribePauseQuery) Order(o ...OrderFunc) *SubscribePauseQuery {
 
 // QueryRider chains the current query on the "rider" edge.
 func (spq *SubscribePauseQuery) QueryRider() *RiderQuery {
-	query := &RiderQuery{config: spq.config}
+	query := (&RiderClient{config: spq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := spq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -102,7 +103,7 @@ func (spq *SubscribePauseQuery) QueryRider() *RiderQuery {
 
 // QueryEmployee chains the current query on the "employee" edge.
 func (spq *SubscribePauseQuery) QueryEmployee() *EmployeeQuery {
-	query := &EmployeeQuery{config: spq.config}
+	query := (&EmployeeClient{config: spq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := spq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -124,7 +125,7 @@ func (spq *SubscribePauseQuery) QueryEmployee() *EmployeeQuery {
 
 // QueryCity chains the current query on the "city" edge.
 func (spq *SubscribePauseQuery) QueryCity() *CityQuery {
-	query := &CityQuery{config: spq.config}
+	query := (&CityClient{config: spq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := spq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -146,7 +147,7 @@ func (spq *SubscribePauseQuery) QueryCity() *CityQuery {
 
 // QueryStore chains the current query on the "store" edge.
 func (spq *SubscribePauseQuery) QueryStore() *StoreQuery {
-	query := &StoreQuery{config: spq.config}
+	query := (&StoreClient{config: spq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := spq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -168,7 +169,7 @@ func (spq *SubscribePauseQuery) QueryStore() *StoreQuery {
 
 // QueryEndStore chains the current query on the "endStore" edge.
 func (spq *SubscribePauseQuery) QueryEndStore() *StoreQuery {
-	query := &StoreQuery{config: spq.config}
+	query := (&StoreClient{config: spq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := spq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -190,7 +191,7 @@ func (spq *SubscribePauseQuery) QueryEndStore() *StoreQuery {
 
 // QueryCabinet chains the current query on the "cabinet" edge.
 func (spq *SubscribePauseQuery) QueryCabinet() *CabinetQuery {
-	query := &CabinetQuery{config: spq.config}
+	query := (&CabinetClient{config: spq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := spq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -212,7 +213,7 @@ func (spq *SubscribePauseQuery) QueryCabinet() *CabinetQuery {
 
 // QueryEndCabinet chains the current query on the "endCabinet" edge.
 func (spq *SubscribePauseQuery) QueryEndCabinet() *CabinetQuery {
-	query := &CabinetQuery{config: spq.config}
+	query := (&CabinetClient{config: spq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := spq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -234,7 +235,7 @@ func (spq *SubscribePauseQuery) QueryEndCabinet() *CabinetQuery {
 
 // QuerySubscribe chains the current query on the "subscribe" edge.
 func (spq *SubscribePauseQuery) QuerySubscribe() *SubscribeQuery {
-	query := &SubscribeQuery{config: spq.config}
+	query := (&SubscribeClient{config: spq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := spq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -256,7 +257,7 @@ func (spq *SubscribePauseQuery) QuerySubscribe() *SubscribeQuery {
 
 // QueryEndEmployee chains the current query on the "end_employee" edge.
 func (spq *SubscribePauseQuery) QueryEndEmployee() *EmployeeQuery {
-	query := &EmployeeQuery{config: spq.config}
+	query := (&EmployeeClient{config: spq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := spq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -278,7 +279,7 @@ func (spq *SubscribePauseQuery) QueryEndEmployee() *EmployeeQuery {
 
 // QuerySuspends chains the current query on the "suspends" edge.
 func (spq *SubscribePauseQuery) QuerySuspends() *SubscribeSuspendQuery {
-	query := &SubscribeSuspendQuery{config: spq.config}
+	query := (&SubscribeSuspendClient{config: spq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := spq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -301,7 +302,7 @@ func (spq *SubscribePauseQuery) QuerySuspends() *SubscribeSuspendQuery {
 // First returns the first SubscribePause entity from the query.
 // Returns a *NotFoundError when no SubscribePause was found.
 func (spq *SubscribePauseQuery) First(ctx context.Context) (*SubscribePause, error) {
-	nodes, err := spq.Limit(1).All(ctx)
+	nodes, err := spq.Limit(1).All(newQueryContext(ctx, TypeSubscribePause, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -324,7 +325,7 @@ func (spq *SubscribePauseQuery) FirstX(ctx context.Context) *SubscribePause {
 // Returns a *NotFoundError when no SubscribePause ID was found.
 func (spq *SubscribePauseQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = spq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = spq.Limit(1).IDs(newQueryContext(ctx, TypeSubscribePause, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -347,7 +348,7 @@ func (spq *SubscribePauseQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one SubscribePause entity is found.
 // Returns a *NotFoundError when no SubscribePause entities are found.
 func (spq *SubscribePauseQuery) Only(ctx context.Context) (*SubscribePause, error) {
-	nodes, err := spq.Limit(2).All(ctx)
+	nodes, err := spq.Limit(2).All(newQueryContext(ctx, TypeSubscribePause, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -375,7 +376,7 @@ func (spq *SubscribePauseQuery) OnlyX(ctx context.Context) *SubscribePause {
 // Returns a *NotFoundError when no entities are found.
 func (spq *SubscribePauseQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = spq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = spq.Limit(2).IDs(newQueryContext(ctx, TypeSubscribePause, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -400,10 +401,12 @@ func (spq *SubscribePauseQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of SubscribePauses.
 func (spq *SubscribePauseQuery) All(ctx context.Context) ([]*SubscribePause, error) {
+	ctx = newQueryContext(ctx, TypeSubscribePause, "All")
 	if err := spq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return spq.sqlAll(ctx)
+	qr := querierAll[[]*SubscribePause, *SubscribePauseQuery]()
+	return withInterceptors[[]*SubscribePause](ctx, spq, qr, spq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -418,6 +421,7 @@ func (spq *SubscribePauseQuery) AllX(ctx context.Context) []*SubscribePause {
 // IDs executes the query and returns a list of SubscribePause IDs.
 func (spq *SubscribePauseQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeSubscribePause, "IDs")
 	if err := spq.Select(subscribepause.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -435,10 +439,11 @@ func (spq *SubscribePauseQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (spq *SubscribePauseQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeSubscribePause, "Count")
 	if err := spq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return spq.sqlCount(ctx)
+	return withInterceptors[int](ctx, spq, querierCount[*SubscribePauseQuery](), spq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -452,10 +457,15 @@ func (spq *SubscribePauseQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (spq *SubscribePauseQuery) Exist(ctx context.Context) (bool, error) {
-	if err := spq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeSubscribePause, "Exist")
+	switch _, err := spq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return spq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -499,7 +509,7 @@ func (spq *SubscribePauseQuery) Clone() *SubscribePauseQuery {
 // WithRider tells the query-builder to eager-load the nodes that are connected to
 // the "rider" edge. The optional arguments are used to configure the query builder of the edge.
 func (spq *SubscribePauseQuery) WithRider(opts ...func(*RiderQuery)) *SubscribePauseQuery {
-	query := &RiderQuery{config: spq.config}
+	query := (&RiderClient{config: spq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -510,7 +520,7 @@ func (spq *SubscribePauseQuery) WithRider(opts ...func(*RiderQuery)) *SubscribeP
 // WithEmployee tells the query-builder to eager-load the nodes that are connected to
 // the "employee" edge. The optional arguments are used to configure the query builder of the edge.
 func (spq *SubscribePauseQuery) WithEmployee(opts ...func(*EmployeeQuery)) *SubscribePauseQuery {
-	query := &EmployeeQuery{config: spq.config}
+	query := (&EmployeeClient{config: spq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -521,7 +531,7 @@ func (spq *SubscribePauseQuery) WithEmployee(opts ...func(*EmployeeQuery)) *Subs
 // WithCity tells the query-builder to eager-load the nodes that are connected to
 // the "city" edge. The optional arguments are used to configure the query builder of the edge.
 func (spq *SubscribePauseQuery) WithCity(opts ...func(*CityQuery)) *SubscribePauseQuery {
-	query := &CityQuery{config: spq.config}
+	query := (&CityClient{config: spq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -532,7 +542,7 @@ func (spq *SubscribePauseQuery) WithCity(opts ...func(*CityQuery)) *SubscribePau
 // WithStore tells the query-builder to eager-load the nodes that are connected to
 // the "store" edge. The optional arguments are used to configure the query builder of the edge.
 func (spq *SubscribePauseQuery) WithStore(opts ...func(*StoreQuery)) *SubscribePauseQuery {
-	query := &StoreQuery{config: spq.config}
+	query := (&StoreClient{config: spq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -543,7 +553,7 @@ func (spq *SubscribePauseQuery) WithStore(opts ...func(*StoreQuery)) *SubscribeP
 // WithEndStore tells the query-builder to eager-load the nodes that are connected to
 // the "endStore" edge. The optional arguments are used to configure the query builder of the edge.
 func (spq *SubscribePauseQuery) WithEndStore(opts ...func(*StoreQuery)) *SubscribePauseQuery {
-	query := &StoreQuery{config: spq.config}
+	query := (&StoreClient{config: spq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -554,7 +564,7 @@ func (spq *SubscribePauseQuery) WithEndStore(opts ...func(*StoreQuery)) *Subscri
 // WithCabinet tells the query-builder to eager-load the nodes that are connected to
 // the "cabinet" edge. The optional arguments are used to configure the query builder of the edge.
 func (spq *SubscribePauseQuery) WithCabinet(opts ...func(*CabinetQuery)) *SubscribePauseQuery {
-	query := &CabinetQuery{config: spq.config}
+	query := (&CabinetClient{config: spq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -565,7 +575,7 @@ func (spq *SubscribePauseQuery) WithCabinet(opts ...func(*CabinetQuery)) *Subscr
 // WithEndCabinet tells the query-builder to eager-load the nodes that are connected to
 // the "endCabinet" edge. The optional arguments are used to configure the query builder of the edge.
 func (spq *SubscribePauseQuery) WithEndCabinet(opts ...func(*CabinetQuery)) *SubscribePauseQuery {
-	query := &CabinetQuery{config: spq.config}
+	query := (&CabinetClient{config: spq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -576,7 +586,7 @@ func (spq *SubscribePauseQuery) WithEndCabinet(opts ...func(*CabinetQuery)) *Sub
 // WithSubscribe tells the query-builder to eager-load the nodes that are connected to
 // the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
 func (spq *SubscribePauseQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *SubscribePauseQuery {
-	query := &SubscribeQuery{config: spq.config}
+	query := (&SubscribeClient{config: spq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -587,7 +597,7 @@ func (spq *SubscribePauseQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *Su
 // WithEndEmployee tells the query-builder to eager-load the nodes that are connected to
 // the "end_employee" edge. The optional arguments are used to configure the query builder of the edge.
 func (spq *SubscribePauseQuery) WithEndEmployee(opts ...func(*EmployeeQuery)) *SubscribePauseQuery {
-	query := &EmployeeQuery{config: spq.config}
+	query := (&EmployeeClient{config: spq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -598,7 +608,7 @@ func (spq *SubscribePauseQuery) WithEndEmployee(opts ...func(*EmployeeQuery)) *S
 // WithSuspends tells the query-builder to eager-load the nodes that are connected to
 // the "suspends" edge. The optional arguments are used to configure the query builder of the edge.
 func (spq *SubscribePauseQuery) WithSuspends(opts ...func(*SubscribeSuspendQuery)) *SubscribePauseQuery {
-	query := &SubscribeSuspendQuery{config: spq.config}
+	query := (&SubscribeSuspendClient{config: spq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -621,16 +631,11 @@ func (spq *SubscribePauseQuery) WithSuspends(opts ...func(*SubscribeSuspendQuery
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (spq *SubscribePauseQuery) GroupBy(field string, fields ...string) *SubscribePauseGroupBy {
-	grbuild := &SubscribePauseGroupBy{config: spq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := spq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return spq.sqlQuery(ctx), nil
-	}
+	spq.fields = append([]string{field}, fields...)
+	grbuild := &SubscribePauseGroupBy{build: spq}
+	grbuild.flds = &spq.fields
 	grbuild.label = subscribepause.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -648,13 +653,28 @@ func (spq *SubscribePauseQuery) GroupBy(field string, fields ...string) *Subscri
 //		Scan(ctx, &v)
 func (spq *SubscribePauseQuery) Select(fields ...string) *SubscribePauseSelect {
 	spq.fields = append(spq.fields, fields...)
-	selbuild := &SubscribePauseSelect{SubscribePauseQuery: spq}
-	selbuild.label = subscribepause.Label
-	selbuild.flds, selbuild.scan = &spq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &SubscribePauseSelect{SubscribePauseQuery: spq}
+	sbuild.label = subscribepause.Label
+	sbuild.flds, sbuild.scan = &spq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a SubscribePauseSelect configured with the given aggregations.
+func (spq *SubscribePauseQuery) Aggregate(fns ...AggregateFunc) *SubscribePauseSelect {
+	return spq.Select().Aggregate(fns...)
 }
 
 func (spq *SubscribePauseQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range spq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, spq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range spq.fields {
 		if !subscribepause.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -1067,17 +1087,6 @@ func (spq *SubscribePauseQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, spq.driver, _spec)
 }
 
-func (spq *SubscribePauseQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := spq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (spq *SubscribePauseQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -1169,13 +1178,8 @@ func (spq *SubscribePauseQuery) Modify(modifiers ...func(s *sql.Selector)) *Subs
 
 // SubscribePauseGroupBy is the group-by builder for SubscribePause entities.
 type SubscribePauseGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *SubscribePauseQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -1184,74 +1188,77 @@ func (spgb *SubscribePauseGroupBy) Aggregate(fns ...AggregateFunc) *SubscribePau
 	return spgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (spgb *SubscribePauseGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := spgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeSubscribePause, "GroupBy")
+	if err := spgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	spgb.sql = query
-	return spgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*SubscribePauseQuery, *SubscribePauseGroupBy](ctx, spgb.build, spgb, spgb.build.inters, v)
 }
 
-func (spgb *SubscribePauseGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range spgb.fields {
-		if !subscribepause.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (spgb *SubscribePauseGroupBy) sqlScan(ctx context.Context, root *SubscribePauseQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(spgb.fns))
+	for _, fn := range spgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := spgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*spgb.flds)+len(spgb.fns))
+		for _, f := range *spgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*spgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := spgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := spgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (spgb *SubscribePauseGroupBy) sqlQuery() *sql.Selector {
-	selector := spgb.sql.Select()
-	aggregation := make([]string, 0, len(spgb.fns))
-	for _, fn := range spgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(spgb.fields)+len(spgb.fns))
-		for _, f := range spgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(spgb.fields...)...)
-}
-
 // SubscribePauseSelect is the builder for selecting fields of SubscribePause entities.
 type SubscribePauseSelect struct {
 	*SubscribePauseQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (sps *SubscribePauseSelect) Aggregate(fns ...AggregateFunc) *SubscribePauseSelect {
+	sps.fns = append(sps.fns, fns...)
+	return sps
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (sps *SubscribePauseSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeSubscribePause, "Select")
 	if err := sps.prepareQuery(ctx); err != nil {
 		return err
 	}
-	sps.sql = sps.SubscribePauseQuery.sqlQuery(ctx)
-	return sps.sqlScan(ctx, v)
+	return scanWithInterceptors[*SubscribePauseQuery, *SubscribePauseSelect](ctx, sps.SubscribePauseQuery, sps, sps.inters, v)
 }
 
-func (sps *SubscribePauseSelect) sqlScan(ctx context.Context, v any) error {
+func (sps *SubscribePauseSelect) sqlScan(ctx context.Context, root *SubscribePauseQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(sps.fns))
+	for _, fn := range sps.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*sps.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := sps.sql.Query()
+	query, args := selector.Query()
 	if err := sps.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

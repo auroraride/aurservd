@@ -19,6 +19,7 @@ type EnterpriseBill struct {
 func (EnterpriseBill) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "enterprise_bill"},
+        entsql.WithComments(true),
     }
 }
 

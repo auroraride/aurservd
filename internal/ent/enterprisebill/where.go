@@ -12,1181 +12,747 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.EnterpriseBill(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.EnterpriseBill(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.EnterpriseBill(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.EnterpriseBill(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.EnterpriseBill(sql.FieldLTE(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
 func DeletedAt(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
 func Remark(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldRemark, v))
 }
 
 // RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
 func RiderID(v uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRiderID), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldRiderID, v))
 }
 
 // CityID applies equality check predicate on the "city_id" field. It's identical to CityIDEQ.
 func CityID(v uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCityID), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldCityID, v))
 }
 
 // StationID applies equality check predicate on the "station_id" field. It's identical to StationIDEQ.
 func StationID(v uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStationID), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldStationID, v))
 }
 
 // SubscribeID applies equality check predicate on the "subscribe_id" field. It's identical to SubscribeIDEQ.
 func SubscribeID(v uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldSubscribeID, v))
 }
 
 // EnterpriseID applies equality check predicate on the "enterprise_id" field. It's identical to EnterpriseIDEQ.
 func EnterpriseID(v uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEnterpriseID), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldEnterpriseID, v))
 }
 
 // StatementID applies equality check predicate on the "statement_id" field. It's identical to StatementIDEQ.
 func StatementID(v uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStatementID), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldStatementID, v))
 }
 
 // Start applies equality check predicate on the "start" field. It's identical to StartEQ.
 func Start(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStart), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldStart, v))
 }
 
 // End applies equality check predicate on the "end" field. It's identical to EndEQ.
 func End(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEnd), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldEnd, v))
 }
 
 // Days applies equality check predicate on the "days" field. It's identical to DaysEQ.
 func Days(v int) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDays), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldDays, v))
 }
 
 // Price applies equality check predicate on the "price" field. It's identical to PriceEQ.
 func Price(v float64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPrice), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldPrice, v))
 }
 
 // Cost applies equality check predicate on the "cost" field. It's identical to CostEQ.
 func Cost(v float64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCost), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldCost, v))
 }
 
 // Model applies equality check predicate on the "model" field. It's identical to ModelEQ.
 func Model(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldModel), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldModel, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
 func CreatedAtNEQ(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtGT applies the GT predicate on the "created_at" field.
 func CreatedAtGT(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldGT(FieldCreatedAt, v))
 }
 
 // CreatedAtGTE applies the GTE predicate on the "created_at" field.
 func CreatedAtGTE(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldGTE(FieldCreatedAt, v))
 }
 
 // CreatedAtLT applies the LT predicate on the "created_at" field.
 func CreatedAtLT(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldLT(FieldCreatedAt, v))
 }
 
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
 func UpdatedAtEQ(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
 func UpdatedAtNEQ(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldNEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldNotIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtGT applies the GT predicate on the "updated_at" field.
 func UpdatedAtGT(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldGT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
 func UpdatedAtGTE(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldGTE(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLT applies the LT predicate on the "updated_at" field.
 func UpdatedAtLT(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldLT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
 func DeletedAtEQ(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
 func DeletedAtNEQ(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldNEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldNotIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtGT applies the GT predicate on the "deleted_at" field.
 func DeletedAtGT(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldGT(FieldDeletedAt, v))
 }
 
 // DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
 func DeletedAtGTE(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldGTE(FieldDeletedAt, v))
 }
 
 // DeletedAtLT applies the LT predicate on the "deleted_at" field.
 func DeletedAtLT(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldLT(FieldDeletedAt, v))
 }
 
 // DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
 func DeletedAtLTE(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldLTE(FieldDeletedAt, v))
 }
 
 // DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
 func DeletedAtIsNil() predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.EnterpriseBill(sql.FieldIsNull(FieldDeletedAt))
 }
 
 // DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
 func DeletedAtNotNil() predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.EnterpriseBill(sql.FieldNotNull(FieldDeletedAt))
 }
 
 // CreatorIsNil applies the IsNil predicate on the "creator" field.
 func CreatorIsNil() predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCreator)))
-	})
+	return predicate.EnterpriseBill(sql.FieldIsNull(FieldCreator))
 }
 
 // CreatorNotNil applies the NotNil predicate on the "creator" field.
 func CreatorNotNil() predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCreator)))
-	})
+	return predicate.EnterpriseBill(sql.FieldNotNull(FieldCreator))
 }
 
 // LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
 func LastModifierIsNil() predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLastModifier)))
-	})
+	return predicate.EnterpriseBill(sql.FieldIsNull(FieldLastModifier))
 }
 
 // LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
 func LastModifierNotNil() predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLastModifier)))
-	})
+	return predicate.EnterpriseBill(sql.FieldNotNull(FieldLastModifier))
 }
 
 // RemarkEQ applies the EQ predicate on the "remark" field.
 func RemarkEQ(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldRemark, v))
 }
 
 // RemarkNEQ applies the NEQ predicate on the "remark" field.
 func RemarkNEQ(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRemark), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldNEQ(FieldRemark, v))
 }
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRemark), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldIn(FieldRemark, vs...))
 }
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRemark), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldNotIn(FieldRemark, vs...))
 }
 
 // RemarkGT applies the GT predicate on the "remark" field.
 func RemarkGT(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRemark), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldGT(FieldRemark, v))
 }
 
 // RemarkGTE applies the GTE predicate on the "remark" field.
 func RemarkGTE(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRemark), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldGTE(FieldRemark, v))
 }
 
 // RemarkLT applies the LT predicate on the "remark" field.
 func RemarkLT(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRemark), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldLT(FieldRemark, v))
 }
 
 // RemarkLTE applies the LTE predicate on the "remark" field.
 func RemarkLTE(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRemark), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldLTE(FieldRemark, v))
 }
 
 // RemarkContains applies the Contains predicate on the "remark" field.
 func RemarkContains(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRemark), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldContains(FieldRemark, v))
 }
 
 // RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
 func RemarkHasPrefix(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRemark), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldHasPrefix(FieldRemark, v))
 }
 
 // RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
 func RemarkHasSuffix(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRemark), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldHasSuffix(FieldRemark, v))
 }
 
 // RemarkIsNil applies the IsNil predicate on the "remark" field.
 func RemarkIsNil() predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRemark)))
-	})
+	return predicate.EnterpriseBill(sql.FieldIsNull(FieldRemark))
 }
 
 // RemarkNotNil applies the NotNil predicate on the "remark" field.
 func RemarkNotNil() predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRemark)))
-	})
+	return predicate.EnterpriseBill(sql.FieldNotNull(FieldRemark))
 }
 
 // RemarkEqualFold applies the EqualFold predicate on the "remark" field.
 func RemarkEqualFold(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRemark), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEqualFold(FieldRemark, v))
 }
 
 // RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
 func RemarkContainsFold(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldContainsFold(FieldRemark, v))
 }
 
 // RiderIDEQ applies the EQ predicate on the "rider_id" field.
 func RiderIDEQ(v uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRiderID), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldRiderID, v))
 }
 
 // RiderIDNEQ applies the NEQ predicate on the "rider_id" field.
 func RiderIDNEQ(v uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRiderID), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldNEQ(FieldRiderID, v))
 }
 
 // RiderIDIn applies the In predicate on the "rider_id" field.
 func RiderIDIn(vs ...uint64) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRiderID), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldIn(FieldRiderID, vs...))
 }
 
 // RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
 func RiderIDNotIn(vs ...uint64) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRiderID), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldNotIn(FieldRiderID, vs...))
 }
 
 // CityIDEQ applies the EQ predicate on the "city_id" field.
 func CityIDEQ(v uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCityID), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldCityID, v))
 }
 
 // CityIDNEQ applies the NEQ predicate on the "city_id" field.
 func CityIDNEQ(v uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCityID), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldNEQ(FieldCityID, v))
 }
 
 // CityIDIn applies the In predicate on the "city_id" field.
 func CityIDIn(vs ...uint64) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCityID), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldIn(FieldCityID, vs...))
 }
 
 // CityIDNotIn applies the NotIn predicate on the "city_id" field.
 func CityIDNotIn(vs ...uint64) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCityID), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldNotIn(FieldCityID, vs...))
 }
 
 // StationIDEQ applies the EQ predicate on the "station_id" field.
 func StationIDEQ(v uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStationID), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldStationID, v))
 }
 
 // StationIDNEQ applies the NEQ predicate on the "station_id" field.
 func StationIDNEQ(v uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStationID), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldNEQ(FieldStationID, v))
 }
 
 // StationIDIn applies the In predicate on the "station_id" field.
 func StationIDIn(vs ...uint64) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStationID), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldIn(FieldStationID, vs...))
 }
 
 // StationIDNotIn applies the NotIn predicate on the "station_id" field.
 func StationIDNotIn(vs ...uint64) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStationID), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldNotIn(FieldStationID, vs...))
 }
 
 // StationIDIsNil applies the IsNil predicate on the "station_id" field.
 func StationIDIsNil() predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldStationID)))
-	})
+	return predicate.EnterpriseBill(sql.FieldIsNull(FieldStationID))
 }
 
 // StationIDNotNil applies the NotNil predicate on the "station_id" field.
 func StationIDNotNil() predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldStationID)))
-	})
+	return predicate.EnterpriseBill(sql.FieldNotNull(FieldStationID))
 }
 
 // SubscribeIDEQ applies the EQ predicate on the "subscribe_id" field.
 func SubscribeIDEQ(v uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldSubscribeID, v))
 }
 
 // SubscribeIDNEQ applies the NEQ predicate on the "subscribe_id" field.
 func SubscribeIDNEQ(v uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldNEQ(FieldSubscribeID, v))
 }
 
 // SubscribeIDIn applies the In predicate on the "subscribe_id" field.
 func SubscribeIDIn(vs ...uint64) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldSubscribeID), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldIn(FieldSubscribeID, vs...))
 }
 
 // SubscribeIDNotIn applies the NotIn predicate on the "subscribe_id" field.
 func SubscribeIDNotIn(vs ...uint64) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldSubscribeID), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldNotIn(FieldSubscribeID, vs...))
 }
 
 // EnterpriseIDEQ applies the EQ predicate on the "enterprise_id" field.
 func EnterpriseIDEQ(v uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEnterpriseID), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldEnterpriseID, v))
 }
 
 // EnterpriseIDNEQ applies the NEQ predicate on the "enterprise_id" field.
 func EnterpriseIDNEQ(v uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEnterpriseID), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldNEQ(FieldEnterpriseID, v))
 }
 
 // EnterpriseIDIn applies the In predicate on the "enterprise_id" field.
 func EnterpriseIDIn(vs ...uint64) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEnterpriseID), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldIn(FieldEnterpriseID, vs...))
 }
 
 // EnterpriseIDNotIn applies the NotIn predicate on the "enterprise_id" field.
 func EnterpriseIDNotIn(vs ...uint64) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEnterpriseID), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldNotIn(FieldEnterpriseID, vs...))
 }
 
 // StatementIDEQ applies the EQ predicate on the "statement_id" field.
 func StatementIDEQ(v uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStatementID), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldStatementID, v))
 }
 
 // StatementIDNEQ applies the NEQ predicate on the "statement_id" field.
 func StatementIDNEQ(v uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStatementID), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldNEQ(FieldStatementID, v))
 }
 
 // StatementIDIn applies the In predicate on the "statement_id" field.
 func StatementIDIn(vs ...uint64) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStatementID), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldIn(FieldStatementID, vs...))
 }
 
 // StatementIDNotIn applies the NotIn predicate on the "statement_id" field.
 func StatementIDNotIn(vs ...uint64) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStatementID), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldNotIn(FieldStatementID, vs...))
 }
 
 // StartEQ applies the EQ predicate on the "start" field.
 func StartEQ(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStart), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldStart, v))
 }
 
 // StartNEQ applies the NEQ predicate on the "start" field.
 func StartNEQ(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStart), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldNEQ(FieldStart, v))
 }
 
 // StartIn applies the In predicate on the "start" field.
 func StartIn(vs ...time.Time) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStart), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldIn(FieldStart, vs...))
 }
 
 // StartNotIn applies the NotIn predicate on the "start" field.
 func StartNotIn(vs ...time.Time) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStart), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldNotIn(FieldStart, vs...))
 }
 
 // StartGT applies the GT predicate on the "start" field.
 func StartGT(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldStart), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldGT(FieldStart, v))
 }
 
 // StartGTE applies the GTE predicate on the "start" field.
 func StartGTE(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldStart), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldGTE(FieldStart, v))
 }
 
 // StartLT applies the LT predicate on the "start" field.
 func StartLT(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldStart), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldLT(FieldStart, v))
 }
 
 // StartLTE applies the LTE predicate on the "start" field.
 func StartLTE(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldStart), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldLTE(FieldStart, v))
 }
 
 // EndEQ applies the EQ predicate on the "end" field.
 func EndEQ(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEnd), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldEnd, v))
 }
 
 // EndNEQ applies the NEQ predicate on the "end" field.
 func EndNEQ(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEnd), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldNEQ(FieldEnd, v))
 }
 
 // EndIn applies the In predicate on the "end" field.
 func EndIn(vs ...time.Time) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEnd), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldIn(FieldEnd, vs...))
 }
 
 // EndNotIn applies the NotIn predicate on the "end" field.
 func EndNotIn(vs ...time.Time) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEnd), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldNotIn(FieldEnd, vs...))
 }
 
 // EndGT applies the GT predicate on the "end" field.
 func EndGT(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldEnd), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldGT(FieldEnd, v))
 }
 
 // EndGTE applies the GTE predicate on the "end" field.
 func EndGTE(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldEnd), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldGTE(FieldEnd, v))
 }
 
 // EndLT applies the LT predicate on the "end" field.
 func EndLT(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldEnd), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldLT(FieldEnd, v))
 }
 
 // EndLTE applies the LTE predicate on the "end" field.
 func EndLTE(v time.Time) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldEnd), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldLTE(FieldEnd, v))
 }
 
 // DaysEQ applies the EQ predicate on the "days" field.
 func DaysEQ(v int) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDays), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldDays, v))
 }
 
 // DaysNEQ applies the NEQ predicate on the "days" field.
 func DaysNEQ(v int) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDays), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldNEQ(FieldDays, v))
 }
 
 // DaysIn applies the In predicate on the "days" field.
 func DaysIn(vs ...int) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDays), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldIn(FieldDays, vs...))
 }
 
 // DaysNotIn applies the NotIn predicate on the "days" field.
 func DaysNotIn(vs ...int) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDays), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldNotIn(FieldDays, vs...))
 }
 
 // DaysGT applies the GT predicate on the "days" field.
 func DaysGT(v int) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDays), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldGT(FieldDays, v))
 }
 
 // DaysGTE applies the GTE predicate on the "days" field.
 func DaysGTE(v int) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDays), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldGTE(FieldDays, v))
 }
 
 // DaysLT applies the LT predicate on the "days" field.
 func DaysLT(v int) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDays), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldLT(FieldDays, v))
 }
 
 // DaysLTE applies the LTE predicate on the "days" field.
 func DaysLTE(v int) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDays), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldLTE(FieldDays, v))
 }
 
 // PriceEQ applies the EQ predicate on the "price" field.
 func PriceEQ(v float64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPrice), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldPrice, v))
 }
 
 // PriceNEQ applies the NEQ predicate on the "price" field.
 func PriceNEQ(v float64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPrice), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldNEQ(FieldPrice, v))
 }
 
 // PriceIn applies the In predicate on the "price" field.
 func PriceIn(vs ...float64) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldPrice), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldIn(FieldPrice, vs...))
 }
 
 // PriceNotIn applies the NotIn predicate on the "price" field.
 func PriceNotIn(vs ...float64) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldPrice), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldNotIn(FieldPrice, vs...))
 }
 
 // PriceGT applies the GT predicate on the "price" field.
 func PriceGT(v float64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldPrice), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldGT(FieldPrice, v))
 }
 
 // PriceGTE applies the GTE predicate on the "price" field.
 func PriceGTE(v float64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldPrice), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldGTE(FieldPrice, v))
 }
 
 // PriceLT applies the LT predicate on the "price" field.
 func PriceLT(v float64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldPrice), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldLT(FieldPrice, v))
 }
 
 // PriceLTE applies the LTE predicate on the "price" field.
 func PriceLTE(v float64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldPrice), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldLTE(FieldPrice, v))
 }
 
 // CostEQ applies the EQ predicate on the "cost" field.
 func CostEQ(v float64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCost), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldCost, v))
 }
 
 // CostNEQ applies the NEQ predicate on the "cost" field.
 func CostNEQ(v float64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCost), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldNEQ(FieldCost, v))
 }
 
 // CostIn applies the In predicate on the "cost" field.
 func CostIn(vs ...float64) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCost), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldIn(FieldCost, vs...))
 }
 
 // CostNotIn applies the NotIn predicate on the "cost" field.
 func CostNotIn(vs ...float64) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCost), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldNotIn(FieldCost, vs...))
 }
 
 // CostGT applies the GT predicate on the "cost" field.
 func CostGT(v float64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCost), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldGT(FieldCost, v))
 }
 
 // CostGTE applies the GTE predicate on the "cost" field.
 func CostGTE(v float64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCost), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldGTE(FieldCost, v))
 }
 
 // CostLT applies the LT predicate on the "cost" field.
 func CostLT(v float64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCost), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldLT(FieldCost, v))
 }
 
 // CostLTE applies the LTE predicate on the "cost" field.
 func CostLTE(v float64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCost), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldLTE(FieldCost, v))
 }
 
 // ModelEQ applies the EQ predicate on the "model" field.
 func ModelEQ(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldModel), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEQ(FieldModel, v))
 }
 
 // ModelNEQ applies the NEQ predicate on the "model" field.
 func ModelNEQ(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldModel), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldNEQ(FieldModel, v))
 }
 
 // ModelIn applies the In predicate on the "model" field.
 func ModelIn(vs ...string) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldModel), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldIn(FieldModel, vs...))
 }
 
 // ModelNotIn applies the NotIn predicate on the "model" field.
 func ModelNotIn(vs ...string) predicate.EnterpriseBill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldModel), v...))
-	})
+	return predicate.EnterpriseBill(sql.FieldNotIn(FieldModel, vs...))
 }
 
 // ModelGT applies the GT predicate on the "model" field.
 func ModelGT(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldModel), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldGT(FieldModel, v))
 }
 
 // ModelGTE applies the GTE predicate on the "model" field.
 func ModelGTE(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldModel), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldGTE(FieldModel, v))
 }
 
 // ModelLT applies the LT predicate on the "model" field.
 func ModelLT(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldModel), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldLT(FieldModel, v))
 }
 
 // ModelLTE applies the LTE predicate on the "model" field.
 func ModelLTE(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldModel), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldLTE(FieldModel, v))
 }
 
 // ModelContains applies the Contains predicate on the "model" field.
 func ModelContains(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldModel), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldContains(FieldModel, v))
 }
 
 // ModelHasPrefix applies the HasPrefix predicate on the "model" field.
 func ModelHasPrefix(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldModel), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldHasPrefix(FieldModel, v))
 }
 
 // ModelHasSuffix applies the HasSuffix predicate on the "model" field.
 func ModelHasSuffix(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldModel), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldHasSuffix(FieldModel, v))
 }
 
 // ModelEqualFold applies the EqualFold predicate on the "model" field.
 func ModelEqualFold(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldModel), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldEqualFold(FieldModel, v))
 }
 
 // ModelContainsFold applies the ContainsFold predicate on the "model" field.
 func ModelContainsFold(v string) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldModel), v))
-	})
+	return predicate.EnterpriseBill(sql.FieldContainsFold(FieldModel, v))
 }
 
 // HasRider applies the HasEdge predicate on the "rider" edge.
@@ -1194,7 +760,6 @@ func HasRider() predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RiderTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1222,7 +787,6 @@ func HasCity() predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CityTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1250,7 +814,6 @@ func HasStation() predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StationTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, StationTable, StationColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1278,7 +841,6 @@ func HasEnterprise() predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EnterpriseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, EnterpriseTable, EnterpriseColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1306,7 +868,6 @@ func HasStatement() predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StatementTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, StatementTable, StatementColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1334,7 +895,6 @@ func HasSubscribe() predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SubscribeTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, SubscribeTable, SubscribeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

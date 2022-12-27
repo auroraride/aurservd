@@ -52,6 +52,7 @@ type PointLog struct {
 func (PointLog) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "point_log"},
+        entsql.WithComments(true),
     }
 }
 

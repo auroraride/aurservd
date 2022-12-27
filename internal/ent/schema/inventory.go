@@ -18,6 +18,7 @@ type Inventory struct {
 func (Inventory) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "inventory"},
+        entsql.WithComments(true),
     }
 }
 

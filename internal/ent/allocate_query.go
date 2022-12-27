@@ -31,6 +31,7 @@ type AllocateQuery struct {
 	unique        *bool
 	order         []OrderFunc
 	fields        []string
+	inters        []Interceptor
 	predicates    []predicate.Allocate
 	withRider     *RiderQuery
 	withSubscribe *SubscribeQuery
@@ -52,13 +53,13 @@ func (aq *AllocateQuery) Where(ps ...predicate.Allocate) *AllocateQuery {
 	return aq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (aq *AllocateQuery) Limit(limit int) *AllocateQuery {
 	aq.limit = &limit
 	return aq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (aq *AllocateQuery) Offset(offset int) *AllocateQuery {
 	aq.offset = &offset
 	return aq
@@ -71,7 +72,7 @@ func (aq *AllocateQuery) Unique(unique bool) *AllocateQuery {
 	return aq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (aq *AllocateQuery) Order(o ...OrderFunc) *AllocateQuery {
 	aq.order = append(aq.order, o...)
 	return aq
@@ -79,7 +80,7 @@ func (aq *AllocateQuery) Order(o ...OrderFunc) *AllocateQuery {
 
 // QueryRider chains the current query on the "rider" edge.
 func (aq *AllocateQuery) QueryRider() *RiderQuery {
-	query := &RiderQuery{config: aq.config}
+	query := (&RiderClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -101,7 +102,7 @@ func (aq *AllocateQuery) QueryRider() *RiderQuery {
 
 // QuerySubscribe chains the current query on the "subscribe" edge.
 func (aq *AllocateQuery) QuerySubscribe() *SubscribeQuery {
-	query := &SubscribeQuery{config: aq.config}
+	query := (&SubscribeClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -123,7 +124,7 @@ func (aq *AllocateQuery) QuerySubscribe() *SubscribeQuery {
 
 // QueryEmployee chains the current query on the "employee" edge.
 func (aq *AllocateQuery) QueryEmployee() *EmployeeQuery {
-	query := &EmployeeQuery{config: aq.config}
+	query := (&EmployeeClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -145,7 +146,7 @@ func (aq *AllocateQuery) QueryEmployee() *EmployeeQuery {
 
 // QueryCabinet chains the current query on the "cabinet" edge.
 func (aq *AllocateQuery) QueryCabinet() *CabinetQuery {
-	query := &CabinetQuery{config: aq.config}
+	query := (&CabinetClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -167,7 +168,7 @@ func (aq *AllocateQuery) QueryCabinet() *CabinetQuery {
 
 // QueryStore chains the current query on the "store" edge.
 func (aq *AllocateQuery) QueryStore() *StoreQuery {
-	query := &StoreQuery{config: aq.config}
+	query := (&StoreClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -189,7 +190,7 @@ func (aq *AllocateQuery) QueryStore() *StoreQuery {
 
 // QueryEbike chains the current query on the "ebike" edge.
 func (aq *AllocateQuery) QueryEbike() *EbikeQuery {
-	query := &EbikeQuery{config: aq.config}
+	query := (&EbikeClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -211,7 +212,7 @@ func (aq *AllocateQuery) QueryEbike() *EbikeQuery {
 
 // QueryBrand chains the current query on the "brand" edge.
 func (aq *AllocateQuery) QueryBrand() *EbikeBrandQuery {
-	query := &EbikeBrandQuery{config: aq.config}
+	query := (&EbikeBrandClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -233,7 +234,7 @@ func (aq *AllocateQuery) QueryBrand() *EbikeBrandQuery {
 
 // QueryContract chains the current query on the "contract" edge.
 func (aq *AllocateQuery) QueryContract() *ContractQuery {
-	query := &ContractQuery{config: aq.config}
+	query := (&ContractClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -256,7 +257,7 @@ func (aq *AllocateQuery) QueryContract() *ContractQuery {
 // First returns the first Allocate entity from the query.
 // Returns a *NotFoundError when no Allocate was found.
 func (aq *AllocateQuery) First(ctx context.Context) (*Allocate, error) {
-	nodes, err := aq.Limit(1).All(ctx)
+	nodes, err := aq.Limit(1).All(newQueryContext(ctx, TypeAllocate, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -279,7 +280,7 @@ func (aq *AllocateQuery) FirstX(ctx context.Context) *Allocate {
 // Returns a *NotFoundError when no Allocate ID was found.
 func (aq *AllocateQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = aq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = aq.Limit(1).IDs(newQueryContext(ctx, TypeAllocate, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -302,7 +303,7 @@ func (aq *AllocateQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Allocate entity is found.
 // Returns a *NotFoundError when no Allocate entities are found.
 func (aq *AllocateQuery) Only(ctx context.Context) (*Allocate, error) {
-	nodes, err := aq.Limit(2).All(ctx)
+	nodes, err := aq.Limit(2).All(newQueryContext(ctx, TypeAllocate, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -330,7 +331,7 @@ func (aq *AllocateQuery) OnlyX(ctx context.Context) *Allocate {
 // Returns a *NotFoundError when no entities are found.
 func (aq *AllocateQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = aq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = aq.Limit(2).IDs(newQueryContext(ctx, TypeAllocate, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -355,10 +356,12 @@ func (aq *AllocateQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Allocates.
 func (aq *AllocateQuery) All(ctx context.Context) ([]*Allocate, error) {
+	ctx = newQueryContext(ctx, TypeAllocate, "All")
 	if err := aq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return aq.sqlAll(ctx)
+	qr := querierAll[[]*Allocate, *AllocateQuery]()
+	return withInterceptors[[]*Allocate](ctx, aq, qr, aq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -373,6 +376,7 @@ func (aq *AllocateQuery) AllX(ctx context.Context) []*Allocate {
 // IDs executes the query and returns a list of Allocate IDs.
 func (aq *AllocateQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeAllocate, "IDs")
 	if err := aq.Select(allocate.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -390,10 +394,11 @@ func (aq *AllocateQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (aq *AllocateQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeAllocate, "Count")
 	if err := aq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return aq.sqlCount(ctx)
+	return withInterceptors[int](ctx, aq, querierCount[*AllocateQuery](), aq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -407,10 +412,15 @@ func (aq *AllocateQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (aq *AllocateQuery) Exist(ctx context.Context) (bool, error) {
-	if err := aq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeAllocate, "Exist")
+	switch _, err := aq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return aq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -452,7 +462,7 @@ func (aq *AllocateQuery) Clone() *AllocateQuery {
 // WithRider tells the query-builder to eager-load the nodes that are connected to
 // the "rider" edge. The optional arguments are used to configure the query builder of the edge.
 func (aq *AllocateQuery) WithRider(opts ...func(*RiderQuery)) *AllocateQuery {
-	query := &RiderQuery{config: aq.config}
+	query := (&RiderClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -463,7 +473,7 @@ func (aq *AllocateQuery) WithRider(opts ...func(*RiderQuery)) *AllocateQuery {
 // WithSubscribe tells the query-builder to eager-load the nodes that are connected to
 // the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
 func (aq *AllocateQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *AllocateQuery {
-	query := &SubscribeQuery{config: aq.config}
+	query := (&SubscribeClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -474,7 +484,7 @@ func (aq *AllocateQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *AllocateQ
 // WithEmployee tells the query-builder to eager-load the nodes that are connected to
 // the "employee" edge. The optional arguments are used to configure the query builder of the edge.
 func (aq *AllocateQuery) WithEmployee(opts ...func(*EmployeeQuery)) *AllocateQuery {
-	query := &EmployeeQuery{config: aq.config}
+	query := (&EmployeeClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -485,7 +495,7 @@ func (aq *AllocateQuery) WithEmployee(opts ...func(*EmployeeQuery)) *AllocateQue
 // WithCabinet tells the query-builder to eager-load the nodes that are connected to
 // the "cabinet" edge. The optional arguments are used to configure the query builder of the edge.
 func (aq *AllocateQuery) WithCabinet(opts ...func(*CabinetQuery)) *AllocateQuery {
-	query := &CabinetQuery{config: aq.config}
+	query := (&CabinetClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -496,7 +506,7 @@ func (aq *AllocateQuery) WithCabinet(opts ...func(*CabinetQuery)) *AllocateQuery
 // WithStore tells the query-builder to eager-load the nodes that are connected to
 // the "store" edge. The optional arguments are used to configure the query builder of the edge.
 func (aq *AllocateQuery) WithStore(opts ...func(*StoreQuery)) *AllocateQuery {
-	query := &StoreQuery{config: aq.config}
+	query := (&StoreClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -507,7 +517,7 @@ func (aq *AllocateQuery) WithStore(opts ...func(*StoreQuery)) *AllocateQuery {
 // WithEbike tells the query-builder to eager-load the nodes that are connected to
 // the "ebike" edge. The optional arguments are used to configure the query builder of the edge.
 func (aq *AllocateQuery) WithEbike(opts ...func(*EbikeQuery)) *AllocateQuery {
-	query := &EbikeQuery{config: aq.config}
+	query := (&EbikeClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -518,7 +528,7 @@ func (aq *AllocateQuery) WithEbike(opts ...func(*EbikeQuery)) *AllocateQuery {
 // WithBrand tells the query-builder to eager-load the nodes that are connected to
 // the "brand" edge. The optional arguments are used to configure the query builder of the edge.
 func (aq *AllocateQuery) WithBrand(opts ...func(*EbikeBrandQuery)) *AllocateQuery {
-	query := &EbikeBrandQuery{config: aq.config}
+	query := (&EbikeBrandClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -529,7 +539,7 @@ func (aq *AllocateQuery) WithBrand(opts ...func(*EbikeBrandQuery)) *AllocateQuer
 // WithContract tells the query-builder to eager-load the nodes that are connected to
 // the "contract" edge. The optional arguments are used to configure the query builder of the edge.
 func (aq *AllocateQuery) WithContract(opts ...func(*ContractQuery)) *AllocateQuery {
-	query := &ContractQuery{config: aq.config}
+	query := (&ContractClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -552,16 +562,11 @@ func (aq *AllocateQuery) WithContract(opts ...func(*ContractQuery)) *AllocateQue
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (aq *AllocateQuery) GroupBy(field string, fields ...string) *AllocateGroupBy {
-	grbuild := &AllocateGroupBy{config: aq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := aq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return aq.sqlQuery(ctx), nil
-	}
+	aq.fields = append([]string{field}, fields...)
+	grbuild := &AllocateGroupBy{build: aq}
+	grbuild.flds = &aq.fields
 	grbuild.label = allocate.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -579,13 +584,28 @@ func (aq *AllocateQuery) GroupBy(field string, fields ...string) *AllocateGroupB
 //		Scan(ctx, &v)
 func (aq *AllocateQuery) Select(fields ...string) *AllocateSelect {
 	aq.fields = append(aq.fields, fields...)
-	selbuild := &AllocateSelect{AllocateQuery: aq}
-	selbuild.label = allocate.Label
-	selbuild.flds, selbuild.scan = &aq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &AllocateSelect{AllocateQuery: aq}
+	sbuild.label = allocate.Label
+	sbuild.flds, sbuild.scan = &aq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a AllocateSelect configured with the given aggregations.
+func (aq *AllocateQuery) Aggregate(fns ...AggregateFunc) *AllocateSelect {
+	return aq.Select().Aggregate(fns...)
 }
 
 func (aq *AllocateQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range aq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, aq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range aq.fields {
 		if !allocate.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -925,17 +945,6 @@ func (aq *AllocateQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, aq.driver, _spec)
 }
 
-func (aq *AllocateQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := aq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (aq *AllocateQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -1027,13 +1036,8 @@ func (aq *AllocateQuery) Modify(modifiers ...func(s *sql.Selector)) *AllocateSel
 
 // AllocateGroupBy is the group-by builder for Allocate entities.
 type AllocateGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *AllocateQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -1042,74 +1046,77 @@ func (agb *AllocateGroupBy) Aggregate(fns ...AggregateFunc) *AllocateGroupBy {
 	return agb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (agb *AllocateGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := agb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeAllocate, "GroupBy")
+	if err := agb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	agb.sql = query
-	return agb.sqlScan(ctx, v)
+	return scanWithInterceptors[*AllocateQuery, *AllocateGroupBy](ctx, agb.build, agb, agb.build.inters, v)
 }
 
-func (agb *AllocateGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range agb.fields {
-		if !allocate.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (agb *AllocateGroupBy) sqlScan(ctx context.Context, root *AllocateQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(agb.fns))
+	for _, fn := range agb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := agb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*agb.flds)+len(agb.fns))
+		for _, f := range *agb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*agb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := agb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := agb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (agb *AllocateGroupBy) sqlQuery() *sql.Selector {
-	selector := agb.sql.Select()
-	aggregation := make([]string, 0, len(agb.fns))
-	for _, fn := range agb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(agb.fields)+len(agb.fns))
-		for _, f := range agb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(agb.fields...)...)
-}
-
 // AllocateSelect is the builder for selecting fields of Allocate entities.
 type AllocateSelect struct {
 	*AllocateQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (as *AllocateSelect) Aggregate(fns ...AggregateFunc) *AllocateSelect {
+	as.fns = append(as.fns, fns...)
+	return as
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (as *AllocateSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeAllocate, "Select")
 	if err := as.prepareQuery(ctx); err != nil {
 		return err
 	}
-	as.sql = as.AllocateQuery.sqlQuery(ctx)
-	return as.sqlScan(ctx, v)
+	return scanWithInterceptors[*AllocateQuery, *AllocateSelect](ctx, as.AllocateQuery, as, as.inters, v)
 }
 
-func (as *AllocateSelect) sqlScan(ctx context.Context, v any) error {
+func (as *AllocateSelect) sqlScan(ctx context.Context, root *AllocateQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(as.fns))
+	for _, fn := range as.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*as.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := as.sql.Query()
+	query, args := selector.Query()
 	if err := as.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

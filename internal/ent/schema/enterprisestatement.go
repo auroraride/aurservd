@@ -19,6 +19,7 @@ type EnterpriseStatement struct {
 func (EnterpriseStatement) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "enterprise_statement"},
+        entsql.WithComments(true),
     }
 }
 

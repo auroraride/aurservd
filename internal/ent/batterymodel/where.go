@@ -12,250 +12,162 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uint64) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.BatteryModel(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uint64) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.BatteryModel(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uint64) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.BatteryModel(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.BatteryModel(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.BatteryModel(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uint64) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.BatteryModel(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uint64) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.BatteryModel(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uint64) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.BatteryModel(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uint64) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.BatteryModel(sql.FieldLTE(FieldID, id))
 }
 
 // Model applies equality check predicate on the "model" field. It's identical to ModelEQ.
 func Model(v string) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldModel), v))
-	})
+	return predicate.BatteryModel(sql.FieldEQ(FieldModel, v))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.BatteryModel(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // ModelEQ applies the EQ predicate on the "model" field.
 func ModelEQ(v string) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldModel), v))
-	})
+	return predicate.BatteryModel(sql.FieldEQ(FieldModel, v))
 }
 
 // ModelNEQ applies the NEQ predicate on the "model" field.
 func ModelNEQ(v string) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldModel), v))
-	})
+	return predicate.BatteryModel(sql.FieldNEQ(FieldModel, v))
 }
 
 // ModelIn applies the In predicate on the "model" field.
 func ModelIn(vs ...string) predicate.BatteryModel {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldModel), v...))
-	})
+	return predicate.BatteryModel(sql.FieldIn(FieldModel, vs...))
 }
 
 // ModelNotIn applies the NotIn predicate on the "model" field.
 func ModelNotIn(vs ...string) predicate.BatteryModel {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldModel), v...))
-	})
+	return predicate.BatteryModel(sql.FieldNotIn(FieldModel, vs...))
 }
 
 // ModelGT applies the GT predicate on the "model" field.
 func ModelGT(v string) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldModel), v))
-	})
+	return predicate.BatteryModel(sql.FieldGT(FieldModel, v))
 }
 
 // ModelGTE applies the GTE predicate on the "model" field.
 func ModelGTE(v string) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldModel), v))
-	})
+	return predicate.BatteryModel(sql.FieldGTE(FieldModel, v))
 }
 
 // ModelLT applies the LT predicate on the "model" field.
 func ModelLT(v string) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldModel), v))
-	})
+	return predicate.BatteryModel(sql.FieldLT(FieldModel, v))
 }
 
 // ModelLTE applies the LTE predicate on the "model" field.
 func ModelLTE(v string) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldModel), v))
-	})
+	return predicate.BatteryModel(sql.FieldLTE(FieldModel, v))
 }
 
 // ModelContains applies the Contains predicate on the "model" field.
 func ModelContains(v string) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldModel), v))
-	})
+	return predicate.BatteryModel(sql.FieldContains(FieldModel, v))
 }
 
 // ModelHasPrefix applies the HasPrefix predicate on the "model" field.
 func ModelHasPrefix(v string) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldModel), v))
-	})
+	return predicate.BatteryModel(sql.FieldHasPrefix(FieldModel, v))
 }
 
 // ModelHasSuffix applies the HasSuffix predicate on the "model" field.
 func ModelHasSuffix(v string) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldModel), v))
-	})
+	return predicate.BatteryModel(sql.FieldHasSuffix(FieldModel, v))
 }
 
 // ModelEqualFold applies the EqualFold predicate on the "model" field.
 func ModelEqualFold(v string) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldModel), v))
-	})
+	return predicate.BatteryModel(sql.FieldEqualFold(FieldModel, v))
 }
 
 // ModelContainsFold applies the ContainsFold predicate on the "model" field.
 func ModelContainsFold(v string) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldModel), v))
-	})
+	return predicate.BatteryModel(sql.FieldContainsFold(FieldModel, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.BatteryModel(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
 func CreatedAtNEQ(v time.Time) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.BatteryModel(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.BatteryModel {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.BatteryModel(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.BatteryModel {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.BatteryModel(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtGT applies the GT predicate on the "created_at" field.
 func CreatedAtGT(v time.Time) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.BatteryModel(sql.FieldGT(FieldCreatedAt, v))
 }
 
 // CreatedAtGTE applies the GTE predicate on the "created_at" field.
 func CreatedAtGTE(v time.Time) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.BatteryModel(sql.FieldGTE(FieldCreatedAt, v))
 }
 
 // CreatedAtLT applies the LT predicate on the "created_at" field.
 func CreatedAtLT(v time.Time) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.BatteryModel(sql.FieldLT(FieldCreatedAt, v))
 }
 
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.BatteryModel(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // HasCabinets applies the HasEdge predicate on the "cabinets" edge.
@@ -263,7 +175,6 @@ func HasCabinets() predicate.BatteryModel {
 	return predicate.BatteryModel(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CabinetsTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, CabinetsTable, CabinetsPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)

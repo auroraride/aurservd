@@ -24,6 +24,7 @@ type RiderFollowUpQuery struct {
 	unique      *bool
 	order       []OrderFunc
 	fields      []string
+	inters      []Interceptor
 	predicates  []predicate.RiderFollowUp
 	withManager *ManagerQuery
 	withRider   *RiderQuery
@@ -39,13 +40,13 @@ func (rfuq *RiderFollowUpQuery) Where(ps ...predicate.RiderFollowUp) *RiderFollo
 	return rfuq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (rfuq *RiderFollowUpQuery) Limit(limit int) *RiderFollowUpQuery {
 	rfuq.limit = &limit
 	return rfuq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (rfuq *RiderFollowUpQuery) Offset(offset int) *RiderFollowUpQuery {
 	rfuq.offset = &offset
 	return rfuq
@@ -58,7 +59,7 @@ func (rfuq *RiderFollowUpQuery) Unique(unique bool) *RiderFollowUpQuery {
 	return rfuq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (rfuq *RiderFollowUpQuery) Order(o ...OrderFunc) *RiderFollowUpQuery {
 	rfuq.order = append(rfuq.order, o...)
 	return rfuq
@@ -66,7 +67,7 @@ func (rfuq *RiderFollowUpQuery) Order(o ...OrderFunc) *RiderFollowUpQuery {
 
 // QueryManager chains the current query on the "manager" edge.
 func (rfuq *RiderFollowUpQuery) QueryManager() *ManagerQuery {
-	query := &ManagerQuery{config: rfuq.config}
+	query := (&ManagerClient{config: rfuq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rfuq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -88,7 +89,7 @@ func (rfuq *RiderFollowUpQuery) QueryManager() *ManagerQuery {
 
 // QueryRider chains the current query on the "rider" edge.
 func (rfuq *RiderFollowUpQuery) QueryRider() *RiderQuery {
-	query := &RiderQuery{config: rfuq.config}
+	query := (&RiderClient{config: rfuq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rfuq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -111,7 +112,7 @@ func (rfuq *RiderFollowUpQuery) QueryRider() *RiderQuery {
 // First returns the first RiderFollowUp entity from the query.
 // Returns a *NotFoundError when no RiderFollowUp was found.
 func (rfuq *RiderFollowUpQuery) First(ctx context.Context) (*RiderFollowUp, error) {
-	nodes, err := rfuq.Limit(1).All(ctx)
+	nodes, err := rfuq.Limit(1).All(newQueryContext(ctx, TypeRiderFollowUp, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +135,7 @@ func (rfuq *RiderFollowUpQuery) FirstX(ctx context.Context) *RiderFollowUp {
 // Returns a *NotFoundError when no RiderFollowUp ID was found.
 func (rfuq *RiderFollowUpQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = rfuq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = rfuq.Limit(1).IDs(newQueryContext(ctx, TypeRiderFollowUp, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -157,7 +158,7 @@ func (rfuq *RiderFollowUpQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one RiderFollowUp entity is found.
 // Returns a *NotFoundError when no RiderFollowUp entities are found.
 func (rfuq *RiderFollowUpQuery) Only(ctx context.Context) (*RiderFollowUp, error) {
-	nodes, err := rfuq.Limit(2).All(ctx)
+	nodes, err := rfuq.Limit(2).All(newQueryContext(ctx, TypeRiderFollowUp, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -185,7 +186,7 @@ func (rfuq *RiderFollowUpQuery) OnlyX(ctx context.Context) *RiderFollowUp {
 // Returns a *NotFoundError when no entities are found.
 func (rfuq *RiderFollowUpQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = rfuq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = rfuq.Limit(2).IDs(newQueryContext(ctx, TypeRiderFollowUp, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -210,10 +211,12 @@ func (rfuq *RiderFollowUpQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of RiderFollowUps.
 func (rfuq *RiderFollowUpQuery) All(ctx context.Context) ([]*RiderFollowUp, error) {
+	ctx = newQueryContext(ctx, TypeRiderFollowUp, "All")
 	if err := rfuq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return rfuq.sqlAll(ctx)
+	qr := querierAll[[]*RiderFollowUp, *RiderFollowUpQuery]()
+	return withInterceptors[[]*RiderFollowUp](ctx, rfuq, qr, rfuq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -228,6 +231,7 @@ func (rfuq *RiderFollowUpQuery) AllX(ctx context.Context) []*RiderFollowUp {
 // IDs executes the query and returns a list of RiderFollowUp IDs.
 func (rfuq *RiderFollowUpQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeRiderFollowUp, "IDs")
 	if err := rfuq.Select(riderfollowup.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -245,10 +249,11 @@ func (rfuq *RiderFollowUpQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (rfuq *RiderFollowUpQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeRiderFollowUp, "Count")
 	if err := rfuq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return rfuq.sqlCount(ctx)
+	return withInterceptors[int](ctx, rfuq, querierCount[*RiderFollowUpQuery](), rfuq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -262,10 +267,15 @@ func (rfuq *RiderFollowUpQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (rfuq *RiderFollowUpQuery) Exist(ctx context.Context) (bool, error) {
-	if err := rfuq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeRiderFollowUp, "Exist")
+	switch _, err := rfuq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return rfuq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -301,7 +311,7 @@ func (rfuq *RiderFollowUpQuery) Clone() *RiderFollowUpQuery {
 // WithManager tells the query-builder to eager-load the nodes that are connected to
 // the "manager" edge. The optional arguments are used to configure the query builder of the edge.
 func (rfuq *RiderFollowUpQuery) WithManager(opts ...func(*ManagerQuery)) *RiderFollowUpQuery {
-	query := &ManagerQuery{config: rfuq.config}
+	query := (&ManagerClient{config: rfuq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -312,7 +322,7 @@ func (rfuq *RiderFollowUpQuery) WithManager(opts ...func(*ManagerQuery)) *RiderF
 // WithRider tells the query-builder to eager-load the nodes that are connected to
 // the "rider" edge. The optional arguments are used to configure the query builder of the edge.
 func (rfuq *RiderFollowUpQuery) WithRider(opts ...func(*RiderQuery)) *RiderFollowUpQuery {
-	query := &RiderQuery{config: rfuq.config}
+	query := (&RiderClient{config: rfuq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -335,16 +345,11 @@ func (rfuq *RiderFollowUpQuery) WithRider(opts ...func(*RiderQuery)) *RiderFollo
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (rfuq *RiderFollowUpQuery) GroupBy(field string, fields ...string) *RiderFollowUpGroupBy {
-	grbuild := &RiderFollowUpGroupBy{config: rfuq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := rfuq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return rfuq.sqlQuery(ctx), nil
-	}
+	rfuq.fields = append([]string{field}, fields...)
+	grbuild := &RiderFollowUpGroupBy{build: rfuq}
+	grbuild.flds = &rfuq.fields
 	grbuild.label = riderfollowup.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -362,13 +367,28 @@ func (rfuq *RiderFollowUpQuery) GroupBy(field string, fields ...string) *RiderFo
 //		Scan(ctx, &v)
 func (rfuq *RiderFollowUpQuery) Select(fields ...string) *RiderFollowUpSelect {
 	rfuq.fields = append(rfuq.fields, fields...)
-	selbuild := &RiderFollowUpSelect{RiderFollowUpQuery: rfuq}
-	selbuild.label = riderfollowup.Label
-	selbuild.flds, selbuild.scan = &rfuq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &RiderFollowUpSelect{RiderFollowUpQuery: rfuq}
+	sbuild.label = riderfollowup.Label
+	sbuild.flds, sbuild.scan = &rfuq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a RiderFollowUpSelect configured with the given aggregations.
+func (rfuq *RiderFollowUpQuery) Aggregate(fns ...AggregateFunc) *RiderFollowUpSelect {
+	return rfuq.Select().Aggregate(fns...)
 }
 
 func (rfuq *RiderFollowUpQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range rfuq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, rfuq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range rfuq.fields {
 		if !riderfollowup.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -494,17 +514,6 @@ func (rfuq *RiderFollowUpQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, rfuq.driver, _spec)
 }
 
-func (rfuq *RiderFollowUpQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := rfuq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (rfuq *RiderFollowUpQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -596,13 +605,8 @@ func (rfuq *RiderFollowUpQuery) Modify(modifiers ...func(s *sql.Selector)) *Ride
 
 // RiderFollowUpGroupBy is the group-by builder for RiderFollowUp entities.
 type RiderFollowUpGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *RiderFollowUpQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -611,74 +615,77 @@ func (rfugb *RiderFollowUpGroupBy) Aggregate(fns ...AggregateFunc) *RiderFollowU
 	return rfugb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (rfugb *RiderFollowUpGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := rfugb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeRiderFollowUp, "GroupBy")
+	if err := rfugb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	rfugb.sql = query
-	return rfugb.sqlScan(ctx, v)
+	return scanWithInterceptors[*RiderFollowUpQuery, *RiderFollowUpGroupBy](ctx, rfugb.build, rfugb, rfugb.build.inters, v)
 }
 
-func (rfugb *RiderFollowUpGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range rfugb.fields {
-		if !riderfollowup.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (rfugb *RiderFollowUpGroupBy) sqlScan(ctx context.Context, root *RiderFollowUpQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(rfugb.fns))
+	for _, fn := range rfugb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := rfugb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*rfugb.flds)+len(rfugb.fns))
+		for _, f := range *rfugb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*rfugb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := rfugb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := rfugb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (rfugb *RiderFollowUpGroupBy) sqlQuery() *sql.Selector {
-	selector := rfugb.sql.Select()
-	aggregation := make([]string, 0, len(rfugb.fns))
-	for _, fn := range rfugb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(rfugb.fields)+len(rfugb.fns))
-		for _, f := range rfugb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(rfugb.fields...)...)
-}
-
 // RiderFollowUpSelect is the builder for selecting fields of RiderFollowUp entities.
 type RiderFollowUpSelect struct {
 	*RiderFollowUpQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (rfus *RiderFollowUpSelect) Aggregate(fns ...AggregateFunc) *RiderFollowUpSelect {
+	rfus.fns = append(rfus.fns, fns...)
+	return rfus
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (rfus *RiderFollowUpSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeRiderFollowUp, "Select")
 	if err := rfus.prepareQuery(ctx); err != nil {
 		return err
 	}
-	rfus.sql = rfus.RiderFollowUpQuery.sqlQuery(ctx)
-	return rfus.sqlScan(ctx, v)
+	return scanWithInterceptors[*RiderFollowUpQuery, *RiderFollowUpSelect](ctx, rfus.RiderFollowUpQuery, rfus, rfus.inters, v)
 }
 
-func (rfus *RiderFollowUpSelect) sqlScan(ctx context.Context, v any) error {
+func (rfus *RiderFollowUpSelect) sqlScan(ctx context.Context, root *RiderFollowUpQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(rfus.fns))
+	for _, fn := range rfus.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*rfus.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := rfus.sql.Query()
+	query, args := selector.Query()
 	if err := rfus.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

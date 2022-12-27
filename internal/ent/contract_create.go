@@ -264,52 +264,10 @@ func (cc *ContractCreate) Mutation() *ContractMutation {
 
 // Save creates the Contract in the database.
 func (cc *ContractCreate) Save(ctx context.Context) (*Contract, error) {
-	var (
-		err  error
-		node *Contract
-	)
 	if err := cc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(cc.hooks) == 0 {
-		if err = cc.check(); err != nil {
-			return nil, err
-		}
-		node, err = cc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ContractMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = cc.check(); err != nil {
-				return nil, err
-			}
-			cc.mutation = mutation
-			if node, err = cc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(cc.hooks) - 1; i >= 0; i-- {
-			if cc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = cc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, cc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Contract)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from ContractMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Contract, ContractMutation](ctx, cc.sqlSave, cc.mutation, cc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -401,6 +359,9 @@ func (cc *ContractCreate) check() error {
 }
 
 func (cc *ContractCreate) sqlSave(ctx context.Context) (*Contract, error) {
+	if err := cc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := cc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, cc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -410,6 +371,8 @@ func (cc *ContractCreate) sqlSave(ctx context.Context) (*Contract, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	cc.mutation.id = &_node.ID
+	cc.mutation.done = true
 	return _node, nil
 }
 
@@ -426,123 +389,63 @@ func (cc *ContractCreate) createSpec() (*Contract, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = cc.conflict
 	if value, ok := cc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: contract.FieldCreatedAt,
-		})
+		_spec.SetField(contract.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := cc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: contract.FieldUpdatedAt,
-		})
+		_spec.SetField(contract.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := cc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: contract.FieldDeletedAt,
-		})
+		_spec.SetField(contract.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := cc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: contract.FieldCreator,
-		})
+		_spec.SetField(contract.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := cc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: contract.FieldLastModifier,
-		})
+		_spec.SetField(contract.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := cc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: contract.FieldRemark,
-		})
+		_spec.SetField(contract.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := cc.mutation.Status(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: contract.FieldStatus,
-		})
+		_spec.SetField(contract.FieldStatus, field.TypeUint8, value)
 		_node.Status = value
 	}
 	if value, ok := cc.mutation.FlowID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: contract.FieldFlowID,
-		})
+		_spec.SetField(contract.FieldFlowID, field.TypeString, value)
 		_node.FlowID = value
 	}
 	if value, ok := cc.mutation.Sn(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: contract.FieldSn,
-		})
+		_spec.SetField(contract.FieldSn, field.TypeString, value)
 		_node.Sn = value
 	}
 	if value, ok := cc.mutation.Files(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: contract.FieldFiles,
-		})
+		_spec.SetField(contract.FieldFiles, field.TypeJSON, value)
 		_node.Files = value
 	}
 	if value, ok := cc.mutation.Effective(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: contract.FieldEffective,
-		})
+		_spec.SetField(contract.FieldEffective, field.TypeBool, value)
 		_node.Effective = value
 	}
 	if value, ok := cc.mutation.RiderInfo(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: contract.FieldRiderInfo,
-		})
+		_spec.SetField(contract.FieldRiderInfo, field.TypeJSON, value)
 		_node.RiderInfo = value
 	}
 	if value, ok := cc.mutation.Link(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: contract.FieldLink,
-		})
+		_spec.SetField(contract.FieldLink, field.TypeString, value)
 		_node.Link = &value
 	}
 	if value, ok := cc.mutation.ExpiresAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: contract.FieldExpiresAt,
-		})
+		_spec.SetField(contract.FieldExpiresAt, field.TypeTime, value)
 		_node.ExpiresAt = &value
 	}
 	if value, ok := cc.mutation.SignedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: contract.FieldSignedAt,
-		})
+		_spec.SetField(contract.FieldSignedAt, field.TypeTime, value)
 		_node.SignedAt = &value
 	}
 	if nodes := cc.mutation.SubscribeIDs(); len(nodes) > 0 {

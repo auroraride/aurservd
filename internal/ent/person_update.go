@@ -366,43 +366,10 @@ func (pu *PersonUpdate) RemoveRider(r ...*Rider) *PersonUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (pu *PersonUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := pu.defaults(); err != nil {
 		return 0, err
 	}
-	if len(pu.hooks) == 0 {
-		if err = pu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = pu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*PersonMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = pu.check(); err != nil {
-				return 0, err
-			}
-			pu.mutation = mutation
-			affected, err = pu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(pu.hooks) - 1; i >= 0; i-- {
-			if pu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = pu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, pu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, PersonMutation](ctx, pu.sqlSave, pu.mutation, pu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -461,6 +428,9 @@ func (pu *PersonUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *PersonU
 }
 
 func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := pu.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   person.Table,
@@ -479,215 +449,100 @@ func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := pu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: person.FieldUpdatedAt,
-		})
+		_spec.SetField(person.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := pu.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: person.FieldDeletedAt,
-		})
+		_spec.SetField(person.FieldDeletedAt, field.TypeTime, value)
 	}
 	if pu.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: person.FieldDeletedAt,
-		})
+		_spec.ClearField(person.FieldDeletedAt, field.TypeTime)
 	}
 	if pu.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: person.FieldCreator,
-		})
+		_spec.ClearField(person.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := pu.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: person.FieldLastModifier,
-		})
+		_spec.SetField(person.FieldLastModifier, field.TypeJSON, value)
 	}
 	if pu.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: person.FieldLastModifier,
-		})
+		_spec.ClearField(person.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := pu.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldRemark,
-		})
+		_spec.SetField(person.FieldRemark, field.TypeString, value)
 	}
 	if pu.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: person.FieldRemark,
-		})
+		_spec.ClearField(person.FieldRemark, field.TypeString)
 	}
 	if value, ok := pu.mutation.Status(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: person.FieldStatus,
-		})
+		_spec.SetField(person.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := pu.mutation.AddedStatus(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: person.FieldStatus,
-		})
+		_spec.AddField(person.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := pu.mutation.Banned(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: person.FieldBanned,
-		})
+		_spec.SetField(person.FieldBanned, field.TypeBool, value)
 	}
 	if value, ok := pu.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldName,
-		})
+		_spec.SetField(person.FieldName, field.TypeString, value)
 	}
 	if value, ok := pu.mutation.IDCardNumber(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldIDCardNumber,
-		})
+		_spec.SetField(person.FieldIDCardNumber, field.TypeString, value)
 	}
 	if pu.mutation.IDCardNumberCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: person.FieldIDCardNumber,
-		})
+		_spec.ClearField(person.FieldIDCardNumber, field.TypeString)
 	}
 	if value, ok := pu.mutation.IDCardType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: person.FieldIDCardType,
-		})
+		_spec.SetField(person.FieldIDCardType, field.TypeUint8, value)
 	}
 	if value, ok := pu.mutation.AddedIDCardType(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: person.FieldIDCardType,
-		})
+		_spec.AddField(person.FieldIDCardType, field.TypeUint8, value)
 	}
 	if value, ok := pu.mutation.IDCardPortrait(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldIDCardPortrait,
-		})
+		_spec.SetField(person.FieldIDCardPortrait, field.TypeString, value)
 	}
 	if pu.mutation.IDCardPortraitCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: person.FieldIDCardPortrait,
-		})
+		_spec.ClearField(person.FieldIDCardPortrait, field.TypeString)
 	}
 	if value, ok := pu.mutation.IDCardNational(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldIDCardNational,
-		})
+		_spec.SetField(person.FieldIDCardNational, field.TypeString, value)
 	}
 	if pu.mutation.IDCardNationalCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: person.FieldIDCardNational,
-		})
+		_spec.ClearField(person.FieldIDCardNational, field.TypeString)
 	}
 	if value, ok := pu.mutation.AuthFace(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldAuthFace,
-		})
+		_spec.SetField(person.FieldAuthFace, field.TypeString, value)
 	}
 	if pu.mutation.AuthFaceCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: person.FieldAuthFace,
-		})
+		_spec.ClearField(person.FieldAuthFace, field.TypeString)
 	}
 	if value, ok := pu.mutation.AuthResult(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: person.FieldAuthResult,
-		})
+		_spec.SetField(person.FieldAuthResult, field.TypeJSON, value)
 	}
 	if pu.mutation.AuthResultCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: person.FieldAuthResult,
-		})
+		_spec.ClearField(person.FieldAuthResult, field.TypeJSON)
 	}
 	if value, ok := pu.mutation.AuthAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: person.FieldAuthAt,
-		})
+		_spec.SetField(person.FieldAuthAt, field.TypeTime, value)
 	}
 	if pu.mutation.AuthAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: person.FieldAuthAt,
-		})
+		_spec.ClearField(person.FieldAuthAt, field.TypeTime)
 	}
 	if value, ok := pu.mutation.EsignAccountID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldEsignAccountID,
-		})
+		_spec.SetField(person.FieldEsignAccountID, field.TypeString, value)
 	}
 	if pu.mutation.EsignAccountIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: person.FieldEsignAccountID,
-		})
+		_spec.ClearField(person.FieldEsignAccountID, field.TypeString)
 	}
 	if value, ok := pu.mutation.BaiduVerifyToken(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldBaiduVerifyToken,
-		})
+		_spec.SetField(person.FieldBaiduVerifyToken, field.TypeString, value)
 	}
 	if pu.mutation.BaiduVerifyTokenCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: person.FieldBaiduVerifyToken,
-		})
+		_spec.ClearField(person.FieldBaiduVerifyToken, field.TypeString)
 	}
 	if value, ok := pu.mutation.BaiduLogID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldBaiduLogID,
-		})
+		_spec.SetField(person.FieldBaiduLogID, field.TypeString, value)
 	}
 	if pu.mutation.BaiduLogIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: person.FieldBaiduLogID,
-		})
+		_spec.ClearField(person.FieldBaiduLogID, field.TypeString)
 	}
 	if pu.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -743,7 +598,7 @@ func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = pu.modifiers
+	_spec.AddModifiers(pu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{person.Label}
@@ -752,6 +607,7 @@ func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	pu.mutation.done = true
 	return n, nil
 }
 
@@ -1106,49 +962,10 @@ func (puo *PersonUpdateOne) Select(field string, fields ...string) *PersonUpdate
 
 // Save executes the query and returns the updated Person entity.
 func (puo *PersonUpdateOne) Save(ctx context.Context) (*Person, error) {
-	var (
-		err  error
-		node *Person
-	)
 	if err := puo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(puo.hooks) == 0 {
-		if err = puo.check(); err != nil {
-			return nil, err
-		}
-		node, err = puo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*PersonMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = puo.check(); err != nil {
-				return nil, err
-			}
-			puo.mutation = mutation
-			node, err = puo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(puo.hooks) - 1; i >= 0; i-- {
-			if puo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = puo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, puo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Person)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from PersonMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Person, PersonMutation](ctx, puo.sqlSave, puo.mutation, puo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -1207,6 +1024,9 @@ func (puo *PersonUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Per
 }
 
 func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err error) {
+	if err := puo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   person.Table,
@@ -1242,215 +1062,100 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 		}
 	}
 	if value, ok := puo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: person.FieldUpdatedAt,
-		})
+		_spec.SetField(person.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := puo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: person.FieldDeletedAt,
-		})
+		_spec.SetField(person.FieldDeletedAt, field.TypeTime, value)
 	}
 	if puo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: person.FieldDeletedAt,
-		})
+		_spec.ClearField(person.FieldDeletedAt, field.TypeTime)
 	}
 	if puo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: person.FieldCreator,
-		})
+		_spec.ClearField(person.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := puo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: person.FieldLastModifier,
-		})
+		_spec.SetField(person.FieldLastModifier, field.TypeJSON, value)
 	}
 	if puo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: person.FieldLastModifier,
-		})
+		_spec.ClearField(person.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := puo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldRemark,
-		})
+		_spec.SetField(person.FieldRemark, field.TypeString, value)
 	}
 	if puo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: person.FieldRemark,
-		})
+		_spec.ClearField(person.FieldRemark, field.TypeString)
 	}
 	if value, ok := puo.mutation.Status(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: person.FieldStatus,
-		})
+		_spec.SetField(person.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := puo.mutation.AddedStatus(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: person.FieldStatus,
-		})
+		_spec.AddField(person.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := puo.mutation.Banned(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: person.FieldBanned,
-		})
+		_spec.SetField(person.FieldBanned, field.TypeBool, value)
 	}
 	if value, ok := puo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldName,
-		})
+		_spec.SetField(person.FieldName, field.TypeString, value)
 	}
 	if value, ok := puo.mutation.IDCardNumber(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldIDCardNumber,
-		})
+		_spec.SetField(person.FieldIDCardNumber, field.TypeString, value)
 	}
 	if puo.mutation.IDCardNumberCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: person.FieldIDCardNumber,
-		})
+		_spec.ClearField(person.FieldIDCardNumber, field.TypeString)
 	}
 	if value, ok := puo.mutation.IDCardType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: person.FieldIDCardType,
-		})
+		_spec.SetField(person.FieldIDCardType, field.TypeUint8, value)
 	}
 	if value, ok := puo.mutation.AddedIDCardType(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: person.FieldIDCardType,
-		})
+		_spec.AddField(person.FieldIDCardType, field.TypeUint8, value)
 	}
 	if value, ok := puo.mutation.IDCardPortrait(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldIDCardPortrait,
-		})
+		_spec.SetField(person.FieldIDCardPortrait, field.TypeString, value)
 	}
 	if puo.mutation.IDCardPortraitCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: person.FieldIDCardPortrait,
-		})
+		_spec.ClearField(person.FieldIDCardPortrait, field.TypeString)
 	}
 	if value, ok := puo.mutation.IDCardNational(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldIDCardNational,
-		})
+		_spec.SetField(person.FieldIDCardNational, field.TypeString, value)
 	}
 	if puo.mutation.IDCardNationalCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: person.FieldIDCardNational,
-		})
+		_spec.ClearField(person.FieldIDCardNational, field.TypeString)
 	}
 	if value, ok := puo.mutation.AuthFace(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldAuthFace,
-		})
+		_spec.SetField(person.FieldAuthFace, field.TypeString, value)
 	}
 	if puo.mutation.AuthFaceCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: person.FieldAuthFace,
-		})
+		_spec.ClearField(person.FieldAuthFace, field.TypeString)
 	}
 	if value, ok := puo.mutation.AuthResult(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: person.FieldAuthResult,
-		})
+		_spec.SetField(person.FieldAuthResult, field.TypeJSON, value)
 	}
 	if puo.mutation.AuthResultCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: person.FieldAuthResult,
-		})
+		_spec.ClearField(person.FieldAuthResult, field.TypeJSON)
 	}
 	if value, ok := puo.mutation.AuthAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: person.FieldAuthAt,
-		})
+		_spec.SetField(person.FieldAuthAt, field.TypeTime, value)
 	}
 	if puo.mutation.AuthAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: person.FieldAuthAt,
-		})
+		_spec.ClearField(person.FieldAuthAt, field.TypeTime)
 	}
 	if value, ok := puo.mutation.EsignAccountID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldEsignAccountID,
-		})
+		_spec.SetField(person.FieldEsignAccountID, field.TypeString, value)
 	}
 	if puo.mutation.EsignAccountIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: person.FieldEsignAccountID,
-		})
+		_spec.ClearField(person.FieldEsignAccountID, field.TypeString)
 	}
 	if value, ok := puo.mutation.BaiduVerifyToken(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldBaiduVerifyToken,
-		})
+		_spec.SetField(person.FieldBaiduVerifyToken, field.TypeString, value)
 	}
 	if puo.mutation.BaiduVerifyTokenCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: person.FieldBaiduVerifyToken,
-		})
+		_spec.ClearField(person.FieldBaiduVerifyToken, field.TypeString)
 	}
 	if value, ok := puo.mutation.BaiduLogID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldBaiduLogID,
-		})
+		_spec.SetField(person.FieldBaiduLogID, field.TypeString, value)
 	}
 	if puo.mutation.BaiduLogIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: person.FieldBaiduLogID,
-		})
+		_spec.ClearField(person.FieldBaiduLogID, field.TypeString)
 	}
 	if puo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1506,7 +1211,7 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = puo.modifiers
+	_spec.AddModifiers(puo.modifiers...)
 	_node = &Person{config: puo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -1518,5 +1223,6 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 		}
 		return nil, err
 	}
+	puo.mutation.done = true
 	return _node, nil
 }

@@ -11,7 +11,7 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/go-resty/resty/v2"
-    jsoniter "github.com/json-iterator/go"
+    "github.com/goccy/go-json"
     log "github.com/sirupsen/logrus"
     "strconv"
     "time"
@@ -63,12 +63,11 @@ const (
 )
 
 type Esign struct {
-    Config        ar.EsignConfig
-    headers       map[string]string
-    client        *resty.Request
-    serialization jsoniter.Config
-    redirect      string
-    sn            string
+    Config   ar.EsignConfig
+    headers  map[string]string
+    client   *resty.Request
+    redirect string
+    sn       string
 }
 
 type commonRes struct {
@@ -90,8 +89,7 @@ func New() *Esign {
         snag.Panic("环境设置失败")
     }
     return &Esign{
-        serialization: jsoniter.Config{SortMapKeys: true},
-        Config:        config,
+        Config: config,
         headers: map[string]string{
             "X-Tsign-Open-App-Id":    config.Appid,
             "Content-Type":           headerContentType,
@@ -142,8 +140,8 @@ func (e *Esign) request(api, method string, body interface{}, data interface{}) 
     res := new(commonRes)
     res.Data = data
     if body != nil {
-        bodyString, _ = e.serialization.Froze().MarshalToString(body)
-        md5 = utils.Md5Base64String(bodyString)
+        b, _ := json.Marshal(body)
+        md5 = utils.Md5Base64String(string(b))
     }
     singnature, raw := e.getSign(api, method, md5)
     req := resty.New().
@@ -183,8 +181,9 @@ func (e *Esign) request(api, method string, body interface{}, data interface{}) 
             Raw:      raw,
             Response: string(r.Body()),
         }
-        logstr, _ := e.serialization.Froze().MarshalToString(logdata)
-        log.Info(logstr)
+
+        b, _ := json.Marshal(logdata)
+        log.Info(string(b))
     }
     e.isResSuccess(r, res)
     return res.Data

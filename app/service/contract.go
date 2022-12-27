@@ -19,8 +19,8 @@ import (
     "github.com/auroraride/aurservd/internal/esign"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
+    "github.com/goccy/go-json"
     "github.com/golang-module/carbon/v2"
-    jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
     "math"
     "strings"
@@ -631,7 +631,7 @@ func (s *contractService) Result(r *ent.Rider, sn string) model.StatusResponse {
 func (s *contractService) Notice(b []byte) {
     // 解析回调信息
     var result esign.Notice
-    err := jsoniter.Unmarshal(b, &result)
+    err := json.Unmarshal(b, &result)
     if err != nil {
         log.Errorf("签约回调解析失败: %v", err)
         return

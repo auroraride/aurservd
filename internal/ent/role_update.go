@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -38,6 +39,12 @@ func (ru *RoleUpdate) SetName(s string) *RoleUpdate {
 // SetPermissions sets the "permissions" field.
 func (ru *RoleUpdate) SetPermissions(s []string) *RoleUpdate {
 	ru.mutation.SetPermissions(s)
+	return ru
+}
+
+// AppendPermissions appends s to the "permissions" field.
+func (ru *RoleUpdate) AppendPermissions(s []string) *RoleUpdate {
+	ru.mutation.AppendPermissions(s)
 	return ru
 }
 
@@ -118,34 +125,7 @@ func (ru *RoleUpdate) RemoveManagers(m ...*Manager) *RoleUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ru *RoleUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(ru.hooks) == 0 {
-		affected, err = ru.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*RoleMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			ru.mutation = mutation
-			affected, err = ru.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(ru.hooks) - 1; i >= 0; i-- {
-			if ru.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ru.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, ru.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, RoleMutation](ctx, ru.sqlSave, ru.mutation, ru.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -195,38 +175,24 @@ func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := ru.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: role.FieldName,
-		})
+		_spec.SetField(role.FieldName, field.TypeString, value)
 	}
 	if value, ok := ru.mutation.Permissions(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: role.FieldPermissions,
+		_spec.SetField(role.FieldPermissions, field.TypeJSON, value)
+	}
+	if value, ok := ru.mutation.AppendedPermissions(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, role.FieldPermissions, value)
 		})
 	}
 	if ru.mutation.PermissionsCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: role.FieldPermissions,
-		})
+		_spec.ClearField(role.FieldPermissions, field.TypeJSON)
 	}
 	if value, ok := ru.mutation.Buildin(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: role.FieldBuildin,
-		})
+		_spec.SetField(role.FieldBuildin, field.TypeBool, value)
 	}
 	if value, ok := ru.mutation.Super(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: role.FieldSuper,
-		})
+		_spec.SetField(role.FieldSuper, field.TypeBool, value)
 	}
 	if ru.mutation.ManagersCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -282,7 +248,7 @@ func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = ru.modifiers
+	_spec.AddModifiers(ru.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, ru.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{role.Label}
@@ -291,6 +257,7 @@ func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	ru.mutation.done = true
 	return n, nil
 }
 
@@ -312,6 +279,12 @@ func (ruo *RoleUpdateOne) SetName(s string) *RoleUpdateOne {
 // SetPermissions sets the "permissions" field.
 func (ruo *RoleUpdateOne) SetPermissions(s []string) *RoleUpdateOne {
 	ruo.mutation.SetPermissions(s)
+	return ruo
+}
+
+// AppendPermissions appends s to the "permissions" field.
+func (ruo *RoleUpdateOne) AppendPermissions(s []string) *RoleUpdateOne {
+	ruo.mutation.AppendPermissions(s)
 	return ruo
 }
 
@@ -399,40 +372,7 @@ func (ruo *RoleUpdateOne) Select(field string, fields ...string) *RoleUpdateOne 
 
 // Save executes the query and returns the updated Role entity.
 func (ruo *RoleUpdateOne) Save(ctx context.Context) (*Role, error) {
-	var (
-		err  error
-		node *Role
-	)
-	if len(ruo.hooks) == 0 {
-		node, err = ruo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*RoleMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			ruo.mutation = mutation
-			node, err = ruo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ruo.hooks) - 1; i >= 0; i-- {
-			if ruo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ruo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ruo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Role)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from RoleMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Role, RoleMutation](ctx, ruo.sqlSave, ruo.mutation, ruo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -499,38 +439,24 @@ func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) 
 		}
 	}
 	if value, ok := ruo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: role.FieldName,
-		})
+		_spec.SetField(role.FieldName, field.TypeString, value)
 	}
 	if value, ok := ruo.mutation.Permissions(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: role.FieldPermissions,
+		_spec.SetField(role.FieldPermissions, field.TypeJSON, value)
+	}
+	if value, ok := ruo.mutation.AppendedPermissions(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, role.FieldPermissions, value)
 		})
 	}
 	if ruo.mutation.PermissionsCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: role.FieldPermissions,
-		})
+		_spec.ClearField(role.FieldPermissions, field.TypeJSON)
 	}
 	if value, ok := ruo.mutation.Buildin(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: role.FieldBuildin,
-		})
+		_spec.SetField(role.FieldBuildin, field.TypeBool, value)
 	}
 	if value, ok := ruo.mutation.Super(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: role.FieldSuper,
-		})
+		_spec.SetField(role.FieldSuper, field.TypeBool, value)
 	}
 	if ruo.mutation.ManagersCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -586,7 +512,7 @@ func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = ruo.modifiers
+	_spec.AddModifiers(ruo.modifiers...)
 	_node = &Role{config: ruo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -598,5 +524,6 @@ func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) 
 		}
 		return nil, err
 	}
+	ruo.mutation.done = true
 	return _node, nil
 }

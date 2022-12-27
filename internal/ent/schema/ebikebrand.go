@@ -51,6 +51,7 @@ type EbikeBrand struct {
 func (EbikeBrand) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "ebike_brand"},
+        entsql.WithComments(true),
     }
 }
 

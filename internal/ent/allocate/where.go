@@ -12,1046 +12,662 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.Allocate(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.Allocate(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.Allocate(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.Allocate(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.Allocate(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.Allocate(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.Allocate(sql.FieldLTE(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
 func RiderID(v uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRiderID), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldRiderID, v))
 }
 
 // SubscribeID applies equality check predicate on the "subscribe_id" field. It's identical to SubscribeIDEQ.
 func SubscribeID(v uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldSubscribeID, v))
 }
 
 // Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
 func Remark(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldRemark, v))
 }
 
 // EmployeeID applies equality check predicate on the "employee_id" field. It's identical to EmployeeIDEQ.
 func EmployeeID(v uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldEmployeeID, v))
 }
 
 // CabinetID applies equality check predicate on the "cabinet_id" field. It's identical to CabinetIDEQ.
 func CabinetID(v uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCabinetID), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldCabinetID, v))
 }
 
 // StoreID applies equality check predicate on the "store_id" field. It's identical to StoreIDEQ.
 func StoreID(v uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStoreID), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldStoreID, v))
 }
 
 // EbikeID applies equality check predicate on the "ebike_id" field. It's identical to EbikeIDEQ.
 func EbikeID(v uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEbikeID), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldEbikeID, v))
 }
 
 // BrandID applies equality check predicate on the "brand_id" field. It's identical to BrandIDEQ.
 func BrandID(v uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBrandID), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldBrandID, v))
 }
 
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v uint8) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStatus), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldStatus, v))
 }
 
 // Time applies equality check predicate on the "time" field. It's identical to TimeEQ.
 func Time(v time.Time) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldTime), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldTime, v))
 }
 
 // Model applies equality check predicate on the "model" field. It's identical to ModelEQ.
 func Model(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldModel), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldModel, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
 func CreatedAtNEQ(v time.Time) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Allocate(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Allocate(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Allocate(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtGT applies the GT predicate on the "created_at" field.
 func CreatedAtGT(v time.Time) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Allocate(sql.FieldGT(FieldCreatedAt, v))
 }
 
 // CreatedAtGTE applies the GTE predicate on the "created_at" field.
 func CreatedAtGTE(v time.Time) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Allocate(sql.FieldGTE(FieldCreatedAt, v))
 }
 
 // CreatedAtLT applies the LT predicate on the "created_at" field.
 func CreatedAtLT(v time.Time) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Allocate(sql.FieldLT(FieldCreatedAt, v))
 }
 
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Allocate(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // CreatedAtIsNil applies the IsNil predicate on the "created_at" field.
 func CreatedAtIsNil() predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCreatedAt)))
-	})
+	return predicate.Allocate(sql.FieldIsNull(FieldCreatedAt))
 }
 
 // CreatedAtNotNil applies the NotNil predicate on the "created_at" field.
 func CreatedAtNotNil() predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCreatedAt)))
-	})
+	return predicate.Allocate(sql.FieldNotNull(FieldCreatedAt))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
 func UpdatedAtEQ(v time.Time) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
 func UpdatedAtNEQ(v time.Time) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Allocate(sql.FieldNEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Allocate(sql.FieldIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Allocate(sql.FieldNotIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtGT applies the GT predicate on the "updated_at" field.
 func UpdatedAtGT(v time.Time) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Allocate(sql.FieldGT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
 func UpdatedAtGTE(v time.Time) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Allocate(sql.FieldGTE(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLT applies the LT predicate on the "updated_at" field.
 func UpdatedAtLT(v time.Time) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Allocate(sql.FieldLT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Allocate(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // UpdatedAtIsNil applies the IsNil predicate on the "updated_at" field.
 func UpdatedAtIsNil() predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldUpdatedAt)))
-	})
+	return predicate.Allocate(sql.FieldIsNull(FieldUpdatedAt))
 }
 
 // UpdatedAtNotNil applies the NotNil predicate on the "updated_at" field.
 func UpdatedAtNotNil() predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldUpdatedAt)))
-	})
+	return predicate.Allocate(sql.FieldNotNull(FieldUpdatedAt))
 }
 
 // RiderIDEQ applies the EQ predicate on the "rider_id" field.
 func RiderIDEQ(v uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRiderID), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldRiderID, v))
 }
 
 // RiderIDNEQ applies the NEQ predicate on the "rider_id" field.
 func RiderIDNEQ(v uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRiderID), v))
-	})
+	return predicate.Allocate(sql.FieldNEQ(FieldRiderID, v))
 }
 
 // RiderIDIn applies the In predicate on the "rider_id" field.
 func RiderIDIn(vs ...uint64) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRiderID), v...))
-	})
+	return predicate.Allocate(sql.FieldIn(FieldRiderID, vs...))
 }
 
 // RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
 func RiderIDNotIn(vs ...uint64) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRiderID), v...))
-	})
+	return predicate.Allocate(sql.FieldNotIn(FieldRiderID, vs...))
 }
 
 // SubscribeIDEQ applies the EQ predicate on the "subscribe_id" field.
 func SubscribeIDEQ(v uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldSubscribeID, v))
 }
 
 // SubscribeIDNEQ applies the NEQ predicate on the "subscribe_id" field.
 func SubscribeIDNEQ(v uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.Allocate(sql.FieldNEQ(FieldSubscribeID, v))
 }
 
 // SubscribeIDIn applies the In predicate on the "subscribe_id" field.
 func SubscribeIDIn(vs ...uint64) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldSubscribeID), v...))
-	})
+	return predicate.Allocate(sql.FieldIn(FieldSubscribeID, vs...))
 }
 
 // SubscribeIDNotIn applies the NotIn predicate on the "subscribe_id" field.
 func SubscribeIDNotIn(vs ...uint64) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldSubscribeID), v...))
-	})
+	return predicate.Allocate(sql.FieldNotIn(FieldSubscribeID, vs...))
 }
 
 // CreatorIsNil applies the IsNil predicate on the "creator" field.
 func CreatorIsNil() predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCreator)))
-	})
+	return predicate.Allocate(sql.FieldIsNull(FieldCreator))
 }
 
 // CreatorNotNil applies the NotNil predicate on the "creator" field.
 func CreatorNotNil() predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCreator)))
-	})
+	return predicate.Allocate(sql.FieldNotNull(FieldCreator))
 }
 
 // LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
 func LastModifierIsNil() predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Allocate(sql.FieldIsNull(FieldLastModifier))
 }
 
 // LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
 func LastModifierNotNil() predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Allocate(sql.FieldNotNull(FieldLastModifier))
 }
 
 // RemarkEQ applies the EQ predicate on the "remark" field.
 func RemarkEQ(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldRemark, v))
 }
 
 // RemarkNEQ applies the NEQ predicate on the "remark" field.
 func RemarkNEQ(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRemark), v))
-	})
+	return predicate.Allocate(sql.FieldNEQ(FieldRemark, v))
 }
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRemark), v...))
-	})
+	return predicate.Allocate(sql.FieldIn(FieldRemark, vs...))
 }
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRemark), v...))
-	})
+	return predicate.Allocate(sql.FieldNotIn(FieldRemark, vs...))
 }
 
 // RemarkGT applies the GT predicate on the "remark" field.
 func RemarkGT(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRemark), v))
-	})
+	return predicate.Allocate(sql.FieldGT(FieldRemark, v))
 }
 
 // RemarkGTE applies the GTE predicate on the "remark" field.
 func RemarkGTE(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRemark), v))
-	})
+	return predicate.Allocate(sql.FieldGTE(FieldRemark, v))
 }
 
 // RemarkLT applies the LT predicate on the "remark" field.
 func RemarkLT(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRemark), v))
-	})
+	return predicate.Allocate(sql.FieldLT(FieldRemark, v))
 }
 
 // RemarkLTE applies the LTE predicate on the "remark" field.
 func RemarkLTE(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRemark), v))
-	})
+	return predicate.Allocate(sql.FieldLTE(FieldRemark, v))
 }
 
 // RemarkContains applies the Contains predicate on the "remark" field.
 func RemarkContains(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRemark), v))
-	})
+	return predicate.Allocate(sql.FieldContains(FieldRemark, v))
 }
 
 // RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
 func RemarkHasPrefix(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRemark), v))
-	})
+	return predicate.Allocate(sql.FieldHasPrefix(FieldRemark, v))
 }
 
 // RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
 func RemarkHasSuffix(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRemark), v))
-	})
+	return predicate.Allocate(sql.FieldHasSuffix(FieldRemark, v))
 }
 
 // RemarkIsNil applies the IsNil predicate on the "remark" field.
 func RemarkIsNil() predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRemark)))
-	})
+	return predicate.Allocate(sql.FieldIsNull(FieldRemark))
 }
 
 // RemarkNotNil applies the NotNil predicate on the "remark" field.
 func RemarkNotNil() predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRemark)))
-	})
+	return predicate.Allocate(sql.FieldNotNull(FieldRemark))
 }
 
 // RemarkEqualFold applies the EqualFold predicate on the "remark" field.
 func RemarkEqualFold(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRemark), v))
-	})
+	return predicate.Allocate(sql.FieldEqualFold(FieldRemark, v))
 }
 
 // RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
 func RemarkContainsFold(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
-	})
+	return predicate.Allocate(sql.FieldContainsFold(FieldRemark, v))
 }
 
 // EmployeeIDEQ applies the EQ predicate on the "employee_id" field.
 func EmployeeIDEQ(v uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldEmployeeID, v))
 }
 
 // EmployeeIDNEQ applies the NEQ predicate on the "employee_id" field.
 func EmployeeIDNEQ(v uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEmployeeID), v))
-	})
+	return predicate.Allocate(sql.FieldNEQ(FieldEmployeeID, v))
 }
 
 // EmployeeIDIn applies the In predicate on the "employee_id" field.
 func EmployeeIDIn(vs ...uint64) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEmployeeID), v...))
-	})
+	return predicate.Allocate(sql.FieldIn(FieldEmployeeID, vs...))
 }
 
 // EmployeeIDNotIn applies the NotIn predicate on the "employee_id" field.
 func EmployeeIDNotIn(vs ...uint64) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEmployeeID), v...))
-	})
+	return predicate.Allocate(sql.FieldNotIn(FieldEmployeeID, vs...))
 }
 
 // EmployeeIDIsNil applies the IsNil predicate on the "employee_id" field.
 func EmployeeIDIsNil() predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldEmployeeID)))
-	})
+	return predicate.Allocate(sql.FieldIsNull(FieldEmployeeID))
 }
 
 // EmployeeIDNotNil applies the NotNil predicate on the "employee_id" field.
 func EmployeeIDNotNil() predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldEmployeeID)))
-	})
+	return predicate.Allocate(sql.FieldNotNull(FieldEmployeeID))
 }
 
 // CabinetIDEQ applies the EQ predicate on the "cabinet_id" field.
 func CabinetIDEQ(v uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCabinetID), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldCabinetID, v))
 }
 
 // CabinetIDNEQ applies the NEQ predicate on the "cabinet_id" field.
 func CabinetIDNEQ(v uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCabinetID), v))
-	})
+	return predicate.Allocate(sql.FieldNEQ(FieldCabinetID, v))
 }
 
 // CabinetIDIn applies the In predicate on the "cabinet_id" field.
 func CabinetIDIn(vs ...uint64) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCabinetID), v...))
-	})
+	return predicate.Allocate(sql.FieldIn(FieldCabinetID, vs...))
 }
 
 // CabinetIDNotIn applies the NotIn predicate on the "cabinet_id" field.
 func CabinetIDNotIn(vs ...uint64) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCabinetID), v...))
-	})
+	return predicate.Allocate(sql.FieldNotIn(FieldCabinetID, vs...))
 }
 
 // CabinetIDIsNil applies the IsNil predicate on the "cabinet_id" field.
 func CabinetIDIsNil() predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCabinetID)))
-	})
+	return predicate.Allocate(sql.FieldIsNull(FieldCabinetID))
 }
 
 // CabinetIDNotNil applies the NotNil predicate on the "cabinet_id" field.
 func CabinetIDNotNil() predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCabinetID)))
-	})
+	return predicate.Allocate(sql.FieldNotNull(FieldCabinetID))
 }
 
 // StoreIDEQ applies the EQ predicate on the "store_id" field.
 func StoreIDEQ(v uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStoreID), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldStoreID, v))
 }
 
 // StoreIDNEQ applies the NEQ predicate on the "store_id" field.
 func StoreIDNEQ(v uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStoreID), v))
-	})
+	return predicate.Allocate(sql.FieldNEQ(FieldStoreID, v))
 }
 
 // StoreIDIn applies the In predicate on the "store_id" field.
 func StoreIDIn(vs ...uint64) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStoreID), v...))
-	})
+	return predicate.Allocate(sql.FieldIn(FieldStoreID, vs...))
 }
 
 // StoreIDNotIn applies the NotIn predicate on the "store_id" field.
 func StoreIDNotIn(vs ...uint64) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStoreID), v...))
-	})
+	return predicate.Allocate(sql.FieldNotIn(FieldStoreID, vs...))
 }
 
 // StoreIDIsNil applies the IsNil predicate on the "store_id" field.
 func StoreIDIsNil() predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldStoreID)))
-	})
+	return predicate.Allocate(sql.FieldIsNull(FieldStoreID))
 }
 
 // StoreIDNotNil applies the NotNil predicate on the "store_id" field.
 func StoreIDNotNil() predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldStoreID)))
-	})
+	return predicate.Allocate(sql.FieldNotNull(FieldStoreID))
 }
 
 // EbikeIDEQ applies the EQ predicate on the "ebike_id" field.
 func EbikeIDEQ(v uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEbikeID), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldEbikeID, v))
 }
 
 // EbikeIDNEQ applies the NEQ predicate on the "ebike_id" field.
 func EbikeIDNEQ(v uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEbikeID), v))
-	})
+	return predicate.Allocate(sql.FieldNEQ(FieldEbikeID, v))
 }
 
 // EbikeIDIn applies the In predicate on the "ebike_id" field.
 func EbikeIDIn(vs ...uint64) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEbikeID), v...))
-	})
+	return predicate.Allocate(sql.FieldIn(FieldEbikeID, vs...))
 }
 
 // EbikeIDNotIn applies the NotIn predicate on the "ebike_id" field.
 func EbikeIDNotIn(vs ...uint64) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEbikeID), v...))
-	})
+	return predicate.Allocate(sql.FieldNotIn(FieldEbikeID, vs...))
 }
 
 // EbikeIDIsNil applies the IsNil predicate on the "ebike_id" field.
 func EbikeIDIsNil() predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldEbikeID)))
-	})
+	return predicate.Allocate(sql.FieldIsNull(FieldEbikeID))
 }
 
 // EbikeIDNotNil applies the NotNil predicate on the "ebike_id" field.
 func EbikeIDNotNil() predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldEbikeID)))
-	})
+	return predicate.Allocate(sql.FieldNotNull(FieldEbikeID))
 }
 
 // BrandIDEQ applies the EQ predicate on the "brand_id" field.
 func BrandIDEQ(v uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBrandID), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldBrandID, v))
 }
 
 // BrandIDNEQ applies the NEQ predicate on the "brand_id" field.
 func BrandIDNEQ(v uint64) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBrandID), v))
-	})
+	return predicate.Allocate(sql.FieldNEQ(FieldBrandID, v))
 }
 
 // BrandIDIn applies the In predicate on the "brand_id" field.
 func BrandIDIn(vs ...uint64) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldBrandID), v...))
-	})
+	return predicate.Allocate(sql.FieldIn(FieldBrandID, vs...))
 }
 
 // BrandIDNotIn applies the NotIn predicate on the "brand_id" field.
 func BrandIDNotIn(vs ...uint64) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldBrandID), v...))
-	})
+	return predicate.Allocate(sql.FieldNotIn(FieldBrandID, vs...))
 }
 
 // BrandIDIsNil applies the IsNil predicate on the "brand_id" field.
 func BrandIDIsNil() predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldBrandID)))
-	})
+	return predicate.Allocate(sql.FieldIsNull(FieldBrandID))
 }
 
 // BrandIDNotNil applies the NotNil predicate on the "brand_id" field.
 func BrandIDNotNil() predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldBrandID)))
-	})
+	return predicate.Allocate(sql.FieldNotNull(FieldBrandID))
 }
 
 // TypeEQ applies the EQ predicate on the "type" field.
 func TypeEQ(v Type) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldType), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldType, v))
 }
 
 // TypeNEQ applies the NEQ predicate on the "type" field.
 func TypeNEQ(v Type) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldType), v))
-	})
+	return predicate.Allocate(sql.FieldNEQ(FieldType, v))
 }
 
 // TypeIn applies the In predicate on the "type" field.
 func TypeIn(vs ...Type) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldType), v...))
-	})
+	return predicate.Allocate(sql.FieldIn(FieldType, vs...))
 }
 
 // TypeNotIn applies the NotIn predicate on the "type" field.
 func TypeNotIn(vs ...Type) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldType), v...))
-	})
+	return predicate.Allocate(sql.FieldNotIn(FieldType, vs...))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.
 func StatusEQ(v uint8) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStatus), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldStatus, v))
 }
 
 // StatusNEQ applies the NEQ predicate on the "status" field.
 func StatusNEQ(v uint8) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStatus), v))
-	})
+	return predicate.Allocate(sql.FieldNEQ(FieldStatus, v))
 }
 
 // StatusIn applies the In predicate on the "status" field.
 func StatusIn(vs ...uint8) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStatus), v...))
-	})
+	return predicate.Allocate(sql.FieldIn(FieldStatus, vs...))
 }
 
 // StatusNotIn applies the NotIn predicate on the "status" field.
 func StatusNotIn(vs ...uint8) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStatus), v...))
-	})
+	return predicate.Allocate(sql.FieldNotIn(FieldStatus, vs...))
 }
 
 // StatusGT applies the GT predicate on the "status" field.
 func StatusGT(v uint8) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldStatus), v))
-	})
+	return predicate.Allocate(sql.FieldGT(FieldStatus, v))
 }
 
 // StatusGTE applies the GTE predicate on the "status" field.
 func StatusGTE(v uint8) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldStatus), v))
-	})
+	return predicate.Allocate(sql.FieldGTE(FieldStatus, v))
 }
 
 // StatusLT applies the LT predicate on the "status" field.
 func StatusLT(v uint8) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldStatus), v))
-	})
+	return predicate.Allocate(sql.FieldLT(FieldStatus, v))
 }
 
 // StatusLTE applies the LTE predicate on the "status" field.
 func StatusLTE(v uint8) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldStatus), v))
-	})
+	return predicate.Allocate(sql.FieldLTE(FieldStatus, v))
 }
 
 // TimeEQ applies the EQ predicate on the "time" field.
 func TimeEQ(v time.Time) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldTime), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldTime, v))
 }
 
 // TimeNEQ applies the NEQ predicate on the "time" field.
 func TimeNEQ(v time.Time) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldTime), v))
-	})
+	return predicate.Allocate(sql.FieldNEQ(FieldTime, v))
 }
 
 // TimeIn applies the In predicate on the "time" field.
 func TimeIn(vs ...time.Time) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldTime), v...))
-	})
+	return predicate.Allocate(sql.FieldIn(FieldTime, vs...))
 }
 
 // TimeNotIn applies the NotIn predicate on the "time" field.
 func TimeNotIn(vs ...time.Time) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldTime), v...))
-	})
+	return predicate.Allocate(sql.FieldNotIn(FieldTime, vs...))
 }
 
 // TimeGT applies the GT predicate on the "time" field.
 func TimeGT(v time.Time) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldTime), v))
-	})
+	return predicate.Allocate(sql.FieldGT(FieldTime, v))
 }
 
 // TimeGTE applies the GTE predicate on the "time" field.
 func TimeGTE(v time.Time) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldTime), v))
-	})
+	return predicate.Allocate(sql.FieldGTE(FieldTime, v))
 }
 
 // TimeLT applies the LT predicate on the "time" field.
 func TimeLT(v time.Time) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldTime), v))
-	})
+	return predicate.Allocate(sql.FieldLT(FieldTime, v))
 }
 
 // TimeLTE applies the LTE predicate on the "time" field.
 func TimeLTE(v time.Time) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldTime), v))
-	})
+	return predicate.Allocate(sql.FieldLTE(FieldTime, v))
 }
 
 // ModelEQ applies the EQ predicate on the "model" field.
 func ModelEQ(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldModel), v))
-	})
+	return predicate.Allocate(sql.FieldEQ(FieldModel, v))
 }
 
 // ModelNEQ applies the NEQ predicate on the "model" field.
 func ModelNEQ(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldModel), v))
-	})
+	return predicate.Allocate(sql.FieldNEQ(FieldModel, v))
 }
 
 // ModelIn applies the In predicate on the "model" field.
 func ModelIn(vs ...string) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldModel), v...))
-	})
+	return predicate.Allocate(sql.FieldIn(FieldModel, vs...))
 }
 
 // ModelNotIn applies the NotIn predicate on the "model" field.
 func ModelNotIn(vs ...string) predicate.Allocate {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldModel), v...))
-	})
+	return predicate.Allocate(sql.FieldNotIn(FieldModel, vs...))
 }
 
 // ModelGT applies the GT predicate on the "model" field.
 func ModelGT(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldModel), v))
-	})
+	return predicate.Allocate(sql.FieldGT(FieldModel, v))
 }
 
 // ModelGTE applies the GTE predicate on the "model" field.
 func ModelGTE(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldModel), v))
-	})
+	return predicate.Allocate(sql.FieldGTE(FieldModel, v))
 }
 
 // ModelLT applies the LT predicate on the "model" field.
 func ModelLT(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldModel), v))
-	})
+	return predicate.Allocate(sql.FieldLT(FieldModel, v))
 }
 
 // ModelLTE applies the LTE predicate on the "model" field.
 func ModelLTE(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldModel), v))
-	})
+	return predicate.Allocate(sql.FieldLTE(FieldModel, v))
 }
 
 // ModelContains applies the Contains predicate on the "model" field.
 func ModelContains(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldModel), v))
-	})
+	return predicate.Allocate(sql.FieldContains(FieldModel, v))
 }
 
 // ModelHasPrefix applies the HasPrefix predicate on the "model" field.
 func ModelHasPrefix(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldModel), v))
-	})
+	return predicate.Allocate(sql.FieldHasPrefix(FieldModel, v))
 }
 
 // ModelHasSuffix applies the HasSuffix predicate on the "model" field.
 func ModelHasSuffix(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldModel), v))
-	})
+	return predicate.Allocate(sql.FieldHasSuffix(FieldModel, v))
 }
 
 // ModelEqualFold applies the EqualFold predicate on the "model" field.
 func ModelEqualFold(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldModel), v))
-	})
+	return predicate.Allocate(sql.FieldEqualFold(FieldModel, v))
 }
 
 // ModelContainsFold applies the ContainsFold predicate on the "model" field.
 func ModelContainsFold(v string) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldModel), v))
-	})
+	return predicate.Allocate(sql.FieldContainsFold(FieldModel, v))
 }
 
 // HasRider applies the HasEdge predicate on the "rider" edge.
@@ -1059,7 +675,6 @@ func HasRider() predicate.Allocate {
 	return predicate.Allocate(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RiderTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1087,7 +702,6 @@ func HasSubscribe() predicate.Allocate {
 	return predicate.Allocate(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SubscribeTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1115,7 +729,6 @@ func HasEmployee() predicate.Allocate {
 	return predicate.Allocate(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EmployeeTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, EmployeeTable, EmployeeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1143,7 +756,6 @@ func HasCabinet() predicate.Allocate {
 	return predicate.Allocate(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CabinetTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, CabinetTable, CabinetColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1171,7 +783,6 @@ func HasStore() predicate.Allocate {
 	return predicate.Allocate(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StoreTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1199,7 +810,6 @@ func HasEbike() predicate.Allocate {
 	return predicate.Allocate(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EbikeTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, EbikeTable, EbikeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1227,7 +837,6 @@ func HasBrand() predicate.Allocate {
 	return predicate.Allocate(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(BrandTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, BrandTable, BrandColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1255,7 +864,6 @@ func HasContract() predicate.Allocate {
 	return predicate.Allocate(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ContractTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, ContractTable, ContractColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

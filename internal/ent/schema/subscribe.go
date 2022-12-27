@@ -60,6 +60,7 @@ type Subscribe struct {
 // Annotations of the Subscribe.
 func (Subscribe) Annotations() []schema.Annotation {
     return []schema.Annotation{
+        entsql.WithComments(true),
         entsql.Annotation{
             Table: "subscribe",
         },

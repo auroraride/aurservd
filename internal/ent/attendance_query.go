@@ -24,6 +24,7 @@ type AttendanceQuery struct {
 	unique       *bool
 	order        []OrderFunc
 	fields       []string
+	inters       []Interceptor
 	predicates   []predicate.Attendance
 	withStore    *StoreQuery
 	withEmployee *EmployeeQuery
@@ -39,13 +40,13 @@ func (aq *AttendanceQuery) Where(ps ...predicate.Attendance) *AttendanceQuery {
 	return aq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (aq *AttendanceQuery) Limit(limit int) *AttendanceQuery {
 	aq.limit = &limit
 	return aq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (aq *AttendanceQuery) Offset(offset int) *AttendanceQuery {
 	aq.offset = &offset
 	return aq
@@ -58,7 +59,7 @@ func (aq *AttendanceQuery) Unique(unique bool) *AttendanceQuery {
 	return aq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (aq *AttendanceQuery) Order(o ...OrderFunc) *AttendanceQuery {
 	aq.order = append(aq.order, o...)
 	return aq
@@ -66,7 +67,7 @@ func (aq *AttendanceQuery) Order(o ...OrderFunc) *AttendanceQuery {
 
 // QueryStore chains the current query on the "store" edge.
 func (aq *AttendanceQuery) QueryStore() *StoreQuery {
-	query := &StoreQuery{config: aq.config}
+	query := (&StoreClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -88,7 +89,7 @@ func (aq *AttendanceQuery) QueryStore() *StoreQuery {
 
 // QueryEmployee chains the current query on the "employee" edge.
 func (aq *AttendanceQuery) QueryEmployee() *EmployeeQuery {
-	query := &EmployeeQuery{config: aq.config}
+	query := (&EmployeeClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -111,7 +112,7 @@ func (aq *AttendanceQuery) QueryEmployee() *EmployeeQuery {
 // First returns the first Attendance entity from the query.
 // Returns a *NotFoundError when no Attendance was found.
 func (aq *AttendanceQuery) First(ctx context.Context) (*Attendance, error) {
-	nodes, err := aq.Limit(1).All(ctx)
+	nodes, err := aq.Limit(1).All(newQueryContext(ctx, TypeAttendance, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +135,7 @@ func (aq *AttendanceQuery) FirstX(ctx context.Context) *Attendance {
 // Returns a *NotFoundError when no Attendance ID was found.
 func (aq *AttendanceQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = aq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = aq.Limit(1).IDs(newQueryContext(ctx, TypeAttendance, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -157,7 +158,7 @@ func (aq *AttendanceQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Attendance entity is found.
 // Returns a *NotFoundError when no Attendance entities are found.
 func (aq *AttendanceQuery) Only(ctx context.Context) (*Attendance, error) {
-	nodes, err := aq.Limit(2).All(ctx)
+	nodes, err := aq.Limit(2).All(newQueryContext(ctx, TypeAttendance, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -185,7 +186,7 @@ func (aq *AttendanceQuery) OnlyX(ctx context.Context) *Attendance {
 // Returns a *NotFoundError when no entities are found.
 func (aq *AttendanceQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = aq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = aq.Limit(2).IDs(newQueryContext(ctx, TypeAttendance, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -210,10 +211,12 @@ func (aq *AttendanceQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Attendances.
 func (aq *AttendanceQuery) All(ctx context.Context) ([]*Attendance, error) {
+	ctx = newQueryContext(ctx, TypeAttendance, "All")
 	if err := aq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return aq.sqlAll(ctx)
+	qr := querierAll[[]*Attendance, *AttendanceQuery]()
+	return withInterceptors[[]*Attendance](ctx, aq, qr, aq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -228,6 +231,7 @@ func (aq *AttendanceQuery) AllX(ctx context.Context) []*Attendance {
 // IDs executes the query and returns a list of Attendance IDs.
 func (aq *AttendanceQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeAttendance, "IDs")
 	if err := aq.Select(attendance.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -245,10 +249,11 @@ func (aq *AttendanceQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (aq *AttendanceQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeAttendance, "Count")
 	if err := aq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return aq.sqlCount(ctx)
+	return withInterceptors[int](ctx, aq, querierCount[*AttendanceQuery](), aq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -262,10 +267,15 @@ func (aq *AttendanceQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (aq *AttendanceQuery) Exist(ctx context.Context) (bool, error) {
-	if err := aq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeAttendance, "Exist")
+	switch _, err := aq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return aq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -301,7 +311,7 @@ func (aq *AttendanceQuery) Clone() *AttendanceQuery {
 // WithStore tells the query-builder to eager-load the nodes that are connected to
 // the "store" edge. The optional arguments are used to configure the query builder of the edge.
 func (aq *AttendanceQuery) WithStore(opts ...func(*StoreQuery)) *AttendanceQuery {
-	query := &StoreQuery{config: aq.config}
+	query := (&StoreClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -312,7 +322,7 @@ func (aq *AttendanceQuery) WithStore(opts ...func(*StoreQuery)) *AttendanceQuery
 // WithEmployee tells the query-builder to eager-load the nodes that are connected to
 // the "employee" edge. The optional arguments are used to configure the query builder of the edge.
 func (aq *AttendanceQuery) WithEmployee(opts ...func(*EmployeeQuery)) *AttendanceQuery {
-	query := &EmployeeQuery{config: aq.config}
+	query := (&EmployeeClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -335,16 +345,11 @@ func (aq *AttendanceQuery) WithEmployee(opts ...func(*EmployeeQuery)) *Attendanc
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (aq *AttendanceQuery) GroupBy(field string, fields ...string) *AttendanceGroupBy {
-	grbuild := &AttendanceGroupBy{config: aq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := aq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return aq.sqlQuery(ctx), nil
-	}
+	aq.fields = append([]string{field}, fields...)
+	grbuild := &AttendanceGroupBy{build: aq}
+	grbuild.flds = &aq.fields
 	grbuild.label = attendance.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -362,13 +367,28 @@ func (aq *AttendanceQuery) GroupBy(field string, fields ...string) *AttendanceGr
 //		Scan(ctx, &v)
 func (aq *AttendanceQuery) Select(fields ...string) *AttendanceSelect {
 	aq.fields = append(aq.fields, fields...)
-	selbuild := &AttendanceSelect{AttendanceQuery: aq}
-	selbuild.label = attendance.Label
-	selbuild.flds, selbuild.scan = &aq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &AttendanceSelect{AttendanceQuery: aq}
+	sbuild.label = attendance.Label
+	sbuild.flds, sbuild.scan = &aq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a AttendanceSelect configured with the given aggregations.
+func (aq *AttendanceQuery) Aggregate(fns ...AggregateFunc) *AttendanceSelect {
+	return aq.Select().Aggregate(fns...)
 }
 
 func (aq *AttendanceQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range aq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, aq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range aq.fields {
 		if !attendance.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -494,17 +514,6 @@ func (aq *AttendanceQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, aq.driver, _spec)
 }
 
-func (aq *AttendanceQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := aq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (aq *AttendanceQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -596,13 +605,8 @@ func (aq *AttendanceQuery) Modify(modifiers ...func(s *sql.Selector)) *Attendanc
 
 // AttendanceGroupBy is the group-by builder for Attendance entities.
 type AttendanceGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *AttendanceQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -611,74 +615,77 @@ func (agb *AttendanceGroupBy) Aggregate(fns ...AggregateFunc) *AttendanceGroupBy
 	return agb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (agb *AttendanceGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := agb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeAttendance, "GroupBy")
+	if err := agb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	agb.sql = query
-	return agb.sqlScan(ctx, v)
+	return scanWithInterceptors[*AttendanceQuery, *AttendanceGroupBy](ctx, agb.build, agb, agb.build.inters, v)
 }
 
-func (agb *AttendanceGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range agb.fields {
-		if !attendance.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (agb *AttendanceGroupBy) sqlScan(ctx context.Context, root *AttendanceQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(agb.fns))
+	for _, fn := range agb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := agb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*agb.flds)+len(agb.fns))
+		for _, f := range *agb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*agb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := agb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := agb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (agb *AttendanceGroupBy) sqlQuery() *sql.Selector {
-	selector := agb.sql.Select()
-	aggregation := make([]string, 0, len(agb.fns))
-	for _, fn := range agb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(agb.fields)+len(agb.fns))
-		for _, f := range agb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(agb.fields...)...)
-}
-
 // AttendanceSelect is the builder for selecting fields of Attendance entities.
 type AttendanceSelect struct {
 	*AttendanceQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (as *AttendanceSelect) Aggregate(fns ...AggregateFunc) *AttendanceSelect {
+	as.fns = append(as.fns, fns...)
+	return as
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (as *AttendanceSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeAttendance, "Select")
 	if err := as.prepareQuery(ctx); err != nil {
 		return err
 	}
-	as.sql = as.AttendanceQuery.sqlQuery(ctx)
-	return as.sqlScan(ctx, v)
+	return scanWithInterceptors[*AttendanceQuery, *AttendanceSelect](ctx, as.AttendanceQuery, as, as.inters, v)
 }
 
-func (as *AttendanceSelect) sqlScan(ctx context.Context, v any) error {
+func (as *AttendanceSelect) sqlScan(ctx context.Context, root *AttendanceQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(as.fns))
+	for _, fn := range as.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*as.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := as.sql.Query()
+	query, args := selector.Query()
 	if err := as.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

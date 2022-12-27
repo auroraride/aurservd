@@ -49,6 +49,7 @@ type Agent struct {
 func (Agent) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "agent"},
+        entsql.WithComments(true),
     }
 }
 

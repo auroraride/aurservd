@@ -50,6 +50,7 @@ type Business struct {
 func (Business) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "business"},
+        entsql.WithComments(true),
     }
 }
 

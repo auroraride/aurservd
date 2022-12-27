@@ -9,7 +9,7 @@ import (
     "bytes"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/pkg/snag"
-    jsoniter "github.com/json-iterator/go"
+    "github.com/goccy/go-json"
     "net/http"
 )
 
@@ -51,7 +51,7 @@ func (c *BaseContext) SendResponse(params ...any) error {
     }
 
     buffer := &bytes.Buffer{}
-    encoder := jsoniter.NewEncoder(buffer)
+    encoder := json.NewEncoder(buffer)
     encoder.SetEscapeHTML(false)
     _ = encoder.Encode(r)
 

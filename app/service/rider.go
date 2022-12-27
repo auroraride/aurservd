@@ -32,8 +32,8 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/auroraride/aurservd/pkg/utils"
+    "github.com/goccy/go-json"
     "github.com/golang-module/carbon/v2"
-    jsoniter "github.com/json-iterator/go"
     "github.com/rs/xid"
     "golang.org/x/exp/slices"
     "strconv"
@@ -953,9 +953,9 @@ func (s *riderService) GetLogs(req *model.RiderLogReq) *model.PaginationRes {
 
     // 查询结果
     result := logging.NewOperateLog().GetLogs(u.CreatedAt, query, int64(pageReq.GetOffset()), int64(pageReq.GetLimit()))
-    b, _ := jsoniter.Marshal(result)
+    b, _ := json.Marshal(result)
     items := make([]model.LogOperate, 0)
-    _ = jsoniter.Unmarshal(b, &items)
+    _ = json.Unmarshal(b, &items)
     return &model.PaginationRes{
         Pagination: model.Pagination{
             Current: pageReq.GetCurrent(),

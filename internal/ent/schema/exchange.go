@@ -21,6 +21,7 @@ type Exchange struct {
 func (Exchange) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "exchange"},
+        entsql.WithComments(true),
     }
 }
 

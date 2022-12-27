@@ -294,43 +294,10 @@ func (cu *CommissionUpdate) ClearEmployee() *CommissionUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (cu *CommissionUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := cu.defaults(); err != nil {
 		return 0, err
 	}
-	if len(cu.hooks) == 0 {
-		if err = cu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = cu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CommissionMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = cu.check(); err != nil {
-				return 0, err
-			}
-			cu.mutation = mutation
-			affected, err = cu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(cu.hooks) - 1; i >= 0; i-- {
-			if cu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = cu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, cu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, CommissionMutation](ctx, cu.sqlSave, cu.mutation, cu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -382,6 +349,9 @@ func (cu *CommissionUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Com
 }
 
 func (cu *CommissionUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := cu.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   commission.Table,
@@ -400,70 +370,34 @@ func (cu *CommissionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := cu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: commission.FieldUpdatedAt,
-		})
+		_spec.SetField(commission.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := cu.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: commission.FieldDeletedAt,
-		})
+		_spec.SetField(commission.FieldDeletedAt, field.TypeTime, value)
 	}
 	if cu.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: commission.FieldDeletedAt,
-		})
+		_spec.ClearField(commission.FieldDeletedAt, field.TypeTime)
 	}
 	if cu.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: commission.FieldCreator,
-		})
+		_spec.ClearField(commission.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := cu.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: commission.FieldLastModifier,
-		})
+		_spec.SetField(commission.FieldLastModifier, field.TypeJSON, value)
 	}
 	if cu.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: commission.FieldLastModifier,
-		})
+		_spec.ClearField(commission.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := cu.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: commission.FieldRemark,
-		})
+		_spec.SetField(commission.FieldRemark, field.TypeString, value)
 	}
 	if cu.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: commission.FieldRemark,
-		})
+		_spec.ClearField(commission.FieldRemark, field.TypeString)
 	}
 	if value, ok := cu.mutation.Status(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: commission.FieldStatus,
-		})
+		_spec.SetField(commission.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := cu.mutation.AddedStatus(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: commission.FieldStatus,
-		})
+		_spec.AddField(commission.FieldStatus, field.TypeUint8, value)
 	}
 	if cu.mutation.BusinessCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -675,7 +609,7 @@ func (cu *CommissionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = cu.modifiers
+	_spec.AddModifiers(cu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{commission.Label}
@@ -684,6 +618,7 @@ func (cu *CommissionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	cu.mutation.done = true
 	return n, nil
 }
 
@@ -961,49 +896,10 @@ func (cuo *CommissionUpdateOne) Select(field string, fields ...string) *Commissi
 
 // Save executes the query and returns the updated Commission entity.
 func (cuo *CommissionUpdateOne) Save(ctx context.Context) (*Commission, error) {
-	var (
-		err  error
-		node *Commission
-	)
 	if err := cuo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(cuo.hooks) == 0 {
-		if err = cuo.check(); err != nil {
-			return nil, err
-		}
-		node, err = cuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CommissionMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = cuo.check(); err != nil {
-				return nil, err
-			}
-			cuo.mutation = mutation
-			node, err = cuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(cuo.hooks) - 1; i >= 0; i-- {
-			if cuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = cuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, cuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Commission)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from CommissionMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Commission, CommissionMutation](ctx, cuo.sqlSave, cuo.mutation, cuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -1055,6 +951,9 @@ func (cuo *CommissionUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) 
 }
 
 func (cuo *CommissionUpdateOne) sqlSave(ctx context.Context) (_node *Commission, err error) {
+	if err := cuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   commission.Table,
@@ -1090,70 +989,34 @@ func (cuo *CommissionUpdateOne) sqlSave(ctx context.Context) (_node *Commission,
 		}
 	}
 	if value, ok := cuo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: commission.FieldUpdatedAt,
-		})
+		_spec.SetField(commission.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := cuo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: commission.FieldDeletedAt,
-		})
+		_spec.SetField(commission.FieldDeletedAt, field.TypeTime, value)
 	}
 	if cuo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: commission.FieldDeletedAt,
-		})
+		_spec.ClearField(commission.FieldDeletedAt, field.TypeTime)
 	}
 	if cuo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: commission.FieldCreator,
-		})
+		_spec.ClearField(commission.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := cuo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: commission.FieldLastModifier,
-		})
+		_spec.SetField(commission.FieldLastModifier, field.TypeJSON, value)
 	}
 	if cuo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: commission.FieldLastModifier,
-		})
+		_spec.ClearField(commission.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := cuo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: commission.FieldRemark,
-		})
+		_spec.SetField(commission.FieldRemark, field.TypeString, value)
 	}
 	if cuo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: commission.FieldRemark,
-		})
+		_spec.ClearField(commission.FieldRemark, field.TypeString)
 	}
 	if value, ok := cuo.mutation.Status(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: commission.FieldStatus,
-		})
+		_spec.SetField(commission.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := cuo.mutation.AddedStatus(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: commission.FieldStatus,
-		})
+		_spec.AddField(commission.FieldStatus, field.TypeUint8, value)
 	}
 	if cuo.mutation.BusinessCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1365,7 +1228,7 @@ func (cuo *CommissionUpdateOne) sqlSave(ctx context.Context) (_node *Commission,
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = cuo.modifiers
+	_spec.AddModifiers(cuo.modifiers...)
 	_node = &Commission{config: cuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -1377,5 +1240,6 @@ func (cuo *CommissionUpdateOne) sqlSave(ctx context.Context) (_node *Commission,
 		}
 		return nil, err
 	}
+	cuo.mutation.done = true
 	return _node, nil
 }

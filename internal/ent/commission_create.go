@@ -230,52 +230,10 @@ func (cc *CommissionCreate) Mutation() *CommissionMutation {
 
 // Save creates the Commission in the database.
 func (cc *CommissionCreate) Save(ctx context.Context) (*Commission, error) {
-	var (
-		err  error
-		node *Commission
-	)
 	if err := cc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(cc.hooks) == 0 {
-		if err = cc.check(); err != nil {
-			return nil, err
-		}
-		node, err = cc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CommissionMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = cc.check(); err != nil {
-				return nil, err
-			}
-			cc.mutation = mutation
-			if node, err = cc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(cc.hooks) - 1; i >= 0; i-- {
-			if cc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = cc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, cc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Commission)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from CommissionMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Commission, CommissionMutation](ctx, cc.sqlSave, cc.mutation, cc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -347,6 +305,9 @@ func (cc *CommissionCreate) check() error {
 }
 
 func (cc *CommissionCreate) sqlSave(ctx context.Context) (*Commission, error) {
+	if err := cc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := cc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, cc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -356,6 +317,8 @@ func (cc *CommissionCreate) sqlSave(ctx context.Context) (*Commission, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	cc.mutation.id = &_node.ID
+	cc.mutation.done = true
 	return _node, nil
 }
 
@@ -372,67 +335,35 @@ func (cc *CommissionCreate) createSpec() (*Commission, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = cc.conflict
 	if value, ok := cc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: commission.FieldCreatedAt,
-		})
+		_spec.SetField(commission.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := cc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: commission.FieldUpdatedAt,
-		})
+		_spec.SetField(commission.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := cc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: commission.FieldDeletedAt,
-		})
+		_spec.SetField(commission.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := cc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: commission.FieldCreator,
-		})
+		_spec.SetField(commission.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := cc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: commission.FieldLastModifier,
-		})
+		_spec.SetField(commission.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := cc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: commission.FieldRemark,
-		})
+		_spec.SetField(commission.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := cc.mutation.Amount(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: commission.FieldAmount,
-		})
+		_spec.SetField(commission.FieldAmount, field.TypeFloat64, value)
 		_node.Amount = value
 	}
 	if value, ok := cc.mutation.Status(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: commission.FieldStatus,
-		})
+		_spec.SetField(commission.FieldStatus, field.TypeUint8, value)
 		_node.Status = value
 	}
 	if nodes := cc.mutation.BusinessIDs(); len(nodes) > 0 {

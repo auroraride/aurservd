@@ -200,52 +200,10 @@ func (ec *ExceptionCreate) Mutation() *ExceptionMutation {
 
 // Save creates the Exception in the database.
 func (ec *ExceptionCreate) Save(ctx context.Context) (*Exception, error) {
-	var (
-		err  error
-		node *Exception
-	)
 	if err := ec.defaults(); err != nil {
 		return nil, err
 	}
-	if len(ec.hooks) == 0 {
-		if err = ec.check(); err != nil {
-			return nil, err
-		}
-		node, err = ec.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ExceptionMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ec.check(); err != nil {
-				return nil, err
-			}
-			ec.mutation = mutation
-			if node, err = ec.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ec.hooks) - 1; i >= 0; i-- {
-			if ec.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ec.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ec.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Exception)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from ExceptionMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Exception, ExceptionMutation](ctx, ec.sqlSave, ec.mutation, ec.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -335,6 +293,9 @@ func (ec *ExceptionCreate) check() error {
 }
 
 func (ec *ExceptionCreate) sqlSave(ctx context.Context) (*Exception, error) {
+	if err := ec.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := ec.createSpec()
 	if err := sqlgraph.CreateNode(ctx, ec.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -344,6 +305,8 @@ func (ec *ExceptionCreate) sqlSave(ctx context.Context) (*Exception, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	ec.mutation.id = &_node.ID
+	ec.mutation.done = true
 	return _node, nil
 }
 
@@ -360,107 +323,55 @@ func (ec *ExceptionCreate) createSpec() (*Exception, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = ec.conflict
 	if value, ok := ec.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: exception.FieldCreatedAt,
-		})
+		_spec.SetField(exception.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := ec.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: exception.FieldUpdatedAt,
-		})
+		_spec.SetField(exception.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := ec.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: exception.FieldDeletedAt,
-		})
+		_spec.SetField(exception.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := ec.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: exception.FieldCreator,
-		})
+		_spec.SetField(exception.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := ec.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: exception.FieldLastModifier,
-		})
+		_spec.SetField(exception.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := ec.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: exception.FieldRemark,
-		})
+		_spec.SetField(exception.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := ec.mutation.Status(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: exception.FieldStatus,
-		})
+		_spec.SetField(exception.FieldStatus, field.TypeUint8, value)
 		_node.Status = value
 	}
 	if value, ok := ec.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: exception.FieldName,
-		})
+		_spec.SetField(exception.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := ec.mutation.Model(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: exception.FieldModel,
-		})
+		_spec.SetField(exception.FieldModel, field.TypeString, value)
 		_node.Model = &value
 	}
 	if value, ok := ec.mutation.Num(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: exception.FieldNum,
-		})
+		_spec.SetField(exception.FieldNum, field.TypeInt, value)
 		_node.Num = value
 	}
 	if value, ok := ec.mutation.Reason(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: exception.FieldReason,
-		})
+		_spec.SetField(exception.FieldReason, field.TypeString, value)
 		_node.Reason = value
 	}
 	if value, ok := ec.mutation.Description(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: exception.FieldDescription,
-		})
+		_spec.SetField(exception.FieldDescription, field.TypeString, value)
 		_node.Description = value
 	}
 	if value, ok := ec.mutation.Attachments(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: exception.FieldAttachments,
-		})
+		_spec.SetField(exception.FieldAttachments, field.TypeJSON, value)
 		_node.Attachments = value
 	}
 	if nodes := ec.mutation.CityIDs(); len(nodes) > 0 {

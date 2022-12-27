@@ -10,7 +10,7 @@ import (
     sls "github.com/aliyun/aliyun-log-go-sdk"
     "github.com/auroraride/aurservd/internal/ali"
     "github.com/auroraride/aurservd/internal/ar"
-    jsoniter "github.com/json-iterator/go"
+    "github.com/goccy/go-json"
     log "github.com/sirupsen/logrus"
     "reflect"
     "strconv"
@@ -143,11 +143,11 @@ func GetCount(logstore string, query string, from time.Time) (total int) {
         return
     }
     var b []byte
-    b, err = jsoniter.Marshal(response.Logs)
+    b, err = json.Marshal(response.Logs)
     if err != nil {
         return
     }
-    err = jsoniter.Unmarshal(b, &cnt)
+    err = json.Unmarshal(b, &cnt)
     if err != nil {
         return
     }

@@ -116,52 +116,10 @@ func (epc *EnterprisePrepaymentCreate) Mutation() *EnterprisePrepaymentMutation 
 
 // Save creates the EnterprisePrepayment in the database.
 func (epc *EnterprisePrepaymentCreate) Save(ctx context.Context) (*EnterprisePrepayment, error) {
-	var (
-		err  error
-		node *EnterprisePrepayment
-	)
 	if err := epc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(epc.hooks) == 0 {
-		if err = epc.check(); err != nil {
-			return nil, err
-		}
-		node, err = epc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*EnterprisePrepaymentMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = epc.check(); err != nil {
-				return nil, err
-			}
-			epc.mutation = mutation
-			if node, err = epc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(epc.hooks) - 1; i >= 0; i-- {
-			if epc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = epc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, epc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*EnterprisePrepayment)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from EnterprisePrepaymentMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*EnterprisePrepayment, EnterprisePrepaymentMutation](ctx, epc.sqlSave, epc.mutation, epc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -226,6 +184,9 @@ func (epc *EnterprisePrepaymentCreate) check() error {
 }
 
 func (epc *EnterprisePrepaymentCreate) sqlSave(ctx context.Context) (*EnterprisePrepayment, error) {
+	if err := epc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := epc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, epc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -235,6 +196,8 @@ func (epc *EnterprisePrepaymentCreate) sqlSave(ctx context.Context) (*Enterprise
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	epc.mutation.id = &_node.ID
+	epc.mutation.done = true
 	return _node, nil
 }
 
@@ -251,59 +214,31 @@ func (epc *EnterprisePrepaymentCreate) createSpec() (*EnterprisePrepayment, *sql
 	)
 	_spec.OnConflict = epc.conflict
 	if value, ok := epc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterpriseprepayment.FieldCreatedAt,
-		})
+		_spec.SetField(enterpriseprepayment.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := epc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterpriseprepayment.FieldUpdatedAt,
-		})
+		_spec.SetField(enterpriseprepayment.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := epc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterpriseprepayment.FieldDeletedAt,
-		})
+		_spec.SetField(enterpriseprepayment.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := epc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: enterpriseprepayment.FieldCreator,
-		})
+		_spec.SetField(enterpriseprepayment.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := epc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: enterpriseprepayment.FieldLastModifier,
-		})
+		_spec.SetField(enterpriseprepayment.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := epc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: enterpriseprepayment.FieldRemark,
-		})
+		_spec.SetField(enterpriseprepayment.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := epc.mutation.Amount(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterpriseprepayment.FieldAmount,
-		})
+		_spec.SetField(enterpriseprepayment.FieldAmount, field.TypeFloat64, value)
 		_node.Amount = value
 	}
 	if nodes := epc.mutation.EnterpriseIDs(); len(nodes) > 0 {

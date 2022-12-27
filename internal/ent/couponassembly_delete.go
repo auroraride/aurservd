@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"fmt"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -28,34 +27,7 @@ func (cad *CouponAssemblyDelete) Where(ps ...predicate.CouponAssembly) *CouponAs
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (cad *CouponAssemblyDelete) Exec(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(cad.hooks) == 0 {
-		affected, err = cad.sqlExec(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CouponAssemblyMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			cad.mutation = mutation
-			affected, err = cad.sqlExec(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(cad.hooks) - 1; i >= 0; i-- {
-			if cad.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = cad.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, cad.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, CouponAssemblyMutation](ctx, cad.sqlExec, cad.mutation, cad.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
@@ -88,6 +60,7 @@ func (cad *CouponAssemblyDelete) sqlExec(ctx context.Context) (int, error) {
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
+	cad.mutation.done = true
 	return affected, err
 }
 

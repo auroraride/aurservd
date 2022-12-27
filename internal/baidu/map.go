@@ -12,7 +12,7 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/go-resty/resty/v2"
-    jsoniter "github.com/json-iterator/go"
+    "github.com/goccy/go-json"
     "net/url"
     "time"
 )
@@ -157,7 +157,7 @@ func (c *mapClient) Riding(origin, destination string) (*Riding, error) {
     if err != nil {
         return nil, err
     }
-    _ = jsoniter.Unmarshal(r.Body(), &res)
+    _ = json.Unmarshal(r.Body(), &res)
     if res.Status != 0 {
         return nil, errors.New(res.Message)
     }

@@ -12,1164 +12,752 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uint64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Store(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uint64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Store(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uint64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.Store(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.Store(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.Store(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uint64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.Store(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uint64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.Store(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uint64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.Store(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uint64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.Store(sql.FieldLTE(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
 func DeletedAt(v time.Time) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
 func Remark(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldRemark, v))
 }
 
 // CityID applies equality check predicate on the "city_id" field. It's identical to CityIDEQ.
 func CityID(v uint64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCityID), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldCityID, v))
 }
 
 // EmployeeID applies equality check predicate on the "employee_id" field. It's identical to EmployeeIDEQ.
 func EmployeeID(v uint64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldEmployeeID, v))
 }
 
 // BranchID applies equality check predicate on the "branch_id" field. It's identical to BranchIDEQ.
 func BranchID(v uint64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBranchID), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldBranchID, v))
 }
 
 // Sn applies equality check predicate on the "sn" field. It's identical to SnEQ.
 func Sn(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSn), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldSn, v))
 }
 
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldName, v))
 }
 
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v uint8) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStatus), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldStatus, v))
 }
 
 // Lng applies equality check predicate on the "lng" field. It's identical to LngEQ.
 func Lng(v float64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLng), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldLng, v))
 }
 
 // Lat applies equality check predicate on the "lat" field. It's identical to LatEQ.
 func Lat(v float64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLat), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldLat, v))
 }
 
 // Address applies equality check predicate on the "address" field. It's identical to AddressEQ.
 func Address(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAddress), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldAddress, v))
 }
 
 // EbikeObtain applies equality check predicate on the "ebike_obtain" field. It's identical to EbikeObtainEQ.
 func EbikeObtain(v bool) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEbikeObtain), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldEbikeObtain, v))
 }
 
 // EbikeRepair applies equality check predicate on the "ebike_repair" field. It's identical to EbikeRepairEQ.
 func EbikeRepair(v bool) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEbikeRepair), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldEbikeRepair, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
 func CreatedAtNEQ(v time.Time) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Store(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Store(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Store(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtGT applies the GT predicate on the "created_at" field.
 func CreatedAtGT(v time.Time) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Store(sql.FieldGT(FieldCreatedAt, v))
 }
 
 // CreatedAtGTE applies the GTE predicate on the "created_at" field.
 func CreatedAtGTE(v time.Time) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Store(sql.FieldGTE(FieldCreatedAt, v))
 }
 
 // CreatedAtLT applies the LT predicate on the "created_at" field.
 func CreatedAtLT(v time.Time) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Store(sql.FieldLT(FieldCreatedAt, v))
 }
 
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Store(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
 func UpdatedAtEQ(v time.Time) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
 func UpdatedAtNEQ(v time.Time) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Store(sql.FieldNEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Store(sql.FieldIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Store(sql.FieldNotIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtGT applies the GT predicate on the "updated_at" field.
 func UpdatedAtGT(v time.Time) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Store(sql.FieldGT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
 func UpdatedAtGTE(v time.Time) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Store(sql.FieldGTE(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLT applies the LT predicate on the "updated_at" field.
 func UpdatedAtLT(v time.Time) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Store(sql.FieldLT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Store(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
 func DeletedAtEQ(v time.Time) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
 func DeletedAtNEQ(v time.Time) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Store(sql.FieldNEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.Store(sql.FieldIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.Store(sql.FieldNotIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtGT applies the GT predicate on the "deleted_at" field.
 func DeletedAtGT(v time.Time) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Store(sql.FieldGT(FieldDeletedAt, v))
 }
 
 // DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
 func DeletedAtGTE(v time.Time) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Store(sql.FieldGTE(FieldDeletedAt, v))
 }
 
 // DeletedAtLT applies the LT predicate on the "deleted_at" field.
 func DeletedAtLT(v time.Time) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Store(sql.FieldLT(FieldDeletedAt, v))
 }
 
 // DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
 func DeletedAtLTE(v time.Time) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Store(sql.FieldLTE(FieldDeletedAt, v))
 }
 
 // DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
 func DeletedAtIsNil() predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.Store(sql.FieldIsNull(FieldDeletedAt))
 }
 
 // DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
 func DeletedAtNotNil() predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.Store(sql.FieldNotNull(FieldDeletedAt))
 }
 
 // CreatorIsNil applies the IsNil predicate on the "creator" field.
 func CreatorIsNil() predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCreator)))
-	})
+	return predicate.Store(sql.FieldIsNull(FieldCreator))
 }
 
 // CreatorNotNil applies the NotNil predicate on the "creator" field.
 func CreatorNotNil() predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCreator)))
-	})
+	return predicate.Store(sql.FieldNotNull(FieldCreator))
 }
 
 // LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
 func LastModifierIsNil() predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Store(sql.FieldIsNull(FieldLastModifier))
 }
 
 // LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
 func LastModifierNotNil() predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Store(sql.FieldNotNull(FieldLastModifier))
 }
 
 // RemarkEQ applies the EQ predicate on the "remark" field.
 func RemarkEQ(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldRemark, v))
 }
 
 // RemarkNEQ applies the NEQ predicate on the "remark" field.
 func RemarkNEQ(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRemark), v))
-	})
+	return predicate.Store(sql.FieldNEQ(FieldRemark, v))
 }
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRemark), v...))
-	})
+	return predicate.Store(sql.FieldIn(FieldRemark, vs...))
 }
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRemark), v...))
-	})
+	return predicate.Store(sql.FieldNotIn(FieldRemark, vs...))
 }
 
 // RemarkGT applies the GT predicate on the "remark" field.
 func RemarkGT(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRemark), v))
-	})
+	return predicate.Store(sql.FieldGT(FieldRemark, v))
 }
 
 // RemarkGTE applies the GTE predicate on the "remark" field.
 func RemarkGTE(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRemark), v))
-	})
+	return predicate.Store(sql.FieldGTE(FieldRemark, v))
 }
 
 // RemarkLT applies the LT predicate on the "remark" field.
 func RemarkLT(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRemark), v))
-	})
+	return predicate.Store(sql.FieldLT(FieldRemark, v))
 }
 
 // RemarkLTE applies the LTE predicate on the "remark" field.
 func RemarkLTE(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRemark), v))
-	})
+	return predicate.Store(sql.FieldLTE(FieldRemark, v))
 }
 
 // RemarkContains applies the Contains predicate on the "remark" field.
 func RemarkContains(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRemark), v))
-	})
+	return predicate.Store(sql.FieldContains(FieldRemark, v))
 }
 
 // RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
 func RemarkHasPrefix(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRemark), v))
-	})
+	return predicate.Store(sql.FieldHasPrefix(FieldRemark, v))
 }
 
 // RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
 func RemarkHasSuffix(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRemark), v))
-	})
+	return predicate.Store(sql.FieldHasSuffix(FieldRemark, v))
 }
 
 // RemarkIsNil applies the IsNil predicate on the "remark" field.
 func RemarkIsNil() predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRemark)))
-	})
+	return predicate.Store(sql.FieldIsNull(FieldRemark))
 }
 
 // RemarkNotNil applies the NotNil predicate on the "remark" field.
 func RemarkNotNil() predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRemark)))
-	})
+	return predicate.Store(sql.FieldNotNull(FieldRemark))
 }
 
 // RemarkEqualFold applies the EqualFold predicate on the "remark" field.
 func RemarkEqualFold(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRemark), v))
-	})
+	return predicate.Store(sql.FieldEqualFold(FieldRemark, v))
 }
 
 // RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
 func RemarkContainsFold(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
-	})
+	return predicate.Store(sql.FieldContainsFold(FieldRemark, v))
 }
 
 // CityIDEQ applies the EQ predicate on the "city_id" field.
 func CityIDEQ(v uint64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCityID), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldCityID, v))
 }
 
 // CityIDNEQ applies the NEQ predicate on the "city_id" field.
 func CityIDNEQ(v uint64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCityID), v))
-	})
+	return predicate.Store(sql.FieldNEQ(FieldCityID, v))
 }
 
 // CityIDIn applies the In predicate on the "city_id" field.
 func CityIDIn(vs ...uint64) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCityID), v...))
-	})
+	return predicate.Store(sql.FieldIn(FieldCityID, vs...))
 }
 
 // CityIDNotIn applies the NotIn predicate on the "city_id" field.
 func CityIDNotIn(vs ...uint64) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCityID), v...))
-	})
+	return predicate.Store(sql.FieldNotIn(FieldCityID, vs...))
 }
 
 // EmployeeIDEQ applies the EQ predicate on the "employee_id" field.
 func EmployeeIDEQ(v uint64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldEmployeeID, v))
 }
 
 // EmployeeIDNEQ applies the NEQ predicate on the "employee_id" field.
 func EmployeeIDNEQ(v uint64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEmployeeID), v))
-	})
+	return predicate.Store(sql.FieldNEQ(FieldEmployeeID, v))
 }
 
 // EmployeeIDIn applies the In predicate on the "employee_id" field.
 func EmployeeIDIn(vs ...uint64) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEmployeeID), v...))
-	})
+	return predicate.Store(sql.FieldIn(FieldEmployeeID, vs...))
 }
 
 // EmployeeIDNotIn applies the NotIn predicate on the "employee_id" field.
 func EmployeeIDNotIn(vs ...uint64) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEmployeeID), v...))
-	})
+	return predicate.Store(sql.FieldNotIn(FieldEmployeeID, vs...))
 }
 
 // EmployeeIDIsNil applies the IsNil predicate on the "employee_id" field.
 func EmployeeIDIsNil() predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldEmployeeID)))
-	})
+	return predicate.Store(sql.FieldIsNull(FieldEmployeeID))
 }
 
 // EmployeeIDNotNil applies the NotNil predicate on the "employee_id" field.
 func EmployeeIDNotNil() predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldEmployeeID)))
-	})
+	return predicate.Store(sql.FieldNotNull(FieldEmployeeID))
 }
 
 // BranchIDEQ applies the EQ predicate on the "branch_id" field.
 func BranchIDEQ(v uint64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBranchID), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldBranchID, v))
 }
 
 // BranchIDNEQ applies the NEQ predicate on the "branch_id" field.
 func BranchIDNEQ(v uint64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBranchID), v))
-	})
+	return predicate.Store(sql.FieldNEQ(FieldBranchID, v))
 }
 
 // BranchIDIn applies the In predicate on the "branch_id" field.
 func BranchIDIn(vs ...uint64) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldBranchID), v...))
-	})
+	return predicate.Store(sql.FieldIn(FieldBranchID, vs...))
 }
 
 // BranchIDNotIn applies the NotIn predicate on the "branch_id" field.
 func BranchIDNotIn(vs ...uint64) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldBranchID), v...))
-	})
+	return predicate.Store(sql.FieldNotIn(FieldBranchID, vs...))
 }
 
 // SnEQ applies the EQ predicate on the "sn" field.
 func SnEQ(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSn), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldSn, v))
 }
 
 // SnNEQ applies the NEQ predicate on the "sn" field.
 func SnNEQ(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSn), v))
-	})
+	return predicate.Store(sql.FieldNEQ(FieldSn, v))
 }
 
 // SnIn applies the In predicate on the "sn" field.
 func SnIn(vs ...string) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldSn), v...))
-	})
+	return predicate.Store(sql.FieldIn(FieldSn, vs...))
 }
 
 // SnNotIn applies the NotIn predicate on the "sn" field.
 func SnNotIn(vs ...string) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldSn), v...))
-	})
+	return predicate.Store(sql.FieldNotIn(FieldSn, vs...))
 }
 
 // SnGT applies the GT predicate on the "sn" field.
 func SnGT(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldSn), v))
-	})
+	return predicate.Store(sql.FieldGT(FieldSn, v))
 }
 
 // SnGTE applies the GTE predicate on the "sn" field.
 func SnGTE(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldSn), v))
-	})
+	return predicate.Store(sql.FieldGTE(FieldSn, v))
 }
 
 // SnLT applies the LT predicate on the "sn" field.
 func SnLT(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldSn), v))
-	})
+	return predicate.Store(sql.FieldLT(FieldSn, v))
 }
 
 // SnLTE applies the LTE predicate on the "sn" field.
 func SnLTE(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldSn), v))
-	})
+	return predicate.Store(sql.FieldLTE(FieldSn, v))
 }
 
 // SnContains applies the Contains predicate on the "sn" field.
 func SnContains(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldSn), v))
-	})
+	return predicate.Store(sql.FieldContains(FieldSn, v))
 }
 
 // SnHasPrefix applies the HasPrefix predicate on the "sn" field.
 func SnHasPrefix(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldSn), v))
-	})
+	return predicate.Store(sql.FieldHasPrefix(FieldSn, v))
 }
 
 // SnHasSuffix applies the HasSuffix predicate on the "sn" field.
 func SnHasSuffix(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldSn), v))
-	})
+	return predicate.Store(sql.FieldHasSuffix(FieldSn, v))
 }
 
 // SnEqualFold applies the EqualFold predicate on the "sn" field.
 func SnEqualFold(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldSn), v))
-	})
+	return predicate.Store(sql.FieldEqualFold(FieldSn, v))
 }
 
 // SnContainsFold applies the ContainsFold predicate on the "sn" field.
 func SnContainsFold(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldSn), v))
-	})
+	return predicate.Store(sql.FieldContainsFold(FieldSn, v))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldName, v))
 }
 
 // NameNEQ applies the NEQ predicate on the "name" field.
 func NameNEQ(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldName), v))
-	})
+	return predicate.Store(sql.FieldNEQ(FieldName, v))
 }
 
 // NameIn applies the In predicate on the "name" field.
 func NameIn(vs ...string) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldName), v...))
-	})
+	return predicate.Store(sql.FieldIn(FieldName, vs...))
 }
 
 // NameNotIn applies the NotIn predicate on the "name" field.
 func NameNotIn(vs ...string) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldName), v...))
-	})
+	return predicate.Store(sql.FieldNotIn(FieldName, vs...))
 }
 
 // NameGT applies the GT predicate on the "name" field.
 func NameGT(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldName), v))
-	})
+	return predicate.Store(sql.FieldGT(FieldName, v))
 }
 
 // NameGTE applies the GTE predicate on the "name" field.
 func NameGTE(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldName), v))
-	})
+	return predicate.Store(sql.FieldGTE(FieldName, v))
 }
 
 // NameLT applies the LT predicate on the "name" field.
 func NameLT(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldName), v))
-	})
+	return predicate.Store(sql.FieldLT(FieldName, v))
 }
 
 // NameLTE applies the LTE predicate on the "name" field.
 func NameLTE(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldName), v))
-	})
+	return predicate.Store(sql.FieldLTE(FieldName, v))
 }
 
 // NameContains applies the Contains predicate on the "name" field.
 func NameContains(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldName), v))
-	})
+	return predicate.Store(sql.FieldContains(FieldName, v))
 }
 
 // NameHasPrefix applies the HasPrefix predicate on the "name" field.
 func NameHasPrefix(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldName), v))
-	})
+	return predicate.Store(sql.FieldHasPrefix(FieldName, v))
 }
 
 // NameHasSuffix applies the HasSuffix predicate on the "name" field.
 func NameHasSuffix(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldName), v))
-	})
+	return predicate.Store(sql.FieldHasSuffix(FieldName, v))
 }
 
 // NameEqualFold applies the EqualFold predicate on the "name" field.
 func NameEqualFold(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldName), v))
-	})
+	return predicate.Store(sql.FieldEqualFold(FieldName, v))
 }
 
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldName), v))
-	})
+	return predicate.Store(sql.FieldContainsFold(FieldName, v))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.
 func StatusEQ(v uint8) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStatus), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldStatus, v))
 }
 
 // StatusNEQ applies the NEQ predicate on the "status" field.
 func StatusNEQ(v uint8) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStatus), v))
-	})
+	return predicate.Store(sql.FieldNEQ(FieldStatus, v))
 }
 
 // StatusIn applies the In predicate on the "status" field.
 func StatusIn(vs ...uint8) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStatus), v...))
-	})
+	return predicate.Store(sql.FieldIn(FieldStatus, vs...))
 }
 
 // StatusNotIn applies the NotIn predicate on the "status" field.
 func StatusNotIn(vs ...uint8) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStatus), v...))
-	})
+	return predicate.Store(sql.FieldNotIn(FieldStatus, vs...))
 }
 
 // StatusGT applies the GT predicate on the "status" field.
 func StatusGT(v uint8) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldStatus), v))
-	})
+	return predicate.Store(sql.FieldGT(FieldStatus, v))
 }
 
 // StatusGTE applies the GTE predicate on the "status" field.
 func StatusGTE(v uint8) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldStatus), v))
-	})
+	return predicate.Store(sql.FieldGTE(FieldStatus, v))
 }
 
 // StatusLT applies the LT predicate on the "status" field.
 func StatusLT(v uint8) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldStatus), v))
-	})
+	return predicate.Store(sql.FieldLT(FieldStatus, v))
 }
 
 // StatusLTE applies the LTE predicate on the "status" field.
 func StatusLTE(v uint8) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldStatus), v))
-	})
+	return predicate.Store(sql.FieldLTE(FieldStatus, v))
 }
 
 // LngEQ applies the EQ predicate on the "lng" field.
 func LngEQ(v float64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLng), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldLng, v))
 }
 
 // LngNEQ applies the NEQ predicate on the "lng" field.
 func LngNEQ(v float64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldLng), v))
-	})
+	return predicate.Store(sql.FieldNEQ(FieldLng, v))
 }
 
 // LngIn applies the In predicate on the "lng" field.
 func LngIn(vs ...float64) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldLng), v...))
-	})
+	return predicate.Store(sql.FieldIn(FieldLng, vs...))
 }
 
 // LngNotIn applies the NotIn predicate on the "lng" field.
 func LngNotIn(vs ...float64) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldLng), v...))
-	})
+	return predicate.Store(sql.FieldNotIn(FieldLng, vs...))
 }
 
 // LngGT applies the GT predicate on the "lng" field.
 func LngGT(v float64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldLng), v))
-	})
+	return predicate.Store(sql.FieldGT(FieldLng, v))
 }
 
 // LngGTE applies the GTE predicate on the "lng" field.
 func LngGTE(v float64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldLng), v))
-	})
+	return predicate.Store(sql.FieldGTE(FieldLng, v))
 }
 
 // LngLT applies the LT predicate on the "lng" field.
 func LngLT(v float64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldLng), v))
-	})
+	return predicate.Store(sql.FieldLT(FieldLng, v))
 }
 
 // LngLTE applies the LTE predicate on the "lng" field.
 func LngLTE(v float64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldLng), v))
-	})
+	return predicate.Store(sql.FieldLTE(FieldLng, v))
 }
 
 // LatEQ applies the EQ predicate on the "lat" field.
 func LatEQ(v float64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLat), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldLat, v))
 }
 
 // LatNEQ applies the NEQ predicate on the "lat" field.
 func LatNEQ(v float64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldLat), v))
-	})
+	return predicate.Store(sql.FieldNEQ(FieldLat, v))
 }
 
 // LatIn applies the In predicate on the "lat" field.
 func LatIn(vs ...float64) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldLat), v...))
-	})
+	return predicate.Store(sql.FieldIn(FieldLat, vs...))
 }
 
 // LatNotIn applies the NotIn predicate on the "lat" field.
 func LatNotIn(vs ...float64) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldLat), v...))
-	})
+	return predicate.Store(sql.FieldNotIn(FieldLat, vs...))
 }
 
 // LatGT applies the GT predicate on the "lat" field.
 func LatGT(v float64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldLat), v))
-	})
+	return predicate.Store(sql.FieldGT(FieldLat, v))
 }
 
 // LatGTE applies the GTE predicate on the "lat" field.
 func LatGTE(v float64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldLat), v))
-	})
+	return predicate.Store(sql.FieldGTE(FieldLat, v))
 }
 
 // LatLT applies the LT predicate on the "lat" field.
 func LatLT(v float64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldLat), v))
-	})
+	return predicate.Store(sql.FieldLT(FieldLat, v))
 }
 
 // LatLTE applies the LTE predicate on the "lat" field.
 func LatLTE(v float64) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldLat), v))
-	})
+	return predicate.Store(sql.FieldLTE(FieldLat, v))
 }
 
 // AddressEQ applies the EQ predicate on the "address" field.
 func AddressEQ(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAddress), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldAddress, v))
 }
 
 // AddressNEQ applies the NEQ predicate on the "address" field.
 func AddressNEQ(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAddress), v))
-	})
+	return predicate.Store(sql.FieldNEQ(FieldAddress, v))
 }
 
 // AddressIn applies the In predicate on the "address" field.
 func AddressIn(vs ...string) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAddress), v...))
-	})
+	return predicate.Store(sql.FieldIn(FieldAddress, vs...))
 }
 
 // AddressNotIn applies the NotIn predicate on the "address" field.
 func AddressNotIn(vs ...string) predicate.Store {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAddress), v...))
-	})
+	return predicate.Store(sql.FieldNotIn(FieldAddress, vs...))
 }
 
 // AddressGT applies the GT predicate on the "address" field.
 func AddressGT(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAddress), v))
-	})
+	return predicate.Store(sql.FieldGT(FieldAddress, v))
 }
 
 // AddressGTE applies the GTE predicate on the "address" field.
 func AddressGTE(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAddress), v))
-	})
+	return predicate.Store(sql.FieldGTE(FieldAddress, v))
 }
 
 // AddressLT applies the LT predicate on the "address" field.
 func AddressLT(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAddress), v))
-	})
+	return predicate.Store(sql.FieldLT(FieldAddress, v))
 }
 
 // AddressLTE applies the LTE predicate on the "address" field.
 func AddressLTE(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAddress), v))
-	})
+	return predicate.Store(sql.FieldLTE(FieldAddress, v))
 }
 
 // AddressContains applies the Contains predicate on the "address" field.
 func AddressContains(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldAddress), v))
-	})
+	return predicate.Store(sql.FieldContains(FieldAddress, v))
 }
 
 // AddressHasPrefix applies the HasPrefix predicate on the "address" field.
 func AddressHasPrefix(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldAddress), v))
-	})
+	return predicate.Store(sql.FieldHasPrefix(FieldAddress, v))
 }
 
 // AddressHasSuffix applies the HasSuffix predicate on the "address" field.
 func AddressHasSuffix(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldAddress), v))
-	})
+	return predicate.Store(sql.FieldHasSuffix(FieldAddress, v))
 }
 
 // AddressEqualFold applies the EqualFold predicate on the "address" field.
 func AddressEqualFold(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldAddress), v))
-	})
+	return predicate.Store(sql.FieldEqualFold(FieldAddress, v))
 }
 
 // AddressContainsFold applies the ContainsFold predicate on the "address" field.
 func AddressContainsFold(v string) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldAddress), v))
-	})
+	return predicate.Store(sql.FieldContainsFold(FieldAddress, v))
 }
 
 // EbikeObtainEQ applies the EQ predicate on the "ebike_obtain" field.
 func EbikeObtainEQ(v bool) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEbikeObtain), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldEbikeObtain, v))
 }
 
 // EbikeObtainNEQ applies the NEQ predicate on the "ebike_obtain" field.
 func EbikeObtainNEQ(v bool) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEbikeObtain), v))
-	})
+	return predicate.Store(sql.FieldNEQ(FieldEbikeObtain, v))
 }
 
 // EbikeRepairEQ applies the EQ predicate on the "ebike_repair" field.
 func EbikeRepairEQ(v bool) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEbikeRepair), v))
-	})
+	return predicate.Store(sql.FieldEQ(FieldEbikeRepair, v))
 }
 
 // EbikeRepairNEQ applies the NEQ predicate on the "ebike_repair" field.
 func EbikeRepairNEQ(v bool) predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEbikeRepair), v))
-	})
+	return predicate.Store(sql.FieldNEQ(FieldEbikeRepair, v))
 }
 
 // HasCity applies the HasEdge predicate on the "city" edge.
@@ -1177,7 +765,6 @@ func HasCity() predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CityTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1205,7 +792,6 @@ func HasBranch() predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(BranchTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, BranchTable, BranchColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1233,7 +819,6 @@ func HasEmployee() predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EmployeeTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, true, EmployeeTable, EmployeeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1261,7 +846,6 @@ func HasStocks() predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StocksTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, StocksTable, StocksColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1289,7 +873,6 @@ func HasAttendances() predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AttendancesTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, AttendancesTable, AttendancesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1317,7 +900,6 @@ func HasExceptions() predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ExceptionsTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, ExceptionsTable, ExceptionsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

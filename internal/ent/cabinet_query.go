@@ -29,6 +29,7 @@ type CabinetQuery struct {
 	unique        *bool
 	order         []OrderFunc
 	fields        []string
+	inters        []Interceptor
 	predicates    []predicate.Cabinet
 	withCity      *CityQuery
 	withBranch    *BranchQuery
@@ -48,13 +49,13 @@ func (cq *CabinetQuery) Where(ps ...predicate.Cabinet) *CabinetQuery {
 	return cq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (cq *CabinetQuery) Limit(limit int) *CabinetQuery {
 	cq.limit = &limit
 	return cq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (cq *CabinetQuery) Offset(offset int) *CabinetQuery {
 	cq.offset = &offset
 	return cq
@@ -67,7 +68,7 @@ func (cq *CabinetQuery) Unique(unique bool) *CabinetQuery {
 	return cq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (cq *CabinetQuery) Order(o ...OrderFunc) *CabinetQuery {
 	cq.order = append(cq.order, o...)
 	return cq
@@ -75,7 +76,7 @@ func (cq *CabinetQuery) Order(o ...OrderFunc) *CabinetQuery {
 
 // QueryCity chains the current query on the "city" edge.
 func (cq *CabinetQuery) QueryCity() *CityQuery {
-	query := &CityQuery{config: cq.config}
+	query := (&CityClient{config: cq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -97,7 +98,7 @@ func (cq *CabinetQuery) QueryCity() *CityQuery {
 
 // QueryBranch chains the current query on the "branch" edge.
 func (cq *CabinetQuery) QueryBranch() *BranchQuery {
-	query := &BranchQuery{config: cq.config}
+	query := (&BranchClient{config: cq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -119,7 +120,7 @@ func (cq *CabinetQuery) QueryBranch() *BranchQuery {
 
 // QueryModels chains the current query on the "models" edge.
 func (cq *CabinetQuery) QueryModels() *BatteryModelQuery {
-	query := &BatteryModelQuery{config: cq.config}
+	query := (&BatteryModelClient{config: cq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -141,7 +142,7 @@ func (cq *CabinetQuery) QueryModels() *BatteryModelQuery {
 
 // QueryFaults chains the current query on the "faults" edge.
 func (cq *CabinetQuery) QueryFaults() *CabinetFaultQuery {
-	query := &CabinetFaultQuery{config: cq.config}
+	query := (&CabinetFaultClient{config: cq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -163,7 +164,7 @@ func (cq *CabinetQuery) QueryFaults() *CabinetFaultQuery {
 
 // QueryExchanges chains the current query on the "exchanges" edge.
 func (cq *CabinetQuery) QueryExchanges() *ExchangeQuery {
-	query := &ExchangeQuery{config: cq.config}
+	query := (&ExchangeClient{config: cq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -185,7 +186,7 @@ func (cq *CabinetQuery) QueryExchanges() *ExchangeQuery {
 
 // QueryStocks chains the current query on the "stocks" edge.
 func (cq *CabinetQuery) QueryStocks() *StockQuery {
-	query := &StockQuery{config: cq.config}
+	query := (&StockClient{config: cq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -208,7 +209,7 @@ func (cq *CabinetQuery) QueryStocks() *StockQuery {
 // First returns the first Cabinet entity from the query.
 // Returns a *NotFoundError when no Cabinet was found.
 func (cq *CabinetQuery) First(ctx context.Context) (*Cabinet, error) {
-	nodes, err := cq.Limit(1).All(ctx)
+	nodes, err := cq.Limit(1).All(newQueryContext(ctx, TypeCabinet, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -231,7 +232,7 @@ func (cq *CabinetQuery) FirstX(ctx context.Context) *Cabinet {
 // Returns a *NotFoundError when no Cabinet ID was found.
 func (cq *CabinetQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = cq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = cq.Limit(1).IDs(newQueryContext(ctx, TypeCabinet, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -254,7 +255,7 @@ func (cq *CabinetQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Cabinet entity is found.
 // Returns a *NotFoundError when no Cabinet entities are found.
 func (cq *CabinetQuery) Only(ctx context.Context) (*Cabinet, error) {
-	nodes, err := cq.Limit(2).All(ctx)
+	nodes, err := cq.Limit(2).All(newQueryContext(ctx, TypeCabinet, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -282,7 +283,7 @@ func (cq *CabinetQuery) OnlyX(ctx context.Context) *Cabinet {
 // Returns a *NotFoundError when no entities are found.
 func (cq *CabinetQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = cq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = cq.Limit(2).IDs(newQueryContext(ctx, TypeCabinet, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -307,10 +308,12 @@ func (cq *CabinetQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Cabinets.
 func (cq *CabinetQuery) All(ctx context.Context) ([]*Cabinet, error) {
+	ctx = newQueryContext(ctx, TypeCabinet, "All")
 	if err := cq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return cq.sqlAll(ctx)
+	qr := querierAll[[]*Cabinet, *CabinetQuery]()
+	return withInterceptors[[]*Cabinet](ctx, cq, qr, cq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -325,6 +328,7 @@ func (cq *CabinetQuery) AllX(ctx context.Context) []*Cabinet {
 // IDs executes the query and returns a list of Cabinet IDs.
 func (cq *CabinetQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeCabinet, "IDs")
 	if err := cq.Select(cabinet.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -342,10 +346,11 @@ func (cq *CabinetQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (cq *CabinetQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeCabinet, "Count")
 	if err := cq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return cq.sqlCount(ctx)
+	return withInterceptors[int](ctx, cq, querierCount[*CabinetQuery](), cq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -359,10 +364,15 @@ func (cq *CabinetQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (cq *CabinetQuery) Exist(ctx context.Context) (bool, error) {
-	if err := cq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeCabinet, "Exist")
+	switch _, err := cq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return cq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -402,7 +412,7 @@ func (cq *CabinetQuery) Clone() *CabinetQuery {
 // WithCity tells the query-builder to eager-load the nodes that are connected to
 // the "city" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *CabinetQuery) WithCity(opts ...func(*CityQuery)) *CabinetQuery {
-	query := &CityQuery{config: cq.config}
+	query := (&CityClient{config: cq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -413,7 +423,7 @@ func (cq *CabinetQuery) WithCity(opts ...func(*CityQuery)) *CabinetQuery {
 // WithBranch tells the query-builder to eager-load the nodes that are connected to
 // the "branch" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *CabinetQuery) WithBranch(opts ...func(*BranchQuery)) *CabinetQuery {
-	query := &BranchQuery{config: cq.config}
+	query := (&BranchClient{config: cq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -424,7 +434,7 @@ func (cq *CabinetQuery) WithBranch(opts ...func(*BranchQuery)) *CabinetQuery {
 // WithModels tells the query-builder to eager-load the nodes that are connected to
 // the "models" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *CabinetQuery) WithModels(opts ...func(*BatteryModelQuery)) *CabinetQuery {
-	query := &BatteryModelQuery{config: cq.config}
+	query := (&BatteryModelClient{config: cq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -435,7 +445,7 @@ func (cq *CabinetQuery) WithModels(opts ...func(*BatteryModelQuery)) *CabinetQue
 // WithFaults tells the query-builder to eager-load the nodes that are connected to
 // the "faults" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *CabinetQuery) WithFaults(opts ...func(*CabinetFaultQuery)) *CabinetQuery {
-	query := &CabinetFaultQuery{config: cq.config}
+	query := (&CabinetFaultClient{config: cq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -446,7 +456,7 @@ func (cq *CabinetQuery) WithFaults(opts ...func(*CabinetFaultQuery)) *CabinetQue
 // WithExchanges tells the query-builder to eager-load the nodes that are connected to
 // the "exchanges" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *CabinetQuery) WithExchanges(opts ...func(*ExchangeQuery)) *CabinetQuery {
-	query := &ExchangeQuery{config: cq.config}
+	query := (&ExchangeClient{config: cq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -457,7 +467,7 @@ func (cq *CabinetQuery) WithExchanges(opts ...func(*ExchangeQuery)) *CabinetQuer
 // WithStocks tells the query-builder to eager-load the nodes that are connected to
 // the "stocks" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *CabinetQuery) WithStocks(opts ...func(*StockQuery)) *CabinetQuery {
-	query := &StockQuery{config: cq.config}
+	query := (&StockClient{config: cq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -480,16 +490,11 @@ func (cq *CabinetQuery) WithStocks(opts ...func(*StockQuery)) *CabinetQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (cq *CabinetQuery) GroupBy(field string, fields ...string) *CabinetGroupBy {
-	grbuild := &CabinetGroupBy{config: cq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := cq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return cq.sqlQuery(ctx), nil
-	}
+	cq.fields = append([]string{field}, fields...)
+	grbuild := &CabinetGroupBy{build: cq}
+	grbuild.flds = &cq.fields
 	grbuild.label = cabinet.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -507,13 +512,28 @@ func (cq *CabinetQuery) GroupBy(field string, fields ...string) *CabinetGroupBy 
 //		Scan(ctx, &v)
 func (cq *CabinetQuery) Select(fields ...string) *CabinetSelect {
 	cq.fields = append(cq.fields, fields...)
-	selbuild := &CabinetSelect{CabinetQuery: cq}
-	selbuild.label = cabinet.Label
-	selbuild.flds, selbuild.scan = &cq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &CabinetSelect{CabinetQuery: cq}
+	sbuild.label = cabinet.Label
+	sbuild.flds, sbuild.scan = &cq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a CabinetSelect configured with the given aggregations.
+func (cq *CabinetQuery) Aggregate(fns ...AggregateFunc) *CabinetSelect {
+	return cq.Select().Aggregate(fns...)
 }
 
 func (cq *CabinetQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range cq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, cq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range cq.fields {
 		if !cabinet.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -701,7 +721,7 @@ func (cq *CabinetQuery) loadModels(ctx context.Context, query *BatteryModelQuery
 			outValue := uint64(values[0].(*sql.NullInt64).Int64)
 			inValue := uint64(values[1].(*sql.NullInt64).Int64)
 			if nids[inValue] == nil {
-				nids[inValue] = map[*Cabinet]struct{}{byID[outValue]: struct{}{}}
+				nids[inValue] = map[*Cabinet]struct{}{byID[outValue]: {}}
 				return assign(columns[1:], values[1:])
 			}
 			nids[inValue][byID[outValue]] = struct{}{}
@@ -820,17 +840,6 @@ func (cq *CabinetQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, cq.driver, _spec)
 }
 
-func (cq *CabinetQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := cq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (cq *CabinetQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -922,13 +931,8 @@ func (cq *CabinetQuery) Modify(modifiers ...func(s *sql.Selector)) *CabinetSelec
 
 // CabinetGroupBy is the group-by builder for Cabinet entities.
 type CabinetGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *CabinetQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -937,74 +941,77 @@ func (cgb *CabinetGroupBy) Aggregate(fns ...AggregateFunc) *CabinetGroupBy {
 	return cgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (cgb *CabinetGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := cgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeCabinet, "GroupBy")
+	if err := cgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	cgb.sql = query
-	return cgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*CabinetQuery, *CabinetGroupBy](ctx, cgb.build, cgb, cgb.build.inters, v)
 }
 
-func (cgb *CabinetGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range cgb.fields {
-		if !cabinet.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (cgb *CabinetGroupBy) sqlScan(ctx context.Context, root *CabinetQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(cgb.fns))
+	for _, fn := range cgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := cgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*cgb.flds)+len(cgb.fns))
+		for _, f := range *cgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*cgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := cgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := cgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (cgb *CabinetGroupBy) sqlQuery() *sql.Selector {
-	selector := cgb.sql.Select()
-	aggregation := make([]string, 0, len(cgb.fns))
-	for _, fn := range cgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(cgb.fields)+len(cgb.fns))
-		for _, f := range cgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(cgb.fields...)...)
-}
-
 // CabinetSelect is the builder for selecting fields of Cabinet entities.
 type CabinetSelect struct {
 	*CabinetQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (cs *CabinetSelect) Aggregate(fns ...AggregateFunc) *CabinetSelect {
+	cs.fns = append(cs.fns, fns...)
+	return cs
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (cs *CabinetSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeCabinet, "Select")
 	if err := cs.prepareQuery(ctx); err != nil {
 		return err
 	}
-	cs.sql = cs.CabinetQuery.sqlQuery(ctx)
-	return cs.sqlScan(ctx, v)
+	return scanWithInterceptors[*CabinetQuery, *CabinetSelect](ctx, cs.CabinetQuery, cs, cs.inters, v)
 }
 
-func (cs *CabinetSelect) sqlScan(ctx context.Context, v any) error {
+func (cs *CabinetSelect) sqlScan(ctx context.Context, root *CabinetQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(cs.fns))
+	for _, fn := range cs.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*cs.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := cs.sql.Query()
+	query, args := selector.Query()
 	if err := cs.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

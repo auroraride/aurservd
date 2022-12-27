@@ -52,6 +52,7 @@ type Employee struct {
 func (Employee) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "employee"},
+        entsql.WithComments(true),
     }
 }
 

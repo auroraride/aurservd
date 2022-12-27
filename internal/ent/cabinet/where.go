@@ -12,2105 +12,1367 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uint64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uint64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uint64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uint64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.Cabinet(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uint64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.Cabinet(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uint64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.Cabinet(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uint64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.Cabinet(sql.FieldLTE(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
 func DeletedAt(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
 func Remark(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldRemark, v))
 }
 
 // CityID applies equality check predicate on the "city_id" field. It's identical to CityIDEQ.
 func CityID(v uint64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCityID), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldCityID, v))
 }
 
 // BranchID applies equality check predicate on the "branch_id" field. It's identical to BranchIDEQ.
 func BranchID(v uint64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBranchID), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldBranchID, v))
 }
 
 // Sn applies equality check predicate on the "sn" field. It's identical to SnEQ.
 func Sn(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSn), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldSn, v))
 }
 
 // Brand applies equality check predicate on the "brand" field. It's identical to BrandEQ.
 func Brand(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBrand), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldBrand, v))
 }
 
 // Serial applies equality check predicate on the "serial" field. It's identical to SerialEQ.
 func Serial(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSerial), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldSerial, v))
 }
 
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldName, v))
 }
 
 // Doors applies equality check predicate on the "doors" field. It's identical to DoorsEQ.
 func Doors(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDoors), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldDoors, v))
 }
 
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v uint8) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStatus), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldStatus, v))
 }
 
 // Lng applies equality check predicate on the "lng" field. It's identical to LngEQ.
 func Lng(v float64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLng), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldLng, v))
 }
 
 // Lat applies equality check predicate on the "lat" field. It's identical to LatEQ.
 func Lat(v float64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLat), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldLat, v))
 }
 
 // Address applies equality check predicate on the "address" field. It's identical to AddressEQ.
 func Address(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAddress), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldAddress, v))
 }
 
 // SimSn applies equality check predicate on the "sim_sn" field. It's identical to SimSnEQ.
 func SimSn(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSimSn), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldSimSn, v))
 }
 
 // SimDate applies equality check predicate on the "sim_date" field. It's identical to SimDateEQ.
 func SimDate(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSimDate), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldSimDate, v))
 }
 
 // Transferred applies equality check predicate on the "transferred" field. It's identical to TransferredEQ.
 func Transferred(v bool) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldTransferred), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldTransferred, v))
 }
 
 // Intelligent applies equality check predicate on the "intelligent" field. It's identical to IntelligentEQ.
 func Intelligent(v bool) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIntelligent), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldIntelligent, v))
 }
 
 // Health applies equality check predicate on the "health" field. It's identical to HealthEQ.
 func Health(v uint8) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldHealth), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldHealth, v))
 }
 
 // BatteryNum applies equality check predicate on the "battery_num" field. It's identical to BatteryNumEQ.
 func BatteryNum(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBatteryNum), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldBatteryNum, v))
 }
 
 // BatteryFullNum applies equality check predicate on the "battery_full_num" field. It's identical to BatteryFullNumEQ.
 func BatteryFullNum(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBatteryFullNum), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldBatteryFullNum, v))
 }
 
 // BatteryChargingNum applies equality check predicate on the "battery_charging_num" field. It's identical to BatteryChargingNumEQ.
 func BatteryChargingNum(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBatteryChargingNum), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldBatteryChargingNum, v))
 }
 
 // EmptyBinNum applies equality check predicate on the "empty_bin_num" field. It's identical to EmptyBinNumEQ.
 func EmptyBinNum(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEmptyBinNum), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldEmptyBinNum, v))
 }
 
 // LockedBinNum applies equality check predicate on the "locked_bin_num" field. It's identical to LockedBinNumEQ.
 func LockedBinNum(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLockedBinNum), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldLockedBinNum, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
 func CreatedAtNEQ(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtGT applies the GT predicate on the "created_at" field.
 func CreatedAtGT(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Cabinet(sql.FieldGT(FieldCreatedAt, v))
 }
 
 // CreatedAtGTE applies the GTE predicate on the "created_at" field.
 func CreatedAtGTE(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Cabinet(sql.FieldGTE(FieldCreatedAt, v))
 }
 
 // CreatedAtLT applies the LT predicate on the "created_at" field.
 func CreatedAtLT(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Cabinet(sql.FieldLT(FieldCreatedAt, v))
 }
 
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Cabinet(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
 func UpdatedAtEQ(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
 func UpdatedAtNEQ(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtGT applies the GT predicate on the "updated_at" field.
 func UpdatedAtGT(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Cabinet(sql.FieldGT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
 func UpdatedAtGTE(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Cabinet(sql.FieldGTE(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLT applies the LT predicate on the "updated_at" field.
 func UpdatedAtLT(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Cabinet(sql.FieldLT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Cabinet(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
 func DeletedAtEQ(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
 func DeletedAtNEQ(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtGT applies the GT predicate on the "deleted_at" field.
 func DeletedAtGT(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Cabinet(sql.FieldGT(FieldDeletedAt, v))
 }
 
 // DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
 func DeletedAtGTE(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Cabinet(sql.FieldGTE(FieldDeletedAt, v))
 }
 
 // DeletedAtLT applies the LT predicate on the "deleted_at" field.
 func DeletedAtLT(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Cabinet(sql.FieldLT(FieldDeletedAt, v))
 }
 
 // DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
 func DeletedAtLTE(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Cabinet(sql.FieldLTE(FieldDeletedAt, v))
 }
 
 // DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
 func DeletedAtIsNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.Cabinet(sql.FieldIsNull(FieldDeletedAt))
 }
 
 // DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
 func DeletedAtNotNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.Cabinet(sql.FieldNotNull(FieldDeletedAt))
 }
 
 // CreatorIsNil applies the IsNil predicate on the "creator" field.
 func CreatorIsNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCreator)))
-	})
+	return predicate.Cabinet(sql.FieldIsNull(FieldCreator))
 }
 
 // CreatorNotNil applies the NotNil predicate on the "creator" field.
 func CreatorNotNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCreator)))
-	})
+	return predicate.Cabinet(sql.FieldNotNull(FieldCreator))
 }
 
 // LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
 func LastModifierIsNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Cabinet(sql.FieldIsNull(FieldLastModifier))
 }
 
 // LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
 func LastModifierNotNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Cabinet(sql.FieldNotNull(FieldLastModifier))
 }
 
 // RemarkEQ applies the EQ predicate on the "remark" field.
 func RemarkEQ(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldRemark, v))
 }
 
 // RemarkNEQ applies the NEQ predicate on the "remark" field.
 func RemarkNEQ(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRemark), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldRemark, v))
 }
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRemark), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldRemark, vs...))
 }
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRemark), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldRemark, vs...))
 }
 
 // RemarkGT applies the GT predicate on the "remark" field.
 func RemarkGT(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRemark), v))
-	})
+	return predicate.Cabinet(sql.FieldGT(FieldRemark, v))
 }
 
 // RemarkGTE applies the GTE predicate on the "remark" field.
 func RemarkGTE(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRemark), v))
-	})
+	return predicate.Cabinet(sql.FieldGTE(FieldRemark, v))
 }
 
 // RemarkLT applies the LT predicate on the "remark" field.
 func RemarkLT(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRemark), v))
-	})
+	return predicate.Cabinet(sql.FieldLT(FieldRemark, v))
 }
 
 // RemarkLTE applies the LTE predicate on the "remark" field.
 func RemarkLTE(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRemark), v))
-	})
+	return predicate.Cabinet(sql.FieldLTE(FieldRemark, v))
 }
 
 // RemarkContains applies the Contains predicate on the "remark" field.
 func RemarkContains(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRemark), v))
-	})
+	return predicate.Cabinet(sql.FieldContains(FieldRemark, v))
 }
 
 // RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
 func RemarkHasPrefix(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRemark), v))
-	})
+	return predicate.Cabinet(sql.FieldHasPrefix(FieldRemark, v))
 }
 
 // RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
 func RemarkHasSuffix(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRemark), v))
-	})
+	return predicate.Cabinet(sql.FieldHasSuffix(FieldRemark, v))
 }
 
 // RemarkIsNil applies the IsNil predicate on the "remark" field.
 func RemarkIsNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRemark)))
-	})
+	return predicate.Cabinet(sql.FieldIsNull(FieldRemark))
 }
 
 // RemarkNotNil applies the NotNil predicate on the "remark" field.
 func RemarkNotNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRemark)))
-	})
+	return predicate.Cabinet(sql.FieldNotNull(FieldRemark))
 }
 
 // RemarkEqualFold applies the EqualFold predicate on the "remark" field.
 func RemarkEqualFold(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRemark), v))
-	})
+	return predicate.Cabinet(sql.FieldEqualFold(FieldRemark, v))
 }
 
 // RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
 func RemarkContainsFold(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
-	})
+	return predicate.Cabinet(sql.FieldContainsFold(FieldRemark, v))
 }
 
 // CityIDEQ applies the EQ predicate on the "city_id" field.
 func CityIDEQ(v uint64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCityID), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldCityID, v))
 }
 
 // CityIDNEQ applies the NEQ predicate on the "city_id" field.
 func CityIDNEQ(v uint64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCityID), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldCityID, v))
 }
 
 // CityIDIn applies the In predicate on the "city_id" field.
 func CityIDIn(vs ...uint64) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCityID), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldCityID, vs...))
 }
 
 // CityIDNotIn applies the NotIn predicate on the "city_id" field.
 func CityIDNotIn(vs ...uint64) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCityID), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldCityID, vs...))
 }
 
 // CityIDIsNil applies the IsNil predicate on the "city_id" field.
 func CityIDIsNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCityID)))
-	})
+	return predicate.Cabinet(sql.FieldIsNull(FieldCityID))
 }
 
 // CityIDNotNil applies the NotNil predicate on the "city_id" field.
 func CityIDNotNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCityID)))
-	})
+	return predicate.Cabinet(sql.FieldNotNull(FieldCityID))
 }
 
 // BranchIDEQ applies the EQ predicate on the "branch_id" field.
 func BranchIDEQ(v uint64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBranchID), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldBranchID, v))
 }
 
 // BranchIDNEQ applies the NEQ predicate on the "branch_id" field.
 func BranchIDNEQ(v uint64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBranchID), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldBranchID, v))
 }
 
 // BranchIDIn applies the In predicate on the "branch_id" field.
 func BranchIDIn(vs ...uint64) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldBranchID), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldBranchID, vs...))
 }
 
 // BranchIDNotIn applies the NotIn predicate on the "branch_id" field.
 func BranchIDNotIn(vs ...uint64) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldBranchID), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldBranchID, vs...))
 }
 
 // BranchIDIsNil applies the IsNil predicate on the "branch_id" field.
 func BranchIDIsNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldBranchID)))
-	})
+	return predicate.Cabinet(sql.FieldIsNull(FieldBranchID))
 }
 
 // BranchIDNotNil applies the NotNil predicate on the "branch_id" field.
 func BranchIDNotNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldBranchID)))
-	})
+	return predicate.Cabinet(sql.FieldNotNull(FieldBranchID))
 }
 
 // SnEQ applies the EQ predicate on the "sn" field.
 func SnEQ(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSn), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldSn, v))
 }
 
 // SnNEQ applies the NEQ predicate on the "sn" field.
 func SnNEQ(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSn), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldSn, v))
 }
 
 // SnIn applies the In predicate on the "sn" field.
 func SnIn(vs ...string) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldSn), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldSn, vs...))
 }
 
 // SnNotIn applies the NotIn predicate on the "sn" field.
 func SnNotIn(vs ...string) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldSn), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldSn, vs...))
 }
 
 // SnGT applies the GT predicate on the "sn" field.
 func SnGT(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldSn), v))
-	})
+	return predicate.Cabinet(sql.FieldGT(FieldSn, v))
 }
 
 // SnGTE applies the GTE predicate on the "sn" field.
 func SnGTE(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldSn), v))
-	})
+	return predicate.Cabinet(sql.FieldGTE(FieldSn, v))
 }
 
 // SnLT applies the LT predicate on the "sn" field.
 func SnLT(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldSn), v))
-	})
+	return predicate.Cabinet(sql.FieldLT(FieldSn, v))
 }
 
 // SnLTE applies the LTE predicate on the "sn" field.
 func SnLTE(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldSn), v))
-	})
+	return predicate.Cabinet(sql.FieldLTE(FieldSn, v))
 }
 
 // SnContains applies the Contains predicate on the "sn" field.
 func SnContains(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldSn), v))
-	})
+	return predicate.Cabinet(sql.FieldContains(FieldSn, v))
 }
 
 // SnHasPrefix applies the HasPrefix predicate on the "sn" field.
 func SnHasPrefix(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldSn), v))
-	})
+	return predicate.Cabinet(sql.FieldHasPrefix(FieldSn, v))
 }
 
 // SnHasSuffix applies the HasSuffix predicate on the "sn" field.
 func SnHasSuffix(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldSn), v))
-	})
+	return predicate.Cabinet(sql.FieldHasSuffix(FieldSn, v))
 }
 
 // SnEqualFold applies the EqualFold predicate on the "sn" field.
 func SnEqualFold(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldSn), v))
-	})
+	return predicate.Cabinet(sql.FieldEqualFold(FieldSn, v))
 }
 
 // SnContainsFold applies the ContainsFold predicate on the "sn" field.
 func SnContainsFold(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldSn), v))
-	})
+	return predicate.Cabinet(sql.FieldContainsFold(FieldSn, v))
 }
 
 // BrandEQ applies the EQ predicate on the "brand" field.
 func BrandEQ(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBrand), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldBrand, v))
 }
 
 // BrandNEQ applies the NEQ predicate on the "brand" field.
 func BrandNEQ(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBrand), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldBrand, v))
 }
 
 // BrandIn applies the In predicate on the "brand" field.
 func BrandIn(vs ...string) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldBrand), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldBrand, vs...))
 }
 
 // BrandNotIn applies the NotIn predicate on the "brand" field.
 func BrandNotIn(vs ...string) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldBrand), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldBrand, vs...))
 }
 
 // BrandGT applies the GT predicate on the "brand" field.
 func BrandGT(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldBrand), v))
-	})
+	return predicate.Cabinet(sql.FieldGT(FieldBrand, v))
 }
 
 // BrandGTE applies the GTE predicate on the "brand" field.
 func BrandGTE(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldBrand), v))
-	})
+	return predicate.Cabinet(sql.FieldGTE(FieldBrand, v))
 }
 
 // BrandLT applies the LT predicate on the "brand" field.
 func BrandLT(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldBrand), v))
-	})
+	return predicate.Cabinet(sql.FieldLT(FieldBrand, v))
 }
 
 // BrandLTE applies the LTE predicate on the "brand" field.
 func BrandLTE(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldBrand), v))
-	})
+	return predicate.Cabinet(sql.FieldLTE(FieldBrand, v))
 }
 
 // BrandContains applies the Contains predicate on the "brand" field.
 func BrandContains(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldBrand), v))
-	})
+	return predicate.Cabinet(sql.FieldContains(FieldBrand, v))
 }
 
 // BrandHasPrefix applies the HasPrefix predicate on the "brand" field.
 func BrandHasPrefix(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldBrand), v))
-	})
+	return predicate.Cabinet(sql.FieldHasPrefix(FieldBrand, v))
 }
 
 // BrandHasSuffix applies the HasSuffix predicate on the "brand" field.
 func BrandHasSuffix(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldBrand), v))
-	})
+	return predicate.Cabinet(sql.FieldHasSuffix(FieldBrand, v))
 }
 
 // BrandEqualFold applies the EqualFold predicate on the "brand" field.
 func BrandEqualFold(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldBrand), v))
-	})
+	return predicate.Cabinet(sql.FieldEqualFold(FieldBrand, v))
 }
 
 // BrandContainsFold applies the ContainsFold predicate on the "brand" field.
 func BrandContainsFold(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldBrand), v))
-	})
+	return predicate.Cabinet(sql.FieldContainsFold(FieldBrand, v))
 }
 
 // SerialEQ applies the EQ predicate on the "serial" field.
 func SerialEQ(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSerial), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldSerial, v))
 }
 
 // SerialNEQ applies the NEQ predicate on the "serial" field.
 func SerialNEQ(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSerial), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldSerial, v))
 }
 
 // SerialIn applies the In predicate on the "serial" field.
 func SerialIn(vs ...string) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldSerial), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldSerial, vs...))
 }
 
 // SerialNotIn applies the NotIn predicate on the "serial" field.
 func SerialNotIn(vs ...string) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldSerial), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldSerial, vs...))
 }
 
 // SerialGT applies the GT predicate on the "serial" field.
 func SerialGT(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldSerial), v))
-	})
+	return predicate.Cabinet(sql.FieldGT(FieldSerial, v))
 }
 
 // SerialGTE applies the GTE predicate on the "serial" field.
 func SerialGTE(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldSerial), v))
-	})
+	return predicate.Cabinet(sql.FieldGTE(FieldSerial, v))
 }
 
 // SerialLT applies the LT predicate on the "serial" field.
 func SerialLT(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldSerial), v))
-	})
+	return predicate.Cabinet(sql.FieldLT(FieldSerial, v))
 }
 
 // SerialLTE applies the LTE predicate on the "serial" field.
 func SerialLTE(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldSerial), v))
-	})
+	return predicate.Cabinet(sql.FieldLTE(FieldSerial, v))
 }
 
 // SerialContains applies the Contains predicate on the "serial" field.
 func SerialContains(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldSerial), v))
-	})
+	return predicate.Cabinet(sql.FieldContains(FieldSerial, v))
 }
 
 // SerialHasPrefix applies the HasPrefix predicate on the "serial" field.
 func SerialHasPrefix(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldSerial), v))
-	})
+	return predicate.Cabinet(sql.FieldHasPrefix(FieldSerial, v))
 }
 
 // SerialHasSuffix applies the HasSuffix predicate on the "serial" field.
 func SerialHasSuffix(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldSerial), v))
-	})
+	return predicate.Cabinet(sql.FieldHasSuffix(FieldSerial, v))
 }
 
 // SerialEqualFold applies the EqualFold predicate on the "serial" field.
 func SerialEqualFold(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldSerial), v))
-	})
+	return predicate.Cabinet(sql.FieldEqualFold(FieldSerial, v))
 }
 
 // SerialContainsFold applies the ContainsFold predicate on the "serial" field.
 func SerialContainsFold(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldSerial), v))
-	})
+	return predicate.Cabinet(sql.FieldContainsFold(FieldSerial, v))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldName, v))
 }
 
 // NameNEQ applies the NEQ predicate on the "name" field.
 func NameNEQ(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldName), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldName, v))
 }
 
 // NameIn applies the In predicate on the "name" field.
 func NameIn(vs ...string) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldName), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldName, vs...))
 }
 
 // NameNotIn applies the NotIn predicate on the "name" field.
 func NameNotIn(vs ...string) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldName), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldName, vs...))
 }
 
 // NameGT applies the GT predicate on the "name" field.
 func NameGT(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldName), v))
-	})
+	return predicate.Cabinet(sql.FieldGT(FieldName, v))
 }
 
 // NameGTE applies the GTE predicate on the "name" field.
 func NameGTE(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldName), v))
-	})
+	return predicate.Cabinet(sql.FieldGTE(FieldName, v))
 }
 
 // NameLT applies the LT predicate on the "name" field.
 func NameLT(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldName), v))
-	})
+	return predicate.Cabinet(sql.FieldLT(FieldName, v))
 }
 
 // NameLTE applies the LTE predicate on the "name" field.
 func NameLTE(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldName), v))
-	})
+	return predicate.Cabinet(sql.FieldLTE(FieldName, v))
 }
 
 // NameContains applies the Contains predicate on the "name" field.
 func NameContains(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldName), v))
-	})
+	return predicate.Cabinet(sql.FieldContains(FieldName, v))
 }
 
 // NameHasPrefix applies the HasPrefix predicate on the "name" field.
 func NameHasPrefix(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldName), v))
-	})
+	return predicate.Cabinet(sql.FieldHasPrefix(FieldName, v))
 }
 
 // NameHasSuffix applies the HasSuffix predicate on the "name" field.
 func NameHasSuffix(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldName), v))
-	})
+	return predicate.Cabinet(sql.FieldHasSuffix(FieldName, v))
 }
 
 // NameEqualFold applies the EqualFold predicate on the "name" field.
 func NameEqualFold(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldName), v))
-	})
+	return predicate.Cabinet(sql.FieldEqualFold(FieldName, v))
 }
 
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldName), v))
-	})
+	return predicate.Cabinet(sql.FieldContainsFold(FieldName, v))
 }
 
 // DoorsEQ applies the EQ predicate on the "doors" field.
 func DoorsEQ(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDoors), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldDoors, v))
 }
 
 // DoorsNEQ applies the NEQ predicate on the "doors" field.
 func DoorsNEQ(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDoors), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldDoors, v))
 }
 
 // DoorsIn applies the In predicate on the "doors" field.
 func DoorsIn(vs ...int) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDoors), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldDoors, vs...))
 }
 
 // DoorsNotIn applies the NotIn predicate on the "doors" field.
 func DoorsNotIn(vs ...int) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDoors), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldDoors, vs...))
 }
 
 // DoorsGT applies the GT predicate on the "doors" field.
 func DoorsGT(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDoors), v))
-	})
+	return predicate.Cabinet(sql.FieldGT(FieldDoors, v))
 }
 
 // DoorsGTE applies the GTE predicate on the "doors" field.
 func DoorsGTE(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDoors), v))
-	})
+	return predicate.Cabinet(sql.FieldGTE(FieldDoors, v))
 }
 
 // DoorsLT applies the LT predicate on the "doors" field.
 func DoorsLT(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDoors), v))
-	})
+	return predicate.Cabinet(sql.FieldLT(FieldDoors, v))
 }
 
 // DoorsLTE applies the LTE predicate on the "doors" field.
 func DoorsLTE(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDoors), v))
-	})
+	return predicate.Cabinet(sql.FieldLTE(FieldDoors, v))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.
 func StatusEQ(v uint8) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStatus), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldStatus, v))
 }
 
 // StatusNEQ applies the NEQ predicate on the "status" field.
 func StatusNEQ(v uint8) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStatus), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldStatus, v))
 }
 
 // StatusIn applies the In predicate on the "status" field.
 func StatusIn(vs ...uint8) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStatus), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldStatus, vs...))
 }
 
 // StatusNotIn applies the NotIn predicate on the "status" field.
 func StatusNotIn(vs ...uint8) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStatus), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldStatus, vs...))
 }
 
 // StatusGT applies the GT predicate on the "status" field.
 func StatusGT(v uint8) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldStatus), v))
-	})
+	return predicate.Cabinet(sql.FieldGT(FieldStatus, v))
 }
 
 // StatusGTE applies the GTE predicate on the "status" field.
 func StatusGTE(v uint8) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldStatus), v))
-	})
+	return predicate.Cabinet(sql.FieldGTE(FieldStatus, v))
 }
 
 // StatusLT applies the LT predicate on the "status" field.
 func StatusLT(v uint8) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldStatus), v))
-	})
+	return predicate.Cabinet(sql.FieldLT(FieldStatus, v))
 }
 
 // StatusLTE applies the LTE predicate on the "status" field.
 func StatusLTE(v uint8) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldStatus), v))
-	})
+	return predicate.Cabinet(sql.FieldLTE(FieldStatus, v))
 }
 
 // LngEQ applies the EQ predicate on the "lng" field.
 func LngEQ(v float64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLng), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldLng, v))
 }
 
 // LngNEQ applies the NEQ predicate on the "lng" field.
 func LngNEQ(v float64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldLng), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldLng, v))
 }
 
 // LngIn applies the In predicate on the "lng" field.
 func LngIn(vs ...float64) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldLng), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldLng, vs...))
 }
 
 // LngNotIn applies the NotIn predicate on the "lng" field.
 func LngNotIn(vs ...float64) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldLng), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldLng, vs...))
 }
 
 // LngGT applies the GT predicate on the "lng" field.
 func LngGT(v float64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldLng), v))
-	})
+	return predicate.Cabinet(sql.FieldGT(FieldLng, v))
 }
 
 // LngGTE applies the GTE predicate on the "lng" field.
 func LngGTE(v float64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldLng), v))
-	})
+	return predicate.Cabinet(sql.FieldGTE(FieldLng, v))
 }
 
 // LngLT applies the LT predicate on the "lng" field.
 func LngLT(v float64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldLng), v))
-	})
+	return predicate.Cabinet(sql.FieldLT(FieldLng, v))
 }
 
 // LngLTE applies the LTE predicate on the "lng" field.
 func LngLTE(v float64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldLng), v))
-	})
+	return predicate.Cabinet(sql.FieldLTE(FieldLng, v))
 }
 
 // LngIsNil applies the IsNil predicate on the "lng" field.
 func LngIsNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLng)))
-	})
+	return predicate.Cabinet(sql.FieldIsNull(FieldLng))
 }
 
 // LngNotNil applies the NotNil predicate on the "lng" field.
 func LngNotNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLng)))
-	})
+	return predicate.Cabinet(sql.FieldNotNull(FieldLng))
 }
 
 // LatEQ applies the EQ predicate on the "lat" field.
 func LatEQ(v float64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLat), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldLat, v))
 }
 
 // LatNEQ applies the NEQ predicate on the "lat" field.
 func LatNEQ(v float64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldLat), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldLat, v))
 }
 
 // LatIn applies the In predicate on the "lat" field.
 func LatIn(vs ...float64) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldLat), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldLat, vs...))
 }
 
 // LatNotIn applies the NotIn predicate on the "lat" field.
 func LatNotIn(vs ...float64) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldLat), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldLat, vs...))
 }
 
 // LatGT applies the GT predicate on the "lat" field.
 func LatGT(v float64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldLat), v))
-	})
+	return predicate.Cabinet(sql.FieldGT(FieldLat, v))
 }
 
 // LatGTE applies the GTE predicate on the "lat" field.
 func LatGTE(v float64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldLat), v))
-	})
+	return predicate.Cabinet(sql.FieldGTE(FieldLat, v))
 }
 
 // LatLT applies the LT predicate on the "lat" field.
 func LatLT(v float64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldLat), v))
-	})
+	return predicate.Cabinet(sql.FieldLT(FieldLat, v))
 }
 
 // LatLTE applies the LTE predicate on the "lat" field.
 func LatLTE(v float64) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldLat), v))
-	})
+	return predicate.Cabinet(sql.FieldLTE(FieldLat, v))
 }
 
 // LatIsNil applies the IsNil predicate on the "lat" field.
 func LatIsNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLat)))
-	})
+	return predicate.Cabinet(sql.FieldIsNull(FieldLat))
 }
 
 // LatNotNil applies the NotNil predicate on the "lat" field.
 func LatNotNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLat)))
-	})
+	return predicate.Cabinet(sql.FieldNotNull(FieldLat))
 }
 
 // AddressEQ applies the EQ predicate on the "address" field.
 func AddressEQ(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAddress), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldAddress, v))
 }
 
 // AddressNEQ applies the NEQ predicate on the "address" field.
 func AddressNEQ(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAddress), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldAddress, v))
 }
 
 // AddressIn applies the In predicate on the "address" field.
 func AddressIn(vs ...string) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAddress), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldAddress, vs...))
 }
 
 // AddressNotIn applies the NotIn predicate on the "address" field.
 func AddressNotIn(vs ...string) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAddress), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldAddress, vs...))
 }
 
 // AddressGT applies the GT predicate on the "address" field.
 func AddressGT(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAddress), v))
-	})
+	return predicate.Cabinet(sql.FieldGT(FieldAddress, v))
 }
 
 // AddressGTE applies the GTE predicate on the "address" field.
 func AddressGTE(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAddress), v))
-	})
+	return predicate.Cabinet(sql.FieldGTE(FieldAddress, v))
 }
 
 // AddressLT applies the LT predicate on the "address" field.
 func AddressLT(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAddress), v))
-	})
+	return predicate.Cabinet(sql.FieldLT(FieldAddress, v))
 }
 
 // AddressLTE applies the LTE predicate on the "address" field.
 func AddressLTE(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAddress), v))
-	})
+	return predicate.Cabinet(sql.FieldLTE(FieldAddress, v))
 }
 
 // AddressContains applies the Contains predicate on the "address" field.
 func AddressContains(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldAddress), v))
-	})
+	return predicate.Cabinet(sql.FieldContains(FieldAddress, v))
 }
 
 // AddressHasPrefix applies the HasPrefix predicate on the "address" field.
 func AddressHasPrefix(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldAddress), v))
-	})
+	return predicate.Cabinet(sql.FieldHasPrefix(FieldAddress, v))
 }
 
 // AddressHasSuffix applies the HasSuffix predicate on the "address" field.
 func AddressHasSuffix(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldAddress), v))
-	})
+	return predicate.Cabinet(sql.FieldHasSuffix(FieldAddress, v))
 }
 
 // AddressIsNil applies the IsNil predicate on the "address" field.
 func AddressIsNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldAddress)))
-	})
+	return predicate.Cabinet(sql.FieldIsNull(FieldAddress))
 }
 
 // AddressNotNil applies the NotNil predicate on the "address" field.
 func AddressNotNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldAddress)))
-	})
+	return predicate.Cabinet(sql.FieldNotNull(FieldAddress))
 }
 
 // AddressEqualFold applies the EqualFold predicate on the "address" field.
 func AddressEqualFold(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldAddress), v))
-	})
+	return predicate.Cabinet(sql.FieldEqualFold(FieldAddress, v))
 }
 
 // AddressContainsFold applies the ContainsFold predicate on the "address" field.
 func AddressContainsFold(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldAddress), v))
-	})
+	return predicate.Cabinet(sql.FieldContainsFold(FieldAddress, v))
 }
 
 // SimSnEQ applies the EQ predicate on the "sim_sn" field.
 func SimSnEQ(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSimSn), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldSimSn, v))
 }
 
 // SimSnNEQ applies the NEQ predicate on the "sim_sn" field.
 func SimSnNEQ(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSimSn), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldSimSn, v))
 }
 
 // SimSnIn applies the In predicate on the "sim_sn" field.
 func SimSnIn(vs ...string) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldSimSn), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldSimSn, vs...))
 }
 
 // SimSnNotIn applies the NotIn predicate on the "sim_sn" field.
 func SimSnNotIn(vs ...string) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldSimSn), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldSimSn, vs...))
 }
 
 // SimSnGT applies the GT predicate on the "sim_sn" field.
 func SimSnGT(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldSimSn), v))
-	})
+	return predicate.Cabinet(sql.FieldGT(FieldSimSn, v))
 }
 
 // SimSnGTE applies the GTE predicate on the "sim_sn" field.
 func SimSnGTE(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldSimSn), v))
-	})
+	return predicate.Cabinet(sql.FieldGTE(FieldSimSn, v))
 }
 
 // SimSnLT applies the LT predicate on the "sim_sn" field.
 func SimSnLT(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldSimSn), v))
-	})
+	return predicate.Cabinet(sql.FieldLT(FieldSimSn, v))
 }
 
 // SimSnLTE applies the LTE predicate on the "sim_sn" field.
 func SimSnLTE(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldSimSn), v))
-	})
+	return predicate.Cabinet(sql.FieldLTE(FieldSimSn, v))
 }
 
 // SimSnContains applies the Contains predicate on the "sim_sn" field.
 func SimSnContains(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldSimSn), v))
-	})
+	return predicate.Cabinet(sql.FieldContains(FieldSimSn, v))
 }
 
 // SimSnHasPrefix applies the HasPrefix predicate on the "sim_sn" field.
 func SimSnHasPrefix(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldSimSn), v))
-	})
+	return predicate.Cabinet(sql.FieldHasPrefix(FieldSimSn, v))
 }
 
 // SimSnHasSuffix applies the HasSuffix predicate on the "sim_sn" field.
 func SimSnHasSuffix(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldSimSn), v))
-	})
+	return predicate.Cabinet(sql.FieldHasSuffix(FieldSimSn, v))
 }
 
 // SimSnIsNil applies the IsNil predicate on the "sim_sn" field.
 func SimSnIsNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldSimSn)))
-	})
+	return predicate.Cabinet(sql.FieldIsNull(FieldSimSn))
 }
 
 // SimSnNotNil applies the NotNil predicate on the "sim_sn" field.
 func SimSnNotNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldSimSn)))
-	})
+	return predicate.Cabinet(sql.FieldNotNull(FieldSimSn))
 }
 
 // SimSnEqualFold applies the EqualFold predicate on the "sim_sn" field.
 func SimSnEqualFold(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldSimSn), v))
-	})
+	return predicate.Cabinet(sql.FieldEqualFold(FieldSimSn, v))
 }
 
 // SimSnContainsFold applies the ContainsFold predicate on the "sim_sn" field.
 func SimSnContainsFold(v string) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldSimSn), v))
-	})
+	return predicate.Cabinet(sql.FieldContainsFold(FieldSimSn, v))
 }
 
 // SimDateEQ applies the EQ predicate on the "sim_date" field.
 func SimDateEQ(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSimDate), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldSimDate, v))
 }
 
 // SimDateNEQ applies the NEQ predicate on the "sim_date" field.
 func SimDateNEQ(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSimDate), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldSimDate, v))
 }
 
 // SimDateIn applies the In predicate on the "sim_date" field.
 func SimDateIn(vs ...time.Time) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldSimDate), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldSimDate, vs...))
 }
 
 // SimDateNotIn applies the NotIn predicate on the "sim_date" field.
 func SimDateNotIn(vs ...time.Time) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldSimDate), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldSimDate, vs...))
 }
 
 // SimDateGT applies the GT predicate on the "sim_date" field.
 func SimDateGT(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldSimDate), v))
-	})
+	return predicate.Cabinet(sql.FieldGT(FieldSimDate, v))
 }
 
 // SimDateGTE applies the GTE predicate on the "sim_date" field.
 func SimDateGTE(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldSimDate), v))
-	})
+	return predicate.Cabinet(sql.FieldGTE(FieldSimDate, v))
 }
 
 // SimDateLT applies the LT predicate on the "sim_date" field.
 func SimDateLT(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldSimDate), v))
-	})
+	return predicate.Cabinet(sql.FieldLT(FieldSimDate, v))
 }
 
 // SimDateLTE applies the LTE predicate on the "sim_date" field.
 func SimDateLTE(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldSimDate), v))
-	})
+	return predicate.Cabinet(sql.FieldLTE(FieldSimDate, v))
 }
 
 // SimDateIsNil applies the IsNil predicate on the "sim_date" field.
 func SimDateIsNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldSimDate)))
-	})
+	return predicate.Cabinet(sql.FieldIsNull(FieldSimDate))
 }
 
 // SimDateNotNil applies the NotNil predicate on the "sim_date" field.
 func SimDateNotNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldSimDate)))
-	})
+	return predicate.Cabinet(sql.FieldNotNull(FieldSimDate))
 }
 
 // TransferredEQ applies the EQ predicate on the "transferred" field.
 func TransferredEQ(v bool) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldTransferred), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldTransferred, v))
 }
 
 // TransferredNEQ applies the NEQ predicate on the "transferred" field.
 func TransferredNEQ(v bool) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldTransferred), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldTransferred, v))
 }
 
 // IntelligentEQ applies the EQ predicate on the "intelligent" field.
 func IntelligentEQ(v bool) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIntelligent), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldIntelligent, v))
 }
 
 // IntelligentNEQ applies the NEQ predicate on the "intelligent" field.
 func IntelligentNEQ(v bool) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldIntelligent), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldIntelligent, v))
 }
 
 // HealthEQ applies the EQ predicate on the "health" field.
 func HealthEQ(v uint8) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldHealth), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldHealth, v))
 }
 
 // HealthNEQ applies the NEQ predicate on the "health" field.
 func HealthNEQ(v uint8) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldHealth), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldHealth, v))
 }
 
 // HealthIn applies the In predicate on the "health" field.
 func HealthIn(vs ...uint8) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldHealth), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldHealth, vs...))
 }
 
 // HealthNotIn applies the NotIn predicate on the "health" field.
 func HealthNotIn(vs ...uint8) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldHealth), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldHealth, vs...))
 }
 
 // HealthGT applies the GT predicate on the "health" field.
 func HealthGT(v uint8) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldHealth), v))
-	})
+	return predicate.Cabinet(sql.FieldGT(FieldHealth, v))
 }
 
 // HealthGTE applies the GTE predicate on the "health" field.
 func HealthGTE(v uint8) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldHealth), v))
-	})
+	return predicate.Cabinet(sql.FieldGTE(FieldHealth, v))
 }
 
 // HealthLT applies the LT predicate on the "health" field.
 func HealthLT(v uint8) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldHealth), v))
-	})
+	return predicate.Cabinet(sql.FieldLT(FieldHealth, v))
 }
 
 // HealthLTE applies the LTE predicate on the "health" field.
 func HealthLTE(v uint8) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldHealth), v))
-	})
+	return predicate.Cabinet(sql.FieldLTE(FieldHealth, v))
 }
 
 // BinIsNil applies the IsNil predicate on the "bin" field.
 func BinIsNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldBin)))
-	})
+	return predicate.Cabinet(sql.FieldIsNull(FieldBin))
 }
 
 // BinNotNil applies the NotNil predicate on the "bin" field.
 func BinNotNil() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldBin)))
-	})
+	return predicate.Cabinet(sql.FieldNotNull(FieldBin))
 }
 
 // BatteryNumEQ applies the EQ predicate on the "battery_num" field.
 func BatteryNumEQ(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBatteryNum), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldBatteryNum, v))
 }
 
 // BatteryNumNEQ applies the NEQ predicate on the "battery_num" field.
 func BatteryNumNEQ(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBatteryNum), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldBatteryNum, v))
 }
 
 // BatteryNumIn applies the In predicate on the "battery_num" field.
 func BatteryNumIn(vs ...int) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldBatteryNum), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldBatteryNum, vs...))
 }
 
 // BatteryNumNotIn applies the NotIn predicate on the "battery_num" field.
 func BatteryNumNotIn(vs ...int) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldBatteryNum), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldBatteryNum, vs...))
 }
 
 // BatteryNumGT applies the GT predicate on the "battery_num" field.
 func BatteryNumGT(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldBatteryNum), v))
-	})
+	return predicate.Cabinet(sql.FieldGT(FieldBatteryNum, v))
 }
 
 // BatteryNumGTE applies the GTE predicate on the "battery_num" field.
 func BatteryNumGTE(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldBatteryNum), v))
-	})
+	return predicate.Cabinet(sql.FieldGTE(FieldBatteryNum, v))
 }
 
 // BatteryNumLT applies the LT predicate on the "battery_num" field.
 func BatteryNumLT(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldBatteryNum), v))
-	})
+	return predicate.Cabinet(sql.FieldLT(FieldBatteryNum, v))
 }
 
 // BatteryNumLTE applies the LTE predicate on the "battery_num" field.
 func BatteryNumLTE(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldBatteryNum), v))
-	})
+	return predicate.Cabinet(sql.FieldLTE(FieldBatteryNum, v))
 }
 
 // BatteryFullNumEQ applies the EQ predicate on the "battery_full_num" field.
 func BatteryFullNumEQ(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBatteryFullNum), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldBatteryFullNum, v))
 }
 
 // BatteryFullNumNEQ applies the NEQ predicate on the "battery_full_num" field.
 func BatteryFullNumNEQ(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBatteryFullNum), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldBatteryFullNum, v))
 }
 
 // BatteryFullNumIn applies the In predicate on the "battery_full_num" field.
 func BatteryFullNumIn(vs ...int) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldBatteryFullNum), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldBatteryFullNum, vs...))
 }
 
 // BatteryFullNumNotIn applies the NotIn predicate on the "battery_full_num" field.
 func BatteryFullNumNotIn(vs ...int) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldBatteryFullNum), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldBatteryFullNum, vs...))
 }
 
 // BatteryFullNumGT applies the GT predicate on the "battery_full_num" field.
 func BatteryFullNumGT(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldBatteryFullNum), v))
-	})
+	return predicate.Cabinet(sql.FieldGT(FieldBatteryFullNum, v))
 }
 
 // BatteryFullNumGTE applies the GTE predicate on the "battery_full_num" field.
 func BatteryFullNumGTE(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldBatteryFullNum), v))
-	})
+	return predicate.Cabinet(sql.FieldGTE(FieldBatteryFullNum, v))
 }
 
 // BatteryFullNumLT applies the LT predicate on the "battery_full_num" field.
 func BatteryFullNumLT(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldBatteryFullNum), v))
-	})
+	return predicate.Cabinet(sql.FieldLT(FieldBatteryFullNum, v))
 }
 
 // BatteryFullNumLTE applies the LTE predicate on the "battery_full_num" field.
 func BatteryFullNumLTE(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldBatteryFullNum), v))
-	})
+	return predicate.Cabinet(sql.FieldLTE(FieldBatteryFullNum, v))
 }
 
 // BatteryChargingNumEQ applies the EQ predicate on the "battery_charging_num" field.
 func BatteryChargingNumEQ(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBatteryChargingNum), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldBatteryChargingNum, v))
 }
 
 // BatteryChargingNumNEQ applies the NEQ predicate on the "battery_charging_num" field.
 func BatteryChargingNumNEQ(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBatteryChargingNum), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldBatteryChargingNum, v))
 }
 
 // BatteryChargingNumIn applies the In predicate on the "battery_charging_num" field.
 func BatteryChargingNumIn(vs ...int) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldBatteryChargingNum), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldBatteryChargingNum, vs...))
 }
 
 // BatteryChargingNumNotIn applies the NotIn predicate on the "battery_charging_num" field.
 func BatteryChargingNumNotIn(vs ...int) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldBatteryChargingNum), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldBatteryChargingNum, vs...))
 }
 
 // BatteryChargingNumGT applies the GT predicate on the "battery_charging_num" field.
 func BatteryChargingNumGT(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldBatteryChargingNum), v))
-	})
+	return predicate.Cabinet(sql.FieldGT(FieldBatteryChargingNum, v))
 }
 
 // BatteryChargingNumGTE applies the GTE predicate on the "battery_charging_num" field.
 func BatteryChargingNumGTE(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldBatteryChargingNum), v))
-	})
+	return predicate.Cabinet(sql.FieldGTE(FieldBatteryChargingNum, v))
 }
 
 // BatteryChargingNumLT applies the LT predicate on the "battery_charging_num" field.
 func BatteryChargingNumLT(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldBatteryChargingNum), v))
-	})
+	return predicate.Cabinet(sql.FieldLT(FieldBatteryChargingNum, v))
 }
 
 // BatteryChargingNumLTE applies the LTE predicate on the "battery_charging_num" field.
 func BatteryChargingNumLTE(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldBatteryChargingNum), v))
-	})
+	return predicate.Cabinet(sql.FieldLTE(FieldBatteryChargingNum, v))
 }
 
 // EmptyBinNumEQ applies the EQ predicate on the "empty_bin_num" field.
 func EmptyBinNumEQ(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEmptyBinNum), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldEmptyBinNum, v))
 }
 
 // EmptyBinNumNEQ applies the NEQ predicate on the "empty_bin_num" field.
 func EmptyBinNumNEQ(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEmptyBinNum), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldEmptyBinNum, v))
 }
 
 // EmptyBinNumIn applies the In predicate on the "empty_bin_num" field.
 func EmptyBinNumIn(vs ...int) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEmptyBinNum), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldEmptyBinNum, vs...))
 }
 
 // EmptyBinNumNotIn applies the NotIn predicate on the "empty_bin_num" field.
 func EmptyBinNumNotIn(vs ...int) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEmptyBinNum), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldEmptyBinNum, vs...))
 }
 
 // EmptyBinNumGT applies the GT predicate on the "empty_bin_num" field.
 func EmptyBinNumGT(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldEmptyBinNum), v))
-	})
+	return predicate.Cabinet(sql.FieldGT(FieldEmptyBinNum, v))
 }
 
 // EmptyBinNumGTE applies the GTE predicate on the "empty_bin_num" field.
 func EmptyBinNumGTE(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldEmptyBinNum), v))
-	})
+	return predicate.Cabinet(sql.FieldGTE(FieldEmptyBinNum, v))
 }
 
 // EmptyBinNumLT applies the LT predicate on the "empty_bin_num" field.
 func EmptyBinNumLT(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldEmptyBinNum), v))
-	})
+	return predicate.Cabinet(sql.FieldLT(FieldEmptyBinNum, v))
 }
 
 // EmptyBinNumLTE applies the LTE predicate on the "empty_bin_num" field.
 func EmptyBinNumLTE(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldEmptyBinNum), v))
-	})
+	return predicate.Cabinet(sql.FieldLTE(FieldEmptyBinNum, v))
 }
 
 // LockedBinNumEQ applies the EQ predicate on the "locked_bin_num" field.
 func LockedBinNumEQ(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLockedBinNum), v))
-	})
+	return predicate.Cabinet(sql.FieldEQ(FieldLockedBinNum, v))
 }
 
 // LockedBinNumNEQ applies the NEQ predicate on the "locked_bin_num" field.
 func LockedBinNumNEQ(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldLockedBinNum), v))
-	})
+	return predicate.Cabinet(sql.FieldNEQ(FieldLockedBinNum, v))
 }
 
 // LockedBinNumIn applies the In predicate on the "locked_bin_num" field.
 func LockedBinNumIn(vs ...int) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldLockedBinNum), v...))
-	})
+	return predicate.Cabinet(sql.FieldIn(FieldLockedBinNum, vs...))
 }
 
 // LockedBinNumNotIn applies the NotIn predicate on the "locked_bin_num" field.
 func LockedBinNumNotIn(vs ...int) predicate.Cabinet {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldLockedBinNum), v...))
-	})
+	return predicate.Cabinet(sql.FieldNotIn(FieldLockedBinNum, vs...))
 }
 
 // LockedBinNumGT applies the GT predicate on the "locked_bin_num" field.
 func LockedBinNumGT(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldLockedBinNum), v))
-	})
+	return predicate.Cabinet(sql.FieldGT(FieldLockedBinNum, v))
 }
 
 // LockedBinNumGTE applies the GTE predicate on the "locked_bin_num" field.
 func LockedBinNumGTE(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldLockedBinNum), v))
-	})
+	return predicate.Cabinet(sql.FieldGTE(FieldLockedBinNum, v))
 }
 
 // LockedBinNumLT applies the LT predicate on the "locked_bin_num" field.
 func LockedBinNumLT(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldLockedBinNum), v))
-	})
+	return predicate.Cabinet(sql.FieldLT(FieldLockedBinNum, v))
 }
 
 // LockedBinNumLTE applies the LTE predicate on the "locked_bin_num" field.
 func LockedBinNumLTE(v int) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldLockedBinNum), v))
-	})
+	return predicate.Cabinet(sql.FieldLTE(FieldLockedBinNum, v))
 }
 
 // HasCity applies the HasEdge predicate on the "city" edge.
@@ -2118,7 +1380,6 @@ func HasCity() predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CityTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -2146,7 +1407,6 @@ func HasBranch() predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(BranchTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, BranchTable, BranchColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -2174,7 +1434,6 @@ func HasModels() predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ModelsTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, ModelsTable, ModelsPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -2202,7 +1461,6 @@ func HasFaults() predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(FaultsTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, FaultsTable, FaultsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -2230,7 +1488,6 @@ func HasExchanges() predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ExchangesTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, ExchangesTable, ExchangesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -2258,7 +1515,6 @@ func HasStocks() predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StocksTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, StocksTable, StocksColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

@@ -102,52 +102,10 @@ func (sc *SettingCreate) Mutation() *SettingMutation {
 
 // Save creates the Setting in the database.
 func (sc *SettingCreate) Save(ctx context.Context) (*Setting, error) {
-	var (
-		err  error
-		node *Setting
-	)
 	if err := sc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(sc.hooks) == 0 {
-		if err = sc.check(); err != nil {
-			return nil, err
-		}
-		node, err = sc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*SettingMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = sc.check(); err != nil {
-				return nil, err
-			}
-			sc.mutation = mutation
-			if node, err = sc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(sc.hooks) - 1; i >= 0; i-- {
-			if sc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = sc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, sc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Setting)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from SettingMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Setting, SettingMutation](ctx, sc.sqlSave, sc.mutation, sc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -217,6 +175,9 @@ func (sc *SettingCreate) check() error {
 }
 
 func (sc *SettingCreate) sqlSave(ctx context.Context) (*Setting, error) {
+	if err := sc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := sc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, sc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -226,6 +187,8 @@ func (sc *SettingCreate) sqlSave(ctx context.Context) (*Setting, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	sc.mutation.id = &_node.ID
+	sc.mutation.done = true
 	return _node, nil
 }
 
@@ -242,67 +205,35 @@ func (sc *SettingCreate) createSpec() (*Setting, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = sc.conflict
 	if value, ok := sc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: setting.FieldCreatedAt,
-		})
+		_spec.SetField(setting.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := sc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: setting.FieldUpdatedAt,
-		})
+		_spec.SetField(setting.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := sc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: setting.FieldCreator,
-		})
+		_spec.SetField(setting.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := sc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: setting.FieldLastModifier,
-		})
+		_spec.SetField(setting.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := sc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: setting.FieldRemark,
-		})
+		_spec.SetField(setting.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := sc.mutation.Key(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: setting.FieldKey,
-		})
+		_spec.SetField(setting.FieldKey, field.TypeString, value)
 		_node.Key = value
 	}
 	if value, ok := sc.mutation.Desc(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: setting.FieldDesc,
-		})
+		_spec.SetField(setting.FieldDesc, field.TypeString, value)
 		_node.Desc = value
 	}
 	if value, ok := sc.mutation.Content(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: setting.FieldContent,
-		})
+		_spec.SetField(setting.FieldContent, field.TypeString, value)
 		_node.Content = value
 	}
 	return _node, _spec

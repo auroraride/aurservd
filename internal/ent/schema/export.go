@@ -19,6 +19,7 @@ type Export struct {
 func (Export) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "export"},
+        entsql.WithComments(true),
     }
 }
 

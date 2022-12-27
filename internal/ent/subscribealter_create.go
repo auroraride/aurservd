@@ -188,52 +188,10 @@ func (sac *SubscribeAlterCreate) Mutation() *SubscribeAlterMutation {
 
 // Save creates the SubscribeAlter in the database.
 func (sac *SubscribeAlterCreate) Save(ctx context.Context) (*SubscribeAlter, error) {
-	var (
-		err  error
-		node *SubscribeAlter
-	)
 	if err := sac.defaults(); err != nil {
 		return nil, err
 	}
-	if len(sac.hooks) == 0 {
-		if err = sac.check(); err != nil {
-			return nil, err
-		}
-		node, err = sac.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*SubscribeAlterMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = sac.check(); err != nil {
-				return nil, err
-			}
-			sac.mutation = mutation
-			if node, err = sac.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(sac.hooks) - 1; i >= 0; i-- {
-			if sac.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = sac.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, sac.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*SubscribeAlter)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from SubscribeAlterMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*SubscribeAlter, SubscribeAlterMutation](ctx, sac.sqlSave, sac.mutation, sac.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -304,6 +262,9 @@ func (sac *SubscribeAlterCreate) check() error {
 }
 
 func (sac *SubscribeAlterCreate) sqlSave(ctx context.Context) (*SubscribeAlter, error) {
+	if err := sac.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := sac.createSpec()
 	if err := sqlgraph.CreateNode(ctx, sac.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -313,6 +274,8 @@ func (sac *SubscribeAlterCreate) sqlSave(ctx context.Context) (*SubscribeAlter, 
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	sac.mutation.id = &_node.ID
+	sac.mutation.done = true
 	return _node, nil
 }
 
@@ -329,59 +292,31 @@ func (sac *SubscribeAlterCreate) createSpec() (*SubscribeAlter, *sqlgraph.Create
 	)
 	_spec.OnConflict = sac.conflict
 	if value, ok := sac.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribealter.FieldCreatedAt,
-		})
+		_spec.SetField(subscribealter.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := sac.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribealter.FieldUpdatedAt,
-		})
+		_spec.SetField(subscribealter.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := sac.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribealter.FieldDeletedAt,
-		})
+		_spec.SetField(subscribealter.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := sac.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: subscribealter.FieldCreator,
-		})
+		_spec.SetField(subscribealter.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := sac.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: subscribealter.FieldLastModifier,
-		})
+		_spec.SetField(subscribealter.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := sac.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribealter.FieldRemark,
-		})
+		_spec.SetField(subscribealter.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := sac.mutation.Days(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribealter.FieldDays,
-		})
+		_spec.SetField(subscribealter.FieldDays, field.TypeInt, value)
 		_node.Days = value
 	}
 	if nodes := sac.mutation.RiderIDs(); len(nodes) > 0 {

@@ -22,6 +22,7 @@ type EbikeBrandQuery struct {
 	unique     *bool
 	order      []OrderFunc
 	fields     []string
+	inters     []Interceptor
 	predicates []predicate.EbikeBrand
 	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -35,13 +36,13 @@ func (ebq *EbikeBrandQuery) Where(ps ...predicate.EbikeBrand) *EbikeBrandQuery {
 	return ebq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (ebq *EbikeBrandQuery) Limit(limit int) *EbikeBrandQuery {
 	ebq.limit = &limit
 	return ebq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (ebq *EbikeBrandQuery) Offset(offset int) *EbikeBrandQuery {
 	ebq.offset = &offset
 	return ebq
@@ -54,7 +55,7 @@ func (ebq *EbikeBrandQuery) Unique(unique bool) *EbikeBrandQuery {
 	return ebq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (ebq *EbikeBrandQuery) Order(o ...OrderFunc) *EbikeBrandQuery {
 	ebq.order = append(ebq.order, o...)
 	return ebq
@@ -63,7 +64,7 @@ func (ebq *EbikeBrandQuery) Order(o ...OrderFunc) *EbikeBrandQuery {
 // First returns the first EbikeBrand entity from the query.
 // Returns a *NotFoundError when no EbikeBrand was found.
 func (ebq *EbikeBrandQuery) First(ctx context.Context) (*EbikeBrand, error) {
-	nodes, err := ebq.Limit(1).All(ctx)
+	nodes, err := ebq.Limit(1).All(newQueryContext(ctx, TypeEbikeBrand, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +87,7 @@ func (ebq *EbikeBrandQuery) FirstX(ctx context.Context) *EbikeBrand {
 // Returns a *NotFoundError when no EbikeBrand ID was found.
 func (ebq *EbikeBrandQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ebq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = ebq.Limit(1).IDs(newQueryContext(ctx, TypeEbikeBrand, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -109,7 +110,7 @@ func (ebq *EbikeBrandQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one EbikeBrand entity is found.
 // Returns a *NotFoundError when no EbikeBrand entities are found.
 func (ebq *EbikeBrandQuery) Only(ctx context.Context) (*EbikeBrand, error) {
-	nodes, err := ebq.Limit(2).All(ctx)
+	nodes, err := ebq.Limit(2).All(newQueryContext(ctx, TypeEbikeBrand, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +138,7 @@ func (ebq *EbikeBrandQuery) OnlyX(ctx context.Context) *EbikeBrand {
 // Returns a *NotFoundError when no entities are found.
 func (ebq *EbikeBrandQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ebq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = ebq.Limit(2).IDs(newQueryContext(ctx, TypeEbikeBrand, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -162,10 +163,12 @@ func (ebq *EbikeBrandQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of EbikeBrands.
 func (ebq *EbikeBrandQuery) All(ctx context.Context) ([]*EbikeBrand, error) {
+	ctx = newQueryContext(ctx, TypeEbikeBrand, "All")
 	if err := ebq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return ebq.sqlAll(ctx)
+	qr := querierAll[[]*EbikeBrand, *EbikeBrandQuery]()
+	return withInterceptors[[]*EbikeBrand](ctx, ebq, qr, ebq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -180,6 +183,7 @@ func (ebq *EbikeBrandQuery) AllX(ctx context.Context) []*EbikeBrand {
 // IDs executes the query and returns a list of EbikeBrand IDs.
 func (ebq *EbikeBrandQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeEbikeBrand, "IDs")
 	if err := ebq.Select(ebikebrand.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -197,10 +201,11 @@ func (ebq *EbikeBrandQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (ebq *EbikeBrandQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeEbikeBrand, "Count")
 	if err := ebq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return ebq.sqlCount(ctx)
+	return withInterceptors[int](ctx, ebq, querierCount[*EbikeBrandQuery](), ebq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -214,10 +219,15 @@ func (ebq *EbikeBrandQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (ebq *EbikeBrandQuery) Exist(ctx context.Context) (bool, error) {
-	if err := ebq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeEbikeBrand, "Exist")
+	switch _, err := ebq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return ebq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -263,16 +273,11 @@ func (ebq *EbikeBrandQuery) Clone() *EbikeBrandQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (ebq *EbikeBrandQuery) GroupBy(field string, fields ...string) *EbikeBrandGroupBy {
-	grbuild := &EbikeBrandGroupBy{config: ebq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := ebq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return ebq.sqlQuery(ctx), nil
-	}
+	ebq.fields = append([]string{field}, fields...)
+	grbuild := &EbikeBrandGroupBy{build: ebq}
+	grbuild.flds = &ebq.fields
 	grbuild.label = ebikebrand.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -290,13 +295,28 @@ func (ebq *EbikeBrandQuery) GroupBy(field string, fields ...string) *EbikeBrandG
 //		Scan(ctx, &v)
 func (ebq *EbikeBrandQuery) Select(fields ...string) *EbikeBrandSelect {
 	ebq.fields = append(ebq.fields, fields...)
-	selbuild := &EbikeBrandSelect{EbikeBrandQuery: ebq}
-	selbuild.label = ebikebrand.Label
-	selbuild.flds, selbuild.scan = &ebq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &EbikeBrandSelect{EbikeBrandQuery: ebq}
+	sbuild.label = ebikebrand.Label
+	sbuild.flds, sbuild.scan = &ebq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a EbikeBrandSelect configured with the given aggregations.
+func (ebq *EbikeBrandQuery) Aggregate(fns ...AggregateFunc) *EbikeBrandSelect {
+	return ebq.Select().Aggregate(fns...)
 }
 
 func (ebq *EbikeBrandQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range ebq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, ebq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range ebq.fields {
 		if !ebikebrand.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -350,17 +370,6 @@ func (ebq *EbikeBrandQuery) sqlCount(ctx context.Context) (int, error) {
 		_spec.Unique = ebq.unique != nil && *ebq.unique
 	}
 	return sqlgraph.CountNodes(ctx, ebq.driver, _spec)
-}
-
-func (ebq *EbikeBrandQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := ebq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
 }
 
 func (ebq *EbikeBrandQuery) querySpec() *sqlgraph.QuerySpec {
@@ -454,13 +463,8 @@ func (ebq *EbikeBrandQuery) Modify(modifiers ...func(s *sql.Selector)) *EbikeBra
 
 // EbikeBrandGroupBy is the group-by builder for EbikeBrand entities.
 type EbikeBrandGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *EbikeBrandQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -469,74 +473,77 @@ func (ebgb *EbikeBrandGroupBy) Aggregate(fns ...AggregateFunc) *EbikeBrandGroupB
 	return ebgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (ebgb *EbikeBrandGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := ebgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeEbikeBrand, "GroupBy")
+	if err := ebgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ebgb.sql = query
-	return ebgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*EbikeBrandQuery, *EbikeBrandGroupBy](ctx, ebgb.build, ebgb, ebgb.build.inters, v)
 }
 
-func (ebgb *EbikeBrandGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range ebgb.fields {
-		if !ebikebrand.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (ebgb *EbikeBrandGroupBy) sqlScan(ctx context.Context, root *EbikeBrandQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(ebgb.fns))
+	for _, fn := range ebgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := ebgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*ebgb.flds)+len(ebgb.fns))
+		for _, f := range *ebgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*ebgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := ebgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := ebgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (ebgb *EbikeBrandGroupBy) sqlQuery() *sql.Selector {
-	selector := ebgb.sql.Select()
-	aggregation := make([]string, 0, len(ebgb.fns))
-	for _, fn := range ebgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(ebgb.fields)+len(ebgb.fns))
-		for _, f := range ebgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(ebgb.fields...)...)
-}
-
 // EbikeBrandSelect is the builder for selecting fields of EbikeBrand entities.
 type EbikeBrandSelect struct {
 	*EbikeBrandQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (ebs *EbikeBrandSelect) Aggregate(fns ...AggregateFunc) *EbikeBrandSelect {
+	ebs.fns = append(ebs.fns, fns...)
+	return ebs
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (ebs *EbikeBrandSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeEbikeBrand, "Select")
 	if err := ebs.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ebs.sql = ebs.EbikeBrandQuery.sqlQuery(ctx)
-	return ebs.sqlScan(ctx, v)
+	return scanWithInterceptors[*EbikeBrandQuery, *EbikeBrandSelect](ctx, ebs.EbikeBrandQuery, ebs, ebs.inters, v)
 }
 
-func (ebs *EbikeBrandSelect) sqlScan(ctx context.Context, v any) error {
+func (ebs *EbikeBrandSelect) sqlScan(ctx context.Context, root *EbikeBrandQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(ebs.fns))
+	for _, fn := range ebs.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*ebs.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := ebs.sql.Query()
+	query, args := selector.Query()
 	if err := ebs.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

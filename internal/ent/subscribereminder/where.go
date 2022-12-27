@@ -12,1087 +12,697 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uint64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uint64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uint64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.SubscribeReminder(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uint64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.SubscribeReminder(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uint64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.SubscribeReminder(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uint64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.SubscribeReminder(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uint64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.SubscribeReminder(sql.FieldLTE(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // SubscribeID applies equality check predicate on the "subscribe_id" field. It's identical to SubscribeIDEQ.
 func SubscribeID(v uint64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldSubscribeID, v))
 }
 
 // PlanID applies equality check predicate on the "plan_id" field. It's identical to PlanIDEQ.
 func PlanID(v uint64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPlanID), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldPlanID, v))
 }
 
 // RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
 func RiderID(v uint64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRiderID), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldRiderID, v))
 }
 
 // Phone applies equality check predicate on the "phone" field. It's identical to PhoneEQ.
 func Phone(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPhone), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldPhone, v))
 }
 
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldName, v))
 }
 
 // Success applies equality check predicate on the "success" field. It's identical to SuccessEQ.
 func Success(v bool) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSuccess), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldSuccess, v))
 }
 
 // Days applies equality check predicate on the "days" field. It's identical to DaysEQ.
 func Days(v int) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDays), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldDays, v))
 }
 
 // PlanName applies equality check predicate on the "plan_name" field. It's identical to PlanNameEQ.
 func PlanName(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPlanName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldPlanName, v))
 }
 
 // Date applies equality check predicate on the "date" field. It's identical to DateEQ.
 func Date(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDate), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldDate, v))
 }
 
 // Fee applies equality check predicate on the "fee" field. It's identical to FeeEQ.
 func Fee(v float64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldFee), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldFee, v))
 }
 
 // FeeFormula applies equality check predicate on the "fee_formula" field. It's identical to FeeFormulaEQ.
 func FeeFormula(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldFeeFormula), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldFeeFormula, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
 func CreatedAtNEQ(v time.Time) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtGT applies the GT predicate on the "created_at" field.
 func CreatedAtGT(v time.Time) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldGT(FieldCreatedAt, v))
 }
 
 // CreatedAtGTE applies the GTE predicate on the "created_at" field.
 func CreatedAtGTE(v time.Time) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldGTE(FieldCreatedAt, v))
 }
 
 // CreatedAtLT applies the LT predicate on the "created_at" field.
 func CreatedAtLT(v time.Time) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldLT(FieldCreatedAt, v))
 }
 
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
 func UpdatedAtEQ(v time.Time) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
 func UpdatedAtNEQ(v time.Time) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldNEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldNotIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtGT applies the GT predicate on the "updated_at" field.
 func UpdatedAtGT(v time.Time) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldGT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
 func UpdatedAtGTE(v time.Time) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldGTE(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLT applies the LT predicate on the "updated_at" field.
 func UpdatedAtLT(v time.Time) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldLT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // SubscribeIDEQ applies the EQ predicate on the "subscribe_id" field.
 func SubscribeIDEQ(v uint64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldSubscribeID, v))
 }
 
 // SubscribeIDNEQ applies the NEQ predicate on the "subscribe_id" field.
 func SubscribeIDNEQ(v uint64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldNEQ(FieldSubscribeID, v))
 }
 
 // SubscribeIDIn applies the In predicate on the "subscribe_id" field.
 func SubscribeIDIn(vs ...uint64) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldSubscribeID), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldIn(FieldSubscribeID, vs...))
 }
 
 // SubscribeIDNotIn applies the NotIn predicate on the "subscribe_id" field.
 func SubscribeIDNotIn(vs ...uint64) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldSubscribeID), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldNotIn(FieldSubscribeID, vs...))
 }
 
 // PlanIDEQ applies the EQ predicate on the "plan_id" field.
 func PlanIDEQ(v uint64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPlanID), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldPlanID, v))
 }
 
 // PlanIDNEQ applies the NEQ predicate on the "plan_id" field.
 func PlanIDNEQ(v uint64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPlanID), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldNEQ(FieldPlanID, v))
 }
 
 // PlanIDIn applies the In predicate on the "plan_id" field.
 func PlanIDIn(vs ...uint64) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldPlanID), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldIn(FieldPlanID, vs...))
 }
 
 // PlanIDNotIn applies the NotIn predicate on the "plan_id" field.
 func PlanIDNotIn(vs ...uint64) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldPlanID), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldNotIn(FieldPlanID, vs...))
 }
 
 // RiderIDEQ applies the EQ predicate on the "rider_id" field.
 func RiderIDEQ(v uint64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRiderID), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldRiderID, v))
 }
 
 // RiderIDNEQ applies the NEQ predicate on the "rider_id" field.
 func RiderIDNEQ(v uint64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRiderID), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldNEQ(FieldRiderID, v))
 }
 
 // RiderIDIn applies the In predicate on the "rider_id" field.
 func RiderIDIn(vs ...uint64) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRiderID), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldIn(FieldRiderID, vs...))
 }
 
 // RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
 func RiderIDNotIn(vs ...uint64) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRiderID), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldNotIn(FieldRiderID, vs...))
 }
 
 // TypeEQ applies the EQ predicate on the "type" field.
 func TypeEQ(v Type) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldType), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldType, v))
 }
 
 // TypeNEQ applies the NEQ predicate on the "type" field.
 func TypeNEQ(v Type) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldType), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldNEQ(FieldType, v))
 }
 
 // TypeIn applies the In predicate on the "type" field.
 func TypeIn(vs ...Type) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldType), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldIn(FieldType, vs...))
 }
 
 // TypeNotIn applies the NotIn predicate on the "type" field.
 func TypeNotIn(vs ...Type) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldType), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldNotIn(FieldType, vs...))
 }
 
 // PhoneEQ applies the EQ predicate on the "phone" field.
 func PhoneEQ(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPhone), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldPhone, v))
 }
 
 // PhoneNEQ applies the NEQ predicate on the "phone" field.
 func PhoneNEQ(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPhone), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldNEQ(FieldPhone, v))
 }
 
 // PhoneIn applies the In predicate on the "phone" field.
 func PhoneIn(vs ...string) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldPhone), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldIn(FieldPhone, vs...))
 }
 
 // PhoneNotIn applies the NotIn predicate on the "phone" field.
 func PhoneNotIn(vs ...string) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldPhone), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldNotIn(FieldPhone, vs...))
 }
 
 // PhoneGT applies the GT predicate on the "phone" field.
 func PhoneGT(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldPhone), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldGT(FieldPhone, v))
 }
 
 // PhoneGTE applies the GTE predicate on the "phone" field.
 func PhoneGTE(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldPhone), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldGTE(FieldPhone, v))
 }
 
 // PhoneLT applies the LT predicate on the "phone" field.
 func PhoneLT(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldPhone), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldLT(FieldPhone, v))
 }
 
 // PhoneLTE applies the LTE predicate on the "phone" field.
 func PhoneLTE(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldPhone), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldLTE(FieldPhone, v))
 }
 
 // PhoneContains applies the Contains predicate on the "phone" field.
 func PhoneContains(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldPhone), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldContains(FieldPhone, v))
 }
 
 // PhoneHasPrefix applies the HasPrefix predicate on the "phone" field.
 func PhoneHasPrefix(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldPhone), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldHasPrefix(FieldPhone, v))
 }
 
 // PhoneHasSuffix applies the HasSuffix predicate on the "phone" field.
 func PhoneHasSuffix(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldPhone), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldHasSuffix(FieldPhone, v))
 }
 
 // PhoneEqualFold applies the EqualFold predicate on the "phone" field.
 func PhoneEqualFold(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldPhone), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEqualFold(FieldPhone, v))
 }
 
 // PhoneContainsFold applies the ContainsFold predicate on the "phone" field.
 func PhoneContainsFold(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldPhone), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldContainsFold(FieldPhone, v))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldName, v))
 }
 
 // NameNEQ applies the NEQ predicate on the "name" field.
 func NameNEQ(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldNEQ(FieldName, v))
 }
 
 // NameIn applies the In predicate on the "name" field.
 func NameIn(vs ...string) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldName), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldIn(FieldName, vs...))
 }
 
 // NameNotIn applies the NotIn predicate on the "name" field.
 func NameNotIn(vs ...string) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldName), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldNotIn(FieldName, vs...))
 }
 
 // NameGT applies the GT predicate on the "name" field.
 func NameGT(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldGT(FieldName, v))
 }
 
 // NameGTE applies the GTE predicate on the "name" field.
 func NameGTE(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldGTE(FieldName, v))
 }
 
 // NameLT applies the LT predicate on the "name" field.
 func NameLT(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldLT(FieldName, v))
 }
 
 // NameLTE applies the LTE predicate on the "name" field.
 func NameLTE(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldLTE(FieldName, v))
 }
 
 // NameContains applies the Contains predicate on the "name" field.
 func NameContains(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldContains(FieldName, v))
 }
 
 // NameHasPrefix applies the HasPrefix predicate on the "name" field.
 func NameHasPrefix(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldHasPrefix(FieldName, v))
 }
 
 // NameHasSuffix applies the HasSuffix predicate on the "name" field.
 func NameHasSuffix(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldHasSuffix(FieldName, v))
 }
 
 // NameEqualFold applies the EqualFold predicate on the "name" field.
 func NameEqualFold(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEqualFold(FieldName, v))
 }
 
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldContainsFold(FieldName, v))
 }
 
 // SuccessEQ applies the EQ predicate on the "success" field.
 func SuccessEQ(v bool) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSuccess), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldSuccess, v))
 }
 
 // SuccessNEQ applies the NEQ predicate on the "success" field.
 func SuccessNEQ(v bool) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSuccess), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldNEQ(FieldSuccess, v))
 }
 
 // DaysEQ applies the EQ predicate on the "days" field.
 func DaysEQ(v int) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDays), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldDays, v))
 }
 
 // DaysNEQ applies the NEQ predicate on the "days" field.
 func DaysNEQ(v int) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDays), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldNEQ(FieldDays, v))
 }
 
 // DaysIn applies the In predicate on the "days" field.
 func DaysIn(vs ...int) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDays), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldIn(FieldDays, vs...))
 }
 
 // DaysNotIn applies the NotIn predicate on the "days" field.
 func DaysNotIn(vs ...int) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDays), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldNotIn(FieldDays, vs...))
 }
 
 // DaysGT applies the GT predicate on the "days" field.
 func DaysGT(v int) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDays), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldGT(FieldDays, v))
 }
 
 // DaysGTE applies the GTE predicate on the "days" field.
 func DaysGTE(v int) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDays), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldGTE(FieldDays, v))
 }
 
 // DaysLT applies the LT predicate on the "days" field.
 func DaysLT(v int) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDays), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldLT(FieldDays, v))
 }
 
 // DaysLTE applies the LTE predicate on the "days" field.
 func DaysLTE(v int) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDays), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldLTE(FieldDays, v))
 }
 
 // PlanNameEQ applies the EQ predicate on the "plan_name" field.
 func PlanNameEQ(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPlanName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldPlanName, v))
 }
 
 // PlanNameNEQ applies the NEQ predicate on the "plan_name" field.
 func PlanNameNEQ(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPlanName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldNEQ(FieldPlanName, v))
 }
 
 // PlanNameIn applies the In predicate on the "plan_name" field.
 func PlanNameIn(vs ...string) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldPlanName), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldIn(FieldPlanName, vs...))
 }
 
 // PlanNameNotIn applies the NotIn predicate on the "plan_name" field.
 func PlanNameNotIn(vs ...string) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldPlanName), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldNotIn(FieldPlanName, vs...))
 }
 
 // PlanNameGT applies the GT predicate on the "plan_name" field.
 func PlanNameGT(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldPlanName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldGT(FieldPlanName, v))
 }
 
 // PlanNameGTE applies the GTE predicate on the "plan_name" field.
 func PlanNameGTE(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldPlanName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldGTE(FieldPlanName, v))
 }
 
 // PlanNameLT applies the LT predicate on the "plan_name" field.
 func PlanNameLT(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldPlanName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldLT(FieldPlanName, v))
 }
 
 // PlanNameLTE applies the LTE predicate on the "plan_name" field.
 func PlanNameLTE(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldPlanName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldLTE(FieldPlanName, v))
 }
 
 // PlanNameContains applies the Contains predicate on the "plan_name" field.
 func PlanNameContains(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldPlanName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldContains(FieldPlanName, v))
 }
 
 // PlanNameHasPrefix applies the HasPrefix predicate on the "plan_name" field.
 func PlanNameHasPrefix(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldPlanName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldHasPrefix(FieldPlanName, v))
 }
 
 // PlanNameHasSuffix applies the HasSuffix predicate on the "plan_name" field.
 func PlanNameHasSuffix(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldPlanName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldHasSuffix(FieldPlanName, v))
 }
 
 // PlanNameEqualFold applies the EqualFold predicate on the "plan_name" field.
 func PlanNameEqualFold(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldPlanName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEqualFold(FieldPlanName, v))
 }
 
 // PlanNameContainsFold applies the ContainsFold predicate on the "plan_name" field.
 func PlanNameContainsFold(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldPlanName), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldContainsFold(FieldPlanName, v))
 }
 
 // DateEQ applies the EQ predicate on the "date" field.
 func DateEQ(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDate), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldDate, v))
 }
 
 // DateNEQ applies the NEQ predicate on the "date" field.
 func DateNEQ(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDate), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldNEQ(FieldDate, v))
 }
 
 // DateIn applies the In predicate on the "date" field.
 func DateIn(vs ...string) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDate), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldIn(FieldDate, vs...))
 }
 
 // DateNotIn applies the NotIn predicate on the "date" field.
 func DateNotIn(vs ...string) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDate), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldNotIn(FieldDate, vs...))
 }
 
 // DateGT applies the GT predicate on the "date" field.
 func DateGT(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDate), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldGT(FieldDate, v))
 }
 
 // DateGTE applies the GTE predicate on the "date" field.
 func DateGTE(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDate), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldGTE(FieldDate, v))
 }
 
 // DateLT applies the LT predicate on the "date" field.
 func DateLT(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDate), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldLT(FieldDate, v))
 }
 
 // DateLTE applies the LTE predicate on the "date" field.
 func DateLTE(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDate), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldLTE(FieldDate, v))
 }
 
 // DateContains applies the Contains predicate on the "date" field.
 func DateContains(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldDate), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldContains(FieldDate, v))
 }
 
 // DateHasPrefix applies the HasPrefix predicate on the "date" field.
 func DateHasPrefix(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldDate), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldHasPrefix(FieldDate, v))
 }
 
 // DateHasSuffix applies the HasSuffix predicate on the "date" field.
 func DateHasSuffix(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldDate), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldHasSuffix(FieldDate, v))
 }
 
 // DateEqualFold applies the EqualFold predicate on the "date" field.
 func DateEqualFold(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldDate), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEqualFold(FieldDate, v))
 }
 
 // DateContainsFold applies the ContainsFold predicate on the "date" field.
 func DateContainsFold(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldDate), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldContainsFold(FieldDate, v))
 }
 
 // FeeEQ applies the EQ predicate on the "fee" field.
 func FeeEQ(v float64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldFee), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldFee, v))
 }
 
 // FeeNEQ applies the NEQ predicate on the "fee" field.
 func FeeNEQ(v float64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldFee), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldNEQ(FieldFee, v))
 }
 
 // FeeIn applies the In predicate on the "fee" field.
 func FeeIn(vs ...float64) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldFee), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldIn(FieldFee, vs...))
 }
 
 // FeeNotIn applies the NotIn predicate on the "fee" field.
 func FeeNotIn(vs ...float64) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldFee), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldNotIn(FieldFee, vs...))
 }
 
 // FeeGT applies the GT predicate on the "fee" field.
 func FeeGT(v float64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldFee), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldGT(FieldFee, v))
 }
 
 // FeeGTE applies the GTE predicate on the "fee" field.
 func FeeGTE(v float64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldFee), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldGTE(FieldFee, v))
 }
 
 // FeeLT applies the LT predicate on the "fee" field.
 func FeeLT(v float64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldFee), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldLT(FieldFee, v))
 }
 
 // FeeLTE applies the LTE predicate on the "fee" field.
 func FeeLTE(v float64) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldFee), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldLTE(FieldFee, v))
 }
 
 // FeeFormulaEQ applies the EQ predicate on the "fee_formula" field.
 func FeeFormulaEQ(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldFeeFormula), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEQ(FieldFeeFormula, v))
 }
 
 // FeeFormulaNEQ applies the NEQ predicate on the "fee_formula" field.
 func FeeFormulaNEQ(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldFeeFormula), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldNEQ(FieldFeeFormula, v))
 }
 
 // FeeFormulaIn applies the In predicate on the "fee_formula" field.
 func FeeFormulaIn(vs ...string) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldFeeFormula), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldIn(FieldFeeFormula, vs...))
 }
 
 // FeeFormulaNotIn applies the NotIn predicate on the "fee_formula" field.
 func FeeFormulaNotIn(vs ...string) predicate.SubscribeReminder {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldFeeFormula), v...))
-	})
+	return predicate.SubscribeReminder(sql.FieldNotIn(FieldFeeFormula, vs...))
 }
 
 // FeeFormulaGT applies the GT predicate on the "fee_formula" field.
 func FeeFormulaGT(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldFeeFormula), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldGT(FieldFeeFormula, v))
 }
 
 // FeeFormulaGTE applies the GTE predicate on the "fee_formula" field.
 func FeeFormulaGTE(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldFeeFormula), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldGTE(FieldFeeFormula, v))
 }
 
 // FeeFormulaLT applies the LT predicate on the "fee_formula" field.
 func FeeFormulaLT(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldFeeFormula), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldLT(FieldFeeFormula, v))
 }
 
 // FeeFormulaLTE applies the LTE predicate on the "fee_formula" field.
 func FeeFormulaLTE(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldFeeFormula), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldLTE(FieldFeeFormula, v))
 }
 
 // FeeFormulaContains applies the Contains predicate on the "fee_formula" field.
 func FeeFormulaContains(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldFeeFormula), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldContains(FieldFeeFormula, v))
 }
 
 // FeeFormulaHasPrefix applies the HasPrefix predicate on the "fee_formula" field.
 func FeeFormulaHasPrefix(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldFeeFormula), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldHasPrefix(FieldFeeFormula, v))
 }
 
 // FeeFormulaHasSuffix applies the HasSuffix predicate on the "fee_formula" field.
 func FeeFormulaHasSuffix(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldFeeFormula), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldHasSuffix(FieldFeeFormula, v))
 }
 
 // FeeFormulaIsNil applies the IsNil predicate on the "fee_formula" field.
 func FeeFormulaIsNil() predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldFeeFormula)))
-	})
+	return predicate.SubscribeReminder(sql.FieldIsNull(FieldFeeFormula))
 }
 
 // FeeFormulaNotNil applies the NotNil predicate on the "fee_formula" field.
 func FeeFormulaNotNil() predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldFeeFormula)))
-	})
+	return predicate.SubscribeReminder(sql.FieldNotNull(FieldFeeFormula))
 }
 
 // FeeFormulaEqualFold applies the EqualFold predicate on the "fee_formula" field.
 func FeeFormulaEqualFold(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldFeeFormula), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldEqualFold(FieldFeeFormula, v))
 }
 
 // FeeFormulaContainsFold applies the ContainsFold predicate on the "fee_formula" field.
 func FeeFormulaContainsFold(v string) predicate.SubscribeReminder {
-	return predicate.SubscribeReminder(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldFeeFormula), v))
-	})
+	return predicate.SubscribeReminder(sql.FieldContainsFold(FieldFeeFormula, v))
 }
 
 // HasSubscribe applies the HasEdge predicate on the "subscribe" edge.
@@ -1100,7 +710,6 @@ func HasSubscribe() predicate.SubscribeReminder {
 	return predicate.SubscribeReminder(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SubscribeTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1128,7 +737,6 @@ func HasPlan() predicate.SubscribeReminder {
 	return predicate.SubscribeReminder(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PlanTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, PlanTable, PlanColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1156,7 +764,6 @@ func HasRider() predicate.SubscribeReminder {
 	return predicate.SubscribeReminder(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RiderTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

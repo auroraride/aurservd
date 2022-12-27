@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -308,6 +309,12 @@ func (pu *PlanUpdate) SetNotes(s []string) *PlanUpdate {
 	return pu
 }
 
+// AppendNotes appends s to the "notes" field.
+func (pu *PlanUpdate) AppendNotes(s []string) *PlanUpdate {
+	pu.mutation.AppendNotes(s)
+	return pu
+}
+
 // ClearNotes clears the value of the "notes" field.
 func (pu *PlanUpdate) ClearNotes() *PlanUpdate {
 	pu.mutation.ClearNotes()
@@ -415,37 +422,10 @@ func (pu *PlanUpdate) RemoveComplexes(p ...*Plan) *PlanUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (pu *PlanUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := pu.defaults(); err != nil {
 		return 0, err
 	}
-	if len(pu.hooks) == 0 {
-		affected, err = pu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*PlanMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			pu.mutation = mutation
-			affected, err = pu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(pu.hooks) - 1; i >= 0; i-- {
-			if pu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = pu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, pu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, PlanMutation](ctx, pu.sqlSave, pu.mutation, pu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -507,213 +487,102 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := pu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: plan.FieldUpdatedAt,
-		})
+		_spec.SetField(plan.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := pu.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: plan.FieldDeletedAt,
-		})
+		_spec.SetField(plan.FieldDeletedAt, field.TypeTime, value)
 	}
 	if pu.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: plan.FieldDeletedAt,
-		})
+		_spec.ClearField(plan.FieldDeletedAt, field.TypeTime)
 	}
 	if pu.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: plan.FieldCreator,
-		})
+		_spec.ClearField(plan.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := pu.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: plan.FieldLastModifier,
-		})
+		_spec.SetField(plan.FieldLastModifier, field.TypeJSON, value)
 	}
 	if pu.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: plan.FieldLastModifier,
-		})
+		_spec.ClearField(plan.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := pu.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: plan.FieldRemark,
-		})
+		_spec.SetField(plan.FieldRemark, field.TypeString, value)
 	}
 	if pu.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: plan.FieldRemark,
-		})
+		_spec.ClearField(plan.FieldRemark, field.TypeString)
 	}
 	if value, ok := pu.mutation.Model(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: plan.FieldModel,
-		})
+		_spec.SetField(plan.FieldModel, field.TypeString, value)
 	}
 	if pu.mutation.ModelCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: plan.FieldModel,
-		})
+		_spec.ClearField(plan.FieldModel, field.TypeString)
 	}
 	if value, ok := pu.mutation.Enable(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: plan.FieldEnable,
-		})
+		_spec.SetField(plan.FieldEnable, field.TypeBool, value)
 	}
 	if value, ok := pu.mutation.GetType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: plan.FieldType,
-		})
+		_spec.SetField(plan.FieldType, field.TypeUint8, value)
 	}
 	if value, ok := pu.mutation.AddedType(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: plan.FieldType,
-		})
+		_spec.AddField(plan.FieldType, field.TypeUint8, value)
 	}
 	if value, ok := pu.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: plan.FieldName,
-		})
+		_spec.SetField(plan.FieldName, field.TypeString, value)
 	}
 	if value, ok := pu.mutation.Start(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: plan.FieldStart,
-		})
+		_spec.SetField(plan.FieldStart, field.TypeTime, value)
 	}
 	if value, ok := pu.mutation.End(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: plan.FieldEnd,
-		})
+		_spec.SetField(plan.FieldEnd, field.TypeTime, value)
 	}
 	if value, ok := pu.mutation.Price(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: plan.FieldPrice,
-		})
+		_spec.SetField(plan.FieldPrice, field.TypeFloat64, value)
 	}
 	if value, ok := pu.mutation.AddedPrice(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: plan.FieldPrice,
-		})
+		_spec.AddField(plan.FieldPrice, field.TypeFloat64, value)
 	}
 	if value, ok := pu.mutation.Days(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
-			Value:  value,
-			Column: plan.FieldDays,
-		})
+		_spec.SetField(plan.FieldDays, field.TypeUint, value)
 	}
 	if value, ok := pu.mutation.AddedDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
-			Value:  value,
-			Column: plan.FieldDays,
-		})
+		_spec.AddField(plan.FieldDays, field.TypeUint, value)
 	}
 	if value, ok := pu.mutation.Commission(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: plan.FieldCommission,
-		})
+		_spec.SetField(plan.FieldCommission, field.TypeFloat64, value)
 	}
 	if value, ok := pu.mutation.AddedCommission(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: plan.FieldCommission,
-		})
+		_spec.AddField(plan.FieldCommission, field.TypeFloat64, value)
 	}
 	if value, ok := pu.mutation.Original(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: plan.FieldOriginal,
-		})
+		_spec.SetField(plan.FieldOriginal, field.TypeFloat64, value)
 	}
 	if value, ok := pu.mutation.AddedOriginal(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: plan.FieldOriginal,
-		})
+		_spec.AddField(plan.FieldOriginal, field.TypeFloat64, value)
 	}
 	if pu.mutation.OriginalCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: plan.FieldOriginal,
-		})
+		_spec.ClearField(plan.FieldOriginal, field.TypeFloat64)
 	}
 	if value, ok := pu.mutation.Desc(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: plan.FieldDesc,
-		})
+		_spec.SetField(plan.FieldDesc, field.TypeString, value)
 	}
 	if pu.mutation.DescCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: plan.FieldDesc,
-		})
+		_spec.ClearField(plan.FieldDesc, field.TypeString)
 	}
 	if value, ok := pu.mutation.DiscountNewly(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: plan.FieldDiscountNewly,
-		})
+		_spec.SetField(plan.FieldDiscountNewly, field.TypeFloat64, value)
 	}
 	if value, ok := pu.mutation.AddedDiscountNewly(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: plan.FieldDiscountNewly,
-		})
+		_spec.AddField(plan.FieldDiscountNewly, field.TypeFloat64, value)
 	}
 	if value, ok := pu.mutation.Notes(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: plan.FieldNotes,
+		_spec.SetField(plan.FieldNotes, field.TypeJSON, value)
+	}
+	if value, ok := pu.mutation.AppendedNotes(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, plan.FieldNotes, value)
 		})
 	}
 	if pu.mutation.NotesCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: plan.FieldNotes,
-		})
+		_spec.ClearField(plan.FieldNotes, field.TypeJSON)
 	}
 	if pu.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -893,7 +762,7 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = pu.modifiers
+	_spec.AddModifiers(pu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{plan.Label}
@@ -902,6 +771,7 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	pu.mutation.done = true
 	return n, nil
 }
 
@@ -1190,6 +1060,12 @@ func (puo *PlanUpdateOne) SetNotes(s []string) *PlanUpdateOne {
 	return puo
 }
 
+// AppendNotes appends s to the "notes" field.
+func (puo *PlanUpdateOne) AppendNotes(s []string) *PlanUpdateOne {
+	puo.mutation.AppendNotes(s)
+	return puo
+}
+
 // ClearNotes clears the value of the "notes" field.
 func (puo *PlanUpdateOne) ClearNotes() *PlanUpdateOne {
 	puo.mutation.ClearNotes()
@@ -1304,43 +1180,10 @@ func (puo *PlanUpdateOne) Select(field string, fields ...string) *PlanUpdateOne 
 
 // Save executes the query and returns the updated Plan entity.
 func (puo *PlanUpdateOne) Save(ctx context.Context) (*Plan, error) {
-	var (
-		err  error
-		node *Plan
-	)
 	if err := puo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(puo.hooks) == 0 {
-		node, err = puo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*PlanMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			puo.mutation = mutation
-			node, err = puo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(puo.hooks) - 1; i >= 0; i-- {
-			if puo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = puo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, puo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Plan)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from PlanMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Plan, PlanMutation](ctx, puo.sqlSave, puo.mutation, puo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -1419,213 +1262,102 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 		}
 	}
 	if value, ok := puo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: plan.FieldUpdatedAt,
-		})
+		_spec.SetField(plan.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := puo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: plan.FieldDeletedAt,
-		})
+		_spec.SetField(plan.FieldDeletedAt, field.TypeTime, value)
 	}
 	if puo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: plan.FieldDeletedAt,
-		})
+		_spec.ClearField(plan.FieldDeletedAt, field.TypeTime)
 	}
 	if puo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: plan.FieldCreator,
-		})
+		_spec.ClearField(plan.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := puo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: plan.FieldLastModifier,
-		})
+		_spec.SetField(plan.FieldLastModifier, field.TypeJSON, value)
 	}
 	if puo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: plan.FieldLastModifier,
-		})
+		_spec.ClearField(plan.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := puo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: plan.FieldRemark,
-		})
+		_spec.SetField(plan.FieldRemark, field.TypeString, value)
 	}
 	if puo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: plan.FieldRemark,
-		})
+		_spec.ClearField(plan.FieldRemark, field.TypeString)
 	}
 	if value, ok := puo.mutation.Model(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: plan.FieldModel,
-		})
+		_spec.SetField(plan.FieldModel, field.TypeString, value)
 	}
 	if puo.mutation.ModelCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: plan.FieldModel,
-		})
+		_spec.ClearField(plan.FieldModel, field.TypeString)
 	}
 	if value, ok := puo.mutation.Enable(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: plan.FieldEnable,
-		})
+		_spec.SetField(plan.FieldEnable, field.TypeBool, value)
 	}
 	if value, ok := puo.mutation.GetType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: plan.FieldType,
-		})
+		_spec.SetField(plan.FieldType, field.TypeUint8, value)
 	}
 	if value, ok := puo.mutation.AddedType(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: plan.FieldType,
-		})
+		_spec.AddField(plan.FieldType, field.TypeUint8, value)
 	}
 	if value, ok := puo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: plan.FieldName,
-		})
+		_spec.SetField(plan.FieldName, field.TypeString, value)
 	}
 	if value, ok := puo.mutation.Start(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: plan.FieldStart,
-		})
+		_spec.SetField(plan.FieldStart, field.TypeTime, value)
 	}
 	if value, ok := puo.mutation.End(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: plan.FieldEnd,
-		})
+		_spec.SetField(plan.FieldEnd, field.TypeTime, value)
 	}
 	if value, ok := puo.mutation.Price(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: plan.FieldPrice,
-		})
+		_spec.SetField(plan.FieldPrice, field.TypeFloat64, value)
 	}
 	if value, ok := puo.mutation.AddedPrice(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: plan.FieldPrice,
-		})
+		_spec.AddField(plan.FieldPrice, field.TypeFloat64, value)
 	}
 	if value, ok := puo.mutation.Days(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
-			Value:  value,
-			Column: plan.FieldDays,
-		})
+		_spec.SetField(plan.FieldDays, field.TypeUint, value)
 	}
 	if value, ok := puo.mutation.AddedDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
-			Value:  value,
-			Column: plan.FieldDays,
-		})
+		_spec.AddField(plan.FieldDays, field.TypeUint, value)
 	}
 	if value, ok := puo.mutation.Commission(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: plan.FieldCommission,
-		})
+		_spec.SetField(plan.FieldCommission, field.TypeFloat64, value)
 	}
 	if value, ok := puo.mutation.AddedCommission(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: plan.FieldCommission,
-		})
+		_spec.AddField(plan.FieldCommission, field.TypeFloat64, value)
 	}
 	if value, ok := puo.mutation.Original(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: plan.FieldOriginal,
-		})
+		_spec.SetField(plan.FieldOriginal, field.TypeFloat64, value)
 	}
 	if value, ok := puo.mutation.AddedOriginal(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: plan.FieldOriginal,
-		})
+		_spec.AddField(plan.FieldOriginal, field.TypeFloat64, value)
 	}
 	if puo.mutation.OriginalCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: plan.FieldOriginal,
-		})
+		_spec.ClearField(plan.FieldOriginal, field.TypeFloat64)
 	}
 	if value, ok := puo.mutation.Desc(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: plan.FieldDesc,
-		})
+		_spec.SetField(plan.FieldDesc, field.TypeString, value)
 	}
 	if puo.mutation.DescCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: plan.FieldDesc,
-		})
+		_spec.ClearField(plan.FieldDesc, field.TypeString)
 	}
 	if value, ok := puo.mutation.DiscountNewly(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: plan.FieldDiscountNewly,
-		})
+		_spec.SetField(plan.FieldDiscountNewly, field.TypeFloat64, value)
 	}
 	if value, ok := puo.mutation.AddedDiscountNewly(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: plan.FieldDiscountNewly,
-		})
+		_spec.AddField(plan.FieldDiscountNewly, field.TypeFloat64, value)
 	}
 	if value, ok := puo.mutation.Notes(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: plan.FieldNotes,
+		_spec.SetField(plan.FieldNotes, field.TypeJSON, value)
+	}
+	if value, ok := puo.mutation.AppendedNotes(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, plan.FieldNotes, value)
 		})
 	}
 	if puo.mutation.NotesCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: plan.FieldNotes,
-		})
+		_spec.ClearField(plan.FieldNotes, field.TypeJSON)
 	}
 	if puo.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1805,7 +1537,7 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = puo.modifiers
+	_spec.AddModifiers(puo.modifiers...)
 	_node = &Plan{config: puo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -1817,5 +1549,6 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 		}
 		return nil, err
 	}
+	puo.mutation.done = true
 	return _node, nil
 }

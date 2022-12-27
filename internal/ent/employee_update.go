@@ -371,43 +371,10 @@ func (eu *EmployeeUpdate) RemoveAssistances(a ...*Assistance) *EmployeeUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (eu *EmployeeUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := eu.defaults(); err != nil {
 		return 0, err
 	}
-	if len(eu.hooks) == 0 {
-		if err = eu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = eu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*EmployeeMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = eu.check(); err != nil {
-				return 0, err
-			}
-			eu.mutation = mutation
-			affected, err = eu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(eu.hooks) - 1; i >= 0; i-- {
-			if eu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = eu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, eu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, EmployeeMutation](ctx, eu.sqlSave, eu.mutation, eu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -459,6 +426,9 @@ func (eu *EmployeeUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Emplo
 }
 
 func (eu *EmployeeUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := eu.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   employee.Table,
@@ -477,90 +447,43 @@ func (eu *EmployeeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := eu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: employee.FieldUpdatedAt,
-		})
+		_spec.SetField(employee.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := eu.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: employee.FieldDeletedAt,
-		})
+		_spec.SetField(employee.FieldDeletedAt, field.TypeTime, value)
 	}
 	if eu.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: employee.FieldDeletedAt,
-		})
+		_spec.ClearField(employee.FieldDeletedAt, field.TypeTime)
 	}
 	if eu.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: employee.FieldCreator,
-		})
+		_spec.ClearField(employee.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := eu.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: employee.FieldLastModifier,
-		})
+		_spec.SetField(employee.FieldLastModifier, field.TypeJSON, value)
 	}
 	if eu.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: employee.FieldLastModifier,
-		})
+		_spec.ClearField(employee.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := eu.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: employee.FieldRemark,
-		})
+		_spec.SetField(employee.FieldRemark, field.TypeString, value)
 	}
 	if eu.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: employee.FieldRemark,
-		})
+		_spec.ClearField(employee.FieldRemark, field.TypeString)
 	}
 	if value, ok := eu.mutation.Sn(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: employee.FieldSn,
-		})
+		_spec.SetField(employee.FieldSn, field.TypeUUID, value)
 	}
 	if eu.mutation.SnCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Column: employee.FieldSn,
-		})
+		_spec.ClearField(employee.FieldSn, field.TypeUUID)
 	}
 	if value, ok := eu.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: employee.FieldName,
-		})
+		_spec.SetField(employee.FieldName, field.TypeString, value)
 	}
 	if value, ok := eu.mutation.Phone(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: employee.FieldPhone,
-		})
+		_spec.SetField(employee.FieldPhone, field.TypeString, value)
 	}
 	if value, ok := eu.mutation.Enable(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: employee.FieldEnable,
-		})
+		_spec.SetField(employee.FieldEnable, field.TypeBool, value)
 	}
 	if eu.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -902,7 +825,7 @@ func (eu *EmployeeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = eu.modifiers
+	_spec.AddModifiers(eu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, eu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{employee.Label}
@@ -911,6 +834,7 @@ func (eu *EmployeeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	eu.mutation.done = true
 	return n, nil
 }
 
@@ -1263,49 +1187,10 @@ func (euo *EmployeeUpdateOne) Select(field string, fields ...string) *EmployeeUp
 
 // Save executes the query and returns the updated Employee entity.
 func (euo *EmployeeUpdateOne) Save(ctx context.Context) (*Employee, error) {
-	var (
-		err  error
-		node *Employee
-	)
 	if err := euo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(euo.hooks) == 0 {
-		if err = euo.check(); err != nil {
-			return nil, err
-		}
-		node, err = euo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*EmployeeMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = euo.check(); err != nil {
-				return nil, err
-			}
-			euo.mutation = mutation
-			node, err = euo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(euo.hooks) - 1; i >= 0; i-- {
-			if euo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = euo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, euo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Employee)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from EmployeeMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Employee, EmployeeMutation](ctx, euo.sqlSave, euo.mutation, euo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -1357,6 +1242,9 @@ func (euo *EmployeeUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *E
 }
 
 func (euo *EmployeeUpdateOne) sqlSave(ctx context.Context) (_node *Employee, err error) {
+	if err := euo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   employee.Table,
@@ -1392,90 +1280,43 @@ func (euo *EmployeeUpdateOne) sqlSave(ctx context.Context) (_node *Employee, err
 		}
 	}
 	if value, ok := euo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: employee.FieldUpdatedAt,
-		})
+		_spec.SetField(employee.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := euo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: employee.FieldDeletedAt,
-		})
+		_spec.SetField(employee.FieldDeletedAt, field.TypeTime, value)
 	}
 	if euo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: employee.FieldDeletedAt,
-		})
+		_spec.ClearField(employee.FieldDeletedAt, field.TypeTime)
 	}
 	if euo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: employee.FieldCreator,
-		})
+		_spec.ClearField(employee.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := euo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: employee.FieldLastModifier,
-		})
+		_spec.SetField(employee.FieldLastModifier, field.TypeJSON, value)
 	}
 	if euo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: employee.FieldLastModifier,
-		})
+		_spec.ClearField(employee.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := euo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: employee.FieldRemark,
-		})
+		_spec.SetField(employee.FieldRemark, field.TypeString, value)
 	}
 	if euo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: employee.FieldRemark,
-		})
+		_spec.ClearField(employee.FieldRemark, field.TypeString)
 	}
 	if value, ok := euo.mutation.Sn(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: employee.FieldSn,
-		})
+		_spec.SetField(employee.FieldSn, field.TypeUUID, value)
 	}
 	if euo.mutation.SnCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Column: employee.FieldSn,
-		})
+		_spec.ClearField(employee.FieldSn, field.TypeUUID)
 	}
 	if value, ok := euo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: employee.FieldName,
-		})
+		_spec.SetField(employee.FieldName, field.TypeString, value)
 	}
 	if value, ok := euo.mutation.Phone(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: employee.FieldPhone,
-		})
+		_spec.SetField(employee.FieldPhone, field.TypeString, value)
 	}
 	if value, ok := euo.mutation.Enable(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: employee.FieldEnable,
-		})
+		_spec.SetField(employee.FieldEnable, field.TypeBool, value)
 	}
 	if euo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1817,7 +1658,7 @@ func (euo *EmployeeUpdateOne) sqlSave(ctx context.Context) (_node *Employee, err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = euo.modifiers
+	_spec.AddModifiers(euo.modifiers...)
 	_node = &Employee{config: euo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -1829,5 +1670,6 @@ func (euo *EmployeeUpdateOne) sqlSave(ctx context.Context) (_node *Employee, err
 		}
 		return nil, err
 	}
+	euo.mutation.done = true
 	return _node, nil
 }

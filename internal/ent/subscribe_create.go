@@ -667,52 +667,10 @@ func (sc *SubscribeCreate) Mutation() *SubscribeMutation {
 
 // Save creates the Subscribe in the database.
 func (sc *SubscribeCreate) Save(ctx context.Context) (*Subscribe, error) {
-	var (
-		err  error
-		node *Subscribe
-	)
 	if err := sc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(sc.hooks) == 0 {
-		if err = sc.check(); err != nil {
-			return nil, err
-		}
-		node, err = sc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*SubscribeMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = sc.check(); err != nil {
-				return nil, err
-			}
-			sc.mutation = mutation
-			if node, err = sc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(sc.hooks) - 1; i >= 0; i-- {
-			if sc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = sc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, sc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Subscribe)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from SubscribeMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Subscribe, SubscribeMutation](ctx, sc.sqlSave, sc.mutation, sc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -853,6 +811,9 @@ func (sc *SubscribeCreate) check() error {
 }
 
 func (sc *SubscribeCreate) sqlSave(ctx context.Context) (*Subscribe, error) {
+	if err := sc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := sc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, sc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -862,6 +823,8 @@ func (sc *SubscribeCreate) sqlSave(ctx context.Context) (*Subscribe, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	sc.mutation.id = &_node.ID
+	sc.mutation.done = true
 	return _node, nil
 }
 
@@ -878,219 +841,111 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = sc.conflict
 	if value, ok := sc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldCreatedAt,
-		})
+		_spec.SetField(subscribe.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := sc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldUpdatedAt,
-		})
+		_spec.SetField(subscribe.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := sc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldDeletedAt,
-		})
+		_spec.SetField(subscribe.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := sc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: subscribe.FieldCreator,
-		})
+		_spec.SetField(subscribe.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := sc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: subscribe.FieldLastModifier,
-		})
+		_spec.SetField(subscribe.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := sc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribe.FieldRemark,
-		})
+		_spec.SetField(subscribe.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := sc.mutation.Status(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: subscribe.FieldStatus,
-		})
+		_spec.SetField(subscribe.FieldStatus, field.TypeUint8, value)
 		_node.Status = value
 	}
 	if value, ok := sc.mutation.GetType(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
-			Value:  value,
-			Column: subscribe.FieldType,
-		})
+		_spec.SetField(subscribe.FieldType, field.TypeUint, value)
 		_node.Type = value
 	}
 	if value, ok := sc.mutation.Model(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribe.FieldModel,
-		})
+		_spec.SetField(subscribe.FieldModel, field.TypeString, value)
 		_node.Model = value
 	}
 	if value, ok := sc.mutation.InitialDays(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldInitialDays,
-		})
+		_spec.SetField(subscribe.FieldInitialDays, field.TypeInt, value)
 		_node.InitialDays = value
 	}
 	if value, ok := sc.mutation.AlterDays(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldAlterDays,
-		})
+		_spec.SetField(subscribe.FieldAlterDays, field.TypeInt, value)
 		_node.AlterDays = value
 	}
 	if value, ok := sc.mutation.PauseDays(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldPauseDays,
-		})
+		_spec.SetField(subscribe.FieldPauseDays, field.TypeInt, value)
 		_node.PauseDays = value
 	}
 	if value, ok := sc.mutation.SuspendDays(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldSuspendDays,
-		})
+		_spec.SetField(subscribe.FieldSuspendDays, field.TypeInt, value)
 		_node.SuspendDays = value
 	}
 	if value, ok := sc.mutation.RenewalDays(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldRenewalDays,
-		})
+		_spec.SetField(subscribe.FieldRenewalDays, field.TypeInt, value)
 		_node.RenewalDays = value
 	}
 	if value, ok := sc.mutation.OverdueDays(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldOverdueDays,
-		})
+		_spec.SetField(subscribe.FieldOverdueDays, field.TypeInt, value)
 		_node.OverdueDays = value
 	}
 	if value, ok := sc.mutation.Remaining(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldRemaining,
-		})
+		_spec.SetField(subscribe.FieldRemaining, field.TypeInt, value)
 		_node.Remaining = value
 	}
 	if value, ok := sc.mutation.PausedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldPausedAt,
-		})
+		_spec.SetField(subscribe.FieldPausedAt, field.TypeTime, value)
 		_node.PausedAt = &value
 	}
 	if value, ok := sc.mutation.SuspendAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldSuspendAt,
-		})
+		_spec.SetField(subscribe.FieldSuspendAt, field.TypeTime, value)
 		_node.SuspendAt = &value
 	}
 	if value, ok := sc.mutation.StartAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldStartAt,
-		})
+		_spec.SetField(subscribe.FieldStartAt, field.TypeTime, value)
 		_node.StartAt = &value
 	}
 	if value, ok := sc.mutation.EndAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldEndAt,
-		})
+		_spec.SetField(subscribe.FieldEndAt, field.TypeTime, value)
 		_node.EndAt = &value
 	}
 	if value, ok := sc.mutation.RefundAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldRefundAt,
-		})
+		_spec.SetField(subscribe.FieldRefundAt, field.TypeTime, value)
 		_node.RefundAt = &value
 	}
 	if value, ok := sc.mutation.UnsubscribeReason(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribe.FieldUnsubscribeReason,
-		})
+		_spec.SetField(subscribe.FieldUnsubscribeReason, field.TypeString, value)
 		_node.UnsubscribeReason = value
 	}
 	if value, ok := sc.mutation.LastBillDate(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldLastBillDate,
-		})
+		_spec.SetField(subscribe.FieldLastBillDate, field.TypeTime, value)
 		_node.LastBillDate = &value
 	}
 	if value, ok := sc.mutation.PauseOverdue(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: subscribe.FieldPauseOverdue,
-		})
+		_spec.SetField(subscribe.FieldPauseOverdue, field.TypeBool, value)
 		_node.PauseOverdue = value
 	}
 	if value, ok := sc.mutation.AgentEndAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldAgentEndAt,
-		})
+		_spec.SetField(subscribe.FieldAgentEndAt, field.TypeTime, value)
 		_node.AgentEndAt = &value
 	}
 	if value, ok := sc.mutation.Formula(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribe.FieldFormula,
-		})
+		_spec.SetField(subscribe.FieldFormula, field.TypeString, value)
 		_node.Formula = &value
 	}
 	if value, ok := sc.mutation.NeedContract(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: subscribe.FieldNeedContract,
-		})
+		_spec.SetField(subscribe.FieldNeedContract, field.TypeBool, value)
 		_node.NeedContract = value
 	}
 	if nodes := sc.mutation.PlanIDs(); len(nodes) > 0 {
