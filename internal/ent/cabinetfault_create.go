@@ -194,52 +194,10 @@ func (cfc *CabinetFaultCreate) Mutation() *CabinetFaultMutation {
 
 // Save creates the CabinetFault in the database.
 func (cfc *CabinetFaultCreate) Save(ctx context.Context) (*CabinetFault, error) {
-	var (
-		err  error
-		node *CabinetFault
-	)
 	if err := cfc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(cfc.hooks) == 0 {
-		if err = cfc.check(); err != nil {
-			return nil, err
-		}
-		node, err = cfc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CabinetFaultMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = cfc.check(); err != nil {
-				return nil, err
-			}
-			cfc.mutation = mutation
-			if node, err = cfc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(cfc.hooks) - 1; i >= 0; i-- {
-			if cfc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = cfc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, cfc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*CabinetFault)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from CabinetFaultMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*CabinetFault, CabinetFaultMutation](ctx, cfc.sqlSave, cfc.mutation, cfc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -326,6 +284,9 @@ func (cfc *CabinetFaultCreate) check() error {
 }
 
 func (cfc *CabinetFaultCreate) sqlSave(ctx context.Context) (*CabinetFault, error) {
+	if err := cfc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := cfc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, cfc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -335,6 +296,8 @@ func (cfc *CabinetFaultCreate) sqlSave(ctx context.Context) (*CabinetFault, erro
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	cfc.mutation.id = &_node.ID
+	cfc.mutation.done = true
 	return _node, nil
 }
 
@@ -351,83 +314,43 @@ func (cfc *CabinetFaultCreate) createSpec() (*CabinetFault, *sqlgraph.CreateSpec
 	)
 	_spec.OnConflict = cfc.conflict
 	if value, ok := cfc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: cabinetfault.FieldCreatedAt,
-		})
+		_spec.SetField(cabinetfault.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := cfc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: cabinetfault.FieldUpdatedAt,
-		})
+		_spec.SetField(cabinetfault.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := cfc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: cabinetfault.FieldDeletedAt,
-		})
+		_spec.SetField(cabinetfault.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := cfc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinetfault.FieldCreator,
-		})
+		_spec.SetField(cabinetfault.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := cfc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinetfault.FieldLastModifier,
-		})
+		_spec.SetField(cabinetfault.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := cfc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinetfault.FieldRemark,
-		})
+		_spec.SetField(cabinetfault.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := cfc.mutation.Status(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: cabinetfault.FieldStatus,
-		})
+		_spec.SetField(cabinetfault.FieldStatus, field.TypeUint8, value)
 		_node.Status = value
 	}
 	if value, ok := cfc.mutation.Fault(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinetfault.FieldFault,
-		})
+		_spec.SetField(cabinetfault.FieldFault, field.TypeString, value)
 		_node.Fault = value
 	}
 	if value, ok := cfc.mutation.Attachments(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinetfault.FieldAttachments,
-		})
+		_spec.SetField(cabinetfault.FieldAttachments, field.TypeJSON, value)
 		_node.Attachments = value
 	}
 	if value, ok := cfc.mutation.Description(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinetfault.FieldDescription,
-		})
+		_spec.SetField(cabinetfault.FieldDescription, field.TypeString, value)
 		_node.Description = value
 	}
 	if nodes := cfc.mutation.CityIDs(); len(nodes) > 0 {

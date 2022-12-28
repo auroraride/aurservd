@@ -30,6 +30,7 @@ type EmployeeQuery struct {
 	unique          *bool
 	order           []OrderFunc
 	fields          []string
+	inters          []Interceptor
 	predicates      []predicate.Employee
 	withCity        *CityQuery
 	withStore       *StoreQuery
@@ -50,13 +51,13 @@ func (eq *EmployeeQuery) Where(ps ...predicate.Employee) *EmployeeQuery {
 	return eq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (eq *EmployeeQuery) Limit(limit int) *EmployeeQuery {
 	eq.limit = &limit
 	return eq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (eq *EmployeeQuery) Offset(offset int) *EmployeeQuery {
 	eq.offset = &offset
 	return eq
@@ -69,7 +70,7 @@ func (eq *EmployeeQuery) Unique(unique bool) *EmployeeQuery {
 	return eq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (eq *EmployeeQuery) Order(o ...OrderFunc) *EmployeeQuery {
 	eq.order = append(eq.order, o...)
 	return eq
@@ -77,7 +78,7 @@ func (eq *EmployeeQuery) Order(o ...OrderFunc) *EmployeeQuery {
 
 // QueryCity chains the current query on the "city" edge.
 func (eq *EmployeeQuery) QueryCity() *CityQuery {
-	query := &CityQuery{config: eq.config}
+	query := (&CityClient{config: eq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := eq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -99,7 +100,7 @@ func (eq *EmployeeQuery) QueryCity() *CityQuery {
 
 // QueryStore chains the current query on the "store" edge.
 func (eq *EmployeeQuery) QueryStore() *StoreQuery {
-	query := &StoreQuery{config: eq.config}
+	query := (&StoreClient{config: eq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := eq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -121,7 +122,7 @@ func (eq *EmployeeQuery) QueryStore() *StoreQuery {
 
 // QueryAttendances chains the current query on the "attendances" edge.
 func (eq *EmployeeQuery) QueryAttendances() *AttendanceQuery {
-	query := &AttendanceQuery{config: eq.config}
+	query := (&AttendanceClient{config: eq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := eq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -143,7 +144,7 @@ func (eq *EmployeeQuery) QueryAttendances() *AttendanceQuery {
 
 // QueryStocks chains the current query on the "stocks" edge.
 func (eq *EmployeeQuery) QueryStocks() *StockQuery {
-	query := &StockQuery{config: eq.config}
+	query := (&StockClient{config: eq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := eq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -165,7 +166,7 @@ func (eq *EmployeeQuery) QueryStocks() *StockQuery {
 
 // QueryExchanges chains the current query on the "exchanges" edge.
 func (eq *EmployeeQuery) QueryExchanges() *ExchangeQuery {
-	query := &ExchangeQuery{config: eq.config}
+	query := (&ExchangeClient{config: eq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := eq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -187,7 +188,7 @@ func (eq *EmployeeQuery) QueryExchanges() *ExchangeQuery {
 
 // QueryCommissions chains the current query on the "commissions" edge.
 func (eq *EmployeeQuery) QueryCommissions() *CommissionQuery {
-	query := &CommissionQuery{config: eq.config}
+	query := (&CommissionClient{config: eq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := eq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -209,7 +210,7 @@ func (eq *EmployeeQuery) QueryCommissions() *CommissionQuery {
 
 // QueryAssistances chains the current query on the "assistances" edge.
 func (eq *EmployeeQuery) QueryAssistances() *AssistanceQuery {
-	query := &AssistanceQuery{config: eq.config}
+	query := (&AssistanceClient{config: eq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := eq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -232,7 +233,7 @@ func (eq *EmployeeQuery) QueryAssistances() *AssistanceQuery {
 // First returns the first Employee entity from the query.
 // Returns a *NotFoundError when no Employee was found.
 func (eq *EmployeeQuery) First(ctx context.Context) (*Employee, error) {
-	nodes, err := eq.Limit(1).All(ctx)
+	nodes, err := eq.Limit(1).All(newQueryContext(ctx, TypeEmployee, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -255,7 +256,7 @@ func (eq *EmployeeQuery) FirstX(ctx context.Context) *Employee {
 // Returns a *NotFoundError when no Employee ID was found.
 func (eq *EmployeeQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = eq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = eq.Limit(1).IDs(newQueryContext(ctx, TypeEmployee, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -278,7 +279,7 @@ func (eq *EmployeeQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Employee entity is found.
 // Returns a *NotFoundError when no Employee entities are found.
 func (eq *EmployeeQuery) Only(ctx context.Context) (*Employee, error) {
-	nodes, err := eq.Limit(2).All(ctx)
+	nodes, err := eq.Limit(2).All(newQueryContext(ctx, TypeEmployee, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -306,7 +307,7 @@ func (eq *EmployeeQuery) OnlyX(ctx context.Context) *Employee {
 // Returns a *NotFoundError when no entities are found.
 func (eq *EmployeeQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = eq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = eq.Limit(2).IDs(newQueryContext(ctx, TypeEmployee, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -331,10 +332,12 @@ func (eq *EmployeeQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Employees.
 func (eq *EmployeeQuery) All(ctx context.Context) ([]*Employee, error) {
+	ctx = newQueryContext(ctx, TypeEmployee, "All")
 	if err := eq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return eq.sqlAll(ctx)
+	qr := querierAll[[]*Employee, *EmployeeQuery]()
+	return withInterceptors[[]*Employee](ctx, eq, qr, eq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -349,6 +352,7 @@ func (eq *EmployeeQuery) AllX(ctx context.Context) []*Employee {
 // IDs executes the query and returns a list of Employee IDs.
 func (eq *EmployeeQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeEmployee, "IDs")
 	if err := eq.Select(employee.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -366,10 +370,11 @@ func (eq *EmployeeQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (eq *EmployeeQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeEmployee, "Count")
 	if err := eq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return eq.sqlCount(ctx)
+	return withInterceptors[int](ctx, eq, querierCount[*EmployeeQuery](), eq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -383,10 +388,15 @@ func (eq *EmployeeQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (eq *EmployeeQuery) Exist(ctx context.Context) (bool, error) {
-	if err := eq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeEmployee, "Exist")
+	switch _, err := eq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return eq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -427,7 +437,7 @@ func (eq *EmployeeQuery) Clone() *EmployeeQuery {
 // WithCity tells the query-builder to eager-load the nodes that are connected to
 // the "city" edge. The optional arguments are used to configure the query builder of the edge.
 func (eq *EmployeeQuery) WithCity(opts ...func(*CityQuery)) *EmployeeQuery {
-	query := &CityQuery{config: eq.config}
+	query := (&CityClient{config: eq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -438,7 +448,7 @@ func (eq *EmployeeQuery) WithCity(opts ...func(*CityQuery)) *EmployeeQuery {
 // WithStore tells the query-builder to eager-load the nodes that are connected to
 // the "store" edge. The optional arguments are used to configure the query builder of the edge.
 func (eq *EmployeeQuery) WithStore(opts ...func(*StoreQuery)) *EmployeeQuery {
-	query := &StoreQuery{config: eq.config}
+	query := (&StoreClient{config: eq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -449,7 +459,7 @@ func (eq *EmployeeQuery) WithStore(opts ...func(*StoreQuery)) *EmployeeQuery {
 // WithAttendances tells the query-builder to eager-load the nodes that are connected to
 // the "attendances" edge. The optional arguments are used to configure the query builder of the edge.
 func (eq *EmployeeQuery) WithAttendances(opts ...func(*AttendanceQuery)) *EmployeeQuery {
-	query := &AttendanceQuery{config: eq.config}
+	query := (&AttendanceClient{config: eq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -460,7 +470,7 @@ func (eq *EmployeeQuery) WithAttendances(opts ...func(*AttendanceQuery)) *Employ
 // WithStocks tells the query-builder to eager-load the nodes that are connected to
 // the "stocks" edge. The optional arguments are used to configure the query builder of the edge.
 func (eq *EmployeeQuery) WithStocks(opts ...func(*StockQuery)) *EmployeeQuery {
-	query := &StockQuery{config: eq.config}
+	query := (&StockClient{config: eq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -471,7 +481,7 @@ func (eq *EmployeeQuery) WithStocks(opts ...func(*StockQuery)) *EmployeeQuery {
 // WithExchanges tells the query-builder to eager-load the nodes that are connected to
 // the "exchanges" edge. The optional arguments are used to configure the query builder of the edge.
 func (eq *EmployeeQuery) WithExchanges(opts ...func(*ExchangeQuery)) *EmployeeQuery {
-	query := &ExchangeQuery{config: eq.config}
+	query := (&ExchangeClient{config: eq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -482,7 +492,7 @@ func (eq *EmployeeQuery) WithExchanges(opts ...func(*ExchangeQuery)) *EmployeeQu
 // WithCommissions tells the query-builder to eager-load the nodes that are connected to
 // the "commissions" edge. The optional arguments are used to configure the query builder of the edge.
 func (eq *EmployeeQuery) WithCommissions(opts ...func(*CommissionQuery)) *EmployeeQuery {
-	query := &CommissionQuery{config: eq.config}
+	query := (&CommissionClient{config: eq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -493,7 +503,7 @@ func (eq *EmployeeQuery) WithCommissions(opts ...func(*CommissionQuery)) *Employ
 // WithAssistances tells the query-builder to eager-load the nodes that are connected to
 // the "assistances" edge. The optional arguments are used to configure the query builder of the edge.
 func (eq *EmployeeQuery) WithAssistances(opts ...func(*AssistanceQuery)) *EmployeeQuery {
-	query := &AssistanceQuery{config: eq.config}
+	query := (&AssistanceClient{config: eq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -516,16 +526,11 @@ func (eq *EmployeeQuery) WithAssistances(opts ...func(*AssistanceQuery)) *Employ
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (eq *EmployeeQuery) GroupBy(field string, fields ...string) *EmployeeGroupBy {
-	grbuild := &EmployeeGroupBy{config: eq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := eq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return eq.sqlQuery(ctx), nil
-	}
+	eq.fields = append([]string{field}, fields...)
+	grbuild := &EmployeeGroupBy{build: eq}
+	grbuild.flds = &eq.fields
 	grbuild.label = employee.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -543,13 +548,28 @@ func (eq *EmployeeQuery) GroupBy(field string, fields ...string) *EmployeeGroupB
 //		Scan(ctx, &v)
 func (eq *EmployeeQuery) Select(fields ...string) *EmployeeSelect {
 	eq.fields = append(eq.fields, fields...)
-	selbuild := &EmployeeSelect{EmployeeQuery: eq}
-	selbuild.label = employee.Label
-	selbuild.flds, selbuild.scan = &eq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &EmployeeSelect{EmployeeQuery: eq}
+	sbuild.label = employee.Label
+	sbuild.flds, sbuild.scan = &eq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a EmployeeSelect configured with the given aggregations.
+func (eq *EmployeeQuery) Aggregate(fns ...AggregateFunc) *EmployeeSelect {
+	return eq.Select().Aggregate(fns...)
 }
 
 func (eq *EmployeeQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range eq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, eq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range eq.fields {
 		if !employee.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -864,17 +884,6 @@ func (eq *EmployeeQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, eq.driver, _spec)
 }
 
-func (eq *EmployeeQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := eq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (eq *EmployeeQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -966,13 +975,8 @@ func (eq *EmployeeQuery) Modify(modifiers ...func(s *sql.Selector)) *EmployeeSel
 
 // EmployeeGroupBy is the group-by builder for Employee entities.
 type EmployeeGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *EmployeeQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -981,74 +985,77 @@ func (egb *EmployeeGroupBy) Aggregate(fns ...AggregateFunc) *EmployeeGroupBy {
 	return egb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (egb *EmployeeGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := egb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeEmployee, "GroupBy")
+	if err := egb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	egb.sql = query
-	return egb.sqlScan(ctx, v)
+	return scanWithInterceptors[*EmployeeQuery, *EmployeeGroupBy](ctx, egb.build, egb, egb.build.inters, v)
 }
 
-func (egb *EmployeeGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range egb.fields {
-		if !employee.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (egb *EmployeeGroupBy) sqlScan(ctx context.Context, root *EmployeeQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(egb.fns))
+	for _, fn := range egb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := egb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*egb.flds)+len(egb.fns))
+		for _, f := range *egb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*egb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := egb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := egb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (egb *EmployeeGroupBy) sqlQuery() *sql.Selector {
-	selector := egb.sql.Select()
-	aggregation := make([]string, 0, len(egb.fns))
-	for _, fn := range egb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(egb.fields)+len(egb.fns))
-		for _, f := range egb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(egb.fields...)...)
-}
-
 // EmployeeSelect is the builder for selecting fields of Employee entities.
 type EmployeeSelect struct {
 	*EmployeeQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (es *EmployeeSelect) Aggregate(fns ...AggregateFunc) *EmployeeSelect {
+	es.fns = append(es.fns, fns...)
+	return es
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (es *EmployeeSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeEmployee, "Select")
 	if err := es.prepareQuery(ctx); err != nil {
 		return err
 	}
-	es.sql = es.EmployeeQuery.sqlQuery(ctx)
-	return es.sqlScan(ctx, v)
+	return scanWithInterceptors[*EmployeeQuery, *EmployeeSelect](ctx, es.EmployeeQuery, es, es.inters, v)
 }
 
-func (es *EmployeeSelect) sqlScan(ctx context.Context, v any) error {
+func (es *EmployeeSelect) sqlScan(ctx context.Context, root *EmployeeQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(es.fns))
+	for _, fn := range es.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*es.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := es.sql.Query()
+	query, args := selector.Query()
 	if err := es.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

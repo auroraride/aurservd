@@ -19,6 +19,7 @@ type EnterprisePrice struct {
 func (EnterprisePrice) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "enterprise_price"},
+        entsql.WithComments(true),
     }
 }
 

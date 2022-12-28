@@ -184,50 +184,8 @@ func (ec *ExportCreate) Mutation() *ExportMutation {
 
 // Save creates the Export in the database.
 func (ec *ExportCreate) Save(ctx context.Context) (*Export, error) {
-	var (
-		err  error
-		node *Export
-	)
 	ec.defaults()
-	if len(ec.hooks) == 0 {
-		if err = ec.check(); err != nil {
-			return nil, err
-		}
-		node, err = ec.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ExportMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ec.check(); err != nil {
-				return nil, err
-			}
-			ec.mutation = mutation
-			if node, err = ec.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ec.hooks) - 1; i >= 0; i-- {
-			if ec.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ec.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ec.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Export)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from ExportMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Export, ExportMutation](ctx, ec.sqlSave, ec.mutation, ec.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -301,6 +259,9 @@ func (ec *ExportCreate) check() error {
 }
 
 func (ec *ExportCreate) sqlSave(ctx context.Context) (*Export, error) {
+	if err := ec.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := ec.createSpec()
 	if err := sqlgraph.CreateNode(ctx, ec.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -310,6 +271,8 @@ func (ec *ExportCreate) sqlSave(ctx context.Context) (*Export, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	ec.mutation.id = &_node.ID
+	ec.mutation.done = true
 	return _node, nil
 }
 
@@ -326,107 +289,55 @@ func (ec *ExportCreate) createSpec() (*Export, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = ec.conflict
 	if value, ok := ec.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: export.FieldCreatedAt,
-		})
+		_spec.SetField(export.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := ec.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: export.FieldUpdatedAt,
-		})
+		_spec.SetField(export.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := ec.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: export.FieldDeletedAt,
-		})
+		_spec.SetField(export.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := ec.mutation.Taxonomy(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: export.FieldTaxonomy,
-		})
+		_spec.SetField(export.FieldTaxonomy, field.TypeString, value)
 		_node.Taxonomy = value
 	}
 	if value, ok := ec.mutation.Sn(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: export.FieldSn,
-		})
+		_spec.SetField(export.FieldSn, field.TypeString, value)
 		_node.Sn = value
 	}
 	if value, ok := ec.mutation.Status(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: export.FieldStatus,
-		})
+		_spec.SetField(export.FieldStatus, field.TypeUint8, value)
 		_node.Status = value
 	}
 	if value, ok := ec.mutation.Path(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: export.FieldPath,
-		})
+		_spec.SetField(export.FieldPath, field.TypeString, value)
 		_node.Path = value
 	}
 	if value, ok := ec.mutation.Message(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: export.FieldMessage,
-		})
+		_spec.SetField(export.FieldMessage, field.TypeString, value)
 		_node.Message = value
 	}
 	if value, ok := ec.mutation.FinishAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: export.FieldFinishAt,
-		})
+		_spec.SetField(export.FieldFinishAt, field.TypeTime, value)
 		_node.FinishAt = value
 	}
 	if value, ok := ec.mutation.Duration(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: export.FieldDuration,
-		})
+		_spec.SetField(export.FieldDuration, field.TypeInt64, value)
 		_node.Duration = value
 	}
 	if value, ok := ec.mutation.Condition(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: export.FieldCondition,
-		})
+		_spec.SetField(export.FieldCondition, field.TypeJSON, value)
 		_node.Condition = value
 	}
 	if value, ok := ec.mutation.Info(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: export.FieldInfo,
-		})
+		_spec.SetField(export.FieldInfo, field.TypeJSON, value)
 		_node.Info = value
 	}
 	if value, ok := ec.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: export.FieldRemark,
-		})
+		_spec.SetField(export.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if nodes := ec.mutation.ManagerIDs(); len(nodes) > 0 {

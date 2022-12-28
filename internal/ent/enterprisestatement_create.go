@@ -216,52 +216,10 @@ func (esc *EnterpriseStatementCreate) Mutation() *EnterpriseStatementMutation {
 
 // Save creates the EnterpriseStatement in the database.
 func (esc *EnterpriseStatementCreate) Save(ctx context.Context) (*EnterpriseStatement, error) {
-	var (
-		err  error
-		node *EnterpriseStatement
-	)
 	if err := esc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(esc.hooks) == 0 {
-		if err = esc.check(); err != nil {
-			return nil, err
-		}
-		node, err = esc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*EnterpriseStatementMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = esc.check(); err != nil {
-				return nil, err
-			}
-			esc.mutation = mutation
-			if node, err = esc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(esc.hooks) - 1; i >= 0; i-- {
-			if esc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = esc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, esc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*EnterpriseStatement)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from EnterpriseStatementMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*EnterpriseStatement, EnterpriseStatementMutation](ctx, esc.sqlSave, esc.mutation, esc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -347,6 +305,9 @@ func (esc *EnterpriseStatementCreate) check() error {
 }
 
 func (esc *EnterpriseStatementCreate) sqlSave(ctx context.Context) (*EnterpriseStatement, error) {
+	if err := esc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := esc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, esc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -356,6 +317,8 @@ func (esc *EnterpriseStatementCreate) sqlSave(ctx context.Context) (*EnterpriseS
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	esc.mutation.id = &_node.ID
+	esc.mutation.done = true
 	return _node, nil
 }
 
@@ -372,107 +335,55 @@ func (esc *EnterpriseStatementCreate) createSpec() (*EnterpriseStatement, *sqlgr
 	)
 	_spec.OnConflict = esc.conflict
 	if value, ok := esc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisestatement.FieldCreatedAt,
-		})
+		_spec.SetField(enterprisestatement.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := esc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisestatement.FieldUpdatedAt,
-		})
+		_spec.SetField(enterprisestatement.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := esc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisestatement.FieldDeletedAt,
-		})
+		_spec.SetField(enterprisestatement.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := esc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: enterprisestatement.FieldCreator,
-		})
+		_spec.SetField(enterprisestatement.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := esc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: enterprisestatement.FieldLastModifier,
-		})
+		_spec.SetField(enterprisestatement.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := esc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: enterprisestatement.FieldRemark,
-		})
+		_spec.SetField(enterprisestatement.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := esc.mutation.Cost(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisestatement.FieldCost,
-		})
+		_spec.SetField(enterprisestatement.FieldCost, field.TypeFloat64, value)
 		_node.Cost = value
 	}
 	if value, ok := esc.mutation.SettledAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisestatement.FieldSettledAt,
-		})
+		_spec.SetField(enterprisestatement.FieldSettledAt, field.TypeTime, value)
 		_node.SettledAt = &value
 	}
 	if value, ok := esc.mutation.Days(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: enterprisestatement.FieldDays,
-		})
+		_spec.SetField(enterprisestatement.FieldDays, field.TypeInt, value)
 		_node.Days = value
 	}
 	if value, ok := esc.mutation.RiderNumber(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: enterprisestatement.FieldRiderNumber,
-		})
+		_spec.SetField(enterprisestatement.FieldRiderNumber, field.TypeInt, value)
 		_node.RiderNumber = value
 	}
 	if value, ok := esc.mutation.Date(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisestatement.FieldDate,
-		})
+		_spec.SetField(enterprisestatement.FieldDate, field.TypeTime, value)
 		_node.Date = &value
 	}
 	if value, ok := esc.mutation.Start(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisestatement.FieldStart,
-		})
+		_spec.SetField(enterprisestatement.FieldStart, field.TypeTime, value)
 		_node.Start = value
 	}
 	if value, ok := esc.mutation.End(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisestatement.FieldEnd,
-		})
+		_spec.SetField(enterprisestatement.FieldEnd, field.TypeTime, value)
 		_node.End = &value
 	}
 	if nodes := esc.mutation.EnterpriseIDs(); len(nodes) > 0 {

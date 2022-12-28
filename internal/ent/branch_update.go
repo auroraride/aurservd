@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/branch"
@@ -140,6 +141,12 @@ func (bu *BranchUpdate) SetAddress(s string) *BranchUpdate {
 // SetPhotos sets the "photos" field.
 func (bu *BranchUpdate) SetPhotos(s []string) *BranchUpdate {
 	bu.mutation.SetPhotos(s)
+	return bu
+}
+
+// AppendPhotos appends s to the "photos" field.
+func (bu *BranchUpdate) AppendPhotos(s []string) *BranchUpdate {
+	bu.mutation.AppendPhotos(s)
 	return bu
 }
 
@@ -311,43 +318,10 @@ func (bu *BranchUpdate) RemoveStores(s ...*Store) *BranchUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (bu *BranchUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := bu.defaults(); err != nil {
 		return 0, err
 	}
-	if len(bu.hooks) == 0 {
-		if err = bu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = bu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*BranchMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = bu.check(); err != nil {
-				return 0, err
-			}
-			bu.mutation = mutation
-			affected, err = bu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(bu.hooks) - 1; i >= 0; i-- {
-			if bu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = bu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, bu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, BranchMutation](ctx, bu.sqlSave, bu.mutation, bu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -399,6 +373,9 @@ func (bu *BranchUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *BranchU
 }
 
 func (bu *BranchUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := bu.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   branch.Table,
@@ -417,112 +394,57 @@ func (bu *BranchUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := bu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: branch.FieldUpdatedAt,
-		})
+		_spec.SetField(branch.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := bu.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: branch.FieldDeletedAt,
-		})
+		_spec.SetField(branch.FieldDeletedAt, field.TypeTime, value)
 	}
 	if bu.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: branch.FieldDeletedAt,
-		})
+		_spec.ClearField(branch.FieldDeletedAt, field.TypeTime)
 	}
 	if bu.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: branch.FieldCreator,
-		})
+		_spec.ClearField(branch.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := bu.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: branch.FieldLastModifier,
-		})
+		_spec.SetField(branch.FieldLastModifier, field.TypeJSON, value)
 	}
 	if bu.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: branch.FieldLastModifier,
-		})
+		_spec.ClearField(branch.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := bu.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: branch.FieldRemark,
-		})
+		_spec.SetField(branch.FieldRemark, field.TypeString, value)
 	}
 	if bu.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: branch.FieldRemark,
-		})
+		_spec.ClearField(branch.FieldRemark, field.TypeString)
 	}
 	if value, ok := bu.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: branch.FieldName,
-		})
+		_spec.SetField(branch.FieldName, field.TypeString, value)
 	}
 	if value, ok := bu.mutation.Lng(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: branch.FieldLng,
-		})
+		_spec.SetField(branch.FieldLng, field.TypeFloat64, value)
 	}
 	if value, ok := bu.mutation.AddedLng(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: branch.FieldLng,
-		})
+		_spec.AddField(branch.FieldLng, field.TypeFloat64, value)
 	}
 	if value, ok := bu.mutation.Lat(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: branch.FieldLat,
-		})
+		_spec.SetField(branch.FieldLat, field.TypeFloat64, value)
 	}
 	if value, ok := bu.mutation.AddedLat(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: branch.FieldLat,
-		})
+		_spec.AddField(branch.FieldLat, field.TypeFloat64, value)
 	}
 	if value, ok := bu.mutation.Address(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: branch.FieldAddress,
-		})
+		_spec.SetField(branch.FieldAddress, field.TypeString, value)
 	}
 	if value, ok := bu.mutation.Photos(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: branch.FieldPhotos,
+		_spec.SetField(branch.FieldPhotos, field.TypeJSON, value)
+	}
+	if value, ok := bu.mutation.AppendedPhotos(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, branch.FieldPhotos, value)
 		})
 	}
 	if value, ok := bu.mutation.Geom(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
-			Value:  value,
-			Column: branch.FieldGeom,
-		})
+		_spec.SetField(branch.FieldGeom, field.TypeOther, value)
 	}
 	if bu.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -775,7 +697,7 @@ func (bu *BranchUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = bu.modifiers
+	_spec.AddModifiers(bu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{branch.Label}
@@ -784,6 +706,7 @@ func (bu *BranchUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	bu.mutation.done = true
 	return n, nil
 }
 
@@ -901,6 +824,12 @@ func (buo *BranchUpdateOne) SetAddress(s string) *BranchUpdateOne {
 // SetPhotos sets the "photos" field.
 func (buo *BranchUpdateOne) SetPhotos(s []string) *BranchUpdateOne {
 	buo.mutation.SetPhotos(s)
+	return buo
+}
+
+// AppendPhotos appends s to the "photos" field.
+func (buo *BranchUpdateOne) AppendPhotos(s []string) *BranchUpdateOne {
+	buo.mutation.AppendPhotos(s)
 	return buo
 }
 
@@ -1079,49 +1008,10 @@ func (buo *BranchUpdateOne) Select(field string, fields ...string) *BranchUpdate
 
 // Save executes the query and returns the updated Branch entity.
 func (buo *BranchUpdateOne) Save(ctx context.Context) (*Branch, error) {
-	var (
-		err  error
-		node *Branch
-	)
 	if err := buo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(buo.hooks) == 0 {
-		if err = buo.check(); err != nil {
-			return nil, err
-		}
-		node, err = buo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*BranchMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = buo.check(); err != nil {
-				return nil, err
-			}
-			buo.mutation = mutation
-			node, err = buo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(buo.hooks) - 1; i >= 0; i-- {
-			if buo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = buo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, buo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Branch)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from BranchMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Branch, BranchMutation](ctx, buo.sqlSave, buo.mutation, buo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -1173,6 +1063,9 @@ func (buo *BranchUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Bra
 }
 
 func (buo *BranchUpdateOne) sqlSave(ctx context.Context) (_node *Branch, err error) {
+	if err := buo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   branch.Table,
@@ -1208,112 +1101,57 @@ func (buo *BranchUpdateOne) sqlSave(ctx context.Context) (_node *Branch, err err
 		}
 	}
 	if value, ok := buo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: branch.FieldUpdatedAt,
-		})
+		_spec.SetField(branch.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := buo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: branch.FieldDeletedAt,
-		})
+		_spec.SetField(branch.FieldDeletedAt, field.TypeTime, value)
 	}
 	if buo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: branch.FieldDeletedAt,
-		})
+		_spec.ClearField(branch.FieldDeletedAt, field.TypeTime)
 	}
 	if buo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: branch.FieldCreator,
-		})
+		_spec.ClearField(branch.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := buo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: branch.FieldLastModifier,
-		})
+		_spec.SetField(branch.FieldLastModifier, field.TypeJSON, value)
 	}
 	if buo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: branch.FieldLastModifier,
-		})
+		_spec.ClearField(branch.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := buo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: branch.FieldRemark,
-		})
+		_spec.SetField(branch.FieldRemark, field.TypeString, value)
 	}
 	if buo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: branch.FieldRemark,
-		})
+		_spec.ClearField(branch.FieldRemark, field.TypeString)
 	}
 	if value, ok := buo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: branch.FieldName,
-		})
+		_spec.SetField(branch.FieldName, field.TypeString, value)
 	}
 	if value, ok := buo.mutation.Lng(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: branch.FieldLng,
-		})
+		_spec.SetField(branch.FieldLng, field.TypeFloat64, value)
 	}
 	if value, ok := buo.mutation.AddedLng(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: branch.FieldLng,
-		})
+		_spec.AddField(branch.FieldLng, field.TypeFloat64, value)
 	}
 	if value, ok := buo.mutation.Lat(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: branch.FieldLat,
-		})
+		_spec.SetField(branch.FieldLat, field.TypeFloat64, value)
 	}
 	if value, ok := buo.mutation.AddedLat(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: branch.FieldLat,
-		})
+		_spec.AddField(branch.FieldLat, field.TypeFloat64, value)
 	}
 	if value, ok := buo.mutation.Address(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: branch.FieldAddress,
-		})
+		_spec.SetField(branch.FieldAddress, field.TypeString, value)
 	}
 	if value, ok := buo.mutation.Photos(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: branch.FieldPhotos,
+		_spec.SetField(branch.FieldPhotos, field.TypeJSON, value)
+	}
+	if value, ok := buo.mutation.AppendedPhotos(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, branch.FieldPhotos, value)
 		})
 	}
 	if value, ok := buo.mutation.Geom(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
-			Value:  value,
-			Column: branch.FieldGeom,
-		})
+		_spec.SetField(branch.FieldGeom, field.TypeOther, value)
 	}
 	if buo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1566,7 +1404,7 @@ func (buo *BranchUpdateOne) sqlSave(ctx context.Context) (_node *Branch, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = buo.modifiers
+	_spec.AddModifiers(buo.modifiers...)
 	_node = &Branch{config: buo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -1578,5 +1416,6 @@ func (buo *BranchUpdateOne) sqlSave(ctx context.Context) (_node *Branch, err err
 		}
 		return nil, err
 	}
+	buo.mutation.done = true
 	return _node, nil
 }

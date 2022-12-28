@@ -12,1135 +12,737 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uint64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uint64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uint64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.Attendance(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.Attendance(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.Attendance(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uint64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.Attendance(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uint64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.Attendance(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uint64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.Attendance(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uint64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.Attendance(sql.FieldLTE(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
 func DeletedAt(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
 func Remark(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldRemark, v))
 }
 
 // StoreID applies equality check predicate on the "store_id" field. It's identical to StoreIDEQ.
 func StoreID(v uint64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStoreID), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldStoreID, v))
 }
 
 // EmployeeID applies equality check predicate on the "employee_id" field. It's identical to EmployeeIDEQ.
 func EmployeeID(v uint64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldEmployeeID, v))
 }
 
 // Photo applies equality check predicate on the "photo" field. It's identical to PhotoEQ.
 func Photo(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPhoto), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldPhoto, v))
 }
 
 // Duty applies equality check predicate on the "duty" field. It's identical to DutyEQ.
 func Duty(v bool) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDuty), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldDuty, v))
 }
 
 // Date applies equality check predicate on the "date" field. It's identical to DateEQ.
 func Date(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDate), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldDate, v))
 }
 
 // Lng applies equality check predicate on the "lng" field. It's identical to LngEQ.
 func Lng(v float64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLng), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldLng, v))
 }
 
 // Lat applies equality check predicate on the "lat" field. It's identical to LatEQ.
 func Lat(v float64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLat), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldLat, v))
 }
 
 // Address applies equality check predicate on the "address" field. It's identical to AddressEQ.
 func Address(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAddress), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldAddress, v))
 }
 
 // Distance applies equality check predicate on the "distance" field. It's identical to DistanceEQ.
 func Distance(v float64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDistance), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldDistance, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
 func CreatedAtNEQ(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Attendance(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Attendance(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Attendance(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtGT applies the GT predicate on the "created_at" field.
 func CreatedAtGT(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Attendance(sql.FieldGT(FieldCreatedAt, v))
 }
 
 // CreatedAtGTE applies the GTE predicate on the "created_at" field.
 func CreatedAtGTE(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Attendance(sql.FieldGTE(FieldCreatedAt, v))
 }
 
 // CreatedAtLT applies the LT predicate on the "created_at" field.
 func CreatedAtLT(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Attendance(sql.FieldLT(FieldCreatedAt, v))
 }
 
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Attendance(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
 func UpdatedAtEQ(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
 func UpdatedAtNEQ(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Attendance(sql.FieldNEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Attendance(sql.FieldIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Attendance(sql.FieldNotIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtGT applies the GT predicate on the "updated_at" field.
 func UpdatedAtGT(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Attendance(sql.FieldGT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
 func UpdatedAtGTE(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Attendance(sql.FieldGTE(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLT applies the LT predicate on the "updated_at" field.
 func UpdatedAtLT(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Attendance(sql.FieldLT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Attendance(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
 func DeletedAtEQ(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
 func DeletedAtNEQ(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Attendance(sql.FieldNEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.Attendance(sql.FieldIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.Attendance(sql.FieldNotIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtGT applies the GT predicate on the "deleted_at" field.
 func DeletedAtGT(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Attendance(sql.FieldGT(FieldDeletedAt, v))
 }
 
 // DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
 func DeletedAtGTE(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Attendance(sql.FieldGTE(FieldDeletedAt, v))
 }
 
 // DeletedAtLT applies the LT predicate on the "deleted_at" field.
 func DeletedAtLT(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Attendance(sql.FieldLT(FieldDeletedAt, v))
 }
 
 // DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
 func DeletedAtLTE(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Attendance(sql.FieldLTE(FieldDeletedAt, v))
 }
 
 // DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
 func DeletedAtIsNil() predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.Attendance(sql.FieldIsNull(FieldDeletedAt))
 }
 
 // DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
 func DeletedAtNotNil() predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.Attendance(sql.FieldNotNull(FieldDeletedAt))
 }
 
 // CreatorIsNil applies the IsNil predicate on the "creator" field.
 func CreatorIsNil() predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCreator)))
-	})
+	return predicate.Attendance(sql.FieldIsNull(FieldCreator))
 }
 
 // CreatorNotNil applies the NotNil predicate on the "creator" field.
 func CreatorNotNil() predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCreator)))
-	})
+	return predicate.Attendance(sql.FieldNotNull(FieldCreator))
 }
 
 // LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
 func LastModifierIsNil() predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Attendance(sql.FieldIsNull(FieldLastModifier))
 }
 
 // LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
 func LastModifierNotNil() predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Attendance(sql.FieldNotNull(FieldLastModifier))
 }
 
 // RemarkEQ applies the EQ predicate on the "remark" field.
 func RemarkEQ(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldRemark, v))
 }
 
 // RemarkNEQ applies the NEQ predicate on the "remark" field.
 func RemarkNEQ(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRemark), v))
-	})
+	return predicate.Attendance(sql.FieldNEQ(FieldRemark, v))
 }
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRemark), v...))
-	})
+	return predicate.Attendance(sql.FieldIn(FieldRemark, vs...))
 }
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRemark), v...))
-	})
+	return predicate.Attendance(sql.FieldNotIn(FieldRemark, vs...))
 }
 
 // RemarkGT applies the GT predicate on the "remark" field.
 func RemarkGT(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRemark), v))
-	})
+	return predicate.Attendance(sql.FieldGT(FieldRemark, v))
 }
 
 // RemarkGTE applies the GTE predicate on the "remark" field.
 func RemarkGTE(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRemark), v))
-	})
+	return predicate.Attendance(sql.FieldGTE(FieldRemark, v))
 }
 
 // RemarkLT applies the LT predicate on the "remark" field.
 func RemarkLT(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRemark), v))
-	})
+	return predicate.Attendance(sql.FieldLT(FieldRemark, v))
 }
 
 // RemarkLTE applies the LTE predicate on the "remark" field.
 func RemarkLTE(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRemark), v))
-	})
+	return predicate.Attendance(sql.FieldLTE(FieldRemark, v))
 }
 
 // RemarkContains applies the Contains predicate on the "remark" field.
 func RemarkContains(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRemark), v))
-	})
+	return predicate.Attendance(sql.FieldContains(FieldRemark, v))
 }
 
 // RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
 func RemarkHasPrefix(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRemark), v))
-	})
+	return predicate.Attendance(sql.FieldHasPrefix(FieldRemark, v))
 }
 
 // RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
 func RemarkHasSuffix(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRemark), v))
-	})
+	return predicate.Attendance(sql.FieldHasSuffix(FieldRemark, v))
 }
 
 // RemarkIsNil applies the IsNil predicate on the "remark" field.
 func RemarkIsNil() predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRemark)))
-	})
+	return predicate.Attendance(sql.FieldIsNull(FieldRemark))
 }
 
 // RemarkNotNil applies the NotNil predicate on the "remark" field.
 func RemarkNotNil() predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRemark)))
-	})
+	return predicate.Attendance(sql.FieldNotNull(FieldRemark))
 }
 
 // RemarkEqualFold applies the EqualFold predicate on the "remark" field.
 func RemarkEqualFold(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRemark), v))
-	})
+	return predicate.Attendance(sql.FieldEqualFold(FieldRemark, v))
 }
 
 // RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
 func RemarkContainsFold(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
-	})
+	return predicate.Attendance(sql.FieldContainsFold(FieldRemark, v))
 }
 
 // StoreIDEQ applies the EQ predicate on the "store_id" field.
 func StoreIDEQ(v uint64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStoreID), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldStoreID, v))
 }
 
 // StoreIDNEQ applies the NEQ predicate on the "store_id" field.
 func StoreIDNEQ(v uint64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStoreID), v))
-	})
+	return predicate.Attendance(sql.FieldNEQ(FieldStoreID, v))
 }
 
 // StoreIDIn applies the In predicate on the "store_id" field.
 func StoreIDIn(vs ...uint64) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStoreID), v...))
-	})
+	return predicate.Attendance(sql.FieldIn(FieldStoreID, vs...))
 }
 
 // StoreIDNotIn applies the NotIn predicate on the "store_id" field.
 func StoreIDNotIn(vs ...uint64) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStoreID), v...))
-	})
+	return predicate.Attendance(sql.FieldNotIn(FieldStoreID, vs...))
 }
 
 // EmployeeIDEQ applies the EQ predicate on the "employee_id" field.
 func EmployeeIDEQ(v uint64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldEmployeeID, v))
 }
 
 // EmployeeIDNEQ applies the NEQ predicate on the "employee_id" field.
 func EmployeeIDNEQ(v uint64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEmployeeID), v))
-	})
+	return predicate.Attendance(sql.FieldNEQ(FieldEmployeeID, v))
 }
 
 // EmployeeIDIn applies the In predicate on the "employee_id" field.
 func EmployeeIDIn(vs ...uint64) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEmployeeID), v...))
-	})
+	return predicate.Attendance(sql.FieldIn(FieldEmployeeID, vs...))
 }
 
 // EmployeeIDNotIn applies the NotIn predicate on the "employee_id" field.
 func EmployeeIDNotIn(vs ...uint64) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEmployeeID), v...))
-	})
+	return predicate.Attendance(sql.FieldNotIn(FieldEmployeeID, vs...))
 }
 
 // InventoryIsNil applies the IsNil predicate on the "inventory" field.
 func InventoryIsNil() predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldInventory)))
-	})
+	return predicate.Attendance(sql.FieldIsNull(FieldInventory))
 }
 
 // InventoryNotNil applies the NotNil predicate on the "inventory" field.
 func InventoryNotNil() predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldInventory)))
-	})
+	return predicate.Attendance(sql.FieldNotNull(FieldInventory))
 }
 
 // PhotoEQ applies the EQ predicate on the "photo" field.
 func PhotoEQ(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPhoto), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldPhoto, v))
 }
 
 // PhotoNEQ applies the NEQ predicate on the "photo" field.
 func PhotoNEQ(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPhoto), v))
-	})
+	return predicate.Attendance(sql.FieldNEQ(FieldPhoto, v))
 }
 
 // PhotoIn applies the In predicate on the "photo" field.
 func PhotoIn(vs ...string) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldPhoto), v...))
-	})
+	return predicate.Attendance(sql.FieldIn(FieldPhoto, vs...))
 }
 
 // PhotoNotIn applies the NotIn predicate on the "photo" field.
 func PhotoNotIn(vs ...string) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldPhoto), v...))
-	})
+	return predicate.Attendance(sql.FieldNotIn(FieldPhoto, vs...))
 }
 
 // PhotoGT applies the GT predicate on the "photo" field.
 func PhotoGT(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldPhoto), v))
-	})
+	return predicate.Attendance(sql.FieldGT(FieldPhoto, v))
 }
 
 // PhotoGTE applies the GTE predicate on the "photo" field.
 func PhotoGTE(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldPhoto), v))
-	})
+	return predicate.Attendance(sql.FieldGTE(FieldPhoto, v))
 }
 
 // PhotoLT applies the LT predicate on the "photo" field.
 func PhotoLT(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldPhoto), v))
-	})
+	return predicate.Attendance(sql.FieldLT(FieldPhoto, v))
 }
 
 // PhotoLTE applies the LTE predicate on the "photo" field.
 func PhotoLTE(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldPhoto), v))
-	})
+	return predicate.Attendance(sql.FieldLTE(FieldPhoto, v))
 }
 
 // PhotoContains applies the Contains predicate on the "photo" field.
 func PhotoContains(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldPhoto), v))
-	})
+	return predicate.Attendance(sql.FieldContains(FieldPhoto, v))
 }
 
 // PhotoHasPrefix applies the HasPrefix predicate on the "photo" field.
 func PhotoHasPrefix(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldPhoto), v))
-	})
+	return predicate.Attendance(sql.FieldHasPrefix(FieldPhoto, v))
 }
 
 // PhotoHasSuffix applies the HasSuffix predicate on the "photo" field.
 func PhotoHasSuffix(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldPhoto), v))
-	})
+	return predicate.Attendance(sql.FieldHasSuffix(FieldPhoto, v))
 }
 
 // PhotoIsNil applies the IsNil predicate on the "photo" field.
 func PhotoIsNil() predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldPhoto)))
-	})
+	return predicate.Attendance(sql.FieldIsNull(FieldPhoto))
 }
 
 // PhotoNotNil applies the NotNil predicate on the "photo" field.
 func PhotoNotNil() predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldPhoto)))
-	})
+	return predicate.Attendance(sql.FieldNotNull(FieldPhoto))
 }
 
 // PhotoEqualFold applies the EqualFold predicate on the "photo" field.
 func PhotoEqualFold(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldPhoto), v))
-	})
+	return predicate.Attendance(sql.FieldEqualFold(FieldPhoto, v))
 }
 
 // PhotoContainsFold applies the ContainsFold predicate on the "photo" field.
 func PhotoContainsFold(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldPhoto), v))
-	})
+	return predicate.Attendance(sql.FieldContainsFold(FieldPhoto, v))
 }
 
 // DutyEQ applies the EQ predicate on the "duty" field.
 func DutyEQ(v bool) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDuty), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldDuty, v))
 }
 
 // DutyNEQ applies the NEQ predicate on the "duty" field.
 func DutyNEQ(v bool) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDuty), v))
-	})
+	return predicate.Attendance(sql.FieldNEQ(FieldDuty, v))
 }
 
 // DateEQ applies the EQ predicate on the "date" field.
 func DateEQ(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDate), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldDate, v))
 }
 
 // DateNEQ applies the NEQ predicate on the "date" field.
 func DateNEQ(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDate), v))
-	})
+	return predicate.Attendance(sql.FieldNEQ(FieldDate, v))
 }
 
 // DateIn applies the In predicate on the "date" field.
 func DateIn(vs ...time.Time) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDate), v...))
-	})
+	return predicate.Attendance(sql.FieldIn(FieldDate, vs...))
 }
 
 // DateNotIn applies the NotIn predicate on the "date" field.
 func DateNotIn(vs ...time.Time) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDate), v...))
-	})
+	return predicate.Attendance(sql.FieldNotIn(FieldDate, vs...))
 }
 
 // DateGT applies the GT predicate on the "date" field.
 func DateGT(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDate), v))
-	})
+	return predicate.Attendance(sql.FieldGT(FieldDate, v))
 }
 
 // DateGTE applies the GTE predicate on the "date" field.
 func DateGTE(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDate), v))
-	})
+	return predicate.Attendance(sql.FieldGTE(FieldDate, v))
 }
 
 // DateLT applies the LT predicate on the "date" field.
 func DateLT(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDate), v))
-	})
+	return predicate.Attendance(sql.FieldLT(FieldDate, v))
 }
 
 // DateLTE applies the LTE predicate on the "date" field.
 func DateLTE(v time.Time) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDate), v))
-	})
+	return predicate.Attendance(sql.FieldLTE(FieldDate, v))
 }
 
 // LngEQ applies the EQ predicate on the "lng" field.
 func LngEQ(v float64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLng), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldLng, v))
 }
 
 // LngNEQ applies the NEQ predicate on the "lng" field.
 func LngNEQ(v float64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldLng), v))
-	})
+	return predicate.Attendance(sql.FieldNEQ(FieldLng, v))
 }
 
 // LngIn applies the In predicate on the "lng" field.
 func LngIn(vs ...float64) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldLng), v...))
-	})
+	return predicate.Attendance(sql.FieldIn(FieldLng, vs...))
 }
 
 // LngNotIn applies the NotIn predicate on the "lng" field.
 func LngNotIn(vs ...float64) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldLng), v...))
-	})
+	return predicate.Attendance(sql.FieldNotIn(FieldLng, vs...))
 }
 
 // LngGT applies the GT predicate on the "lng" field.
 func LngGT(v float64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldLng), v))
-	})
+	return predicate.Attendance(sql.FieldGT(FieldLng, v))
 }
 
 // LngGTE applies the GTE predicate on the "lng" field.
 func LngGTE(v float64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldLng), v))
-	})
+	return predicate.Attendance(sql.FieldGTE(FieldLng, v))
 }
 
 // LngLT applies the LT predicate on the "lng" field.
 func LngLT(v float64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldLng), v))
-	})
+	return predicate.Attendance(sql.FieldLT(FieldLng, v))
 }
 
 // LngLTE applies the LTE predicate on the "lng" field.
 func LngLTE(v float64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldLng), v))
-	})
+	return predicate.Attendance(sql.FieldLTE(FieldLng, v))
 }
 
 // LngIsNil applies the IsNil predicate on the "lng" field.
 func LngIsNil() predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLng)))
-	})
+	return predicate.Attendance(sql.FieldIsNull(FieldLng))
 }
 
 // LngNotNil applies the NotNil predicate on the "lng" field.
 func LngNotNil() predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLng)))
-	})
+	return predicate.Attendance(sql.FieldNotNull(FieldLng))
 }
 
 // LatEQ applies the EQ predicate on the "lat" field.
 func LatEQ(v float64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLat), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldLat, v))
 }
 
 // LatNEQ applies the NEQ predicate on the "lat" field.
 func LatNEQ(v float64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldLat), v))
-	})
+	return predicate.Attendance(sql.FieldNEQ(FieldLat, v))
 }
 
 // LatIn applies the In predicate on the "lat" field.
 func LatIn(vs ...float64) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldLat), v...))
-	})
+	return predicate.Attendance(sql.FieldIn(FieldLat, vs...))
 }
 
 // LatNotIn applies the NotIn predicate on the "lat" field.
 func LatNotIn(vs ...float64) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldLat), v...))
-	})
+	return predicate.Attendance(sql.FieldNotIn(FieldLat, vs...))
 }
 
 // LatGT applies the GT predicate on the "lat" field.
 func LatGT(v float64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldLat), v))
-	})
+	return predicate.Attendance(sql.FieldGT(FieldLat, v))
 }
 
 // LatGTE applies the GTE predicate on the "lat" field.
 func LatGTE(v float64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldLat), v))
-	})
+	return predicate.Attendance(sql.FieldGTE(FieldLat, v))
 }
 
 // LatLT applies the LT predicate on the "lat" field.
 func LatLT(v float64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldLat), v))
-	})
+	return predicate.Attendance(sql.FieldLT(FieldLat, v))
 }
 
 // LatLTE applies the LTE predicate on the "lat" field.
 func LatLTE(v float64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldLat), v))
-	})
+	return predicate.Attendance(sql.FieldLTE(FieldLat, v))
 }
 
 // LatIsNil applies the IsNil predicate on the "lat" field.
 func LatIsNil() predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLat)))
-	})
+	return predicate.Attendance(sql.FieldIsNull(FieldLat))
 }
 
 // LatNotNil applies the NotNil predicate on the "lat" field.
 func LatNotNil() predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLat)))
-	})
+	return predicate.Attendance(sql.FieldNotNull(FieldLat))
 }
 
 // AddressEQ applies the EQ predicate on the "address" field.
 func AddressEQ(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAddress), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldAddress, v))
 }
 
 // AddressNEQ applies the NEQ predicate on the "address" field.
 func AddressNEQ(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAddress), v))
-	})
+	return predicate.Attendance(sql.FieldNEQ(FieldAddress, v))
 }
 
 // AddressIn applies the In predicate on the "address" field.
 func AddressIn(vs ...string) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAddress), v...))
-	})
+	return predicate.Attendance(sql.FieldIn(FieldAddress, vs...))
 }
 
 // AddressNotIn applies the NotIn predicate on the "address" field.
 func AddressNotIn(vs ...string) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAddress), v...))
-	})
+	return predicate.Attendance(sql.FieldNotIn(FieldAddress, vs...))
 }
 
 // AddressGT applies the GT predicate on the "address" field.
 func AddressGT(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAddress), v))
-	})
+	return predicate.Attendance(sql.FieldGT(FieldAddress, v))
 }
 
 // AddressGTE applies the GTE predicate on the "address" field.
 func AddressGTE(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAddress), v))
-	})
+	return predicate.Attendance(sql.FieldGTE(FieldAddress, v))
 }
 
 // AddressLT applies the LT predicate on the "address" field.
 func AddressLT(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAddress), v))
-	})
+	return predicate.Attendance(sql.FieldLT(FieldAddress, v))
 }
 
 // AddressLTE applies the LTE predicate on the "address" field.
 func AddressLTE(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAddress), v))
-	})
+	return predicate.Attendance(sql.FieldLTE(FieldAddress, v))
 }
 
 // AddressContains applies the Contains predicate on the "address" field.
 func AddressContains(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldAddress), v))
-	})
+	return predicate.Attendance(sql.FieldContains(FieldAddress, v))
 }
 
 // AddressHasPrefix applies the HasPrefix predicate on the "address" field.
 func AddressHasPrefix(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldAddress), v))
-	})
+	return predicate.Attendance(sql.FieldHasPrefix(FieldAddress, v))
 }
 
 // AddressHasSuffix applies the HasSuffix predicate on the "address" field.
 func AddressHasSuffix(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldAddress), v))
-	})
+	return predicate.Attendance(sql.FieldHasSuffix(FieldAddress, v))
 }
 
 // AddressIsNil applies the IsNil predicate on the "address" field.
 func AddressIsNil() predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldAddress)))
-	})
+	return predicate.Attendance(sql.FieldIsNull(FieldAddress))
 }
 
 // AddressNotNil applies the NotNil predicate on the "address" field.
 func AddressNotNil() predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldAddress)))
-	})
+	return predicate.Attendance(sql.FieldNotNull(FieldAddress))
 }
 
 // AddressEqualFold applies the EqualFold predicate on the "address" field.
 func AddressEqualFold(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldAddress), v))
-	})
+	return predicate.Attendance(sql.FieldEqualFold(FieldAddress, v))
 }
 
 // AddressContainsFold applies the ContainsFold predicate on the "address" field.
 func AddressContainsFold(v string) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldAddress), v))
-	})
+	return predicate.Attendance(sql.FieldContainsFold(FieldAddress, v))
 }
 
 // DistanceEQ applies the EQ predicate on the "distance" field.
 func DistanceEQ(v float64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDistance), v))
-	})
+	return predicate.Attendance(sql.FieldEQ(FieldDistance, v))
 }
 
 // DistanceNEQ applies the NEQ predicate on the "distance" field.
 func DistanceNEQ(v float64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDistance), v))
-	})
+	return predicate.Attendance(sql.FieldNEQ(FieldDistance, v))
 }
 
 // DistanceIn applies the In predicate on the "distance" field.
 func DistanceIn(vs ...float64) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDistance), v...))
-	})
+	return predicate.Attendance(sql.FieldIn(FieldDistance, vs...))
 }
 
 // DistanceNotIn applies the NotIn predicate on the "distance" field.
 func DistanceNotIn(vs ...float64) predicate.Attendance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDistance), v...))
-	})
+	return predicate.Attendance(sql.FieldNotIn(FieldDistance, vs...))
 }
 
 // DistanceGT applies the GT predicate on the "distance" field.
 func DistanceGT(v float64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDistance), v))
-	})
+	return predicate.Attendance(sql.FieldGT(FieldDistance, v))
 }
 
 // DistanceGTE applies the GTE predicate on the "distance" field.
 func DistanceGTE(v float64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDistance), v))
-	})
+	return predicate.Attendance(sql.FieldGTE(FieldDistance, v))
 }
 
 // DistanceLT applies the LT predicate on the "distance" field.
 func DistanceLT(v float64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDistance), v))
-	})
+	return predicate.Attendance(sql.FieldLT(FieldDistance, v))
 }
 
 // DistanceLTE applies the LTE predicate on the "distance" field.
 func DistanceLTE(v float64) predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDistance), v))
-	})
+	return predicate.Attendance(sql.FieldLTE(FieldDistance, v))
 }
 
 // DistanceIsNil applies the IsNil predicate on the "distance" field.
 func DistanceIsNil() predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDistance)))
-	})
+	return predicate.Attendance(sql.FieldIsNull(FieldDistance))
 }
 
 // DistanceNotNil applies the NotNil predicate on the "distance" field.
 func DistanceNotNil() predicate.Attendance {
-	return predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDistance)))
-	})
+	return predicate.Attendance(sql.FieldNotNull(FieldDistance))
 }
 
 // HasStore applies the HasEdge predicate on the "store" edge.
@@ -1148,7 +750,6 @@ func HasStore() predicate.Attendance {
 	return predicate.Attendance(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StoreTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, StoreTable, StoreColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1176,7 +777,6 @@ func HasEmployee() predicate.Attendance {
 	return predicate.Attendance(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EmployeeTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, EmployeeTable, EmployeeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

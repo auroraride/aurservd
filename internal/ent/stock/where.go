@@ -12,1471 +12,937 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.Stock(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.Stock(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.Stock(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.Stock(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.Stock(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.Stock(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.Stock(sql.FieldLTE(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
 func DeletedAt(v time.Time) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
 func Remark(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldRemark, v))
 }
 
 // CityID applies equality check predicate on the "city_id" field. It's identical to CityIDEQ.
 func CityID(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCityID), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldCityID, v))
 }
 
 // SubscribeID applies equality check predicate on the "subscribe_id" field. It's identical to SubscribeIDEQ.
 func SubscribeID(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldSubscribeID, v))
 }
 
 // EbikeID applies equality check predicate on the "ebike_id" field. It's identical to EbikeIDEQ.
 func EbikeID(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEbikeID), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldEbikeID, v))
 }
 
 // BrandID applies equality check predicate on the "brand_id" field. It's identical to BrandIDEQ.
 func BrandID(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBrandID), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldBrandID, v))
 }
 
 // ParentID applies equality check predicate on the "parent_id" field. It's identical to ParentIDEQ.
 func ParentID(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldParentID), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldParentID, v))
 }
 
 // Sn applies equality check predicate on the "sn" field. It's identical to SnEQ.
 func Sn(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSn), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldSn, v))
 }
 
 // Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
 func Type(v uint8) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldType), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldType, v))
 }
 
 // StoreID applies equality check predicate on the "store_id" field. It's identical to StoreIDEQ.
 func StoreID(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStoreID), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldStoreID, v))
 }
 
 // CabinetID applies equality check predicate on the "cabinet_id" field. It's identical to CabinetIDEQ.
 func CabinetID(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCabinetID), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldCabinetID, v))
 }
 
 // RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
 func RiderID(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRiderID), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldRiderID, v))
 }
 
 // EmployeeID applies equality check predicate on the "employee_id" field. It's identical to EmployeeIDEQ.
 func EmployeeID(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldEmployeeID, v))
 }
 
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldName, v))
 }
 
 // Model applies equality check predicate on the "model" field. It's identical to ModelEQ.
 func Model(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldModel), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldModel, v))
 }
 
 // Num applies equality check predicate on the "num" field. It's identical to NumEQ.
 func Num(v int) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldNum), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldNum, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
 func CreatedAtNEQ(v time.Time) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Stock(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Stock(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Stock(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtGT applies the GT predicate on the "created_at" field.
 func CreatedAtGT(v time.Time) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Stock(sql.FieldGT(FieldCreatedAt, v))
 }
 
 // CreatedAtGTE applies the GTE predicate on the "created_at" field.
 func CreatedAtGTE(v time.Time) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Stock(sql.FieldGTE(FieldCreatedAt, v))
 }
 
 // CreatedAtLT applies the LT predicate on the "created_at" field.
 func CreatedAtLT(v time.Time) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Stock(sql.FieldLT(FieldCreatedAt, v))
 }
 
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Stock(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
 func UpdatedAtEQ(v time.Time) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
 func UpdatedAtNEQ(v time.Time) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Stock(sql.FieldNEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Stock(sql.FieldIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Stock(sql.FieldNotIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtGT applies the GT predicate on the "updated_at" field.
 func UpdatedAtGT(v time.Time) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Stock(sql.FieldGT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
 func UpdatedAtGTE(v time.Time) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Stock(sql.FieldGTE(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLT applies the LT predicate on the "updated_at" field.
 func UpdatedAtLT(v time.Time) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Stock(sql.FieldLT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Stock(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
 func DeletedAtEQ(v time.Time) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
 func DeletedAtNEQ(v time.Time) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Stock(sql.FieldNEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.Stock(sql.FieldIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.Stock(sql.FieldNotIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtGT applies the GT predicate on the "deleted_at" field.
 func DeletedAtGT(v time.Time) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Stock(sql.FieldGT(FieldDeletedAt, v))
 }
 
 // DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
 func DeletedAtGTE(v time.Time) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Stock(sql.FieldGTE(FieldDeletedAt, v))
 }
 
 // DeletedAtLT applies the LT predicate on the "deleted_at" field.
 func DeletedAtLT(v time.Time) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Stock(sql.FieldLT(FieldDeletedAt, v))
 }
 
 // DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
 func DeletedAtLTE(v time.Time) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Stock(sql.FieldLTE(FieldDeletedAt, v))
 }
 
 // DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
 func DeletedAtIsNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.Stock(sql.FieldIsNull(FieldDeletedAt))
 }
 
 // DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
 func DeletedAtNotNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.Stock(sql.FieldNotNull(FieldDeletedAt))
 }
 
 // CreatorIsNil applies the IsNil predicate on the "creator" field.
 func CreatorIsNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCreator)))
-	})
+	return predicate.Stock(sql.FieldIsNull(FieldCreator))
 }
 
 // CreatorNotNil applies the NotNil predicate on the "creator" field.
 func CreatorNotNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCreator)))
-	})
+	return predicate.Stock(sql.FieldNotNull(FieldCreator))
 }
 
 // LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
 func LastModifierIsNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Stock(sql.FieldIsNull(FieldLastModifier))
 }
 
 // LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
 func LastModifierNotNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Stock(sql.FieldNotNull(FieldLastModifier))
 }
 
 // RemarkEQ applies the EQ predicate on the "remark" field.
 func RemarkEQ(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldRemark, v))
 }
 
 // RemarkNEQ applies the NEQ predicate on the "remark" field.
 func RemarkNEQ(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRemark), v))
-	})
+	return predicate.Stock(sql.FieldNEQ(FieldRemark, v))
 }
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRemark), v...))
-	})
+	return predicate.Stock(sql.FieldIn(FieldRemark, vs...))
 }
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRemark), v...))
-	})
+	return predicate.Stock(sql.FieldNotIn(FieldRemark, vs...))
 }
 
 // RemarkGT applies the GT predicate on the "remark" field.
 func RemarkGT(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRemark), v))
-	})
+	return predicate.Stock(sql.FieldGT(FieldRemark, v))
 }
 
 // RemarkGTE applies the GTE predicate on the "remark" field.
 func RemarkGTE(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRemark), v))
-	})
+	return predicate.Stock(sql.FieldGTE(FieldRemark, v))
 }
 
 // RemarkLT applies the LT predicate on the "remark" field.
 func RemarkLT(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRemark), v))
-	})
+	return predicate.Stock(sql.FieldLT(FieldRemark, v))
 }
 
 // RemarkLTE applies the LTE predicate on the "remark" field.
 func RemarkLTE(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRemark), v))
-	})
+	return predicate.Stock(sql.FieldLTE(FieldRemark, v))
 }
 
 // RemarkContains applies the Contains predicate on the "remark" field.
 func RemarkContains(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRemark), v))
-	})
+	return predicate.Stock(sql.FieldContains(FieldRemark, v))
 }
 
 // RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
 func RemarkHasPrefix(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRemark), v))
-	})
+	return predicate.Stock(sql.FieldHasPrefix(FieldRemark, v))
 }
 
 // RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
 func RemarkHasSuffix(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRemark), v))
-	})
+	return predicate.Stock(sql.FieldHasSuffix(FieldRemark, v))
 }
 
 // RemarkIsNil applies the IsNil predicate on the "remark" field.
 func RemarkIsNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRemark)))
-	})
+	return predicate.Stock(sql.FieldIsNull(FieldRemark))
 }
 
 // RemarkNotNil applies the NotNil predicate on the "remark" field.
 func RemarkNotNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRemark)))
-	})
+	return predicate.Stock(sql.FieldNotNull(FieldRemark))
 }
 
 // RemarkEqualFold applies the EqualFold predicate on the "remark" field.
 func RemarkEqualFold(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRemark), v))
-	})
+	return predicate.Stock(sql.FieldEqualFold(FieldRemark, v))
 }
 
 // RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
 func RemarkContainsFold(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
-	})
+	return predicate.Stock(sql.FieldContainsFold(FieldRemark, v))
 }
 
 // CityIDEQ applies the EQ predicate on the "city_id" field.
 func CityIDEQ(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCityID), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldCityID, v))
 }
 
 // CityIDNEQ applies the NEQ predicate on the "city_id" field.
 func CityIDNEQ(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCityID), v))
-	})
+	return predicate.Stock(sql.FieldNEQ(FieldCityID, v))
 }
 
 // CityIDIn applies the In predicate on the "city_id" field.
 func CityIDIn(vs ...uint64) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCityID), v...))
-	})
+	return predicate.Stock(sql.FieldIn(FieldCityID, vs...))
 }
 
 // CityIDNotIn applies the NotIn predicate on the "city_id" field.
 func CityIDNotIn(vs ...uint64) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCityID), v...))
-	})
+	return predicate.Stock(sql.FieldNotIn(FieldCityID, vs...))
 }
 
 // CityIDIsNil applies the IsNil predicate on the "city_id" field.
 func CityIDIsNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCityID)))
-	})
+	return predicate.Stock(sql.FieldIsNull(FieldCityID))
 }
 
 // CityIDNotNil applies the NotNil predicate on the "city_id" field.
 func CityIDNotNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCityID)))
-	})
+	return predicate.Stock(sql.FieldNotNull(FieldCityID))
 }
 
 // SubscribeIDEQ applies the EQ predicate on the "subscribe_id" field.
 func SubscribeIDEQ(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldSubscribeID, v))
 }
 
 // SubscribeIDNEQ applies the NEQ predicate on the "subscribe_id" field.
 func SubscribeIDNEQ(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.Stock(sql.FieldNEQ(FieldSubscribeID, v))
 }
 
 // SubscribeIDIn applies the In predicate on the "subscribe_id" field.
 func SubscribeIDIn(vs ...uint64) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldSubscribeID), v...))
-	})
+	return predicate.Stock(sql.FieldIn(FieldSubscribeID, vs...))
 }
 
 // SubscribeIDNotIn applies the NotIn predicate on the "subscribe_id" field.
 func SubscribeIDNotIn(vs ...uint64) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldSubscribeID), v...))
-	})
+	return predicate.Stock(sql.FieldNotIn(FieldSubscribeID, vs...))
 }
 
 // SubscribeIDIsNil applies the IsNil predicate on the "subscribe_id" field.
 func SubscribeIDIsNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldSubscribeID)))
-	})
+	return predicate.Stock(sql.FieldIsNull(FieldSubscribeID))
 }
 
 // SubscribeIDNotNil applies the NotNil predicate on the "subscribe_id" field.
 func SubscribeIDNotNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldSubscribeID)))
-	})
+	return predicate.Stock(sql.FieldNotNull(FieldSubscribeID))
 }
 
 // EbikeIDEQ applies the EQ predicate on the "ebike_id" field.
 func EbikeIDEQ(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEbikeID), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldEbikeID, v))
 }
 
 // EbikeIDNEQ applies the NEQ predicate on the "ebike_id" field.
 func EbikeIDNEQ(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEbikeID), v))
-	})
+	return predicate.Stock(sql.FieldNEQ(FieldEbikeID, v))
 }
 
 // EbikeIDIn applies the In predicate on the "ebike_id" field.
 func EbikeIDIn(vs ...uint64) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEbikeID), v...))
-	})
+	return predicate.Stock(sql.FieldIn(FieldEbikeID, vs...))
 }
 
 // EbikeIDNotIn applies the NotIn predicate on the "ebike_id" field.
 func EbikeIDNotIn(vs ...uint64) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEbikeID), v...))
-	})
+	return predicate.Stock(sql.FieldNotIn(FieldEbikeID, vs...))
 }
 
 // EbikeIDIsNil applies the IsNil predicate on the "ebike_id" field.
 func EbikeIDIsNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldEbikeID)))
-	})
+	return predicate.Stock(sql.FieldIsNull(FieldEbikeID))
 }
 
 // EbikeIDNotNil applies the NotNil predicate on the "ebike_id" field.
 func EbikeIDNotNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldEbikeID)))
-	})
+	return predicate.Stock(sql.FieldNotNull(FieldEbikeID))
 }
 
 // BrandIDEQ applies the EQ predicate on the "brand_id" field.
 func BrandIDEQ(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBrandID), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldBrandID, v))
 }
 
 // BrandIDNEQ applies the NEQ predicate on the "brand_id" field.
 func BrandIDNEQ(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBrandID), v))
-	})
+	return predicate.Stock(sql.FieldNEQ(FieldBrandID, v))
 }
 
 // BrandIDIn applies the In predicate on the "brand_id" field.
 func BrandIDIn(vs ...uint64) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldBrandID), v...))
-	})
+	return predicate.Stock(sql.FieldIn(FieldBrandID, vs...))
 }
 
 // BrandIDNotIn applies the NotIn predicate on the "brand_id" field.
 func BrandIDNotIn(vs ...uint64) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldBrandID), v...))
-	})
+	return predicate.Stock(sql.FieldNotIn(FieldBrandID, vs...))
 }
 
 // BrandIDIsNil applies the IsNil predicate on the "brand_id" field.
 func BrandIDIsNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldBrandID)))
-	})
+	return predicate.Stock(sql.FieldIsNull(FieldBrandID))
 }
 
 // BrandIDNotNil applies the NotNil predicate on the "brand_id" field.
 func BrandIDNotNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldBrandID)))
-	})
+	return predicate.Stock(sql.FieldNotNull(FieldBrandID))
 }
 
 // ParentIDEQ applies the EQ predicate on the "parent_id" field.
 func ParentIDEQ(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldParentID), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldParentID, v))
 }
 
 // ParentIDNEQ applies the NEQ predicate on the "parent_id" field.
 func ParentIDNEQ(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldParentID), v))
-	})
+	return predicate.Stock(sql.FieldNEQ(FieldParentID, v))
 }
 
 // ParentIDIn applies the In predicate on the "parent_id" field.
 func ParentIDIn(vs ...uint64) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldParentID), v...))
-	})
+	return predicate.Stock(sql.FieldIn(FieldParentID, vs...))
 }
 
 // ParentIDNotIn applies the NotIn predicate on the "parent_id" field.
 func ParentIDNotIn(vs ...uint64) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldParentID), v...))
-	})
+	return predicate.Stock(sql.FieldNotIn(FieldParentID, vs...))
 }
 
 // ParentIDIsNil applies the IsNil predicate on the "parent_id" field.
 func ParentIDIsNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldParentID)))
-	})
+	return predicate.Stock(sql.FieldIsNull(FieldParentID))
 }
 
 // ParentIDNotNil applies the NotNil predicate on the "parent_id" field.
 func ParentIDNotNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldParentID)))
-	})
+	return predicate.Stock(sql.FieldNotNull(FieldParentID))
 }
 
 // SnEQ applies the EQ predicate on the "sn" field.
 func SnEQ(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSn), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldSn, v))
 }
 
 // SnNEQ applies the NEQ predicate on the "sn" field.
 func SnNEQ(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSn), v))
-	})
+	return predicate.Stock(sql.FieldNEQ(FieldSn, v))
 }
 
 // SnIn applies the In predicate on the "sn" field.
 func SnIn(vs ...string) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldSn), v...))
-	})
+	return predicate.Stock(sql.FieldIn(FieldSn, vs...))
 }
 
 // SnNotIn applies the NotIn predicate on the "sn" field.
 func SnNotIn(vs ...string) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldSn), v...))
-	})
+	return predicate.Stock(sql.FieldNotIn(FieldSn, vs...))
 }
 
 // SnGT applies the GT predicate on the "sn" field.
 func SnGT(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldSn), v))
-	})
+	return predicate.Stock(sql.FieldGT(FieldSn, v))
 }
 
 // SnGTE applies the GTE predicate on the "sn" field.
 func SnGTE(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldSn), v))
-	})
+	return predicate.Stock(sql.FieldGTE(FieldSn, v))
 }
 
 // SnLT applies the LT predicate on the "sn" field.
 func SnLT(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldSn), v))
-	})
+	return predicate.Stock(sql.FieldLT(FieldSn, v))
 }
 
 // SnLTE applies the LTE predicate on the "sn" field.
 func SnLTE(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldSn), v))
-	})
+	return predicate.Stock(sql.FieldLTE(FieldSn, v))
 }
 
 // SnContains applies the Contains predicate on the "sn" field.
 func SnContains(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldSn), v))
-	})
+	return predicate.Stock(sql.FieldContains(FieldSn, v))
 }
 
 // SnHasPrefix applies the HasPrefix predicate on the "sn" field.
 func SnHasPrefix(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldSn), v))
-	})
+	return predicate.Stock(sql.FieldHasPrefix(FieldSn, v))
 }
 
 // SnHasSuffix applies the HasSuffix predicate on the "sn" field.
 func SnHasSuffix(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldSn), v))
-	})
+	return predicate.Stock(sql.FieldHasSuffix(FieldSn, v))
 }
 
 // SnEqualFold applies the EqualFold predicate on the "sn" field.
 func SnEqualFold(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldSn), v))
-	})
+	return predicate.Stock(sql.FieldEqualFold(FieldSn, v))
 }
 
 // SnContainsFold applies the ContainsFold predicate on the "sn" field.
 func SnContainsFold(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldSn), v))
-	})
+	return predicate.Stock(sql.FieldContainsFold(FieldSn, v))
 }
 
 // TypeEQ applies the EQ predicate on the "type" field.
 func TypeEQ(v uint8) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldType), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldType, v))
 }
 
 // TypeNEQ applies the NEQ predicate on the "type" field.
 func TypeNEQ(v uint8) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldType), v))
-	})
+	return predicate.Stock(sql.FieldNEQ(FieldType, v))
 }
 
 // TypeIn applies the In predicate on the "type" field.
 func TypeIn(vs ...uint8) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldType), v...))
-	})
+	return predicate.Stock(sql.FieldIn(FieldType, vs...))
 }
 
 // TypeNotIn applies the NotIn predicate on the "type" field.
 func TypeNotIn(vs ...uint8) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldType), v...))
-	})
+	return predicate.Stock(sql.FieldNotIn(FieldType, vs...))
 }
 
 // TypeGT applies the GT predicate on the "type" field.
 func TypeGT(v uint8) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldType), v))
-	})
+	return predicate.Stock(sql.FieldGT(FieldType, v))
 }
 
 // TypeGTE applies the GTE predicate on the "type" field.
 func TypeGTE(v uint8) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldType), v))
-	})
+	return predicate.Stock(sql.FieldGTE(FieldType, v))
 }
 
 // TypeLT applies the LT predicate on the "type" field.
 func TypeLT(v uint8) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldType), v))
-	})
+	return predicate.Stock(sql.FieldLT(FieldType, v))
 }
 
 // TypeLTE applies the LTE predicate on the "type" field.
 func TypeLTE(v uint8) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldType), v))
-	})
+	return predicate.Stock(sql.FieldLTE(FieldType, v))
 }
 
 // StoreIDEQ applies the EQ predicate on the "store_id" field.
 func StoreIDEQ(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStoreID), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldStoreID, v))
 }
 
 // StoreIDNEQ applies the NEQ predicate on the "store_id" field.
 func StoreIDNEQ(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStoreID), v))
-	})
+	return predicate.Stock(sql.FieldNEQ(FieldStoreID, v))
 }
 
 // StoreIDIn applies the In predicate on the "store_id" field.
 func StoreIDIn(vs ...uint64) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStoreID), v...))
-	})
+	return predicate.Stock(sql.FieldIn(FieldStoreID, vs...))
 }
 
 // StoreIDNotIn applies the NotIn predicate on the "store_id" field.
 func StoreIDNotIn(vs ...uint64) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStoreID), v...))
-	})
+	return predicate.Stock(sql.FieldNotIn(FieldStoreID, vs...))
 }
 
 // StoreIDIsNil applies the IsNil predicate on the "store_id" field.
 func StoreIDIsNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldStoreID)))
-	})
+	return predicate.Stock(sql.FieldIsNull(FieldStoreID))
 }
 
 // StoreIDNotNil applies the NotNil predicate on the "store_id" field.
 func StoreIDNotNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldStoreID)))
-	})
+	return predicate.Stock(sql.FieldNotNull(FieldStoreID))
 }
 
 // CabinetIDEQ applies the EQ predicate on the "cabinet_id" field.
 func CabinetIDEQ(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCabinetID), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldCabinetID, v))
 }
 
 // CabinetIDNEQ applies the NEQ predicate on the "cabinet_id" field.
 func CabinetIDNEQ(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCabinetID), v))
-	})
+	return predicate.Stock(sql.FieldNEQ(FieldCabinetID, v))
 }
 
 // CabinetIDIn applies the In predicate on the "cabinet_id" field.
 func CabinetIDIn(vs ...uint64) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCabinetID), v...))
-	})
+	return predicate.Stock(sql.FieldIn(FieldCabinetID, vs...))
 }
 
 // CabinetIDNotIn applies the NotIn predicate on the "cabinet_id" field.
 func CabinetIDNotIn(vs ...uint64) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCabinetID), v...))
-	})
+	return predicate.Stock(sql.FieldNotIn(FieldCabinetID, vs...))
 }
 
 // CabinetIDIsNil applies the IsNil predicate on the "cabinet_id" field.
 func CabinetIDIsNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCabinetID)))
-	})
+	return predicate.Stock(sql.FieldIsNull(FieldCabinetID))
 }
 
 // CabinetIDNotNil applies the NotNil predicate on the "cabinet_id" field.
 func CabinetIDNotNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCabinetID)))
-	})
+	return predicate.Stock(sql.FieldNotNull(FieldCabinetID))
 }
 
 // RiderIDEQ applies the EQ predicate on the "rider_id" field.
 func RiderIDEQ(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRiderID), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldRiderID, v))
 }
 
 // RiderIDNEQ applies the NEQ predicate on the "rider_id" field.
 func RiderIDNEQ(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRiderID), v))
-	})
+	return predicate.Stock(sql.FieldNEQ(FieldRiderID, v))
 }
 
 // RiderIDIn applies the In predicate on the "rider_id" field.
 func RiderIDIn(vs ...uint64) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRiderID), v...))
-	})
+	return predicate.Stock(sql.FieldIn(FieldRiderID, vs...))
 }
 
 // RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
 func RiderIDNotIn(vs ...uint64) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRiderID), v...))
-	})
+	return predicate.Stock(sql.FieldNotIn(FieldRiderID, vs...))
 }
 
 // RiderIDIsNil applies the IsNil predicate on the "rider_id" field.
 func RiderIDIsNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRiderID)))
-	})
+	return predicate.Stock(sql.FieldIsNull(FieldRiderID))
 }
 
 // RiderIDNotNil applies the NotNil predicate on the "rider_id" field.
 func RiderIDNotNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRiderID)))
-	})
+	return predicate.Stock(sql.FieldNotNull(FieldRiderID))
 }
 
 // EmployeeIDEQ applies the EQ predicate on the "employee_id" field.
 func EmployeeIDEQ(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldEmployeeID, v))
 }
 
 // EmployeeIDNEQ applies the NEQ predicate on the "employee_id" field.
 func EmployeeIDNEQ(v uint64) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEmployeeID), v))
-	})
+	return predicate.Stock(sql.FieldNEQ(FieldEmployeeID, v))
 }
 
 // EmployeeIDIn applies the In predicate on the "employee_id" field.
 func EmployeeIDIn(vs ...uint64) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEmployeeID), v...))
-	})
+	return predicate.Stock(sql.FieldIn(FieldEmployeeID, vs...))
 }
 
 // EmployeeIDNotIn applies the NotIn predicate on the "employee_id" field.
 func EmployeeIDNotIn(vs ...uint64) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEmployeeID), v...))
-	})
+	return predicate.Stock(sql.FieldNotIn(FieldEmployeeID, vs...))
 }
 
 // EmployeeIDIsNil applies the IsNil predicate on the "employee_id" field.
 func EmployeeIDIsNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldEmployeeID)))
-	})
+	return predicate.Stock(sql.FieldIsNull(FieldEmployeeID))
 }
 
 // EmployeeIDNotNil applies the NotNil predicate on the "employee_id" field.
 func EmployeeIDNotNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldEmployeeID)))
-	})
+	return predicate.Stock(sql.FieldNotNull(FieldEmployeeID))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldName, v))
 }
 
 // NameNEQ applies the NEQ predicate on the "name" field.
 func NameNEQ(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldName), v))
-	})
+	return predicate.Stock(sql.FieldNEQ(FieldName, v))
 }
 
 // NameIn applies the In predicate on the "name" field.
 func NameIn(vs ...string) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldName), v...))
-	})
+	return predicate.Stock(sql.FieldIn(FieldName, vs...))
 }
 
 // NameNotIn applies the NotIn predicate on the "name" field.
 func NameNotIn(vs ...string) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldName), v...))
-	})
+	return predicate.Stock(sql.FieldNotIn(FieldName, vs...))
 }
 
 // NameGT applies the GT predicate on the "name" field.
 func NameGT(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldName), v))
-	})
+	return predicate.Stock(sql.FieldGT(FieldName, v))
 }
 
 // NameGTE applies the GTE predicate on the "name" field.
 func NameGTE(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldName), v))
-	})
+	return predicate.Stock(sql.FieldGTE(FieldName, v))
 }
 
 // NameLT applies the LT predicate on the "name" field.
 func NameLT(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldName), v))
-	})
+	return predicate.Stock(sql.FieldLT(FieldName, v))
 }
 
 // NameLTE applies the LTE predicate on the "name" field.
 func NameLTE(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldName), v))
-	})
+	return predicate.Stock(sql.FieldLTE(FieldName, v))
 }
 
 // NameContains applies the Contains predicate on the "name" field.
 func NameContains(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldName), v))
-	})
+	return predicate.Stock(sql.FieldContains(FieldName, v))
 }
 
 // NameHasPrefix applies the HasPrefix predicate on the "name" field.
 func NameHasPrefix(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldName), v))
-	})
+	return predicate.Stock(sql.FieldHasPrefix(FieldName, v))
 }
 
 // NameHasSuffix applies the HasSuffix predicate on the "name" field.
 func NameHasSuffix(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldName), v))
-	})
+	return predicate.Stock(sql.FieldHasSuffix(FieldName, v))
 }
 
 // NameEqualFold applies the EqualFold predicate on the "name" field.
 func NameEqualFold(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldName), v))
-	})
+	return predicate.Stock(sql.FieldEqualFold(FieldName, v))
 }
 
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldName), v))
-	})
+	return predicate.Stock(sql.FieldContainsFold(FieldName, v))
 }
 
 // ModelEQ applies the EQ predicate on the "model" field.
 func ModelEQ(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldModel), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldModel, v))
 }
 
 // ModelNEQ applies the NEQ predicate on the "model" field.
 func ModelNEQ(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldModel), v))
-	})
+	return predicate.Stock(sql.FieldNEQ(FieldModel, v))
 }
 
 // ModelIn applies the In predicate on the "model" field.
 func ModelIn(vs ...string) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldModel), v...))
-	})
+	return predicate.Stock(sql.FieldIn(FieldModel, vs...))
 }
 
 // ModelNotIn applies the NotIn predicate on the "model" field.
 func ModelNotIn(vs ...string) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldModel), v...))
-	})
+	return predicate.Stock(sql.FieldNotIn(FieldModel, vs...))
 }
 
 // ModelGT applies the GT predicate on the "model" field.
 func ModelGT(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldModel), v))
-	})
+	return predicate.Stock(sql.FieldGT(FieldModel, v))
 }
 
 // ModelGTE applies the GTE predicate on the "model" field.
 func ModelGTE(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldModel), v))
-	})
+	return predicate.Stock(sql.FieldGTE(FieldModel, v))
 }
 
 // ModelLT applies the LT predicate on the "model" field.
 func ModelLT(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldModel), v))
-	})
+	return predicate.Stock(sql.FieldLT(FieldModel, v))
 }
 
 // ModelLTE applies the LTE predicate on the "model" field.
 func ModelLTE(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldModel), v))
-	})
+	return predicate.Stock(sql.FieldLTE(FieldModel, v))
 }
 
 // ModelContains applies the Contains predicate on the "model" field.
 func ModelContains(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldModel), v))
-	})
+	return predicate.Stock(sql.FieldContains(FieldModel, v))
 }
 
 // ModelHasPrefix applies the HasPrefix predicate on the "model" field.
 func ModelHasPrefix(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldModel), v))
-	})
+	return predicate.Stock(sql.FieldHasPrefix(FieldModel, v))
 }
 
 // ModelHasSuffix applies the HasSuffix predicate on the "model" field.
 func ModelHasSuffix(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldModel), v))
-	})
+	return predicate.Stock(sql.FieldHasSuffix(FieldModel, v))
 }
 
 // ModelIsNil applies the IsNil predicate on the "model" field.
 func ModelIsNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldModel)))
-	})
+	return predicate.Stock(sql.FieldIsNull(FieldModel))
 }
 
 // ModelNotNil applies the NotNil predicate on the "model" field.
 func ModelNotNil() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldModel)))
-	})
+	return predicate.Stock(sql.FieldNotNull(FieldModel))
 }
 
 // ModelEqualFold applies the EqualFold predicate on the "model" field.
 func ModelEqualFold(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldModel), v))
-	})
+	return predicate.Stock(sql.FieldEqualFold(FieldModel, v))
 }
 
 // ModelContainsFold applies the ContainsFold predicate on the "model" field.
 func ModelContainsFold(v string) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldModel), v))
-	})
+	return predicate.Stock(sql.FieldContainsFold(FieldModel, v))
 }
 
 // NumEQ applies the EQ predicate on the "num" field.
 func NumEQ(v int) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldNum), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldNum, v))
 }
 
 // NumNEQ applies the NEQ predicate on the "num" field.
 func NumNEQ(v int) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldNum), v))
-	})
+	return predicate.Stock(sql.FieldNEQ(FieldNum, v))
 }
 
 // NumIn applies the In predicate on the "num" field.
 func NumIn(vs ...int) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldNum), v...))
-	})
+	return predicate.Stock(sql.FieldIn(FieldNum, vs...))
 }
 
 // NumNotIn applies the NotIn predicate on the "num" field.
 func NumNotIn(vs ...int) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldNum), v...))
-	})
+	return predicate.Stock(sql.FieldNotIn(FieldNum, vs...))
 }
 
 // NumGT applies the GT predicate on the "num" field.
 func NumGT(v int) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldNum), v))
-	})
+	return predicate.Stock(sql.FieldGT(FieldNum, v))
 }
 
 // NumGTE applies the GTE predicate on the "num" field.
 func NumGTE(v int) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldNum), v))
-	})
+	return predicate.Stock(sql.FieldGTE(FieldNum, v))
 }
 
 // NumLT applies the LT predicate on the "num" field.
 func NumLT(v int) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldNum), v))
-	})
+	return predicate.Stock(sql.FieldLT(FieldNum, v))
 }
 
 // NumLTE applies the LTE predicate on the "num" field.
 func NumLTE(v int) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldNum), v))
-	})
+	return predicate.Stock(sql.FieldLTE(FieldNum, v))
 }
 
 // MaterialEQ applies the EQ predicate on the "material" field.
 func MaterialEQ(v Material) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldMaterial), v))
-	})
+	return predicate.Stock(sql.FieldEQ(FieldMaterial, v))
 }
 
 // MaterialNEQ applies the NEQ predicate on the "material" field.
 func MaterialNEQ(v Material) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldMaterial), v))
-	})
+	return predicate.Stock(sql.FieldNEQ(FieldMaterial, v))
 }
 
 // MaterialIn applies the In predicate on the "material" field.
 func MaterialIn(vs ...Material) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldMaterial), v...))
-	})
+	return predicate.Stock(sql.FieldIn(FieldMaterial, vs...))
 }
 
 // MaterialNotIn applies the NotIn predicate on the "material" field.
 func MaterialNotIn(vs ...Material) predicate.Stock {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldMaterial), v...))
-	})
+	return predicate.Stock(sql.FieldNotIn(FieldMaterial, vs...))
 }
 
 // HasCity applies the HasEdge predicate on the "city" edge.
@@ -1484,7 +950,6 @@ func HasCity() predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CityTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1512,7 +977,6 @@ func HasSubscribe() predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SubscribeTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1540,7 +1004,6 @@ func HasEbike() predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EbikeTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, EbikeTable, EbikeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1568,7 +1031,6 @@ func HasBrand() predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(BrandTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, BrandTable, BrandColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1596,7 +1058,6 @@ func HasStore() predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StoreTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, StoreTable, StoreColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1624,7 +1085,6 @@ func HasCabinet() predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CabinetTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, CabinetTable, CabinetColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1652,7 +1112,6 @@ func HasRider() predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RiderTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, RiderTable, RiderColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1680,7 +1139,6 @@ func HasEmployee() predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EmployeeTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, EmployeeTable, EmployeeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1708,7 +1166,6 @@ func HasSpouse() predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SpouseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, SpouseTable, SpouseColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1736,7 +1193,6 @@ func HasParent() predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ParentTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1764,7 +1220,6 @@ func HasChildren() predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ChildrenTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, ChildrenTable, ChildrenColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

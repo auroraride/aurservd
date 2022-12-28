@@ -165,43 +165,10 @@ func (mu *ManagerUpdate) ClearRole() *ManagerUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (mu *ManagerUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := mu.defaults(); err != nil {
 		return 0, err
 	}
-	if len(mu.hooks) == 0 {
-		if err = mu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = mu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ManagerMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = mu.check(); err != nil {
-				return 0, err
-			}
-			mu.mutation = mutation
-			affected, err = mu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(mu.hooks) - 1; i >= 0; i-- {
-			if mu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = mu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, mu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, ManagerMutation](ctx, mu.sqlSave, mu.mutation, mu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -260,6 +227,9 @@ func (mu *ManagerUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Manage
 }
 
 func (mu *ManagerUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := mu.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   manager.Table,
@@ -278,90 +248,43 @@ func (mu *ManagerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := mu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: manager.FieldUpdatedAt,
-		})
+		_spec.SetField(manager.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := mu.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: manager.FieldDeletedAt,
-		})
+		_spec.SetField(manager.FieldDeletedAt, field.TypeTime, value)
 	}
 	if mu.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: manager.FieldDeletedAt,
-		})
+		_spec.ClearField(manager.FieldDeletedAt, field.TypeTime)
 	}
 	if mu.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: manager.FieldCreator,
-		})
+		_spec.ClearField(manager.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := mu.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: manager.FieldLastModifier,
-		})
+		_spec.SetField(manager.FieldLastModifier, field.TypeJSON, value)
 	}
 	if mu.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: manager.FieldLastModifier,
-		})
+		_spec.ClearField(manager.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := mu.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: manager.FieldRemark,
-		})
+		_spec.SetField(manager.FieldRemark, field.TypeString, value)
 	}
 	if mu.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: manager.FieldRemark,
-		})
+		_spec.ClearField(manager.FieldRemark, field.TypeString)
 	}
 	if value, ok := mu.mutation.Phone(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: manager.FieldPhone,
-		})
+		_spec.SetField(manager.FieldPhone, field.TypeString, value)
 	}
 	if value, ok := mu.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: manager.FieldName,
-		})
+		_spec.SetField(manager.FieldName, field.TypeString, value)
 	}
 	if value, ok := mu.mutation.Password(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: manager.FieldPassword,
-		})
+		_spec.SetField(manager.FieldPassword, field.TypeString, value)
 	}
 	if value, ok := mu.mutation.LastSigninAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: manager.FieldLastSigninAt,
-		})
+		_spec.SetField(manager.FieldLastSigninAt, field.TypeTime, value)
 	}
 	if mu.mutation.LastSigninAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: manager.FieldLastSigninAt,
-		})
+		_spec.ClearField(manager.FieldLastSigninAt, field.TypeTime)
 	}
 	if mu.mutation.RoleCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -398,7 +321,7 @@ func (mu *ManagerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = mu.modifiers
+	_spec.AddModifiers(mu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, mu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{manager.Label}
@@ -407,6 +330,7 @@ func (mu *ManagerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	mu.mutation.done = true
 	return n, nil
 }
 
@@ -560,49 +484,10 @@ func (muo *ManagerUpdateOne) Select(field string, fields ...string) *ManagerUpda
 
 // Save executes the query and returns the updated Manager entity.
 func (muo *ManagerUpdateOne) Save(ctx context.Context) (*Manager, error) {
-	var (
-		err  error
-		node *Manager
-	)
 	if err := muo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(muo.hooks) == 0 {
-		if err = muo.check(); err != nil {
-			return nil, err
-		}
-		node, err = muo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ManagerMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = muo.check(); err != nil {
-				return nil, err
-			}
-			muo.mutation = mutation
-			node, err = muo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(muo.hooks) - 1; i >= 0; i-- {
-			if muo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = muo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, muo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Manager)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from ManagerMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Manager, ManagerMutation](ctx, muo.sqlSave, muo.mutation, muo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -661,6 +546,9 @@ func (muo *ManagerUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Ma
 }
 
 func (muo *ManagerUpdateOne) sqlSave(ctx context.Context) (_node *Manager, err error) {
+	if err := muo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   manager.Table,
@@ -696,90 +584,43 @@ func (muo *ManagerUpdateOne) sqlSave(ctx context.Context) (_node *Manager, err e
 		}
 	}
 	if value, ok := muo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: manager.FieldUpdatedAt,
-		})
+		_spec.SetField(manager.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := muo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: manager.FieldDeletedAt,
-		})
+		_spec.SetField(manager.FieldDeletedAt, field.TypeTime, value)
 	}
 	if muo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: manager.FieldDeletedAt,
-		})
+		_spec.ClearField(manager.FieldDeletedAt, field.TypeTime)
 	}
 	if muo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: manager.FieldCreator,
-		})
+		_spec.ClearField(manager.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := muo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: manager.FieldLastModifier,
-		})
+		_spec.SetField(manager.FieldLastModifier, field.TypeJSON, value)
 	}
 	if muo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: manager.FieldLastModifier,
-		})
+		_spec.ClearField(manager.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := muo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: manager.FieldRemark,
-		})
+		_spec.SetField(manager.FieldRemark, field.TypeString, value)
 	}
 	if muo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: manager.FieldRemark,
-		})
+		_spec.ClearField(manager.FieldRemark, field.TypeString)
 	}
 	if value, ok := muo.mutation.Phone(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: manager.FieldPhone,
-		})
+		_spec.SetField(manager.FieldPhone, field.TypeString, value)
 	}
 	if value, ok := muo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: manager.FieldName,
-		})
+		_spec.SetField(manager.FieldName, field.TypeString, value)
 	}
 	if value, ok := muo.mutation.Password(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: manager.FieldPassword,
-		})
+		_spec.SetField(manager.FieldPassword, field.TypeString, value)
 	}
 	if value, ok := muo.mutation.LastSigninAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: manager.FieldLastSigninAt,
-		})
+		_spec.SetField(manager.FieldLastSigninAt, field.TypeTime, value)
 	}
 	if muo.mutation.LastSigninAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: manager.FieldLastSigninAt,
-		})
+		_spec.ClearField(manager.FieldLastSigninAt, field.TypeTime)
 	}
 	if muo.mutation.RoleCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -816,7 +657,7 @@ func (muo *ManagerUpdateOne) sqlSave(ctx context.Context) (_node *Manager, err e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = muo.modifiers
+	_spec.AddModifiers(muo.modifiers...)
 	_node = &Manager{config: muo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -828,5 +669,6 @@ func (muo *ManagerUpdateOne) sqlSave(ctx context.Context) (_node *Manager, err e
 		}
 		return nil, err
 	}
+	muo.mutation.done = true
 	return _node, nil
 }

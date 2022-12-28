@@ -208,52 +208,10 @@ func (cc *CityCreate) Mutation() *CityMutation {
 
 // Save creates the City in the database.
 func (cc *CityCreate) Save(ctx context.Context) (*City, error) {
-	var (
-		err  error
-		node *City
-	)
 	if err := cc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(cc.hooks) == 0 {
-		if err = cc.check(); err != nil {
-			return nil, err
-		}
-		node, err = cc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CityMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = cc.check(); err != nil {
-				return nil, err
-			}
-			cc.mutation = mutation
-			if node, err = cc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(cc.hooks) - 1; i >= 0; i-- {
-			if cc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = cc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, cc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*City)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from CityMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*City, CityMutation](ctx, cc.sqlSave, cc.mutation, cc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -325,6 +283,9 @@ func (cc *CityCreate) check() error {
 }
 
 func (cc *CityCreate) sqlSave(ctx context.Context) (*City, error) {
+	if err := cc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := cc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, cc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -336,6 +297,8 @@ func (cc *CityCreate) sqlSave(ctx context.Context) (*City, error) {
 		id := _spec.ID.Value.(int64)
 		_node.ID = uint64(id)
 	}
+	cc.mutation.id = &_node.ID
+	cc.mutation.done = true
 	return _node, nil
 }
 
@@ -356,91 +319,47 @@ func (cc *CityCreate) createSpec() (*City, *sqlgraph.CreateSpec) {
 		_spec.ID.Value = id
 	}
 	if value, ok := cc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: city.FieldCreatedAt,
-		})
+		_spec.SetField(city.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := cc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: city.FieldUpdatedAt,
-		})
+		_spec.SetField(city.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := cc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: city.FieldDeletedAt,
-		})
+		_spec.SetField(city.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := cc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: city.FieldCreator,
-		})
+		_spec.SetField(city.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := cc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: city.FieldLastModifier,
-		})
+		_spec.SetField(city.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := cc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: city.FieldRemark,
-		})
+		_spec.SetField(city.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := cc.mutation.Open(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: city.FieldOpen,
-		})
+		_spec.SetField(city.FieldOpen, field.TypeBool, value)
 		_node.Open = &value
 	}
 	if value, ok := cc.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: city.FieldName,
-		})
+		_spec.SetField(city.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := cc.mutation.Code(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: city.FieldCode,
-		})
+		_spec.SetField(city.FieldCode, field.TypeString, value)
 		_node.Code = value
 	}
 	if value, ok := cc.mutation.Lng(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: city.FieldLng,
-		})
+		_spec.SetField(city.FieldLng, field.TypeFloat64, value)
 		_node.Lng = value
 	}
 	if value, ok := cc.mutation.Lat(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: city.FieldLat,
-		})
+		_spec.SetField(city.FieldLat, field.TypeFloat64, value)
 		_node.Lat = value
 	}
 	if nodes := cc.mutation.ParentIDs(); len(nodes) > 0 {

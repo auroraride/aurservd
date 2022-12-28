@@ -19,6 +19,7 @@ type Commission struct {
 func (Commission) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "commission"},
+        entsql.WithComments(true),
     }
 }
 

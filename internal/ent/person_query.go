@@ -24,6 +24,7 @@ type PersonQuery struct {
 	unique     *bool
 	order      []OrderFunc
 	fields     []string
+	inters     []Interceptor
 	predicates []predicate.Person
 	withRider  *RiderQuery
 	modifiers  []func(*sql.Selector)
@@ -38,13 +39,13 @@ func (pq *PersonQuery) Where(ps ...predicate.Person) *PersonQuery {
 	return pq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (pq *PersonQuery) Limit(limit int) *PersonQuery {
 	pq.limit = &limit
 	return pq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (pq *PersonQuery) Offset(offset int) *PersonQuery {
 	pq.offset = &offset
 	return pq
@@ -57,7 +58,7 @@ func (pq *PersonQuery) Unique(unique bool) *PersonQuery {
 	return pq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (pq *PersonQuery) Order(o ...OrderFunc) *PersonQuery {
 	pq.order = append(pq.order, o...)
 	return pq
@@ -65,7 +66,7 @@ func (pq *PersonQuery) Order(o ...OrderFunc) *PersonQuery {
 
 // QueryRider chains the current query on the "rider" edge.
 func (pq *PersonQuery) QueryRider() *RiderQuery {
-	query := &RiderQuery{config: pq.config}
+	query := (&RiderClient{config: pq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := pq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -88,7 +89,7 @@ func (pq *PersonQuery) QueryRider() *RiderQuery {
 // First returns the first Person entity from the query.
 // Returns a *NotFoundError when no Person was found.
 func (pq *PersonQuery) First(ctx context.Context) (*Person, error) {
-	nodes, err := pq.Limit(1).All(ctx)
+	nodes, err := pq.Limit(1).All(newQueryContext(ctx, TypePerson, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +112,7 @@ func (pq *PersonQuery) FirstX(ctx context.Context) *Person {
 // Returns a *NotFoundError when no Person ID was found.
 func (pq *PersonQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = pq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = pq.Limit(1).IDs(newQueryContext(ctx, TypePerson, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -134,7 +135,7 @@ func (pq *PersonQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Person entity is found.
 // Returns a *NotFoundError when no Person entities are found.
 func (pq *PersonQuery) Only(ctx context.Context) (*Person, error) {
-	nodes, err := pq.Limit(2).All(ctx)
+	nodes, err := pq.Limit(2).All(newQueryContext(ctx, TypePerson, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +163,7 @@ func (pq *PersonQuery) OnlyX(ctx context.Context) *Person {
 // Returns a *NotFoundError when no entities are found.
 func (pq *PersonQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = pq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = pq.Limit(2).IDs(newQueryContext(ctx, TypePerson, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -187,10 +188,12 @@ func (pq *PersonQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Persons.
 func (pq *PersonQuery) All(ctx context.Context) ([]*Person, error) {
+	ctx = newQueryContext(ctx, TypePerson, "All")
 	if err := pq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return pq.sqlAll(ctx)
+	qr := querierAll[[]*Person, *PersonQuery]()
+	return withInterceptors[[]*Person](ctx, pq, qr, pq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -205,6 +208,7 @@ func (pq *PersonQuery) AllX(ctx context.Context) []*Person {
 // IDs executes the query and returns a list of Person IDs.
 func (pq *PersonQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypePerson, "IDs")
 	if err := pq.Select(person.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -222,10 +226,11 @@ func (pq *PersonQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (pq *PersonQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypePerson, "Count")
 	if err := pq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return pq.sqlCount(ctx)
+	return withInterceptors[int](ctx, pq, querierCount[*PersonQuery](), pq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -239,10 +244,15 @@ func (pq *PersonQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (pq *PersonQuery) Exist(ctx context.Context) (bool, error) {
-	if err := pq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypePerson, "Exist")
+	switch _, err := pq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return pq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -277,7 +287,7 @@ func (pq *PersonQuery) Clone() *PersonQuery {
 // WithRider tells the query-builder to eager-load the nodes that are connected to
 // the "rider" edge. The optional arguments are used to configure the query builder of the edge.
 func (pq *PersonQuery) WithRider(opts ...func(*RiderQuery)) *PersonQuery {
-	query := &RiderQuery{config: pq.config}
+	query := (&RiderClient{config: pq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -300,16 +310,11 @@ func (pq *PersonQuery) WithRider(opts ...func(*RiderQuery)) *PersonQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (pq *PersonQuery) GroupBy(field string, fields ...string) *PersonGroupBy {
-	grbuild := &PersonGroupBy{config: pq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := pq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return pq.sqlQuery(ctx), nil
-	}
+	pq.fields = append([]string{field}, fields...)
+	grbuild := &PersonGroupBy{build: pq}
+	grbuild.flds = &pq.fields
 	grbuild.label = person.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -327,13 +332,28 @@ func (pq *PersonQuery) GroupBy(field string, fields ...string) *PersonGroupBy {
 //		Scan(ctx, &v)
 func (pq *PersonQuery) Select(fields ...string) *PersonSelect {
 	pq.fields = append(pq.fields, fields...)
-	selbuild := &PersonSelect{PersonQuery: pq}
-	selbuild.label = person.Label
-	selbuild.flds, selbuild.scan = &pq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &PersonSelect{PersonQuery: pq}
+	sbuild.label = person.Label
+	sbuild.flds, sbuild.scan = &pq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a PersonSelect configured with the given aggregations.
+func (pq *PersonQuery) Aggregate(fns ...AggregateFunc) *PersonSelect {
+	return pq.Select().Aggregate(fns...)
 }
 
 func (pq *PersonQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range pq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, pq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range pq.fields {
 		if !person.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -431,17 +451,6 @@ func (pq *PersonQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, pq.driver, _spec)
 }
 
-func (pq *PersonQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := pq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (pq *PersonQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -533,13 +542,8 @@ func (pq *PersonQuery) Modify(modifiers ...func(s *sql.Selector)) *PersonSelect 
 
 // PersonGroupBy is the group-by builder for Person entities.
 type PersonGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *PersonQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -548,74 +552,77 @@ func (pgb *PersonGroupBy) Aggregate(fns ...AggregateFunc) *PersonGroupBy {
 	return pgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (pgb *PersonGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := pgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypePerson, "GroupBy")
+	if err := pgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	pgb.sql = query
-	return pgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*PersonQuery, *PersonGroupBy](ctx, pgb.build, pgb, pgb.build.inters, v)
 }
 
-func (pgb *PersonGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range pgb.fields {
-		if !person.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (pgb *PersonGroupBy) sqlScan(ctx context.Context, root *PersonQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(pgb.fns))
+	for _, fn := range pgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := pgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*pgb.flds)+len(pgb.fns))
+		for _, f := range *pgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*pgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := pgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := pgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (pgb *PersonGroupBy) sqlQuery() *sql.Selector {
-	selector := pgb.sql.Select()
-	aggregation := make([]string, 0, len(pgb.fns))
-	for _, fn := range pgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(pgb.fields)+len(pgb.fns))
-		for _, f := range pgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(pgb.fields...)...)
-}
-
 // PersonSelect is the builder for selecting fields of Person entities.
 type PersonSelect struct {
 	*PersonQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (ps *PersonSelect) Aggregate(fns ...AggregateFunc) *PersonSelect {
+	ps.fns = append(ps.fns, fns...)
+	return ps
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (ps *PersonSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypePerson, "Select")
 	if err := ps.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ps.sql = ps.PersonQuery.sqlQuery(ctx)
-	return ps.sqlScan(ctx, v)
+	return scanWithInterceptors[*PersonQuery, *PersonSelect](ctx, ps.PersonQuery, ps, ps.inters, v)
 }
 
-func (ps *PersonSelect) sqlScan(ctx context.Context, v any) error {
+func (ps *PersonSelect) sqlScan(ctx context.Context, root *PersonQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(ps.fns))
+	for _, fn := range ps.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*ps.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := ps.sql.Query()
+	query, args := selector.Query()
 	if err := ps.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

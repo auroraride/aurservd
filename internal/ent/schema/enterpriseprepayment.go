@@ -17,6 +17,7 @@ type EnterprisePrepayment struct {
 func (EnterprisePrepayment) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "enterprise_prepayment"},
+        entsql.WithComments(true),
     }
 }
 

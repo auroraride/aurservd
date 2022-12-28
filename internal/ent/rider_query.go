@@ -33,6 +33,7 @@ type RiderQuery struct {
 	unique         *bool
 	order          []OrderFunc
 	fields         []string
+	inters         []Interceptor
 	predicates     []predicate.Rider
 	withStation    *EnterpriseStationQuery
 	withPerson     *PersonQuery
@@ -56,13 +57,13 @@ func (rq *RiderQuery) Where(ps ...predicate.Rider) *RiderQuery {
 	return rq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (rq *RiderQuery) Limit(limit int) *RiderQuery {
 	rq.limit = &limit
 	return rq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (rq *RiderQuery) Offset(offset int) *RiderQuery {
 	rq.offset = &offset
 	return rq
@@ -75,7 +76,7 @@ func (rq *RiderQuery) Unique(unique bool) *RiderQuery {
 	return rq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (rq *RiderQuery) Order(o ...OrderFunc) *RiderQuery {
 	rq.order = append(rq.order, o...)
 	return rq
@@ -83,7 +84,7 @@ func (rq *RiderQuery) Order(o ...OrderFunc) *RiderQuery {
 
 // QueryStation chains the current query on the "station" edge.
 func (rq *RiderQuery) QueryStation() *EnterpriseStationQuery {
-	query := &EnterpriseStationQuery{config: rq.config}
+	query := (&EnterpriseStationClient{config: rq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -105,7 +106,7 @@ func (rq *RiderQuery) QueryStation() *EnterpriseStationQuery {
 
 // QueryPerson chains the current query on the "person" edge.
 func (rq *RiderQuery) QueryPerson() *PersonQuery {
-	query := &PersonQuery{config: rq.config}
+	query := (&PersonClient{config: rq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -127,7 +128,7 @@ func (rq *RiderQuery) QueryPerson() *PersonQuery {
 
 // QueryEnterprise chains the current query on the "enterprise" edge.
 func (rq *RiderQuery) QueryEnterprise() *EnterpriseQuery {
-	query := &EnterpriseQuery{config: rq.config}
+	query := (&EnterpriseClient{config: rq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -149,7 +150,7 @@ func (rq *RiderQuery) QueryEnterprise() *EnterpriseQuery {
 
 // QueryContracts chains the current query on the "contracts" edge.
 func (rq *RiderQuery) QueryContracts() *ContractQuery {
-	query := &ContractQuery{config: rq.config}
+	query := (&ContractClient{config: rq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -171,7 +172,7 @@ func (rq *RiderQuery) QueryContracts() *ContractQuery {
 
 // QueryFaults chains the current query on the "faults" edge.
 func (rq *RiderQuery) QueryFaults() *CabinetFaultQuery {
-	query := &CabinetFaultQuery{config: rq.config}
+	query := (&CabinetFaultClient{config: rq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -193,7 +194,7 @@ func (rq *RiderQuery) QueryFaults() *CabinetFaultQuery {
 
 // QueryOrders chains the current query on the "orders" edge.
 func (rq *RiderQuery) QueryOrders() *OrderQuery {
-	query := &OrderQuery{config: rq.config}
+	query := (&OrderClient{config: rq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -215,7 +216,7 @@ func (rq *RiderQuery) QueryOrders() *OrderQuery {
 
 // QueryExchanges chains the current query on the "exchanges" edge.
 func (rq *RiderQuery) QueryExchanges() *ExchangeQuery {
-	query := &ExchangeQuery{config: rq.config}
+	query := (&ExchangeClient{config: rq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -237,7 +238,7 @@ func (rq *RiderQuery) QueryExchanges() *ExchangeQuery {
 
 // QuerySubscribes chains the current query on the "subscribes" edge.
 func (rq *RiderQuery) QuerySubscribes() *SubscribeQuery {
-	query := &SubscribeQuery{config: rq.config}
+	query := (&SubscribeClient{config: rq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -259,7 +260,7 @@ func (rq *RiderQuery) QuerySubscribes() *SubscribeQuery {
 
 // QueryStocks chains the current query on the "stocks" edge.
 func (rq *RiderQuery) QueryStocks() *StockQuery {
-	query := &StockQuery{config: rq.config}
+	query := (&StockClient{config: rq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -281,7 +282,7 @@ func (rq *RiderQuery) QueryStocks() *StockQuery {
 
 // QueryFollowups chains the current query on the "followups" edge.
 func (rq *RiderQuery) QueryFollowups() *RiderFollowUpQuery {
-	query := &RiderFollowUpQuery{config: rq.config}
+	query := (&RiderFollowUpClient{config: rq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -304,7 +305,7 @@ func (rq *RiderQuery) QueryFollowups() *RiderFollowUpQuery {
 // First returns the first Rider entity from the query.
 // Returns a *NotFoundError when no Rider was found.
 func (rq *RiderQuery) First(ctx context.Context) (*Rider, error) {
-	nodes, err := rq.Limit(1).All(ctx)
+	nodes, err := rq.Limit(1).All(newQueryContext(ctx, TypeRider, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -327,7 +328,7 @@ func (rq *RiderQuery) FirstX(ctx context.Context) *Rider {
 // Returns a *NotFoundError when no Rider ID was found.
 func (rq *RiderQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = rq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = rq.Limit(1).IDs(newQueryContext(ctx, TypeRider, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -350,7 +351,7 @@ func (rq *RiderQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Rider entity is found.
 // Returns a *NotFoundError when no Rider entities are found.
 func (rq *RiderQuery) Only(ctx context.Context) (*Rider, error) {
-	nodes, err := rq.Limit(2).All(ctx)
+	nodes, err := rq.Limit(2).All(newQueryContext(ctx, TypeRider, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -378,7 +379,7 @@ func (rq *RiderQuery) OnlyX(ctx context.Context) *Rider {
 // Returns a *NotFoundError when no entities are found.
 func (rq *RiderQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = rq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = rq.Limit(2).IDs(newQueryContext(ctx, TypeRider, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -403,10 +404,12 @@ func (rq *RiderQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Riders.
 func (rq *RiderQuery) All(ctx context.Context) ([]*Rider, error) {
+	ctx = newQueryContext(ctx, TypeRider, "All")
 	if err := rq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return rq.sqlAll(ctx)
+	qr := querierAll[[]*Rider, *RiderQuery]()
+	return withInterceptors[[]*Rider](ctx, rq, qr, rq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -421,6 +424,7 @@ func (rq *RiderQuery) AllX(ctx context.Context) []*Rider {
 // IDs executes the query and returns a list of Rider IDs.
 func (rq *RiderQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeRider, "IDs")
 	if err := rq.Select(rider.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -438,10 +442,11 @@ func (rq *RiderQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (rq *RiderQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeRider, "Count")
 	if err := rq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return rq.sqlCount(ctx)
+	return withInterceptors[int](ctx, rq, querierCount[*RiderQuery](), rq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -455,10 +460,15 @@ func (rq *RiderQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (rq *RiderQuery) Exist(ctx context.Context) (bool, error) {
-	if err := rq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeRider, "Exist")
+	switch _, err := rq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return rq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -502,7 +512,7 @@ func (rq *RiderQuery) Clone() *RiderQuery {
 // WithStation tells the query-builder to eager-load the nodes that are connected to
 // the "station" edge. The optional arguments are used to configure the query builder of the edge.
 func (rq *RiderQuery) WithStation(opts ...func(*EnterpriseStationQuery)) *RiderQuery {
-	query := &EnterpriseStationQuery{config: rq.config}
+	query := (&EnterpriseStationClient{config: rq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -513,7 +523,7 @@ func (rq *RiderQuery) WithStation(opts ...func(*EnterpriseStationQuery)) *RiderQ
 // WithPerson tells the query-builder to eager-load the nodes that are connected to
 // the "person" edge. The optional arguments are used to configure the query builder of the edge.
 func (rq *RiderQuery) WithPerson(opts ...func(*PersonQuery)) *RiderQuery {
-	query := &PersonQuery{config: rq.config}
+	query := (&PersonClient{config: rq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -524,7 +534,7 @@ func (rq *RiderQuery) WithPerson(opts ...func(*PersonQuery)) *RiderQuery {
 // WithEnterprise tells the query-builder to eager-load the nodes that are connected to
 // the "enterprise" edge. The optional arguments are used to configure the query builder of the edge.
 func (rq *RiderQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *RiderQuery {
-	query := &EnterpriseQuery{config: rq.config}
+	query := (&EnterpriseClient{config: rq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -535,7 +545,7 @@ func (rq *RiderQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *RiderQuery
 // WithContracts tells the query-builder to eager-load the nodes that are connected to
 // the "contracts" edge. The optional arguments are used to configure the query builder of the edge.
 func (rq *RiderQuery) WithContracts(opts ...func(*ContractQuery)) *RiderQuery {
-	query := &ContractQuery{config: rq.config}
+	query := (&ContractClient{config: rq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -546,7 +556,7 @@ func (rq *RiderQuery) WithContracts(opts ...func(*ContractQuery)) *RiderQuery {
 // WithFaults tells the query-builder to eager-load the nodes that are connected to
 // the "faults" edge. The optional arguments are used to configure the query builder of the edge.
 func (rq *RiderQuery) WithFaults(opts ...func(*CabinetFaultQuery)) *RiderQuery {
-	query := &CabinetFaultQuery{config: rq.config}
+	query := (&CabinetFaultClient{config: rq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -557,7 +567,7 @@ func (rq *RiderQuery) WithFaults(opts ...func(*CabinetFaultQuery)) *RiderQuery {
 // WithOrders tells the query-builder to eager-load the nodes that are connected to
 // the "orders" edge. The optional arguments are used to configure the query builder of the edge.
 func (rq *RiderQuery) WithOrders(opts ...func(*OrderQuery)) *RiderQuery {
-	query := &OrderQuery{config: rq.config}
+	query := (&OrderClient{config: rq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -568,7 +578,7 @@ func (rq *RiderQuery) WithOrders(opts ...func(*OrderQuery)) *RiderQuery {
 // WithExchanges tells the query-builder to eager-load the nodes that are connected to
 // the "exchanges" edge. The optional arguments are used to configure the query builder of the edge.
 func (rq *RiderQuery) WithExchanges(opts ...func(*ExchangeQuery)) *RiderQuery {
-	query := &ExchangeQuery{config: rq.config}
+	query := (&ExchangeClient{config: rq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -579,7 +589,7 @@ func (rq *RiderQuery) WithExchanges(opts ...func(*ExchangeQuery)) *RiderQuery {
 // WithSubscribes tells the query-builder to eager-load the nodes that are connected to
 // the "subscribes" edge. The optional arguments are used to configure the query builder of the edge.
 func (rq *RiderQuery) WithSubscribes(opts ...func(*SubscribeQuery)) *RiderQuery {
-	query := &SubscribeQuery{config: rq.config}
+	query := (&SubscribeClient{config: rq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -590,7 +600,7 @@ func (rq *RiderQuery) WithSubscribes(opts ...func(*SubscribeQuery)) *RiderQuery 
 // WithStocks tells the query-builder to eager-load the nodes that are connected to
 // the "stocks" edge. The optional arguments are used to configure the query builder of the edge.
 func (rq *RiderQuery) WithStocks(opts ...func(*StockQuery)) *RiderQuery {
-	query := &StockQuery{config: rq.config}
+	query := (&StockClient{config: rq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -601,7 +611,7 @@ func (rq *RiderQuery) WithStocks(opts ...func(*StockQuery)) *RiderQuery {
 // WithFollowups tells the query-builder to eager-load the nodes that are connected to
 // the "followups" edge. The optional arguments are used to configure the query builder of the edge.
 func (rq *RiderQuery) WithFollowups(opts ...func(*RiderFollowUpQuery)) *RiderQuery {
-	query := &RiderFollowUpQuery{config: rq.config}
+	query := (&RiderFollowUpClient{config: rq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -624,16 +634,11 @@ func (rq *RiderQuery) WithFollowups(opts ...func(*RiderFollowUpQuery)) *RiderQue
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (rq *RiderQuery) GroupBy(field string, fields ...string) *RiderGroupBy {
-	grbuild := &RiderGroupBy{config: rq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := rq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return rq.sqlQuery(ctx), nil
-	}
+	rq.fields = append([]string{field}, fields...)
+	grbuild := &RiderGroupBy{build: rq}
+	grbuild.flds = &rq.fields
 	grbuild.label = rider.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -651,13 +656,28 @@ func (rq *RiderQuery) GroupBy(field string, fields ...string) *RiderGroupBy {
 //		Scan(ctx, &v)
 func (rq *RiderQuery) Select(fields ...string) *RiderSelect {
 	rq.fields = append(rq.fields, fields...)
-	selbuild := &RiderSelect{RiderQuery: rq}
-	selbuild.label = rider.Label
-	selbuild.flds, selbuild.scan = &rq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &RiderSelect{RiderQuery: rq}
+	sbuild.label = rider.Label
+	sbuild.flds, sbuild.scan = &rq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a RiderSelect configured with the given aggregations.
+func (rq *RiderQuery) Aggregate(fns ...AggregateFunc) *RiderSelect {
+	return rq.Select().Aggregate(fns...)
 }
 
 func (rq *RiderQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range rq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, rq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range rq.fields {
 		if !rider.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -1074,17 +1094,6 @@ func (rq *RiderQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, rq.driver, _spec)
 }
 
-func (rq *RiderQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := rq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (rq *RiderQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -1176,13 +1185,8 @@ func (rq *RiderQuery) Modify(modifiers ...func(s *sql.Selector)) *RiderSelect {
 
 // RiderGroupBy is the group-by builder for Rider entities.
 type RiderGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *RiderQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -1191,74 +1195,77 @@ func (rgb *RiderGroupBy) Aggregate(fns ...AggregateFunc) *RiderGroupBy {
 	return rgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (rgb *RiderGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := rgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeRider, "GroupBy")
+	if err := rgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	rgb.sql = query
-	return rgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*RiderQuery, *RiderGroupBy](ctx, rgb.build, rgb, rgb.build.inters, v)
 }
 
-func (rgb *RiderGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range rgb.fields {
-		if !rider.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (rgb *RiderGroupBy) sqlScan(ctx context.Context, root *RiderQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(rgb.fns))
+	for _, fn := range rgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := rgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*rgb.flds)+len(rgb.fns))
+		for _, f := range *rgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*rgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := rgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := rgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (rgb *RiderGroupBy) sqlQuery() *sql.Selector {
-	selector := rgb.sql.Select()
-	aggregation := make([]string, 0, len(rgb.fns))
-	for _, fn := range rgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(rgb.fields)+len(rgb.fns))
-		for _, f := range rgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(rgb.fields...)...)
-}
-
 // RiderSelect is the builder for selecting fields of Rider entities.
 type RiderSelect struct {
 	*RiderQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (rs *RiderSelect) Aggregate(fns ...AggregateFunc) *RiderSelect {
+	rs.fns = append(rs.fns, fns...)
+	return rs
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (rs *RiderSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeRider, "Select")
 	if err := rs.prepareQuery(ctx); err != nil {
 		return err
 	}
-	rs.sql = rs.RiderQuery.sqlQuery(ctx)
-	return rs.sqlScan(ctx, v)
+	return scanWithInterceptors[*RiderQuery, *RiderSelect](ctx, rs.RiderQuery, rs, rs.inters, v)
 }
 
-func (rs *RiderSelect) sqlScan(ctx context.Context, v any) error {
+func (rs *RiderSelect) sqlScan(ctx context.Context, root *RiderQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(rs.fns))
+	for _, fn := range rs.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*rs.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := rs.sql.Query()
+	query, args := selector.Query()
 	if err := rs.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

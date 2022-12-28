@@ -13,6 +13,7 @@ import (
     "fmt"
     "github.com/alibabacloud-go/tea/tea"
     sls "github.com/aliyun/aliyun-log-go-sdk"
+    am "github.com/auroraride/adapter/model"
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
@@ -96,6 +97,7 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
         SetStatus(req.Status.Value()).
         SetDoors(req.Doors).
         SetNillableRemark(req.Remark).
+        SetIntelligent(req.Intelligent).
         SetBrand(req.Brand.Value()).
         SetHealth(model.CabinetHealthStatusOffline)
     if req.BranchID != nil {
@@ -162,6 +164,9 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
             q.Where(cabinet.Health(model.CabinetHealthStatusOffline))
             break
         }
+    }
+    if req.Intelligent != 0 {
+        q.Where(cabinet.Intelligent(req.Intelligent == 1))
     }
 
     return model.ParsePaginationResponse[model.CabinetItem, ent.Cabinet](q, req.PaginationReq, func(item *ent.Cabinet) (res model.CabinetItem) {
@@ -256,6 +261,10 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
                 snag.Panic("sim卡到期日期不能早于现在")
             }
             q.SetSimDate(end)
+        }
+
+        if req.Intelligent != nil {
+            q.SetIntelligent(*req.Intelligent)
         }
 
         cab, err = q.Save(s.ctx)
@@ -656,4 +665,35 @@ func (s *cabinetService) Transfer(req *model.CabinetTransferReq) {
     _, _ = cab.Update().SetTransferred(true).Save(s.ctx)
     return
 
+}
+
+func (s *cabinetService) Sync(data *am.CabinetSyncRequest) {
+    if data.Serial == "" {
+        log.Error("[SYNC] 缺少参数 serial")
+        return
+    }
+
+    cab, _ := s.orm.QueryNotDeleted().Where(cabinet.Serial(data.Serial)).WithModels().First(s.ctx)
+    if cab == nil {
+        log.Errorf("[SYNC] 未找到电柜信息, 请先添加电柜: %s", data.Serial)
+    }
+
+    updater := cab.Update()
+
+    c := data.Cabinet
+    if c != nil {
+        health := model.CabinetHealthStatusOffline
+        if c.Online {
+            health = model.CabinetHealthStatusOnline
+        }
+        if c.Status == " " {
+        }
+        updater.SetHealth(health)
+    }
+
+    bins := data.Bins
+    if len(bins) > 0 {
+    }
+
+    _ = updater.Exec(s.ctx)
 }

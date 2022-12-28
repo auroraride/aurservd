@@ -482,52 +482,10 @@ func (ac *AssistanceCreate) Mutation() *AssistanceMutation {
 
 // Save creates the Assistance in the database.
 func (ac *AssistanceCreate) Save(ctx context.Context) (*Assistance, error) {
-	var (
-		err  error
-		node *Assistance
-	)
 	if err := ac.defaults(); err != nil {
 		return nil, err
 	}
-	if len(ac.hooks) == 0 {
-		if err = ac.check(); err != nil {
-			return nil, err
-		}
-		node, err = ac.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*AssistanceMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ac.check(); err != nil {
-				return nil, err
-			}
-			ac.mutation = mutation
-			if node, err = ac.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ac.hooks) - 1; i >= 0; i-- {
-			if ac.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ac.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ac.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Assistance)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from AssistanceMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Assistance, AssistanceMutation](ctx, ac.sqlSave, ac.mutation, ac.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -634,6 +592,9 @@ func (ac *AssistanceCreate) check() error {
 }
 
 func (ac *AssistanceCreate) sqlSave(ctx context.Context) (*Assistance, error) {
+	if err := ac.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := ac.createSpec()
 	if err := sqlgraph.CreateNode(ctx, ac.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -643,6 +604,8 @@ func (ac *AssistanceCreate) sqlSave(ctx context.Context) (*Assistance, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	ac.mutation.id = &_node.ID
+	ac.mutation.done = true
 	return _node, nil
 }
 
@@ -659,243 +622,123 @@ func (ac *AssistanceCreate) createSpec() (*Assistance, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = ac.conflict
 	if value, ok := ac.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: assistance.FieldCreatedAt,
-		})
+		_spec.SetField(assistance.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := ac.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: assistance.FieldUpdatedAt,
-		})
+		_spec.SetField(assistance.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := ac.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: assistance.FieldDeletedAt,
-		})
+		_spec.SetField(assistance.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := ac.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: assistance.FieldCreator,
-		})
+		_spec.SetField(assistance.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := ac.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: assistance.FieldLastModifier,
-		})
+		_spec.SetField(assistance.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := ac.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldRemark,
-		})
+		_spec.SetField(assistance.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := ac.mutation.Status(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: assistance.FieldStatus,
-		})
+		_spec.SetField(assistance.FieldStatus, field.TypeUint8, value)
 		_node.Status = value
 	}
 	if value, ok := ac.mutation.Lng(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldLng,
-		})
+		_spec.SetField(assistance.FieldLng, field.TypeFloat64, value)
 		_node.Lng = value
 	}
 	if value, ok := ac.mutation.Lat(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldLat,
-		})
+		_spec.SetField(assistance.FieldLat, field.TypeFloat64, value)
 		_node.Lat = value
 	}
 	if value, ok := ac.mutation.Address(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldAddress,
-		})
+		_spec.SetField(assistance.FieldAddress, field.TypeString, value)
 		_node.Address = value
 	}
 	if value, ok := ac.mutation.Breakdown(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldBreakdown,
-		})
+		_spec.SetField(assistance.FieldBreakdown, field.TypeString, value)
 		_node.Breakdown = value
 	}
 	if value, ok := ac.mutation.BreakdownDesc(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldBreakdownDesc,
-		})
+		_spec.SetField(assistance.FieldBreakdownDesc, field.TypeString, value)
 		_node.BreakdownDesc = value
 	}
 	if value, ok := ac.mutation.BreakdownPhotos(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: assistance.FieldBreakdownPhotos,
-		})
+		_spec.SetField(assistance.FieldBreakdownPhotos, field.TypeJSON, value)
 		_node.BreakdownPhotos = value
 	}
 	if value, ok := ac.mutation.CancelReason(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldCancelReason,
-		})
+		_spec.SetField(assistance.FieldCancelReason, field.TypeString, value)
 		_node.CancelReason = &value
 	}
 	if value, ok := ac.mutation.CancelReasonDesc(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldCancelReasonDesc,
-		})
+		_spec.SetField(assistance.FieldCancelReasonDesc, field.TypeString, value)
 		_node.CancelReasonDesc = &value
 	}
 	if value, ok := ac.mutation.Distance(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldDistance,
-		})
+		_spec.SetField(assistance.FieldDistance, field.TypeFloat64, value)
 		_node.Distance = value
 	}
 	if value, ok := ac.mutation.Reason(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldReason,
-		})
+		_spec.SetField(assistance.FieldReason, field.TypeString, value)
 		_node.Reason = value
 	}
 	if value, ok := ac.mutation.DetectPhoto(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldDetectPhoto,
-		})
+		_spec.SetField(assistance.FieldDetectPhoto, field.TypeString, value)
 		_node.DetectPhoto = value
 	}
 	if value, ok := ac.mutation.JointPhoto(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldJointPhoto,
-		})
+		_spec.SetField(assistance.FieldJointPhoto, field.TypeString, value)
 		_node.JointPhoto = value
 	}
 	if value, ok := ac.mutation.Cost(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldCost,
-		})
+		_spec.SetField(assistance.FieldCost, field.TypeFloat64, value)
 		_node.Cost = value
 	}
 	if value, ok := ac.mutation.RefusedDesc(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldRefusedDesc,
-		})
+		_spec.SetField(assistance.FieldRefusedDesc, field.TypeString, value)
 		_node.RefusedDesc = &value
 	}
 	if value, ok := ac.mutation.PayAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: assistance.FieldPayAt,
-		})
+		_spec.SetField(assistance.FieldPayAt, field.TypeTime, value)
 		_node.PayAt = &value
 	}
 	if value, ok := ac.mutation.AllocateAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: assistance.FieldAllocateAt,
-		})
+		_spec.SetField(assistance.FieldAllocateAt, field.TypeTime, value)
 		_node.AllocateAt = &value
 	}
 	if value, ok := ac.mutation.Wait(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: assistance.FieldWait,
-		})
+		_spec.SetField(assistance.FieldWait, field.TypeInt, value)
 		_node.Wait = value
 	}
 	if value, ok := ac.mutation.FreeReason(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldFreeReason,
-		})
+		_spec.SetField(assistance.FieldFreeReason, field.TypeString, value)
 		_node.FreeReason = &value
 	}
 	if value, ok := ac.mutation.FailReason(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldFailReason,
-		})
+		_spec.SetField(assistance.FieldFailReason, field.TypeString, value)
 		_node.FailReason = &value
 	}
 	if value, ok := ac.mutation.ProcessAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: assistance.FieldProcessAt,
-		})
+		_spec.SetField(assistance.FieldProcessAt, field.TypeTime, value)
 		_node.ProcessAt = &value
 	}
 	if value, ok := ac.mutation.Price(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: assistance.FieldPrice,
-		})
+		_spec.SetField(assistance.FieldPrice, field.TypeFloat64, value)
 		_node.Price = value
 	}
 	if value, ok := ac.mutation.NaviDuration(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: assistance.FieldNaviDuration,
-		})
+		_spec.SetField(assistance.FieldNaviDuration, field.TypeInt, value)
 		_node.NaviDuration = value
 	}
 	if value, ok := ac.mutation.NaviPolylines(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: assistance.FieldNaviPolylines,
-		})
+		_spec.SetField(assistance.FieldNaviPolylines, field.TypeJSON, value)
 		_node.NaviPolylines = value
 	}
 	if nodes := ac.mutation.StoreIDs(); len(nodes) > 0 {

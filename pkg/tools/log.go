@@ -6,7 +6,7 @@
 package tools
 
 import (
-    jsoniter "github.com/json-iterator/go"
+    "github.com/goccy/go-json"
     log "github.com/sirupsen/logrus"
 )
 
@@ -20,7 +20,7 @@ func NewLog() *logTool {
 func (*logTool) Infof(format string, args ...interface{}) {
     data := make([]interface{}, len(args))
     for i, param := range args {
-        b, _ := jsoniter.Marshal(param)
+        b, _ := json.Marshal(param)
         data[i] = string(b)
     }
     log.Infof(format, data...)

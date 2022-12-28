@@ -14,7 +14,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/go-resty/resty/v2"
-    jsoniter "github.com/json-iterator/go"
+    "github.com/goccy/go-json"
     log "github.com/sirupsen/logrus"
     "regexp"
     "strconv"
@@ -173,7 +173,7 @@ func (p *kaixin) FetchStatus(serial string) (online bool, bins model.CabinetBins
     }
 
     // regexp.MustCompile(`(?m)({.*})(.*)`)
-    err = jsoniter.Unmarshal(r.Body(), res)
+    err = json.Unmarshal(r.Body(), res)
     if err != nil {
         p.logger.Write(fmt.Sprintf("凯信状态解析失败, serial: %s, body: %s\n", serial, r.Body()))
         return
@@ -266,7 +266,7 @@ func (p *kaixin) doDoorOperate(code, serial, operation string, door int, battery
         return
     }
 
-    err = jsoniter.Unmarshal(r.Body(), res)
+    err = json.Unmarshal(r.Body(), res)
     if err != nil {
         log.Error(err)
         return

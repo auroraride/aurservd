@@ -20,6 +20,7 @@ type SubscribeSuspend struct {
 func (SubscribeSuspend) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "subscribe_suspend"},
+        entsql.WithComments(true),
     }
 }
 

@@ -122,52 +122,10 @@ func (rfuc *RiderFollowUpCreate) Mutation() *RiderFollowUpMutation {
 
 // Save creates the RiderFollowUp in the database.
 func (rfuc *RiderFollowUpCreate) Save(ctx context.Context) (*RiderFollowUp, error) {
-	var (
-		err  error
-		node *RiderFollowUp
-	)
 	if err := rfuc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(rfuc.hooks) == 0 {
-		if err = rfuc.check(); err != nil {
-			return nil, err
-		}
-		node, err = rfuc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*RiderFollowUpMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = rfuc.check(); err != nil {
-				return nil, err
-			}
-			rfuc.mutation = mutation
-			if node, err = rfuc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(rfuc.hooks) - 1; i >= 0; i-- {
-			if rfuc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = rfuc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, rfuc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*RiderFollowUp)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from RiderFollowUpMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*RiderFollowUp, RiderFollowUpMutation](ctx, rfuc.sqlSave, rfuc.mutation, rfuc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -235,6 +193,9 @@ func (rfuc *RiderFollowUpCreate) check() error {
 }
 
 func (rfuc *RiderFollowUpCreate) sqlSave(ctx context.Context) (*RiderFollowUp, error) {
+	if err := rfuc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := rfuc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, rfuc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -244,6 +205,8 @@ func (rfuc *RiderFollowUpCreate) sqlSave(ctx context.Context) (*RiderFollowUp, e
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	rfuc.mutation.id = &_node.ID
+	rfuc.mutation.done = true
 	return _node, nil
 }
 
@@ -260,51 +223,27 @@ func (rfuc *RiderFollowUpCreate) createSpec() (*RiderFollowUp, *sqlgraph.CreateS
 	)
 	_spec.OnConflict = rfuc.conflict
 	if value, ok := rfuc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: riderfollowup.FieldCreatedAt,
-		})
+		_spec.SetField(riderfollowup.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := rfuc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: riderfollowup.FieldUpdatedAt,
-		})
+		_spec.SetField(riderfollowup.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := rfuc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: riderfollowup.FieldDeletedAt,
-		})
+		_spec.SetField(riderfollowup.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := rfuc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: riderfollowup.FieldCreator,
-		})
+		_spec.SetField(riderfollowup.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := rfuc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: riderfollowup.FieldLastModifier,
-		})
+		_spec.SetField(riderfollowup.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := rfuc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: riderfollowup.FieldRemark,
-		})
+		_spec.SetField(riderfollowup.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if nodes := rfuc.mutation.ManagerIDs(); len(nodes) > 0 {

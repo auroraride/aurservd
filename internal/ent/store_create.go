@@ -262,52 +262,10 @@ func (sc *StoreCreate) Mutation() *StoreMutation {
 
 // Save creates the Store in the database.
 func (sc *StoreCreate) Save(ctx context.Context) (*Store, error) {
-	var (
-		err  error
-		node *Store
-	)
 	if err := sc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(sc.hooks) == 0 {
-		if err = sc.check(); err != nil {
-			return nil, err
-		}
-		node, err = sc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*StoreMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = sc.check(); err != nil {
-				return nil, err
-			}
-			sc.mutation = mutation
-			if node, err = sc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(sc.hooks) - 1; i >= 0; i-- {
-			if sc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = sc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, sc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Store)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from StoreMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Store, StoreMutation](ctx, sc.sqlSave, sc.mutation, sc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -411,6 +369,9 @@ func (sc *StoreCreate) check() error {
 }
 
 func (sc *StoreCreate) sqlSave(ctx context.Context) (*Store, error) {
+	if err := sc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := sc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, sc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -420,6 +381,8 @@ func (sc *StoreCreate) sqlSave(ctx context.Context) (*Store, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	sc.mutation.id = &_node.ID
+	sc.mutation.done = true
 	return _node, nil
 }
 
@@ -436,115 +399,59 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = sc.conflict
 	if value, ok := sc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: store.FieldCreatedAt,
-		})
+		_spec.SetField(store.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := sc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: store.FieldUpdatedAt,
-		})
+		_spec.SetField(store.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := sc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: store.FieldDeletedAt,
-		})
+		_spec.SetField(store.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := sc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: store.FieldCreator,
-		})
+		_spec.SetField(store.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := sc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: store.FieldLastModifier,
-		})
+		_spec.SetField(store.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := sc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: store.FieldRemark,
-		})
+		_spec.SetField(store.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := sc.mutation.Sn(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: store.FieldSn,
-		})
+		_spec.SetField(store.FieldSn, field.TypeString, value)
 		_node.Sn = value
 	}
 	if value, ok := sc.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: store.FieldName,
-		})
+		_spec.SetField(store.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := sc.mutation.Status(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: store.FieldStatus,
-		})
+		_spec.SetField(store.FieldStatus, field.TypeUint8, value)
 		_node.Status = value
 	}
 	if value, ok := sc.mutation.Lng(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: store.FieldLng,
-		})
+		_spec.SetField(store.FieldLng, field.TypeFloat64, value)
 		_node.Lng = value
 	}
 	if value, ok := sc.mutation.Lat(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: store.FieldLat,
-		})
+		_spec.SetField(store.FieldLat, field.TypeFloat64, value)
 		_node.Lat = value
 	}
 	if value, ok := sc.mutation.Address(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: store.FieldAddress,
-		})
+		_spec.SetField(store.FieldAddress, field.TypeString, value)
 		_node.Address = value
 	}
 	if value, ok := sc.mutation.EbikeObtain(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: store.FieldEbikeObtain,
-		})
+		_spec.SetField(store.FieldEbikeObtain, field.TypeBool, value)
 		_node.EbikeObtain = value
 	}
 	if value, ok := sc.mutation.EbikeRepair(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: store.FieldEbikeRepair,
-		})
+		_spec.SetField(store.FieldEbikeRepair, field.TypeBool, value)
 		_node.EbikeRepair = value
 	}
 	if nodes := sc.mutation.CityIDs(); len(nodes) > 0 {

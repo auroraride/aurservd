@@ -23,6 +23,7 @@ type EnterprisePrepaymentQuery struct {
 	unique         *bool
 	order          []OrderFunc
 	fields         []string
+	inters         []Interceptor
 	predicates     []predicate.EnterprisePrepayment
 	withEnterprise *EnterpriseQuery
 	modifiers      []func(*sql.Selector)
@@ -37,13 +38,13 @@ func (epq *EnterprisePrepaymentQuery) Where(ps ...predicate.EnterprisePrepayment
 	return epq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (epq *EnterprisePrepaymentQuery) Limit(limit int) *EnterprisePrepaymentQuery {
 	epq.limit = &limit
 	return epq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (epq *EnterprisePrepaymentQuery) Offset(offset int) *EnterprisePrepaymentQuery {
 	epq.offset = &offset
 	return epq
@@ -56,7 +57,7 @@ func (epq *EnterprisePrepaymentQuery) Unique(unique bool) *EnterprisePrepaymentQ
 	return epq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (epq *EnterprisePrepaymentQuery) Order(o ...OrderFunc) *EnterprisePrepaymentQuery {
 	epq.order = append(epq.order, o...)
 	return epq
@@ -64,7 +65,7 @@ func (epq *EnterprisePrepaymentQuery) Order(o ...OrderFunc) *EnterprisePrepaymen
 
 // QueryEnterprise chains the current query on the "enterprise" edge.
 func (epq *EnterprisePrepaymentQuery) QueryEnterprise() *EnterpriseQuery {
-	query := &EnterpriseQuery{config: epq.config}
+	query := (&EnterpriseClient{config: epq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := epq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -87,7 +88,7 @@ func (epq *EnterprisePrepaymentQuery) QueryEnterprise() *EnterpriseQuery {
 // First returns the first EnterprisePrepayment entity from the query.
 // Returns a *NotFoundError when no EnterprisePrepayment was found.
 func (epq *EnterprisePrepaymentQuery) First(ctx context.Context) (*EnterprisePrepayment, error) {
-	nodes, err := epq.Limit(1).All(ctx)
+	nodes, err := epq.Limit(1).All(newQueryContext(ctx, TypeEnterprisePrepayment, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +111,7 @@ func (epq *EnterprisePrepaymentQuery) FirstX(ctx context.Context) *EnterprisePre
 // Returns a *NotFoundError when no EnterprisePrepayment ID was found.
 func (epq *EnterprisePrepaymentQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = epq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = epq.Limit(1).IDs(newQueryContext(ctx, TypeEnterprisePrepayment, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -133,7 +134,7 @@ func (epq *EnterprisePrepaymentQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one EnterprisePrepayment entity is found.
 // Returns a *NotFoundError when no EnterprisePrepayment entities are found.
 func (epq *EnterprisePrepaymentQuery) Only(ctx context.Context) (*EnterprisePrepayment, error) {
-	nodes, err := epq.Limit(2).All(ctx)
+	nodes, err := epq.Limit(2).All(newQueryContext(ctx, TypeEnterprisePrepayment, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +162,7 @@ func (epq *EnterprisePrepaymentQuery) OnlyX(ctx context.Context) *EnterprisePrep
 // Returns a *NotFoundError when no entities are found.
 func (epq *EnterprisePrepaymentQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = epq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = epq.Limit(2).IDs(newQueryContext(ctx, TypeEnterprisePrepayment, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -186,10 +187,12 @@ func (epq *EnterprisePrepaymentQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of EnterprisePrepayments.
 func (epq *EnterprisePrepaymentQuery) All(ctx context.Context) ([]*EnterprisePrepayment, error) {
+	ctx = newQueryContext(ctx, TypeEnterprisePrepayment, "All")
 	if err := epq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return epq.sqlAll(ctx)
+	qr := querierAll[[]*EnterprisePrepayment, *EnterprisePrepaymentQuery]()
+	return withInterceptors[[]*EnterprisePrepayment](ctx, epq, qr, epq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -204,6 +207,7 @@ func (epq *EnterprisePrepaymentQuery) AllX(ctx context.Context) []*EnterprisePre
 // IDs executes the query and returns a list of EnterprisePrepayment IDs.
 func (epq *EnterprisePrepaymentQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeEnterprisePrepayment, "IDs")
 	if err := epq.Select(enterpriseprepayment.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -221,10 +225,11 @@ func (epq *EnterprisePrepaymentQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (epq *EnterprisePrepaymentQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeEnterprisePrepayment, "Count")
 	if err := epq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return epq.sqlCount(ctx)
+	return withInterceptors[int](ctx, epq, querierCount[*EnterprisePrepaymentQuery](), epq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -238,10 +243,15 @@ func (epq *EnterprisePrepaymentQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (epq *EnterprisePrepaymentQuery) Exist(ctx context.Context) (bool, error) {
-	if err := epq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeEnterprisePrepayment, "Exist")
+	switch _, err := epq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return epq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -276,7 +286,7 @@ func (epq *EnterprisePrepaymentQuery) Clone() *EnterprisePrepaymentQuery {
 // WithEnterprise tells the query-builder to eager-load the nodes that are connected to
 // the "enterprise" edge. The optional arguments are used to configure the query builder of the edge.
 func (epq *EnterprisePrepaymentQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *EnterprisePrepaymentQuery {
-	query := &EnterpriseQuery{config: epq.config}
+	query := (&EnterpriseClient{config: epq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -299,16 +309,11 @@ func (epq *EnterprisePrepaymentQuery) WithEnterprise(opts ...func(*EnterpriseQue
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (epq *EnterprisePrepaymentQuery) GroupBy(field string, fields ...string) *EnterprisePrepaymentGroupBy {
-	grbuild := &EnterprisePrepaymentGroupBy{config: epq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := epq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return epq.sqlQuery(ctx), nil
-	}
+	epq.fields = append([]string{field}, fields...)
+	grbuild := &EnterprisePrepaymentGroupBy{build: epq}
+	grbuild.flds = &epq.fields
 	grbuild.label = enterpriseprepayment.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -326,13 +331,28 @@ func (epq *EnterprisePrepaymentQuery) GroupBy(field string, fields ...string) *E
 //		Scan(ctx, &v)
 func (epq *EnterprisePrepaymentQuery) Select(fields ...string) *EnterprisePrepaymentSelect {
 	epq.fields = append(epq.fields, fields...)
-	selbuild := &EnterprisePrepaymentSelect{EnterprisePrepaymentQuery: epq}
-	selbuild.label = enterpriseprepayment.Label
-	selbuild.flds, selbuild.scan = &epq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &EnterprisePrepaymentSelect{EnterprisePrepaymentQuery: epq}
+	sbuild.label = enterpriseprepayment.Label
+	sbuild.flds, sbuild.scan = &epq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a EnterprisePrepaymentSelect configured with the given aggregations.
+func (epq *EnterprisePrepaymentQuery) Aggregate(fns ...AggregateFunc) *EnterprisePrepaymentSelect {
+	return epq.Select().Aggregate(fns...)
 }
 
 func (epq *EnterprisePrepaymentQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range epq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, epq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range epq.fields {
 		if !enterpriseprepayment.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -423,17 +443,6 @@ func (epq *EnterprisePrepaymentQuery) sqlCount(ctx context.Context) (int, error)
 		_spec.Unique = epq.unique != nil && *epq.unique
 	}
 	return sqlgraph.CountNodes(ctx, epq.driver, _spec)
-}
-
-func (epq *EnterprisePrepaymentQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := epq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
 }
 
 func (epq *EnterprisePrepaymentQuery) querySpec() *sqlgraph.QuerySpec {
@@ -527,13 +536,8 @@ func (epq *EnterprisePrepaymentQuery) Modify(modifiers ...func(s *sql.Selector))
 
 // EnterprisePrepaymentGroupBy is the group-by builder for EnterprisePrepayment entities.
 type EnterprisePrepaymentGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *EnterprisePrepaymentQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -542,74 +546,77 @@ func (epgb *EnterprisePrepaymentGroupBy) Aggregate(fns ...AggregateFunc) *Enterp
 	return epgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (epgb *EnterprisePrepaymentGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := epgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeEnterprisePrepayment, "GroupBy")
+	if err := epgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	epgb.sql = query
-	return epgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*EnterprisePrepaymentQuery, *EnterprisePrepaymentGroupBy](ctx, epgb.build, epgb, epgb.build.inters, v)
 }
 
-func (epgb *EnterprisePrepaymentGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range epgb.fields {
-		if !enterpriseprepayment.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (epgb *EnterprisePrepaymentGroupBy) sqlScan(ctx context.Context, root *EnterprisePrepaymentQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(epgb.fns))
+	for _, fn := range epgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := epgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*epgb.flds)+len(epgb.fns))
+		for _, f := range *epgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*epgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := epgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := epgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (epgb *EnterprisePrepaymentGroupBy) sqlQuery() *sql.Selector {
-	selector := epgb.sql.Select()
-	aggregation := make([]string, 0, len(epgb.fns))
-	for _, fn := range epgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(epgb.fields)+len(epgb.fns))
-		for _, f := range epgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(epgb.fields...)...)
-}
-
 // EnterprisePrepaymentSelect is the builder for selecting fields of EnterprisePrepayment entities.
 type EnterprisePrepaymentSelect struct {
 	*EnterprisePrepaymentQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (eps *EnterprisePrepaymentSelect) Aggregate(fns ...AggregateFunc) *EnterprisePrepaymentSelect {
+	eps.fns = append(eps.fns, fns...)
+	return eps
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (eps *EnterprisePrepaymentSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeEnterprisePrepayment, "Select")
 	if err := eps.prepareQuery(ctx); err != nil {
 		return err
 	}
-	eps.sql = eps.EnterprisePrepaymentQuery.sqlQuery(ctx)
-	return eps.sqlScan(ctx, v)
+	return scanWithInterceptors[*EnterprisePrepaymentQuery, *EnterprisePrepaymentSelect](ctx, eps.EnterprisePrepaymentQuery, eps, eps.inters, v)
 }
 
-func (eps *EnterprisePrepaymentSelect) sqlScan(ctx context.Context, v any) error {
+func (eps *EnterprisePrepaymentSelect) sqlScan(ctx context.Context, root *EnterprisePrepaymentQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(eps.fns))
+	for _, fn := range eps.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*eps.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := eps.sql.Query()
+	query, args := selector.Query()
 	if err := eps.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

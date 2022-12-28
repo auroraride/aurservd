@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"fmt"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -28,34 +27,7 @@ func (rfud *RiderFollowUpDelete) Where(ps ...predicate.RiderFollowUp) *RiderFoll
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (rfud *RiderFollowUpDelete) Exec(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(rfud.hooks) == 0 {
-		affected, err = rfud.sqlExec(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*RiderFollowUpMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			rfud.mutation = mutation
-			affected, err = rfud.sqlExec(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(rfud.hooks) - 1; i >= 0; i-- {
-			if rfud.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = rfud.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, rfud.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, RiderFollowUpMutation](ctx, rfud.sqlExec, rfud.mutation, rfud.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
@@ -88,6 +60,7 @@ func (rfud *RiderFollowUpDelete) sqlExec(ctx context.Context) (int, error) {
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
+	rfud.mutation.done = true
 	return affected, err
 }
 

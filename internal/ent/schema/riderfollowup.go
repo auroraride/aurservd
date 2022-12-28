@@ -19,6 +19,7 @@ type RiderFollowUp struct {
 func (RiderFollowUp) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "rider_follow_up"},
+        entsql.WithComments(true),
     }
 }
 

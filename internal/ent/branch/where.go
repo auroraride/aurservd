@@ -13,916 +13,592 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uint64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Branch(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uint64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Branch(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uint64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.Branch(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.Branch(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.Branch(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uint64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.Branch(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uint64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.Branch(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uint64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.Branch(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uint64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.Branch(sql.FieldLTE(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Branch(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Branch(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
 func DeletedAt(v time.Time) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Branch(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
 func Remark(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Branch(sql.FieldEQ(FieldRemark, v))
 }
 
 // CityID applies equality check predicate on the "city_id" field. It's identical to CityIDEQ.
 func CityID(v uint64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCityID), v))
-	})
+	return predicate.Branch(sql.FieldEQ(FieldCityID, v))
 }
 
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
+	return predicate.Branch(sql.FieldEQ(FieldName, v))
 }
 
 // Lng applies equality check predicate on the "lng" field. It's identical to LngEQ.
 func Lng(v float64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLng), v))
-	})
+	return predicate.Branch(sql.FieldEQ(FieldLng, v))
 }
 
 // Lat applies equality check predicate on the "lat" field. It's identical to LatEQ.
 func Lat(v float64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLat), v))
-	})
+	return predicate.Branch(sql.FieldEQ(FieldLat, v))
 }
 
 // Address applies equality check predicate on the "address" field. It's identical to AddressEQ.
 func Address(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAddress), v))
-	})
+	return predicate.Branch(sql.FieldEQ(FieldAddress, v))
 }
 
 // Geom applies equality check predicate on the "geom" field. It's identical to GeomEQ.
 func Geom(v *model.Geometry) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldGeom), v))
-	})
+	return predicate.Branch(sql.FieldEQ(FieldGeom, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Branch(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
 func CreatedAtNEQ(v time.Time) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Branch(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.Branch {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Branch(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.Branch {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Branch(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtGT applies the GT predicate on the "created_at" field.
 func CreatedAtGT(v time.Time) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Branch(sql.FieldGT(FieldCreatedAt, v))
 }
 
 // CreatedAtGTE applies the GTE predicate on the "created_at" field.
 func CreatedAtGTE(v time.Time) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Branch(sql.FieldGTE(FieldCreatedAt, v))
 }
 
 // CreatedAtLT applies the LT predicate on the "created_at" field.
 func CreatedAtLT(v time.Time) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Branch(sql.FieldLT(FieldCreatedAt, v))
 }
 
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Branch(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
 func UpdatedAtEQ(v time.Time) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Branch(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
 func UpdatedAtNEQ(v time.Time) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Branch(sql.FieldNEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.Branch {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Branch(sql.FieldIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.Branch {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Branch(sql.FieldNotIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtGT applies the GT predicate on the "updated_at" field.
 func UpdatedAtGT(v time.Time) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Branch(sql.FieldGT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
 func UpdatedAtGTE(v time.Time) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Branch(sql.FieldGTE(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLT applies the LT predicate on the "updated_at" field.
 func UpdatedAtLT(v time.Time) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Branch(sql.FieldLT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Branch(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
 func DeletedAtEQ(v time.Time) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Branch(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
 func DeletedAtNEQ(v time.Time) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Branch(sql.FieldNEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.Branch {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.Branch(sql.FieldIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.Branch {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.Branch(sql.FieldNotIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtGT applies the GT predicate on the "deleted_at" field.
 func DeletedAtGT(v time.Time) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Branch(sql.FieldGT(FieldDeletedAt, v))
 }
 
 // DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
 func DeletedAtGTE(v time.Time) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Branch(sql.FieldGTE(FieldDeletedAt, v))
 }
 
 // DeletedAtLT applies the LT predicate on the "deleted_at" field.
 func DeletedAtLT(v time.Time) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Branch(sql.FieldLT(FieldDeletedAt, v))
 }
 
 // DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
 func DeletedAtLTE(v time.Time) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Branch(sql.FieldLTE(FieldDeletedAt, v))
 }
 
 // DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
 func DeletedAtIsNil() predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.Branch(sql.FieldIsNull(FieldDeletedAt))
 }
 
 // DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
 func DeletedAtNotNil() predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.Branch(sql.FieldNotNull(FieldDeletedAt))
 }
 
 // CreatorIsNil applies the IsNil predicate on the "creator" field.
 func CreatorIsNil() predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCreator)))
-	})
+	return predicate.Branch(sql.FieldIsNull(FieldCreator))
 }
 
 // CreatorNotNil applies the NotNil predicate on the "creator" field.
 func CreatorNotNil() predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCreator)))
-	})
+	return predicate.Branch(sql.FieldNotNull(FieldCreator))
 }
 
 // LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
 func LastModifierIsNil() predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Branch(sql.FieldIsNull(FieldLastModifier))
 }
 
 // LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
 func LastModifierNotNil() predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Branch(sql.FieldNotNull(FieldLastModifier))
 }
 
 // RemarkEQ applies the EQ predicate on the "remark" field.
 func RemarkEQ(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Branch(sql.FieldEQ(FieldRemark, v))
 }
 
 // RemarkNEQ applies the NEQ predicate on the "remark" field.
 func RemarkNEQ(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRemark), v))
-	})
+	return predicate.Branch(sql.FieldNEQ(FieldRemark, v))
 }
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.Branch {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRemark), v...))
-	})
+	return predicate.Branch(sql.FieldIn(FieldRemark, vs...))
 }
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.Branch {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRemark), v...))
-	})
+	return predicate.Branch(sql.FieldNotIn(FieldRemark, vs...))
 }
 
 // RemarkGT applies the GT predicate on the "remark" field.
 func RemarkGT(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRemark), v))
-	})
+	return predicate.Branch(sql.FieldGT(FieldRemark, v))
 }
 
 // RemarkGTE applies the GTE predicate on the "remark" field.
 func RemarkGTE(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRemark), v))
-	})
+	return predicate.Branch(sql.FieldGTE(FieldRemark, v))
 }
 
 // RemarkLT applies the LT predicate on the "remark" field.
 func RemarkLT(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRemark), v))
-	})
+	return predicate.Branch(sql.FieldLT(FieldRemark, v))
 }
 
 // RemarkLTE applies the LTE predicate on the "remark" field.
 func RemarkLTE(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRemark), v))
-	})
+	return predicate.Branch(sql.FieldLTE(FieldRemark, v))
 }
 
 // RemarkContains applies the Contains predicate on the "remark" field.
 func RemarkContains(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRemark), v))
-	})
+	return predicate.Branch(sql.FieldContains(FieldRemark, v))
 }
 
 // RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
 func RemarkHasPrefix(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRemark), v))
-	})
+	return predicate.Branch(sql.FieldHasPrefix(FieldRemark, v))
 }
 
 // RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
 func RemarkHasSuffix(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRemark), v))
-	})
+	return predicate.Branch(sql.FieldHasSuffix(FieldRemark, v))
 }
 
 // RemarkIsNil applies the IsNil predicate on the "remark" field.
 func RemarkIsNil() predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRemark)))
-	})
+	return predicate.Branch(sql.FieldIsNull(FieldRemark))
 }
 
 // RemarkNotNil applies the NotNil predicate on the "remark" field.
 func RemarkNotNil() predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRemark)))
-	})
+	return predicate.Branch(sql.FieldNotNull(FieldRemark))
 }
 
 // RemarkEqualFold applies the EqualFold predicate on the "remark" field.
 func RemarkEqualFold(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRemark), v))
-	})
+	return predicate.Branch(sql.FieldEqualFold(FieldRemark, v))
 }
 
 // RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
 func RemarkContainsFold(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
-	})
+	return predicate.Branch(sql.FieldContainsFold(FieldRemark, v))
 }
 
 // CityIDEQ applies the EQ predicate on the "city_id" field.
 func CityIDEQ(v uint64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCityID), v))
-	})
+	return predicate.Branch(sql.FieldEQ(FieldCityID, v))
 }
 
 // CityIDNEQ applies the NEQ predicate on the "city_id" field.
 func CityIDNEQ(v uint64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCityID), v))
-	})
+	return predicate.Branch(sql.FieldNEQ(FieldCityID, v))
 }
 
 // CityIDIn applies the In predicate on the "city_id" field.
 func CityIDIn(vs ...uint64) predicate.Branch {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCityID), v...))
-	})
+	return predicate.Branch(sql.FieldIn(FieldCityID, vs...))
 }
 
 // CityIDNotIn applies the NotIn predicate on the "city_id" field.
 func CityIDNotIn(vs ...uint64) predicate.Branch {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCityID), v...))
-	})
+	return predicate.Branch(sql.FieldNotIn(FieldCityID, vs...))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
+	return predicate.Branch(sql.FieldEQ(FieldName, v))
 }
 
 // NameNEQ applies the NEQ predicate on the "name" field.
 func NameNEQ(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldName), v))
-	})
+	return predicate.Branch(sql.FieldNEQ(FieldName, v))
 }
 
 // NameIn applies the In predicate on the "name" field.
 func NameIn(vs ...string) predicate.Branch {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldName), v...))
-	})
+	return predicate.Branch(sql.FieldIn(FieldName, vs...))
 }
 
 // NameNotIn applies the NotIn predicate on the "name" field.
 func NameNotIn(vs ...string) predicate.Branch {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldName), v...))
-	})
+	return predicate.Branch(sql.FieldNotIn(FieldName, vs...))
 }
 
 // NameGT applies the GT predicate on the "name" field.
 func NameGT(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldName), v))
-	})
+	return predicate.Branch(sql.FieldGT(FieldName, v))
 }
 
 // NameGTE applies the GTE predicate on the "name" field.
 func NameGTE(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldName), v))
-	})
+	return predicate.Branch(sql.FieldGTE(FieldName, v))
 }
 
 // NameLT applies the LT predicate on the "name" field.
 func NameLT(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldName), v))
-	})
+	return predicate.Branch(sql.FieldLT(FieldName, v))
 }
 
 // NameLTE applies the LTE predicate on the "name" field.
 func NameLTE(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldName), v))
-	})
+	return predicate.Branch(sql.FieldLTE(FieldName, v))
 }
 
 // NameContains applies the Contains predicate on the "name" field.
 func NameContains(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldName), v))
-	})
+	return predicate.Branch(sql.FieldContains(FieldName, v))
 }
 
 // NameHasPrefix applies the HasPrefix predicate on the "name" field.
 func NameHasPrefix(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldName), v))
-	})
+	return predicate.Branch(sql.FieldHasPrefix(FieldName, v))
 }
 
 // NameHasSuffix applies the HasSuffix predicate on the "name" field.
 func NameHasSuffix(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldName), v))
-	})
+	return predicate.Branch(sql.FieldHasSuffix(FieldName, v))
 }
 
 // NameEqualFold applies the EqualFold predicate on the "name" field.
 func NameEqualFold(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldName), v))
-	})
+	return predicate.Branch(sql.FieldEqualFold(FieldName, v))
 }
 
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldName), v))
-	})
+	return predicate.Branch(sql.FieldContainsFold(FieldName, v))
 }
 
 // LngEQ applies the EQ predicate on the "lng" field.
 func LngEQ(v float64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLng), v))
-	})
+	return predicate.Branch(sql.FieldEQ(FieldLng, v))
 }
 
 // LngNEQ applies the NEQ predicate on the "lng" field.
 func LngNEQ(v float64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldLng), v))
-	})
+	return predicate.Branch(sql.FieldNEQ(FieldLng, v))
 }
 
 // LngIn applies the In predicate on the "lng" field.
 func LngIn(vs ...float64) predicate.Branch {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldLng), v...))
-	})
+	return predicate.Branch(sql.FieldIn(FieldLng, vs...))
 }
 
 // LngNotIn applies the NotIn predicate on the "lng" field.
 func LngNotIn(vs ...float64) predicate.Branch {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldLng), v...))
-	})
+	return predicate.Branch(sql.FieldNotIn(FieldLng, vs...))
 }
 
 // LngGT applies the GT predicate on the "lng" field.
 func LngGT(v float64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldLng), v))
-	})
+	return predicate.Branch(sql.FieldGT(FieldLng, v))
 }
 
 // LngGTE applies the GTE predicate on the "lng" field.
 func LngGTE(v float64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldLng), v))
-	})
+	return predicate.Branch(sql.FieldGTE(FieldLng, v))
 }
 
 // LngLT applies the LT predicate on the "lng" field.
 func LngLT(v float64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldLng), v))
-	})
+	return predicate.Branch(sql.FieldLT(FieldLng, v))
 }
 
 // LngLTE applies the LTE predicate on the "lng" field.
 func LngLTE(v float64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldLng), v))
-	})
+	return predicate.Branch(sql.FieldLTE(FieldLng, v))
 }
 
 // LatEQ applies the EQ predicate on the "lat" field.
 func LatEQ(v float64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLat), v))
-	})
+	return predicate.Branch(sql.FieldEQ(FieldLat, v))
 }
 
 // LatNEQ applies the NEQ predicate on the "lat" field.
 func LatNEQ(v float64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldLat), v))
-	})
+	return predicate.Branch(sql.FieldNEQ(FieldLat, v))
 }
 
 // LatIn applies the In predicate on the "lat" field.
 func LatIn(vs ...float64) predicate.Branch {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldLat), v...))
-	})
+	return predicate.Branch(sql.FieldIn(FieldLat, vs...))
 }
 
 // LatNotIn applies the NotIn predicate on the "lat" field.
 func LatNotIn(vs ...float64) predicate.Branch {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldLat), v...))
-	})
+	return predicate.Branch(sql.FieldNotIn(FieldLat, vs...))
 }
 
 // LatGT applies the GT predicate on the "lat" field.
 func LatGT(v float64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldLat), v))
-	})
+	return predicate.Branch(sql.FieldGT(FieldLat, v))
 }
 
 // LatGTE applies the GTE predicate on the "lat" field.
 func LatGTE(v float64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldLat), v))
-	})
+	return predicate.Branch(sql.FieldGTE(FieldLat, v))
 }
 
 // LatLT applies the LT predicate on the "lat" field.
 func LatLT(v float64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldLat), v))
-	})
+	return predicate.Branch(sql.FieldLT(FieldLat, v))
 }
 
 // LatLTE applies the LTE predicate on the "lat" field.
 func LatLTE(v float64) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldLat), v))
-	})
+	return predicate.Branch(sql.FieldLTE(FieldLat, v))
 }
 
 // AddressEQ applies the EQ predicate on the "address" field.
 func AddressEQ(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAddress), v))
-	})
+	return predicate.Branch(sql.FieldEQ(FieldAddress, v))
 }
 
 // AddressNEQ applies the NEQ predicate on the "address" field.
 func AddressNEQ(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAddress), v))
-	})
+	return predicate.Branch(sql.FieldNEQ(FieldAddress, v))
 }
 
 // AddressIn applies the In predicate on the "address" field.
 func AddressIn(vs ...string) predicate.Branch {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAddress), v...))
-	})
+	return predicate.Branch(sql.FieldIn(FieldAddress, vs...))
 }
 
 // AddressNotIn applies the NotIn predicate on the "address" field.
 func AddressNotIn(vs ...string) predicate.Branch {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAddress), v...))
-	})
+	return predicate.Branch(sql.FieldNotIn(FieldAddress, vs...))
 }
 
 // AddressGT applies the GT predicate on the "address" field.
 func AddressGT(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAddress), v))
-	})
+	return predicate.Branch(sql.FieldGT(FieldAddress, v))
 }
 
 // AddressGTE applies the GTE predicate on the "address" field.
 func AddressGTE(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAddress), v))
-	})
+	return predicate.Branch(sql.FieldGTE(FieldAddress, v))
 }
 
 // AddressLT applies the LT predicate on the "address" field.
 func AddressLT(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAddress), v))
-	})
+	return predicate.Branch(sql.FieldLT(FieldAddress, v))
 }
 
 // AddressLTE applies the LTE predicate on the "address" field.
 func AddressLTE(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAddress), v))
-	})
+	return predicate.Branch(sql.FieldLTE(FieldAddress, v))
 }
 
 // AddressContains applies the Contains predicate on the "address" field.
 func AddressContains(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldAddress), v))
-	})
+	return predicate.Branch(sql.FieldContains(FieldAddress, v))
 }
 
 // AddressHasPrefix applies the HasPrefix predicate on the "address" field.
 func AddressHasPrefix(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldAddress), v))
-	})
+	return predicate.Branch(sql.FieldHasPrefix(FieldAddress, v))
 }
 
 // AddressHasSuffix applies the HasSuffix predicate on the "address" field.
 func AddressHasSuffix(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldAddress), v))
-	})
+	return predicate.Branch(sql.FieldHasSuffix(FieldAddress, v))
 }
 
 // AddressEqualFold applies the EqualFold predicate on the "address" field.
 func AddressEqualFold(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldAddress), v))
-	})
+	return predicate.Branch(sql.FieldEqualFold(FieldAddress, v))
 }
 
 // AddressContainsFold applies the ContainsFold predicate on the "address" field.
 func AddressContainsFold(v string) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldAddress), v))
-	})
+	return predicate.Branch(sql.FieldContainsFold(FieldAddress, v))
 }
 
 // GeomEQ applies the EQ predicate on the "geom" field.
 func GeomEQ(v *model.Geometry) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldGeom), v))
-	})
+	return predicate.Branch(sql.FieldEQ(FieldGeom, v))
 }
 
 // GeomNEQ applies the NEQ predicate on the "geom" field.
 func GeomNEQ(v *model.Geometry) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldGeom), v))
-	})
+	return predicate.Branch(sql.FieldNEQ(FieldGeom, v))
 }
 
 // GeomIn applies the In predicate on the "geom" field.
 func GeomIn(vs ...*model.Geometry) predicate.Branch {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldGeom), v...))
-	})
+	return predicate.Branch(sql.FieldIn(FieldGeom, vs...))
 }
 
 // GeomNotIn applies the NotIn predicate on the "geom" field.
 func GeomNotIn(vs ...*model.Geometry) predicate.Branch {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldGeom), v...))
-	})
+	return predicate.Branch(sql.FieldNotIn(FieldGeom, vs...))
 }
 
 // GeomGT applies the GT predicate on the "geom" field.
 func GeomGT(v *model.Geometry) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldGeom), v))
-	})
+	return predicate.Branch(sql.FieldGT(FieldGeom, v))
 }
 
 // GeomGTE applies the GTE predicate on the "geom" field.
 func GeomGTE(v *model.Geometry) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldGeom), v))
-	})
+	return predicate.Branch(sql.FieldGTE(FieldGeom, v))
 }
 
 // GeomLT applies the LT predicate on the "geom" field.
 func GeomLT(v *model.Geometry) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldGeom), v))
-	})
+	return predicate.Branch(sql.FieldLT(FieldGeom, v))
 }
 
 // GeomLTE applies the LTE predicate on the "geom" field.
 func GeomLTE(v *model.Geometry) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldGeom), v))
-	})
+	return predicate.Branch(sql.FieldLTE(FieldGeom, v))
 }
 
 // HasCity applies the HasEdge predicate on the "city" edge.
@@ -930,7 +606,6 @@ func HasCity() predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CityTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -958,7 +633,6 @@ func HasContracts() predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ContractsTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, ContractsTable, ContractsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -986,7 +660,6 @@ func HasCabinets() predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CabinetsTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, CabinetsTable, CabinetsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1014,7 +687,6 @@ func HasFaults() predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(FaultsTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, FaultsTable, FaultsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1042,7 +714,6 @@ func HasStores() predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StoresTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, StoresTable, StoresColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

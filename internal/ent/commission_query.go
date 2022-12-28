@@ -28,6 +28,7 @@ type CommissionQuery struct {
 	unique        *bool
 	order         []OrderFunc
 	fields        []string
+	inters        []Interceptor
 	predicates    []predicate.Commission
 	withBusiness  *BusinessQuery
 	withSubscribe *SubscribeQuery
@@ -47,13 +48,13 @@ func (cq *CommissionQuery) Where(ps ...predicate.Commission) *CommissionQuery {
 	return cq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (cq *CommissionQuery) Limit(limit int) *CommissionQuery {
 	cq.limit = &limit
 	return cq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (cq *CommissionQuery) Offset(offset int) *CommissionQuery {
 	cq.offset = &offset
 	return cq
@@ -66,7 +67,7 @@ func (cq *CommissionQuery) Unique(unique bool) *CommissionQuery {
 	return cq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (cq *CommissionQuery) Order(o ...OrderFunc) *CommissionQuery {
 	cq.order = append(cq.order, o...)
 	return cq
@@ -74,7 +75,7 @@ func (cq *CommissionQuery) Order(o ...OrderFunc) *CommissionQuery {
 
 // QueryBusiness chains the current query on the "business" edge.
 func (cq *CommissionQuery) QueryBusiness() *BusinessQuery {
-	query := &BusinessQuery{config: cq.config}
+	query := (&BusinessClient{config: cq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -96,7 +97,7 @@ func (cq *CommissionQuery) QueryBusiness() *BusinessQuery {
 
 // QuerySubscribe chains the current query on the "subscribe" edge.
 func (cq *CommissionQuery) QuerySubscribe() *SubscribeQuery {
-	query := &SubscribeQuery{config: cq.config}
+	query := (&SubscribeClient{config: cq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -118,7 +119,7 @@ func (cq *CommissionQuery) QuerySubscribe() *SubscribeQuery {
 
 // QueryPlan chains the current query on the "plan" edge.
 func (cq *CommissionQuery) QueryPlan() *PlanQuery {
-	query := &PlanQuery{config: cq.config}
+	query := (&PlanClient{config: cq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -140,7 +141,7 @@ func (cq *CommissionQuery) QueryPlan() *PlanQuery {
 
 // QueryRider chains the current query on the "rider" edge.
 func (cq *CommissionQuery) QueryRider() *RiderQuery {
-	query := &RiderQuery{config: cq.config}
+	query := (&RiderClient{config: cq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -162,7 +163,7 @@ func (cq *CommissionQuery) QueryRider() *RiderQuery {
 
 // QueryOrder chains the current query on the "order" edge.
 func (cq *CommissionQuery) QueryOrder() *OrderQuery {
-	query := &OrderQuery{config: cq.config}
+	query := (&OrderClient{config: cq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -184,7 +185,7 @@ func (cq *CommissionQuery) QueryOrder() *OrderQuery {
 
 // QueryEmployee chains the current query on the "employee" edge.
 func (cq *CommissionQuery) QueryEmployee() *EmployeeQuery {
-	query := &EmployeeQuery{config: cq.config}
+	query := (&EmployeeClient{config: cq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -207,7 +208,7 @@ func (cq *CommissionQuery) QueryEmployee() *EmployeeQuery {
 // First returns the first Commission entity from the query.
 // Returns a *NotFoundError when no Commission was found.
 func (cq *CommissionQuery) First(ctx context.Context) (*Commission, error) {
-	nodes, err := cq.Limit(1).All(ctx)
+	nodes, err := cq.Limit(1).All(newQueryContext(ctx, TypeCommission, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -230,7 +231,7 @@ func (cq *CommissionQuery) FirstX(ctx context.Context) *Commission {
 // Returns a *NotFoundError when no Commission ID was found.
 func (cq *CommissionQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = cq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = cq.Limit(1).IDs(newQueryContext(ctx, TypeCommission, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -253,7 +254,7 @@ func (cq *CommissionQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Commission entity is found.
 // Returns a *NotFoundError when no Commission entities are found.
 func (cq *CommissionQuery) Only(ctx context.Context) (*Commission, error) {
-	nodes, err := cq.Limit(2).All(ctx)
+	nodes, err := cq.Limit(2).All(newQueryContext(ctx, TypeCommission, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -281,7 +282,7 @@ func (cq *CommissionQuery) OnlyX(ctx context.Context) *Commission {
 // Returns a *NotFoundError when no entities are found.
 func (cq *CommissionQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = cq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = cq.Limit(2).IDs(newQueryContext(ctx, TypeCommission, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -306,10 +307,12 @@ func (cq *CommissionQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Commissions.
 func (cq *CommissionQuery) All(ctx context.Context) ([]*Commission, error) {
+	ctx = newQueryContext(ctx, TypeCommission, "All")
 	if err := cq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return cq.sqlAll(ctx)
+	qr := querierAll[[]*Commission, *CommissionQuery]()
+	return withInterceptors[[]*Commission](ctx, cq, qr, cq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -324,6 +327,7 @@ func (cq *CommissionQuery) AllX(ctx context.Context) []*Commission {
 // IDs executes the query and returns a list of Commission IDs.
 func (cq *CommissionQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeCommission, "IDs")
 	if err := cq.Select(commission.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -341,10 +345,11 @@ func (cq *CommissionQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (cq *CommissionQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeCommission, "Count")
 	if err := cq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return cq.sqlCount(ctx)
+	return withInterceptors[int](ctx, cq, querierCount[*CommissionQuery](), cq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -358,10 +363,15 @@ func (cq *CommissionQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (cq *CommissionQuery) Exist(ctx context.Context) (bool, error) {
-	if err := cq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeCommission, "Exist")
+	switch _, err := cq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return cq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -401,7 +411,7 @@ func (cq *CommissionQuery) Clone() *CommissionQuery {
 // WithBusiness tells the query-builder to eager-load the nodes that are connected to
 // the "business" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *CommissionQuery) WithBusiness(opts ...func(*BusinessQuery)) *CommissionQuery {
-	query := &BusinessQuery{config: cq.config}
+	query := (&BusinessClient{config: cq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -412,7 +422,7 @@ func (cq *CommissionQuery) WithBusiness(opts ...func(*BusinessQuery)) *Commissio
 // WithSubscribe tells the query-builder to eager-load the nodes that are connected to
 // the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *CommissionQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *CommissionQuery {
-	query := &SubscribeQuery{config: cq.config}
+	query := (&SubscribeClient{config: cq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -423,7 +433,7 @@ func (cq *CommissionQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *Commiss
 // WithPlan tells the query-builder to eager-load the nodes that are connected to
 // the "plan" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *CommissionQuery) WithPlan(opts ...func(*PlanQuery)) *CommissionQuery {
-	query := &PlanQuery{config: cq.config}
+	query := (&PlanClient{config: cq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -434,7 +444,7 @@ func (cq *CommissionQuery) WithPlan(opts ...func(*PlanQuery)) *CommissionQuery {
 // WithRider tells the query-builder to eager-load the nodes that are connected to
 // the "rider" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *CommissionQuery) WithRider(opts ...func(*RiderQuery)) *CommissionQuery {
-	query := &RiderQuery{config: cq.config}
+	query := (&RiderClient{config: cq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -445,7 +455,7 @@ func (cq *CommissionQuery) WithRider(opts ...func(*RiderQuery)) *CommissionQuery
 // WithOrder tells the query-builder to eager-load the nodes that are connected to
 // the "order" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *CommissionQuery) WithOrder(opts ...func(*OrderQuery)) *CommissionQuery {
-	query := &OrderQuery{config: cq.config}
+	query := (&OrderClient{config: cq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -456,7 +466,7 @@ func (cq *CommissionQuery) WithOrder(opts ...func(*OrderQuery)) *CommissionQuery
 // WithEmployee tells the query-builder to eager-load the nodes that are connected to
 // the "employee" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *CommissionQuery) WithEmployee(opts ...func(*EmployeeQuery)) *CommissionQuery {
-	query := &EmployeeQuery{config: cq.config}
+	query := (&EmployeeClient{config: cq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -479,16 +489,11 @@ func (cq *CommissionQuery) WithEmployee(opts ...func(*EmployeeQuery)) *Commissio
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (cq *CommissionQuery) GroupBy(field string, fields ...string) *CommissionGroupBy {
-	grbuild := &CommissionGroupBy{config: cq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := cq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return cq.sqlQuery(ctx), nil
-	}
+	cq.fields = append([]string{field}, fields...)
+	grbuild := &CommissionGroupBy{build: cq}
+	grbuild.flds = &cq.fields
 	grbuild.label = commission.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -506,13 +511,28 @@ func (cq *CommissionQuery) GroupBy(field string, fields ...string) *CommissionGr
 //		Scan(ctx, &v)
 func (cq *CommissionQuery) Select(fields ...string) *CommissionSelect {
 	cq.fields = append(cq.fields, fields...)
-	selbuild := &CommissionSelect{CommissionQuery: cq}
-	selbuild.label = commission.Label
-	selbuild.flds, selbuild.scan = &cq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &CommissionSelect{CommissionQuery: cq}
+	sbuild.label = commission.Label
+	sbuild.flds, sbuild.scan = &cq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a CommissionSelect configured with the given aggregations.
+func (cq *CommissionQuery) Aggregate(fns ...AggregateFunc) *CommissionSelect {
+	return cq.Select().Aggregate(fns...)
 }
 
 func (cq *CommissionQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range cq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, cq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range cq.fields {
 		if !commission.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -785,17 +805,6 @@ func (cq *CommissionQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, cq.driver, _spec)
 }
 
-func (cq *CommissionQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := cq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (cq *CommissionQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -887,13 +896,8 @@ func (cq *CommissionQuery) Modify(modifiers ...func(s *sql.Selector)) *Commissio
 
 // CommissionGroupBy is the group-by builder for Commission entities.
 type CommissionGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *CommissionQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -902,74 +906,77 @@ func (cgb *CommissionGroupBy) Aggregate(fns ...AggregateFunc) *CommissionGroupBy
 	return cgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (cgb *CommissionGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := cgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeCommission, "GroupBy")
+	if err := cgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	cgb.sql = query
-	return cgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*CommissionQuery, *CommissionGroupBy](ctx, cgb.build, cgb, cgb.build.inters, v)
 }
 
-func (cgb *CommissionGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range cgb.fields {
-		if !commission.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (cgb *CommissionGroupBy) sqlScan(ctx context.Context, root *CommissionQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(cgb.fns))
+	for _, fn := range cgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := cgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*cgb.flds)+len(cgb.fns))
+		for _, f := range *cgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*cgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := cgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := cgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (cgb *CommissionGroupBy) sqlQuery() *sql.Selector {
-	selector := cgb.sql.Select()
-	aggregation := make([]string, 0, len(cgb.fns))
-	for _, fn := range cgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(cgb.fields)+len(cgb.fns))
-		for _, f := range cgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(cgb.fields...)...)
-}
-
 // CommissionSelect is the builder for selecting fields of Commission entities.
 type CommissionSelect struct {
 	*CommissionQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (cs *CommissionSelect) Aggregate(fns ...AggregateFunc) *CommissionSelect {
+	cs.fns = append(cs.fns, fns...)
+	return cs
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (cs *CommissionSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeCommission, "Select")
 	if err := cs.prepareQuery(ctx); err != nil {
 		return err
 	}
-	cs.sql = cs.CommissionQuery.sqlQuery(ctx)
-	return cs.sqlScan(ctx, v)
+	return scanWithInterceptors[*CommissionQuery, *CommissionSelect](ctx, cs.CommissionQuery, cs, cs.inters, v)
 }
 
-func (cs *CommissionSelect) sqlScan(ctx context.Context, v any) error {
+func (cs *CommissionSelect) sqlScan(ctx context.Context, root *CommissionQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(cs.fns))
+	for _, fn := range cs.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*cs.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := cs.sql.Query()
+	query, args := selector.Query()
 	if err := cs.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

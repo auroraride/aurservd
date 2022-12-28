@@ -334,43 +334,10 @@ func (au *AllocateUpdate) ClearContract() *AllocateUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (au *AllocateUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := au.defaults(); err != nil {
 		return 0, err
 	}
-	if len(au.hooks) == 0 {
-		if err = au.check(); err != nil {
-			return 0, err
-		}
-		affected, err = au.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*AllocateMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = au.check(); err != nil {
-				return 0, err
-			}
-			au.mutation = mutation
-			affected, err = au.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(au.hooks) - 1; i >= 0; i-- {
-			if au.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = au.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, au.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, AllocateMutation](ctx, au.sqlSave, au.mutation, au.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -430,6 +397,9 @@ func (au *AllocateUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Alloc
 }
 
 func (au *AllocateUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := au.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   allocate.Table,
@@ -448,90 +418,43 @@ func (au *AllocateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if au.mutation.CreatedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: allocate.FieldCreatedAt,
-		})
+		_spec.ClearField(allocate.FieldCreatedAt, field.TypeTime)
 	}
 	if value, ok := au.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: allocate.FieldUpdatedAt,
-		})
+		_spec.SetField(allocate.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if au.mutation.UpdatedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: allocate.FieldUpdatedAt,
-		})
+		_spec.ClearField(allocate.FieldUpdatedAt, field.TypeTime)
 	}
 	if au.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: allocate.FieldCreator,
-		})
+		_spec.ClearField(allocate.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := au.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: allocate.FieldLastModifier,
-		})
+		_spec.SetField(allocate.FieldLastModifier, field.TypeJSON, value)
 	}
 	if au.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: allocate.FieldLastModifier,
-		})
+		_spec.ClearField(allocate.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := au.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: allocate.FieldRemark,
-		})
+		_spec.SetField(allocate.FieldRemark, field.TypeString, value)
 	}
 	if au.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: allocate.FieldRemark,
-		})
+		_spec.ClearField(allocate.FieldRemark, field.TypeString)
 	}
 	if value, ok := au.mutation.GetType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: allocate.FieldType,
-		})
+		_spec.SetField(allocate.FieldType, field.TypeEnum, value)
 	}
 	if value, ok := au.mutation.Status(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: allocate.FieldStatus,
-		})
+		_spec.SetField(allocate.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := au.mutation.AddedStatus(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: allocate.FieldStatus,
-		})
+		_spec.AddField(allocate.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := au.mutation.Time(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: allocate.FieldTime,
-		})
+		_spec.SetField(allocate.FieldTime, field.TypeTime, value)
 	}
 	if value, ok := au.mutation.Model(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: allocate.FieldModel,
-		})
+		_spec.SetField(allocate.FieldModel, field.TypeString, value)
 	}
 	if au.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -813,7 +736,7 @@ func (au *AllocateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = au.modifiers
+	_spec.AddModifiers(au.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{allocate.Label}
@@ -822,6 +745,7 @@ func (au *AllocateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	au.mutation.done = true
 	return n, nil
 }
 
@@ -1137,49 +1061,10 @@ func (auo *AllocateUpdateOne) Select(field string, fields ...string) *AllocateUp
 
 // Save executes the query and returns the updated Allocate entity.
 func (auo *AllocateUpdateOne) Save(ctx context.Context) (*Allocate, error) {
-	var (
-		err  error
-		node *Allocate
-	)
 	if err := auo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(auo.hooks) == 0 {
-		if err = auo.check(); err != nil {
-			return nil, err
-		}
-		node, err = auo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*AllocateMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = auo.check(); err != nil {
-				return nil, err
-			}
-			auo.mutation = mutation
-			node, err = auo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(auo.hooks) - 1; i >= 0; i-- {
-			if auo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = auo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, auo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Allocate)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from AllocateMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Allocate, AllocateMutation](ctx, auo.sqlSave, auo.mutation, auo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -1239,6 +1124,9 @@ func (auo *AllocateUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *A
 }
 
 func (auo *AllocateUpdateOne) sqlSave(ctx context.Context) (_node *Allocate, err error) {
+	if err := auo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   allocate.Table,
@@ -1274,90 +1162,43 @@ func (auo *AllocateUpdateOne) sqlSave(ctx context.Context) (_node *Allocate, err
 		}
 	}
 	if auo.mutation.CreatedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: allocate.FieldCreatedAt,
-		})
+		_spec.ClearField(allocate.FieldCreatedAt, field.TypeTime)
 	}
 	if value, ok := auo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: allocate.FieldUpdatedAt,
-		})
+		_spec.SetField(allocate.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if auo.mutation.UpdatedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: allocate.FieldUpdatedAt,
-		})
+		_spec.ClearField(allocate.FieldUpdatedAt, field.TypeTime)
 	}
 	if auo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: allocate.FieldCreator,
-		})
+		_spec.ClearField(allocate.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := auo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: allocate.FieldLastModifier,
-		})
+		_spec.SetField(allocate.FieldLastModifier, field.TypeJSON, value)
 	}
 	if auo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: allocate.FieldLastModifier,
-		})
+		_spec.ClearField(allocate.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := auo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: allocate.FieldRemark,
-		})
+		_spec.SetField(allocate.FieldRemark, field.TypeString, value)
 	}
 	if auo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: allocate.FieldRemark,
-		})
+		_spec.ClearField(allocate.FieldRemark, field.TypeString)
 	}
 	if value, ok := auo.mutation.GetType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: allocate.FieldType,
-		})
+		_spec.SetField(allocate.FieldType, field.TypeEnum, value)
 	}
 	if value, ok := auo.mutation.Status(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: allocate.FieldStatus,
-		})
+		_spec.SetField(allocate.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := auo.mutation.AddedStatus(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: allocate.FieldStatus,
-		})
+		_spec.AddField(allocate.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := auo.mutation.Time(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: allocate.FieldTime,
-		})
+		_spec.SetField(allocate.FieldTime, field.TypeTime, value)
 	}
 	if value, ok := auo.mutation.Model(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: allocate.FieldModel,
-		})
+		_spec.SetField(allocate.FieldModel, field.TypeString, value)
 	}
 	if auo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1639,7 +1480,7 @@ func (auo *AllocateUpdateOne) sqlSave(ctx context.Context) (_node *Allocate, err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = auo.modifiers
+	_spec.AddModifiers(auo.modifiers...)
 	_node = &Allocate{config: auo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -1651,5 +1492,6 @@ func (auo *AllocateUpdateOne) sqlSave(ctx context.Context) (_node *Allocate, err
 		}
 		return nil, err
 	}
+	auo.mutation.done = true
 	return _node, nil
 }

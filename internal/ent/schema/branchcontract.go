@@ -19,6 +19,7 @@ type BranchContract struct {
 func (BranchContract) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "branch_contract"},
+        entsql.WithComments(true),
     }
 }
 

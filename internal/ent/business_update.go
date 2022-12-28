@@ -380,43 +380,10 @@ func (bu *BusinessUpdate) ClearCabinet() *BusinessUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (bu *BusinessUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := bu.defaults(); err != nil {
 		return 0, err
 	}
-	if len(bu.hooks) == 0 {
-		if err = bu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = bu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*BusinessMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = bu.check(); err != nil {
-				return 0, err
-			}
-			bu.mutation = mutation
-			affected, err = bu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(bu.hooks) - 1; i >= 0; i-- {
-			if bu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = bu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, bu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, BusinessMutation](ctx, bu.sqlSave, bu.mutation, bu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -479,6 +446,9 @@ func (bu *BusinessUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Busin
 }
 
 func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := bu.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   business.Table,
@@ -497,89 +467,43 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := bu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: business.FieldUpdatedAt,
-		})
+		_spec.SetField(business.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := bu.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: business.FieldDeletedAt,
-		})
+		_spec.SetField(business.FieldDeletedAt, field.TypeTime, value)
 	}
 	if bu.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: business.FieldDeletedAt,
-		})
+		_spec.ClearField(business.FieldDeletedAt, field.TypeTime)
 	}
 	if bu.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: business.FieldCreator,
-		})
+		_spec.ClearField(business.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := bu.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: business.FieldLastModifier,
-		})
+		_spec.SetField(business.FieldLastModifier, field.TypeJSON, value)
 	}
 	if bu.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: business.FieldLastModifier,
-		})
+		_spec.ClearField(business.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := bu.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: business.FieldRemark,
-		})
+		_spec.SetField(business.FieldRemark, field.TypeString, value)
 	}
 	if bu.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: business.FieldRemark,
-		})
+		_spec.ClearField(business.FieldRemark, field.TypeString)
 	}
 	if value, ok := bu.mutation.GetType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: business.FieldType,
-		})
+		_spec.SetField(business.FieldType, field.TypeEnum, value)
 	}
 	if value, ok := bu.mutation.BinInfo(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: business.FieldBinInfo,
-		})
+		_spec.SetField(business.FieldBinInfo, field.TypeJSON, value)
 	}
 	if bu.mutation.BinInfoCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: business.FieldBinInfo,
-		})
+		_spec.ClearField(business.FieldBinInfo, field.TypeJSON)
 	}
 	if value, ok := bu.mutation.StockSn(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: business.FieldStockSn,
-		})
+		_spec.SetField(business.FieldStockSn, field.TypeString, value)
 	}
 	if bu.mutation.StockSnCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: business.FieldStockSn,
-		})
+		_spec.ClearField(business.FieldStockSn, field.TypeString)
 	}
 	if bu.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -896,7 +820,7 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = bu.modifiers
+	_spec.AddModifiers(bu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{business.Label}
@@ -905,6 +829,7 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	bu.mutation.done = true
 	return n, nil
 }
 
@@ -1264,49 +1189,10 @@ func (buo *BusinessUpdateOne) Select(field string, fields ...string) *BusinessUp
 
 // Save executes the query and returns the updated Business entity.
 func (buo *BusinessUpdateOne) Save(ctx context.Context) (*Business, error) {
-	var (
-		err  error
-		node *Business
-	)
 	if err := buo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(buo.hooks) == 0 {
-		if err = buo.check(); err != nil {
-			return nil, err
-		}
-		node, err = buo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*BusinessMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = buo.check(); err != nil {
-				return nil, err
-			}
-			buo.mutation = mutation
-			node, err = buo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(buo.hooks) - 1; i >= 0; i-- {
-			if buo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = buo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, buo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Business)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from BusinessMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Business, BusinessMutation](ctx, buo.sqlSave, buo.mutation, buo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -1369,6 +1255,9 @@ func (buo *BusinessUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *B
 }
 
 func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err error) {
+	if err := buo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   business.Table,
@@ -1404,89 +1293,43 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 		}
 	}
 	if value, ok := buo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: business.FieldUpdatedAt,
-		})
+		_spec.SetField(business.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := buo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: business.FieldDeletedAt,
-		})
+		_spec.SetField(business.FieldDeletedAt, field.TypeTime, value)
 	}
 	if buo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: business.FieldDeletedAt,
-		})
+		_spec.ClearField(business.FieldDeletedAt, field.TypeTime)
 	}
 	if buo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: business.FieldCreator,
-		})
+		_spec.ClearField(business.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := buo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: business.FieldLastModifier,
-		})
+		_spec.SetField(business.FieldLastModifier, field.TypeJSON, value)
 	}
 	if buo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: business.FieldLastModifier,
-		})
+		_spec.ClearField(business.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := buo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: business.FieldRemark,
-		})
+		_spec.SetField(business.FieldRemark, field.TypeString, value)
 	}
 	if buo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: business.FieldRemark,
-		})
+		_spec.ClearField(business.FieldRemark, field.TypeString)
 	}
 	if value, ok := buo.mutation.GetType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: business.FieldType,
-		})
+		_spec.SetField(business.FieldType, field.TypeEnum, value)
 	}
 	if value, ok := buo.mutation.BinInfo(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: business.FieldBinInfo,
-		})
+		_spec.SetField(business.FieldBinInfo, field.TypeJSON, value)
 	}
 	if buo.mutation.BinInfoCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: business.FieldBinInfo,
-		})
+		_spec.ClearField(business.FieldBinInfo, field.TypeJSON)
 	}
 	if value, ok := buo.mutation.StockSn(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: business.FieldStockSn,
-		})
+		_spec.SetField(business.FieldStockSn, field.TypeString, value)
 	}
 	if buo.mutation.StockSnCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: business.FieldStockSn,
-		})
+		_spec.ClearField(business.FieldStockSn, field.TypeString)
 	}
 	if buo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1803,7 +1646,7 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = buo.modifiers
+	_spec.AddModifiers(buo.modifiers...)
 	_node = &Business{config: buo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -1815,5 +1658,6 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 		}
 		return nil, err
 	}
+	buo.mutation.done = true
 	return _node, nil
 }

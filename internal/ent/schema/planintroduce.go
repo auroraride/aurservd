@@ -51,6 +51,7 @@ type PlanIntroduce struct {
 func (PlanIntroduce) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "plan_introduce"},
+        entsql.WithComments(true),
     }
 }
 

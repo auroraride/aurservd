@@ -252,52 +252,10 @@ func (cc *CouponCreate) Mutation() *CouponMutation {
 
 // Save creates the Coupon in the database.
 func (cc *CouponCreate) Save(ctx context.Context) (*Coupon, error) {
-	var (
-		err  error
-		node *Coupon
-	)
 	if err := cc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(cc.hooks) == 0 {
-		if err = cc.check(); err != nil {
-			return nil, err
-		}
-		node, err = cc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CouponMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = cc.check(); err != nil {
-				return nil, err
-			}
-			cc.mutation = mutation
-			if node, err = cc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(cc.hooks) - 1; i >= 0; i-- {
-			if cc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = cc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, cc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Coupon)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from CouponMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Coupon, CouponMutation](ctx, cc.sqlSave, cc.mutation, cc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -387,6 +345,9 @@ func (cc *CouponCreate) check() error {
 }
 
 func (cc *CouponCreate) sqlSave(ctx context.Context) (*Coupon, error) {
+	if err := cc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := cc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, cc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -396,6 +357,8 @@ func (cc *CouponCreate) sqlSave(ctx context.Context) (*Coupon, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	cc.mutation.id = &_node.ID
+	cc.mutation.done = true
 	return _node, nil
 }
 
@@ -412,123 +375,63 @@ func (cc *CouponCreate) createSpec() (*Coupon, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = cc.conflict
 	if value, ok := cc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: coupon.FieldCreatedAt,
-		})
+		_spec.SetField(coupon.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := cc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: coupon.FieldUpdatedAt,
-		})
+		_spec.SetField(coupon.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := cc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: coupon.FieldCreator,
-		})
+		_spec.SetField(coupon.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := cc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: coupon.FieldLastModifier,
-		})
+		_spec.SetField(coupon.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := cc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: coupon.FieldRemark,
-		})
+		_spec.SetField(coupon.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := cc.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: coupon.FieldName,
-		})
+		_spec.SetField(coupon.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := cc.mutation.Rule(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: coupon.FieldRule,
-		})
+		_spec.SetField(coupon.FieldRule, field.TypeUint8, value)
 		_node.Rule = value
 	}
 	if value, ok := cc.mutation.Multiple(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: coupon.FieldMultiple,
-		})
+		_spec.SetField(coupon.FieldMultiple, field.TypeBool, value)
 		_node.Multiple = value
 	}
 	if value, ok := cc.mutation.Amount(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: coupon.FieldAmount,
-		})
+		_spec.SetField(coupon.FieldAmount, field.TypeFloat64, value)
 		_node.Amount = value
 	}
 	if value, ok := cc.mutation.Code(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: coupon.FieldCode,
-		})
+		_spec.SetField(coupon.FieldCode, field.TypeString, value)
 		_node.Code = value
 	}
 	if value, ok := cc.mutation.ExpiresAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: coupon.FieldExpiresAt,
-		})
+		_spec.SetField(coupon.FieldExpiresAt, field.TypeTime, value)
 		_node.ExpiresAt = value
 	}
 	if value, ok := cc.mutation.UsedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: coupon.FieldUsedAt,
-		})
+		_spec.SetField(coupon.FieldUsedAt, field.TypeTime, value)
 		_node.UsedAt = &value
 	}
 	if value, ok := cc.mutation.Duration(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: coupon.FieldDuration,
-		})
+		_spec.SetField(coupon.FieldDuration, field.TypeJSON, value)
 		_node.Duration = value
 	}
 	if value, ok := cc.mutation.Plans(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: coupon.FieldPlans,
-		})
+		_spec.SetField(coupon.FieldPlans, field.TypeJSON, value)
 		_node.Plans = value
 	}
 	if value, ok := cc.mutation.Cities(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: coupon.FieldCities,
-		})
+		_spec.SetField(coupon.FieldCities, field.TypeJSON, value)
 		_node.Cities = value
 	}
 	if nodes := cc.mutation.RiderIDs(); len(nodes) > 0 {

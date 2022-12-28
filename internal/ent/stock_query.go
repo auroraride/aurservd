@@ -31,6 +31,7 @@ type StockQuery struct {
 	unique        *bool
 	order         []OrderFunc
 	fields        []string
+	inters        []Interceptor
 	predicates    []predicate.Stock
 	withCity      *CityQuery
 	withSubscribe *SubscribeQuery
@@ -56,13 +57,13 @@ func (sq *StockQuery) Where(ps ...predicate.Stock) *StockQuery {
 	return sq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (sq *StockQuery) Limit(limit int) *StockQuery {
 	sq.limit = &limit
 	return sq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (sq *StockQuery) Offset(offset int) *StockQuery {
 	sq.offset = &offset
 	return sq
@@ -75,7 +76,7 @@ func (sq *StockQuery) Unique(unique bool) *StockQuery {
 	return sq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (sq *StockQuery) Order(o ...OrderFunc) *StockQuery {
 	sq.order = append(sq.order, o...)
 	return sq
@@ -83,7 +84,7 @@ func (sq *StockQuery) Order(o ...OrderFunc) *StockQuery {
 
 // QueryCity chains the current query on the "city" edge.
 func (sq *StockQuery) QueryCity() *CityQuery {
-	query := &CityQuery{config: sq.config}
+	query := (&CityClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -105,7 +106,7 @@ func (sq *StockQuery) QueryCity() *CityQuery {
 
 // QuerySubscribe chains the current query on the "subscribe" edge.
 func (sq *StockQuery) QuerySubscribe() *SubscribeQuery {
-	query := &SubscribeQuery{config: sq.config}
+	query := (&SubscribeClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -127,7 +128,7 @@ func (sq *StockQuery) QuerySubscribe() *SubscribeQuery {
 
 // QueryEbike chains the current query on the "ebike" edge.
 func (sq *StockQuery) QueryEbike() *EbikeQuery {
-	query := &EbikeQuery{config: sq.config}
+	query := (&EbikeClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -149,7 +150,7 @@ func (sq *StockQuery) QueryEbike() *EbikeQuery {
 
 // QueryBrand chains the current query on the "brand" edge.
 func (sq *StockQuery) QueryBrand() *EbikeBrandQuery {
-	query := &EbikeBrandQuery{config: sq.config}
+	query := (&EbikeBrandClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -171,7 +172,7 @@ func (sq *StockQuery) QueryBrand() *EbikeBrandQuery {
 
 // QueryStore chains the current query on the "store" edge.
 func (sq *StockQuery) QueryStore() *StoreQuery {
-	query := &StoreQuery{config: sq.config}
+	query := (&StoreClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -193,7 +194,7 @@ func (sq *StockQuery) QueryStore() *StoreQuery {
 
 // QueryCabinet chains the current query on the "cabinet" edge.
 func (sq *StockQuery) QueryCabinet() *CabinetQuery {
-	query := &CabinetQuery{config: sq.config}
+	query := (&CabinetClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -215,7 +216,7 @@ func (sq *StockQuery) QueryCabinet() *CabinetQuery {
 
 // QueryRider chains the current query on the "rider" edge.
 func (sq *StockQuery) QueryRider() *RiderQuery {
-	query := &RiderQuery{config: sq.config}
+	query := (&RiderClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -237,7 +238,7 @@ func (sq *StockQuery) QueryRider() *RiderQuery {
 
 // QueryEmployee chains the current query on the "employee" edge.
 func (sq *StockQuery) QueryEmployee() *EmployeeQuery {
-	query := &EmployeeQuery{config: sq.config}
+	query := (&EmployeeClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -259,7 +260,7 @@ func (sq *StockQuery) QueryEmployee() *EmployeeQuery {
 
 // QuerySpouse chains the current query on the "spouse" edge.
 func (sq *StockQuery) QuerySpouse() *StockQuery {
-	query := &StockQuery{config: sq.config}
+	query := (&StockClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -281,7 +282,7 @@ func (sq *StockQuery) QuerySpouse() *StockQuery {
 
 // QueryParent chains the current query on the "parent" edge.
 func (sq *StockQuery) QueryParent() *StockQuery {
-	query := &StockQuery{config: sq.config}
+	query := (&StockClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -303,7 +304,7 @@ func (sq *StockQuery) QueryParent() *StockQuery {
 
 // QueryChildren chains the current query on the "children" edge.
 func (sq *StockQuery) QueryChildren() *StockQuery {
-	query := &StockQuery{config: sq.config}
+	query := (&StockClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -326,7 +327,7 @@ func (sq *StockQuery) QueryChildren() *StockQuery {
 // First returns the first Stock entity from the query.
 // Returns a *NotFoundError when no Stock was found.
 func (sq *StockQuery) First(ctx context.Context) (*Stock, error) {
-	nodes, err := sq.Limit(1).All(ctx)
+	nodes, err := sq.Limit(1).All(newQueryContext(ctx, TypeStock, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -349,7 +350,7 @@ func (sq *StockQuery) FirstX(ctx context.Context) *Stock {
 // Returns a *NotFoundError when no Stock ID was found.
 func (sq *StockQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = sq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = sq.Limit(1).IDs(newQueryContext(ctx, TypeStock, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -372,7 +373,7 @@ func (sq *StockQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Stock entity is found.
 // Returns a *NotFoundError when no Stock entities are found.
 func (sq *StockQuery) Only(ctx context.Context) (*Stock, error) {
-	nodes, err := sq.Limit(2).All(ctx)
+	nodes, err := sq.Limit(2).All(newQueryContext(ctx, TypeStock, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -400,7 +401,7 @@ func (sq *StockQuery) OnlyX(ctx context.Context) *Stock {
 // Returns a *NotFoundError when no entities are found.
 func (sq *StockQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = sq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = sq.Limit(2).IDs(newQueryContext(ctx, TypeStock, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -425,10 +426,12 @@ func (sq *StockQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Stocks.
 func (sq *StockQuery) All(ctx context.Context) ([]*Stock, error) {
+	ctx = newQueryContext(ctx, TypeStock, "All")
 	if err := sq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return sq.sqlAll(ctx)
+	qr := querierAll[[]*Stock, *StockQuery]()
+	return withInterceptors[[]*Stock](ctx, sq, qr, sq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -443,6 +446,7 @@ func (sq *StockQuery) AllX(ctx context.Context) []*Stock {
 // IDs executes the query and returns a list of Stock IDs.
 func (sq *StockQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeStock, "IDs")
 	if err := sq.Select(stock.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -460,10 +464,11 @@ func (sq *StockQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (sq *StockQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeStock, "Count")
 	if err := sq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return sq.sqlCount(ctx)
+	return withInterceptors[int](ctx, sq, querierCount[*StockQuery](), sq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -477,10 +482,15 @@ func (sq *StockQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (sq *StockQuery) Exist(ctx context.Context) (bool, error) {
-	if err := sq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeStock, "Exist")
+	switch _, err := sq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return sq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -525,7 +535,7 @@ func (sq *StockQuery) Clone() *StockQuery {
 // WithCity tells the query-builder to eager-load the nodes that are connected to
 // the "city" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *StockQuery) WithCity(opts ...func(*CityQuery)) *StockQuery {
-	query := &CityQuery{config: sq.config}
+	query := (&CityClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -536,7 +546,7 @@ func (sq *StockQuery) WithCity(opts ...func(*CityQuery)) *StockQuery {
 // WithSubscribe tells the query-builder to eager-load the nodes that are connected to
 // the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *StockQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *StockQuery {
-	query := &SubscribeQuery{config: sq.config}
+	query := (&SubscribeClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -547,7 +557,7 @@ func (sq *StockQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *StockQuery {
 // WithEbike tells the query-builder to eager-load the nodes that are connected to
 // the "ebike" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *StockQuery) WithEbike(opts ...func(*EbikeQuery)) *StockQuery {
-	query := &EbikeQuery{config: sq.config}
+	query := (&EbikeClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -558,7 +568,7 @@ func (sq *StockQuery) WithEbike(opts ...func(*EbikeQuery)) *StockQuery {
 // WithBrand tells the query-builder to eager-load the nodes that are connected to
 // the "brand" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *StockQuery) WithBrand(opts ...func(*EbikeBrandQuery)) *StockQuery {
-	query := &EbikeBrandQuery{config: sq.config}
+	query := (&EbikeBrandClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -569,7 +579,7 @@ func (sq *StockQuery) WithBrand(opts ...func(*EbikeBrandQuery)) *StockQuery {
 // WithStore tells the query-builder to eager-load the nodes that are connected to
 // the "store" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *StockQuery) WithStore(opts ...func(*StoreQuery)) *StockQuery {
-	query := &StoreQuery{config: sq.config}
+	query := (&StoreClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -580,7 +590,7 @@ func (sq *StockQuery) WithStore(opts ...func(*StoreQuery)) *StockQuery {
 // WithCabinet tells the query-builder to eager-load the nodes that are connected to
 // the "cabinet" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *StockQuery) WithCabinet(opts ...func(*CabinetQuery)) *StockQuery {
-	query := &CabinetQuery{config: sq.config}
+	query := (&CabinetClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -591,7 +601,7 @@ func (sq *StockQuery) WithCabinet(opts ...func(*CabinetQuery)) *StockQuery {
 // WithRider tells the query-builder to eager-load the nodes that are connected to
 // the "rider" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *StockQuery) WithRider(opts ...func(*RiderQuery)) *StockQuery {
-	query := &RiderQuery{config: sq.config}
+	query := (&RiderClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -602,7 +612,7 @@ func (sq *StockQuery) WithRider(opts ...func(*RiderQuery)) *StockQuery {
 // WithEmployee tells the query-builder to eager-load the nodes that are connected to
 // the "employee" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *StockQuery) WithEmployee(opts ...func(*EmployeeQuery)) *StockQuery {
-	query := &EmployeeQuery{config: sq.config}
+	query := (&EmployeeClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -613,7 +623,7 @@ func (sq *StockQuery) WithEmployee(opts ...func(*EmployeeQuery)) *StockQuery {
 // WithSpouse tells the query-builder to eager-load the nodes that are connected to
 // the "spouse" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *StockQuery) WithSpouse(opts ...func(*StockQuery)) *StockQuery {
-	query := &StockQuery{config: sq.config}
+	query := (&StockClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -624,7 +634,7 @@ func (sq *StockQuery) WithSpouse(opts ...func(*StockQuery)) *StockQuery {
 // WithParent tells the query-builder to eager-load the nodes that are connected to
 // the "parent" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *StockQuery) WithParent(opts ...func(*StockQuery)) *StockQuery {
-	query := &StockQuery{config: sq.config}
+	query := (&StockClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -635,7 +645,7 @@ func (sq *StockQuery) WithParent(opts ...func(*StockQuery)) *StockQuery {
 // WithChildren tells the query-builder to eager-load the nodes that are connected to
 // the "children" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *StockQuery) WithChildren(opts ...func(*StockQuery)) *StockQuery {
-	query := &StockQuery{config: sq.config}
+	query := (&StockClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -658,16 +668,11 @@ func (sq *StockQuery) WithChildren(opts ...func(*StockQuery)) *StockQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (sq *StockQuery) GroupBy(field string, fields ...string) *StockGroupBy {
-	grbuild := &StockGroupBy{config: sq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := sq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return sq.sqlQuery(ctx), nil
-	}
+	sq.fields = append([]string{field}, fields...)
+	grbuild := &StockGroupBy{build: sq}
+	grbuild.flds = &sq.fields
 	grbuild.label = stock.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -685,13 +690,28 @@ func (sq *StockQuery) GroupBy(field string, fields ...string) *StockGroupBy {
 //		Scan(ctx, &v)
 func (sq *StockQuery) Select(fields ...string) *StockSelect {
 	sq.fields = append(sq.fields, fields...)
-	selbuild := &StockSelect{StockQuery: sq}
-	selbuild.label = stock.Label
-	selbuild.flds, selbuild.scan = &sq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &StockSelect{StockQuery: sq}
+	sbuild.label = stock.Label
+	sbuild.flds, sbuild.scan = &sq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a StockSelect configured with the given aggregations.
+func (sq *StockQuery) Aggregate(fns ...AggregateFunc) *StockSelect {
+	return sq.Select().Aggregate(fns...)
 }
 
 func (sq *StockQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range sq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, sq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range sq.fields {
 		if !stock.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -1157,17 +1177,6 @@ func (sq *StockQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, sq.driver, _spec)
 }
 
-func (sq *StockQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := sq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (sq *StockQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -1259,13 +1268,8 @@ func (sq *StockQuery) Modify(modifiers ...func(s *sql.Selector)) *StockSelect {
 
 // StockGroupBy is the group-by builder for Stock entities.
 type StockGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *StockQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -1274,74 +1278,77 @@ func (sgb *StockGroupBy) Aggregate(fns ...AggregateFunc) *StockGroupBy {
 	return sgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (sgb *StockGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := sgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeStock, "GroupBy")
+	if err := sgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	sgb.sql = query
-	return sgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*StockQuery, *StockGroupBy](ctx, sgb.build, sgb, sgb.build.inters, v)
 }
 
-func (sgb *StockGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range sgb.fields {
-		if !stock.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (sgb *StockGroupBy) sqlScan(ctx context.Context, root *StockQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(sgb.fns))
+	for _, fn := range sgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := sgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*sgb.flds)+len(sgb.fns))
+		for _, f := range *sgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*sgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := sgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := sgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (sgb *StockGroupBy) sqlQuery() *sql.Selector {
-	selector := sgb.sql.Select()
-	aggregation := make([]string, 0, len(sgb.fns))
-	for _, fn := range sgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(sgb.fields)+len(sgb.fns))
-		for _, f := range sgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(sgb.fields...)...)
-}
-
 // StockSelect is the builder for selecting fields of Stock entities.
 type StockSelect struct {
 	*StockQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (ss *StockSelect) Aggregate(fns ...AggregateFunc) *StockSelect {
+	ss.fns = append(ss.fns, fns...)
+	return ss
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (ss *StockSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeStock, "Select")
 	if err := ss.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ss.sql = ss.StockQuery.sqlQuery(ctx)
-	return ss.sqlScan(ctx, v)
+	return scanWithInterceptors[*StockQuery, *StockSelect](ctx, ss.StockQuery, ss, ss.inters, v)
 }
 
-func (ss *StockSelect) sqlScan(ctx context.Context, v any) error {
+func (ss *StockSelect) sqlScan(ctx context.Context, root *StockQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(ss.fns))
+	for _, fn := range ss.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*ss.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := ss.sql.Query()
+	query, args := selector.Query()
 	if err := ss.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

@@ -50,6 +50,7 @@ type Contract struct {
 func (Contract) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "contract"},
+        entsql.WithComments(true),
     }
 }
 

@@ -174,52 +174,10 @@ func (rc *ReserveCreate) Mutation() *ReserveMutation {
 
 // Save creates the Reserve in the database.
 func (rc *ReserveCreate) Save(ctx context.Context) (*Reserve, error) {
-	var (
-		err  error
-		node *Reserve
-	)
 	if err := rc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(rc.hooks) == 0 {
-		if err = rc.check(); err != nil {
-			return nil, err
-		}
-		node, err = rc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ReserveMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = rc.check(); err != nil {
-				return nil, err
-			}
-			rc.mutation = mutation
-			if node, err = rc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(rc.hooks) - 1; i >= 0; i-- {
-			if rc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = rc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, rc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Reserve)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from ReserveMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Reserve, ReserveMutation](ctx, rc.sqlSave, rc.mutation, rc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -303,6 +261,9 @@ func (rc *ReserveCreate) check() error {
 }
 
 func (rc *ReserveCreate) sqlSave(ctx context.Context) (*Reserve, error) {
+	if err := rc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := rc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, rc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -312,6 +273,8 @@ func (rc *ReserveCreate) sqlSave(ctx context.Context) (*Reserve, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	rc.mutation.id = &_node.ID
+	rc.mutation.done = true
 	return _node, nil
 }
 
@@ -328,67 +291,35 @@ func (rc *ReserveCreate) createSpec() (*Reserve, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = rc.conflict
 	if value, ok := rc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: reserve.FieldCreatedAt,
-		})
+		_spec.SetField(reserve.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := rc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: reserve.FieldUpdatedAt,
-		})
+		_spec.SetField(reserve.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := rc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: reserve.FieldDeletedAt,
-		})
+		_spec.SetField(reserve.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := rc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: reserve.FieldCreator,
-		})
+		_spec.SetField(reserve.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := rc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: reserve.FieldLastModifier,
-		})
+		_spec.SetField(reserve.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := rc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: reserve.FieldRemark,
-		})
+		_spec.SetField(reserve.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := rc.mutation.Status(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: reserve.FieldStatus,
-		})
+		_spec.SetField(reserve.FieldStatus, field.TypeUint8, value)
 		_node.Status = value
 	}
 	if value, ok := rc.mutation.GetType(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: reserve.FieldType,
-		})
+		_spec.SetField(reserve.FieldType, field.TypeString, value)
 		_node.Type = value
 	}
 	if nodes := rc.mutation.CabinetIDs(); len(nodes) > 0 {

@@ -19,6 +19,7 @@ type SubscribeReminder struct {
 func (SubscribeReminder) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "subscribe_reminder"},
+        entsql.WithComments(true),
     }
 }
 

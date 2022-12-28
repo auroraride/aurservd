@@ -210,52 +210,10 @@ func (ac *AttendanceCreate) Mutation() *AttendanceMutation {
 
 // Save creates the Attendance in the database.
 func (ac *AttendanceCreate) Save(ctx context.Context) (*Attendance, error) {
-	var (
-		err  error
-		node *Attendance
-	)
 	if err := ac.defaults(); err != nil {
 		return nil, err
 	}
-	if len(ac.hooks) == 0 {
-		if err = ac.check(); err != nil {
-			return nil, err
-		}
-		node, err = ac.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*AttendanceMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ac.check(); err != nil {
-				return nil, err
-			}
-			ac.mutation = mutation
-			if node, err = ac.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ac.hooks) - 1; i >= 0; i-- {
-			if ac.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ac.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ac.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Attendance)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from AttendanceMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Attendance, AttendanceMutation](ctx, ac.sqlSave, ac.mutation, ac.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -329,6 +287,9 @@ func (ac *AttendanceCreate) check() error {
 }
 
 func (ac *AttendanceCreate) sqlSave(ctx context.Context) (*Attendance, error) {
+	if err := ac.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := ac.createSpec()
 	if err := sqlgraph.CreateNode(ctx, ac.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -338,6 +299,8 @@ func (ac *AttendanceCreate) sqlSave(ctx context.Context) (*Attendance, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	ac.mutation.id = &_node.ID
+	ac.mutation.done = true
 	return _node, nil
 }
 
@@ -354,115 +317,59 @@ func (ac *AttendanceCreate) createSpec() (*Attendance, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = ac.conflict
 	if value, ok := ac.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: attendance.FieldCreatedAt,
-		})
+		_spec.SetField(attendance.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := ac.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: attendance.FieldUpdatedAt,
-		})
+		_spec.SetField(attendance.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := ac.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: attendance.FieldDeletedAt,
-		})
+		_spec.SetField(attendance.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := ac.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: attendance.FieldCreator,
-		})
+		_spec.SetField(attendance.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := ac.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: attendance.FieldLastModifier,
-		})
+		_spec.SetField(attendance.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := ac.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: attendance.FieldRemark,
-		})
+		_spec.SetField(attendance.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := ac.mutation.Inventory(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: attendance.FieldInventory,
-		})
+		_spec.SetField(attendance.FieldInventory, field.TypeJSON, value)
 		_node.Inventory = value
 	}
 	if value, ok := ac.mutation.Photo(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: attendance.FieldPhoto,
-		})
+		_spec.SetField(attendance.FieldPhoto, field.TypeString, value)
 		_node.Photo = &value
 	}
 	if value, ok := ac.mutation.Duty(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: attendance.FieldDuty,
-		})
+		_spec.SetField(attendance.FieldDuty, field.TypeBool, value)
 		_node.Duty = value
 	}
 	if value, ok := ac.mutation.Date(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: attendance.FieldDate,
-		})
+		_spec.SetField(attendance.FieldDate, field.TypeTime, value)
 		_node.Date = value
 	}
 	if value, ok := ac.mutation.Lng(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: attendance.FieldLng,
-		})
+		_spec.SetField(attendance.FieldLng, field.TypeFloat64, value)
 		_node.Lng = &value
 	}
 	if value, ok := ac.mutation.Lat(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: attendance.FieldLat,
-		})
+		_spec.SetField(attendance.FieldLat, field.TypeFloat64, value)
 		_node.Lat = &value
 	}
 	if value, ok := ac.mutation.Address(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: attendance.FieldAddress,
-		})
+		_spec.SetField(attendance.FieldAddress, field.TypeString, value)
 		_node.Address = &value
 	}
 	if value, ok := ac.mutation.Distance(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: attendance.FieldDistance,
-		})
+		_spec.SetField(attendance.FieldDistance, field.TypeFloat64, value)
 		_node.Distance = &value
 	}
 	if nodes := ac.mutation.StoreIDs(); len(nodes) > 0 {

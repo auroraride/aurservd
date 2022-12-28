@@ -14,8 +14,8 @@ import (
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
+    "github.com/goccy/go-json"
     "github.com/golang-module/carbon/v2"
-    jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
     "github.com/smartwalle/alipay/v3"
     "net/http"
@@ -137,7 +137,7 @@ func (c *alipayClient) Refund(req *model.PaymentRefund) {
         RefundAmount: fmt.Sprintf("%.2f", req.RefundAmount),
         RefundReason: req.Reason,
     })
-    b, _ := jsoniter.MarshalIndent(result, "", "  ")
+    b, _ := json.MarshalIndent(result, "", "  ")
     log.Infof("[%s]支付宝退款反馈\n%s, err: %v", req.TradeNo, b, err)
 
     if err != nil {
@@ -160,7 +160,7 @@ func (c *alipayClient) Refund(req *model.PaymentRefund) {
 // Notification 支付宝回调
 func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
     result, err := c.Client.GetTradeNotification(req)
-    b, _ := jsoniter.MarshalIndent(result, "", "  ")
+    b, _ := json.MarshalIndent(result, "", "  ")
     log.Infof("支付宝反馈\n%s", b)
     if err != nil {
         log.Error(err)
@@ -176,7 +176,7 @@ func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
         return nil
     }
 
-    b, _ = jsoniter.MarshalIndent(pc, "", "  ")
+    b, _ = json.MarshalIndent(pc, "", "  ")
     log.Infof("获取到支付宝支付缓存: %s", b)
 
     switch pc.CacheType {

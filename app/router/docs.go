@@ -7,14 +7,13 @@ package router
 
 import (
     "bytes"
-    "encoding/json"
     "fmt"
     "github.com/auroraride/aurservd/assets"
     "github.com/auroraride/aurservd/assets/docs"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/getkin/kin-openapi/openapi2"
     "github.com/getkin/kin-openapi/openapi2conv"
-    jsoniter "github.com/json-iterator/go"
+    "github.com/goccy/go-json"
     "github.com/labstack/echo/v4"
     "github.com/shurcooL/github_flavored_markdown"
     "github.com/shurcooL/github_flavored_markdown/gfmstyle"
@@ -48,7 +47,7 @@ func loadDocRoutes() {
             return
         }
         doc, err := openapi2conv.ToV3(&doc2)
-        b, _ := jsoniter.Marshal(doc)
+        b, _ := json.Marshal(doc)
         return c.Blob(200, "application/json", b)
     })
 

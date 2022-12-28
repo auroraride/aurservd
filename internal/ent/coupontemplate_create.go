@@ -126,52 +126,10 @@ func (ctc *CouponTemplateCreate) Mutation() *CouponTemplateMutation {
 
 // Save creates the CouponTemplate in the database.
 func (ctc *CouponTemplateCreate) Save(ctx context.Context) (*CouponTemplate, error) {
-	var (
-		err  error
-		node *CouponTemplate
-	)
 	if err := ctc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(ctc.hooks) == 0 {
-		if err = ctc.check(); err != nil {
-			return nil, err
-		}
-		node, err = ctc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CouponTemplateMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ctc.check(); err != nil {
-				return nil, err
-			}
-			ctc.mutation = mutation
-			if node, err = ctc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ctc.hooks) - 1; i >= 0; i-- {
-			if ctc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ctc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ctc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*CouponTemplate)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from CouponTemplateMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*CouponTemplate, CouponTemplateMutation](ctx, ctc.sqlSave, ctc.mutation, ctc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -240,6 +198,9 @@ func (ctc *CouponTemplateCreate) check() error {
 }
 
 func (ctc *CouponTemplateCreate) sqlSave(ctx context.Context) (*CouponTemplate, error) {
+	if err := ctc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := ctc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, ctc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -249,6 +210,8 @@ func (ctc *CouponTemplateCreate) sqlSave(ctx context.Context) (*CouponTemplate, 
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	ctc.mutation.id = &_node.ID
+	ctc.mutation.done = true
 	return _node, nil
 }
 
@@ -265,67 +228,35 @@ func (ctc *CouponTemplateCreate) createSpec() (*CouponTemplate, *sqlgraph.Create
 	)
 	_spec.OnConflict = ctc.conflict
 	if value, ok := ctc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: coupontemplate.FieldCreatedAt,
-		})
+		_spec.SetField(coupontemplate.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := ctc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: coupontemplate.FieldUpdatedAt,
-		})
+		_spec.SetField(coupontemplate.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := ctc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: coupontemplate.FieldCreator,
-		})
+		_spec.SetField(coupontemplate.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := ctc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: coupontemplate.FieldLastModifier,
-		})
+		_spec.SetField(coupontemplate.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := ctc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: coupontemplate.FieldRemark,
-		})
+		_spec.SetField(coupontemplate.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := ctc.mutation.Enable(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: coupontemplate.FieldEnable,
-		})
+		_spec.SetField(coupontemplate.FieldEnable, field.TypeBool, value)
 		_node.Enable = value
 	}
 	if value, ok := ctc.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: coupontemplate.FieldName,
-		})
+		_spec.SetField(coupontemplate.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := ctc.mutation.Meta(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: coupontemplate.FieldMeta,
-		})
+		_spec.SetField(coupontemplate.FieldMeta, field.TypeJSON, value)
 		_node.Meta = value
 	}
 	if nodes := ctc.mutation.CouponsIDs(); len(nodes) > 0 {

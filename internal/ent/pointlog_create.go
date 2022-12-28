@@ -140,52 +140,10 @@ func (plc *PointLogCreate) Mutation() *PointLogMutation {
 
 // Save creates the PointLog in the database.
 func (plc *PointLogCreate) Save(ctx context.Context) (*PointLog, error) {
-	var (
-		err  error
-		node *PointLog
-	)
 	if err := plc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(plc.hooks) == 0 {
-		if err = plc.check(); err != nil {
-			return nil, err
-		}
-		node, err = plc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*PointLogMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = plc.check(); err != nil {
-				return nil, err
-			}
-			plc.mutation = mutation
-			if node, err = plc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(plc.hooks) - 1; i >= 0; i-- {
-			if plc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = plc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, plc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*PointLog)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from PointLogMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*PointLog, PointLogMutation](ctx, plc.sqlSave, plc.mutation, plc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -256,6 +214,9 @@ func (plc *PointLogCreate) check() error {
 }
 
 func (plc *PointLogCreate) sqlSave(ctx context.Context) (*PointLog, error) {
+	if err := plc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := plc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, plc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -265,6 +226,8 @@ func (plc *PointLogCreate) sqlSave(ctx context.Context) (*PointLog, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	plc.mutation.id = &_node.ID
+	plc.mutation.done = true
 	return _node, nil
 }
 
@@ -281,75 +244,39 @@ func (plc *PointLogCreate) createSpec() (*PointLog, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = plc.conflict
 	if value, ok := plc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: pointlog.FieldCreatedAt,
-		})
+		_spec.SetField(pointlog.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := plc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: pointlog.FieldUpdatedAt,
-		})
+		_spec.SetField(pointlog.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := plc.mutation.Modifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: pointlog.FieldModifier,
-		})
+		_spec.SetField(pointlog.FieldModifier, field.TypeJSON, value)
 		_node.Modifier = value
 	}
 	if value, ok := plc.mutation.EmployeeInfo(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: pointlog.FieldEmployeeInfo,
-		})
+		_spec.SetField(pointlog.FieldEmployeeInfo, field.TypeJSON, value)
 		_node.EmployeeInfo = value
 	}
 	if value, ok := plc.mutation.GetType(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: pointlog.FieldType,
-		})
+		_spec.SetField(pointlog.FieldType, field.TypeUint8, value)
 		_node.Type = value
 	}
 	if value, ok := plc.mutation.Points(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: pointlog.FieldPoints,
-		})
+		_spec.SetField(pointlog.FieldPoints, field.TypeInt64, value)
 		_node.Points = value
 	}
 	if value, ok := plc.mutation.After(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: pointlog.FieldAfter,
-		})
+		_spec.SetField(pointlog.FieldAfter, field.TypeInt64, value)
 		_node.After = value
 	}
 	if value, ok := plc.mutation.Reason(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: pointlog.FieldReason,
-		})
+		_spec.SetField(pointlog.FieldReason, field.TypeString, value)
 		_node.Reason = &value
 	}
 	if value, ok := plc.mutation.Attach(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: pointlog.FieldAttach,
-		})
+		_spec.SetField(pointlog.FieldAttach, field.TypeJSON, value)
 		_node.Attach = value
 	}
 	if nodes := plc.mutation.RiderIDs(); len(nodes) > 0 {

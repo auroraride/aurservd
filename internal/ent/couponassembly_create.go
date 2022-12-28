@@ -126,52 +126,10 @@ func (cac *CouponAssemblyCreate) Mutation() *CouponAssemblyMutation {
 
 // Save creates the CouponAssembly in the database.
 func (cac *CouponAssemblyCreate) Save(ctx context.Context) (*CouponAssembly, error) {
-	var (
-		err  error
-		node *CouponAssembly
-	)
 	if err := cac.defaults(); err != nil {
 		return nil, err
 	}
-	if len(cac.hooks) == 0 {
-		if err = cac.check(); err != nil {
-			return nil, err
-		}
-		node, err = cac.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CouponAssemblyMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = cac.check(); err != nil {
-				return nil, err
-			}
-			cac.mutation = mutation
-			if node, err = cac.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(cac.hooks) - 1; i >= 0; i-- {
-			if cac.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = cac.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, cac.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*CouponAssembly)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from CouponAssemblyMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*CouponAssembly, CouponAssemblyMutation](ctx, cac.sqlSave, cac.mutation, cac.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -248,6 +206,9 @@ func (cac *CouponAssemblyCreate) check() error {
 }
 
 func (cac *CouponAssemblyCreate) sqlSave(ctx context.Context) (*CouponAssembly, error) {
+	if err := cac.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := cac.createSpec()
 	if err := sqlgraph.CreateNode(ctx, cac.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -257,6 +218,8 @@ func (cac *CouponAssemblyCreate) sqlSave(ctx context.Context) (*CouponAssembly, 
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	cac.mutation.id = &_node.ID
+	cac.mutation.done = true
 	return _node, nil
 }
 
@@ -273,83 +236,43 @@ func (cac *CouponAssemblyCreate) createSpec() (*CouponAssembly, *sqlgraph.Create
 	)
 	_spec.OnConflict = cac.conflict
 	if value, ok := cac.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: couponassembly.FieldCreatedAt,
-		})
+		_spec.SetField(couponassembly.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := cac.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: couponassembly.FieldUpdatedAt,
-		})
+		_spec.SetField(couponassembly.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := cac.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: couponassembly.FieldCreator,
-		})
+		_spec.SetField(couponassembly.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := cac.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: couponassembly.FieldLastModifier,
-		})
+		_spec.SetField(couponassembly.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := cac.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: couponassembly.FieldRemark,
-		})
+		_spec.SetField(couponassembly.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := cac.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: couponassembly.FieldName,
-		})
+		_spec.SetField(couponassembly.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := cac.mutation.Number(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: couponassembly.FieldNumber,
-		})
+		_spec.SetField(couponassembly.FieldNumber, field.TypeInt, value)
 		_node.Number = value
 	}
 	if value, ok := cac.mutation.Amount(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: couponassembly.FieldAmount,
-		})
+		_spec.SetField(couponassembly.FieldAmount, field.TypeFloat64, value)
 		_node.Amount = value
 	}
 	if value, ok := cac.mutation.Target(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: couponassembly.FieldTarget,
-		})
+		_spec.SetField(couponassembly.FieldTarget, field.TypeUint8, value)
 		_node.Target = value
 	}
 	if value, ok := cac.mutation.Meta(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: couponassembly.FieldMeta,
-		})
+		_spec.SetField(couponassembly.FieldMeta, field.TypeJSON, value)
 		_node.Meta = value
 	}
 	if nodes := cac.mutation.TemplateIDs(); len(nodes) > 0 {

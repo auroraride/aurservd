@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
@@ -243,6 +244,12 @@ func (cu *CouponUpdate) SetPlans(m []model.Plan) *CouponUpdate {
 	return cu
 }
 
+// AppendPlans appends m to the "plans" field.
+func (cu *CouponUpdate) AppendPlans(m []model.Plan) *CouponUpdate {
+	cu.mutation.AppendPlans(m)
+	return cu
+}
+
 // ClearPlans clears the value of the "plans" field.
 func (cu *CouponUpdate) ClearPlans() *CouponUpdate {
 	cu.mutation.ClearPlans()
@@ -252,6 +259,12 @@ func (cu *CouponUpdate) ClearPlans() *CouponUpdate {
 // SetCities sets the "cities" field.
 func (cu *CouponUpdate) SetCities(m []model.City) *CouponUpdate {
 	cu.mutation.SetCities(m)
+	return cu
+}
+
+// AppendCities appends m to the "cities" field.
+func (cu *CouponUpdate) AppendCities(m []model.City) *CouponUpdate {
+	cu.mutation.AppendCities(m)
 	return cu
 }
 
@@ -323,43 +336,10 @@ func (cu *CouponUpdate) ClearOrder() *CouponUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (cu *CouponUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := cu.defaults(); err != nil {
 		return 0, err
 	}
-	if len(cu.hooks) == 0 {
-		if err = cu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = cu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CouponMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = cu.check(); err != nil {
-				return 0, err
-			}
-			cu.mutation = mutation
-			affected, err = cu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(cu.hooks) - 1; i >= 0; i-- {
-			if cu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = cu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, cu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, CouponMutation](ctx, cu.sqlSave, cu.mutation, cu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -414,6 +394,9 @@ func (cu *CouponUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *CouponU
 }
 
 func (cu *CouponUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := cu.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   coupon.Table,
@@ -432,144 +415,77 @@ func (cu *CouponUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := cu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: coupon.FieldUpdatedAt,
-		})
+		_spec.SetField(coupon.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if cu.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: coupon.FieldCreator,
-		})
+		_spec.ClearField(coupon.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := cu.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: coupon.FieldLastModifier,
-		})
+		_spec.SetField(coupon.FieldLastModifier, field.TypeJSON, value)
 	}
 	if cu.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: coupon.FieldLastModifier,
-		})
+		_spec.ClearField(coupon.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := cu.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: coupon.FieldRemark,
-		})
+		_spec.SetField(coupon.FieldRemark, field.TypeString, value)
 	}
 	if cu.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: coupon.FieldRemark,
-		})
+		_spec.ClearField(coupon.FieldRemark, field.TypeString)
 	}
 	if value, ok := cu.mutation.Rule(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: coupon.FieldRule,
-		})
+		_spec.SetField(coupon.FieldRule, field.TypeUint8, value)
 	}
 	if value, ok := cu.mutation.AddedRule(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: coupon.FieldRule,
-		})
+		_spec.AddField(coupon.FieldRule, field.TypeUint8, value)
 	}
 	if value, ok := cu.mutation.Multiple(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: coupon.FieldMultiple,
-		})
+		_spec.SetField(coupon.FieldMultiple, field.TypeBool, value)
 	}
 	if value, ok := cu.mutation.Amount(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: coupon.FieldAmount,
-		})
+		_spec.SetField(coupon.FieldAmount, field.TypeFloat64, value)
 	}
 	if value, ok := cu.mutation.AddedAmount(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: coupon.FieldAmount,
-		})
+		_spec.AddField(coupon.FieldAmount, field.TypeFloat64, value)
 	}
 	if value, ok := cu.mutation.Code(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: coupon.FieldCode,
-		})
+		_spec.SetField(coupon.FieldCode, field.TypeString, value)
 	}
 	if value, ok := cu.mutation.ExpiresAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: coupon.FieldExpiresAt,
-		})
+		_spec.SetField(coupon.FieldExpiresAt, field.TypeTime, value)
 	}
 	if cu.mutation.ExpiresAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: coupon.FieldExpiresAt,
-		})
+		_spec.ClearField(coupon.FieldExpiresAt, field.TypeTime)
 	}
 	if value, ok := cu.mutation.UsedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: coupon.FieldUsedAt,
-		})
+		_spec.SetField(coupon.FieldUsedAt, field.TypeTime, value)
 	}
 	if cu.mutation.UsedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: coupon.FieldUsedAt,
-		})
+		_spec.ClearField(coupon.FieldUsedAt, field.TypeTime)
 	}
 	if value, ok := cu.mutation.Duration(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: coupon.FieldDuration,
-		})
+		_spec.SetField(coupon.FieldDuration, field.TypeJSON, value)
 	}
 	if value, ok := cu.mutation.Plans(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: coupon.FieldPlans,
+		_spec.SetField(coupon.FieldPlans, field.TypeJSON, value)
+	}
+	if value, ok := cu.mutation.AppendedPlans(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, coupon.FieldPlans, value)
 		})
 	}
 	if cu.mutation.PlansCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: coupon.FieldPlans,
-		})
+		_spec.ClearField(coupon.FieldPlans, field.TypeJSON)
 	}
 	if value, ok := cu.mutation.Cities(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: coupon.FieldCities,
+		_spec.SetField(coupon.FieldCities, field.TypeJSON, value)
+	}
+	if value, ok := cu.mutation.AppendedCities(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, coupon.FieldCities, value)
 		})
 	}
 	if cu.mutation.CitiesCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: coupon.FieldCities,
-		})
+		_spec.ClearField(coupon.FieldCities, field.TypeJSON)
 	}
 	if cu.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -746,7 +662,7 @@ func (cu *CouponUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = cu.modifiers
+	_spec.AddModifiers(cu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{coupon.Label}
@@ -755,6 +671,7 @@ func (cu *CouponUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	cu.mutation.done = true
 	return n, nil
 }
 
@@ -975,6 +892,12 @@ func (cuo *CouponUpdateOne) SetPlans(m []model.Plan) *CouponUpdateOne {
 	return cuo
 }
 
+// AppendPlans appends m to the "plans" field.
+func (cuo *CouponUpdateOne) AppendPlans(m []model.Plan) *CouponUpdateOne {
+	cuo.mutation.AppendPlans(m)
+	return cuo
+}
+
 // ClearPlans clears the value of the "plans" field.
 func (cuo *CouponUpdateOne) ClearPlans() *CouponUpdateOne {
 	cuo.mutation.ClearPlans()
@@ -984,6 +907,12 @@ func (cuo *CouponUpdateOne) ClearPlans() *CouponUpdateOne {
 // SetCities sets the "cities" field.
 func (cuo *CouponUpdateOne) SetCities(m []model.City) *CouponUpdateOne {
 	cuo.mutation.SetCities(m)
+	return cuo
+}
+
+// AppendCities appends m to the "cities" field.
+func (cuo *CouponUpdateOne) AppendCities(m []model.City) *CouponUpdateOne {
+	cuo.mutation.AppendCities(m)
 	return cuo
 }
 
@@ -1062,49 +991,10 @@ func (cuo *CouponUpdateOne) Select(field string, fields ...string) *CouponUpdate
 
 // Save executes the query and returns the updated Coupon entity.
 func (cuo *CouponUpdateOne) Save(ctx context.Context) (*Coupon, error) {
-	var (
-		err  error
-		node *Coupon
-	)
 	if err := cuo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(cuo.hooks) == 0 {
-		if err = cuo.check(); err != nil {
-			return nil, err
-		}
-		node, err = cuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CouponMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = cuo.check(); err != nil {
-				return nil, err
-			}
-			cuo.mutation = mutation
-			node, err = cuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(cuo.hooks) - 1; i >= 0; i-- {
-			if cuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = cuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, cuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Coupon)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from CouponMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Coupon, CouponMutation](ctx, cuo.sqlSave, cuo.mutation, cuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -1159,6 +1049,9 @@ func (cuo *CouponUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Cou
 }
 
 func (cuo *CouponUpdateOne) sqlSave(ctx context.Context) (_node *Coupon, err error) {
+	if err := cuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   coupon.Table,
@@ -1194,144 +1087,77 @@ func (cuo *CouponUpdateOne) sqlSave(ctx context.Context) (_node *Coupon, err err
 		}
 	}
 	if value, ok := cuo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: coupon.FieldUpdatedAt,
-		})
+		_spec.SetField(coupon.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if cuo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: coupon.FieldCreator,
-		})
+		_spec.ClearField(coupon.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := cuo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: coupon.FieldLastModifier,
-		})
+		_spec.SetField(coupon.FieldLastModifier, field.TypeJSON, value)
 	}
 	if cuo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: coupon.FieldLastModifier,
-		})
+		_spec.ClearField(coupon.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := cuo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: coupon.FieldRemark,
-		})
+		_spec.SetField(coupon.FieldRemark, field.TypeString, value)
 	}
 	if cuo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: coupon.FieldRemark,
-		})
+		_spec.ClearField(coupon.FieldRemark, field.TypeString)
 	}
 	if value, ok := cuo.mutation.Rule(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: coupon.FieldRule,
-		})
+		_spec.SetField(coupon.FieldRule, field.TypeUint8, value)
 	}
 	if value, ok := cuo.mutation.AddedRule(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: coupon.FieldRule,
-		})
+		_spec.AddField(coupon.FieldRule, field.TypeUint8, value)
 	}
 	if value, ok := cuo.mutation.Multiple(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: coupon.FieldMultiple,
-		})
+		_spec.SetField(coupon.FieldMultiple, field.TypeBool, value)
 	}
 	if value, ok := cuo.mutation.Amount(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: coupon.FieldAmount,
-		})
+		_spec.SetField(coupon.FieldAmount, field.TypeFloat64, value)
 	}
 	if value, ok := cuo.mutation.AddedAmount(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: coupon.FieldAmount,
-		})
+		_spec.AddField(coupon.FieldAmount, field.TypeFloat64, value)
 	}
 	if value, ok := cuo.mutation.Code(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: coupon.FieldCode,
-		})
+		_spec.SetField(coupon.FieldCode, field.TypeString, value)
 	}
 	if value, ok := cuo.mutation.ExpiresAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: coupon.FieldExpiresAt,
-		})
+		_spec.SetField(coupon.FieldExpiresAt, field.TypeTime, value)
 	}
 	if cuo.mutation.ExpiresAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: coupon.FieldExpiresAt,
-		})
+		_spec.ClearField(coupon.FieldExpiresAt, field.TypeTime)
 	}
 	if value, ok := cuo.mutation.UsedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: coupon.FieldUsedAt,
-		})
+		_spec.SetField(coupon.FieldUsedAt, field.TypeTime, value)
 	}
 	if cuo.mutation.UsedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: coupon.FieldUsedAt,
-		})
+		_spec.ClearField(coupon.FieldUsedAt, field.TypeTime)
 	}
 	if value, ok := cuo.mutation.Duration(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: coupon.FieldDuration,
-		})
+		_spec.SetField(coupon.FieldDuration, field.TypeJSON, value)
 	}
 	if value, ok := cuo.mutation.Plans(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: coupon.FieldPlans,
+		_spec.SetField(coupon.FieldPlans, field.TypeJSON, value)
+	}
+	if value, ok := cuo.mutation.AppendedPlans(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, coupon.FieldPlans, value)
 		})
 	}
 	if cuo.mutation.PlansCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: coupon.FieldPlans,
-		})
+		_spec.ClearField(coupon.FieldPlans, field.TypeJSON)
 	}
 	if value, ok := cuo.mutation.Cities(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: coupon.FieldCities,
+		_spec.SetField(coupon.FieldCities, field.TypeJSON, value)
+	}
+	if value, ok := cuo.mutation.AppendedCities(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, coupon.FieldCities, value)
 		})
 	}
 	if cuo.mutation.CitiesCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: coupon.FieldCities,
-		})
+		_spec.ClearField(coupon.FieldCities, field.TypeJSON)
 	}
 	if cuo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1508,7 +1334,7 @@ func (cuo *CouponUpdateOne) sqlSave(ctx context.Context) (_node *Coupon, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = cuo.modifiers
+	_spec.AddModifiers(cuo.modifiers...)
 	_node = &Coupon{config: cuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -1520,5 +1346,6 @@ func (cuo *CouponUpdateOne) sqlSave(ctx context.Context) (_node *Coupon, err err
 		}
 		return nil, err
 	}
+	cuo.mutation.done = true
 	return _node, nil
 }

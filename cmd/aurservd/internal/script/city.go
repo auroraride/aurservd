@@ -7,13 +7,12 @@ package script
 
 import (
     "context"
-    "encoding/json"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/assets"
     "github.com/auroraride/aurservd/internal/amap"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/city"
-    jsoniter "github.com/json-iterator/go"
+    "github.com/goccy/go-json"
     log "github.com/sirupsen/logrus"
     "github.com/spf13/cobra"
     "io/ioutil"
@@ -40,7 +39,7 @@ func cityCenterCmd() *cobra.Command {
                 Children []City  `json:"children,omitempty"`
             }
             var items []City
-            err := jsoniter.Unmarshal(assets.City, &items)
+            err := json.Unmarshal(assets.City, &items)
             if err != nil {
                 log.Fatal(err)
             }

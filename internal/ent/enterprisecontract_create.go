@@ -128,52 +128,10 @@ func (ecc *EnterpriseContractCreate) Mutation() *EnterpriseContractMutation {
 
 // Save creates the EnterpriseContract in the database.
 func (ecc *EnterpriseContractCreate) Save(ctx context.Context) (*EnterpriseContract, error) {
-	var (
-		err  error
-		node *EnterpriseContract
-	)
 	if err := ecc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(ecc.hooks) == 0 {
-		if err = ecc.check(); err != nil {
-			return nil, err
-		}
-		node, err = ecc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*EnterpriseContractMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ecc.check(); err != nil {
-				return nil, err
-			}
-			ecc.mutation = mutation
-			if node, err = ecc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ecc.hooks) - 1; i >= 0; i-- {
-			if ecc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ecc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ecc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*EnterpriseContract)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from EnterpriseContractMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*EnterpriseContract, EnterpriseContractMutation](ctx, ecc.sqlSave, ecc.mutation, ecc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -244,6 +202,9 @@ func (ecc *EnterpriseContractCreate) check() error {
 }
 
 func (ecc *EnterpriseContractCreate) sqlSave(ctx context.Context) (*EnterpriseContract, error) {
+	if err := ecc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := ecc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, ecc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -253,6 +214,8 @@ func (ecc *EnterpriseContractCreate) sqlSave(ctx context.Context) (*EnterpriseCo
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	ecc.mutation.id = &_node.ID
+	ecc.mutation.done = true
 	return _node, nil
 }
 
@@ -269,75 +232,39 @@ func (ecc *EnterpriseContractCreate) createSpec() (*EnterpriseContract, *sqlgrap
 	)
 	_spec.OnConflict = ecc.conflict
 	if value, ok := ecc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisecontract.FieldCreatedAt,
-		})
+		_spec.SetField(enterprisecontract.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := ecc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisecontract.FieldUpdatedAt,
-		})
+		_spec.SetField(enterprisecontract.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := ecc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisecontract.FieldDeletedAt,
-		})
+		_spec.SetField(enterprisecontract.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := ecc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: enterprisecontract.FieldCreator,
-		})
+		_spec.SetField(enterprisecontract.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := ecc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: enterprisecontract.FieldLastModifier,
-		})
+		_spec.SetField(enterprisecontract.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := ecc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: enterprisecontract.FieldRemark,
-		})
+		_spec.SetField(enterprisecontract.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := ecc.mutation.Start(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisecontract.FieldStart,
-		})
+		_spec.SetField(enterprisecontract.FieldStart, field.TypeTime, value)
 		_node.Start = value
 	}
 	if value, ok := ecc.mutation.End(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisecontract.FieldEnd,
-		})
+		_spec.SetField(enterprisecontract.FieldEnd, field.TypeTime, value)
 		_node.End = value
 	}
 	if value, ok := ecc.mutation.File(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: enterprisecontract.FieldFile,
-		})
+		_spec.SetField(enterprisecontract.FieldFile, field.TypeString, value)
 		_node.File = value
 	}
 	if nodes := ecc.mutation.EnterpriseIDs(); len(nodes) > 0 {

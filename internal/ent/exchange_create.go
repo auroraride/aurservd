@@ -330,52 +330,10 @@ func (ec *ExchangeCreate) Mutation() *ExchangeMutation {
 
 // Save creates the Exchange in the database.
 func (ec *ExchangeCreate) Save(ctx context.Context) (*Exchange, error) {
-	var (
-		err  error
-		node *Exchange
-	)
 	if err := ec.defaults(); err != nil {
 		return nil, err
 	}
-	if len(ec.hooks) == 0 {
-		if err = ec.check(); err != nil {
-			return nil, err
-		}
-		node, err = ec.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ExchangeMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ec.check(); err != nil {
-				return nil, err
-			}
-			ec.mutation = mutation
-			if node, err = ec.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ec.hooks) - 1; i >= 0; i-- {
-			if ec.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ec.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ec.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Exchange)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from ExchangeMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Exchange, ExchangeMutation](ctx, ec.sqlSave, ec.mutation, ec.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -469,6 +427,9 @@ func (ec *ExchangeCreate) check() error {
 }
 
 func (ec *ExchangeCreate) sqlSave(ctx context.Context) (*Exchange, error) {
+	if err := ec.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := ec.createSpec()
 	if err := sqlgraph.CreateNode(ctx, ec.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -478,6 +439,8 @@ func (ec *ExchangeCreate) sqlSave(ctx context.Context) (*Exchange, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	ec.mutation.id = &_node.ID
+	ec.mutation.done = true
 	return _node, nil
 }
 
@@ -494,123 +457,63 @@ func (ec *ExchangeCreate) createSpec() (*Exchange, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = ec.conflict
 	if value, ok := ec.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: exchange.FieldCreatedAt,
-		})
+		_spec.SetField(exchange.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := ec.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: exchange.FieldUpdatedAt,
-		})
+		_spec.SetField(exchange.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := ec.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: exchange.FieldDeletedAt,
-		})
+		_spec.SetField(exchange.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := ec.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: exchange.FieldCreator,
-		})
+		_spec.SetField(exchange.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := ec.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: exchange.FieldLastModifier,
-		})
+		_spec.SetField(exchange.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := ec.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: exchange.FieldRemark,
-		})
+		_spec.SetField(exchange.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := ec.mutation.UUID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: exchange.FieldUUID,
-		})
+		_spec.SetField(exchange.FieldUUID, field.TypeString, value)
 		_node.UUID = value
 	}
 	if value, ok := ec.mutation.Success(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: exchange.FieldSuccess,
-		})
+		_spec.SetField(exchange.FieldSuccess, field.TypeBool, value)
 		_node.Success = value
 	}
 	if value, ok := ec.mutation.Detail(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: exchange.FieldDetail,
-		})
+		_spec.SetField(exchange.FieldDetail, field.TypeJSON, value)
 		_node.Detail = value
 	}
 	if value, ok := ec.mutation.Info(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: exchange.FieldInfo,
-		})
+		_spec.SetField(exchange.FieldInfo, field.TypeJSON, value)
 		_node.Info = value
 	}
 	if value, ok := ec.mutation.Model(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: exchange.FieldModel,
-		})
+		_spec.SetField(exchange.FieldModel, field.TypeString, value)
 		_node.Model = value
 	}
 	if value, ok := ec.mutation.Alternative(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: exchange.FieldAlternative,
-		})
+		_spec.SetField(exchange.FieldAlternative, field.TypeBool, value)
 		_node.Alternative = value
 	}
 	if value, ok := ec.mutation.StartAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: exchange.FieldStartAt,
-		})
+		_spec.SetField(exchange.FieldStartAt, field.TypeTime, value)
 		_node.StartAt = value
 	}
 	if value, ok := ec.mutation.FinishAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: exchange.FieldFinishAt,
-		})
+		_spec.SetField(exchange.FieldFinishAt, field.TypeTime, value)
 		_node.FinishAt = value
 	}
 	if value, ok := ec.mutation.Duration(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: exchange.FieldDuration,
-		})
+		_spec.SetField(exchange.FieldDuration, field.TypeInt, value)
 		_node.Duration = value
 	}
 	if nodes := ec.mutation.SubscribeIDs(); len(nodes) > 0 {

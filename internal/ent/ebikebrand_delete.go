@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"fmt"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -28,34 +27,7 @@ func (ebd *EbikeBrandDelete) Where(ps ...predicate.EbikeBrand) *EbikeBrandDelete
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (ebd *EbikeBrandDelete) Exec(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(ebd.hooks) == 0 {
-		affected, err = ebd.sqlExec(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*EbikeBrandMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			ebd.mutation = mutation
-			affected, err = ebd.sqlExec(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(ebd.hooks) - 1; i >= 0; i-- {
-			if ebd.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ebd.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, ebd.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, EbikeBrandMutation](ctx, ebd.sqlExec, ebd.mutation, ebd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
@@ -88,6 +60,7 @@ func (ebd *EbikeBrandDelete) sqlExec(ctx context.Context) (int, error) {
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
+	ebd.mutation.done = true
 	return affected, err
 }
 

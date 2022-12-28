@@ -131,43 +131,10 @@ func (ecu *EnterpriseContractUpdate) ClearEnterprise() *EnterpriseContractUpdate
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ecu *EnterpriseContractUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := ecu.defaults(); err != nil {
 		return 0, err
 	}
-	if len(ecu.hooks) == 0 {
-		if err = ecu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = ecu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*EnterpriseContractMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ecu.check(); err != nil {
-				return 0, err
-			}
-			ecu.mutation = mutation
-			affected, err = ecu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(ecu.hooks) - 1; i >= 0; i-- {
-			if ecu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ecu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, ecu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, EnterpriseContractMutation](ctx, ecu.sqlSave, ecu.mutation, ecu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -219,6 +186,9 @@ func (ecu *EnterpriseContractUpdate) Modify(modifiers ...func(u *sql.UpdateBuild
 }
 
 func (ecu *EnterpriseContractUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := ecu.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   enterprisecontract.Table,
@@ -237,77 +207,37 @@ func (ecu *EnterpriseContractUpdate) sqlSave(ctx context.Context) (n int, err er
 		}
 	}
 	if value, ok := ecu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisecontract.FieldUpdatedAt,
-		})
+		_spec.SetField(enterprisecontract.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := ecu.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisecontract.FieldDeletedAt,
-		})
+		_spec.SetField(enterprisecontract.FieldDeletedAt, field.TypeTime, value)
 	}
 	if ecu.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: enterprisecontract.FieldDeletedAt,
-		})
+		_spec.ClearField(enterprisecontract.FieldDeletedAt, field.TypeTime)
 	}
 	if ecu.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: enterprisecontract.FieldCreator,
-		})
+		_spec.ClearField(enterprisecontract.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := ecu.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: enterprisecontract.FieldLastModifier,
-		})
+		_spec.SetField(enterprisecontract.FieldLastModifier, field.TypeJSON, value)
 	}
 	if ecu.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: enterprisecontract.FieldLastModifier,
-		})
+		_spec.ClearField(enterprisecontract.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := ecu.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: enterprisecontract.FieldRemark,
-		})
+		_spec.SetField(enterprisecontract.FieldRemark, field.TypeString, value)
 	}
 	if ecu.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: enterprisecontract.FieldRemark,
-		})
+		_spec.ClearField(enterprisecontract.FieldRemark, field.TypeString)
 	}
 	if value, ok := ecu.mutation.Start(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisecontract.FieldStart,
-		})
+		_spec.SetField(enterprisecontract.FieldStart, field.TypeTime, value)
 	}
 	if value, ok := ecu.mutation.End(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisecontract.FieldEnd,
-		})
+		_spec.SetField(enterprisecontract.FieldEnd, field.TypeTime, value)
 	}
 	if value, ok := ecu.mutation.File(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: enterprisecontract.FieldFile,
-		})
+		_spec.SetField(enterprisecontract.FieldFile, field.TypeString, value)
 	}
 	if ecu.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -344,7 +274,7 @@ func (ecu *EnterpriseContractUpdate) sqlSave(ctx context.Context) (n int, err er
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = ecu.modifiers
+	_spec.AddModifiers(ecu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, ecu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{enterprisecontract.Label}
@@ -353,6 +283,7 @@ func (ecu *EnterpriseContractUpdate) sqlSave(ctx context.Context) (n int, err er
 		}
 		return 0, err
 	}
+	ecu.mutation.done = true
 	return n, nil
 }
 
@@ -472,49 +403,10 @@ func (ecuo *EnterpriseContractUpdateOne) Select(field string, fields ...string) 
 
 // Save executes the query and returns the updated EnterpriseContract entity.
 func (ecuo *EnterpriseContractUpdateOne) Save(ctx context.Context) (*EnterpriseContract, error) {
-	var (
-		err  error
-		node *EnterpriseContract
-	)
 	if err := ecuo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(ecuo.hooks) == 0 {
-		if err = ecuo.check(); err != nil {
-			return nil, err
-		}
-		node, err = ecuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*EnterpriseContractMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ecuo.check(); err != nil {
-				return nil, err
-			}
-			ecuo.mutation = mutation
-			node, err = ecuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ecuo.hooks) - 1; i >= 0; i-- {
-			if ecuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ecuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ecuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*EnterpriseContract)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from EnterpriseContractMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*EnterpriseContract, EnterpriseContractMutation](ctx, ecuo.sqlSave, ecuo.mutation, ecuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -566,6 +458,9 @@ func (ecuo *EnterpriseContractUpdateOne) Modify(modifiers ...func(u *sql.UpdateB
 }
 
 func (ecuo *EnterpriseContractUpdateOne) sqlSave(ctx context.Context) (_node *EnterpriseContract, err error) {
+	if err := ecuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   enterprisecontract.Table,
@@ -601,77 +496,37 @@ func (ecuo *EnterpriseContractUpdateOne) sqlSave(ctx context.Context) (_node *En
 		}
 	}
 	if value, ok := ecuo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisecontract.FieldUpdatedAt,
-		})
+		_spec.SetField(enterprisecontract.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := ecuo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisecontract.FieldDeletedAt,
-		})
+		_spec.SetField(enterprisecontract.FieldDeletedAt, field.TypeTime, value)
 	}
 	if ecuo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: enterprisecontract.FieldDeletedAt,
-		})
+		_spec.ClearField(enterprisecontract.FieldDeletedAt, field.TypeTime)
 	}
 	if ecuo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: enterprisecontract.FieldCreator,
-		})
+		_spec.ClearField(enterprisecontract.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := ecuo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: enterprisecontract.FieldLastModifier,
-		})
+		_spec.SetField(enterprisecontract.FieldLastModifier, field.TypeJSON, value)
 	}
 	if ecuo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: enterprisecontract.FieldLastModifier,
-		})
+		_spec.ClearField(enterprisecontract.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := ecuo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: enterprisecontract.FieldRemark,
-		})
+		_spec.SetField(enterprisecontract.FieldRemark, field.TypeString, value)
 	}
 	if ecuo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: enterprisecontract.FieldRemark,
-		})
+		_spec.ClearField(enterprisecontract.FieldRemark, field.TypeString)
 	}
 	if value, ok := ecuo.mutation.Start(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisecontract.FieldStart,
-		})
+		_spec.SetField(enterprisecontract.FieldStart, field.TypeTime, value)
 	}
 	if value, ok := ecuo.mutation.End(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisecontract.FieldEnd,
-		})
+		_spec.SetField(enterprisecontract.FieldEnd, field.TypeTime, value)
 	}
 	if value, ok := ecuo.mutation.File(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: enterprisecontract.FieldFile,
-		})
+		_spec.SetField(enterprisecontract.FieldFile, field.TypeString, value)
 	}
 	if ecuo.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -708,7 +563,7 @@ func (ecuo *EnterpriseContractUpdateOne) sqlSave(ctx context.Context) (_node *En
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = ecuo.modifiers
+	_spec.AddModifiers(ecuo.modifiers...)
 	_node = &EnterpriseContract{config: ecuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -720,5 +575,6 @@ func (ecuo *EnterpriseContractUpdateOne) sqlSave(ctx context.Context) (_node *En
 		}
 		return nil, err
 	}
+	ecuo.mutation.done = true
 	return _node, nil
 }

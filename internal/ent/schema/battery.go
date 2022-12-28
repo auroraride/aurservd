@@ -52,6 +52,7 @@ type Battery struct {
 func (Battery) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "battery"},
+        entsql.WithComments(true),
     }
 }
 

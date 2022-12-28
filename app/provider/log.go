@@ -9,8 +9,8 @@ import (
     "bytes"
     "fmt"
     "github.com/auroraride/aurservd/pkg/utils"
+    "github.com/goccy/go-json"
     "github.com/golang-module/carbon/v2"
-    jsoniter "github.com/json-iterator/go"
     "os"
     "sync"
     "time"
@@ -41,7 +41,7 @@ func (l *Logger) Write(message any) {
         break
     default:
         b := &bytes.Buffer{}
-        encoder := jsoniter.NewEncoder(b)
+        encoder := json.NewEncoder(b)
         encoder.SetEscapeHTML(false)
         _ = encoder.Encode(message)
         buffer.Write(b.Bytes())

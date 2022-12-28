@@ -502,43 +502,10 @@ func (su *StockUpdate) RemoveChildren(s ...*Stock) *StockUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (su *StockUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := su.defaults(); err != nil {
 		return 0, err
 	}
-	if len(su.hooks) == 0 {
-		if err = su.check(); err != nil {
-			return 0, err
-		}
-		affected, err = su.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*StockMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = su.check(); err != nil {
-				return 0, err
-			}
-			su.mutation = mutation
-			affected, err = su.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(su.hooks) - 1; i >= 0; i-- {
-			if su.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = su.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, su.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, StockMutation](ctx, su.sqlSave, su.mutation, su.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -592,6 +559,9 @@ func (su *StockUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *StockUpd
 }
 
 func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := su.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   stock.Table,
@@ -610,104 +580,49 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := su.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: stock.FieldUpdatedAt,
-		})
+		_spec.SetField(stock.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := su.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: stock.FieldDeletedAt,
-		})
+		_spec.SetField(stock.FieldDeletedAt, field.TypeTime, value)
 	}
 	if su.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: stock.FieldDeletedAt,
-		})
+		_spec.ClearField(stock.FieldDeletedAt, field.TypeTime)
 	}
 	if su.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: stock.FieldCreator,
-		})
+		_spec.ClearField(stock.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := su.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: stock.FieldLastModifier,
-		})
+		_spec.SetField(stock.FieldLastModifier, field.TypeJSON, value)
 	}
 	if su.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: stock.FieldLastModifier,
-		})
+		_spec.ClearField(stock.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := su.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: stock.FieldRemark,
-		})
+		_spec.SetField(stock.FieldRemark, field.TypeString, value)
 	}
 	if su.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: stock.FieldRemark,
-		})
+		_spec.ClearField(stock.FieldRemark, field.TypeString)
 	}
 	if value, ok := su.mutation.Sn(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: stock.FieldSn,
-		})
+		_spec.SetField(stock.FieldSn, field.TypeString, value)
 	}
 	if value, ok := su.mutation.GetType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: stock.FieldType,
-		})
+		_spec.SetField(stock.FieldType, field.TypeUint8, value)
 	}
 	if value, ok := su.mutation.AddedType(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: stock.FieldType,
-		})
+		_spec.AddField(stock.FieldType, field.TypeUint8, value)
 	}
 	if value, ok := su.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: stock.FieldName,
-		})
+		_spec.SetField(stock.FieldName, field.TypeString, value)
 	}
 	if value, ok := su.mutation.Model(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: stock.FieldModel,
-		})
+		_spec.SetField(stock.FieldModel, field.TypeString, value)
 	}
 	if su.mutation.ModelCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: stock.FieldModel,
-		})
+		_spec.ClearField(stock.FieldModel, field.TypeString)
 	}
 	if value, ok := su.mutation.Material(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: stock.FieldMaterial,
-		})
+		_spec.SetField(stock.FieldMaterial, field.TypeEnum, value)
 	}
 	if su.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1113,7 +1028,7 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = su.modifiers
+	_spec.AddModifiers(su.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, su.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{stock.Label}
@@ -1122,6 +1037,7 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	su.mutation.done = true
 	return n, nil
 }
 
@@ -1605,49 +1521,10 @@ func (suo *StockUpdateOne) Select(field string, fields ...string) *StockUpdateOn
 
 // Save executes the query and returns the updated Stock entity.
 func (suo *StockUpdateOne) Save(ctx context.Context) (*Stock, error) {
-	var (
-		err  error
-		node *Stock
-	)
 	if err := suo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(suo.hooks) == 0 {
-		if err = suo.check(); err != nil {
-			return nil, err
-		}
-		node, err = suo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*StockMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = suo.check(); err != nil {
-				return nil, err
-			}
-			suo.mutation = mutation
-			node, err = suo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(suo.hooks) - 1; i >= 0; i-- {
-			if suo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = suo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, suo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Stock)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from StockMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Stock, StockMutation](ctx, suo.sqlSave, suo.mutation, suo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -1701,6 +1578,9 @@ func (suo *StockUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Stoc
 }
 
 func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error) {
+	if err := suo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   stock.Table,
@@ -1736,104 +1616,49 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 		}
 	}
 	if value, ok := suo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: stock.FieldUpdatedAt,
-		})
+		_spec.SetField(stock.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := suo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: stock.FieldDeletedAt,
-		})
+		_spec.SetField(stock.FieldDeletedAt, field.TypeTime, value)
 	}
 	if suo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: stock.FieldDeletedAt,
-		})
+		_spec.ClearField(stock.FieldDeletedAt, field.TypeTime)
 	}
 	if suo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: stock.FieldCreator,
-		})
+		_spec.ClearField(stock.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := suo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: stock.FieldLastModifier,
-		})
+		_spec.SetField(stock.FieldLastModifier, field.TypeJSON, value)
 	}
 	if suo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: stock.FieldLastModifier,
-		})
+		_spec.ClearField(stock.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := suo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: stock.FieldRemark,
-		})
+		_spec.SetField(stock.FieldRemark, field.TypeString, value)
 	}
 	if suo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: stock.FieldRemark,
-		})
+		_spec.ClearField(stock.FieldRemark, field.TypeString)
 	}
 	if value, ok := suo.mutation.Sn(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: stock.FieldSn,
-		})
+		_spec.SetField(stock.FieldSn, field.TypeString, value)
 	}
 	if value, ok := suo.mutation.GetType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: stock.FieldType,
-		})
+		_spec.SetField(stock.FieldType, field.TypeUint8, value)
 	}
 	if value, ok := suo.mutation.AddedType(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: stock.FieldType,
-		})
+		_spec.AddField(stock.FieldType, field.TypeUint8, value)
 	}
 	if value, ok := suo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: stock.FieldName,
-		})
+		_spec.SetField(stock.FieldName, field.TypeString, value)
 	}
 	if value, ok := suo.mutation.Model(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: stock.FieldModel,
-		})
+		_spec.SetField(stock.FieldModel, field.TypeString, value)
 	}
 	if suo.mutation.ModelCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: stock.FieldModel,
-		})
+		_spec.ClearField(stock.FieldModel, field.TypeString)
 	}
 	if value, ok := suo.mutation.Material(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: stock.FieldMaterial,
-		})
+		_spec.SetField(stock.FieldMaterial, field.TypeEnum, value)
 	}
 	if suo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -2239,7 +2064,7 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = suo.modifiers
+	_spec.AddModifiers(suo.modifiers...)
 	_node = &Stock{config: suo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -2251,5 +2076,6 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 		}
 		return nil, err
 	}
+	suo.mutation.done = true
 	return _node, nil
 }

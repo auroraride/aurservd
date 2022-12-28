@@ -240,43 +240,10 @@ func (sau *SubscribeAlterUpdate) ClearSubscribe() *SubscribeAlterUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (sau *SubscribeAlterUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := sau.defaults(); err != nil {
 		return 0, err
 	}
-	if len(sau.hooks) == 0 {
-		if err = sau.check(); err != nil {
-			return 0, err
-		}
-		affected, err = sau.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*SubscribeAlterMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = sau.check(); err != nil {
-				return 0, err
-			}
-			sau.mutation = mutation
-			affected, err = sau.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(sau.hooks) - 1; i >= 0; i-- {
-			if sau.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = sau.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, sau.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, SubscribeAlterMutation](ctx, sau.sqlSave, sau.mutation, sau.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -331,6 +298,9 @@ func (sau *SubscribeAlterUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder))
 }
 
 func (sau *SubscribeAlterUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := sau.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   subscribealter.Table,
@@ -349,70 +319,34 @@ func (sau *SubscribeAlterUpdate) sqlSave(ctx context.Context) (n int, err error)
 		}
 	}
 	if value, ok := sau.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribealter.FieldUpdatedAt,
-		})
+		_spec.SetField(subscribealter.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := sau.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribealter.FieldDeletedAt,
-		})
+		_spec.SetField(subscribealter.FieldDeletedAt, field.TypeTime, value)
 	}
 	if sau.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: subscribealter.FieldDeletedAt,
-		})
+		_spec.ClearField(subscribealter.FieldDeletedAt, field.TypeTime)
 	}
 	if sau.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: subscribealter.FieldCreator,
-		})
+		_spec.ClearField(subscribealter.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := sau.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: subscribealter.FieldLastModifier,
-		})
+		_spec.SetField(subscribealter.FieldLastModifier, field.TypeJSON, value)
 	}
 	if sau.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: subscribealter.FieldLastModifier,
-		})
+		_spec.ClearField(subscribealter.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := sau.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribealter.FieldRemark,
-		})
+		_spec.SetField(subscribealter.FieldRemark, field.TypeString, value)
 	}
 	if sau.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: subscribealter.FieldRemark,
-		})
+		_spec.ClearField(subscribealter.FieldRemark, field.TypeString)
 	}
 	if value, ok := sau.mutation.Days(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribealter.FieldDays,
-		})
+		_spec.SetField(subscribealter.FieldDays, field.TypeInt, value)
 	}
 	if value, ok := sau.mutation.AddedDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribealter.FieldDays,
-		})
+		_spec.AddField(subscribealter.FieldDays, field.TypeInt, value)
 	}
 	if sau.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -589,7 +523,7 @@ func (sau *SubscribeAlterUpdate) sqlSave(ctx context.Context) (n int, err error)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = sau.modifiers
+	_spec.AddModifiers(sau.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, sau.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{subscribealter.Label}
@@ -598,6 +532,7 @@ func (sau *SubscribeAlterUpdate) sqlSave(ctx context.Context) (n int, err error)
 		}
 		return 0, err
 	}
+	sau.mutation.done = true
 	return n, nil
 }
 
@@ -822,49 +757,10 @@ func (sauo *SubscribeAlterUpdateOne) Select(field string, fields ...string) *Sub
 
 // Save executes the query and returns the updated SubscribeAlter entity.
 func (sauo *SubscribeAlterUpdateOne) Save(ctx context.Context) (*SubscribeAlter, error) {
-	var (
-		err  error
-		node *SubscribeAlter
-	)
 	if err := sauo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(sauo.hooks) == 0 {
-		if err = sauo.check(); err != nil {
-			return nil, err
-		}
-		node, err = sauo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*SubscribeAlterMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = sauo.check(); err != nil {
-				return nil, err
-			}
-			sauo.mutation = mutation
-			node, err = sauo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(sauo.hooks) - 1; i >= 0; i-- {
-			if sauo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = sauo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, sauo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*SubscribeAlter)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from SubscribeAlterMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*SubscribeAlter, SubscribeAlterMutation](ctx, sauo.sqlSave, sauo.mutation, sauo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -919,6 +815,9 @@ func (sauo *SubscribeAlterUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuild
 }
 
 func (sauo *SubscribeAlterUpdateOne) sqlSave(ctx context.Context) (_node *SubscribeAlter, err error) {
+	if err := sauo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   subscribealter.Table,
@@ -954,70 +853,34 @@ func (sauo *SubscribeAlterUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 		}
 	}
 	if value, ok := sauo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribealter.FieldUpdatedAt,
-		})
+		_spec.SetField(subscribealter.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := sauo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribealter.FieldDeletedAt,
-		})
+		_spec.SetField(subscribealter.FieldDeletedAt, field.TypeTime, value)
 	}
 	if sauo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: subscribealter.FieldDeletedAt,
-		})
+		_spec.ClearField(subscribealter.FieldDeletedAt, field.TypeTime)
 	}
 	if sauo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: subscribealter.FieldCreator,
-		})
+		_spec.ClearField(subscribealter.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := sauo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: subscribealter.FieldLastModifier,
-		})
+		_spec.SetField(subscribealter.FieldLastModifier, field.TypeJSON, value)
 	}
 	if sauo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: subscribealter.FieldLastModifier,
-		})
+		_spec.ClearField(subscribealter.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := sauo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribealter.FieldRemark,
-		})
+		_spec.SetField(subscribealter.FieldRemark, field.TypeString, value)
 	}
 	if sauo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: subscribealter.FieldRemark,
-		})
+		_spec.ClearField(subscribealter.FieldRemark, field.TypeString)
 	}
 	if value, ok := sauo.mutation.Days(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribealter.FieldDays,
-		})
+		_spec.SetField(subscribealter.FieldDays, field.TypeInt, value)
 	}
 	if value, ok := sauo.mutation.AddedDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribealter.FieldDays,
-		})
+		_spec.AddField(subscribealter.FieldDays, field.TypeInt, value)
 	}
 	if sauo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1194,7 +1057,7 @@ func (sauo *SubscribeAlterUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = sauo.modifiers
+	_spec.AddModifiers(sauo.modifiers...)
 	_node = &SubscribeAlter{config: sauo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -1206,5 +1069,6 @@ func (sauo *SubscribeAlterUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 		}
 		return nil, err
 	}
+	sauo.mutation.done = true
 	return _node, nil
 }

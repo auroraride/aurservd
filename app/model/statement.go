@@ -5,7 +5,9 @@
 
 package model
 
-import jsoniter "github.com/json-iterator/go"
+import (
+    "github.com/goccy/go-json"
+)
 
 type StatementBillReq struct {
     End string `json:"end" validate:"required,datetime=2006-01-02" query:"end" trans:"账单截止日期"`
@@ -54,11 +56,11 @@ type StatementBillData struct {
 }
 
 func (d *StatementBillRes) MarshalBinary() ([]byte, error) {
-    return jsoniter.Marshal(d)
+    return json.Marshal(d)
 }
 
 func (d *StatementBillRes) UnmarshalBinary(data []byte) error {
-    return jsoniter.Unmarshal(data, d)
+    return json.Unmarshal(data, d)
 }
 
 type StatementClearBillReq struct {

@@ -12,1193 +12,767 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.Coupon(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.Coupon(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.Coupon(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.Coupon(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.Coupon(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.Coupon(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.Coupon(sql.FieldLTE(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
 func Remark(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldRemark, v))
 }
 
 // RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
 func RiderID(v uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRiderID), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldRiderID, v))
 }
 
 // AssemblyID applies equality check predicate on the "assembly_id" field. It's identical to AssemblyIDEQ.
 func AssemblyID(v uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAssemblyID), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldAssemblyID, v))
 }
 
 // PlanID applies equality check predicate on the "plan_id" field. It's identical to PlanIDEQ.
 func PlanID(v uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPlanID), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldPlanID, v))
 }
 
 // TemplateID applies equality check predicate on the "template_id" field. It's identical to TemplateIDEQ.
 func TemplateID(v uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldTemplateID), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldTemplateID, v))
 }
 
 // OrderID applies equality check predicate on the "order_id" field. It's identical to OrderIDEQ.
 func OrderID(v uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldOrderID), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldOrderID, v))
 }
 
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldName, v))
 }
 
 // Rule applies equality check predicate on the "rule" field. It's identical to RuleEQ.
 func Rule(v uint8) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRule), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldRule, v))
 }
 
 // Multiple applies equality check predicate on the "multiple" field. It's identical to MultipleEQ.
 func Multiple(v bool) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldMultiple), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldMultiple, v))
 }
 
 // Amount applies equality check predicate on the "amount" field. It's identical to AmountEQ.
 func Amount(v float64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAmount), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldAmount, v))
 }
 
 // Code applies equality check predicate on the "code" field. It's identical to CodeEQ.
 func Code(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCode), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldCode, v))
 }
 
 // ExpiresAt applies equality check predicate on the "expires_at" field. It's identical to ExpiresAtEQ.
 func ExpiresAt(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldExpiresAt), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldExpiresAt, v))
 }
 
 // UsedAt applies equality check predicate on the "used_at" field. It's identical to UsedAtEQ.
 func UsedAt(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUsedAt), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldUsedAt, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
 func CreatedAtNEQ(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Coupon(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Coupon(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Coupon(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtGT applies the GT predicate on the "created_at" field.
 func CreatedAtGT(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Coupon(sql.FieldGT(FieldCreatedAt, v))
 }
 
 // CreatedAtGTE applies the GTE predicate on the "created_at" field.
 func CreatedAtGTE(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Coupon(sql.FieldGTE(FieldCreatedAt, v))
 }
 
 // CreatedAtLT applies the LT predicate on the "created_at" field.
 func CreatedAtLT(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Coupon(sql.FieldLT(FieldCreatedAt, v))
 }
 
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Coupon(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
 func UpdatedAtEQ(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
 func UpdatedAtNEQ(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Coupon(sql.FieldNEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Coupon(sql.FieldIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Coupon(sql.FieldNotIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtGT applies the GT predicate on the "updated_at" field.
 func UpdatedAtGT(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Coupon(sql.FieldGT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
 func UpdatedAtGTE(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Coupon(sql.FieldGTE(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLT applies the LT predicate on the "updated_at" field.
 func UpdatedAtLT(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Coupon(sql.FieldLT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Coupon(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // CreatorIsNil applies the IsNil predicate on the "creator" field.
 func CreatorIsNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCreator)))
-	})
+	return predicate.Coupon(sql.FieldIsNull(FieldCreator))
 }
 
 // CreatorNotNil applies the NotNil predicate on the "creator" field.
 func CreatorNotNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCreator)))
-	})
+	return predicate.Coupon(sql.FieldNotNull(FieldCreator))
 }
 
 // LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
 func LastModifierIsNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Coupon(sql.FieldIsNull(FieldLastModifier))
 }
 
 // LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
 func LastModifierNotNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Coupon(sql.FieldNotNull(FieldLastModifier))
 }
 
 // RemarkEQ applies the EQ predicate on the "remark" field.
 func RemarkEQ(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldRemark, v))
 }
 
 // RemarkNEQ applies the NEQ predicate on the "remark" field.
 func RemarkNEQ(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRemark), v))
-	})
+	return predicate.Coupon(sql.FieldNEQ(FieldRemark, v))
 }
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRemark), v...))
-	})
+	return predicate.Coupon(sql.FieldIn(FieldRemark, vs...))
 }
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRemark), v...))
-	})
+	return predicate.Coupon(sql.FieldNotIn(FieldRemark, vs...))
 }
 
 // RemarkGT applies the GT predicate on the "remark" field.
 func RemarkGT(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRemark), v))
-	})
+	return predicate.Coupon(sql.FieldGT(FieldRemark, v))
 }
 
 // RemarkGTE applies the GTE predicate on the "remark" field.
 func RemarkGTE(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRemark), v))
-	})
+	return predicate.Coupon(sql.FieldGTE(FieldRemark, v))
 }
 
 // RemarkLT applies the LT predicate on the "remark" field.
 func RemarkLT(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRemark), v))
-	})
+	return predicate.Coupon(sql.FieldLT(FieldRemark, v))
 }
 
 // RemarkLTE applies the LTE predicate on the "remark" field.
 func RemarkLTE(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRemark), v))
-	})
+	return predicate.Coupon(sql.FieldLTE(FieldRemark, v))
 }
 
 // RemarkContains applies the Contains predicate on the "remark" field.
 func RemarkContains(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRemark), v))
-	})
+	return predicate.Coupon(sql.FieldContains(FieldRemark, v))
 }
 
 // RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
 func RemarkHasPrefix(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRemark), v))
-	})
+	return predicate.Coupon(sql.FieldHasPrefix(FieldRemark, v))
 }
 
 // RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
 func RemarkHasSuffix(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRemark), v))
-	})
+	return predicate.Coupon(sql.FieldHasSuffix(FieldRemark, v))
 }
 
 // RemarkIsNil applies the IsNil predicate on the "remark" field.
 func RemarkIsNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRemark)))
-	})
+	return predicate.Coupon(sql.FieldIsNull(FieldRemark))
 }
 
 // RemarkNotNil applies the NotNil predicate on the "remark" field.
 func RemarkNotNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRemark)))
-	})
+	return predicate.Coupon(sql.FieldNotNull(FieldRemark))
 }
 
 // RemarkEqualFold applies the EqualFold predicate on the "remark" field.
 func RemarkEqualFold(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRemark), v))
-	})
+	return predicate.Coupon(sql.FieldEqualFold(FieldRemark, v))
 }
 
 // RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
 func RemarkContainsFold(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
-	})
+	return predicate.Coupon(sql.FieldContainsFold(FieldRemark, v))
 }
 
 // RiderIDEQ applies the EQ predicate on the "rider_id" field.
 func RiderIDEQ(v uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRiderID), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldRiderID, v))
 }
 
 // RiderIDNEQ applies the NEQ predicate on the "rider_id" field.
 func RiderIDNEQ(v uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRiderID), v))
-	})
+	return predicate.Coupon(sql.FieldNEQ(FieldRiderID, v))
 }
 
 // RiderIDIn applies the In predicate on the "rider_id" field.
 func RiderIDIn(vs ...uint64) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRiderID), v...))
-	})
+	return predicate.Coupon(sql.FieldIn(FieldRiderID, vs...))
 }
 
 // RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
 func RiderIDNotIn(vs ...uint64) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRiderID), v...))
-	})
+	return predicate.Coupon(sql.FieldNotIn(FieldRiderID, vs...))
 }
 
 // RiderIDIsNil applies the IsNil predicate on the "rider_id" field.
 func RiderIDIsNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRiderID)))
-	})
+	return predicate.Coupon(sql.FieldIsNull(FieldRiderID))
 }
 
 // RiderIDNotNil applies the NotNil predicate on the "rider_id" field.
 func RiderIDNotNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRiderID)))
-	})
+	return predicate.Coupon(sql.FieldNotNull(FieldRiderID))
 }
 
 // AssemblyIDEQ applies the EQ predicate on the "assembly_id" field.
 func AssemblyIDEQ(v uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAssemblyID), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldAssemblyID, v))
 }
 
 // AssemblyIDNEQ applies the NEQ predicate on the "assembly_id" field.
 func AssemblyIDNEQ(v uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAssemblyID), v))
-	})
+	return predicate.Coupon(sql.FieldNEQ(FieldAssemblyID, v))
 }
 
 // AssemblyIDIn applies the In predicate on the "assembly_id" field.
 func AssemblyIDIn(vs ...uint64) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAssemblyID), v...))
-	})
+	return predicate.Coupon(sql.FieldIn(FieldAssemblyID, vs...))
 }
 
 // AssemblyIDNotIn applies the NotIn predicate on the "assembly_id" field.
 func AssemblyIDNotIn(vs ...uint64) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAssemblyID), v...))
-	})
+	return predicate.Coupon(sql.FieldNotIn(FieldAssemblyID, vs...))
 }
 
 // PlanIDEQ applies the EQ predicate on the "plan_id" field.
 func PlanIDEQ(v uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPlanID), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldPlanID, v))
 }
 
 // PlanIDNEQ applies the NEQ predicate on the "plan_id" field.
 func PlanIDNEQ(v uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPlanID), v))
-	})
+	return predicate.Coupon(sql.FieldNEQ(FieldPlanID, v))
 }
 
 // PlanIDIn applies the In predicate on the "plan_id" field.
 func PlanIDIn(vs ...uint64) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldPlanID), v...))
-	})
+	return predicate.Coupon(sql.FieldIn(FieldPlanID, vs...))
 }
 
 // PlanIDNotIn applies the NotIn predicate on the "plan_id" field.
 func PlanIDNotIn(vs ...uint64) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldPlanID), v...))
-	})
+	return predicate.Coupon(sql.FieldNotIn(FieldPlanID, vs...))
 }
 
 // PlanIDIsNil applies the IsNil predicate on the "plan_id" field.
 func PlanIDIsNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldPlanID)))
-	})
+	return predicate.Coupon(sql.FieldIsNull(FieldPlanID))
 }
 
 // PlanIDNotNil applies the NotNil predicate on the "plan_id" field.
 func PlanIDNotNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldPlanID)))
-	})
+	return predicate.Coupon(sql.FieldNotNull(FieldPlanID))
 }
 
 // TemplateIDEQ applies the EQ predicate on the "template_id" field.
 func TemplateIDEQ(v uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldTemplateID), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldTemplateID, v))
 }
 
 // TemplateIDNEQ applies the NEQ predicate on the "template_id" field.
 func TemplateIDNEQ(v uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldTemplateID), v))
-	})
+	return predicate.Coupon(sql.FieldNEQ(FieldTemplateID, v))
 }
 
 // TemplateIDIn applies the In predicate on the "template_id" field.
 func TemplateIDIn(vs ...uint64) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldTemplateID), v...))
-	})
+	return predicate.Coupon(sql.FieldIn(FieldTemplateID, vs...))
 }
 
 // TemplateIDNotIn applies the NotIn predicate on the "template_id" field.
 func TemplateIDNotIn(vs ...uint64) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldTemplateID), v...))
-	})
+	return predicate.Coupon(sql.FieldNotIn(FieldTemplateID, vs...))
 }
 
 // OrderIDEQ applies the EQ predicate on the "order_id" field.
 func OrderIDEQ(v uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldOrderID), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldOrderID, v))
 }
 
 // OrderIDNEQ applies the NEQ predicate on the "order_id" field.
 func OrderIDNEQ(v uint64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldOrderID), v))
-	})
+	return predicate.Coupon(sql.FieldNEQ(FieldOrderID, v))
 }
 
 // OrderIDIn applies the In predicate on the "order_id" field.
 func OrderIDIn(vs ...uint64) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldOrderID), v...))
-	})
+	return predicate.Coupon(sql.FieldIn(FieldOrderID, vs...))
 }
 
 // OrderIDNotIn applies the NotIn predicate on the "order_id" field.
 func OrderIDNotIn(vs ...uint64) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldOrderID), v...))
-	})
+	return predicate.Coupon(sql.FieldNotIn(FieldOrderID, vs...))
 }
 
 // OrderIDIsNil applies the IsNil predicate on the "order_id" field.
 func OrderIDIsNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldOrderID)))
-	})
+	return predicate.Coupon(sql.FieldIsNull(FieldOrderID))
 }
 
 // OrderIDNotNil applies the NotNil predicate on the "order_id" field.
 func OrderIDNotNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldOrderID)))
-	})
+	return predicate.Coupon(sql.FieldNotNull(FieldOrderID))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldName, v))
 }
 
 // NameNEQ applies the NEQ predicate on the "name" field.
 func NameNEQ(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldName), v))
-	})
+	return predicate.Coupon(sql.FieldNEQ(FieldName, v))
 }
 
 // NameIn applies the In predicate on the "name" field.
 func NameIn(vs ...string) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldName), v...))
-	})
+	return predicate.Coupon(sql.FieldIn(FieldName, vs...))
 }
 
 // NameNotIn applies the NotIn predicate on the "name" field.
 func NameNotIn(vs ...string) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldName), v...))
-	})
+	return predicate.Coupon(sql.FieldNotIn(FieldName, vs...))
 }
 
 // NameGT applies the GT predicate on the "name" field.
 func NameGT(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldName), v))
-	})
+	return predicate.Coupon(sql.FieldGT(FieldName, v))
 }
 
 // NameGTE applies the GTE predicate on the "name" field.
 func NameGTE(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldName), v))
-	})
+	return predicate.Coupon(sql.FieldGTE(FieldName, v))
 }
 
 // NameLT applies the LT predicate on the "name" field.
 func NameLT(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldName), v))
-	})
+	return predicate.Coupon(sql.FieldLT(FieldName, v))
 }
 
 // NameLTE applies the LTE predicate on the "name" field.
 func NameLTE(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldName), v))
-	})
+	return predicate.Coupon(sql.FieldLTE(FieldName, v))
 }
 
 // NameContains applies the Contains predicate on the "name" field.
 func NameContains(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldName), v))
-	})
+	return predicate.Coupon(sql.FieldContains(FieldName, v))
 }
 
 // NameHasPrefix applies the HasPrefix predicate on the "name" field.
 func NameHasPrefix(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldName), v))
-	})
+	return predicate.Coupon(sql.FieldHasPrefix(FieldName, v))
 }
 
 // NameHasSuffix applies the HasSuffix predicate on the "name" field.
 func NameHasSuffix(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldName), v))
-	})
+	return predicate.Coupon(sql.FieldHasSuffix(FieldName, v))
 }
 
 // NameEqualFold applies the EqualFold predicate on the "name" field.
 func NameEqualFold(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldName), v))
-	})
+	return predicate.Coupon(sql.FieldEqualFold(FieldName, v))
 }
 
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldName), v))
-	})
+	return predicate.Coupon(sql.FieldContainsFold(FieldName, v))
 }
 
 // RuleEQ applies the EQ predicate on the "rule" field.
 func RuleEQ(v uint8) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRule), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldRule, v))
 }
 
 // RuleNEQ applies the NEQ predicate on the "rule" field.
 func RuleNEQ(v uint8) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRule), v))
-	})
+	return predicate.Coupon(sql.FieldNEQ(FieldRule, v))
 }
 
 // RuleIn applies the In predicate on the "rule" field.
 func RuleIn(vs ...uint8) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRule), v...))
-	})
+	return predicate.Coupon(sql.FieldIn(FieldRule, vs...))
 }
 
 // RuleNotIn applies the NotIn predicate on the "rule" field.
 func RuleNotIn(vs ...uint8) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRule), v...))
-	})
+	return predicate.Coupon(sql.FieldNotIn(FieldRule, vs...))
 }
 
 // RuleGT applies the GT predicate on the "rule" field.
 func RuleGT(v uint8) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRule), v))
-	})
+	return predicate.Coupon(sql.FieldGT(FieldRule, v))
 }
 
 // RuleGTE applies the GTE predicate on the "rule" field.
 func RuleGTE(v uint8) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRule), v))
-	})
+	return predicate.Coupon(sql.FieldGTE(FieldRule, v))
 }
 
 // RuleLT applies the LT predicate on the "rule" field.
 func RuleLT(v uint8) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRule), v))
-	})
+	return predicate.Coupon(sql.FieldLT(FieldRule, v))
 }
 
 // RuleLTE applies the LTE predicate on the "rule" field.
 func RuleLTE(v uint8) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRule), v))
-	})
+	return predicate.Coupon(sql.FieldLTE(FieldRule, v))
 }
 
 // MultipleEQ applies the EQ predicate on the "multiple" field.
 func MultipleEQ(v bool) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldMultiple), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldMultiple, v))
 }
 
 // MultipleNEQ applies the NEQ predicate on the "multiple" field.
 func MultipleNEQ(v bool) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldMultiple), v))
-	})
+	return predicate.Coupon(sql.FieldNEQ(FieldMultiple, v))
 }
 
 // AmountEQ applies the EQ predicate on the "amount" field.
 func AmountEQ(v float64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAmount), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldAmount, v))
 }
 
 // AmountNEQ applies the NEQ predicate on the "amount" field.
 func AmountNEQ(v float64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAmount), v))
-	})
+	return predicate.Coupon(sql.FieldNEQ(FieldAmount, v))
 }
 
 // AmountIn applies the In predicate on the "amount" field.
 func AmountIn(vs ...float64) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAmount), v...))
-	})
+	return predicate.Coupon(sql.FieldIn(FieldAmount, vs...))
 }
 
 // AmountNotIn applies the NotIn predicate on the "amount" field.
 func AmountNotIn(vs ...float64) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAmount), v...))
-	})
+	return predicate.Coupon(sql.FieldNotIn(FieldAmount, vs...))
 }
 
 // AmountGT applies the GT predicate on the "amount" field.
 func AmountGT(v float64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAmount), v))
-	})
+	return predicate.Coupon(sql.FieldGT(FieldAmount, v))
 }
 
 // AmountGTE applies the GTE predicate on the "amount" field.
 func AmountGTE(v float64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAmount), v))
-	})
+	return predicate.Coupon(sql.FieldGTE(FieldAmount, v))
 }
 
 // AmountLT applies the LT predicate on the "amount" field.
 func AmountLT(v float64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAmount), v))
-	})
+	return predicate.Coupon(sql.FieldLT(FieldAmount, v))
 }
 
 // AmountLTE applies the LTE predicate on the "amount" field.
 func AmountLTE(v float64) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAmount), v))
-	})
+	return predicate.Coupon(sql.FieldLTE(FieldAmount, v))
 }
 
 // CodeEQ applies the EQ predicate on the "code" field.
 func CodeEQ(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCode), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldCode, v))
 }
 
 // CodeNEQ applies the NEQ predicate on the "code" field.
 func CodeNEQ(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCode), v))
-	})
+	return predicate.Coupon(sql.FieldNEQ(FieldCode, v))
 }
 
 // CodeIn applies the In predicate on the "code" field.
 func CodeIn(vs ...string) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCode), v...))
-	})
+	return predicate.Coupon(sql.FieldIn(FieldCode, vs...))
 }
 
 // CodeNotIn applies the NotIn predicate on the "code" field.
 func CodeNotIn(vs ...string) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCode), v...))
-	})
+	return predicate.Coupon(sql.FieldNotIn(FieldCode, vs...))
 }
 
 // CodeGT applies the GT predicate on the "code" field.
 func CodeGT(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCode), v))
-	})
+	return predicate.Coupon(sql.FieldGT(FieldCode, v))
 }
 
 // CodeGTE applies the GTE predicate on the "code" field.
 func CodeGTE(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCode), v))
-	})
+	return predicate.Coupon(sql.FieldGTE(FieldCode, v))
 }
 
 // CodeLT applies the LT predicate on the "code" field.
 func CodeLT(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCode), v))
-	})
+	return predicate.Coupon(sql.FieldLT(FieldCode, v))
 }
 
 // CodeLTE applies the LTE predicate on the "code" field.
 func CodeLTE(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCode), v))
-	})
+	return predicate.Coupon(sql.FieldLTE(FieldCode, v))
 }
 
 // CodeContains applies the Contains predicate on the "code" field.
 func CodeContains(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldCode), v))
-	})
+	return predicate.Coupon(sql.FieldContains(FieldCode, v))
 }
 
 // CodeHasPrefix applies the HasPrefix predicate on the "code" field.
 func CodeHasPrefix(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldCode), v))
-	})
+	return predicate.Coupon(sql.FieldHasPrefix(FieldCode, v))
 }
 
 // CodeHasSuffix applies the HasSuffix predicate on the "code" field.
 func CodeHasSuffix(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldCode), v))
-	})
+	return predicate.Coupon(sql.FieldHasSuffix(FieldCode, v))
 }
 
 // CodeEqualFold applies the EqualFold predicate on the "code" field.
 func CodeEqualFold(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldCode), v))
-	})
+	return predicate.Coupon(sql.FieldEqualFold(FieldCode, v))
 }
 
 // CodeContainsFold applies the ContainsFold predicate on the "code" field.
 func CodeContainsFold(v string) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldCode), v))
-	})
+	return predicate.Coupon(sql.FieldContainsFold(FieldCode, v))
 }
 
 // ExpiresAtEQ applies the EQ predicate on the "expires_at" field.
 func ExpiresAtEQ(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldExpiresAt), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldExpiresAt, v))
 }
 
 // ExpiresAtNEQ applies the NEQ predicate on the "expires_at" field.
 func ExpiresAtNEQ(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldExpiresAt), v))
-	})
+	return predicate.Coupon(sql.FieldNEQ(FieldExpiresAt, v))
 }
 
 // ExpiresAtIn applies the In predicate on the "expires_at" field.
 func ExpiresAtIn(vs ...time.Time) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldExpiresAt), v...))
-	})
+	return predicate.Coupon(sql.FieldIn(FieldExpiresAt, vs...))
 }
 
 // ExpiresAtNotIn applies the NotIn predicate on the "expires_at" field.
 func ExpiresAtNotIn(vs ...time.Time) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldExpiresAt), v...))
-	})
+	return predicate.Coupon(sql.FieldNotIn(FieldExpiresAt, vs...))
 }
 
 // ExpiresAtGT applies the GT predicate on the "expires_at" field.
 func ExpiresAtGT(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldExpiresAt), v))
-	})
+	return predicate.Coupon(sql.FieldGT(FieldExpiresAt, v))
 }
 
 // ExpiresAtGTE applies the GTE predicate on the "expires_at" field.
 func ExpiresAtGTE(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldExpiresAt), v))
-	})
+	return predicate.Coupon(sql.FieldGTE(FieldExpiresAt, v))
 }
 
 // ExpiresAtLT applies the LT predicate on the "expires_at" field.
 func ExpiresAtLT(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldExpiresAt), v))
-	})
+	return predicate.Coupon(sql.FieldLT(FieldExpiresAt, v))
 }
 
 // ExpiresAtLTE applies the LTE predicate on the "expires_at" field.
 func ExpiresAtLTE(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldExpiresAt), v))
-	})
+	return predicate.Coupon(sql.FieldLTE(FieldExpiresAt, v))
 }
 
 // ExpiresAtIsNil applies the IsNil predicate on the "expires_at" field.
 func ExpiresAtIsNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldExpiresAt)))
-	})
+	return predicate.Coupon(sql.FieldIsNull(FieldExpiresAt))
 }
 
 // ExpiresAtNotNil applies the NotNil predicate on the "expires_at" field.
 func ExpiresAtNotNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldExpiresAt)))
-	})
+	return predicate.Coupon(sql.FieldNotNull(FieldExpiresAt))
 }
 
 // UsedAtEQ applies the EQ predicate on the "used_at" field.
 func UsedAtEQ(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUsedAt), v))
-	})
+	return predicate.Coupon(sql.FieldEQ(FieldUsedAt, v))
 }
 
 // UsedAtNEQ applies the NEQ predicate on the "used_at" field.
 func UsedAtNEQ(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUsedAt), v))
-	})
+	return predicate.Coupon(sql.FieldNEQ(FieldUsedAt, v))
 }
 
 // UsedAtIn applies the In predicate on the "used_at" field.
 func UsedAtIn(vs ...time.Time) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUsedAt), v...))
-	})
+	return predicate.Coupon(sql.FieldIn(FieldUsedAt, vs...))
 }
 
 // UsedAtNotIn applies the NotIn predicate on the "used_at" field.
 func UsedAtNotIn(vs ...time.Time) predicate.Coupon {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUsedAt), v...))
-	})
+	return predicate.Coupon(sql.FieldNotIn(FieldUsedAt, vs...))
 }
 
 // UsedAtGT applies the GT predicate on the "used_at" field.
 func UsedAtGT(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUsedAt), v))
-	})
+	return predicate.Coupon(sql.FieldGT(FieldUsedAt, v))
 }
 
 // UsedAtGTE applies the GTE predicate on the "used_at" field.
 func UsedAtGTE(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUsedAt), v))
-	})
+	return predicate.Coupon(sql.FieldGTE(FieldUsedAt, v))
 }
 
 // UsedAtLT applies the LT predicate on the "used_at" field.
 func UsedAtLT(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUsedAt), v))
-	})
+	return predicate.Coupon(sql.FieldLT(FieldUsedAt, v))
 }
 
 // UsedAtLTE applies the LTE predicate on the "used_at" field.
 func UsedAtLTE(v time.Time) predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUsedAt), v))
-	})
+	return predicate.Coupon(sql.FieldLTE(FieldUsedAt, v))
 }
 
 // UsedAtIsNil applies the IsNil predicate on the "used_at" field.
 func UsedAtIsNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldUsedAt)))
-	})
+	return predicate.Coupon(sql.FieldIsNull(FieldUsedAt))
 }
 
 // UsedAtNotNil applies the NotNil predicate on the "used_at" field.
 func UsedAtNotNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldUsedAt)))
-	})
+	return predicate.Coupon(sql.FieldNotNull(FieldUsedAt))
 }
 
 // PlansIsNil applies the IsNil predicate on the "plans" field.
 func PlansIsNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldPlans)))
-	})
+	return predicate.Coupon(sql.FieldIsNull(FieldPlans))
 }
 
 // PlansNotNil applies the NotNil predicate on the "plans" field.
 func PlansNotNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldPlans)))
-	})
+	return predicate.Coupon(sql.FieldNotNull(FieldPlans))
 }
 
 // CitiesIsNil applies the IsNil predicate on the "cities" field.
 func CitiesIsNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCities)))
-	})
+	return predicate.Coupon(sql.FieldIsNull(FieldCities))
 }
 
 // CitiesNotNil applies the NotNil predicate on the "cities" field.
 func CitiesNotNil() predicate.Coupon {
-	return predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCities)))
-	})
+	return predicate.Coupon(sql.FieldNotNull(FieldCities))
 }
 
 // HasRider applies the HasEdge predicate on the "rider" edge.
@@ -1206,7 +780,6 @@ func HasRider() predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RiderTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1234,7 +807,6 @@ func HasAssembly() predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AssemblyTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, AssemblyTable, AssemblyColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1262,7 +834,6 @@ func HasPlan() predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PlanTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, PlanTable, PlanColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1290,7 +861,6 @@ func HasTemplate() predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(TemplateTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, TemplateTable, TemplateColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1318,7 +888,6 @@ func HasOrder() predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(OrderTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, OrderTable, OrderColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

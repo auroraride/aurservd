@@ -252,52 +252,10 @@ func (ac *AllocateCreate) Mutation() *AllocateMutation {
 
 // Save creates the Allocate in the database.
 func (ac *AllocateCreate) Save(ctx context.Context) (*Allocate, error) {
-	var (
-		err  error
-		node *Allocate
-	)
 	if err := ac.defaults(); err != nil {
 		return nil, err
 	}
-	if len(ac.hooks) == 0 {
-		if err = ac.check(); err != nil {
-			return nil, err
-		}
-		node, err = ac.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*AllocateMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ac.check(); err != nil {
-				return nil, err
-			}
-			ac.mutation = mutation
-			if node, err = ac.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ac.hooks) - 1; i >= 0; i-- {
-			if ac.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ac.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ac.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Allocate)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from AllocateMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Allocate, AllocateMutation](ctx, ac.sqlSave, ac.mutation, ac.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -376,6 +334,9 @@ func (ac *AllocateCreate) check() error {
 }
 
 func (ac *AllocateCreate) sqlSave(ctx context.Context) (*Allocate, error) {
+	if err := ac.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := ac.createSpec()
 	if err := sqlgraph.CreateNode(ctx, ac.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -385,6 +346,8 @@ func (ac *AllocateCreate) sqlSave(ctx context.Context) (*Allocate, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	ac.mutation.id = &_node.ID
+	ac.mutation.done = true
 	return _node, nil
 }
 
@@ -401,75 +364,39 @@ func (ac *AllocateCreate) createSpec() (*Allocate, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = ac.conflict
 	if value, ok := ac.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: allocate.FieldCreatedAt,
-		})
+		_spec.SetField(allocate.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = &value
 	}
 	if value, ok := ac.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: allocate.FieldUpdatedAt,
-		})
+		_spec.SetField(allocate.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = &value
 	}
 	if value, ok := ac.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: allocate.FieldCreator,
-		})
+		_spec.SetField(allocate.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := ac.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: allocate.FieldLastModifier,
-		})
+		_spec.SetField(allocate.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := ac.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: allocate.FieldRemark,
-		})
+		_spec.SetField(allocate.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := ac.mutation.GetType(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: allocate.FieldType,
-		})
+		_spec.SetField(allocate.FieldType, field.TypeEnum, value)
 		_node.Type = value
 	}
 	if value, ok := ac.mutation.Status(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: allocate.FieldStatus,
-		})
+		_spec.SetField(allocate.FieldStatus, field.TypeUint8, value)
 		_node.Status = value
 	}
 	if value, ok := ac.mutation.Time(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: allocate.FieldTime,
-		})
+		_spec.SetField(allocate.FieldTime, field.TypeTime, value)
 		_node.Time = value
 	}
 	if value, ok := ac.mutation.Model(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: allocate.FieldModel,
-		})
+		_spec.SetField(allocate.FieldModel, field.TypeString, value)
 		_node.Model = value
 	}
 	if nodes := ac.mutation.RiderIDs(); len(nodes) > 0 {

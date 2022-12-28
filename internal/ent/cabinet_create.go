@@ -426,52 +426,10 @@ func (cc *CabinetCreate) Mutation() *CabinetMutation {
 
 // Save creates the Cabinet in the database.
 func (cc *CabinetCreate) Save(ctx context.Context) (*Cabinet, error) {
-	var (
-		err  error
-		node *Cabinet
-	)
 	if err := cc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(cc.hooks) == 0 {
-		if err = cc.check(); err != nil {
-			return nil, err
-		}
-		node, err = cc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CabinetMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = cc.check(); err != nil {
-				return nil, err
-			}
-			cc.mutation = mutation
-			if node, err = cc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(cc.hooks) - 1; i >= 0; i-- {
-			if cc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = cc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, cc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Cabinet)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from CabinetMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Cabinet, CabinetMutation](ctx, cc.sqlSave, cc.mutation, cc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -601,6 +559,9 @@ func (cc *CabinetCreate) check() error {
 }
 
 func (cc *CabinetCreate) sqlSave(ctx context.Context) (*Cabinet, error) {
+	if err := cc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := cc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, cc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -610,6 +571,8 @@ func (cc *CabinetCreate) sqlSave(ctx context.Context) (*Cabinet, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	cc.mutation.id = &_node.ID
+	cc.mutation.done = true
 	return _node, nil
 }
 
@@ -626,211 +589,107 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = cc.conflict
 	if value, ok := cc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: cabinet.FieldCreatedAt,
-		})
+		_spec.SetField(cabinet.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := cc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: cabinet.FieldUpdatedAt,
-		})
+		_spec.SetField(cabinet.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := cc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: cabinet.FieldDeletedAt,
-		})
+		_spec.SetField(cabinet.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := cc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinet.FieldCreator,
-		})
+		_spec.SetField(cabinet.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := cc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinet.FieldLastModifier,
-		})
+		_spec.SetField(cabinet.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := cc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinet.FieldRemark,
-		})
+		_spec.SetField(cabinet.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := cc.mutation.Sn(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinet.FieldSn,
-		})
+		_spec.SetField(cabinet.FieldSn, field.TypeString, value)
 		_node.Sn = value
 	}
 	if value, ok := cc.mutation.Brand(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinet.FieldBrand,
-		})
+		_spec.SetField(cabinet.FieldBrand, field.TypeString, value)
 		_node.Brand = value
 	}
 	if value, ok := cc.mutation.Serial(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinet.FieldSerial,
-		})
+		_spec.SetField(cabinet.FieldSerial, field.TypeString, value)
 		_node.Serial = value
 	}
 	if value, ok := cc.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinet.FieldName,
-		})
+		_spec.SetField(cabinet.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := cc.mutation.Doors(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldDoors,
-		})
+		_spec.SetField(cabinet.FieldDoors, field.TypeInt, value)
 		_node.Doors = value
 	}
 	if value, ok := cc.mutation.Status(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: cabinet.FieldStatus,
-		})
+		_spec.SetField(cabinet.FieldStatus, field.TypeUint8, value)
 		_node.Status = value
 	}
 	if value, ok := cc.mutation.Lng(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: cabinet.FieldLng,
-		})
+		_spec.SetField(cabinet.FieldLng, field.TypeFloat64, value)
 		_node.Lng = value
 	}
 	if value, ok := cc.mutation.Lat(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: cabinet.FieldLat,
-		})
+		_spec.SetField(cabinet.FieldLat, field.TypeFloat64, value)
 		_node.Lat = value
 	}
 	if value, ok := cc.mutation.Address(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinet.FieldAddress,
-		})
+		_spec.SetField(cabinet.FieldAddress, field.TypeString, value)
 		_node.Address = value
 	}
 	if value, ok := cc.mutation.SimSn(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinet.FieldSimSn,
-		})
+		_spec.SetField(cabinet.FieldSimSn, field.TypeString, value)
 		_node.SimSn = value
 	}
 	if value, ok := cc.mutation.SimDate(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: cabinet.FieldSimDate,
-		})
+		_spec.SetField(cabinet.FieldSimDate, field.TypeTime, value)
 		_node.SimDate = value
 	}
 	if value, ok := cc.mutation.Transferred(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: cabinet.FieldTransferred,
-		})
+		_spec.SetField(cabinet.FieldTransferred, field.TypeBool, value)
 		_node.Transferred = value
 	}
 	if value, ok := cc.mutation.Intelligent(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: cabinet.FieldIntelligent,
-		})
+		_spec.SetField(cabinet.FieldIntelligent, field.TypeBool, value)
 		_node.Intelligent = value
 	}
 	if value, ok := cc.mutation.Health(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: cabinet.FieldHealth,
-		})
+		_spec.SetField(cabinet.FieldHealth, field.TypeUint8, value)
 		_node.Health = value
 	}
 	if value, ok := cc.mutation.Bin(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinet.FieldBin,
-		})
+		_spec.SetField(cabinet.FieldBin, field.TypeJSON, value)
 		_node.Bin = value
 	}
 	if value, ok := cc.mutation.BatteryNum(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldBatteryNum,
-		})
+		_spec.SetField(cabinet.FieldBatteryNum, field.TypeInt, value)
 		_node.BatteryNum = value
 	}
 	if value, ok := cc.mutation.BatteryFullNum(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldBatteryFullNum,
-		})
+		_spec.SetField(cabinet.FieldBatteryFullNum, field.TypeInt, value)
 		_node.BatteryFullNum = value
 	}
 	if value, ok := cc.mutation.BatteryChargingNum(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldBatteryChargingNum,
-		})
+		_spec.SetField(cabinet.FieldBatteryChargingNum, field.TypeInt, value)
 		_node.BatteryChargingNum = value
 	}
 	if value, ok := cc.mutation.EmptyBinNum(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldEmptyBinNum,
-		})
+		_spec.SetField(cabinet.FieldEmptyBinNum, field.TypeInt, value)
 		_node.EmptyBinNum = value
 	}
 	if value, ok := cc.mutation.LockedBinNum(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: cabinet.FieldLockedBinNum,
-		})
+		_spec.SetField(cabinet.FieldLockedBinNum, field.TypeInt, value)
 		_node.LockedBinNum = value
 	}
 	if nodes := cc.mutation.CityIDs(); len(nodes) > 0 {

@@ -68,14 +68,15 @@ const (
 
 // Cabinet 电柜基础属性
 type Cabinet struct {
-    BranchID *uint64       `json:"branchId"`                                                      // 网点
-    Status   CabinetStatus `json:"status" enums:"0,1,2"`                                          // 电柜状态 0未投放 1运营中 2维护中
-    Brand    CabinetBrand  `json:"brand" validate:"required" trans:"品牌" enums:"KAIXIN,YUNDONG"` // KAIXIN(凯信) YUNDONG(云动)
-    Serial   string        `json:"serial" validate:"required" trans:"电柜编码"`
-    Name     string        `json:"name" validate:"required" trans:"电柜名称"`
-    Doors    int           `json:"doors"` // 柜门数量
-    Remark   *string       `json:"remark" trans:"备注"`
-    Health   *uint8        `json:"health"` // 在线状态 0离线 1在线 2故障
+    BranchID    *uint64       `json:"branchId"`                                                      // 网点
+    Status      CabinetStatus `json:"status" enums:"0,1,2"`                                          // 电柜状态 0未投放 1运营中 2维护中
+    Brand       CabinetBrand  `json:"brand" validate:"required" trans:"品牌" enums:"KAIXIN,YUNDONG"` // KAIXIN(凯信) YUNDONG(云动)
+    Serial      string        `json:"serial" validate:"required" trans:"电柜编码"`
+    Name        string        `json:"name" validate:"required" trans:"电柜名称"`
+    Doors       int           `json:"doors"` // 柜门数量
+    Remark      *string       `json:"remark" trans:"备注"`
+    Health      *uint8        `json:"health"`      // 在线状态 0离线 1在线 2故障
+    Intelligent bool          `json:"intelligent"` // 是否智能柜
 }
 
 type CabinetBasicInfo struct {
@@ -111,34 +112,37 @@ type CabinetItem struct {
     SimDate     string   `json:"simDate,omitempty"`   // SIM卡到期日期, 例: 2022-06-01
     Transferred bool     `json:"transferred"`         // 是否初始化过调拨
     BatteryNum  int      `json:"batteryNum"`          // 电池数量
+    Intelligent bool     `json:"intelligent"`         // 是否智能柜
 }
 
 // CabinetQueryReq 电柜查询请求
 type CabinetQueryReq struct {
     PaginationReq
 
-    Serial *string `json:"serial" query:"serial"` // 电柜编号
-    Name   *string `json:"name" query:"name"`     // 电柜名称
-    CityID *uint64 `json:"cityId" query:"cityId"` // 城市ID
-    Brand  *string `json:"brand" query:"brand"`   // 电柜型号
-    Status *uint8  `json:"status" query:"status"` // 电柜状态
-    Model  *string `json:"model" query:"model"`   // 电池型号
-    Online uint8   `json:"online" query:"online"` // 在线状态
+    Serial      *string `json:"serial" query:"serial"`           // 电柜编号
+    Name        *string `json:"name" query:"name"`               // 电柜名称
+    CityID      *uint64 `json:"cityId" query:"cityId"`           // 城市ID
+    Brand       *string `json:"brand" query:"brand"`             // 电柜型号
+    Status      *uint8  `json:"status" query:"status"`           // 电柜状态
+    Model       *string `json:"model" query:"model"`             // 电池型号
+    Online      uint8   `json:"online" query:"online"`           // 在线状态
+    Intelligent uint8   `json:"intelligent" query:"intelligent"` // 是否智能柜 0:全部 1:是 2:否
 }
 
 // CabinetModifyReq 电柜修改请求
 type CabinetModifyReq struct {
-    ID       uint64         `json:"id" param:"id"`
-    BranchID *uint64        `json:"branchId"`                                  // 网点
-    Status   *CabinetStatus `json:"status" enums:"0,1,2"`                      // 电柜状态 0未投放 1运营中 2维护中
-    Brand    *CabinetBrand  `json:"brand" trans:"品牌" enums:"KAIXIN,YUNDONG"` // KAIXIN(凯信) YUNDONG(云动)
-    Serial   *string        `json:"serial" trans:"电柜原始编码"`
-    Name     *string        `json:"name" trans:"电柜名称"`
-    Doors    *uint          `json:"doors" trans:"柜门数量"`
-    Remark   *string        `json:"remark" trans:"备注"`
-    Models   *[]string      `json:"models" trans:"电池型号"`
-    SimSn    *string        `json:"simSn,omitempty"`   // SIM卡号
-    SimDate  *string        `json:"simDate,omitempty"` // SIM卡到期日期, 例: 2022-06-01
+    ID          uint64         `json:"id" param:"id"`
+    BranchID    *uint64        `json:"branchId"`                                  // 网点
+    Status      *CabinetStatus `json:"status" enums:"0,1,2"`                      // 电柜状态 0未投放 1运营中 2维护中
+    Brand       *CabinetBrand  `json:"brand" trans:"品牌" enums:"KAIXIN,YUNDONG"` // KAIXIN(凯信) YUNDONG(云动)
+    Serial      *string        `json:"serial" trans:"电柜原始编码"`
+    Name        *string        `json:"name" trans:"电柜名称"`
+    Doors       *uint          `json:"doors" trans:"柜门数量"`
+    Remark      *string        `json:"remark" trans:"备注"`
+    Models      *[]string      `json:"models" trans:"电池型号"`
+    SimSn       *string        `json:"simSn,omitempty"`       // SIM卡号
+    SimDate     *string        `json:"simDate,omitempty"`     // SIM卡到期日期, 例: 2022-06-01
+    Intelligent *bool          `json:"intelligent,omitempty"` // 是否智能柜
 }
 
 // CabinetDeleteReq 电柜删除请求

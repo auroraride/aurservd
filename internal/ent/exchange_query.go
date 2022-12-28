@@ -30,6 +30,7 @@ type ExchangeQuery struct {
 	unique         *bool
 	order          []OrderFunc
 	fields         []string
+	inters         []Interceptor
 	predicates     []predicate.Exchange
 	withSubscribe  *SubscribeQuery
 	withCity       *CityQuery
@@ -51,13 +52,13 @@ func (eq *ExchangeQuery) Where(ps ...predicate.Exchange) *ExchangeQuery {
 	return eq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (eq *ExchangeQuery) Limit(limit int) *ExchangeQuery {
 	eq.limit = &limit
 	return eq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (eq *ExchangeQuery) Offset(offset int) *ExchangeQuery {
 	eq.offset = &offset
 	return eq
@@ -70,7 +71,7 @@ func (eq *ExchangeQuery) Unique(unique bool) *ExchangeQuery {
 	return eq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (eq *ExchangeQuery) Order(o ...OrderFunc) *ExchangeQuery {
 	eq.order = append(eq.order, o...)
 	return eq
@@ -78,7 +79,7 @@ func (eq *ExchangeQuery) Order(o ...OrderFunc) *ExchangeQuery {
 
 // QuerySubscribe chains the current query on the "subscribe" edge.
 func (eq *ExchangeQuery) QuerySubscribe() *SubscribeQuery {
-	query := &SubscribeQuery{config: eq.config}
+	query := (&SubscribeClient{config: eq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := eq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -100,7 +101,7 @@ func (eq *ExchangeQuery) QuerySubscribe() *SubscribeQuery {
 
 // QueryCity chains the current query on the "city" edge.
 func (eq *ExchangeQuery) QueryCity() *CityQuery {
-	query := &CityQuery{config: eq.config}
+	query := (&CityClient{config: eq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := eq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -122,7 +123,7 @@ func (eq *ExchangeQuery) QueryCity() *CityQuery {
 
 // QueryStore chains the current query on the "store" edge.
 func (eq *ExchangeQuery) QueryStore() *StoreQuery {
-	query := &StoreQuery{config: eq.config}
+	query := (&StoreClient{config: eq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := eq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -144,7 +145,7 @@ func (eq *ExchangeQuery) QueryStore() *StoreQuery {
 
 // QueryEnterprise chains the current query on the "enterprise" edge.
 func (eq *ExchangeQuery) QueryEnterprise() *EnterpriseQuery {
-	query := &EnterpriseQuery{config: eq.config}
+	query := (&EnterpriseClient{config: eq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := eq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -166,7 +167,7 @@ func (eq *ExchangeQuery) QueryEnterprise() *EnterpriseQuery {
 
 // QueryStation chains the current query on the "station" edge.
 func (eq *ExchangeQuery) QueryStation() *EnterpriseStationQuery {
-	query := &EnterpriseStationQuery{config: eq.config}
+	query := (&EnterpriseStationClient{config: eq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := eq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -188,7 +189,7 @@ func (eq *ExchangeQuery) QueryStation() *EnterpriseStationQuery {
 
 // QueryCabinet chains the current query on the "cabinet" edge.
 func (eq *ExchangeQuery) QueryCabinet() *CabinetQuery {
-	query := &CabinetQuery{config: eq.config}
+	query := (&CabinetClient{config: eq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := eq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -210,7 +211,7 @@ func (eq *ExchangeQuery) QueryCabinet() *CabinetQuery {
 
 // QueryRider chains the current query on the "rider" edge.
 func (eq *ExchangeQuery) QueryRider() *RiderQuery {
-	query := &RiderQuery{config: eq.config}
+	query := (&RiderClient{config: eq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := eq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -232,7 +233,7 @@ func (eq *ExchangeQuery) QueryRider() *RiderQuery {
 
 // QueryEmployee chains the current query on the "employee" edge.
 func (eq *ExchangeQuery) QueryEmployee() *EmployeeQuery {
-	query := &EmployeeQuery{config: eq.config}
+	query := (&EmployeeClient{config: eq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := eq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -255,7 +256,7 @@ func (eq *ExchangeQuery) QueryEmployee() *EmployeeQuery {
 // First returns the first Exchange entity from the query.
 // Returns a *NotFoundError when no Exchange was found.
 func (eq *ExchangeQuery) First(ctx context.Context) (*Exchange, error) {
-	nodes, err := eq.Limit(1).All(ctx)
+	nodes, err := eq.Limit(1).All(newQueryContext(ctx, TypeExchange, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -278,7 +279,7 @@ func (eq *ExchangeQuery) FirstX(ctx context.Context) *Exchange {
 // Returns a *NotFoundError when no Exchange ID was found.
 func (eq *ExchangeQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = eq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = eq.Limit(1).IDs(newQueryContext(ctx, TypeExchange, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -301,7 +302,7 @@ func (eq *ExchangeQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Exchange entity is found.
 // Returns a *NotFoundError when no Exchange entities are found.
 func (eq *ExchangeQuery) Only(ctx context.Context) (*Exchange, error) {
-	nodes, err := eq.Limit(2).All(ctx)
+	nodes, err := eq.Limit(2).All(newQueryContext(ctx, TypeExchange, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -329,7 +330,7 @@ func (eq *ExchangeQuery) OnlyX(ctx context.Context) *Exchange {
 // Returns a *NotFoundError when no entities are found.
 func (eq *ExchangeQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = eq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = eq.Limit(2).IDs(newQueryContext(ctx, TypeExchange, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -354,10 +355,12 @@ func (eq *ExchangeQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Exchanges.
 func (eq *ExchangeQuery) All(ctx context.Context) ([]*Exchange, error) {
+	ctx = newQueryContext(ctx, TypeExchange, "All")
 	if err := eq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return eq.sqlAll(ctx)
+	qr := querierAll[[]*Exchange, *ExchangeQuery]()
+	return withInterceptors[[]*Exchange](ctx, eq, qr, eq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -372,6 +375,7 @@ func (eq *ExchangeQuery) AllX(ctx context.Context) []*Exchange {
 // IDs executes the query and returns a list of Exchange IDs.
 func (eq *ExchangeQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeExchange, "IDs")
 	if err := eq.Select(exchange.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -389,10 +393,11 @@ func (eq *ExchangeQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (eq *ExchangeQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeExchange, "Count")
 	if err := eq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return eq.sqlCount(ctx)
+	return withInterceptors[int](ctx, eq, querierCount[*ExchangeQuery](), eq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -406,10 +411,15 @@ func (eq *ExchangeQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (eq *ExchangeQuery) Exist(ctx context.Context) (bool, error) {
-	if err := eq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeExchange, "Exist")
+	switch _, err := eq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return eq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -451,7 +461,7 @@ func (eq *ExchangeQuery) Clone() *ExchangeQuery {
 // WithSubscribe tells the query-builder to eager-load the nodes that are connected to
 // the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
 func (eq *ExchangeQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *ExchangeQuery {
-	query := &SubscribeQuery{config: eq.config}
+	query := (&SubscribeClient{config: eq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -462,7 +472,7 @@ func (eq *ExchangeQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *ExchangeQ
 // WithCity tells the query-builder to eager-load the nodes that are connected to
 // the "city" edge. The optional arguments are used to configure the query builder of the edge.
 func (eq *ExchangeQuery) WithCity(opts ...func(*CityQuery)) *ExchangeQuery {
-	query := &CityQuery{config: eq.config}
+	query := (&CityClient{config: eq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -473,7 +483,7 @@ func (eq *ExchangeQuery) WithCity(opts ...func(*CityQuery)) *ExchangeQuery {
 // WithStore tells the query-builder to eager-load the nodes that are connected to
 // the "store" edge. The optional arguments are used to configure the query builder of the edge.
 func (eq *ExchangeQuery) WithStore(opts ...func(*StoreQuery)) *ExchangeQuery {
-	query := &StoreQuery{config: eq.config}
+	query := (&StoreClient{config: eq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -484,7 +494,7 @@ func (eq *ExchangeQuery) WithStore(opts ...func(*StoreQuery)) *ExchangeQuery {
 // WithEnterprise tells the query-builder to eager-load the nodes that are connected to
 // the "enterprise" edge. The optional arguments are used to configure the query builder of the edge.
 func (eq *ExchangeQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *ExchangeQuery {
-	query := &EnterpriseQuery{config: eq.config}
+	query := (&EnterpriseClient{config: eq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -495,7 +505,7 @@ func (eq *ExchangeQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *Exchang
 // WithStation tells the query-builder to eager-load the nodes that are connected to
 // the "station" edge. The optional arguments are used to configure the query builder of the edge.
 func (eq *ExchangeQuery) WithStation(opts ...func(*EnterpriseStationQuery)) *ExchangeQuery {
-	query := &EnterpriseStationQuery{config: eq.config}
+	query := (&EnterpriseStationClient{config: eq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -506,7 +516,7 @@ func (eq *ExchangeQuery) WithStation(opts ...func(*EnterpriseStationQuery)) *Exc
 // WithCabinet tells the query-builder to eager-load the nodes that are connected to
 // the "cabinet" edge. The optional arguments are used to configure the query builder of the edge.
 func (eq *ExchangeQuery) WithCabinet(opts ...func(*CabinetQuery)) *ExchangeQuery {
-	query := &CabinetQuery{config: eq.config}
+	query := (&CabinetClient{config: eq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -517,7 +527,7 @@ func (eq *ExchangeQuery) WithCabinet(opts ...func(*CabinetQuery)) *ExchangeQuery
 // WithRider tells the query-builder to eager-load the nodes that are connected to
 // the "rider" edge. The optional arguments are used to configure the query builder of the edge.
 func (eq *ExchangeQuery) WithRider(opts ...func(*RiderQuery)) *ExchangeQuery {
-	query := &RiderQuery{config: eq.config}
+	query := (&RiderClient{config: eq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -528,7 +538,7 @@ func (eq *ExchangeQuery) WithRider(opts ...func(*RiderQuery)) *ExchangeQuery {
 // WithEmployee tells the query-builder to eager-load the nodes that are connected to
 // the "employee" edge. The optional arguments are used to configure the query builder of the edge.
 func (eq *ExchangeQuery) WithEmployee(opts ...func(*EmployeeQuery)) *ExchangeQuery {
-	query := &EmployeeQuery{config: eq.config}
+	query := (&EmployeeClient{config: eq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -551,16 +561,11 @@ func (eq *ExchangeQuery) WithEmployee(opts ...func(*EmployeeQuery)) *ExchangeQue
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (eq *ExchangeQuery) GroupBy(field string, fields ...string) *ExchangeGroupBy {
-	grbuild := &ExchangeGroupBy{config: eq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := eq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return eq.sqlQuery(ctx), nil
-	}
+	eq.fields = append([]string{field}, fields...)
+	grbuild := &ExchangeGroupBy{build: eq}
+	grbuild.flds = &eq.fields
 	grbuild.label = exchange.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -578,13 +583,28 @@ func (eq *ExchangeQuery) GroupBy(field string, fields ...string) *ExchangeGroupB
 //		Scan(ctx, &v)
 func (eq *ExchangeQuery) Select(fields ...string) *ExchangeSelect {
 	eq.fields = append(eq.fields, fields...)
-	selbuild := &ExchangeSelect{ExchangeQuery: eq}
-	selbuild.label = exchange.Label
-	selbuild.flds, selbuild.scan = &eq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &ExchangeSelect{ExchangeQuery: eq}
+	sbuild.label = exchange.Label
+	sbuild.flds, sbuild.scan = &eq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a ExchangeSelect configured with the given aggregations.
+func (eq *ExchangeQuery) Aggregate(fns ...AggregateFunc) *ExchangeSelect {
+	return eq.Select().Aggregate(fns...)
 }
 
 func (eq *ExchangeQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range eq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, eq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range eq.fields {
 		if !exchange.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -920,17 +940,6 @@ func (eq *ExchangeQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, eq.driver, _spec)
 }
 
-func (eq *ExchangeQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := eq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (eq *ExchangeQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -1022,13 +1031,8 @@ func (eq *ExchangeQuery) Modify(modifiers ...func(s *sql.Selector)) *ExchangeSel
 
 // ExchangeGroupBy is the group-by builder for Exchange entities.
 type ExchangeGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *ExchangeQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -1037,74 +1041,77 @@ func (egb *ExchangeGroupBy) Aggregate(fns ...AggregateFunc) *ExchangeGroupBy {
 	return egb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (egb *ExchangeGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := egb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeExchange, "GroupBy")
+	if err := egb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	egb.sql = query
-	return egb.sqlScan(ctx, v)
+	return scanWithInterceptors[*ExchangeQuery, *ExchangeGroupBy](ctx, egb.build, egb, egb.build.inters, v)
 }
 
-func (egb *ExchangeGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range egb.fields {
-		if !exchange.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (egb *ExchangeGroupBy) sqlScan(ctx context.Context, root *ExchangeQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(egb.fns))
+	for _, fn := range egb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := egb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*egb.flds)+len(egb.fns))
+		for _, f := range *egb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*egb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := egb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := egb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (egb *ExchangeGroupBy) sqlQuery() *sql.Selector {
-	selector := egb.sql.Select()
-	aggregation := make([]string, 0, len(egb.fns))
-	for _, fn := range egb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(egb.fields)+len(egb.fns))
-		for _, f := range egb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(egb.fields...)...)
-}
-
 // ExchangeSelect is the builder for selecting fields of Exchange entities.
 type ExchangeSelect struct {
 	*ExchangeQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (es *ExchangeSelect) Aggregate(fns ...AggregateFunc) *ExchangeSelect {
+	es.fns = append(es.fns, fns...)
+	return es
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (es *ExchangeSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeExchange, "Select")
 	if err := es.prepareQuery(ctx); err != nil {
 		return err
 	}
-	es.sql = es.ExchangeQuery.sqlQuery(ctx)
-	return es.sqlScan(ctx, v)
+	return scanWithInterceptors[*ExchangeQuery, *ExchangeSelect](ctx, es.ExchangeQuery, es, es.inters, v)
 }
 
-func (es *ExchangeSelect) sqlScan(ctx context.Context, v any) error {
+func (es *ExchangeSelect) sqlScan(ctx context.Context, root *ExchangeQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(es.fns))
+	for _, fn := range es.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*es.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := es.sql.Query()
+	query, args := selector.Query()
 	if err := es.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

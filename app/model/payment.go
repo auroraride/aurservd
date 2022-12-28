@@ -6,7 +6,7 @@
 package model
 
 import (
-    jsoniter "github.com/json-iterator/go"
+    "github.com/goccy/go-json"
     "time"
 )
 
@@ -96,11 +96,11 @@ type PaymentCache struct {
 }
 
 func (pc *PaymentCache) MarshalBinary() ([]byte, error) {
-    return jsoniter.Marshal(pc)
+    return json.Marshal(pc)
 }
 
 func (pc *PaymentCache) UnmarshalBinary(data []byte) error {
-    return jsoniter.Unmarshal(data, pc)
+    return json.Unmarshal(data, pc)
 }
 
 func (pc *PaymentCache) GetPaymentArgs() (float64, string, string) {

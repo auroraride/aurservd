@@ -12,930 +12,602 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uint64) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.OrderRefund(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uint64) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.OrderRefund(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uint64) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.OrderRefund(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.OrderRefund(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.OrderRefund(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uint64) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.OrderRefund(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uint64) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.OrderRefund(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uint64) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.OrderRefund(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uint64) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.OrderRefund(sql.FieldLTE(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
 func DeletedAt(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
 func Remark(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.OrderRefund(sql.FieldEQ(FieldRemark, v))
 }
 
 // OrderID applies equality check predicate on the "order_id" field. It's identical to OrderIDEQ.
 func OrderID(v uint64) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldOrderID), v))
-	})
+	return predicate.OrderRefund(sql.FieldEQ(FieldOrderID, v))
 }
 
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v uint8) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStatus), v))
-	})
+	return predicate.OrderRefund(sql.FieldEQ(FieldStatus, v))
 }
 
 // Amount applies equality check predicate on the "amount" field. It's identical to AmountEQ.
 func Amount(v float64) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAmount), v))
-	})
+	return predicate.OrderRefund(sql.FieldEQ(FieldAmount, v))
 }
 
 // OutRefundNo applies equality check predicate on the "out_refund_no" field. It's identical to OutRefundNoEQ.
 func OutRefundNo(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldOutRefundNo), v))
-	})
+	return predicate.OrderRefund(sql.FieldEQ(FieldOutRefundNo, v))
 }
 
 // Reason applies equality check predicate on the "reason" field. It's identical to ReasonEQ.
 func Reason(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldReason), v))
-	})
+	return predicate.OrderRefund(sql.FieldEQ(FieldReason, v))
 }
 
 // RefundAt applies equality check predicate on the "refund_at" field. It's identical to RefundAtEQ.
 func RefundAt(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRefundAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldEQ(FieldRefundAt, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
 func CreatedAtNEQ(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.OrderRefund {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.OrderRefund(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.OrderRefund {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.OrderRefund(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtGT applies the GT predicate on the "created_at" field.
 func CreatedAtGT(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldGT(FieldCreatedAt, v))
 }
 
 // CreatedAtGTE applies the GTE predicate on the "created_at" field.
 func CreatedAtGTE(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldGTE(FieldCreatedAt, v))
 }
 
 // CreatedAtLT applies the LT predicate on the "created_at" field.
 func CreatedAtLT(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldLT(FieldCreatedAt, v))
 }
 
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
 func UpdatedAtEQ(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
 func UpdatedAtNEQ(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldNEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.OrderRefund {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.OrderRefund(sql.FieldIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.OrderRefund {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.OrderRefund(sql.FieldNotIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtGT applies the GT predicate on the "updated_at" field.
 func UpdatedAtGT(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldGT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
 func UpdatedAtGTE(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldGTE(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLT applies the LT predicate on the "updated_at" field.
 func UpdatedAtLT(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldLT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
 func DeletedAtEQ(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
 func DeletedAtNEQ(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldNEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.OrderRefund {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.OrderRefund(sql.FieldIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.OrderRefund {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.OrderRefund(sql.FieldNotIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtGT applies the GT predicate on the "deleted_at" field.
 func DeletedAtGT(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldGT(FieldDeletedAt, v))
 }
 
 // DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
 func DeletedAtGTE(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldGTE(FieldDeletedAt, v))
 }
 
 // DeletedAtLT applies the LT predicate on the "deleted_at" field.
 func DeletedAtLT(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldLT(FieldDeletedAt, v))
 }
 
 // DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
 func DeletedAtLTE(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldLTE(FieldDeletedAt, v))
 }
 
 // DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
 func DeletedAtIsNil() predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.OrderRefund(sql.FieldIsNull(FieldDeletedAt))
 }
 
 // DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
 func DeletedAtNotNil() predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.OrderRefund(sql.FieldNotNull(FieldDeletedAt))
 }
 
 // CreatorIsNil applies the IsNil predicate on the "creator" field.
 func CreatorIsNil() predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCreator)))
-	})
+	return predicate.OrderRefund(sql.FieldIsNull(FieldCreator))
 }
 
 // CreatorNotNil applies the NotNil predicate on the "creator" field.
 func CreatorNotNil() predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCreator)))
-	})
+	return predicate.OrderRefund(sql.FieldNotNull(FieldCreator))
 }
 
 // LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
 func LastModifierIsNil() predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLastModifier)))
-	})
+	return predicate.OrderRefund(sql.FieldIsNull(FieldLastModifier))
 }
 
 // LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
 func LastModifierNotNil() predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLastModifier)))
-	})
+	return predicate.OrderRefund(sql.FieldNotNull(FieldLastModifier))
 }
 
 // RemarkEQ applies the EQ predicate on the "remark" field.
 func RemarkEQ(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.OrderRefund(sql.FieldEQ(FieldRemark, v))
 }
 
 // RemarkNEQ applies the NEQ predicate on the "remark" field.
 func RemarkNEQ(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRemark), v))
-	})
+	return predicate.OrderRefund(sql.FieldNEQ(FieldRemark, v))
 }
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.OrderRefund {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRemark), v...))
-	})
+	return predicate.OrderRefund(sql.FieldIn(FieldRemark, vs...))
 }
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.OrderRefund {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRemark), v...))
-	})
+	return predicate.OrderRefund(sql.FieldNotIn(FieldRemark, vs...))
 }
 
 // RemarkGT applies the GT predicate on the "remark" field.
 func RemarkGT(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRemark), v))
-	})
+	return predicate.OrderRefund(sql.FieldGT(FieldRemark, v))
 }
 
 // RemarkGTE applies the GTE predicate on the "remark" field.
 func RemarkGTE(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRemark), v))
-	})
+	return predicate.OrderRefund(sql.FieldGTE(FieldRemark, v))
 }
 
 // RemarkLT applies the LT predicate on the "remark" field.
 func RemarkLT(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRemark), v))
-	})
+	return predicate.OrderRefund(sql.FieldLT(FieldRemark, v))
 }
 
 // RemarkLTE applies the LTE predicate on the "remark" field.
 func RemarkLTE(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRemark), v))
-	})
+	return predicate.OrderRefund(sql.FieldLTE(FieldRemark, v))
 }
 
 // RemarkContains applies the Contains predicate on the "remark" field.
 func RemarkContains(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRemark), v))
-	})
+	return predicate.OrderRefund(sql.FieldContains(FieldRemark, v))
 }
 
 // RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
 func RemarkHasPrefix(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRemark), v))
-	})
+	return predicate.OrderRefund(sql.FieldHasPrefix(FieldRemark, v))
 }
 
 // RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
 func RemarkHasSuffix(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRemark), v))
-	})
+	return predicate.OrderRefund(sql.FieldHasSuffix(FieldRemark, v))
 }
 
 // RemarkIsNil applies the IsNil predicate on the "remark" field.
 func RemarkIsNil() predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRemark)))
-	})
+	return predicate.OrderRefund(sql.FieldIsNull(FieldRemark))
 }
 
 // RemarkNotNil applies the NotNil predicate on the "remark" field.
 func RemarkNotNil() predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRemark)))
-	})
+	return predicate.OrderRefund(sql.FieldNotNull(FieldRemark))
 }
 
 // RemarkEqualFold applies the EqualFold predicate on the "remark" field.
 func RemarkEqualFold(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRemark), v))
-	})
+	return predicate.OrderRefund(sql.FieldEqualFold(FieldRemark, v))
 }
 
 // RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
 func RemarkContainsFold(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
-	})
+	return predicate.OrderRefund(sql.FieldContainsFold(FieldRemark, v))
 }
 
 // OrderIDEQ applies the EQ predicate on the "order_id" field.
 func OrderIDEQ(v uint64) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldOrderID), v))
-	})
+	return predicate.OrderRefund(sql.FieldEQ(FieldOrderID, v))
 }
 
 // OrderIDNEQ applies the NEQ predicate on the "order_id" field.
 func OrderIDNEQ(v uint64) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldOrderID), v))
-	})
+	return predicate.OrderRefund(sql.FieldNEQ(FieldOrderID, v))
 }
 
 // OrderIDIn applies the In predicate on the "order_id" field.
 func OrderIDIn(vs ...uint64) predicate.OrderRefund {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldOrderID), v...))
-	})
+	return predicate.OrderRefund(sql.FieldIn(FieldOrderID, vs...))
 }
 
 // OrderIDNotIn applies the NotIn predicate on the "order_id" field.
 func OrderIDNotIn(vs ...uint64) predicate.OrderRefund {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldOrderID), v...))
-	})
+	return predicate.OrderRefund(sql.FieldNotIn(FieldOrderID, vs...))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.
 func StatusEQ(v uint8) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStatus), v))
-	})
+	return predicate.OrderRefund(sql.FieldEQ(FieldStatus, v))
 }
 
 // StatusNEQ applies the NEQ predicate on the "status" field.
 func StatusNEQ(v uint8) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStatus), v))
-	})
+	return predicate.OrderRefund(sql.FieldNEQ(FieldStatus, v))
 }
 
 // StatusIn applies the In predicate on the "status" field.
 func StatusIn(vs ...uint8) predicate.OrderRefund {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStatus), v...))
-	})
+	return predicate.OrderRefund(sql.FieldIn(FieldStatus, vs...))
 }
 
 // StatusNotIn applies the NotIn predicate on the "status" field.
 func StatusNotIn(vs ...uint8) predicate.OrderRefund {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStatus), v...))
-	})
+	return predicate.OrderRefund(sql.FieldNotIn(FieldStatus, vs...))
 }
 
 // StatusGT applies the GT predicate on the "status" field.
 func StatusGT(v uint8) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldStatus), v))
-	})
+	return predicate.OrderRefund(sql.FieldGT(FieldStatus, v))
 }
 
 // StatusGTE applies the GTE predicate on the "status" field.
 func StatusGTE(v uint8) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldStatus), v))
-	})
+	return predicate.OrderRefund(sql.FieldGTE(FieldStatus, v))
 }
 
 // StatusLT applies the LT predicate on the "status" field.
 func StatusLT(v uint8) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldStatus), v))
-	})
+	return predicate.OrderRefund(sql.FieldLT(FieldStatus, v))
 }
 
 // StatusLTE applies the LTE predicate on the "status" field.
 func StatusLTE(v uint8) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldStatus), v))
-	})
+	return predicate.OrderRefund(sql.FieldLTE(FieldStatus, v))
 }
 
 // AmountEQ applies the EQ predicate on the "amount" field.
 func AmountEQ(v float64) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAmount), v))
-	})
+	return predicate.OrderRefund(sql.FieldEQ(FieldAmount, v))
 }
 
 // AmountNEQ applies the NEQ predicate on the "amount" field.
 func AmountNEQ(v float64) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAmount), v))
-	})
+	return predicate.OrderRefund(sql.FieldNEQ(FieldAmount, v))
 }
 
 // AmountIn applies the In predicate on the "amount" field.
 func AmountIn(vs ...float64) predicate.OrderRefund {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAmount), v...))
-	})
+	return predicate.OrderRefund(sql.FieldIn(FieldAmount, vs...))
 }
 
 // AmountNotIn applies the NotIn predicate on the "amount" field.
 func AmountNotIn(vs ...float64) predicate.OrderRefund {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAmount), v...))
-	})
+	return predicate.OrderRefund(sql.FieldNotIn(FieldAmount, vs...))
 }
 
 // AmountGT applies the GT predicate on the "amount" field.
 func AmountGT(v float64) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAmount), v))
-	})
+	return predicate.OrderRefund(sql.FieldGT(FieldAmount, v))
 }
 
 // AmountGTE applies the GTE predicate on the "amount" field.
 func AmountGTE(v float64) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAmount), v))
-	})
+	return predicate.OrderRefund(sql.FieldGTE(FieldAmount, v))
 }
 
 // AmountLT applies the LT predicate on the "amount" field.
 func AmountLT(v float64) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAmount), v))
-	})
+	return predicate.OrderRefund(sql.FieldLT(FieldAmount, v))
 }
 
 // AmountLTE applies the LTE predicate on the "amount" field.
 func AmountLTE(v float64) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAmount), v))
-	})
+	return predicate.OrderRefund(sql.FieldLTE(FieldAmount, v))
 }
 
 // OutRefundNoEQ applies the EQ predicate on the "out_refund_no" field.
 func OutRefundNoEQ(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldOutRefundNo), v))
-	})
+	return predicate.OrderRefund(sql.FieldEQ(FieldOutRefundNo, v))
 }
 
 // OutRefundNoNEQ applies the NEQ predicate on the "out_refund_no" field.
 func OutRefundNoNEQ(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldOutRefundNo), v))
-	})
+	return predicate.OrderRefund(sql.FieldNEQ(FieldOutRefundNo, v))
 }
 
 // OutRefundNoIn applies the In predicate on the "out_refund_no" field.
 func OutRefundNoIn(vs ...string) predicate.OrderRefund {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldOutRefundNo), v...))
-	})
+	return predicate.OrderRefund(sql.FieldIn(FieldOutRefundNo, vs...))
 }
 
 // OutRefundNoNotIn applies the NotIn predicate on the "out_refund_no" field.
 func OutRefundNoNotIn(vs ...string) predicate.OrderRefund {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldOutRefundNo), v...))
-	})
+	return predicate.OrderRefund(sql.FieldNotIn(FieldOutRefundNo, vs...))
 }
 
 // OutRefundNoGT applies the GT predicate on the "out_refund_no" field.
 func OutRefundNoGT(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldOutRefundNo), v))
-	})
+	return predicate.OrderRefund(sql.FieldGT(FieldOutRefundNo, v))
 }
 
 // OutRefundNoGTE applies the GTE predicate on the "out_refund_no" field.
 func OutRefundNoGTE(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldOutRefundNo), v))
-	})
+	return predicate.OrderRefund(sql.FieldGTE(FieldOutRefundNo, v))
 }
 
 // OutRefundNoLT applies the LT predicate on the "out_refund_no" field.
 func OutRefundNoLT(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldOutRefundNo), v))
-	})
+	return predicate.OrderRefund(sql.FieldLT(FieldOutRefundNo, v))
 }
 
 // OutRefundNoLTE applies the LTE predicate on the "out_refund_no" field.
 func OutRefundNoLTE(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldOutRefundNo), v))
-	})
+	return predicate.OrderRefund(sql.FieldLTE(FieldOutRefundNo, v))
 }
 
 // OutRefundNoContains applies the Contains predicate on the "out_refund_no" field.
 func OutRefundNoContains(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldOutRefundNo), v))
-	})
+	return predicate.OrderRefund(sql.FieldContains(FieldOutRefundNo, v))
 }
 
 // OutRefundNoHasPrefix applies the HasPrefix predicate on the "out_refund_no" field.
 func OutRefundNoHasPrefix(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldOutRefundNo), v))
-	})
+	return predicate.OrderRefund(sql.FieldHasPrefix(FieldOutRefundNo, v))
 }
 
 // OutRefundNoHasSuffix applies the HasSuffix predicate on the "out_refund_no" field.
 func OutRefundNoHasSuffix(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldOutRefundNo), v))
-	})
+	return predicate.OrderRefund(sql.FieldHasSuffix(FieldOutRefundNo, v))
 }
 
 // OutRefundNoEqualFold applies the EqualFold predicate on the "out_refund_no" field.
 func OutRefundNoEqualFold(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldOutRefundNo), v))
-	})
+	return predicate.OrderRefund(sql.FieldEqualFold(FieldOutRefundNo, v))
 }
 
 // OutRefundNoContainsFold applies the ContainsFold predicate on the "out_refund_no" field.
 func OutRefundNoContainsFold(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldOutRefundNo), v))
-	})
+	return predicate.OrderRefund(sql.FieldContainsFold(FieldOutRefundNo, v))
 }
 
 // ReasonEQ applies the EQ predicate on the "reason" field.
 func ReasonEQ(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldReason), v))
-	})
+	return predicate.OrderRefund(sql.FieldEQ(FieldReason, v))
 }
 
 // ReasonNEQ applies the NEQ predicate on the "reason" field.
 func ReasonNEQ(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldReason), v))
-	})
+	return predicate.OrderRefund(sql.FieldNEQ(FieldReason, v))
 }
 
 // ReasonIn applies the In predicate on the "reason" field.
 func ReasonIn(vs ...string) predicate.OrderRefund {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldReason), v...))
-	})
+	return predicate.OrderRefund(sql.FieldIn(FieldReason, vs...))
 }
 
 // ReasonNotIn applies the NotIn predicate on the "reason" field.
 func ReasonNotIn(vs ...string) predicate.OrderRefund {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldReason), v...))
-	})
+	return predicate.OrderRefund(sql.FieldNotIn(FieldReason, vs...))
 }
 
 // ReasonGT applies the GT predicate on the "reason" field.
 func ReasonGT(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldReason), v))
-	})
+	return predicate.OrderRefund(sql.FieldGT(FieldReason, v))
 }
 
 // ReasonGTE applies the GTE predicate on the "reason" field.
 func ReasonGTE(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldReason), v))
-	})
+	return predicate.OrderRefund(sql.FieldGTE(FieldReason, v))
 }
 
 // ReasonLT applies the LT predicate on the "reason" field.
 func ReasonLT(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldReason), v))
-	})
+	return predicate.OrderRefund(sql.FieldLT(FieldReason, v))
 }
 
 // ReasonLTE applies the LTE predicate on the "reason" field.
 func ReasonLTE(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldReason), v))
-	})
+	return predicate.OrderRefund(sql.FieldLTE(FieldReason, v))
 }
 
 // ReasonContains applies the Contains predicate on the "reason" field.
 func ReasonContains(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldReason), v))
-	})
+	return predicate.OrderRefund(sql.FieldContains(FieldReason, v))
 }
 
 // ReasonHasPrefix applies the HasPrefix predicate on the "reason" field.
 func ReasonHasPrefix(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldReason), v))
-	})
+	return predicate.OrderRefund(sql.FieldHasPrefix(FieldReason, v))
 }
 
 // ReasonHasSuffix applies the HasSuffix predicate on the "reason" field.
 func ReasonHasSuffix(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldReason), v))
-	})
+	return predicate.OrderRefund(sql.FieldHasSuffix(FieldReason, v))
 }
 
 // ReasonEqualFold applies the EqualFold predicate on the "reason" field.
 func ReasonEqualFold(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldReason), v))
-	})
+	return predicate.OrderRefund(sql.FieldEqualFold(FieldReason, v))
 }
 
 // ReasonContainsFold applies the ContainsFold predicate on the "reason" field.
 func ReasonContainsFold(v string) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldReason), v))
-	})
+	return predicate.OrderRefund(sql.FieldContainsFold(FieldReason, v))
 }
 
 // RefundAtEQ applies the EQ predicate on the "refund_at" field.
 func RefundAtEQ(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRefundAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldEQ(FieldRefundAt, v))
 }
 
 // RefundAtNEQ applies the NEQ predicate on the "refund_at" field.
 func RefundAtNEQ(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRefundAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldNEQ(FieldRefundAt, v))
 }
 
 // RefundAtIn applies the In predicate on the "refund_at" field.
 func RefundAtIn(vs ...time.Time) predicate.OrderRefund {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRefundAt), v...))
-	})
+	return predicate.OrderRefund(sql.FieldIn(FieldRefundAt, vs...))
 }
 
 // RefundAtNotIn applies the NotIn predicate on the "refund_at" field.
 func RefundAtNotIn(vs ...time.Time) predicate.OrderRefund {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRefundAt), v...))
-	})
+	return predicate.OrderRefund(sql.FieldNotIn(FieldRefundAt, vs...))
 }
 
 // RefundAtGT applies the GT predicate on the "refund_at" field.
 func RefundAtGT(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRefundAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldGT(FieldRefundAt, v))
 }
 
 // RefundAtGTE applies the GTE predicate on the "refund_at" field.
 func RefundAtGTE(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRefundAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldGTE(FieldRefundAt, v))
 }
 
 // RefundAtLT applies the LT predicate on the "refund_at" field.
 func RefundAtLT(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRefundAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldLT(FieldRefundAt, v))
 }
 
 // RefundAtLTE applies the LTE predicate on the "refund_at" field.
 func RefundAtLTE(v time.Time) predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRefundAt), v))
-	})
+	return predicate.OrderRefund(sql.FieldLTE(FieldRefundAt, v))
 }
 
 // RefundAtIsNil applies the IsNil predicate on the "refund_at" field.
 func RefundAtIsNil() predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRefundAt)))
-	})
+	return predicate.OrderRefund(sql.FieldIsNull(FieldRefundAt))
 }
 
 // RefundAtNotNil applies the NotNil predicate on the "refund_at" field.
 func RefundAtNotNil() predicate.OrderRefund {
-	return predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRefundAt)))
-	})
+	return predicate.OrderRefund(sql.FieldNotNull(FieldRefundAt))
 }
 
 // HasOrder applies the HasEdge predicate on the "order" edge.
@@ -943,7 +615,6 @@ func HasOrder() predicate.OrderRefund {
 	return predicate.OrderRefund(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(OrderTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, true, OrderTable, OrderColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

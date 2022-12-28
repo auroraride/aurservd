@@ -12,2933 +12,1907 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
 func DeletedAt(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
 func Remark(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldRemark, v))
 }
 
 // StoreID applies equality check predicate on the "store_id" field. It's identical to StoreIDEQ.
 func StoreID(v uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStoreID), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldStoreID, v))
 }
 
 // RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
 func RiderID(v uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRiderID), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldRiderID, v))
 }
 
 // SubscribeID applies equality check predicate on the "subscribe_id" field. It's identical to SubscribeIDEQ.
 func SubscribeID(v uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldSubscribeID, v))
 }
 
 // CityID applies equality check predicate on the "city_id" field. It's identical to CityIDEQ.
 func CityID(v uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCityID), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldCityID, v))
 }
 
 // EmployeeID applies equality check predicate on the "employee_id" field. It's identical to EmployeeIDEQ.
 func EmployeeID(v uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldEmployeeID, v))
 }
 
 // OrderID applies equality check predicate on the "order_id" field. It's identical to OrderIDEQ.
 func OrderID(v uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldOrderID), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldOrderID, v))
 }
 
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v uint8) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStatus), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldStatus, v))
 }
 
 // Lng applies equality check predicate on the "lng" field. It's identical to LngEQ.
 func Lng(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLng), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldLng, v))
 }
 
 // Lat applies equality check predicate on the "lat" field. It's identical to LatEQ.
 func Lat(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLat), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldLat, v))
 }
 
 // Address applies equality check predicate on the "address" field. It's identical to AddressEQ.
 func Address(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAddress), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldAddress, v))
 }
 
 // Breakdown applies equality check predicate on the "breakdown" field. It's identical to BreakdownEQ.
 func Breakdown(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBreakdown), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldBreakdown, v))
 }
 
 // BreakdownDesc applies equality check predicate on the "breakdown_desc" field. It's identical to BreakdownDescEQ.
 func BreakdownDesc(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBreakdownDesc), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldBreakdownDesc, v))
 }
 
 // CancelReason applies equality check predicate on the "cancel_reason" field. It's identical to CancelReasonEQ.
 func CancelReason(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCancelReason), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldCancelReason, v))
 }
 
 // CancelReasonDesc applies equality check predicate on the "cancel_reason_desc" field. It's identical to CancelReasonDescEQ.
 func CancelReasonDesc(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCancelReasonDesc), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldCancelReasonDesc, v))
 }
 
 // Distance applies equality check predicate on the "distance" field. It's identical to DistanceEQ.
 func Distance(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDistance), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldDistance, v))
 }
 
 // Reason applies equality check predicate on the "reason" field. It's identical to ReasonEQ.
 func Reason(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldReason), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldReason, v))
 }
 
 // DetectPhoto applies equality check predicate on the "detect_photo" field. It's identical to DetectPhotoEQ.
 func DetectPhoto(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDetectPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldDetectPhoto, v))
 }
 
 // JointPhoto applies equality check predicate on the "joint_photo" field. It's identical to JointPhotoEQ.
 func JointPhoto(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldJointPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldJointPhoto, v))
 }
 
 // Cost applies equality check predicate on the "cost" field. It's identical to CostEQ.
 func Cost(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCost), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldCost, v))
 }
 
 // RefusedDesc applies equality check predicate on the "refused_desc" field. It's identical to RefusedDescEQ.
 func RefusedDesc(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRefusedDesc), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldRefusedDesc, v))
 }
 
 // PayAt applies equality check predicate on the "pay_at" field. It's identical to PayAtEQ.
 func PayAt(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPayAt), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldPayAt, v))
 }
 
 // AllocateAt applies equality check predicate on the "allocate_at" field. It's identical to AllocateAtEQ.
 func AllocateAt(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAllocateAt), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldAllocateAt, v))
 }
 
 // Wait applies equality check predicate on the "wait" field. It's identical to WaitEQ.
 func Wait(v int) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldWait), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldWait, v))
 }
 
 // FreeReason applies equality check predicate on the "free_reason" field. It's identical to FreeReasonEQ.
 func FreeReason(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldFreeReason), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldFreeReason, v))
 }
 
 // FailReason applies equality check predicate on the "fail_reason" field. It's identical to FailReasonEQ.
 func FailReason(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldFailReason), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldFailReason, v))
 }
 
 // ProcessAt applies equality check predicate on the "process_at" field. It's identical to ProcessAtEQ.
 func ProcessAt(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldProcessAt), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldProcessAt, v))
 }
 
 // Price applies equality check predicate on the "price" field. It's identical to PriceEQ.
 func Price(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPrice), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldPrice, v))
 }
 
 // NaviDuration applies equality check predicate on the "navi_duration" field. It's identical to NaviDurationEQ.
 func NaviDuration(v int) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldNaviDuration), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldNaviDuration, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
 func CreatedAtNEQ(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtGT applies the GT predicate on the "created_at" field.
 func CreatedAtGT(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldCreatedAt, v))
 }
 
 // CreatedAtGTE applies the GTE predicate on the "created_at" field.
 func CreatedAtGTE(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldCreatedAt, v))
 }
 
 // CreatedAtLT applies the LT predicate on the "created_at" field.
 func CreatedAtLT(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldCreatedAt, v))
 }
 
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
 func UpdatedAtEQ(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
 func UpdatedAtNEQ(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtGT applies the GT predicate on the "updated_at" field.
 func UpdatedAtGT(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
 func UpdatedAtGTE(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLT applies the LT predicate on the "updated_at" field.
 func UpdatedAtLT(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
 func DeletedAtEQ(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
 func DeletedAtNEQ(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtGT applies the GT predicate on the "deleted_at" field.
 func DeletedAtGT(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldDeletedAt, v))
 }
 
 // DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
 func DeletedAtGTE(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldDeletedAt, v))
 }
 
 // DeletedAtLT applies the LT predicate on the "deleted_at" field.
 func DeletedAtLT(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldDeletedAt, v))
 }
 
 // DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
 func DeletedAtLTE(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldDeletedAt, v))
 }
 
 // DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
 func DeletedAtIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldDeletedAt))
 }
 
 // DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
 func DeletedAtNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldDeletedAt))
 }
 
 // CreatorIsNil applies the IsNil predicate on the "creator" field.
 func CreatorIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCreator)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldCreator))
 }
 
 // CreatorNotNil applies the NotNil predicate on the "creator" field.
 func CreatorNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCreator)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldCreator))
 }
 
 // LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
 func LastModifierIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldLastModifier))
 }
 
 // LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
 func LastModifierNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldLastModifier))
 }
 
 // RemarkEQ applies the EQ predicate on the "remark" field.
 func RemarkEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldRemark, v))
 }
 
 // RemarkNEQ applies the NEQ predicate on the "remark" field.
 func RemarkNEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRemark), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldRemark, v))
 }
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRemark), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldRemark, vs...))
 }
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRemark), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldRemark, vs...))
 }
 
 // RemarkGT applies the GT predicate on the "remark" field.
 func RemarkGT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRemark), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldRemark, v))
 }
 
 // RemarkGTE applies the GTE predicate on the "remark" field.
 func RemarkGTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRemark), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldRemark, v))
 }
 
 // RemarkLT applies the LT predicate on the "remark" field.
 func RemarkLT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRemark), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldRemark, v))
 }
 
 // RemarkLTE applies the LTE predicate on the "remark" field.
 func RemarkLTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRemark), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldRemark, v))
 }
 
 // RemarkContains applies the Contains predicate on the "remark" field.
 func RemarkContains(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRemark), v))
-	})
+	return predicate.Assistance(sql.FieldContains(FieldRemark, v))
 }
 
 // RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
 func RemarkHasPrefix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRemark), v))
-	})
+	return predicate.Assistance(sql.FieldHasPrefix(FieldRemark, v))
 }
 
 // RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
 func RemarkHasSuffix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRemark), v))
-	})
+	return predicate.Assistance(sql.FieldHasSuffix(FieldRemark, v))
 }
 
 // RemarkIsNil applies the IsNil predicate on the "remark" field.
 func RemarkIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRemark)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldRemark))
 }
 
 // RemarkNotNil applies the NotNil predicate on the "remark" field.
 func RemarkNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRemark)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldRemark))
 }
 
 // RemarkEqualFold applies the EqualFold predicate on the "remark" field.
 func RemarkEqualFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRemark), v))
-	})
+	return predicate.Assistance(sql.FieldEqualFold(FieldRemark, v))
 }
 
 // RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
 func RemarkContainsFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
-	})
+	return predicate.Assistance(sql.FieldContainsFold(FieldRemark, v))
 }
 
 // StoreIDEQ applies the EQ predicate on the "store_id" field.
 func StoreIDEQ(v uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStoreID), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldStoreID, v))
 }
 
 // StoreIDNEQ applies the NEQ predicate on the "store_id" field.
 func StoreIDNEQ(v uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStoreID), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldStoreID, v))
 }
 
 // StoreIDIn applies the In predicate on the "store_id" field.
 func StoreIDIn(vs ...uint64) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStoreID), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldStoreID, vs...))
 }
 
 // StoreIDNotIn applies the NotIn predicate on the "store_id" field.
 func StoreIDNotIn(vs ...uint64) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStoreID), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldStoreID, vs...))
 }
 
 // StoreIDIsNil applies the IsNil predicate on the "store_id" field.
 func StoreIDIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldStoreID)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldStoreID))
 }
 
 // StoreIDNotNil applies the NotNil predicate on the "store_id" field.
 func StoreIDNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldStoreID)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldStoreID))
 }
 
 // RiderIDEQ applies the EQ predicate on the "rider_id" field.
 func RiderIDEQ(v uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRiderID), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldRiderID, v))
 }
 
 // RiderIDNEQ applies the NEQ predicate on the "rider_id" field.
 func RiderIDNEQ(v uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRiderID), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldRiderID, v))
 }
 
 // RiderIDIn applies the In predicate on the "rider_id" field.
 func RiderIDIn(vs ...uint64) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRiderID), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldRiderID, vs...))
 }
 
 // RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
 func RiderIDNotIn(vs ...uint64) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRiderID), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldRiderID, vs...))
 }
 
 // SubscribeIDEQ applies the EQ predicate on the "subscribe_id" field.
 func SubscribeIDEQ(v uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldSubscribeID, v))
 }
 
 // SubscribeIDNEQ applies the NEQ predicate on the "subscribe_id" field.
 func SubscribeIDNEQ(v uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldSubscribeID, v))
 }
 
 // SubscribeIDIn applies the In predicate on the "subscribe_id" field.
 func SubscribeIDIn(vs ...uint64) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldSubscribeID), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldSubscribeID, vs...))
 }
 
 // SubscribeIDNotIn applies the NotIn predicate on the "subscribe_id" field.
 func SubscribeIDNotIn(vs ...uint64) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldSubscribeID), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldSubscribeID, vs...))
 }
 
 // CityIDEQ applies the EQ predicate on the "city_id" field.
 func CityIDEQ(v uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCityID), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldCityID, v))
 }
 
 // CityIDNEQ applies the NEQ predicate on the "city_id" field.
 func CityIDNEQ(v uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCityID), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldCityID, v))
 }
 
 // CityIDIn applies the In predicate on the "city_id" field.
 func CityIDIn(vs ...uint64) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCityID), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldCityID, vs...))
 }
 
 // CityIDNotIn applies the NotIn predicate on the "city_id" field.
 func CityIDNotIn(vs ...uint64) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCityID), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldCityID, vs...))
 }
 
 // EmployeeIDEQ applies the EQ predicate on the "employee_id" field.
 func EmployeeIDEQ(v uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldEmployeeID, v))
 }
 
 // EmployeeIDNEQ applies the NEQ predicate on the "employee_id" field.
 func EmployeeIDNEQ(v uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEmployeeID), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldEmployeeID, v))
 }
 
 // EmployeeIDIn applies the In predicate on the "employee_id" field.
 func EmployeeIDIn(vs ...uint64) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEmployeeID), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldEmployeeID, vs...))
 }
 
 // EmployeeIDNotIn applies the NotIn predicate on the "employee_id" field.
 func EmployeeIDNotIn(vs ...uint64) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEmployeeID), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldEmployeeID, vs...))
 }
 
 // EmployeeIDIsNil applies the IsNil predicate on the "employee_id" field.
 func EmployeeIDIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldEmployeeID)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldEmployeeID))
 }
 
 // EmployeeIDNotNil applies the NotNil predicate on the "employee_id" field.
 func EmployeeIDNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldEmployeeID)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldEmployeeID))
 }
 
 // OrderIDEQ applies the EQ predicate on the "order_id" field.
 func OrderIDEQ(v uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldOrderID), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldOrderID, v))
 }
 
 // OrderIDNEQ applies the NEQ predicate on the "order_id" field.
 func OrderIDNEQ(v uint64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldOrderID), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldOrderID, v))
 }
 
 // OrderIDIn applies the In predicate on the "order_id" field.
 func OrderIDIn(vs ...uint64) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldOrderID), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldOrderID, vs...))
 }
 
 // OrderIDNotIn applies the NotIn predicate on the "order_id" field.
 func OrderIDNotIn(vs ...uint64) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldOrderID), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldOrderID, vs...))
 }
 
 // OrderIDIsNil applies the IsNil predicate on the "order_id" field.
 func OrderIDIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldOrderID)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldOrderID))
 }
 
 // OrderIDNotNil applies the NotNil predicate on the "order_id" field.
 func OrderIDNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldOrderID)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldOrderID))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.
 func StatusEQ(v uint8) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStatus), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldStatus, v))
 }
 
 // StatusNEQ applies the NEQ predicate on the "status" field.
 func StatusNEQ(v uint8) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStatus), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldStatus, v))
 }
 
 // StatusIn applies the In predicate on the "status" field.
 func StatusIn(vs ...uint8) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStatus), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldStatus, vs...))
 }
 
 // StatusNotIn applies the NotIn predicate on the "status" field.
 func StatusNotIn(vs ...uint8) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStatus), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldStatus, vs...))
 }
 
 // StatusGT applies the GT predicate on the "status" field.
 func StatusGT(v uint8) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldStatus), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldStatus, v))
 }
 
 // StatusGTE applies the GTE predicate on the "status" field.
 func StatusGTE(v uint8) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldStatus), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldStatus, v))
 }
 
 // StatusLT applies the LT predicate on the "status" field.
 func StatusLT(v uint8) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldStatus), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldStatus, v))
 }
 
 // StatusLTE applies the LTE predicate on the "status" field.
 func StatusLTE(v uint8) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldStatus), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldStatus, v))
 }
 
 // LngEQ applies the EQ predicate on the "lng" field.
 func LngEQ(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLng), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldLng, v))
 }
 
 // LngNEQ applies the NEQ predicate on the "lng" field.
 func LngNEQ(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldLng), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldLng, v))
 }
 
 // LngIn applies the In predicate on the "lng" field.
 func LngIn(vs ...float64) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldLng), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldLng, vs...))
 }
 
 // LngNotIn applies the NotIn predicate on the "lng" field.
 func LngNotIn(vs ...float64) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldLng), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldLng, vs...))
 }
 
 // LngGT applies the GT predicate on the "lng" field.
 func LngGT(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldLng), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldLng, v))
 }
 
 // LngGTE applies the GTE predicate on the "lng" field.
 func LngGTE(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldLng), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldLng, v))
 }
 
 // LngLT applies the LT predicate on the "lng" field.
 func LngLT(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldLng), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldLng, v))
 }
 
 // LngLTE applies the LTE predicate on the "lng" field.
 func LngLTE(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldLng), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldLng, v))
 }
 
 // LatEQ applies the EQ predicate on the "lat" field.
 func LatEQ(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLat), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldLat, v))
 }
 
 // LatNEQ applies the NEQ predicate on the "lat" field.
 func LatNEQ(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldLat), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldLat, v))
 }
 
 // LatIn applies the In predicate on the "lat" field.
 func LatIn(vs ...float64) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldLat), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldLat, vs...))
 }
 
 // LatNotIn applies the NotIn predicate on the "lat" field.
 func LatNotIn(vs ...float64) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldLat), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldLat, vs...))
 }
 
 // LatGT applies the GT predicate on the "lat" field.
 func LatGT(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldLat), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldLat, v))
 }
 
 // LatGTE applies the GTE predicate on the "lat" field.
 func LatGTE(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldLat), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldLat, v))
 }
 
 // LatLT applies the LT predicate on the "lat" field.
 func LatLT(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldLat), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldLat, v))
 }
 
 // LatLTE applies the LTE predicate on the "lat" field.
 func LatLTE(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldLat), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldLat, v))
 }
 
 // AddressEQ applies the EQ predicate on the "address" field.
 func AddressEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAddress), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldAddress, v))
 }
 
 // AddressNEQ applies the NEQ predicate on the "address" field.
 func AddressNEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAddress), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldAddress, v))
 }
 
 // AddressIn applies the In predicate on the "address" field.
 func AddressIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAddress), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldAddress, vs...))
 }
 
 // AddressNotIn applies the NotIn predicate on the "address" field.
 func AddressNotIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAddress), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldAddress, vs...))
 }
 
 // AddressGT applies the GT predicate on the "address" field.
 func AddressGT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAddress), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldAddress, v))
 }
 
 // AddressGTE applies the GTE predicate on the "address" field.
 func AddressGTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAddress), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldAddress, v))
 }
 
 // AddressLT applies the LT predicate on the "address" field.
 func AddressLT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAddress), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldAddress, v))
 }
 
 // AddressLTE applies the LTE predicate on the "address" field.
 func AddressLTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAddress), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldAddress, v))
 }
 
 // AddressContains applies the Contains predicate on the "address" field.
 func AddressContains(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldAddress), v))
-	})
+	return predicate.Assistance(sql.FieldContains(FieldAddress, v))
 }
 
 // AddressHasPrefix applies the HasPrefix predicate on the "address" field.
 func AddressHasPrefix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldAddress), v))
-	})
+	return predicate.Assistance(sql.FieldHasPrefix(FieldAddress, v))
 }
 
 // AddressHasSuffix applies the HasSuffix predicate on the "address" field.
 func AddressHasSuffix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldAddress), v))
-	})
+	return predicate.Assistance(sql.FieldHasSuffix(FieldAddress, v))
 }
 
 // AddressEqualFold applies the EqualFold predicate on the "address" field.
 func AddressEqualFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldAddress), v))
-	})
+	return predicate.Assistance(sql.FieldEqualFold(FieldAddress, v))
 }
 
 // AddressContainsFold applies the ContainsFold predicate on the "address" field.
 func AddressContainsFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldAddress), v))
-	})
+	return predicate.Assistance(sql.FieldContainsFold(FieldAddress, v))
 }
 
 // BreakdownEQ applies the EQ predicate on the "breakdown" field.
 func BreakdownEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBreakdown), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldBreakdown, v))
 }
 
 // BreakdownNEQ applies the NEQ predicate on the "breakdown" field.
 func BreakdownNEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBreakdown), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldBreakdown, v))
 }
 
 // BreakdownIn applies the In predicate on the "breakdown" field.
 func BreakdownIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldBreakdown), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldBreakdown, vs...))
 }
 
 // BreakdownNotIn applies the NotIn predicate on the "breakdown" field.
 func BreakdownNotIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldBreakdown), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldBreakdown, vs...))
 }
 
 // BreakdownGT applies the GT predicate on the "breakdown" field.
 func BreakdownGT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldBreakdown), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldBreakdown, v))
 }
 
 // BreakdownGTE applies the GTE predicate on the "breakdown" field.
 func BreakdownGTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldBreakdown), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldBreakdown, v))
 }
 
 // BreakdownLT applies the LT predicate on the "breakdown" field.
 func BreakdownLT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldBreakdown), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldBreakdown, v))
 }
 
 // BreakdownLTE applies the LTE predicate on the "breakdown" field.
 func BreakdownLTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldBreakdown), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldBreakdown, v))
 }
 
 // BreakdownContains applies the Contains predicate on the "breakdown" field.
 func BreakdownContains(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldBreakdown), v))
-	})
+	return predicate.Assistance(sql.FieldContains(FieldBreakdown, v))
 }
 
 // BreakdownHasPrefix applies the HasPrefix predicate on the "breakdown" field.
 func BreakdownHasPrefix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldBreakdown), v))
-	})
+	return predicate.Assistance(sql.FieldHasPrefix(FieldBreakdown, v))
 }
 
 // BreakdownHasSuffix applies the HasSuffix predicate on the "breakdown" field.
 func BreakdownHasSuffix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldBreakdown), v))
-	})
+	return predicate.Assistance(sql.FieldHasSuffix(FieldBreakdown, v))
 }
 
 // BreakdownEqualFold applies the EqualFold predicate on the "breakdown" field.
 func BreakdownEqualFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldBreakdown), v))
-	})
+	return predicate.Assistance(sql.FieldEqualFold(FieldBreakdown, v))
 }
 
 // BreakdownContainsFold applies the ContainsFold predicate on the "breakdown" field.
 func BreakdownContainsFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldBreakdown), v))
-	})
+	return predicate.Assistance(sql.FieldContainsFold(FieldBreakdown, v))
 }
 
 // BreakdownDescEQ applies the EQ predicate on the "breakdown_desc" field.
 func BreakdownDescEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBreakdownDesc), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldBreakdownDesc, v))
 }
 
 // BreakdownDescNEQ applies the NEQ predicate on the "breakdown_desc" field.
 func BreakdownDescNEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBreakdownDesc), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldBreakdownDesc, v))
 }
 
 // BreakdownDescIn applies the In predicate on the "breakdown_desc" field.
 func BreakdownDescIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldBreakdownDesc), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldBreakdownDesc, vs...))
 }
 
 // BreakdownDescNotIn applies the NotIn predicate on the "breakdown_desc" field.
 func BreakdownDescNotIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldBreakdownDesc), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldBreakdownDesc, vs...))
 }
 
 // BreakdownDescGT applies the GT predicate on the "breakdown_desc" field.
 func BreakdownDescGT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldBreakdownDesc), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldBreakdownDesc, v))
 }
 
 // BreakdownDescGTE applies the GTE predicate on the "breakdown_desc" field.
 func BreakdownDescGTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldBreakdownDesc), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldBreakdownDesc, v))
 }
 
 // BreakdownDescLT applies the LT predicate on the "breakdown_desc" field.
 func BreakdownDescLT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldBreakdownDesc), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldBreakdownDesc, v))
 }
 
 // BreakdownDescLTE applies the LTE predicate on the "breakdown_desc" field.
 func BreakdownDescLTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldBreakdownDesc), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldBreakdownDesc, v))
 }
 
 // BreakdownDescContains applies the Contains predicate on the "breakdown_desc" field.
 func BreakdownDescContains(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldBreakdownDesc), v))
-	})
+	return predicate.Assistance(sql.FieldContains(FieldBreakdownDesc, v))
 }
 
 // BreakdownDescHasPrefix applies the HasPrefix predicate on the "breakdown_desc" field.
 func BreakdownDescHasPrefix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldBreakdownDesc), v))
-	})
+	return predicate.Assistance(sql.FieldHasPrefix(FieldBreakdownDesc, v))
 }
 
 // BreakdownDescHasSuffix applies the HasSuffix predicate on the "breakdown_desc" field.
 func BreakdownDescHasSuffix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldBreakdownDesc), v))
-	})
+	return predicate.Assistance(sql.FieldHasSuffix(FieldBreakdownDesc, v))
 }
 
 // BreakdownDescIsNil applies the IsNil predicate on the "breakdown_desc" field.
 func BreakdownDescIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldBreakdownDesc)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldBreakdownDesc))
 }
 
 // BreakdownDescNotNil applies the NotNil predicate on the "breakdown_desc" field.
 func BreakdownDescNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldBreakdownDesc)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldBreakdownDesc))
 }
 
 // BreakdownDescEqualFold applies the EqualFold predicate on the "breakdown_desc" field.
 func BreakdownDescEqualFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldBreakdownDesc), v))
-	})
+	return predicate.Assistance(sql.FieldEqualFold(FieldBreakdownDesc, v))
 }
 
 // BreakdownDescContainsFold applies the ContainsFold predicate on the "breakdown_desc" field.
 func BreakdownDescContainsFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldBreakdownDesc), v))
-	})
+	return predicate.Assistance(sql.FieldContainsFold(FieldBreakdownDesc, v))
 }
 
 // CancelReasonEQ applies the EQ predicate on the "cancel_reason" field.
 func CancelReasonEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCancelReason), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldCancelReason, v))
 }
 
 // CancelReasonNEQ applies the NEQ predicate on the "cancel_reason" field.
 func CancelReasonNEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCancelReason), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldCancelReason, v))
 }
 
 // CancelReasonIn applies the In predicate on the "cancel_reason" field.
 func CancelReasonIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCancelReason), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldCancelReason, vs...))
 }
 
 // CancelReasonNotIn applies the NotIn predicate on the "cancel_reason" field.
 func CancelReasonNotIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCancelReason), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldCancelReason, vs...))
 }
 
 // CancelReasonGT applies the GT predicate on the "cancel_reason" field.
 func CancelReasonGT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCancelReason), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldCancelReason, v))
 }
 
 // CancelReasonGTE applies the GTE predicate on the "cancel_reason" field.
 func CancelReasonGTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCancelReason), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldCancelReason, v))
 }
 
 // CancelReasonLT applies the LT predicate on the "cancel_reason" field.
 func CancelReasonLT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCancelReason), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldCancelReason, v))
 }
 
 // CancelReasonLTE applies the LTE predicate on the "cancel_reason" field.
 func CancelReasonLTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCancelReason), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldCancelReason, v))
 }
 
 // CancelReasonContains applies the Contains predicate on the "cancel_reason" field.
 func CancelReasonContains(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldCancelReason), v))
-	})
+	return predicate.Assistance(sql.FieldContains(FieldCancelReason, v))
 }
 
 // CancelReasonHasPrefix applies the HasPrefix predicate on the "cancel_reason" field.
 func CancelReasonHasPrefix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldCancelReason), v))
-	})
+	return predicate.Assistance(sql.FieldHasPrefix(FieldCancelReason, v))
 }
 
 // CancelReasonHasSuffix applies the HasSuffix predicate on the "cancel_reason" field.
 func CancelReasonHasSuffix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldCancelReason), v))
-	})
+	return predicate.Assistance(sql.FieldHasSuffix(FieldCancelReason, v))
 }
 
 // CancelReasonIsNil applies the IsNil predicate on the "cancel_reason" field.
 func CancelReasonIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCancelReason)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldCancelReason))
 }
 
 // CancelReasonNotNil applies the NotNil predicate on the "cancel_reason" field.
 func CancelReasonNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCancelReason)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldCancelReason))
 }
 
 // CancelReasonEqualFold applies the EqualFold predicate on the "cancel_reason" field.
 func CancelReasonEqualFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldCancelReason), v))
-	})
+	return predicate.Assistance(sql.FieldEqualFold(FieldCancelReason, v))
 }
 
 // CancelReasonContainsFold applies the ContainsFold predicate on the "cancel_reason" field.
 func CancelReasonContainsFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldCancelReason), v))
-	})
+	return predicate.Assistance(sql.FieldContainsFold(FieldCancelReason, v))
 }
 
 // CancelReasonDescEQ applies the EQ predicate on the "cancel_reason_desc" field.
 func CancelReasonDescEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCancelReasonDesc), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldCancelReasonDesc, v))
 }
 
 // CancelReasonDescNEQ applies the NEQ predicate on the "cancel_reason_desc" field.
 func CancelReasonDescNEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCancelReasonDesc), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldCancelReasonDesc, v))
 }
 
 // CancelReasonDescIn applies the In predicate on the "cancel_reason_desc" field.
 func CancelReasonDescIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCancelReasonDesc), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldCancelReasonDesc, vs...))
 }
 
 // CancelReasonDescNotIn applies the NotIn predicate on the "cancel_reason_desc" field.
 func CancelReasonDescNotIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCancelReasonDesc), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldCancelReasonDesc, vs...))
 }
 
 // CancelReasonDescGT applies the GT predicate on the "cancel_reason_desc" field.
 func CancelReasonDescGT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCancelReasonDesc), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldCancelReasonDesc, v))
 }
 
 // CancelReasonDescGTE applies the GTE predicate on the "cancel_reason_desc" field.
 func CancelReasonDescGTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCancelReasonDesc), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldCancelReasonDesc, v))
 }
 
 // CancelReasonDescLT applies the LT predicate on the "cancel_reason_desc" field.
 func CancelReasonDescLT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCancelReasonDesc), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldCancelReasonDesc, v))
 }
 
 // CancelReasonDescLTE applies the LTE predicate on the "cancel_reason_desc" field.
 func CancelReasonDescLTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCancelReasonDesc), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldCancelReasonDesc, v))
 }
 
 // CancelReasonDescContains applies the Contains predicate on the "cancel_reason_desc" field.
 func CancelReasonDescContains(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldCancelReasonDesc), v))
-	})
+	return predicate.Assistance(sql.FieldContains(FieldCancelReasonDesc, v))
 }
 
 // CancelReasonDescHasPrefix applies the HasPrefix predicate on the "cancel_reason_desc" field.
 func CancelReasonDescHasPrefix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldCancelReasonDesc), v))
-	})
+	return predicate.Assistance(sql.FieldHasPrefix(FieldCancelReasonDesc, v))
 }
 
 // CancelReasonDescHasSuffix applies the HasSuffix predicate on the "cancel_reason_desc" field.
 func CancelReasonDescHasSuffix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldCancelReasonDesc), v))
-	})
+	return predicate.Assistance(sql.FieldHasSuffix(FieldCancelReasonDesc, v))
 }
 
 // CancelReasonDescIsNil applies the IsNil predicate on the "cancel_reason_desc" field.
 func CancelReasonDescIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCancelReasonDesc)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldCancelReasonDesc))
 }
 
 // CancelReasonDescNotNil applies the NotNil predicate on the "cancel_reason_desc" field.
 func CancelReasonDescNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCancelReasonDesc)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldCancelReasonDesc))
 }
 
 // CancelReasonDescEqualFold applies the EqualFold predicate on the "cancel_reason_desc" field.
 func CancelReasonDescEqualFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldCancelReasonDesc), v))
-	})
+	return predicate.Assistance(sql.FieldEqualFold(FieldCancelReasonDesc, v))
 }
 
 // CancelReasonDescContainsFold applies the ContainsFold predicate on the "cancel_reason_desc" field.
 func CancelReasonDescContainsFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldCancelReasonDesc), v))
-	})
+	return predicate.Assistance(sql.FieldContainsFold(FieldCancelReasonDesc, v))
 }
 
 // DistanceEQ applies the EQ predicate on the "distance" field.
 func DistanceEQ(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDistance), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldDistance, v))
 }
 
 // DistanceNEQ applies the NEQ predicate on the "distance" field.
 func DistanceNEQ(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDistance), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldDistance, v))
 }
 
 // DistanceIn applies the In predicate on the "distance" field.
 func DistanceIn(vs ...float64) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDistance), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldDistance, vs...))
 }
 
 // DistanceNotIn applies the NotIn predicate on the "distance" field.
 func DistanceNotIn(vs ...float64) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDistance), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldDistance, vs...))
 }
 
 // DistanceGT applies the GT predicate on the "distance" field.
 func DistanceGT(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDistance), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldDistance, v))
 }
 
 // DistanceGTE applies the GTE predicate on the "distance" field.
 func DistanceGTE(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDistance), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldDistance, v))
 }
 
 // DistanceLT applies the LT predicate on the "distance" field.
 func DistanceLT(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDistance), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldDistance, v))
 }
 
 // DistanceLTE applies the LTE predicate on the "distance" field.
 func DistanceLTE(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDistance), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldDistance, v))
 }
 
 // DistanceIsNil applies the IsNil predicate on the "distance" field.
 func DistanceIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDistance)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldDistance))
 }
 
 // DistanceNotNil applies the NotNil predicate on the "distance" field.
 func DistanceNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDistance)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldDistance))
 }
 
 // ReasonEQ applies the EQ predicate on the "reason" field.
 func ReasonEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldReason), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldReason, v))
 }
 
 // ReasonNEQ applies the NEQ predicate on the "reason" field.
 func ReasonNEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldReason), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldReason, v))
 }
 
 // ReasonIn applies the In predicate on the "reason" field.
 func ReasonIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldReason), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldReason, vs...))
 }
 
 // ReasonNotIn applies the NotIn predicate on the "reason" field.
 func ReasonNotIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldReason), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldReason, vs...))
 }
 
 // ReasonGT applies the GT predicate on the "reason" field.
 func ReasonGT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldReason), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldReason, v))
 }
 
 // ReasonGTE applies the GTE predicate on the "reason" field.
 func ReasonGTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldReason), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldReason, v))
 }
 
 // ReasonLT applies the LT predicate on the "reason" field.
 func ReasonLT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldReason), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldReason, v))
 }
 
 // ReasonLTE applies the LTE predicate on the "reason" field.
 func ReasonLTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldReason), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldReason, v))
 }
 
 // ReasonContains applies the Contains predicate on the "reason" field.
 func ReasonContains(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldReason), v))
-	})
+	return predicate.Assistance(sql.FieldContains(FieldReason, v))
 }
 
 // ReasonHasPrefix applies the HasPrefix predicate on the "reason" field.
 func ReasonHasPrefix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldReason), v))
-	})
+	return predicate.Assistance(sql.FieldHasPrefix(FieldReason, v))
 }
 
 // ReasonHasSuffix applies the HasSuffix predicate on the "reason" field.
 func ReasonHasSuffix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldReason), v))
-	})
+	return predicate.Assistance(sql.FieldHasSuffix(FieldReason, v))
 }
 
 // ReasonIsNil applies the IsNil predicate on the "reason" field.
 func ReasonIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldReason)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldReason))
 }
 
 // ReasonNotNil applies the NotNil predicate on the "reason" field.
 func ReasonNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldReason)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldReason))
 }
 
 // ReasonEqualFold applies the EqualFold predicate on the "reason" field.
 func ReasonEqualFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldReason), v))
-	})
+	return predicate.Assistance(sql.FieldEqualFold(FieldReason, v))
 }
 
 // ReasonContainsFold applies the ContainsFold predicate on the "reason" field.
 func ReasonContainsFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldReason), v))
-	})
+	return predicate.Assistance(sql.FieldContainsFold(FieldReason, v))
 }
 
 // DetectPhotoEQ applies the EQ predicate on the "detect_photo" field.
 func DetectPhotoEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDetectPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldDetectPhoto, v))
 }
 
 // DetectPhotoNEQ applies the NEQ predicate on the "detect_photo" field.
 func DetectPhotoNEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDetectPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldDetectPhoto, v))
 }
 
 // DetectPhotoIn applies the In predicate on the "detect_photo" field.
 func DetectPhotoIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDetectPhoto), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldDetectPhoto, vs...))
 }
 
 // DetectPhotoNotIn applies the NotIn predicate on the "detect_photo" field.
 func DetectPhotoNotIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDetectPhoto), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldDetectPhoto, vs...))
 }
 
 // DetectPhotoGT applies the GT predicate on the "detect_photo" field.
 func DetectPhotoGT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDetectPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldDetectPhoto, v))
 }
 
 // DetectPhotoGTE applies the GTE predicate on the "detect_photo" field.
 func DetectPhotoGTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDetectPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldDetectPhoto, v))
 }
 
 // DetectPhotoLT applies the LT predicate on the "detect_photo" field.
 func DetectPhotoLT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDetectPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldDetectPhoto, v))
 }
 
 // DetectPhotoLTE applies the LTE predicate on the "detect_photo" field.
 func DetectPhotoLTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDetectPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldDetectPhoto, v))
 }
 
 // DetectPhotoContains applies the Contains predicate on the "detect_photo" field.
 func DetectPhotoContains(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldDetectPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldContains(FieldDetectPhoto, v))
 }
 
 // DetectPhotoHasPrefix applies the HasPrefix predicate on the "detect_photo" field.
 func DetectPhotoHasPrefix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldDetectPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldHasPrefix(FieldDetectPhoto, v))
 }
 
 // DetectPhotoHasSuffix applies the HasSuffix predicate on the "detect_photo" field.
 func DetectPhotoHasSuffix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldDetectPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldHasSuffix(FieldDetectPhoto, v))
 }
 
 // DetectPhotoIsNil applies the IsNil predicate on the "detect_photo" field.
 func DetectPhotoIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDetectPhoto)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldDetectPhoto))
 }
 
 // DetectPhotoNotNil applies the NotNil predicate on the "detect_photo" field.
 func DetectPhotoNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDetectPhoto)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldDetectPhoto))
 }
 
 // DetectPhotoEqualFold applies the EqualFold predicate on the "detect_photo" field.
 func DetectPhotoEqualFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldDetectPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldEqualFold(FieldDetectPhoto, v))
 }
 
 // DetectPhotoContainsFold applies the ContainsFold predicate on the "detect_photo" field.
 func DetectPhotoContainsFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldDetectPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldContainsFold(FieldDetectPhoto, v))
 }
 
 // JointPhotoEQ applies the EQ predicate on the "joint_photo" field.
 func JointPhotoEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldJointPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldJointPhoto, v))
 }
 
 // JointPhotoNEQ applies the NEQ predicate on the "joint_photo" field.
 func JointPhotoNEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldJointPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldJointPhoto, v))
 }
 
 // JointPhotoIn applies the In predicate on the "joint_photo" field.
 func JointPhotoIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldJointPhoto), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldJointPhoto, vs...))
 }
 
 // JointPhotoNotIn applies the NotIn predicate on the "joint_photo" field.
 func JointPhotoNotIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldJointPhoto), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldJointPhoto, vs...))
 }
 
 // JointPhotoGT applies the GT predicate on the "joint_photo" field.
 func JointPhotoGT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldJointPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldJointPhoto, v))
 }
 
 // JointPhotoGTE applies the GTE predicate on the "joint_photo" field.
 func JointPhotoGTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldJointPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldJointPhoto, v))
 }
 
 // JointPhotoLT applies the LT predicate on the "joint_photo" field.
 func JointPhotoLT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldJointPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldJointPhoto, v))
 }
 
 // JointPhotoLTE applies the LTE predicate on the "joint_photo" field.
 func JointPhotoLTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldJointPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldJointPhoto, v))
 }
 
 // JointPhotoContains applies the Contains predicate on the "joint_photo" field.
 func JointPhotoContains(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldJointPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldContains(FieldJointPhoto, v))
 }
 
 // JointPhotoHasPrefix applies the HasPrefix predicate on the "joint_photo" field.
 func JointPhotoHasPrefix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldJointPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldHasPrefix(FieldJointPhoto, v))
 }
 
 // JointPhotoHasSuffix applies the HasSuffix predicate on the "joint_photo" field.
 func JointPhotoHasSuffix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldJointPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldHasSuffix(FieldJointPhoto, v))
 }
 
 // JointPhotoIsNil applies the IsNil predicate on the "joint_photo" field.
 func JointPhotoIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldJointPhoto)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldJointPhoto))
 }
 
 // JointPhotoNotNil applies the NotNil predicate on the "joint_photo" field.
 func JointPhotoNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldJointPhoto)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldJointPhoto))
 }
 
 // JointPhotoEqualFold applies the EqualFold predicate on the "joint_photo" field.
 func JointPhotoEqualFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldJointPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldEqualFold(FieldJointPhoto, v))
 }
 
 // JointPhotoContainsFold applies the ContainsFold predicate on the "joint_photo" field.
 func JointPhotoContainsFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldJointPhoto), v))
-	})
+	return predicate.Assistance(sql.FieldContainsFold(FieldJointPhoto, v))
 }
 
 // CostEQ applies the EQ predicate on the "cost" field.
 func CostEQ(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCost), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldCost, v))
 }
 
 // CostNEQ applies the NEQ predicate on the "cost" field.
 func CostNEQ(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCost), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldCost, v))
 }
 
 // CostIn applies the In predicate on the "cost" field.
 func CostIn(vs ...float64) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCost), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldCost, vs...))
 }
 
 // CostNotIn applies the NotIn predicate on the "cost" field.
 func CostNotIn(vs ...float64) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCost), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldCost, vs...))
 }
 
 // CostGT applies the GT predicate on the "cost" field.
 func CostGT(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCost), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldCost, v))
 }
 
 // CostGTE applies the GTE predicate on the "cost" field.
 func CostGTE(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCost), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldCost, v))
 }
 
 // CostLT applies the LT predicate on the "cost" field.
 func CostLT(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCost), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldCost, v))
 }
 
 // CostLTE applies the LTE predicate on the "cost" field.
 func CostLTE(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCost), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldCost, v))
 }
 
 // CostIsNil applies the IsNil predicate on the "cost" field.
 func CostIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCost)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldCost))
 }
 
 // CostNotNil applies the NotNil predicate on the "cost" field.
 func CostNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCost)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldCost))
 }
 
 // RefusedDescEQ applies the EQ predicate on the "refused_desc" field.
 func RefusedDescEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRefusedDesc), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldRefusedDesc, v))
 }
 
 // RefusedDescNEQ applies the NEQ predicate on the "refused_desc" field.
 func RefusedDescNEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRefusedDesc), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldRefusedDesc, v))
 }
 
 // RefusedDescIn applies the In predicate on the "refused_desc" field.
 func RefusedDescIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRefusedDesc), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldRefusedDesc, vs...))
 }
 
 // RefusedDescNotIn applies the NotIn predicate on the "refused_desc" field.
 func RefusedDescNotIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRefusedDesc), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldRefusedDesc, vs...))
 }
 
 // RefusedDescGT applies the GT predicate on the "refused_desc" field.
 func RefusedDescGT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRefusedDesc), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldRefusedDesc, v))
 }
 
 // RefusedDescGTE applies the GTE predicate on the "refused_desc" field.
 func RefusedDescGTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRefusedDesc), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldRefusedDesc, v))
 }
 
 // RefusedDescLT applies the LT predicate on the "refused_desc" field.
 func RefusedDescLT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRefusedDesc), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldRefusedDesc, v))
 }
 
 // RefusedDescLTE applies the LTE predicate on the "refused_desc" field.
 func RefusedDescLTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRefusedDesc), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldRefusedDesc, v))
 }
 
 // RefusedDescContains applies the Contains predicate on the "refused_desc" field.
 func RefusedDescContains(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRefusedDesc), v))
-	})
+	return predicate.Assistance(sql.FieldContains(FieldRefusedDesc, v))
 }
 
 // RefusedDescHasPrefix applies the HasPrefix predicate on the "refused_desc" field.
 func RefusedDescHasPrefix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRefusedDesc), v))
-	})
+	return predicate.Assistance(sql.FieldHasPrefix(FieldRefusedDesc, v))
 }
 
 // RefusedDescHasSuffix applies the HasSuffix predicate on the "refused_desc" field.
 func RefusedDescHasSuffix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRefusedDesc), v))
-	})
+	return predicate.Assistance(sql.FieldHasSuffix(FieldRefusedDesc, v))
 }
 
 // RefusedDescIsNil applies the IsNil predicate on the "refused_desc" field.
 func RefusedDescIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRefusedDesc)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldRefusedDesc))
 }
 
 // RefusedDescNotNil applies the NotNil predicate on the "refused_desc" field.
 func RefusedDescNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRefusedDesc)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldRefusedDesc))
 }
 
 // RefusedDescEqualFold applies the EqualFold predicate on the "refused_desc" field.
 func RefusedDescEqualFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRefusedDesc), v))
-	})
+	return predicate.Assistance(sql.FieldEqualFold(FieldRefusedDesc, v))
 }
 
 // RefusedDescContainsFold applies the ContainsFold predicate on the "refused_desc" field.
 func RefusedDescContainsFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRefusedDesc), v))
-	})
+	return predicate.Assistance(sql.FieldContainsFold(FieldRefusedDesc, v))
 }
 
 // PayAtEQ applies the EQ predicate on the "pay_at" field.
 func PayAtEQ(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPayAt), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldPayAt, v))
 }
 
 // PayAtNEQ applies the NEQ predicate on the "pay_at" field.
 func PayAtNEQ(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPayAt), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldPayAt, v))
 }
 
 // PayAtIn applies the In predicate on the "pay_at" field.
 func PayAtIn(vs ...time.Time) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldPayAt), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldPayAt, vs...))
 }
 
 // PayAtNotIn applies the NotIn predicate on the "pay_at" field.
 func PayAtNotIn(vs ...time.Time) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldPayAt), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldPayAt, vs...))
 }
 
 // PayAtGT applies the GT predicate on the "pay_at" field.
 func PayAtGT(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldPayAt), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldPayAt, v))
 }
 
 // PayAtGTE applies the GTE predicate on the "pay_at" field.
 func PayAtGTE(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldPayAt), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldPayAt, v))
 }
 
 // PayAtLT applies the LT predicate on the "pay_at" field.
 func PayAtLT(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldPayAt), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldPayAt, v))
 }
 
 // PayAtLTE applies the LTE predicate on the "pay_at" field.
 func PayAtLTE(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldPayAt), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldPayAt, v))
 }
 
 // PayAtIsNil applies the IsNil predicate on the "pay_at" field.
 func PayAtIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldPayAt)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldPayAt))
 }
 
 // PayAtNotNil applies the NotNil predicate on the "pay_at" field.
 func PayAtNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldPayAt)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldPayAt))
 }
 
 // AllocateAtEQ applies the EQ predicate on the "allocate_at" field.
 func AllocateAtEQ(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAllocateAt), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldAllocateAt, v))
 }
 
 // AllocateAtNEQ applies the NEQ predicate on the "allocate_at" field.
 func AllocateAtNEQ(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAllocateAt), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldAllocateAt, v))
 }
 
 // AllocateAtIn applies the In predicate on the "allocate_at" field.
 func AllocateAtIn(vs ...time.Time) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAllocateAt), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldAllocateAt, vs...))
 }
 
 // AllocateAtNotIn applies the NotIn predicate on the "allocate_at" field.
 func AllocateAtNotIn(vs ...time.Time) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAllocateAt), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldAllocateAt, vs...))
 }
 
 // AllocateAtGT applies the GT predicate on the "allocate_at" field.
 func AllocateAtGT(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAllocateAt), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldAllocateAt, v))
 }
 
 // AllocateAtGTE applies the GTE predicate on the "allocate_at" field.
 func AllocateAtGTE(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAllocateAt), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldAllocateAt, v))
 }
 
 // AllocateAtLT applies the LT predicate on the "allocate_at" field.
 func AllocateAtLT(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAllocateAt), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldAllocateAt, v))
 }
 
 // AllocateAtLTE applies the LTE predicate on the "allocate_at" field.
 func AllocateAtLTE(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAllocateAt), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldAllocateAt, v))
 }
 
 // AllocateAtIsNil applies the IsNil predicate on the "allocate_at" field.
 func AllocateAtIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldAllocateAt)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldAllocateAt))
 }
 
 // AllocateAtNotNil applies the NotNil predicate on the "allocate_at" field.
 func AllocateAtNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldAllocateAt)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldAllocateAt))
 }
 
 // WaitEQ applies the EQ predicate on the "wait" field.
 func WaitEQ(v int) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldWait), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldWait, v))
 }
 
 // WaitNEQ applies the NEQ predicate on the "wait" field.
 func WaitNEQ(v int) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldWait), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldWait, v))
 }
 
 // WaitIn applies the In predicate on the "wait" field.
 func WaitIn(vs ...int) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldWait), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldWait, vs...))
 }
 
 // WaitNotIn applies the NotIn predicate on the "wait" field.
 func WaitNotIn(vs ...int) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldWait), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldWait, vs...))
 }
 
 // WaitGT applies the GT predicate on the "wait" field.
 func WaitGT(v int) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldWait), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldWait, v))
 }
 
 // WaitGTE applies the GTE predicate on the "wait" field.
 func WaitGTE(v int) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldWait), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldWait, v))
 }
 
 // WaitLT applies the LT predicate on the "wait" field.
 func WaitLT(v int) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldWait), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldWait, v))
 }
 
 // WaitLTE applies the LTE predicate on the "wait" field.
 func WaitLTE(v int) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldWait), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldWait, v))
 }
 
 // FreeReasonEQ applies the EQ predicate on the "free_reason" field.
 func FreeReasonEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldFreeReason), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldFreeReason, v))
 }
 
 // FreeReasonNEQ applies the NEQ predicate on the "free_reason" field.
 func FreeReasonNEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldFreeReason), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldFreeReason, v))
 }
 
 // FreeReasonIn applies the In predicate on the "free_reason" field.
 func FreeReasonIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldFreeReason), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldFreeReason, vs...))
 }
 
 // FreeReasonNotIn applies the NotIn predicate on the "free_reason" field.
 func FreeReasonNotIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldFreeReason), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldFreeReason, vs...))
 }
 
 // FreeReasonGT applies the GT predicate on the "free_reason" field.
 func FreeReasonGT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldFreeReason), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldFreeReason, v))
 }
 
 // FreeReasonGTE applies the GTE predicate on the "free_reason" field.
 func FreeReasonGTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldFreeReason), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldFreeReason, v))
 }
 
 // FreeReasonLT applies the LT predicate on the "free_reason" field.
 func FreeReasonLT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldFreeReason), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldFreeReason, v))
 }
 
 // FreeReasonLTE applies the LTE predicate on the "free_reason" field.
 func FreeReasonLTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldFreeReason), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldFreeReason, v))
 }
 
 // FreeReasonContains applies the Contains predicate on the "free_reason" field.
 func FreeReasonContains(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldFreeReason), v))
-	})
+	return predicate.Assistance(sql.FieldContains(FieldFreeReason, v))
 }
 
 // FreeReasonHasPrefix applies the HasPrefix predicate on the "free_reason" field.
 func FreeReasonHasPrefix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldFreeReason), v))
-	})
+	return predicate.Assistance(sql.FieldHasPrefix(FieldFreeReason, v))
 }
 
 // FreeReasonHasSuffix applies the HasSuffix predicate on the "free_reason" field.
 func FreeReasonHasSuffix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldFreeReason), v))
-	})
+	return predicate.Assistance(sql.FieldHasSuffix(FieldFreeReason, v))
 }
 
 // FreeReasonIsNil applies the IsNil predicate on the "free_reason" field.
 func FreeReasonIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldFreeReason)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldFreeReason))
 }
 
 // FreeReasonNotNil applies the NotNil predicate on the "free_reason" field.
 func FreeReasonNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldFreeReason)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldFreeReason))
 }
 
 // FreeReasonEqualFold applies the EqualFold predicate on the "free_reason" field.
 func FreeReasonEqualFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldFreeReason), v))
-	})
+	return predicate.Assistance(sql.FieldEqualFold(FieldFreeReason, v))
 }
 
 // FreeReasonContainsFold applies the ContainsFold predicate on the "free_reason" field.
 func FreeReasonContainsFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldFreeReason), v))
-	})
+	return predicate.Assistance(sql.FieldContainsFold(FieldFreeReason, v))
 }
 
 // FailReasonEQ applies the EQ predicate on the "fail_reason" field.
 func FailReasonEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldFailReason), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldFailReason, v))
 }
 
 // FailReasonNEQ applies the NEQ predicate on the "fail_reason" field.
 func FailReasonNEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldFailReason), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldFailReason, v))
 }
 
 // FailReasonIn applies the In predicate on the "fail_reason" field.
 func FailReasonIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldFailReason), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldFailReason, vs...))
 }
 
 // FailReasonNotIn applies the NotIn predicate on the "fail_reason" field.
 func FailReasonNotIn(vs ...string) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldFailReason), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldFailReason, vs...))
 }
 
 // FailReasonGT applies the GT predicate on the "fail_reason" field.
 func FailReasonGT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldFailReason), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldFailReason, v))
 }
 
 // FailReasonGTE applies the GTE predicate on the "fail_reason" field.
 func FailReasonGTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldFailReason), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldFailReason, v))
 }
 
 // FailReasonLT applies the LT predicate on the "fail_reason" field.
 func FailReasonLT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldFailReason), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldFailReason, v))
 }
 
 // FailReasonLTE applies the LTE predicate on the "fail_reason" field.
 func FailReasonLTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldFailReason), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldFailReason, v))
 }
 
 // FailReasonContains applies the Contains predicate on the "fail_reason" field.
 func FailReasonContains(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldFailReason), v))
-	})
+	return predicate.Assistance(sql.FieldContains(FieldFailReason, v))
 }
 
 // FailReasonHasPrefix applies the HasPrefix predicate on the "fail_reason" field.
 func FailReasonHasPrefix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldFailReason), v))
-	})
+	return predicate.Assistance(sql.FieldHasPrefix(FieldFailReason, v))
 }
 
 // FailReasonHasSuffix applies the HasSuffix predicate on the "fail_reason" field.
 func FailReasonHasSuffix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldFailReason), v))
-	})
+	return predicate.Assistance(sql.FieldHasSuffix(FieldFailReason, v))
 }
 
 // FailReasonIsNil applies the IsNil predicate on the "fail_reason" field.
 func FailReasonIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldFailReason)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldFailReason))
 }
 
 // FailReasonNotNil applies the NotNil predicate on the "fail_reason" field.
 func FailReasonNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldFailReason)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldFailReason))
 }
 
 // FailReasonEqualFold applies the EqualFold predicate on the "fail_reason" field.
 func FailReasonEqualFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldFailReason), v))
-	})
+	return predicate.Assistance(sql.FieldEqualFold(FieldFailReason, v))
 }
 
 // FailReasonContainsFold applies the ContainsFold predicate on the "fail_reason" field.
 func FailReasonContainsFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldFailReason), v))
-	})
+	return predicate.Assistance(sql.FieldContainsFold(FieldFailReason, v))
 }
 
 // ProcessAtEQ applies the EQ predicate on the "process_at" field.
 func ProcessAtEQ(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldProcessAt), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldProcessAt, v))
 }
 
 // ProcessAtNEQ applies the NEQ predicate on the "process_at" field.
 func ProcessAtNEQ(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldProcessAt), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldProcessAt, v))
 }
 
 // ProcessAtIn applies the In predicate on the "process_at" field.
 func ProcessAtIn(vs ...time.Time) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldProcessAt), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldProcessAt, vs...))
 }
 
 // ProcessAtNotIn applies the NotIn predicate on the "process_at" field.
 func ProcessAtNotIn(vs ...time.Time) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldProcessAt), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldProcessAt, vs...))
 }
 
 // ProcessAtGT applies the GT predicate on the "process_at" field.
 func ProcessAtGT(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldProcessAt), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldProcessAt, v))
 }
 
 // ProcessAtGTE applies the GTE predicate on the "process_at" field.
 func ProcessAtGTE(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldProcessAt), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldProcessAt, v))
 }
 
 // ProcessAtLT applies the LT predicate on the "process_at" field.
 func ProcessAtLT(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldProcessAt), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldProcessAt, v))
 }
 
 // ProcessAtLTE applies the LTE predicate on the "process_at" field.
 func ProcessAtLTE(v time.Time) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldProcessAt), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldProcessAt, v))
 }
 
 // ProcessAtIsNil applies the IsNil predicate on the "process_at" field.
 func ProcessAtIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldProcessAt)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldProcessAt))
 }
 
 // ProcessAtNotNil applies the NotNil predicate on the "process_at" field.
 func ProcessAtNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldProcessAt)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldProcessAt))
 }
 
 // PriceEQ applies the EQ predicate on the "price" field.
 func PriceEQ(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPrice), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldPrice, v))
 }
 
 // PriceNEQ applies the NEQ predicate on the "price" field.
 func PriceNEQ(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPrice), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldPrice, v))
 }
 
 // PriceIn applies the In predicate on the "price" field.
 func PriceIn(vs ...float64) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldPrice), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldPrice, vs...))
 }
 
 // PriceNotIn applies the NotIn predicate on the "price" field.
 func PriceNotIn(vs ...float64) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldPrice), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldPrice, vs...))
 }
 
 // PriceGT applies the GT predicate on the "price" field.
 func PriceGT(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldPrice), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldPrice, v))
 }
 
 // PriceGTE applies the GTE predicate on the "price" field.
 func PriceGTE(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldPrice), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldPrice, v))
 }
 
 // PriceLT applies the LT predicate on the "price" field.
 func PriceLT(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldPrice), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldPrice, v))
 }
 
 // PriceLTE applies the LTE predicate on the "price" field.
 func PriceLTE(v float64) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldPrice), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldPrice, v))
 }
 
 // PriceIsNil applies the IsNil predicate on the "price" field.
 func PriceIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldPrice)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldPrice))
 }
 
 // PriceNotNil applies the NotNil predicate on the "price" field.
 func PriceNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldPrice)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldPrice))
 }
 
 // NaviDurationEQ applies the EQ predicate on the "navi_duration" field.
 func NaviDurationEQ(v int) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldNaviDuration), v))
-	})
+	return predicate.Assistance(sql.FieldEQ(FieldNaviDuration, v))
 }
 
 // NaviDurationNEQ applies the NEQ predicate on the "navi_duration" field.
 func NaviDurationNEQ(v int) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldNaviDuration), v))
-	})
+	return predicate.Assistance(sql.FieldNEQ(FieldNaviDuration, v))
 }
 
 // NaviDurationIn applies the In predicate on the "navi_duration" field.
 func NaviDurationIn(vs ...int) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldNaviDuration), v...))
-	})
+	return predicate.Assistance(sql.FieldIn(FieldNaviDuration, vs...))
 }
 
 // NaviDurationNotIn applies the NotIn predicate on the "navi_duration" field.
 func NaviDurationNotIn(vs ...int) predicate.Assistance {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldNaviDuration), v...))
-	})
+	return predicate.Assistance(sql.FieldNotIn(FieldNaviDuration, vs...))
 }
 
 // NaviDurationGT applies the GT predicate on the "navi_duration" field.
 func NaviDurationGT(v int) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldNaviDuration), v))
-	})
+	return predicate.Assistance(sql.FieldGT(FieldNaviDuration, v))
 }
 
 // NaviDurationGTE applies the GTE predicate on the "navi_duration" field.
 func NaviDurationGTE(v int) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldNaviDuration), v))
-	})
+	return predicate.Assistance(sql.FieldGTE(FieldNaviDuration, v))
 }
 
 // NaviDurationLT applies the LT predicate on the "navi_duration" field.
 func NaviDurationLT(v int) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldNaviDuration), v))
-	})
+	return predicate.Assistance(sql.FieldLT(FieldNaviDuration, v))
 }
 
 // NaviDurationLTE applies the LTE predicate on the "navi_duration" field.
 func NaviDurationLTE(v int) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldNaviDuration), v))
-	})
+	return predicate.Assistance(sql.FieldLTE(FieldNaviDuration, v))
 }
 
 // NaviDurationIsNil applies the IsNil predicate on the "navi_duration" field.
 func NaviDurationIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldNaviDuration)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldNaviDuration))
 }
 
 // NaviDurationNotNil applies the NotNil predicate on the "navi_duration" field.
 func NaviDurationNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldNaviDuration)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldNaviDuration))
 }
 
 // NaviPolylinesIsNil applies the IsNil predicate on the "navi_polylines" field.
 func NaviPolylinesIsNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldNaviPolylines)))
-	})
+	return predicate.Assistance(sql.FieldIsNull(FieldNaviPolylines))
 }
 
 // NaviPolylinesNotNil applies the NotNil predicate on the "navi_polylines" field.
 func NaviPolylinesNotNil() predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldNaviPolylines)))
-	})
+	return predicate.Assistance(sql.FieldNotNull(FieldNaviPolylines))
 }
 
 // HasStore applies the HasEdge predicate on the "store" edge.
@@ -2946,7 +1920,6 @@ func HasStore() predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StoreTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -2974,7 +1947,6 @@ func HasRider() predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RiderTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -3002,7 +1974,6 @@ func HasSubscribe() predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SubscribeTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -3030,7 +2001,6 @@ func HasCity() predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CityTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -3058,7 +2028,6 @@ func HasOrder() predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(OrderTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, true, OrderTable, OrderColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -3086,7 +2055,6 @@ func HasEmployee() predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EmployeeTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, EmployeeTable, EmployeeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

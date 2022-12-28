@@ -65,6 +65,7 @@ type Store struct {
 func (Store) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "store"},
+        entsql.WithComments(true),
     }
 }
 

@@ -12,1351 +12,857 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.SubscribePause(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.SubscribePause(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.SubscribePause(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.SubscribePause(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.SubscribePause(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.SubscribePause(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.SubscribePause(sql.FieldLTE(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
 func DeletedAt(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
 func Remark(v string) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldRemark, v))
 }
 
 // RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
 func RiderID(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRiderID), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldRiderID, v))
 }
 
 // EmployeeID applies equality check predicate on the "employee_id" field. It's identical to EmployeeIDEQ.
 func EmployeeID(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldEmployeeID, v))
 }
 
 // CityID applies equality check predicate on the "city_id" field. It's identical to CityIDEQ.
 func CityID(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCityID), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldCityID, v))
 }
 
 // StoreID applies equality check predicate on the "store_id" field. It's identical to StoreIDEQ.
 func StoreID(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStoreID), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldStoreID, v))
 }
 
 // EndStoreID applies equality check predicate on the "end_store_id" field. It's identical to EndStoreIDEQ.
 func EndStoreID(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEndStoreID), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldEndStoreID, v))
 }
 
 // CabinetID applies equality check predicate on the "cabinet_id" field. It's identical to CabinetIDEQ.
 func CabinetID(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCabinetID), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldCabinetID, v))
 }
 
 // EndCabinetID applies equality check predicate on the "end_cabinet_id" field. It's identical to EndCabinetIDEQ.
 func EndCabinetID(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEndCabinetID), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldEndCabinetID, v))
 }
 
 // SubscribeID applies equality check predicate on the "subscribe_id" field. It's identical to SubscribeIDEQ.
 func SubscribeID(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldSubscribeID, v))
 }
 
 // StartAt applies equality check predicate on the "start_at" field. It's identical to StartAtEQ.
 func StartAt(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStartAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldStartAt, v))
 }
 
 // EndAt applies equality check predicate on the "end_at" field. It's identical to EndAtEQ.
 func EndAt(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEndAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldEndAt, v))
 }
 
 // Days applies equality check predicate on the "days" field. It's identical to DaysEQ.
 func Days(v int) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDays), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldDays, v))
 }
 
 // EndEmployeeID applies equality check predicate on the "end_employee_id" field. It's identical to EndEmployeeIDEQ.
 func EndEmployeeID(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEndEmployeeID), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldEndEmployeeID, v))
 }
 
 // OverdueDays applies equality check predicate on the "overdue_days" field. It's identical to OverdueDaysEQ.
 func OverdueDays(v int) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldOverdueDays), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldOverdueDays, v))
 }
 
 // PauseOverdue applies equality check predicate on the "pause_overdue" field. It's identical to PauseOverdueEQ.
 func PauseOverdue(v bool) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPauseOverdue), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldPauseOverdue, v))
 }
 
 // SuspendDays applies equality check predicate on the "suspend_days" field. It's identical to SuspendDaysEQ.
 func SuspendDays(v int) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSuspendDays), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldSuspendDays, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
 func CreatedAtNEQ(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.SubscribePause(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.SubscribePause(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtGT applies the GT predicate on the "created_at" field.
 func CreatedAtGT(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldGT(FieldCreatedAt, v))
 }
 
 // CreatedAtGTE applies the GTE predicate on the "created_at" field.
 func CreatedAtGTE(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldGTE(FieldCreatedAt, v))
 }
 
 // CreatedAtLT applies the LT predicate on the "created_at" field.
 func CreatedAtLT(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldLT(FieldCreatedAt, v))
 }
 
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
 func UpdatedAtEQ(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
 func UpdatedAtNEQ(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldNEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.SubscribePause(sql.FieldIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.SubscribePause(sql.FieldNotIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtGT applies the GT predicate on the "updated_at" field.
 func UpdatedAtGT(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldGT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
 func UpdatedAtGTE(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldGTE(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLT applies the LT predicate on the "updated_at" field.
 func UpdatedAtLT(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldLT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
 func DeletedAtEQ(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
 func DeletedAtNEQ(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldNEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.SubscribePause(sql.FieldIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.SubscribePause(sql.FieldNotIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtGT applies the GT predicate on the "deleted_at" field.
 func DeletedAtGT(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldGT(FieldDeletedAt, v))
 }
 
 // DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
 func DeletedAtGTE(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldGTE(FieldDeletedAt, v))
 }
 
 // DeletedAtLT applies the LT predicate on the "deleted_at" field.
 func DeletedAtLT(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldLT(FieldDeletedAt, v))
 }
 
 // DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
 func DeletedAtLTE(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldLTE(FieldDeletedAt, v))
 }
 
 // DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
 func DeletedAtIsNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.SubscribePause(sql.FieldIsNull(FieldDeletedAt))
 }
 
 // DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
 func DeletedAtNotNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.SubscribePause(sql.FieldNotNull(FieldDeletedAt))
 }
 
 // CreatorIsNil applies the IsNil predicate on the "creator" field.
 func CreatorIsNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCreator)))
-	})
+	return predicate.SubscribePause(sql.FieldIsNull(FieldCreator))
 }
 
 // CreatorNotNil applies the NotNil predicate on the "creator" field.
 func CreatorNotNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCreator)))
-	})
+	return predicate.SubscribePause(sql.FieldNotNull(FieldCreator))
 }
 
 // LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
 func LastModifierIsNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLastModifier)))
-	})
+	return predicate.SubscribePause(sql.FieldIsNull(FieldLastModifier))
 }
 
 // LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
 func LastModifierNotNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLastModifier)))
-	})
+	return predicate.SubscribePause(sql.FieldNotNull(FieldLastModifier))
 }
 
 // RemarkEQ applies the EQ predicate on the "remark" field.
 func RemarkEQ(v string) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldRemark, v))
 }
 
 // RemarkNEQ applies the NEQ predicate on the "remark" field.
 func RemarkNEQ(v string) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribePause(sql.FieldNEQ(FieldRemark, v))
 }
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRemark), v...))
-	})
+	return predicate.SubscribePause(sql.FieldIn(FieldRemark, vs...))
 }
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRemark), v...))
-	})
+	return predicate.SubscribePause(sql.FieldNotIn(FieldRemark, vs...))
 }
 
 // RemarkGT applies the GT predicate on the "remark" field.
 func RemarkGT(v string) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribePause(sql.FieldGT(FieldRemark, v))
 }
 
 // RemarkGTE applies the GTE predicate on the "remark" field.
 func RemarkGTE(v string) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribePause(sql.FieldGTE(FieldRemark, v))
 }
 
 // RemarkLT applies the LT predicate on the "remark" field.
 func RemarkLT(v string) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribePause(sql.FieldLT(FieldRemark, v))
 }
 
 // RemarkLTE applies the LTE predicate on the "remark" field.
 func RemarkLTE(v string) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribePause(sql.FieldLTE(FieldRemark, v))
 }
 
 // RemarkContains applies the Contains predicate on the "remark" field.
 func RemarkContains(v string) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribePause(sql.FieldContains(FieldRemark, v))
 }
 
 // RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
 func RemarkHasPrefix(v string) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribePause(sql.FieldHasPrefix(FieldRemark, v))
 }
 
 // RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
 func RemarkHasSuffix(v string) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribePause(sql.FieldHasSuffix(FieldRemark, v))
 }
 
 // RemarkIsNil applies the IsNil predicate on the "remark" field.
 func RemarkIsNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRemark)))
-	})
+	return predicate.SubscribePause(sql.FieldIsNull(FieldRemark))
 }
 
 // RemarkNotNil applies the NotNil predicate on the "remark" field.
 func RemarkNotNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRemark)))
-	})
+	return predicate.SubscribePause(sql.FieldNotNull(FieldRemark))
 }
 
 // RemarkEqualFold applies the EqualFold predicate on the "remark" field.
 func RemarkEqualFold(v string) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribePause(sql.FieldEqualFold(FieldRemark, v))
 }
 
 // RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
 func RemarkContainsFold(v string) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
-	})
+	return predicate.SubscribePause(sql.FieldContainsFold(FieldRemark, v))
 }
 
 // RiderIDEQ applies the EQ predicate on the "rider_id" field.
 func RiderIDEQ(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRiderID), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldRiderID, v))
 }
 
 // RiderIDNEQ applies the NEQ predicate on the "rider_id" field.
 func RiderIDNEQ(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRiderID), v))
-	})
+	return predicate.SubscribePause(sql.FieldNEQ(FieldRiderID, v))
 }
 
 // RiderIDIn applies the In predicate on the "rider_id" field.
 func RiderIDIn(vs ...uint64) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRiderID), v...))
-	})
+	return predicate.SubscribePause(sql.FieldIn(FieldRiderID, vs...))
 }
 
 // RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
 func RiderIDNotIn(vs ...uint64) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRiderID), v...))
-	})
+	return predicate.SubscribePause(sql.FieldNotIn(FieldRiderID, vs...))
 }
 
 // EmployeeIDEQ applies the EQ predicate on the "employee_id" field.
 func EmployeeIDEQ(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldEmployeeID, v))
 }
 
 // EmployeeIDNEQ applies the NEQ predicate on the "employee_id" field.
 func EmployeeIDNEQ(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEmployeeID), v))
-	})
+	return predicate.SubscribePause(sql.FieldNEQ(FieldEmployeeID, v))
 }
 
 // EmployeeIDIn applies the In predicate on the "employee_id" field.
 func EmployeeIDIn(vs ...uint64) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEmployeeID), v...))
-	})
+	return predicate.SubscribePause(sql.FieldIn(FieldEmployeeID, vs...))
 }
 
 // EmployeeIDNotIn applies the NotIn predicate on the "employee_id" field.
 func EmployeeIDNotIn(vs ...uint64) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEmployeeID), v...))
-	})
+	return predicate.SubscribePause(sql.FieldNotIn(FieldEmployeeID, vs...))
 }
 
 // EmployeeIDIsNil applies the IsNil predicate on the "employee_id" field.
 func EmployeeIDIsNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldEmployeeID)))
-	})
+	return predicate.SubscribePause(sql.FieldIsNull(FieldEmployeeID))
 }
 
 // EmployeeIDNotNil applies the NotNil predicate on the "employee_id" field.
 func EmployeeIDNotNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldEmployeeID)))
-	})
+	return predicate.SubscribePause(sql.FieldNotNull(FieldEmployeeID))
 }
 
 // CityIDEQ applies the EQ predicate on the "city_id" field.
 func CityIDEQ(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCityID), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldCityID, v))
 }
 
 // CityIDNEQ applies the NEQ predicate on the "city_id" field.
 func CityIDNEQ(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCityID), v))
-	})
+	return predicate.SubscribePause(sql.FieldNEQ(FieldCityID, v))
 }
 
 // CityIDIn applies the In predicate on the "city_id" field.
 func CityIDIn(vs ...uint64) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCityID), v...))
-	})
+	return predicate.SubscribePause(sql.FieldIn(FieldCityID, vs...))
 }
 
 // CityIDNotIn applies the NotIn predicate on the "city_id" field.
 func CityIDNotIn(vs ...uint64) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCityID), v...))
-	})
+	return predicate.SubscribePause(sql.FieldNotIn(FieldCityID, vs...))
 }
 
 // CityIDIsNil applies the IsNil predicate on the "city_id" field.
 func CityIDIsNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCityID)))
-	})
+	return predicate.SubscribePause(sql.FieldIsNull(FieldCityID))
 }
 
 // CityIDNotNil applies the NotNil predicate on the "city_id" field.
 func CityIDNotNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCityID)))
-	})
+	return predicate.SubscribePause(sql.FieldNotNull(FieldCityID))
 }
 
 // StoreIDEQ applies the EQ predicate on the "store_id" field.
 func StoreIDEQ(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStoreID), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldStoreID, v))
 }
 
 // StoreIDNEQ applies the NEQ predicate on the "store_id" field.
 func StoreIDNEQ(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStoreID), v))
-	})
+	return predicate.SubscribePause(sql.FieldNEQ(FieldStoreID, v))
 }
 
 // StoreIDIn applies the In predicate on the "store_id" field.
 func StoreIDIn(vs ...uint64) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStoreID), v...))
-	})
+	return predicate.SubscribePause(sql.FieldIn(FieldStoreID, vs...))
 }
 
 // StoreIDNotIn applies the NotIn predicate on the "store_id" field.
 func StoreIDNotIn(vs ...uint64) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStoreID), v...))
-	})
+	return predicate.SubscribePause(sql.FieldNotIn(FieldStoreID, vs...))
 }
 
 // StoreIDIsNil applies the IsNil predicate on the "store_id" field.
 func StoreIDIsNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldStoreID)))
-	})
+	return predicate.SubscribePause(sql.FieldIsNull(FieldStoreID))
 }
 
 // StoreIDNotNil applies the NotNil predicate on the "store_id" field.
 func StoreIDNotNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldStoreID)))
-	})
+	return predicate.SubscribePause(sql.FieldNotNull(FieldStoreID))
 }
 
 // EndStoreIDEQ applies the EQ predicate on the "end_store_id" field.
 func EndStoreIDEQ(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEndStoreID), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldEndStoreID, v))
 }
 
 // EndStoreIDNEQ applies the NEQ predicate on the "end_store_id" field.
 func EndStoreIDNEQ(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEndStoreID), v))
-	})
+	return predicate.SubscribePause(sql.FieldNEQ(FieldEndStoreID, v))
 }
 
 // EndStoreIDIn applies the In predicate on the "end_store_id" field.
 func EndStoreIDIn(vs ...uint64) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEndStoreID), v...))
-	})
+	return predicate.SubscribePause(sql.FieldIn(FieldEndStoreID, vs...))
 }
 
 // EndStoreIDNotIn applies the NotIn predicate on the "end_store_id" field.
 func EndStoreIDNotIn(vs ...uint64) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEndStoreID), v...))
-	})
+	return predicate.SubscribePause(sql.FieldNotIn(FieldEndStoreID, vs...))
 }
 
 // EndStoreIDIsNil applies the IsNil predicate on the "end_store_id" field.
 func EndStoreIDIsNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldEndStoreID)))
-	})
+	return predicate.SubscribePause(sql.FieldIsNull(FieldEndStoreID))
 }
 
 // EndStoreIDNotNil applies the NotNil predicate on the "end_store_id" field.
 func EndStoreIDNotNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldEndStoreID)))
-	})
+	return predicate.SubscribePause(sql.FieldNotNull(FieldEndStoreID))
 }
 
 // CabinetIDEQ applies the EQ predicate on the "cabinet_id" field.
 func CabinetIDEQ(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCabinetID), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldCabinetID, v))
 }
 
 // CabinetIDNEQ applies the NEQ predicate on the "cabinet_id" field.
 func CabinetIDNEQ(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCabinetID), v))
-	})
+	return predicate.SubscribePause(sql.FieldNEQ(FieldCabinetID, v))
 }
 
 // CabinetIDIn applies the In predicate on the "cabinet_id" field.
 func CabinetIDIn(vs ...uint64) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCabinetID), v...))
-	})
+	return predicate.SubscribePause(sql.FieldIn(FieldCabinetID, vs...))
 }
 
 // CabinetIDNotIn applies the NotIn predicate on the "cabinet_id" field.
 func CabinetIDNotIn(vs ...uint64) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCabinetID), v...))
-	})
+	return predicate.SubscribePause(sql.FieldNotIn(FieldCabinetID, vs...))
 }
 
 // CabinetIDIsNil applies the IsNil predicate on the "cabinet_id" field.
 func CabinetIDIsNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCabinetID)))
-	})
+	return predicate.SubscribePause(sql.FieldIsNull(FieldCabinetID))
 }
 
 // CabinetIDNotNil applies the NotNil predicate on the "cabinet_id" field.
 func CabinetIDNotNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCabinetID)))
-	})
+	return predicate.SubscribePause(sql.FieldNotNull(FieldCabinetID))
 }
 
 // EndCabinetIDEQ applies the EQ predicate on the "end_cabinet_id" field.
 func EndCabinetIDEQ(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEndCabinetID), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldEndCabinetID, v))
 }
 
 // EndCabinetIDNEQ applies the NEQ predicate on the "end_cabinet_id" field.
 func EndCabinetIDNEQ(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEndCabinetID), v))
-	})
+	return predicate.SubscribePause(sql.FieldNEQ(FieldEndCabinetID, v))
 }
 
 // EndCabinetIDIn applies the In predicate on the "end_cabinet_id" field.
 func EndCabinetIDIn(vs ...uint64) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEndCabinetID), v...))
-	})
+	return predicate.SubscribePause(sql.FieldIn(FieldEndCabinetID, vs...))
 }
 
 // EndCabinetIDNotIn applies the NotIn predicate on the "end_cabinet_id" field.
 func EndCabinetIDNotIn(vs ...uint64) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEndCabinetID), v...))
-	})
+	return predicate.SubscribePause(sql.FieldNotIn(FieldEndCabinetID, vs...))
 }
 
 // EndCabinetIDIsNil applies the IsNil predicate on the "end_cabinet_id" field.
 func EndCabinetIDIsNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldEndCabinetID)))
-	})
+	return predicate.SubscribePause(sql.FieldIsNull(FieldEndCabinetID))
 }
 
 // EndCabinetIDNotNil applies the NotNil predicate on the "end_cabinet_id" field.
 func EndCabinetIDNotNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldEndCabinetID)))
-	})
+	return predicate.SubscribePause(sql.FieldNotNull(FieldEndCabinetID))
 }
 
 // SubscribeIDEQ applies the EQ predicate on the "subscribe_id" field.
 func SubscribeIDEQ(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldSubscribeID, v))
 }
 
 // SubscribeIDNEQ applies the NEQ predicate on the "subscribe_id" field.
 func SubscribeIDNEQ(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSubscribeID), v))
-	})
+	return predicate.SubscribePause(sql.FieldNEQ(FieldSubscribeID, v))
 }
 
 // SubscribeIDIn applies the In predicate on the "subscribe_id" field.
 func SubscribeIDIn(vs ...uint64) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldSubscribeID), v...))
-	})
+	return predicate.SubscribePause(sql.FieldIn(FieldSubscribeID, vs...))
 }
 
 // SubscribeIDNotIn applies the NotIn predicate on the "subscribe_id" field.
 func SubscribeIDNotIn(vs ...uint64) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldSubscribeID), v...))
-	})
+	return predicate.SubscribePause(sql.FieldNotIn(FieldSubscribeID, vs...))
 }
 
 // StartAtEQ applies the EQ predicate on the "start_at" field.
 func StartAtEQ(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStartAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldStartAt, v))
 }
 
 // StartAtNEQ applies the NEQ predicate on the "start_at" field.
 func StartAtNEQ(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStartAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldNEQ(FieldStartAt, v))
 }
 
 // StartAtIn applies the In predicate on the "start_at" field.
 func StartAtIn(vs ...time.Time) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStartAt), v...))
-	})
+	return predicate.SubscribePause(sql.FieldIn(FieldStartAt, vs...))
 }
 
 // StartAtNotIn applies the NotIn predicate on the "start_at" field.
 func StartAtNotIn(vs ...time.Time) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStartAt), v...))
-	})
+	return predicate.SubscribePause(sql.FieldNotIn(FieldStartAt, vs...))
 }
 
 // StartAtGT applies the GT predicate on the "start_at" field.
 func StartAtGT(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldStartAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldGT(FieldStartAt, v))
 }
 
 // StartAtGTE applies the GTE predicate on the "start_at" field.
 func StartAtGTE(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldStartAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldGTE(FieldStartAt, v))
 }
 
 // StartAtLT applies the LT predicate on the "start_at" field.
 func StartAtLT(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldStartAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldLT(FieldStartAt, v))
 }
 
 // StartAtLTE applies the LTE predicate on the "start_at" field.
 func StartAtLTE(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldStartAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldLTE(FieldStartAt, v))
 }
 
 // EndAtEQ applies the EQ predicate on the "end_at" field.
 func EndAtEQ(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEndAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldEndAt, v))
 }
 
 // EndAtNEQ applies the NEQ predicate on the "end_at" field.
 func EndAtNEQ(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEndAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldNEQ(FieldEndAt, v))
 }
 
 // EndAtIn applies the In predicate on the "end_at" field.
 func EndAtIn(vs ...time.Time) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEndAt), v...))
-	})
+	return predicate.SubscribePause(sql.FieldIn(FieldEndAt, vs...))
 }
 
 // EndAtNotIn applies the NotIn predicate on the "end_at" field.
 func EndAtNotIn(vs ...time.Time) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEndAt), v...))
-	})
+	return predicate.SubscribePause(sql.FieldNotIn(FieldEndAt, vs...))
 }
 
 // EndAtGT applies the GT predicate on the "end_at" field.
 func EndAtGT(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldEndAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldGT(FieldEndAt, v))
 }
 
 // EndAtGTE applies the GTE predicate on the "end_at" field.
 func EndAtGTE(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldEndAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldGTE(FieldEndAt, v))
 }
 
 // EndAtLT applies the LT predicate on the "end_at" field.
 func EndAtLT(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldEndAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldLT(FieldEndAt, v))
 }
 
 // EndAtLTE applies the LTE predicate on the "end_at" field.
 func EndAtLTE(v time.Time) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldEndAt), v))
-	})
+	return predicate.SubscribePause(sql.FieldLTE(FieldEndAt, v))
 }
 
 // EndAtIsNil applies the IsNil predicate on the "end_at" field.
 func EndAtIsNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldEndAt)))
-	})
+	return predicate.SubscribePause(sql.FieldIsNull(FieldEndAt))
 }
 
 // EndAtNotNil applies the NotNil predicate on the "end_at" field.
 func EndAtNotNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldEndAt)))
-	})
+	return predicate.SubscribePause(sql.FieldNotNull(FieldEndAt))
 }
 
 // DaysEQ applies the EQ predicate on the "days" field.
 func DaysEQ(v int) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDays), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldDays, v))
 }
 
 // DaysNEQ applies the NEQ predicate on the "days" field.
 func DaysNEQ(v int) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDays), v))
-	})
+	return predicate.SubscribePause(sql.FieldNEQ(FieldDays, v))
 }
 
 // DaysIn applies the In predicate on the "days" field.
 func DaysIn(vs ...int) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDays), v...))
-	})
+	return predicate.SubscribePause(sql.FieldIn(FieldDays, vs...))
 }
 
 // DaysNotIn applies the NotIn predicate on the "days" field.
 func DaysNotIn(vs ...int) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDays), v...))
-	})
+	return predicate.SubscribePause(sql.FieldNotIn(FieldDays, vs...))
 }
 
 // DaysGT applies the GT predicate on the "days" field.
 func DaysGT(v int) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDays), v))
-	})
+	return predicate.SubscribePause(sql.FieldGT(FieldDays, v))
 }
 
 // DaysGTE applies the GTE predicate on the "days" field.
 func DaysGTE(v int) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDays), v))
-	})
+	return predicate.SubscribePause(sql.FieldGTE(FieldDays, v))
 }
 
 // DaysLT applies the LT predicate on the "days" field.
 func DaysLT(v int) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDays), v))
-	})
+	return predicate.SubscribePause(sql.FieldLT(FieldDays, v))
 }
 
 // DaysLTE applies the LTE predicate on the "days" field.
 func DaysLTE(v int) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDays), v))
-	})
+	return predicate.SubscribePause(sql.FieldLTE(FieldDays, v))
 }
 
 // DaysIsNil applies the IsNil predicate on the "days" field.
 func DaysIsNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDays)))
-	})
+	return predicate.SubscribePause(sql.FieldIsNull(FieldDays))
 }
 
 // DaysNotNil applies the NotNil predicate on the "days" field.
 func DaysNotNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDays)))
-	})
+	return predicate.SubscribePause(sql.FieldNotNull(FieldDays))
 }
 
 // EndEmployeeIDEQ applies the EQ predicate on the "end_employee_id" field.
 func EndEmployeeIDEQ(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEndEmployeeID), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldEndEmployeeID, v))
 }
 
 // EndEmployeeIDNEQ applies the NEQ predicate on the "end_employee_id" field.
 func EndEmployeeIDNEQ(v uint64) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEndEmployeeID), v))
-	})
+	return predicate.SubscribePause(sql.FieldNEQ(FieldEndEmployeeID, v))
 }
 
 // EndEmployeeIDIn applies the In predicate on the "end_employee_id" field.
 func EndEmployeeIDIn(vs ...uint64) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEndEmployeeID), v...))
-	})
+	return predicate.SubscribePause(sql.FieldIn(FieldEndEmployeeID, vs...))
 }
 
 // EndEmployeeIDNotIn applies the NotIn predicate on the "end_employee_id" field.
 func EndEmployeeIDNotIn(vs ...uint64) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEndEmployeeID), v...))
-	})
+	return predicate.SubscribePause(sql.FieldNotIn(FieldEndEmployeeID, vs...))
 }
 
 // EndEmployeeIDIsNil applies the IsNil predicate on the "end_employee_id" field.
 func EndEmployeeIDIsNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldEndEmployeeID)))
-	})
+	return predicate.SubscribePause(sql.FieldIsNull(FieldEndEmployeeID))
 }
 
 // EndEmployeeIDNotNil applies the NotNil predicate on the "end_employee_id" field.
 func EndEmployeeIDNotNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldEndEmployeeID)))
-	})
+	return predicate.SubscribePause(sql.FieldNotNull(FieldEndEmployeeID))
 }
 
 // OverdueDaysEQ applies the EQ predicate on the "overdue_days" field.
 func OverdueDaysEQ(v int) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldOverdueDays), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldOverdueDays, v))
 }
 
 // OverdueDaysNEQ applies the NEQ predicate on the "overdue_days" field.
 func OverdueDaysNEQ(v int) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldOverdueDays), v))
-	})
+	return predicate.SubscribePause(sql.FieldNEQ(FieldOverdueDays, v))
 }
 
 // OverdueDaysIn applies the In predicate on the "overdue_days" field.
 func OverdueDaysIn(vs ...int) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldOverdueDays), v...))
-	})
+	return predicate.SubscribePause(sql.FieldIn(FieldOverdueDays, vs...))
 }
 
 // OverdueDaysNotIn applies the NotIn predicate on the "overdue_days" field.
 func OverdueDaysNotIn(vs ...int) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldOverdueDays), v...))
-	})
+	return predicate.SubscribePause(sql.FieldNotIn(FieldOverdueDays, vs...))
 }
 
 // OverdueDaysGT applies the GT predicate on the "overdue_days" field.
 func OverdueDaysGT(v int) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldOverdueDays), v))
-	})
+	return predicate.SubscribePause(sql.FieldGT(FieldOverdueDays, v))
 }
 
 // OverdueDaysGTE applies the GTE predicate on the "overdue_days" field.
 func OverdueDaysGTE(v int) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldOverdueDays), v))
-	})
+	return predicate.SubscribePause(sql.FieldGTE(FieldOverdueDays, v))
 }
 
 // OverdueDaysLT applies the LT predicate on the "overdue_days" field.
 func OverdueDaysLT(v int) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldOverdueDays), v))
-	})
+	return predicate.SubscribePause(sql.FieldLT(FieldOverdueDays, v))
 }
 
 // OverdueDaysLTE applies the LTE predicate on the "overdue_days" field.
 func OverdueDaysLTE(v int) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldOverdueDays), v))
-	})
+	return predicate.SubscribePause(sql.FieldLTE(FieldOverdueDays, v))
 }
 
 // EndModifierIsNil applies the IsNil predicate on the "end_modifier" field.
 func EndModifierIsNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldEndModifier)))
-	})
+	return predicate.SubscribePause(sql.FieldIsNull(FieldEndModifier))
 }
 
 // EndModifierNotNil applies the NotNil predicate on the "end_modifier" field.
 func EndModifierNotNil() predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldEndModifier)))
-	})
+	return predicate.SubscribePause(sql.FieldNotNull(FieldEndModifier))
 }
 
 // PauseOverdueEQ applies the EQ predicate on the "pause_overdue" field.
 func PauseOverdueEQ(v bool) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPauseOverdue), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldPauseOverdue, v))
 }
 
 // PauseOverdueNEQ applies the NEQ predicate on the "pause_overdue" field.
 func PauseOverdueNEQ(v bool) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPauseOverdue), v))
-	})
+	return predicate.SubscribePause(sql.FieldNEQ(FieldPauseOverdue, v))
 }
 
 // SuspendDaysEQ applies the EQ predicate on the "suspend_days" field.
 func SuspendDaysEQ(v int) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSuspendDays), v))
-	})
+	return predicate.SubscribePause(sql.FieldEQ(FieldSuspendDays, v))
 }
 
 // SuspendDaysNEQ applies the NEQ predicate on the "suspend_days" field.
 func SuspendDaysNEQ(v int) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSuspendDays), v))
-	})
+	return predicate.SubscribePause(sql.FieldNEQ(FieldSuspendDays, v))
 }
 
 // SuspendDaysIn applies the In predicate on the "suspend_days" field.
 func SuspendDaysIn(vs ...int) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldSuspendDays), v...))
-	})
+	return predicate.SubscribePause(sql.FieldIn(FieldSuspendDays, vs...))
 }
 
 // SuspendDaysNotIn applies the NotIn predicate on the "suspend_days" field.
 func SuspendDaysNotIn(vs ...int) predicate.SubscribePause {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldSuspendDays), v...))
-	})
+	return predicate.SubscribePause(sql.FieldNotIn(FieldSuspendDays, vs...))
 }
 
 // SuspendDaysGT applies the GT predicate on the "suspend_days" field.
 func SuspendDaysGT(v int) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldSuspendDays), v))
-	})
+	return predicate.SubscribePause(sql.FieldGT(FieldSuspendDays, v))
 }
 
 // SuspendDaysGTE applies the GTE predicate on the "suspend_days" field.
 func SuspendDaysGTE(v int) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldSuspendDays), v))
-	})
+	return predicate.SubscribePause(sql.FieldGTE(FieldSuspendDays, v))
 }
 
 // SuspendDaysLT applies the LT predicate on the "suspend_days" field.
 func SuspendDaysLT(v int) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldSuspendDays), v))
-	})
+	return predicate.SubscribePause(sql.FieldLT(FieldSuspendDays, v))
 }
 
 // SuspendDaysLTE applies the LTE predicate on the "suspend_days" field.
 func SuspendDaysLTE(v int) predicate.SubscribePause {
-	return predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldSuspendDays), v))
-	})
+	return predicate.SubscribePause(sql.FieldLTE(FieldSuspendDays, v))
 }
 
 // HasRider applies the HasEdge predicate on the "rider" edge.
@@ -1364,7 +870,6 @@ func HasRider() predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RiderTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1392,7 +897,6 @@ func HasEmployee() predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EmployeeTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, EmployeeTable, EmployeeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1420,7 +924,6 @@ func HasCity() predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CityTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1448,7 +951,6 @@ func HasStore() predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StoreTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1476,7 +978,6 @@ func HasEndStore() predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EndStoreTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, EndStoreTable, EndStoreColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1504,7 +1005,6 @@ func HasCabinet() predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CabinetTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, CabinetTable, CabinetColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1532,7 +1032,6 @@ func HasEndCabinet() predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EndCabinetTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, EndCabinetTable, EndCabinetColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1560,7 +1059,6 @@ func HasSubscribe() predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SubscribeTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, SubscribeTable, SubscribeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1588,7 +1086,6 @@ func HasEndEmployee() predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EndEmployeeTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, EndEmployeeTable, EndEmployeeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1616,7 +1113,6 @@ func HasSuspends() predicate.SubscribePause {
 	return predicate.SubscribePause(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SuspendsTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, SuspendsTable, SuspendsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

@@ -274,43 +274,10 @@ func (ebu *EnterpriseBillUpdate) ClearSubscribe() *EnterpriseBillUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ebu *EnterpriseBillUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := ebu.defaults(); err != nil {
 		return 0, err
 	}
-	if len(ebu.hooks) == 0 {
-		if err = ebu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = ebu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*EnterpriseBillMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ebu.check(); err != nil {
-				return 0, err
-			}
-			ebu.mutation = mutation
-			affected, err = ebu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(ebu.hooks) - 1; i >= 0; i-- {
-			if ebu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ebu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, ebu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, EnterpriseBillMutation](ctx, ebu.sqlSave, ebu.mutation, ebu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -374,6 +341,9 @@ func (ebu *EnterpriseBillUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder))
 }
 
 func (ebu *EnterpriseBillUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := ebu.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   enterprisebill.Table,
@@ -392,119 +362,55 @@ func (ebu *EnterpriseBillUpdate) sqlSave(ctx context.Context) (n int, err error)
 		}
 	}
 	if value, ok := ebu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisebill.FieldUpdatedAt,
-		})
+		_spec.SetField(enterprisebill.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := ebu.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisebill.FieldDeletedAt,
-		})
+		_spec.SetField(enterprisebill.FieldDeletedAt, field.TypeTime, value)
 	}
 	if ebu.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: enterprisebill.FieldDeletedAt,
-		})
+		_spec.ClearField(enterprisebill.FieldDeletedAt, field.TypeTime)
 	}
 	if ebu.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: enterprisebill.FieldCreator,
-		})
+		_spec.ClearField(enterprisebill.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := ebu.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: enterprisebill.FieldLastModifier,
-		})
+		_spec.SetField(enterprisebill.FieldLastModifier, field.TypeJSON, value)
 	}
 	if ebu.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: enterprisebill.FieldLastModifier,
-		})
+		_spec.ClearField(enterprisebill.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := ebu.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: enterprisebill.FieldRemark,
-		})
+		_spec.SetField(enterprisebill.FieldRemark, field.TypeString, value)
 	}
 	if ebu.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: enterprisebill.FieldRemark,
-		})
+		_spec.ClearField(enterprisebill.FieldRemark, field.TypeString)
 	}
 	if value, ok := ebu.mutation.Start(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisebill.FieldStart,
-		})
+		_spec.SetField(enterprisebill.FieldStart, field.TypeTime, value)
 	}
 	if value, ok := ebu.mutation.End(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisebill.FieldEnd,
-		})
+		_spec.SetField(enterprisebill.FieldEnd, field.TypeTime, value)
 	}
 	if value, ok := ebu.mutation.Days(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: enterprisebill.FieldDays,
-		})
+		_spec.SetField(enterprisebill.FieldDays, field.TypeInt, value)
 	}
 	if value, ok := ebu.mutation.AddedDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: enterprisebill.FieldDays,
-		})
+		_spec.AddField(enterprisebill.FieldDays, field.TypeInt, value)
 	}
 	if value, ok := ebu.mutation.Price(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisebill.FieldPrice,
-		})
+		_spec.SetField(enterprisebill.FieldPrice, field.TypeFloat64, value)
 	}
 	if value, ok := ebu.mutation.AddedPrice(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisebill.FieldPrice,
-		})
+		_spec.AddField(enterprisebill.FieldPrice, field.TypeFloat64, value)
 	}
 	if value, ok := ebu.mutation.Cost(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisebill.FieldCost,
-		})
+		_spec.SetField(enterprisebill.FieldCost, field.TypeFloat64, value)
 	}
 	if value, ok := ebu.mutation.AddedCost(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisebill.FieldCost,
-		})
+		_spec.AddField(enterprisebill.FieldCost, field.TypeFloat64, value)
 	}
 	if value, ok := ebu.mutation.Model(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: enterprisebill.FieldModel,
-		})
+		_spec.SetField(enterprisebill.FieldModel, field.TypeString, value)
 	}
 	if ebu.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -716,7 +622,7 @@ func (ebu *EnterpriseBillUpdate) sqlSave(ctx context.Context) (n int, err error)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = ebu.modifiers
+	_spec.AddModifiers(ebu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, ebu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{enterprisebill.Label}
@@ -725,6 +631,7 @@ func (ebu *EnterpriseBillUpdate) sqlSave(ctx context.Context) (n int, err error)
 		}
 		return 0, err
 	}
+	ebu.mutation.done = true
 	return n, nil
 }
 
@@ -982,49 +889,10 @@ func (ebuo *EnterpriseBillUpdateOne) Select(field string, fields ...string) *Ent
 
 // Save executes the query and returns the updated EnterpriseBill entity.
 func (ebuo *EnterpriseBillUpdateOne) Save(ctx context.Context) (*EnterpriseBill, error) {
-	var (
-		err  error
-		node *EnterpriseBill
-	)
 	if err := ebuo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(ebuo.hooks) == 0 {
-		if err = ebuo.check(); err != nil {
-			return nil, err
-		}
-		node, err = ebuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*EnterpriseBillMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ebuo.check(); err != nil {
-				return nil, err
-			}
-			ebuo.mutation = mutation
-			node, err = ebuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ebuo.hooks) - 1; i >= 0; i-- {
-			if ebuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ebuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ebuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*EnterpriseBill)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from EnterpriseBillMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*EnterpriseBill, EnterpriseBillMutation](ctx, ebuo.sqlSave, ebuo.mutation, ebuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -1088,6 +956,9 @@ func (ebuo *EnterpriseBillUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuild
 }
 
 func (ebuo *EnterpriseBillUpdateOne) sqlSave(ctx context.Context) (_node *EnterpriseBill, err error) {
+	if err := ebuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   enterprisebill.Table,
@@ -1123,119 +994,55 @@ func (ebuo *EnterpriseBillUpdateOne) sqlSave(ctx context.Context) (_node *Enterp
 		}
 	}
 	if value, ok := ebuo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisebill.FieldUpdatedAt,
-		})
+		_spec.SetField(enterprisebill.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := ebuo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisebill.FieldDeletedAt,
-		})
+		_spec.SetField(enterprisebill.FieldDeletedAt, field.TypeTime, value)
 	}
 	if ebuo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: enterprisebill.FieldDeletedAt,
-		})
+		_spec.ClearField(enterprisebill.FieldDeletedAt, field.TypeTime)
 	}
 	if ebuo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: enterprisebill.FieldCreator,
-		})
+		_spec.ClearField(enterprisebill.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := ebuo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: enterprisebill.FieldLastModifier,
-		})
+		_spec.SetField(enterprisebill.FieldLastModifier, field.TypeJSON, value)
 	}
 	if ebuo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: enterprisebill.FieldLastModifier,
-		})
+		_spec.ClearField(enterprisebill.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := ebuo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: enterprisebill.FieldRemark,
-		})
+		_spec.SetField(enterprisebill.FieldRemark, field.TypeString, value)
 	}
 	if ebuo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: enterprisebill.FieldRemark,
-		})
+		_spec.ClearField(enterprisebill.FieldRemark, field.TypeString)
 	}
 	if value, ok := ebuo.mutation.Start(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisebill.FieldStart,
-		})
+		_spec.SetField(enterprisebill.FieldStart, field.TypeTime, value)
 	}
 	if value, ok := ebuo.mutation.End(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: enterprisebill.FieldEnd,
-		})
+		_spec.SetField(enterprisebill.FieldEnd, field.TypeTime, value)
 	}
 	if value, ok := ebuo.mutation.Days(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: enterprisebill.FieldDays,
-		})
+		_spec.SetField(enterprisebill.FieldDays, field.TypeInt, value)
 	}
 	if value, ok := ebuo.mutation.AddedDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: enterprisebill.FieldDays,
-		})
+		_spec.AddField(enterprisebill.FieldDays, field.TypeInt, value)
 	}
 	if value, ok := ebuo.mutation.Price(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisebill.FieldPrice,
-		})
+		_spec.SetField(enterprisebill.FieldPrice, field.TypeFloat64, value)
 	}
 	if value, ok := ebuo.mutation.AddedPrice(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisebill.FieldPrice,
-		})
+		_spec.AddField(enterprisebill.FieldPrice, field.TypeFloat64, value)
 	}
 	if value, ok := ebuo.mutation.Cost(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisebill.FieldCost,
-		})
+		_spec.SetField(enterprisebill.FieldCost, field.TypeFloat64, value)
 	}
 	if value, ok := ebuo.mutation.AddedCost(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisebill.FieldCost,
-		})
+		_spec.AddField(enterprisebill.FieldCost, field.TypeFloat64, value)
 	}
 	if value, ok := ebuo.mutation.Model(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: enterprisebill.FieldModel,
-		})
+		_spec.SetField(enterprisebill.FieldModel, field.TypeString, value)
 	}
 	if ebuo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1447,7 +1254,7 @@ func (ebuo *EnterpriseBillUpdateOne) sqlSave(ctx context.Context) (_node *Enterp
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = ebuo.modifiers
+	_spec.AddModifiers(ebuo.modifiers...)
 	_node = &EnterpriseBill{config: ebuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -1459,5 +1266,6 @@ func (ebuo *EnterpriseBillUpdateOne) sqlSave(ctx context.Context) (_node *Enterp
 		}
 		return nil, err
 	}
+	ebuo.mutation.done = true
 	return _node, nil
 }

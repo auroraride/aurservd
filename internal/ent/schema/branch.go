@@ -21,6 +21,7 @@ type Branch struct {
 func (Branch) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "branch"},
+        entsql.WithComments(true),
     }
 }
 

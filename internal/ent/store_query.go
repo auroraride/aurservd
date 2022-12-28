@@ -29,6 +29,7 @@ type StoreQuery struct {
 	unique          *bool
 	order           []OrderFunc
 	fields          []string
+	inters          []Interceptor
 	predicates      []predicate.Store
 	withCity        *CityQuery
 	withBranch      *BranchQuery
@@ -48,13 +49,13 @@ func (sq *StoreQuery) Where(ps ...predicate.Store) *StoreQuery {
 	return sq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (sq *StoreQuery) Limit(limit int) *StoreQuery {
 	sq.limit = &limit
 	return sq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (sq *StoreQuery) Offset(offset int) *StoreQuery {
 	sq.offset = &offset
 	return sq
@@ -67,7 +68,7 @@ func (sq *StoreQuery) Unique(unique bool) *StoreQuery {
 	return sq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (sq *StoreQuery) Order(o ...OrderFunc) *StoreQuery {
 	sq.order = append(sq.order, o...)
 	return sq
@@ -75,7 +76,7 @@ func (sq *StoreQuery) Order(o ...OrderFunc) *StoreQuery {
 
 // QueryCity chains the current query on the "city" edge.
 func (sq *StoreQuery) QueryCity() *CityQuery {
-	query := &CityQuery{config: sq.config}
+	query := (&CityClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -97,7 +98,7 @@ func (sq *StoreQuery) QueryCity() *CityQuery {
 
 // QueryBranch chains the current query on the "branch" edge.
 func (sq *StoreQuery) QueryBranch() *BranchQuery {
-	query := &BranchQuery{config: sq.config}
+	query := (&BranchClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -119,7 +120,7 @@ func (sq *StoreQuery) QueryBranch() *BranchQuery {
 
 // QueryEmployee chains the current query on the "employee" edge.
 func (sq *StoreQuery) QueryEmployee() *EmployeeQuery {
-	query := &EmployeeQuery{config: sq.config}
+	query := (&EmployeeClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -141,7 +142,7 @@ func (sq *StoreQuery) QueryEmployee() *EmployeeQuery {
 
 // QueryStocks chains the current query on the "stocks" edge.
 func (sq *StoreQuery) QueryStocks() *StockQuery {
-	query := &StockQuery{config: sq.config}
+	query := (&StockClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -163,7 +164,7 @@ func (sq *StoreQuery) QueryStocks() *StockQuery {
 
 // QueryAttendances chains the current query on the "attendances" edge.
 func (sq *StoreQuery) QueryAttendances() *AttendanceQuery {
-	query := &AttendanceQuery{config: sq.config}
+	query := (&AttendanceClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -185,7 +186,7 @@ func (sq *StoreQuery) QueryAttendances() *AttendanceQuery {
 
 // QueryExceptions chains the current query on the "exceptions" edge.
 func (sq *StoreQuery) QueryExceptions() *ExceptionQuery {
-	query := &ExceptionQuery{config: sq.config}
+	query := (&ExceptionClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -208,7 +209,7 @@ func (sq *StoreQuery) QueryExceptions() *ExceptionQuery {
 // First returns the first Store entity from the query.
 // Returns a *NotFoundError when no Store was found.
 func (sq *StoreQuery) First(ctx context.Context) (*Store, error) {
-	nodes, err := sq.Limit(1).All(ctx)
+	nodes, err := sq.Limit(1).All(newQueryContext(ctx, TypeStore, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -231,7 +232,7 @@ func (sq *StoreQuery) FirstX(ctx context.Context) *Store {
 // Returns a *NotFoundError when no Store ID was found.
 func (sq *StoreQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = sq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = sq.Limit(1).IDs(newQueryContext(ctx, TypeStore, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -254,7 +255,7 @@ func (sq *StoreQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Store entity is found.
 // Returns a *NotFoundError when no Store entities are found.
 func (sq *StoreQuery) Only(ctx context.Context) (*Store, error) {
-	nodes, err := sq.Limit(2).All(ctx)
+	nodes, err := sq.Limit(2).All(newQueryContext(ctx, TypeStore, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -282,7 +283,7 @@ func (sq *StoreQuery) OnlyX(ctx context.Context) *Store {
 // Returns a *NotFoundError when no entities are found.
 func (sq *StoreQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = sq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = sq.Limit(2).IDs(newQueryContext(ctx, TypeStore, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -307,10 +308,12 @@ func (sq *StoreQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Stores.
 func (sq *StoreQuery) All(ctx context.Context) ([]*Store, error) {
+	ctx = newQueryContext(ctx, TypeStore, "All")
 	if err := sq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return sq.sqlAll(ctx)
+	qr := querierAll[[]*Store, *StoreQuery]()
+	return withInterceptors[[]*Store](ctx, sq, qr, sq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -325,6 +328,7 @@ func (sq *StoreQuery) AllX(ctx context.Context) []*Store {
 // IDs executes the query and returns a list of Store IDs.
 func (sq *StoreQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeStore, "IDs")
 	if err := sq.Select(store.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -342,10 +346,11 @@ func (sq *StoreQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (sq *StoreQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeStore, "Count")
 	if err := sq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return sq.sqlCount(ctx)
+	return withInterceptors[int](ctx, sq, querierCount[*StoreQuery](), sq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -359,10 +364,15 @@ func (sq *StoreQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (sq *StoreQuery) Exist(ctx context.Context) (bool, error) {
-	if err := sq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeStore, "Exist")
+	switch _, err := sq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return sq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -402,7 +412,7 @@ func (sq *StoreQuery) Clone() *StoreQuery {
 // WithCity tells the query-builder to eager-load the nodes that are connected to
 // the "city" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *StoreQuery) WithCity(opts ...func(*CityQuery)) *StoreQuery {
-	query := &CityQuery{config: sq.config}
+	query := (&CityClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -413,7 +423,7 @@ func (sq *StoreQuery) WithCity(opts ...func(*CityQuery)) *StoreQuery {
 // WithBranch tells the query-builder to eager-load the nodes that are connected to
 // the "branch" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *StoreQuery) WithBranch(opts ...func(*BranchQuery)) *StoreQuery {
-	query := &BranchQuery{config: sq.config}
+	query := (&BranchClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -424,7 +434,7 @@ func (sq *StoreQuery) WithBranch(opts ...func(*BranchQuery)) *StoreQuery {
 // WithEmployee tells the query-builder to eager-load the nodes that are connected to
 // the "employee" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *StoreQuery) WithEmployee(opts ...func(*EmployeeQuery)) *StoreQuery {
-	query := &EmployeeQuery{config: sq.config}
+	query := (&EmployeeClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -435,7 +445,7 @@ func (sq *StoreQuery) WithEmployee(opts ...func(*EmployeeQuery)) *StoreQuery {
 // WithStocks tells the query-builder to eager-load the nodes that are connected to
 // the "stocks" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *StoreQuery) WithStocks(opts ...func(*StockQuery)) *StoreQuery {
-	query := &StockQuery{config: sq.config}
+	query := (&StockClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -446,7 +456,7 @@ func (sq *StoreQuery) WithStocks(opts ...func(*StockQuery)) *StoreQuery {
 // WithAttendances tells the query-builder to eager-load the nodes that are connected to
 // the "attendances" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *StoreQuery) WithAttendances(opts ...func(*AttendanceQuery)) *StoreQuery {
-	query := &AttendanceQuery{config: sq.config}
+	query := (&AttendanceClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -457,7 +467,7 @@ func (sq *StoreQuery) WithAttendances(opts ...func(*AttendanceQuery)) *StoreQuer
 // WithExceptions tells the query-builder to eager-load the nodes that are connected to
 // the "exceptions" edge. The optional arguments are used to configure the query builder of the edge.
 func (sq *StoreQuery) WithExceptions(opts ...func(*ExceptionQuery)) *StoreQuery {
-	query := &ExceptionQuery{config: sq.config}
+	query := (&ExceptionClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -480,16 +490,11 @@ func (sq *StoreQuery) WithExceptions(opts ...func(*ExceptionQuery)) *StoreQuery 
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (sq *StoreQuery) GroupBy(field string, fields ...string) *StoreGroupBy {
-	grbuild := &StoreGroupBy{config: sq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := sq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return sq.sqlQuery(ctx), nil
-	}
+	sq.fields = append([]string{field}, fields...)
+	grbuild := &StoreGroupBy{build: sq}
+	grbuild.flds = &sq.fields
 	grbuild.label = store.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -507,13 +512,28 @@ func (sq *StoreQuery) GroupBy(field string, fields ...string) *StoreGroupBy {
 //		Scan(ctx, &v)
 func (sq *StoreQuery) Select(fields ...string) *StoreSelect {
 	sq.fields = append(sq.fields, fields...)
-	selbuild := &StoreSelect{StoreQuery: sq}
-	selbuild.label = store.Label
-	selbuild.flds, selbuild.scan = &sq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &StoreSelect{StoreQuery: sq}
+	sbuild.label = store.Label
+	sbuild.flds, sbuild.scan = &sq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a StoreSelect configured with the given aggregations.
+func (sq *StoreQuery) Aggregate(fns ...AggregateFunc) *StoreSelect {
+	return sq.Select().Aggregate(fns...)
 }
 
 func (sq *StoreQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range sq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, sq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range sq.fields {
 		if !store.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -784,17 +804,6 @@ func (sq *StoreQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, sq.driver, _spec)
 }
 
-func (sq *StoreQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := sq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (sq *StoreQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -886,13 +895,8 @@ func (sq *StoreQuery) Modify(modifiers ...func(s *sql.Selector)) *StoreSelect {
 
 // StoreGroupBy is the group-by builder for Store entities.
 type StoreGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *StoreQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -901,74 +905,77 @@ func (sgb *StoreGroupBy) Aggregate(fns ...AggregateFunc) *StoreGroupBy {
 	return sgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (sgb *StoreGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := sgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeStore, "GroupBy")
+	if err := sgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	sgb.sql = query
-	return sgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*StoreQuery, *StoreGroupBy](ctx, sgb.build, sgb, sgb.build.inters, v)
 }
 
-func (sgb *StoreGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range sgb.fields {
-		if !store.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (sgb *StoreGroupBy) sqlScan(ctx context.Context, root *StoreQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(sgb.fns))
+	for _, fn := range sgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := sgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*sgb.flds)+len(sgb.fns))
+		for _, f := range *sgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*sgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := sgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := sgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (sgb *StoreGroupBy) sqlQuery() *sql.Selector {
-	selector := sgb.sql.Select()
-	aggregation := make([]string, 0, len(sgb.fns))
-	for _, fn := range sgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(sgb.fields)+len(sgb.fns))
-		for _, f := range sgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(sgb.fields...)...)
-}
-
 // StoreSelect is the builder for selecting fields of Store entities.
 type StoreSelect struct {
 	*StoreQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (ss *StoreSelect) Aggregate(fns ...AggregateFunc) *StoreSelect {
+	ss.fns = append(ss.fns, fns...)
+	return ss
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (ss *StoreSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeStore, "Select")
 	if err := ss.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ss.sql = ss.StoreQuery.sqlQuery(ctx)
-	return ss.sqlScan(ctx, v)
+	return scanWithInterceptors[*StoreQuery, *StoreSelect](ctx, ss.StoreQuery, ss, ss.inters, v)
 }
 
-func (ss *StoreSelect) sqlScan(ctx context.Context, v any) error {
+func (ss *StoreSelect) sqlScan(ctx context.Context, root *StoreQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(ss.fns))
+	for _, fn := range ss.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*ss.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := ss.sql.Query()
+	query, args := selector.Query()
 	if err := ss.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

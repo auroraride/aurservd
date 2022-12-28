@@ -66,6 +66,7 @@ type Cabinet struct {
 func (Cabinet) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "cabinet"},
+        entsql.WithComments(true),
     }
 }
 
@@ -90,7 +91,7 @@ func (Cabinet) Fields() []ent.Field {
         field.Bool("intelligent").Default(false).Comment("是否智能柜"),
 
         // 以下字段仅非智能柜有效
-        field.Uint8("health").Default(0).Comment("健康状态 0未知 1正常 2离线 3故障"),
+        field.Uint8("health").Default(0).Comment("健康状态 0:离线 1:正常 2:故障"),
         field.JSON("bin", model.CabinetBins{}).Optional().Comment("仓位信息"),
         field.Int("battery_num").Default(0).Comment("电池总数"),
         field.Int("battery_full_num").Default(0).Comment("满电总数"),

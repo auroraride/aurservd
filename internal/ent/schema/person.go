@@ -21,6 +21,7 @@ type Person struct {
 func (Person) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "person"},
+        entsql.WithComments(true),
     }
 }
 

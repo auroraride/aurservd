@@ -144,43 +144,10 @@ func (cau *CouponAssemblyUpdate) ClearTemplate() *CouponAssemblyUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (cau *CouponAssemblyUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := cau.defaults(); err != nil {
 		return 0, err
 	}
-	if len(cau.hooks) == 0 {
-		if err = cau.check(); err != nil {
-			return 0, err
-		}
-		affected, err = cau.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CouponAssemblyMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = cau.check(); err != nil {
-				return 0, err
-			}
-			cau.mutation = mutation
-			affected, err = cau.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(cau.hooks) - 1; i >= 0; i-- {
-			if cau.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = cau.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, cau.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, CouponAssemblyMutation](ctx, cau.sqlSave, cau.mutation, cau.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -232,6 +199,9 @@ func (cau *CouponAssemblyUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder))
 }
 
 func (cau *CouponAssemblyUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := cau.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   couponassembly.Table,
@@ -250,99 +220,46 @@ func (cau *CouponAssemblyUpdate) sqlSave(ctx context.Context) (n int, err error)
 		}
 	}
 	if value, ok := cau.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: couponassembly.FieldUpdatedAt,
-		})
+		_spec.SetField(couponassembly.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if cau.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: couponassembly.FieldCreator,
-		})
+		_spec.ClearField(couponassembly.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := cau.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: couponassembly.FieldLastModifier,
-		})
+		_spec.SetField(couponassembly.FieldLastModifier, field.TypeJSON, value)
 	}
 	if cau.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: couponassembly.FieldLastModifier,
-		})
+		_spec.ClearField(couponassembly.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := cau.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: couponassembly.FieldRemark,
-		})
+		_spec.SetField(couponassembly.FieldRemark, field.TypeString, value)
 	}
 	if cau.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: couponassembly.FieldRemark,
-		})
+		_spec.ClearField(couponassembly.FieldRemark, field.TypeString)
 	}
 	if value, ok := cau.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: couponassembly.FieldName,
-		})
+		_spec.SetField(couponassembly.FieldName, field.TypeString, value)
 	}
 	if value, ok := cau.mutation.Number(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: couponassembly.FieldNumber,
-		})
+		_spec.SetField(couponassembly.FieldNumber, field.TypeInt, value)
 	}
 	if value, ok := cau.mutation.AddedNumber(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: couponassembly.FieldNumber,
-		})
+		_spec.AddField(couponassembly.FieldNumber, field.TypeInt, value)
 	}
 	if value, ok := cau.mutation.Amount(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: couponassembly.FieldAmount,
-		})
+		_spec.SetField(couponassembly.FieldAmount, field.TypeFloat64, value)
 	}
 	if value, ok := cau.mutation.AddedAmount(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: couponassembly.FieldAmount,
-		})
+		_spec.AddField(couponassembly.FieldAmount, field.TypeFloat64, value)
 	}
 	if value, ok := cau.mutation.Target(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: couponassembly.FieldTarget,
-		})
+		_spec.SetField(couponassembly.FieldTarget, field.TypeUint8, value)
 	}
 	if value, ok := cau.mutation.AddedTarget(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: couponassembly.FieldTarget,
-		})
+		_spec.AddField(couponassembly.FieldTarget, field.TypeUint8, value)
 	}
 	if value, ok := cau.mutation.Meta(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: couponassembly.FieldMeta,
-		})
+		_spec.SetField(couponassembly.FieldMeta, field.TypeJSON, value)
 	}
 	if cau.mutation.TemplateCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -379,7 +296,7 @@ func (cau *CouponAssemblyUpdate) sqlSave(ctx context.Context) (n int, err error)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = cau.modifiers
+	_spec.AddModifiers(cau.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, cau.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{couponassembly.Label}
@@ -388,6 +305,7 @@ func (cau *CouponAssemblyUpdate) sqlSave(ctx context.Context) (n int, err error)
 		}
 		return 0, err
 	}
+	cau.mutation.done = true
 	return n, nil
 }
 
@@ -520,49 +438,10 @@ func (cauo *CouponAssemblyUpdateOne) Select(field string, fields ...string) *Cou
 
 // Save executes the query and returns the updated CouponAssembly entity.
 func (cauo *CouponAssemblyUpdateOne) Save(ctx context.Context) (*CouponAssembly, error) {
-	var (
-		err  error
-		node *CouponAssembly
-	)
 	if err := cauo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(cauo.hooks) == 0 {
-		if err = cauo.check(); err != nil {
-			return nil, err
-		}
-		node, err = cauo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CouponAssemblyMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = cauo.check(); err != nil {
-				return nil, err
-			}
-			cauo.mutation = mutation
-			node, err = cauo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(cauo.hooks) - 1; i >= 0; i-- {
-			if cauo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = cauo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, cauo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*CouponAssembly)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from CouponAssemblyMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*CouponAssembly, CouponAssemblyMutation](ctx, cauo.sqlSave, cauo.mutation, cauo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -614,6 +493,9 @@ func (cauo *CouponAssemblyUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuild
 }
 
 func (cauo *CouponAssemblyUpdateOne) sqlSave(ctx context.Context) (_node *CouponAssembly, err error) {
+	if err := cauo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   couponassembly.Table,
@@ -649,99 +531,46 @@ func (cauo *CouponAssemblyUpdateOne) sqlSave(ctx context.Context) (_node *Coupon
 		}
 	}
 	if value, ok := cauo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: couponassembly.FieldUpdatedAt,
-		})
+		_spec.SetField(couponassembly.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if cauo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: couponassembly.FieldCreator,
-		})
+		_spec.ClearField(couponassembly.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := cauo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: couponassembly.FieldLastModifier,
-		})
+		_spec.SetField(couponassembly.FieldLastModifier, field.TypeJSON, value)
 	}
 	if cauo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: couponassembly.FieldLastModifier,
-		})
+		_spec.ClearField(couponassembly.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := cauo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: couponassembly.FieldRemark,
-		})
+		_spec.SetField(couponassembly.FieldRemark, field.TypeString, value)
 	}
 	if cauo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: couponassembly.FieldRemark,
-		})
+		_spec.ClearField(couponassembly.FieldRemark, field.TypeString)
 	}
 	if value, ok := cauo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: couponassembly.FieldName,
-		})
+		_spec.SetField(couponassembly.FieldName, field.TypeString, value)
 	}
 	if value, ok := cauo.mutation.Number(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: couponassembly.FieldNumber,
-		})
+		_spec.SetField(couponassembly.FieldNumber, field.TypeInt, value)
 	}
 	if value, ok := cauo.mutation.AddedNumber(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: couponassembly.FieldNumber,
-		})
+		_spec.AddField(couponassembly.FieldNumber, field.TypeInt, value)
 	}
 	if value, ok := cauo.mutation.Amount(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: couponassembly.FieldAmount,
-		})
+		_spec.SetField(couponassembly.FieldAmount, field.TypeFloat64, value)
 	}
 	if value, ok := cauo.mutation.AddedAmount(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: couponassembly.FieldAmount,
-		})
+		_spec.AddField(couponassembly.FieldAmount, field.TypeFloat64, value)
 	}
 	if value, ok := cauo.mutation.Target(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: couponassembly.FieldTarget,
-		})
+		_spec.SetField(couponassembly.FieldTarget, field.TypeUint8, value)
 	}
 	if value, ok := cauo.mutation.AddedTarget(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: couponassembly.FieldTarget,
-		})
+		_spec.AddField(couponassembly.FieldTarget, field.TypeUint8, value)
 	}
 	if value, ok := cauo.mutation.Meta(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: couponassembly.FieldMeta,
-		})
+		_spec.SetField(couponassembly.FieldMeta, field.TypeJSON, value)
 	}
 	if cauo.mutation.TemplateCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -778,7 +607,7 @@ func (cauo *CouponAssemblyUpdateOne) sqlSave(ctx context.Context) (_node *Coupon
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = cauo.modifiers
+	_spec.AddModifiers(cauo.modifiers...)
 	_node = &CouponAssembly{config: cauo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -790,5 +619,6 @@ func (cauo *CouponAssemblyUpdateOne) sqlSave(ctx context.Context) (_node *Coupon
 		}
 		return nil, err
 	}
+	cauo.mutation.done = true
 	return _node, nil
 }

@@ -78,34 +78,7 @@ func (bmu *BatteryModelUpdate) RemoveCabinets(c ...*Cabinet) *BatteryModelUpdate
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (bmu *BatteryModelUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(bmu.hooks) == 0 {
-		affected, err = bmu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*BatteryModelMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			bmu.mutation = mutation
-			affected, err = bmu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(bmu.hooks) - 1; i >= 0; i-- {
-			if bmu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = bmu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, bmu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, BatteryModelMutation](ctx, bmu.sqlSave, bmu.mutation, bmu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -155,11 +128,7 @@ func (bmu *BatteryModelUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := bmu.mutation.Model(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: batterymodel.FieldModel,
-		})
+		_spec.SetField(batterymodel.FieldModel, field.TypeString, value)
 	}
 	if bmu.mutation.CabinetsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -215,7 +184,7 @@ func (bmu *BatteryModelUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = bmu.modifiers
+	_spec.AddModifiers(bmu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, bmu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{batterymodel.Label}
@@ -224,6 +193,7 @@ func (bmu *BatteryModelUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	bmu.mutation.done = true
 	return n, nil
 }
 
@@ -292,40 +262,7 @@ func (bmuo *BatteryModelUpdateOne) Select(field string, fields ...string) *Batte
 
 // Save executes the query and returns the updated BatteryModel entity.
 func (bmuo *BatteryModelUpdateOne) Save(ctx context.Context) (*BatteryModel, error) {
-	var (
-		err  error
-		node *BatteryModel
-	)
-	if len(bmuo.hooks) == 0 {
-		node, err = bmuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*BatteryModelMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			bmuo.mutation = mutation
-			node, err = bmuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(bmuo.hooks) - 1; i >= 0; i-- {
-			if bmuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = bmuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, bmuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*BatteryModel)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from BatteryModelMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*BatteryModel, BatteryModelMutation](ctx, bmuo.sqlSave, bmuo.mutation, bmuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -392,11 +329,7 @@ func (bmuo *BatteryModelUpdateOne) sqlSave(ctx context.Context) (_node *BatteryM
 		}
 	}
 	if value, ok := bmuo.mutation.Model(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: batterymodel.FieldModel,
-		})
+		_spec.SetField(batterymodel.FieldModel, field.TypeString, value)
 	}
 	if bmuo.mutation.CabinetsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -452,7 +385,7 @@ func (bmuo *BatteryModelUpdateOne) sqlSave(ctx context.Context) (_node *BatteryM
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = bmuo.modifiers
+	_spec.AddModifiers(bmuo.modifiers...)
 	_node = &BatteryModel{config: bmuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -464,5 +397,6 @@ func (bmuo *BatteryModelUpdateOne) sqlSave(ctx context.Context) (_node *BatteryM
 		}
 		return nil, err
 	}
+	bmuo.mutation.done = true
 	return _node, nil
 }

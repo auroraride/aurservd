@@ -634,43 +634,10 @@ func (ou *OrderUpdate) RemoveCoupons(c ...*Coupon) *OrderUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ou *OrderUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := ou.defaults(); err != nil {
 		return 0, err
 	}
-	if len(ou.hooks) == 0 {
-		if err = ou.check(); err != nil {
-			return 0, err
-		}
-		affected, err = ou.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*OrderMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ou.check(); err != nil {
-				return 0, err
-			}
-			ou.mutation = mutation
-			affected, err = ou.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(ou.hooks) - 1; i >= 0; i-- {
-			if ou.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ou.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, ou.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, OrderMutation](ctx, ou.sqlSave, ou.mutation, ou.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -722,6 +689,9 @@ func (ou *OrderUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *OrderUpd
 }
 
 func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := ou.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   order.Table,
@@ -740,179 +710,82 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := ou.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: order.FieldUpdatedAt,
-		})
+		_spec.SetField(order.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := ou.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: order.FieldDeletedAt,
-		})
+		_spec.SetField(order.FieldDeletedAt, field.TypeTime, value)
 	}
 	if ou.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: order.FieldDeletedAt,
-		})
+		_spec.ClearField(order.FieldDeletedAt, field.TypeTime)
 	}
 	if ou.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: order.FieldCreator,
-		})
+		_spec.ClearField(order.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := ou.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: order.FieldLastModifier,
-		})
+		_spec.SetField(order.FieldLastModifier, field.TypeJSON, value)
 	}
 	if ou.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: order.FieldLastModifier,
-		})
+		_spec.ClearField(order.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := ou.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: order.FieldRemark,
-		})
+		_spec.SetField(order.FieldRemark, field.TypeString, value)
 	}
 	if ou.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: order.FieldRemark,
-		})
+		_spec.ClearField(order.FieldRemark, field.TypeString)
 	}
 	if value, ok := ou.mutation.Status(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: order.FieldStatus,
-		})
+		_spec.SetField(order.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := ou.mutation.AddedStatus(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: order.FieldStatus,
-		})
+		_spec.AddField(order.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := ou.mutation.RefundAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: order.FieldRefundAt,
-		})
+		_spec.SetField(order.FieldRefundAt, field.TypeTime, value)
 	}
 	if ou.mutation.RefundAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: order.FieldRefundAt,
-		})
+		_spec.ClearField(order.FieldRefundAt, field.TypeTime)
 	}
 	if value, ok := ou.mutation.InitialDays(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: order.FieldInitialDays,
-		})
+		_spec.SetField(order.FieldInitialDays, field.TypeInt, value)
 	}
 	if value, ok := ou.mutation.AddedInitialDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: order.FieldInitialDays,
-		})
+		_spec.AddField(order.FieldInitialDays, field.TypeInt, value)
 	}
 	if ou.mutation.InitialDaysCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Column: order.FieldInitialDays,
-		})
+		_spec.ClearField(order.FieldInitialDays, field.TypeInt)
 	}
 	if value, ok := ou.mutation.PastDays(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: order.FieldPastDays,
-		})
+		_spec.SetField(order.FieldPastDays, field.TypeInt, value)
 	}
 	if value, ok := ou.mutation.AddedPastDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: order.FieldPastDays,
-		})
+		_spec.AddField(order.FieldPastDays, field.TypeInt, value)
 	}
 	if ou.mutation.PastDaysCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Column: order.FieldPastDays,
-		})
+		_spec.ClearField(order.FieldPastDays, field.TypeInt)
 	}
 	if value, ok := ou.mutation.Points(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: order.FieldPoints,
-		})
+		_spec.SetField(order.FieldPoints, field.TypeInt64, value)
 	}
 	if value, ok := ou.mutation.AddedPoints(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: order.FieldPoints,
-		})
+		_spec.AddField(order.FieldPoints, field.TypeInt64, value)
 	}
 	if value, ok := ou.mutation.PointRatio(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: order.FieldPointRatio,
-		})
+		_spec.SetField(order.FieldPointRatio, field.TypeFloat64, value)
 	}
 	if value, ok := ou.mutation.AddedPointRatio(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: order.FieldPointRatio,
-		})
+		_spec.AddField(order.FieldPointRatio, field.TypeFloat64, value)
 	}
 	if value, ok := ou.mutation.CouponAmount(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: order.FieldCouponAmount,
-		})
+		_spec.SetField(order.FieldCouponAmount, field.TypeFloat64, value)
 	}
 	if value, ok := ou.mutation.AddedCouponAmount(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: order.FieldCouponAmount,
-		})
+		_spec.AddField(order.FieldCouponAmount, field.TypeFloat64, value)
 	}
 	if value, ok := ou.mutation.DiscountNewly(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: order.FieldDiscountNewly,
-		})
+		_spec.SetField(order.FieldDiscountNewly, field.TypeFloat64, value)
 	}
 	if value, ok := ou.mutation.AddedDiscountNewly(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: order.FieldDiscountNewly,
-		})
+		_spec.AddField(order.FieldDiscountNewly, field.TypeFloat64, value)
 	}
 	if ou.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1372,7 +1245,7 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = ou.modifiers
+	_spec.AddModifiers(ou.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, ou.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{order.Label}
@@ -1381,6 +1254,7 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	ou.mutation.done = true
 	return n, nil
 }
 
@@ -1994,49 +1868,10 @@ func (ouo *OrderUpdateOne) Select(field string, fields ...string) *OrderUpdateOn
 
 // Save executes the query and returns the updated Order entity.
 func (ouo *OrderUpdateOne) Save(ctx context.Context) (*Order, error) {
-	var (
-		err  error
-		node *Order
-	)
 	if err := ouo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(ouo.hooks) == 0 {
-		if err = ouo.check(); err != nil {
-			return nil, err
-		}
-		node, err = ouo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*OrderMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ouo.check(); err != nil {
-				return nil, err
-			}
-			ouo.mutation = mutation
-			node, err = ouo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ouo.hooks) - 1; i >= 0; i-- {
-			if ouo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ouo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ouo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Order)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from OrderMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Order, OrderMutation](ctx, ouo.sqlSave, ouo.mutation, ouo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -2088,6 +1923,9 @@ func (ouo *OrderUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Orde
 }
 
 func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error) {
+	if err := ouo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   order.Table,
@@ -2123,179 +1961,82 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 		}
 	}
 	if value, ok := ouo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: order.FieldUpdatedAt,
-		})
+		_spec.SetField(order.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := ouo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: order.FieldDeletedAt,
-		})
+		_spec.SetField(order.FieldDeletedAt, field.TypeTime, value)
 	}
 	if ouo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: order.FieldDeletedAt,
-		})
+		_spec.ClearField(order.FieldDeletedAt, field.TypeTime)
 	}
 	if ouo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: order.FieldCreator,
-		})
+		_spec.ClearField(order.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := ouo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: order.FieldLastModifier,
-		})
+		_spec.SetField(order.FieldLastModifier, field.TypeJSON, value)
 	}
 	if ouo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: order.FieldLastModifier,
-		})
+		_spec.ClearField(order.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := ouo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: order.FieldRemark,
-		})
+		_spec.SetField(order.FieldRemark, field.TypeString, value)
 	}
 	if ouo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: order.FieldRemark,
-		})
+		_spec.ClearField(order.FieldRemark, field.TypeString)
 	}
 	if value, ok := ouo.mutation.Status(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: order.FieldStatus,
-		})
+		_spec.SetField(order.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := ouo.mutation.AddedStatus(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: order.FieldStatus,
-		})
+		_spec.AddField(order.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := ouo.mutation.RefundAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: order.FieldRefundAt,
-		})
+		_spec.SetField(order.FieldRefundAt, field.TypeTime, value)
 	}
 	if ouo.mutation.RefundAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: order.FieldRefundAt,
-		})
+		_spec.ClearField(order.FieldRefundAt, field.TypeTime)
 	}
 	if value, ok := ouo.mutation.InitialDays(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: order.FieldInitialDays,
-		})
+		_spec.SetField(order.FieldInitialDays, field.TypeInt, value)
 	}
 	if value, ok := ouo.mutation.AddedInitialDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: order.FieldInitialDays,
-		})
+		_spec.AddField(order.FieldInitialDays, field.TypeInt, value)
 	}
 	if ouo.mutation.InitialDaysCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Column: order.FieldInitialDays,
-		})
+		_spec.ClearField(order.FieldInitialDays, field.TypeInt)
 	}
 	if value, ok := ouo.mutation.PastDays(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: order.FieldPastDays,
-		})
+		_spec.SetField(order.FieldPastDays, field.TypeInt, value)
 	}
 	if value, ok := ouo.mutation.AddedPastDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: order.FieldPastDays,
-		})
+		_spec.AddField(order.FieldPastDays, field.TypeInt, value)
 	}
 	if ouo.mutation.PastDaysCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Column: order.FieldPastDays,
-		})
+		_spec.ClearField(order.FieldPastDays, field.TypeInt)
 	}
 	if value, ok := ouo.mutation.Points(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: order.FieldPoints,
-		})
+		_spec.SetField(order.FieldPoints, field.TypeInt64, value)
 	}
 	if value, ok := ouo.mutation.AddedPoints(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: order.FieldPoints,
-		})
+		_spec.AddField(order.FieldPoints, field.TypeInt64, value)
 	}
 	if value, ok := ouo.mutation.PointRatio(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: order.FieldPointRatio,
-		})
+		_spec.SetField(order.FieldPointRatio, field.TypeFloat64, value)
 	}
 	if value, ok := ouo.mutation.AddedPointRatio(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: order.FieldPointRatio,
-		})
+		_spec.AddField(order.FieldPointRatio, field.TypeFloat64, value)
 	}
 	if value, ok := ouo.mutation.CouponAmount(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: order.FieldCouponAmount,
-		})
+		_spec.SetField(order.FieldCouponAmount, field.TypeFloat64, value)
 	}
 	if value, ok := ouo.mutation.AddedCouponAmount(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: order.FieldCouponAmount,
-		})
+		_spec.AddField(order.FieldCouponAmount, field.TypeFloat64, value)
 	}
 	if value, ok := ouo.mutation.DiscountNewly(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: order.FieldDiscountNewly,
-		})
+		_spec.SetField(order.FieldDiscountNewly, field.TypeFloat64, value)
 	}
 	if value, ok := ouo.mutation.AddedDiscountNewly(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: order.FieldDiscountNewly,
-		})
+		_spec.AddField(order.FieldDiscountNewly, field.TypeFloat64, value)
 	}
 	if ouo.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -2755,7 +2496,7 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = ouo.modifiers
+	_spec.AddModifiers(ouo.modifiers...)
 	_node = &Order{config: ouo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -2767,5 +2508,6 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 		}
 		return nil, err
 	}
+	ouo.mutation.done = true
 	return _node, nil
 }

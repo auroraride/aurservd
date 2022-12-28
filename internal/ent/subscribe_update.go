@@ -991,43 +991,10 @@ func (su *SubscribeUpdate) RemoveBills(e ...*EnterpriseBill) *SubscribeUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (su *SubscribeUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := su.defaults(); err != nil {
 		return 0, err
 	}
-	if len(su.hooks) == 0 {
-		if err = su.check(); err != nil {
-			return 0, err
-		}
-		affected, err = su.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*SubscribeMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = su.check(); err != nil {
-				return 0, err
-			}
-			su.mutation = mutation
-			affected, err = su.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(su.hooks) - 1; i >= 0; i-- {
-			if su.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = su.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, su.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, SubscribeMutation](ctx, su.sqlSave, su.mutation, su.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -1082,6 +1049,9 @@ func (su *SubscribeUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Subs
 }
 
 func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := su.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   subscribe.Table,
@@ -1100,312 +1070,142 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := su.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldUpdatedAt,
-		})
+		_spec.SetField(subscribe.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := su.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldDeletedAt,
-		})
+		_spec.SetField(subscribe.FieldDeletedAt, field.TypeTime, value)
 	}
 	if su.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: subscribe.FieldDeletedAt,
-		})
+		_spec.ClearField(subscribe.FieldDeletedAt, field.TypeTime)
 	}
 	if su.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: subscribe.FieldCreator,
-		})
+		_spec.ClearField(subscribe.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := su.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: subscribe.FieldLastModifier,
-		})
+		_spec.SetField(subscribe.FieldLastModifier, field.TypeJSON, value)
 	}
 	if su.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: subscribe.FieldLastModifier,
-		})
+		_spec.ClearField(subscribe.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := su.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribe.FieldRemark,
-		})
+		_spec.SetField(subscribe.FieldRemark, field.TypeString, value)
 	}
 	if su.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: subscribe.FieldRemark,
-		})
+		_spec.ClearField(subscribe.FieldRemark, field.TypeString)
 	}
 	if value, ok := su.mutation.Status(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: subscribe.FieldStatus,
-		})
+		_spec.SetField(subscribe.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := su.mutation.AddedStatus(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: subscribe.FieldStatus,
-		})
+		_spec.AddField(subscribe.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := su.mutation.Model(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribe.FieldModel,
-		})
+		_spec.SetField(subscribe.FieldModel, field.TypeString, value)
 	}
 	if value, ok := su.mutation.InitialDays(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldInitialDays,
-		})
+		_spec.SetField(subscribe.FieldInitialDays, field.TypeInt, value)
 	}
 	if value, ok := su.mutation.AddedInitialDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldInitialDays,
-		})
+		_spec.AddField(subscribe.FieldInitialDays, field.TypeInt, value)
 	}
 	if su.mutation.InitialDaysCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Column: subscribe.FieldInitialDays,
-		})
+		_spec.ClearField(subscribe.FieldInitialDays, field.TypeInt)
 	}
 	if value, ok := su.mutation.AlterDays(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldAlterDays,
-		})
+		_spec.SetField(subscribe.FieldAlterDays, field.TypeInt, value)
 	}
 	if value, ok := su.mutation.AddedAlterDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldAlterDays,
-		})
+		_spec.AddField(subscribe.FieldAlterDays, field.TypeInt, value)
 	}
 	if value, ok := su.mutation.PauseDays(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldPauseDays,
-		})
+		_spec.SetField(subscribe.FieldPauseDays, field.TypeInt, value)
 	}
 	if value, ok := su.mutation.AddedPauseDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldPauseDays,
-		})
+		_spec.AddField(subscribe.FieldPauseDays, field.TypeInt, value)
 	}
 	if value, ok := su.mutation.SuspendDays(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldSuspendDays,
-		})
+		_spec.SetField(subscribe.FieldSuspendDays, field.TypeInt, value)
 	}
 	if value, ok := su.mutation.AddedSuspendDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldSuspendDays,
-		})
+		_spec.AddField(subscribe.FieldSuspendDays, field.TypeInt, value)
 	}
 	if value, ok := su.mutation.RenewalDays(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldRenewalDays,
-		})
+		_spec.SetField(subscribe.FieldRenewalDays, field.TypeInt, value)
 	}
 	if value, ok := su.mutation.AddedRenewalDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldRenewalDays,
-		})
+		_spec.AddField(subscribe.FieldRenewalDays, field.TypeInt, value)
 	}
 	if value, ok := su.mutation.OverdueDays(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldOverdueDays,
-		})
+		_spec.SetField(subscribe.FieldOverdueDays, field.TypeInt, value)
 	}
 	if value, ok := su.mutation.AddedOverdueDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldOverdueDays,
-		})
+		_spec.AddField(subscribe.FieldOverdueDays, field.TypeInt, value)
 	}
 	if value, ok := su.mutation.Remaining(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldRemaining,
-		})
+		_spec.SetField(subscribe.FieldRemaining, field.TypeInt, value)
 	}
 	if value, ok := su.mutation.AddedRemaining(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldRemaining,
-		})
+		_spec.AddField(subscribe.FieldRemaining, field.TypeInt, value)
 	}
 	if value, ok := su.mutation.PausedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldPausedAt,
-		})
+		_spec.SetField(subscribe.FieldPausedAt, field.TypeTime, value)
 	}
 	if su.mutation.PausedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: subscribe.FieldPausedAt,
-		})
+		_spec.ClearField(subscribe.FieldPausedAt, field.TypeTime)
 	}
 	if value, ok := su.mutation.SuspendAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldSuspendAt,
-		})
+		_spec.SetField(subscribe.FieldSuspendAt, field.TypeTime, value)
 	}
 	if su.mutation.SuspendAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: subscribe.FieldSuspendAt,
-		})
+		_spec.ClearField(subscribe.FieldSuspendAt, field.TypeTime)
 	}
 	if value, ok := su.mutation.StartAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldStartAt,
-		})
+		_spec.SetField(subscribe.FieldStartAt, field.TypeTime, value)
 	}
 	if su.mutation.StartAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: subscribe.FieldStartAt,
-		})
+		_spec.ClearField(subscribe.FieldStartAt, field.TypeTime)
 	}
 	if value, ok := su.mutation.EndAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldEndAt,
-		})
+		_spec.SetField(subscribe.FieldEndAt, field.TypeTime, value)
 	}
 	if su.mutation.EndAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: subscribe.FieldEndAt,
-		})
+		_spec.ClearField(subscribe.FieldEndAt, field.TypeTime)
 	}
 	if value, ok := su.mutation.RefundAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldRefundAt,
-		})
+		_spec.SetField(subscribe.FieldRefundAt, field.TypeTime, value)
 	}
 	if su.mutation.RefundAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: subscribe.FieldRefundAt,
-		})
+		_spec.ClearField(subscribe.FieldRefundAt, field.TypeTime)
 	}
 	if value, ok := su.mutation.UnsubscribeReason(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribe.FieldUnsubscribeReason,
-		})
+		_spec.SetField(subscribe.FieldUnsubscribeReason, field.TypeString, value)
 	}
 	if su.mutation.UnsubscribeReasonCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: subscribe.FieldUnsubscribeReason,
-		})
+		_spec.ClearField(subscribe.FieldUnsubscribeReason, field.TypeString)
 	}
 	if value, ok := su.mutation.LastBillDate(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldLastBillDate,
-		})
+		_spec.SetField(subscribe.FieldLastBillDate, field.TypeTime, value)
 	}
 	if su.mutation.LastBillDateCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: subscribe.FieldLastBillDate,
-		})
+		_spec.ClearField(subscribe.FieldLastBillDate, field.TypeTime)
 	}
 	if value, ok := su.mutation.PauseOverdue(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: subscribe.FieldPauseOverdue,
-		})
+		_spec.SetField(subscribe.FieldPauseOverdue, field.TypeBool, value)
 	}
 	if value, ok := su.mutation.AgentEndAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldAgentEndAt,
-		})
+		_spec.SetField(subscribe.FieldAgentEndAt, field.TypeTime, value)
 	}
 	if su.mutation.AgentEndAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: subscribe.FieldAgentEndAt,
-		})
+		_spec.ClearField(subscribe.FieldAgentEndAt, field.TypeTime)
 	}
 	if value, ok := su.mutation.Formula(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribe.FieldFormula,
-		})
+		_spec.SetField(subscribe.FieldFormula, field.TypeString, value)
 	}
 	if su.mutation.FormulaCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: subscribe.FieldFormula,
-		})
+		_spec.ClearField(subscribe.FieldFormula, field.TypeString)
 	}
 	if value, ok := su.mutation.NeedContract(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: subscribe.FieldNeedContract,
-		})
+		_spec.SetField(subscribe.FieldNeedContract, field.TypeBool, value)
 	}
 	if su.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -2062,7 +1862,7 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = su.modifiers
+	_spec.AddModifiers(su.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, su.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{subscribe.Label}
@@ -2071,6 +1871,7 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	su.mutation.done = true
 	return n, nil
 }
 
@@ -3036,49 +2837,10 @@ func (suo *SubscribeUpdateOne) Select(field string, fields ...string) *Subscribe
 
 // Save executes the query and returns the updated Subscribe entity.
 func (suo *SubscribeUpdateOne) Save(ctx context.Context) (*Subscribe, error) {
-	var (
-		err  error
-		node *Subscribe
-	)
 	if err := suo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(suo.hooks) == 0 {
-		if err = suo.check(); err != nil {
-			return nil, err
-		}
-		node, err = suo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*SubscribeMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = suo.check(); err != nil {
-				return nil, err
-			}
-			suo.mutation = mutation
-			node, err = suo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(suo.hooks) - 1; i >= 0; i-- {
-			if suo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = suo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, suo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Subscribe)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from SubscribeMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Subscribe, SubscribeMutation](ctx, suo.sqlSave, suo.mutation, suo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -3133,6 +2895,9 @@ func (suo *SubscribeUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *
 }
 
 func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, err error) {
+	if err := suo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   subscribe.Table,
@@ -3168,312 +2933,142 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 		}
 	}
 	if value, ok := suo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldUpdatedAt,
-		})
+		_spec.SetField(subscribe.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := suo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldDeletedAt,
-		})
+		_spec.SetField(subscribe.FieldDeletedAt, field.TypeTime, value)
 	}
 	if suo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: subscribe.FieldDeletedAt,
-		})
+		_spec.ClearField(subscribe.FieldDeletedAt, field.TypeTime)
 	}
 	if suo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: subscribe.FieldCreator,
-		})
+		_spec.ClearField(subscribe.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := suo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: subscribe.FieldLastModifier,
-		})
+		_spec.SetField(subscribe.FieldLastModifier, field.TypeJSON, value)
 	}
 	if suo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: subscribe.FieldLastModifier,
-		})
+		_spec.ClearField(subscribe.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := suo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribe.FieldRemark,
-		})
+		_spec.SetField(subscribe.FieldRemark, field.TypeString, value)
 	}
 	if suo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: subscribe.FieldRemark,
-		})
+		_spec.ClearField(subscribe.FieldRemark, field.TypeString)
 	}
 	if value, ok := suo.mutation.Status(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: subscribe.FieldStatus,
-		})
+		_spec.SetField(subscribe.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := suo.mutation.AddedStatus(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: subscribe.FieldStatus,
-		})
+		_spec.AddField(subscribe.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := suo.mutation.Model(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribe.FieldModel,
-		})
+		_spec.SetField(subscribe.FieldModel, field.TypeString, value)
 	}
 	if value, ok := suo.mutation.InitialDays(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldInitialDays,
-		})
+		_spec.SetField(subscribe.FieldInitialDays, field.TypeInt, value)
 	}
 	if value, ok := suo.mutation.AddedInitialDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldInitialDays,
-		})
+		_spec.AddField(subscribe.FieldInitialDays, field.TypeInt, value)
 	}
 	if suo.mutation.InitialDaysCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Column: subscribe.FieldInitialDays,
-		})
+		_spec.ClearField(subscribe.FieldInitialDays, field.TypeInt)
 	}
 	if value, ok := suo.mutation.AlterDays(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldAlterDays,
-		})
+		_spec.SetField(subscribe.FieldAlterDays, field.TypeInt, value)
 	}
 	if value, ok := suo.mutation.AddedAlterDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldAlterDays,
-		})
+		_spec.AddField(subscribe.FieldAlterDays, field.TypeInt, value)
 	}
 	if value, ok := suo.mutation.PauseDays(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldPauseDays,
-		})
+		_spec.SetField(subscribe.FieldPauseDays, field.TypeInt, value)
 	}
 	if value, ok := suo.mutation.AddedPauseDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldPauseDays,
-		})
+		_spec.AddField(subscribe.FieldPauseDays, field.TypeInt, value)
 	}
 	if value, ok := suo.mutation.SuspendDays(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldSuspendDays,
-		})
+		_spec.SetField(subscribe.FieldSuspendDays, field.TypeInt, value)
 	}
 	if value, ok := suo.mutation.AddedSuspendDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldSuspendDays,
-		})
+		_spec.AddField(subscribe.FieldSuspendDays, field.TypeInt, value)
 	}
 	if value, ok := suo.mutation.RenewalDays(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldRenewalDays,
-		})
+		_spec.SetField(subscribe.FieldRenewalDays, field.TypeInt, value)
 	}
 	if value, ok := suo.mutation.AddedRenewalDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldRenewalDays,
-		})
+		_spec.AddField(subscribe.FieldRenewalDays, field.TypeInt, value)
 	}
 	if value, ok := suo.mutation.OverdueDays(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldOverdueDays,
-		})
+		_spec.SetField(subscribe.FieldOverdueDays, field.TypeInt, value)
 	}
 	if value, ok := suo.mutation.AddedOverdueDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldOverdueDays,
-		})
+		_spec.AddField(subscribe.FieldOverdueDays, field.TypeInt, value)
 	}
 	if value, ok := suo.mutation.Remaining(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldRemaining,
-		})
+		_spec.SetField(subscribe.FieldRemaining, field.TypeInt, value)
 	}
 	if value, ok := suo.mutation.AddedRemaining(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldRemaining,
-		})
+		_spec.AddField(subscribe.FieldRemaining, field.TypeInt, value)
 	}
 	if value, ok := suo.mutation.PausedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldPausedAt,
-		})
+		_spec.SetField(subscribe.FieldPausedAt, field.TypeTime, value)
 	}
 	if suo.mutation.PausedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: subscribe.FieldPausedAt,
-		})
+		_spec.ClearField(subscribe.FieldPausedAt, field.TypeTime)
 	}
 	if value, ok := suo.mutation.SuspendAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldSuspendAt,
-		})
+		_spec.SetField(subscribe.FieldSuspendAt, field.TypeTime, value)
 	}
 	if suo.mutation.SuspendAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: subscribe.FieldSuspendAt,
-		})
+		_spec.ClearField(subscribe.FieldSuspendAt, field.TypeTime)
 	}
 	if value, ok := suo.mutation.StartAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldStartAt,
-		})
+		_spec.SetField(subscribe.FieldStartAt, field.TypeTime, value)
 	}
 	if suo.mutation.StartAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: subscribe.FieldStartAt,
-		})
+		_spec.ClearField(subscribe.FieldStartAt, field.TypeTime)
 	}
 	if value, ok := suo.mutation.EndAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldEndAt,
-		})
+		_spec.SetField(subscribe.FieldEndAt, field.TypeTime, value)
 	}
 	if suo.mutation.EndAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: subscribe.FieldEndAt,
-		})
+		_spec.ClearField(subscribe.FieldEndAt, field.TypeTime)
 	}
 	if value, ok := suo.mutation.RefundAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldRefundAt,
-		})
+		_spec.SetField(subscribe.FieldRefundAt, field.TypeTime, value)
 	}
 	if suo.mutation.RefundAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: subscribe.FieldRefundAt,
-		})
+		_spec.ClearField(subscribe.FieldRefundAt, field.TypeTime)
 	}
 	if value, ok := suo.mutation.UnsubscribeReason(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribe.FieldUnsubscribeReason,
-		})
+		_spec.SetField(subscribe.FieldUnsubscribeReason, field.TypeString, value)
 	}
 	if suo.mutation.UnsubscribeReasonCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: subscribe.FieldUnsubscribeReason,
-		})
+		_spec.ClearField(subscribe.FieldUnsubscribeReason, field.TypeString)
 	}
 	if value, ok := suo.mutation.LastBillDate(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldLastBillDate,
-		})
+		_spec.SetField(subscribe.FieldLastBillDate, field.TypeTime, value)
 	}
 	if suo.mutation.LastBillDateCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: subscribe.FieldLastBillDate,
-		})
+		_spec.ClearField(subscribe.FieldLastBillDate, field.TypeTime)
 	}
 	if value, ok := suo.mutation.PauseOverdue(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: subscribe.FieldPauseOverdue,
-		})
+		_spec.SetField(subscribe.FieldPauseOverdue, field.TypeBool, value)
 	}
 	if value, ok := suo.mutation.AgentEndAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribe.FieldAgentEndAt,
-		})
+		_spec.SetField(subscribe.FieldAgentEndAt, field.TypeTime, value)
 	}
 	if suo.mutation.AgentEndAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: subscribe.FieldAgentEndAt,
-		})
+		_spec.ClearField(subscribe.FieldAgentEndAt, field.TypeTime)
 	}
 	if value, ok := suo.mutation.Formula(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribe.FieldFormula,
-		})
+		_spec.SetField(subscribe.FieldFormula, field.TypeString, value)
 	}
 	if suo.mutation.FormulaCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: subscribe.FieldFormula,
-		})
+		_spec.ClearField(subscribe.FieldFormula, field.TypeString)
 	}
 	if value, ok := suo.mutation.NeedContract(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: subscribe.FieldNeedContract,
-		})
+		_spec.SetField(subscribe.FieldNeedContract, field.TypeBool, value)
 	}
 	if suo.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -4130,7 +3725,7 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = suo.modifiers
+	_spec.AddModifiers(suo.modifiers...)
 	_node = &Subscribe{config: suo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -4142,5 +3737,6 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 		}
 		return nil, err
 	}
+	suo.mutation.done = true
 	return _node, nil
 }

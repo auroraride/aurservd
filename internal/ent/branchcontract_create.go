@@ -194,52 +194,10 @@ func (bcc *BranchContractCreate) Mutation() *BranchContractMutation {
 
 // Save creates the BranchContract in the database.
 func (bcc *BranchContractCreate) Save(ctx context.Context) (*BranchContract, error) {
-	var (
-		err  error
-		node *BranchContract
-	)
 	if err := bcc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(bcc.hooks) == 0 {
-		if err = bcc.check(); err != nil {
-			return nil, err
-		}
-		node, err = bcc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*BranchContractMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = bcc.check(); err != nil {
-				return nil, err
-			}
-			bcc.mutation = mutation
-			if node, err = bcc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(bcc.hooks) - 1; i >= 0; i-- {
-			if bcc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = bcc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, bcc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*BranchContract)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from BranchContractMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*BranchContract, BranchContractMutation](ctx, bcc.sqlSave, bcc.mutation, bcc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -343,6 +301,9 @@ func (bcc *BranchContractCreate) check() error {
 }
 
 func (bcc *BranchContractCreate) sqlSave(ctx context.Context) (*BranchContract, error) {
+	if err := bcc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := bcc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, bcc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -352,6 +313,8 @@ func (bcc *BranchContractCreate) sqlSave(ctx context.Context) (*BranchContract, 
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	bcc.mutation.id = &_node.ID
+	bcc.mutation.done = true
 	return _node, nil
 }
 
@@ -368,163 +331,83 @@ func (bcc *BranchContractCreate) createSpec() (*BranchContract, *sqlgraph.Create
 	)
 	_spec.OnConflict = bcc.conflict
 	if value, ok := bcc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: branchcontract.FieldCreatedAt,
-		})
+		_spec.SetField(branchcontract.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := bcc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: branchcontract.FieldUpdatedAt,
-		})
+		_spec.SetField(branchcontract.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := bcc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: branchcontract.FieldDeletedAt,
-		})
+		_spec.SetField(branchcontract.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := bcc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: branchcontract.FieldCreator,
-		})
+		_spec.SetField(branchcontract.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := bcc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: branchcontract.FieldLastModifier,
-		})
+		_spec.SetField(branchcontract.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := bcc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: branchcontract.FieldRemark,
-		})
+		_spec.SetField(branchcontract.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := bcc.mutation.LandlordName(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: branchcontract.FieldLandlordName,
-		})
+		_spec.SetField(branchcontract.FieldLandlordName, field.TypeString, value)
 		_node.LandlordName = value
 	}
 	if value, ok := bcc.mutation.IDCardNumber(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: branchcontract.FieldIDCardNumber,
-		})
+		_spec.SetField(branchcontract.FieldIDCardNumber, field.TypeString, value)
 		_node.IDCardNumber = value
 	}
 	if value, ok := bcc.mutation.Phone(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: branchcontract.FieldPhone,
-		})
+		_spec.SetField(branchcontract.FieldPhone, field.TypeString, value)
 		_node.Phone = value
 	}
 	if value, ok := bcc.mutation.BankNumber(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: branchcontract.FieldBankNumber,
-		})
+		_spec.SetField(branchcontract.FieldBankNumber, field.TypeString, value)
 		_node.BankNumber = value
 	}
 	if value, ok := bcc.mutation.Pledge(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: branchcontract.FieldPledge,
-		})
+		_spec.SetField(branchcontract.FieldPledge, field.TypeFloat64, value)
 		_node.Pledge = value
 	}
 	if value, ok := bcc.mutation.Rent(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: branchcontract.FieldRent,
-		})
+		_spec.SetField(branchcontract.FieldRent, field.TypeFloat64, value)
 		_node.Rent = value
 	}
 	if value, ok := bcc.mutation.Lease(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
-			Value:  value,
-			Column: branchcontract.FieldLease,
-		})
+		_spec.SetField(branchcontract.FieldLease, field.TypeUint, value)
 		_node.Lease = value
 	}
 	if value, ok := bcc.mutation.ElectricityPledge(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: branchcontract.FieldElectricityPledge,
-		})
+		_spec.SetField(branchcontract.FieldElectricityPledge, field.TypeFloat64, value)
 		_node.ElectricityPledge = value
 	}
 	if value, ok := bcc.mutation.Electricity(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: branchcontract.FieldElectricity,
-		})
+		_spec.SetField(branchcontract.FieldElectricity, field.TypeString, value)
 		_node.Electricity = value
 	}
 	if value, ok := bcc.mutation.Area(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: branchcontract.FieldArea,
-		})
+		_spec.SetField(branchcontract.FieldArea, field.TypeFloat64, value)
 		_node.Area = value
 	}
 	if value, ok := bcc.mutation.StartTime(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: branchcontract.FieldStartTime,
-		})
+		_spec.SetField(branchcontract.FieldStartTime, field.TypeTime, value)
 		_node.StartTime = value
 	}
 	if value, ok := bcc.mutation.EndTime(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: branchcontract.FieldEndTime,
-		})
+		_spec.SetField(branchcontract.FieldEndTime, field.TypeTime, value)
 		_node.EndTime = value
 	}
 	if value, ok := bcc.mutation.File(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: branchcontract.FieldFile,
-		})
+		_spec.SetField(branchcontract.FieldFile, field.TypeString, value)
 		_node.File = value
 	}
 	if value, ok := bcc.mutation.Sheets(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: branchcontract.FieldSheets,
-		})
+		_spec.SetField(branchcontract.FieldSheets, field.TypeJSON, value)
 		_node.Sheets = value
 	}
 	if nodes := bcc.mutation.BranchIDs(); len(nodes) > 0 {

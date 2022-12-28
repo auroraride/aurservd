@@ -21,6 +21,7 @@ type SubscribePause struct {
 func (SubscribePause) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "subscribe_pause"},
+        entsql.WithComments(true),
     }
 }
 

@@ -23,6 +23,7 @@ type OrderRefundQuery struct {
 	unique     *bool
 	order      []OrderFunc
 	fields     []string
+	inters     []Interceptor
 	predicates []predicate.OrderRefund
 	withOrder  *OrderQuery
 	modifiers  []func(*sql.Selector)
@@ -37,13 +38,13 @@ func (orq *OrderRefundQuery) Where(ps ...predicate.OrderRefund) *OrderRefundQuer
 	return orq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (orq *OrderRefundQuery) Limit(limit int) *OrderRefundQuery {
 	orq.limit = &limit
 	return orq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (orq *OrderRefundQuery) Offset(offset int) *OrderRefundQuery {
 	orq.offset = &offset
 	return orq
@@ -56,7 +57,7 @@ func (orq *OrderRefundQuery) Unique(unique bool) *OrderRefundQuery {
 	return orq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (orq *OrderRefundQuery) Order(o ...OrderFunc) *OrderRefundQuery {
 	orq.order = append(orq.order, o...)
 	return orq
@@ -64,7 +65,7 @@ func (orq *OrderRefundQuery) Order(o ...OrderFunc) *OrderRefundQuery {
 
 // QueryOrder chains the current query on the "order" edge.
 func (orq *OrderRefundQuery) QueryOrder() *OrderQuery {
-	query := &OrderQuery{config: orq.config}
+	query := (&OrderClient{config: orq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := orq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -87,7 +88,7 @@ func (orq *OrderRefundQuery) QueryOrder() *OrderQuery {
 // First returns the first OrderRefund entity from the query.
 // Returns a *NotFoundError when no OrderRefund was found.
 func (orq *OrderRefundQuery) First(ctx context.Context) (*OrderRefund, error) {
-	nodes, err := orq.Limit(1).All(ctx)
+	nodes, err := orq.Limit(1).All(newQueryContext(ctx, TypeOrderRefund, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +111,7 @@ func (orq *OrderRefundQuery) FirstX(ctx context.Context) *OrderRefund {
 // Returns a *NotFoundError when no OrderRefund ID was found.
 func (orq *OrderRefundQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = orq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = orq.Limit(1).IDs(newQueryContext(ctx, TypeOrderRefund, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -133,7 +134,7 @@ func (orq *OrderRefundQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one OrderRefund entity is found.
 // Returns a *NotFoundError when no OrderRefund entities are found.
 func (orq *OrderRefundQuery) Only(ctx context.Context) (*OrderRefund, error) {
-	nodes, err := orq.Limit(2).All(ctx)
+	nodes, err := orq.Limit(2).All(newQueryContext(ctx, TypeOrderRefund, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +162,7 @@ func (orq *OrderRefundQuery) OnlyX(ctx context.Context) *OrderRefund {
 // Returns a *NotFoundError when no entities are found.
 func (orq *OrderRefundQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = orq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = orq.Limit(2).IDs(newQueryContext(ctx, TypeOrderRefund, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -186,10 +187,12 @@ func (orq *OrderRefundQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of OrderRefunds.
 func (orq *OrderRefundQuery) All(ctx context.Context) ([]*OrderRefund, error) {
+	ctx = newQueryContext(ctx, TypeOrderRefund, "All")
 	if err := orq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return orq.sqlAll(ctx)
+	qr := querierAll[[]*OrderRefund, *OrderRefundQuery]()
+	return withInterceptors[[]*OrderRefund](ctx, orq, qr, orq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -204,6 +207,7 @@ func (orq *OrderRefundQuery) AllX(ctx context.Context) []*OrderRefund {
 // IDs executes the query and returns a list of OrderRefund IDs.
 func (orq *OrderRefundQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeOrderRefund, "IDs")
 	if err := orq.Select(orderrefund.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -221,10 +225,11 @@ func (orq *OrderRefundQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (orq *OrderRefundQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeOrderRefund, "Count")
 	if err := orq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return orq.sqlCount(ctx)
+	return withInterceptors[int](ctx, orq, querierCount[*OrderRefundQuery](), orq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -238,10 +243,15 @@ func (orq *OrderRefundQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (orq *OrderRefundQuery) Exist(ctx context.Context) (bool, error) {
-	if err := orq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeOrderRefund, "Exist")
+	switch _, err := orq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return orq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -276,7 +286,7 @@ func (orq *OrderRefundQuery) Clone() *OrderRefundQuery {
 // WithOrder tells the query-builder to eager-load the nodes that are connected to
 // the "order" edge. The optional arguments are used to configure the query builder of the edge.
 func (orq *OrderRefundQuery) WithOrder(opts ...func(*OrderQuery)) *OrderRefundQuery {
-	query := &OrderQuery{config: orq.config}
+	query := (&OrderClient{config: orq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -299,16 +309,11 @@ func (orq *OrderRefundQuery) WithOrder(opts ...func(*OrderQuery)) *OrderRefundQu
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (orq *OrderRefundQuery) GroupBy(field string, fields ...string) *OrderRefundGroupBy {
-	grbuild := &OrderRefundGroupBy{config: orq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := orq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return orq.sqlQuery(ctx), nil
-	}
+	orq.fields = append([]string{field}, fields...)
+	grbuild := &OrderRefundGroupBy{build: orq}
+	grbuild.flds = &orq.fields
 	grbuild.label = orderrefund.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -326,13 +331,28 @@ func (orq *OrderRefundQuery) GroupBy(field string, fields ...string) *OrderRefun
 //		Scan(ctx, &v)
 func (orq *OrderRefundQuery) Select(fields ...string) *OrderRefundSelect {
 	orq.fields = append(orq.fields, fields...)
-	selbuild := &OrderRefundSelect{OrderRefundQuery: orq}
-	selbuild.label = orderrefund.Label
-	selbuild.flds, selbuild.scan = &orq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &OrderRefundSelect{OrderRefundQuery: orq}
+	sbuild.label = orderrefund.Label
+	sbuild.flds, sbuild.scan = &orq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a OrderRefundSelect configured with the given aggregations.
+func (orq *OrderRefundQuery) Aggregate(fns ...AggregateFunc) *OrderRefundSelect {
+	return orq.Select().Aggregate(fns...)
 }
 
 func (orq *OrderRefundQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range orq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, orq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range orq.fields {
 		if !orderrefund.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -423,17 +443,6 @@ func (orq *OrderRefundQuery) sqlCount(ctx context.Context) (int, error) {
 		_spec.Unique = orq.unique != nil && *orq.unique
 	}
 	return sqlgraph.CountNodes(ctx, orq.driver, _spec)
-}
-
-func (orq *OrderRefundQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := orq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
 }
 
 func (orq *OrderRefundQuery) querySpec() *sqlgraph.QuerySpec {
@@ -527,13 +536,8 @@ func (orq *OrderRefundQuery) Modify(modifiers ...func(s *sql.Selector)) *OrderRe
 
 // OrderRefundGroupBy is the group-by builder for OrderRefund entities.
 type OrderRefundGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *OrderRefundQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -542,74 +546,77 @@ func (orgb *OrderRefundGroupBy) Aggregate(fns ...AggregateFunc) *OrderRefundGrou
 	return orgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (orgb *OrderRefundGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := orgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeOrderRefund, "GroupBy")
+	if err := orgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	orgb.sql = query
-	return orgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*OrderRefundQuery, *OrderRefundGroupBy](ctx, orgb.build, orgb, orgb.build.inters, v)
 }
 
-func (orgb *OrderRefundGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range orgb.fields {
-		if !orderrefund.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (orgb *OrderRefundGroupBy) sqlScan(ctx context.Context, root *OrderRefundQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(orgb.fns))
+	for _, fn := range orgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := orgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*orgb.flds)+len(orgb.fns))
+		for _, f := range *orgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*orgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := orgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := orgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (orgb *OrderRefundGroupBy) sqlQuery() *sql.Selector {
-	selector := orgb.sql.Select()
-	aggregation := make([]string, 0, len(orgb.fns))
-	for _, fn := range orgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(orgb.fields)+len(orgb.fns))
-		for _, f := range orgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(orgb.fields...)...)
-}
-
 // OrderRefundSelect is the builder for selecting fields of OrderRefund entities.
 type OrderRefundSelect struct {
 	*OrderRefundQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (ors *OrderRefundSelect) Aggregate(fns ...AggregateFunc) *OrderRefundSelect {
+	ors.fns = append(ors.fns, fns...)
+	return ors
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (ors *OrderRefundSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeOrderRefund, "Select")
 	if err := ors.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ors.sql = ors.OrderRefundQuery.sqlQuery(ctx)
-	return ors.sqlScan(ctx, v)
+	return scanWithInterceptors[*OrderRefundQuery, *OrderRefundSelect](ctx, ors.OrderRefundQuery, ors, ors.inters, v)
 }
 
-func (ors *OrderRefundSelect) sqlScan(ctx context.Context, v any) error {
+func (ors *OrderRefundSelect) sqlScan(ctx context.Context, root *OrderRefundQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(ors.fns))
+	for _, fn := range ors.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*ors.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := ors.sql.Query()
+	query, args := selector.Query()
 	if err := ors.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

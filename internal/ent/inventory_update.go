@@ -119,37 +119,10 @@ func (iu *InventoryUpdate) Mutation() *InventoryMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (iu *InventoryUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := iu.defaults(); err != nil {
 		return 0, err
 	}
-	if len(iu.hooks) == 0 {
-		affected, err = iu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*InventoryMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			iu.mutation = mutation
-			affected, err = iu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(iu.hooks) - 1; i >= 0; i-- {
-			if iu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = iu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, iu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, InventoryMutation](ctx, iu.sqlSave, iu.mutation, iu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -211,86 +184,42 @@ func (iu *InventoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := iu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: inventory.FieldUpdatedAt,
-		})
+		_spec.SetField(inventory.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := iu.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: inventory.FieldDeletedAt,
-		})
+		_spec.SetField(inventory.FieldDeletedAt, field.TypeTime, value)
 	}
 	if iu.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: inventory.FieldDeletedAt,
-		})
+		_spec.ClearField(inventory.FieldDeletedAt, field.TypeTime)
 	}
 	if iu.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: inventory.FieldCreator,
-		})
+		_spec.ClearField(inventory.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := iu.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: inventory.FieldLastModifier,
-		})
+		_spec.SetField(inventory.FieldLastModifier, field.TypeJSON, value)
 	}
 	if iu.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: inventory.FieldLastModifier,
-		})
+		_spec.ClearField(inventory.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := iu.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: inventory.FieldRemark,
-		})
+		_spec.SetField(inventory.FieldRemark, field.TypeString, value)
 	}
 	if iu.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: inventory.FieldRemark,
-		})
+		_spec.ClearField(inventory.FieldRemark, field.TypeString)
 	}
 	if value, ok := iu.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: inventory.FieldName,
-		})
+		_spec.SetField(inventory.FieldName, field.TypeString, value)
 	}
 	if value, ok := iu.mutation.Count(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: inventory.FieldCount,
-		})
+		_spec.SetField(inventory.FieldCount, field.TypeBool, value)
 	}
 	if value, ok := iu.mutation.Transfer(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: inventory.FieldTransfer,
-		})
+		_spec.SetField(inventory.FieldTransfer, field.TypeBool, value)
 	}
 	if value, ok := iu.mutation.Purchase(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: inventory.FieldPurchase,
-		})
+		_spec.SetField(inventory.FieldPurchase, field.TypeBool, value)
 	}
-	_spec.Modifiers = iu.modifiers
+	_spec.AddModifiers(iu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, iu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{inventory.Label}
@@ -299,6 +228,7 @@ func (iu *InventoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	iu.mutation.done = true
 	return n, nil
 }
 
@@ -407,43 +337,10 @@ func (iuo *InventoryUpdateOne) Select(field string, fields ...string) *Inventory
 
 // Save executes the query and returns the updated Inventory entity.
 func (iuo *InventoryUpdateOne) Save(ctx context.Context) (*Inventory, error) {
-	var (
-		err  error
-		node *Inventory
-	)
 	if err := iuo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(iuo.hooks) == 0 {
-		node, err = iuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*InventoryMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			iuo.mutation = mutation
-			node, err = iuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(iuo.hooks) - 1; i >= 0; i-- {
-			if iuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = iuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, iuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Inventory)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from InventoryMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Inventory, InventoryMutation](ctx, iuo.sqlSave, iuo.mutation, iuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -522,86 +419,42 @@ func (iuo *InventoryUpdateOne) sqlSave(ctx context.Context) (_node *Inventory, e
 		}
 	}
 	if value, ok := iuo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: inventory.FieldUpdatedAt,
-		})
+		_spec.SetField(inventory.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := iuo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: inventory.FieldDeletedAt,
-		})
+		_spec.SetField(inventory.FieldDeletedAt, field.TypeTime, value)
 	}
 	if iuo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: inventory.FieldDeletedAt,
-		})
+		_spec.ClearField(inventory.FieldDeletedAt, field.TypeTime)
 	}
 	if iuo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: inventory.FieldCreator,
-		})
+		_spec.ClearField(inventory.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := iuo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: inventory.FieldLastModifier,
-		})
+		_spec.SetField(inventory.FieldLastModifier, field.TypeJSON, value)
 	}
 	if iuo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: inventory.FieldLastModifier,
-		})
+		_spec.ClearField(inventory.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := iuo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: inventory.FieldRemark,
-		})
+		_spec.SetField(inventory.FieldRemark, field.TypeString, value)
 	}
 	if iuo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: inventory.FieldRemark,
-		})
+		_spec.ClearField(inventory.FieldRemark, field.TypeString)
 	}
 	if value, ok := iuo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: inventory.FieldName,
-		})
+		_spec.SetField(inventory.FieldName, field.TypeString, value)
 	}
 	if value, ok := iuo.mutation.Count(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: inventory.FieldCount,
-		})
+		_spec.SetField(inventory.FieldCount, field.TypeBool, value)
 	}
 	if value, ok := iuo.mutation.Transfer(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: inventory.FieldTransfer,
-		})
+		_spec.SetField(inventory.FieldTransfer, field.TypeBool, value)
 	}
 	if value, ok := iuo.mutation.Purchase(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: inventory.FieldPurchase,
-		})
+		_spec.SetField(inventory.FieldPurchase, field.TypeBool, value)
 	}
-	_spec.Modifiers = iuo.modifiers
+	_spec.AddModifiers(iuo.modifiers...)
 	_node = &Inventory{config: iuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -613,5 +466,6 @@ func (iuo *InventoryUpdateOne) sqlSave(ctx context.Context) (_node *Inventory, e
 		}
 		return nil, err
 	}
+	iuo.mutation.done = true
 	return _node, nil
 }

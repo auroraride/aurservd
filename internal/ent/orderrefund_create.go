@@ -148,52 +148,10 @@ func (orc *OrderRefundCreate) Mutation() *OrderRefundMutation {
 
 // Save creates the OrderRefund in the database.
 func (orc *OrderRefundCreate) Save(ctx context.Context) (*OrderRefund, error) {
-	var (
-		err  error
-		node *OrderRefund
-	)
 	if err := orc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(orc.hooks) == 0 {
-		if err = orc.check(); err != nil {
-			return nil, err
-		}
-		node, err = orc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*OrderRefundMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = orc.check(); err != nil {
-				return nil, err
-			}
-			orc.mutation = mutation
-			if node, err = orc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(orc.hooks) - 1; i >= 0; i-- {
-			if orc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = orc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, orc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*OrderRefund)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from OrderRefundMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*OrderRefund, OrderRefundMutation](ctx, orc.sqlSave, orc.mutation, orc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -267,6 +225,9 @@ func (orc *OrderRefundCreate) check() error {
 }
 
 func (orc *OrderRefundCreate) sqlSave(ctx context.Context) (*OrderRefund, error) {
+	if err := orc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := orc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, orc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -276,6 +237,8 @@ func (orc *OrderRefundCreate) sqlSave(ctx context.Context) (*OrderRefund, error)
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	orc.mutation.id = &_node.ID
+	orc.mutation.done = true
 	return _node, nil
 }
 
@@ -292,91 +255,47 @@ func (orc *OrderRefundCreate) createSpec() (*OrderRefund, *sqlgraph.CreateSpec) 
 	)
 	_spec.OnConflict = orc.conflict
 	if value, ok := orc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: orderrefund.FieldCreatedAt,
-		})
+		_spec.SetField(orderrefund.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := orc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: orderrefund.FieldUpdatedAt,
-		})
+		_spec.SetField(orderrefund.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := orc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: orderrefund.FieldDeletedAt,
-		})
+		_spec.SetField(orderrefund.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := orc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: orderrefund.FieldCreator,
-		})
+		_spec.SetField(orderrefund.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := orc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: orderrefund.FieldLastModifier,
-		})
+		_spec.SetField(orderrefund.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := orc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: orderrefund.FieldRemark,
-		})
+		_spec.SetField(orderrefund.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := orc.mutation.Status(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: orderrefund.FieldStatus,
-		})
+		_spec.SetField(orderrefund.FieldStatus, field.TypeUint8, value)
 		_node.Status = value
 	}
 	if value, ok := orc.mutation.Amount(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: orderrefund.FieldAmount,
-		})
+		_spec.SetField(orderrefund.FieldAmount, field.TypeFloat64, value)
 		_node.Amount = value
 	}
 	if value, ok := orc.mutation.OutRefundNo(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: orderrefund.FieldOutRefundNo,
-		})
+		_spec.SetField(orderrefund.FieldOutRefundNo, field.TypeString, value)
 		_node.OutRefundNo = value
 	}
 	if value, ok := orc.mutation.Reason(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: orderrefund.FieldReason,
-		})
+		_spec.SetField(orderrefund.FieldReason, field.TypeString, value)
 		_node.Reason = value
 	}
 	if value, ok := orc.mutation.RefundAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: orderrefund.FieldRefundAt,
-		})
+		_spec.SetField(orderrefund.FieldRefundAt, field.TypeTime, value)
 		_node.RefundAt = &value
 	}
 	if nodes := orc.mutation.OrderIDs(); len(nodes) > 0 {

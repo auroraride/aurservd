@@ -188,43 +188,10 @@ func (plu *PointLogUpdate) ClearOrder() *PointLogUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (plu *PointLogUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := plu.defaults(); err != nil {
 		return 0, err
 	}
-	if len(plu.hooks) == 0 {
-		if err = plu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = plu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*PointLogMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = plu.check(); err != nil {
-				return 0, err
-			}
-			plu.mutation = mutation
-			affected, err = plu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(plu.hooks) - 1; i >= 0; i-- {
-			if plu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = plu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, plu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, PointLogMutation](ctx, plu.sqlSave, plu.mutation, plu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -276,6 +243,9 @@ func (plu *PointLogUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Poin
 }
 
 func (plu *PointLogUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := plu.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   pointlog.Table,
@@ -294,105 +264,49 @@ func (plu *PointLogUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := plu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: pointlog.FieldUpdatedAt,
-		})
+		_spec.SetField(pointlog.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := plu.mutation.Modifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: pointlog.FieldModifier,
-		})
+		_spec.SetField(pointlog.FieldModifier, field.TypeJSON, value)
 	}
 	if plu.mutation.ModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: pointlog.FieldModifier,
-		})
+		_spec.ClearField(pointlog.FieldModifier, field.TypeJSON)
 	}
 	if value, ok := plu.mutation.EmployeeInfo(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: pointlog.FieldEmployeeInfo,
-		})
+		_spec.SetField(pointlog.FieldEmployeeInfo, field.TypeJSON, value)
 	}
 	if plu.mutation.EmployeeInfoCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: pointlog.FieldEmployeeInfo,
-		})
+		_spec.ClearField(pointlog.FieldEmployeeInfo, field.TypeJSON)
 	}
 	if value, ok := plu.mutation.GetType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: pointlog.FieldType,
-		})
+		_spec.SetField(pointlog.FieldType, field.TypeUint8, value)
 	}
 	if value, ok := plu.mutation.AddedType(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: pointlog.FieldType,
-		})
+		_spec.AddField(pointlog.FieldType, field.TypeUint8, value)
 	}
 	if value, ok := plu.mutation.Points(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: pointlog.FieldPoints,
-		})
+		_spec.SetField(pointlog.FieldPoints, field.TypeInt64, value)
 	}
 	if value, ok := plu.mutation.AddedPoints(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: pointlog.FieldPoints,
-		})
+		_spec.AddField(pointlog.FieldPoints, field.TypeInt64, value)
 	}
 	if value, ok := plu.mutation.After(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: pointlog.FieldAfter,
-		})
+		_spec.SetField(pointlog.FieldAfter, field.TypeInt64, value)
 	}
 	if value, ok := plu.mutation.AddedAfter(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: pointlog.FieldAfter,
-		})
+		_spec.AddField(pointlog.FieldAfter, field.TypeInt64, value)
 	}
 	if value, ok := plu.mutation.Reason(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: pointlog.FieldReason,
-		})
+		_spec.SetField(pointlog.FieldReason, field.TypeString, value)
 	}
 	if plu.mutation.ReasonCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: pointlog.FieldReason,
-		})
+		_spec.ClearField(pointlog.FieldReason, field.TypeString)
 	}
 	if value, ok := plu.mutation.Attach(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: pointlog.FieldAttach,
-		})
+		_spec.SetField(pointlog.FieldAttach, field.TypeJSON, value)
 	}
 	if plu.mutation.AttachCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: pointlog.FieldAttach,
-		})
+		_spec.ClearField(pointlog.FieldAttach, field.TypeJSON)
 	}
 	if plu.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -464,7 +378,7 @@ func (plu *PointLogUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = plu.modifiers
+	_spec.AddModifiers(plu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, plu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{pointlog.Label}
@@ -473,6 +387,7 @@ func (plu *PointLogUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	plu.mutation.done = true
 	return n, nil
 }
 
@@ -648,49 +563,10 @@ func (pluo *PointLogUpdateOne) Select(field string, fields ...string) *PointLogU
 
 // Save executes the query and returns the updated PointLog entity.
 func (pluo *PointLogUpdateOne) Save(ctx context.Context) (*PointLog, error) {
-	var (
-		err  error
-		node *PointLog
-	)
 	if err := pluo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(pluo.hooks) == 0 {
-		if err = pluo.check(); err != nil {
-			return nil, err
-		}
-		node, err = pluo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*PointLogMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = pluo.check(); err != nil {
-				return nil, err
-			}
-			pluo.mutation = mutation
-			node, err = pluo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(pluo.hooks) - 1; i >= 0; i-- {
-			if pluo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = pluo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, pluo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*PointLog)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from PointLogMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*PointLog, PointLogMutation](ctx, pluo.sqlSave, pluo.mutation, pluo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -742,6 +618,9 @@ func (pluo *PointLogUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *
 }
 
 func (pluo *PointLogUpdateOne) sqlSave(ctx context.Context) (_node *PointLog, err error) {
+	if err := pluo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   pointlog.Table,
@@ -777,105 +656,49 @@ func (pluo *PointLogUpdateOne) sqlSave(ctx context.Context) (_node *PointLog, er
 		}
 	}
 	if value, ok := pluo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: pointlog.FieldUpdatedAt,
-		})
+		_spec.SetField(pointlog.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := pluo.mutation.Modifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: pointlog.FieldModifier,
-		})
+		_spec.SetField(pointlog.FieldModifier, field.TypeJSON, value)
 	}
 	if pluo.mutation.ModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: pointlog.FieldModifier,
-		})
+		_spec.ClearField(pointlog.FieldModifier, field.TypeJSON)
 	}
 	if value, ok := pluo.mutation.EmployeeInfo(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: pointlog.FieldEmployeeInfo,
-		})
+		_spec.SetField(pointlog.FieldEmployeeInfo, field.TypeJSON, value)
 	}
 	if pluo.mutation.EmployeeInfoCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: pointlog.FieldEmployeeInfo,
-		})
+		_spec.ClearField(pointlog.FieldEmployeeInfo, field.TypeJSON)
 	}
 	if value, ok := pluo.mutation.GetType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: pointlog.FieldType,
-		})
+		_spec.SetField(pointlog.FieldType, field.TypeUint8, value)
 	}
 	if value, ok := pluo.mutation.AddedType(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: pointlog.FieldType,
-		})
+		_spec.AddField(pointlog.FieldType, field.TypeUint8, value)
 	}
 	if value, ok := pluo.mutation.Points(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: pointlog.FieldPoints,
-		})
+		_spec.SetField(pointlog.FieldPoints, field.TypeInt64, value)
 	}
 	if value, ok := pluo.mutation.AddedPoints(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: pointlog.FieldPoints,
-		})
+		_spec.AddField(pointlog.FieldPoints, field.TypeInt64, value)
 	}
 	if value, ok := pluo.mutation.After(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: pointlog.FieldAfter,
-		})
+		_spec.SetField(pointlog.FieldAfter, field.TypeInt64, value)
 	}
 	if value, ok := pluo.mutation.AddedAfter(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: pointlog.FieldAfter,
-		})
+		_spec.AddField(pointlog.FieldAfter, field.TypeInt64, value)
 	}
 	if value, ok := pluo.mutation.Reason(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: pointlog.FieldReason,
-		})
+		_spec.SetField(pointlog.FieldReason, field.TypeString, value)
 	}
 	if pluo.mutation.ReasonCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: pointlog.FieldReason,
-		})
+		_spec.ClearField(pointlog.FieldReason, field.TypeString)
 	}
 	if value, ok := pluo.mutation.Attach(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: pointlog.FieldAttach,
-		})
+		_spec.SetField(pointlog.FieldAttach, field.TypeJSON, value)
 	}
 	if pluo.mutation.AttachCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: pointlog.FieldAttach,
-		})
+		_spec.ClearField(pointlog.FieldAttach, field.TypeJSON)
 	}
 	if pluo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -947,7 +770,7 @@ func (pluo *PointLogUpdateOne) sqlSave(ctx context.Context) (_node *PointLog, er
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = pluo.modifiers
+	_spec.AddModifiers(pluo.modifiers...)
 	_node = &PointLog{config: pluo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -959,5 +782,6 @@ func (pluo *PointLogUpdateOne) sqlSave(ctx context.Context) (_node *PointLog, er
 		}
 		return nil, err
 	}
+	pluo.mutation.done = true
 	return _node, nil
 }

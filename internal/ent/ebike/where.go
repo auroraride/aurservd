@@ -13,1290 +13,842 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uint64) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uint64) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uint64) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.Ebike(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.Ebike(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.Ebike(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uint64) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.Ebike(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uint64) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.Ebike(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uint64) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.Ebike(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uint64) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.Ebike(sql.FieldLTE(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
 func Remark(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldRemark, v))
 }
 
 // BrandID applies equality check predicate on the "brand_id" field. It's identical to BrandIDEQ.
 func BrandID(v uint64) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBrandID), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldBrandID, v))
 }
 
 // RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
 func RiderID(v uint64) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRiderID), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldRiderID, v))
 }
 
 // StoreID applies equality check predicate on the "store_id" field. It's identical to StoreIDEQ.
 func StoreID(v uint64) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStoreID), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldStoreID, v))
 }
 
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v model.EbikeStatus) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStatus), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldStatus, v))
 }
 
 // Enable applies equality check predicate on the "enable" field. It's identical to EnableEQ.
 func Enable(v bool) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEnable), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldEnable, v))
 }
 
 // Sn applies equality check predicate on the "sn" field. It's identical to SnEQ.
 func Sn(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSn), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldSn, v))
 }
 
 // Plate applies equality check predicate on the "plate" field. It's identical to PlateEQ.
 func Plate(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPlate), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldPlate, v))
 }
 
 // Machine applies equality check predicate on the "machine" field. It's identical to MachineEQ.
 func Machine(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldMachine), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldMachine, v))
 }
 
 // Sim applies equality check predicate on the "sim" field. It's identical to SimEQ.
 func Sim(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSim), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldSim, v))
 }
 
 // Color applies equality check predicate on the "color" field. It's identical to ColorEQ.
 func Color(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldColor), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldColor, v))
 }
 
 // ExFactory applies equality check predicate on the "ex_factory" field. It's identical to ExFactoryEQ.
 func ExFactory(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldExFactory), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldExFactory, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
 func CreatedAtNEQ(v time.Time) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Ebike(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Ebike(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Ebike(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtGT applies the GT predicate on the "created_at" field.
 func CreatedAtGT(v time.Time) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Ebike(sql.FieldGT(FieldCreatedAt, v))
 }
 
 // CreatedAtGTE applies the GTE predicate on the "created_at" field.
 func CreatedAtGTE(v time.Time) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Ebike(sql.FieldGTE(FieldCreatedAt, v))
 }
 
 // CreatedAtLT applies the LT predicate on the "created_at" field.
 func CreatedAtLT(v time.Time) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Ebike(sql.FieldLT(FieldCreatedAt, v))
 }
 
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Ebike(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
 func UpdatedAtEQ(v time.Time) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
 func UpdatedAtNEQ(v time.Time) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Ebike(sql.FieldNEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Ebike(sql.FieldIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Ebike(sql.FieldNotIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtGT applies the GT predicate on the "updated_at" field.
 func UpdatedAtGT(v time.Time) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Ebike(sql.FieldGT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
 func UpdatedAtGTE(v time.Time) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Ebike(sql.FieldGTE(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLT applies the LT predicate on the "updated_at" field.
 func UpdatedAtLT(v time.Time) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Ebike(sql.FieldLT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Ebike(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // CreatorIsNil applies the IsNil predicate on the "creator" field.
 func CreatorIsNil() predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCreator)))
-	})
+	return predicate.Ebike(sql.FieldIsNull(FieldCreator))
 }
 
 // CreatorNotNil applies the NotNil predicate on the "creator" field.
 func CreatorNotNil() predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCreator)))
-	})
+	return predicate.Ebike(sql.FieldNotNull(FieldCreator))
 }
 
 // LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
 func LastModifierIsNil() predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Ebike(sql.FieldIsNull(FieldLastModifier))
 }
 
 // LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
 func LastModifierNotNil() predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Ebike(sql.FieldNotNull(FieldLastModifier))
 }
 
 // RemarkEQ applies the EQ predicate on the "remark" field.
 func RemarkEQ(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldRemark, v))
 }
 
 // RemarkNEQ applies the NEQ predicate on the "remark" field.
 func RemarkNEQ(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRemark), v))
-	})
+	return predicate.Ebike(sql.FieldNEQ(FieldRemark, v))
 }
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRemark), v...))
-	})
+	return predicate.Ebike(sql.FieldIn(FieldRemark, vs...))
 }
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRemark), v...))
-	})
+	return predicate.Ebike(sql.FieldNotIn(FieldRemark, vs...))
 }
 
 // RemarkGT applies the GT predicate on the "remark" field.
 func RemarkGT(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRemark), v))
-	})
+	return predicate.Ebike(sql.FieldGT(FieldRemark, v))
 }
 
 // RemarkGTE applies the GTE predicate on the "remark" field.
 func RemarkGTE(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRemark), v))
-	})
+	return predicate.Ebike(sql.FieldGTE(FieldRemark, v))
 }
 
 // RemarkLT applies the LT predicate on the "remark" field.
 func RemarkLT(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRemark), v))
-	})
+	return predicate.Ebike(sql.FieldLT(FieldRemark, v))
 }
 
 // RemarkLTE applies the LTE predicate on the "remark" field.
 func RemarkLTE(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRemark), v))
-	})
+	return predicate.Ebike(sql.FieldLTE(FieldRemark, v))
 }
 
 // RemarkContains applies the Contains predicate on the "remark" field.
 func RemarkContains(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRemark), v))
-	})
+	return predicate.Ebike(sql.FieldContains(FieldRemark, v))
 }
 
 // RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
 func RemarkHasPrefix(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRemark), v))
-	})
+	return predicate.Ebike(sql.FieldHasPrefix(FieldRemark, v))
 }
 
 // RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
 func RemarkHasSuffix(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRemark), v))
-	})
+	return predicate.Ebike(sql.FieldHasSuffix(FieldRemark, v))
 }
 
 // RemarkIsNil applies the IsNil predicate on the "remark" field.
 func RemarkIsNil() predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRemark)))
-	})
+	return predicate.Ebike(sql.FieldIsNull(FieldRemark))
 }
 
 // RemarkNotNil applies the NotNil predicate on the "remark" field.
 func RemarkNotNil() predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRemark)))
-	})
+	return predicate.Ebike(sql.FieldNotNull(FieldRemark))
 }
 
 // RemarkEqualFold applies the EqualFold predicate on the "remark" field.
 func RemarkEqualFold(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRemark), v))
-	})
+	return predicate.Ebike(sql.FieldEqualFold(FieldRemark, v))
 }
 
 // RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
 func RemarkContainsFold(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
-	})
+	return predicate.Ebike(sql.FieldContainsFold(FieldRemark, v))
 }
 
 // BrandIDEQ applies the EQ predicate on the "brand_id" field.
 func BrandIDEQ(v uint64) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBrandID), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldBrandID, v))
 }
 
 // BrandIDNEQ applies the NEQ predicate on the "brand_id" field.
 func BrandIDNEQ(v uint64) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBrandID), v))
-	})
+	return predicate.Ebike(sql.FieldNEQ(FieldBrandID, v))
 }
 
 // BrandIDIn applies the In predicate on the "brand_id" field.
 func BrandIDIn(vs ...uint64) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldBrandID), v...))
-	})
+	return predicate.Ebike(sql.FieldIn(FieldBrandID, vs...))
 }
 
 // BrandIDNotIn applies the NotIn predicate on the "brand_id" field.
 func BrandIDNotIn(vs ...uint64) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldBrandID), v...))
-	})
+	return predicate.Ebike(sql.FieldNotIn(FieldBrandID, vs...))
 }
 
 // RiderIDEQ applies the EQ predicate on the "rider_id" field.
 func RiderIDEQ(v uint64) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRiderID), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldRiderID, v))
 }
 
 // RiderIDNEQ applies the NEQ predicate on the "rider_id" field.
 func RiderIDNEQ(v uint64) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRiderID), v))
-	})
+	return predicate.Ebike(sql.FieldNEQ(FieldRiderID, v))
 }
 
 // RiderIDIn applies the In predicate on the "rider_id" field.
 func RiderIDIn(vs ...uint64) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRiderID), v...))
-	})
+	return predicate.Ebike(sql.FieldIn(FieldRiderID, vs...))
 }
 
 // RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
 func RiderIDNotIn(vs ...uint64) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRiderID), v...))
-	})
+	return predicate.Ebike(sql.FieldNotIn(FieldRiderID, vs...))
 }
 
 // RiderIDIsNil applies the IsNil predicate on the "rider_id" field.
 func RiderIDIsNil() predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRiderID)))
-	})
+	return predicate.Ebike(sql.FieldIsNull(FieldRiderID))
 }
 
 // RiderIDNotNil applies the NotNil predicate on the "rider_id" field.
 func RiderIDNotNil() predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRiderID)))
-	})
+	return predicate.Ebike(sql.FieldNotNull(FieldRiderID))
 }
 
 // StoreIDEQ applies the EQ predicate on the "store_id" field.
 func StoreIDEQ(v uint64) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStoreID), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldStoreID, v))
 }
 
 // StoreIDNEQ applies the NEQ predicate on the "store_id" field.
 func StoreIDNEQ(v uint64) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStoreID), v))
-	})
+	return predicate.Ebike(sql.FieldNEQ(FieldStoreID, v))
 }
 
 // StoreIDIn applies the In predicate on the "store_id" field.
 func StoreIDIn(vs ...uint64) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStoreID), v...))
-	})
+	return predicate.Ebike(sql.FieldIn(FieldStoreID, vs...))
 }
 
 // StoreIDNotIn applies the NotIn predicate on the "store_id" field.
 func StoreIDNotIn(vs ...uint64) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStoreID), v...))
-	})
+	return predicate.Ebike(sql.FieldNotIn(FieldStoreID, vs...))
 }
 
 // StoreIDIsNil applies the IsNil predicate on the "store_id" field.
 func StoreIDIsNil() predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldStoreID)))
-	})
+	return predicate.Ebike(sql.FieldIsNull(FieldStoreID))
 }
 
 // StoreIDNotNil applies the NotNil predicate on the "store_id" field.
 func StoreIDNotNil() predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldStoreID)))
-	})
+	return predicate.Ebike(sql.FieldNotNull(FieldStoreID))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.
 func StatusEQ(v model.EbikeStatus) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStatus), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldStatus, v))
 }
 
 // StatusNEQ applies the NEQ predicate on the "status" field.
 func StatusNEQ(v model.EbikeStatus) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStatus), v))
-	})
+	return predicate.Ebike(sql.FieldNEQ(FieldStatus, v))
 }
 
 // StatusIn applies the In predicate on the "status" field.
 func StatusIn(vs ...model.EbikeStatus) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStatus), v...))
-	})
+	return predicate.Ebike(sql.FieldIn(FieldStatus, vs...))
 }
 
 // StatusNotIn applies the NotIn predicate on the "status" field.
 func StatusNotIn(vs ...model.EbikeStatus) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStatus), v...))
-	})
+	return predicate.Ebike(sql.FieldNotIn(FieldStatus, vs...))
 }
 
 // StatusGT applies the GT predicate on the "status" field.
 func StatusGT(v model.EbikeStatus) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldStatus), v))
-	})
+	return predicate.Ebike(sql.FieldGT(FieldStatus, v))
 }
 
 // StatusGTE applies the GTE predicate on the "status" field.
 func StatusGTE(v model.EbikeStatus) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldStatus), v))
-	})
+	return predicate.Ebike(sql.FieldGTE(FieldStatus, v))
 }
 
 // StatusLT applies the LT predicate on the "status" field.
 func StatusLT(v model.EbikeStatus) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldStatus), v))
-	})
+	return predicate.Ebike(sql.FieldLT(FieldStatus, v))
 }
 
 // StatusLTE applies the LTE predicate on the "status" field.
 func StatusLTE(v model.EbikeStatus) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldStatus), v))
-	})
+	return predicate.Ebike(sql.FieldLTE(FieldStatus, v))
 }
 
 // EnableEQ applies the EQ predicate on the "enable" field.
 func EnableEQ(v bool) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEnable), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldEnable, v))
 }
 
 // EnableNEQ applies the NEQ predicate on the "enable" field.
 func EnableNEQ(v bool) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEnable), v))
-	})
+	return predicate.Ebike(sql.FieldNEQ(FieldEnable, v))
 }
 
 // SnEQ applies the EQ predicate on the "sn" field.
 func SnEQ(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSn), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldSn, v))
 }
 
 // SnNEQ applies the NEQ predicate on the "sn" field.
 func SnNEQ(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSn), v))
-	})
+	return predicate.Ebike(sql.FieldNEQ(FieldSn, v))
 }
 
 // SnIn applies the In predicate on the "sn" field.
 func SnIn(vs ...string) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldSn), v...))
-	})
+	return predicate.Ebike(sql.FieldIn(FieldSn, vs...))
 }
 
 // SnNotIn applies the NotIn predicate on the "sn" field.
 func SnNotIn(vs ...string) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldSn), v...))
-	})
+	return predicate.Ebike(sql.FieldNotIn(FieldSn, vs...))
 }
 
 // SnGT applies the GT predicate on the "sn" field.
 func SnGT(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldSn), v))
-	})
+	return predicate.Ebike(sql.FieldGT(FieldSn, v))
 }
 
 // SnGTE applies the GTE predicate on the "sn" field.
 func SnGTE(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldSn), v))
-	})
+	return predicate.Ebike(sql.FieldGTE(FieldSn, v))
 }
 
 // SnLT applies the LT predicate on the "sn" field.
 func SnLT(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldSn), v))
-	})
+	return predicate.Ebike(sql.FieldLT(FieldSn, v))
 }
 
 // SnLTE applies the LTE predicate on the "sn" field.
 func SnLTE(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldSn), v))
-	})
+	return predicate.Ebike(sql.FieldLTE(FieldSn, v))
 }
 
 // SnContains applies the Contains predicate on the "sn" field.
 func SnContains(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldSn), v))
-	})
+	return predicate.Ebike(sql.FieldContains(FieldSn, v))
 }
 
 // SnHasPrefix applies the HasPrefix predicate on the "sn" field.
 func SnHasPrefix(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldSn), v))
-	})
+	return predicate.Ebike(sql.FieldHasPrefix(FieldSn, v))
 }
 
 // SnHasSuffix applies the HasSuffix predicate on the "sn" field.
 func SnHasSuffix(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldSn), v))
-	})
+	return predicate.Ebike(sql.FieldHasSuffix(FieldSn, v))
 }
 
 // SnEqualFold applies the EqualFold predicate on the "sn" field.
 func SnEqualFold(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldSn), v))
-	})
+	return predicate.Ebike(sql.FieldEqualFold(FieldSn, v))
 }
 
 // SnContainsFold applies the ContainsFold predicate on the "sn" field.
 func SnContainsFold(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldSn), v))
-	})
+	return predicate.Ebike(sql.FieldContainsFold(FieldSn, v))
 }
 
 // PlateEQ applies the EQ predicate on the "plate" field.
 func PlateEQ(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPlate), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldPlate, v))
 }
 
 // PlateNEQ applies the NEQ predicate on the "plate" field.
 func PlateNEQ(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPlate), v))
-	})
+	return predicate.Ebike(sql.FieldNEQ(FieldPlate, v))
 }
 
 // PlateIn applies the In predicate on the "plate" field.
 func PlateIn(vs ...string) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldPlate), v...))
-	})
+	return predicate.Ebike(sql.FieldIn(FieldPlate, vs...))
 }
 
 // PlateNotIn applies the NotIn predicate on the "plate" field.
 func PlateNotIn(vs ...string) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldPlate), v...))
-	})
+	return predicate.Ebike(sql.FieldNotIn(FieldPlate, vs...))
 }
 
 // PlateGT applies the GT predicate on the "plate" field.
 func PlateGT(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldPlate), v))
-	})
+	return predicate.Ebike(sql.FieldGT(FieldPlate, v))
 }
 
 // PlateGTE applies the GTE predicate on the "plate" field.
 func PlateGTE(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldPlate), v))
-	})
+	return predicate.Ebike(sql.FieldGTE(FieldPlate, v))
 }
 
 // PlateLT applies the LT predicate on the "plate" field.
 func PlateLT(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldPlate), v))
-	})
+	return predicate.Ebike(sql.FieldLT(FieldPlate, v))
 }
 
 // PlateLTE applies the LTE predicate on the "plate" field.
 func PlateLTE(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldPlate), v))
-	})
+	return predicate.Ebike(sql.FieldLTE(FieldPlate, v))
 }
 
 // PlateContains applies the Contains predicate on the "plate" field.
 func PlateContains(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldPlate), v))
-	})
+	return predicate.Ebike(sql.FieldContains(FieldPlate, v))
 }
 
 // PlateHasPrefix applies the HasPrefix predicate on the "plate" field.
 func PlateHasPrefix(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldPlate), v))
-	})
+	return predicate.Ebike(sql.FieldHasPrefix(FieldPlate, v))
 }
 
 // PlateHasSuffix applies the HasSuffix predicate on the "plate" field.
 func PlateHasSuffix(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldPlate), v))
-	})
+	return predicate.Ebike(sql.FieldHasSuffix(FieldPlate, v))
 }
 
 // PlateIsNil applies the IsNil predicate on the "plate" field.
 func PlateIsNil() predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldPlate)))
-	})
+	return predicate.Ebike(sql.FieldIsNull(FieldPlate))
 }
 
 // PlateNotNil applies the NotNil predicate on the "plate" field.
 func PlateNotNil() predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldPlate)))
-	})
+	return predicate.Ebike(sql.FieldNotNull(FieldPlate))
 }
 
 // PlateEqualFold applies the EqualFold predicate on the "plate" field.
 func PlateEqualFold(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldPlate), v))
-	})
+	return predicate.Ebike(sql.FieldEqualFold(FieldPlate, v))
 }
 
 // PlateContainsFold applies the ContainsFold predicate on the "plate" field.
 func PlateContainsFold(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldPlate), v))
-	})
+	return predicate.Ebike(sql.FieldContainsFold(FieldPlate, v))
 }
 
 // MachineEQ applies the EQ predicate on the "machine" field.
 func MachineEQ(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldMachine), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldMachine, v))
 }
 
 // MachineNEQ applies the NEQ predicate on the "machine" field.
 func MachineNEQ(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldMachine), v))
-	})
+	return predicate.Ebike(sql.FieldNEQ(FieldMachine, v))
 }
 
 // MachineIn applies the In predicate on the "machine" field.
 func MachineIn(vs ...string) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldMachine), v...))
-	})
+	return predicate.Ebike(sql.FieldIn(FieldMachine, vs...))
 }
 
 // MachineNotIn applies the NotIn predicate on the "machine" field.
 func MachineNotIn(vs ...string) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldMachine), v...))
-	})
+	return predicate.Ebike(sql.FieldNotIn(FieldMachine, vs...))
 }
 
 // MachineGT applies the GT predicate on the "machine" field.
 func MachineGT(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldMachine), v))
-	})
+	return predicate.Ebike(sql.FieldGT(FieldMachine, v))
 }
 
 // MachineGTE applies the GTE predicate on the "machine" field.
 func MachineGTE(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldMachine), v))
-	})
+	return predicate.Ebike(sql.FieldGTE(FieldMachine, v))
 }
 
 // MachineLT applies the LT predicate on the "machine" field.
 func MachineLT(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldMachine), v))
-	})
+	return predicate.Ebike(sql.FieldLT(FieldMachine, v))
 }
 
 // MachineLTE applies the LTE predicate on the "machine" field.
 func MachineLTE(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldMachine), v))
-	})
+	return predicate.Ebike(sql.FieldLTE(FieldMachine, v))
 }
 
 // MachineContains applies the Contains predicate on the "machine" field.
 func MachineContains(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldMachine), v))
-	})
+	return predicate.Ebike(sql.FieldContains(FieldMachine, v))
 }
 
 // MachineHasPrefix applies the HasPrefix predicate on the "machine" field.
 func MachineHasPrefix(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldMachine), v))
-	})
+	return predicate.Ebike(sql.FieldHasPrefix(FieldMachine, v))
 }
 
 // MachineHasSuffix applies the HasSuffix predicate on the "machine" field.
 func MachineHasSuffix(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldMachine), v))
-	})
+	return predicate.Ebike(sql.FieldHasSuffix(FieldMachine, v))
 }
 
 // MachineIsNil applies the IsNil predicate on the "machine" field.
 func MachineIsNil() predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldMachine)))
-	})
+	return predicate.Ebike(sql.FieldIsNull(FieldMachine))
 }
 
 // MachineNotNil applies the NotNil predicate on the "machine" field.
 func MachineNotNil() predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldMachine)))
-	})
+	return predicate.Ebike(sql.FieldNotNull(FieldMachine))
 }
 
 // MachineEqualFold applies the EqualFold predicate on the "machine" field.
 func MachineEqualFold(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldMachine), v))
-	})
+	return predicate.Ebike(sql.FieldEqualFold(FieldMachine, v))
 }
 
 // MachineContainsFold applies the ContainsFold predicate on the "machine" field.
 func MachineContainsFold(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldMachine), v))
-	})
+	return predicate.Ebike(sql.FieldContainsFold(FieldMachine, v))
 }
 
 // SimEQ applies the EQ predicate on the "sim" field.
 func SimEQ(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSim), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldSim, v))
 }
 
 // SimNEQ applies the NEQ predicate on the "sim" field.
 func SimNEQ(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSim), v))
-	})
+	return predicate.Ebike(sql.FieldNEQ(FieldSim, v))
 }
 
 // SimIn applies the In predicate on the "sim" field.
 func SimIn(vs ...string) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldSim), v...))
-	})
+	return predicate.Ebike(sql.FieldIn(FieldSim, vs...))
 }
 
 // SimNotIn applies the NotIn predicate on the "sim" field.
 func SimNotIn(vs ...string) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldSim), v...))
-	})
+	return predicate.Ebike(sql.FieldNotIn(FieldSim, vs...))
 }
 
 // SimGT applies the GT predicate on the "sim" field.
 func SimGT(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldSim), v))
-	})
+	return predicate.Ebike(sql.FieldGT(FieldSim, v))
 }
 
 // SimGTE applies the GTE predicate on the "sim" field.
 func SimGTE(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldSim), v))
-	})
+	return predicate.Ebike(sql.FieldGTE(FieldSim, v))
 }
 
 // SimLT applies the LT predicate on the "sim" field.
 func SimLT(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldSim), v))
-	})
+	return predicate.Ebike(sql.FieldLT(FieldSim, v))
 }
 
 // SimLTE applies the LTE predicate on the "sim" field.
 func SimLTE(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldSim), v))
-	})
+	return predicate.Ebike(sql.FieldLTE(FieldSim, v))
 }
 
 // SimContains applies the Contains predicate on the "sim" field.
 func SimContains(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldSim), v))
-	})
+	return predicate.Ebike(sql.FieldContains(FieldSim, v))
 }
 
 // SimHasPrefix applies the HasPrefix predicate on the "sim" field.
 func SimHasPrefix(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldSim), v))
-	})
+	return predicate.Ebike(sql.FieldHasPrefix(FieldSim, v))
 }
 
 // SimHasSuffix applies the HasSuffix predicate on the "sim" field.
 func SimHasSuffix(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldSim), v))
-	})
+	return predicate.Ebike(sql.FieldHasSuffix(FieldSim, v))
 }
 
 // SimIsNil applies the IsNil predicate on the "sim" field.
 func SimIsNil() predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldSim)))
-	})
+	return predicate.Ebike(sql.FieldIsNull(FieldSim))
 }
 
 // SimNotNil applies the NotNil predicate on the "sim" field.
 func SimNotNil() predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldSim)))
-	})
+	return predicate.Ebike(sql.FieldNotNull(FieldSim))
 }
 
 // SimEqualFold applies the EqualFold predicate on the "sim" field.
 func SimEqualFold(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldSim), v))
-	})
+	return predicate.Ebike(sql.FieldEqualFold(FieldSim, v))
 }
 
 // SimContainsFold applies the ContainsFold predicate on the "sim" field.
 func SimContainsFold(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldSim), v))
-	})
+	return predicate.Ebike(sql.FieldContainsFold(FieldSim, v))
 }
 
 // ColorEQ applies the EQ predicate on the "color" field.
 func ColorEQ(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldColor), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldColor, v))
 }
 
 // ColorNEQ applies the NEQ predicate on the "color" field.
 func ColorNEQ(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldColor), v))
-	})
+	return predicate.Ebike(sql.FieldNEQ(FieldColor, v))
 }
 
 // ColorIn applies the In predicate on the "color" field.
 func ColorIn(vs ...string) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldColor), v...))
-	})
+	return predicate.Ebike(sql.FieldIn(FieldColor, vs...))
 }
 
 // ColorNotIn applies the NotIn predicate on the "color" field.
 func ColorNotIn(vs ...string) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldColor), v...))
-	})
+	return predicate.Ebike(sql.FieldNotIn(FieldColor, vs...))
 }
 
 // ColorGT applies the GT predicate on the "color" field.
 func ColorGT(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldColor), v))
-	})
+	return predicate.Ebike(sql.FieldGT(FieldColor, v))
 }
 
 // ColorGTE applies the GTE predicate on the "color" field.
 func ColorGTE(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldColor), v))
-	})
+	return predicate.Ebike(sql.FieldGTE(FieldColor, v))
 }
 
 // ColorLT applies the LT predicate on the "color" field.
 func ColorLT(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldColor), v))
-	})
+	return predicate.Ebike(sql.FieldLT(FieldColor, v))
 }
 
 // ColorLTE applies the LTE predicate on the "color" field.
 func ColorLTE(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldColor), v))
-	})
+	return predicate.Ebike(sql.FieldLTE(FieldColor, v))
 }
 
 // ColorContains applies the Contains predicate on the "color" field.
 func ColorContains(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldColor), v))
-	})
+	return predicate.Ebike(sql.FieldContains(FieldColor, v))
 }
 
 // ColorHasPrefix applies the HasPrefix predicate on the "color" field.
 func ColorHasPrefix(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldColor), v))
-	})
+	return predicate.Ebike(sql.FieldHasPrefix(FieldColor, v))
 }
 
 // ColorHasSuffix applies the HasSuffix predicate on the "color" field.
 func ColorHasSuffix(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldColor), v))
-	})
+	return predicate.Ebike(sql.FieldHasSuffix(FieldColor, v))
 }
 
 // ColorEqualFold applies the EqualFold predicate on the "color" field.
 func ColorEqualFold(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldColor), v))
-	})
+	return predicate.Ebike(sql.FieldEqualFold(FieldColor, v))
 }
 
 // ColorContainsFold applies the ContainsFold predicate on the "color" field.
 func ColorContainsFold(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldColor), v))
-	})
+	return predicate.Ebike(sql.FieldContainsFold(FieldColor, v))
 }
 
 // ExFactoryEQ applies the EQ predicate on the "ex_factory" field.
 func ExFactoryEQ(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldExFactory), v))
-	})
+	return predicate.Ebike(sql.FieldEQ(FieldExFactory, v))
 }
 
 // ExFactoryNEQ applies the NEQ predicate on the "ex_factory" field.
 func ExFactoryNEQ(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldExFactory), v))
-	})
+	return predicate.Ebike(sql.FieldNEQ(FieldExFactory, v))
 }
 
 // ExFactoryIn applies the In predicate on the "ex_factory" field.
 func ExFactoryIn(vs ...string) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldExFactory), v...))
-	})
+	return predicate.Ebike(sql.FieldIn(FieldExFactory, vs...))
 }
 
 // ExFactoryNotIn applies the NotIn predicate on the "ex_factory" field.
 func ExFactoryNotIn(vs ...string) predicate.Ebike {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldExFactory), v...))
-	})
+	return predicate.Ebike(sql.FieldNotIn(FieldExFactory, vs...))
 }
 
 // ExFactoryGT applies the GT predicate on the "ex_factory" field.
 func ExFactoryGT(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldExFactory), v))
-	})
+	return predicate.Ebike(sql.FieldGT(FieldExFactory, v))
 }
 
 // ExFactoryGTE applies the GTE predicate on the "ex_factory" field.
 func ExFactoryGTE(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldExFactory), v))
-	})
+	return predicate.Ebike(sql.FieldGTE(FieldExFactory, v))
 }
 
 // ExFactoryLT applies the LT predicate on the "ex_factory" field.
 func ExFactoryLT(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldExFactory), v))
-	})
+	return predicate.Ebike(sql.FieldLT(FieldExFactory, v))
 }
 
 // ExFactoryLTE applies the LTE predicate on the "ex_factory" field.
 func ExFactoryLTE(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldExFactory), v))
-	})
+	return predicate.Ebike(sql.FieldLTE(FieldExFactory, v))
 }
 
 // ExFactoryContains applies the Contains predicate on the "ex_factory" field.
 func ExFactoryContains(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldExFactory), v))
-	})
+	return predicate.Ebike(sql.FieldContains(FieldExFactory, v))
 }
 
 // ExFactoryHasPrefix applies the HasPrefix predicate on the "ex_factory" field.
 func ExFactoryHasPrefix(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldExFactory), v))
-	})
+	return predicate.Ebike(sql.FieldHasPrefix(FieldExFactory, v))
 }
 
 // ExFactoryHasSuffix applies the HasSuffix predicate on the "ex_factory" field.
 func ExFactoryHasSuffix(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldExFactory), v))
-	})
+	return predicate.Ebike(sql.FieldHasSuffix(FieldExFactory, v))
 }
 
 // ExFactoryEqualFold applies the EqualFold predicate on the "ex_factory" field.
 func ExFactoryEqualFold(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldExFactory), v))
-	})
+	return predicate.Ebike(sql.FieldEqualFold(FieldExFactory, v))
 }
 
 // ExFactoryContainsFold applies the ContainsFold predicate on the "ex_factory" field.
 func ExFactoryContainsFold(v string) predicate.Ebike {
-	return predicate.Ebike(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldExFactory), v))
-	})
+	return predicate.Ebike(sql.FieldContainsFold(FieldExFactory, v))
 }
 
 // HasBrand applies the HasEdge predicate on the "brand" edge.
@@ -1304,7 +856,6 @@ func HasBrand() predicate.Ebike {
 	return predicate.Ebike(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(BrandTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, BrandTable, BrandColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1332,7 +883,6 @@ func HasRider() predicate.Ebike {
 	return predicate.Ebike(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RiderTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1360,7 +910,6 @@ func HasStore() predicate.Ebike {
 	return predicate.Ebike(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StoreTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

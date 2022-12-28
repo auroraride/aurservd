@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/branch"
@@ -163,6 +164,12 @@ func (cfu *CabinetFaultUpdate) SetAttachments(s []string) *CabinetFaultUpdate {
 	return cfu
 }
 
+// AppendAttachments appends s to the "attachments" field.
+func (cfu *CabinetFaultUpdate) AppendAttachments(s []string) *CabinetFaultUpdate {
+	cfu.mutation.AppendAttachments(s)
+	return cfu
+}
+
 // ClearAttachments clears the value of the "attachments" field.
 func (cfu *CabinetFaultUpdate) ClearAttachments() *CabinetFaultUpdate {
 	cfu.mutation.ClearAttachments()
@@ -240,43 +247,10 @@ func (cfu *CabinetFaultUpdate) ClearRider() *CabinetFaultUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (cfu *CabinetFaultUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := cfu.defaults(); err != nil {
 		return 0, err
 	}
-	if len(cfu.hooks) == 0 {
-		if err = cfu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = cfu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CabinetFaultMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = cfu.check(); err != nil {
-				return 0, err
-			}
-			cfu.mutation = mutation
-			affected, err = cfu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(cfu.hooks) - 1; i >= 0; i-- {
-			if cfu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = cfu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, cfu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, CabinetFaultMutation](ctx, cfu.sqlSave, cfu.mutation, cfu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -337,6 +311,9 @@ func (cfu *CabinetFaultUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *
 }
 
 func (cfu *CabinetFaultUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := cfu.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   cabinetfault.Table,
@@ -355,109 +332,57 @@ func (cfu *CabinetFaultUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := cfu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: cabinetfault.FieldUpdatedAt,
-		})
+		_spec.SetField(cabinetfault.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := cfu.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: cabinetfault.FieldDeletedAt,
-		})
+		_spec.SetField(cabinetfault.FieldDeletedAt, field.TypeTime, value)
 	}
 	if cfu.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: cabinetfault.FieldDeletedAt,
-		})
+		_spec.ClearField(cabinetfault.FieldDeletedAt, field.TypeTime)
 	}
 	if cfu.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: cabinetfault.FieldCreator,
-		})
+		_spec.ClearField(cabinetfault.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := cfu.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinetfault.FieldLastModifier,
-		})
+		_spec.SetField(cabinetfault.FieldLastModifier, field.TypeJSON, value)
 	}
 	if cfu.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: cabinetfault.FieldLastModifier,
-		})
+		_spec.ClearField(cabinetfault.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := cfu.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinetfault.FieldRemark,
-		})
+		_spec.SetField(cabinetfault.FieldRemark, field.TypeString, value)
 	}
 	if cfu.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: cabinetfault.FieldRemark,
-		})
+		_spec.ClearField(cabinetfault.FieldRemark, field.TypeString)
 	}
 	if value, ok := cfu.mutation.Status(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: cabinetfault.FieldStatus,
-		})
+		_spec.SetField(cabinetfault.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := cfu.mutation.AddedStatus(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: cabinetfault.FieldStatus,
-		})
+		_spec.AddField(cabinetfault.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := cfu.mutation.Fault(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinetfault.FieldFault,
-		})
+		_spec.SetField(cabinetfault.FieldFault, field.TypeString, value)
 	}
 	if cfu.mutation.FaultCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: cabinetfault.FieldFault,
-		})
+		_spec.ClearField(cabinetfault.FieldFault, field.TypeString)
 	}
 	if value, ok := cfu.mutation.Attachments(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinetfault.FieldAttachments,
+		_spec.SetField(cabinetfault.FieldAttachments, field.TypeJSON, value)
+	}
+	if value, ok := cfu.mutation.AppendedAttachments(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, cabinetfault.FieldAttachments, value)
 		})
 	}
 	if cfu.mutation.AttachmentsCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: cabinetfault.FieldAttachments,
-		})
+		_spec.ClearField(cabinetfault.FieldAttachments, field.TypeJSON)
 	}
 	if value, ok := cfu.mutation.Description(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinetfault.FieldDescription,
-		})
+		_spec.SetField(cabinetfault.FieldDescription, field.TypeString, value)
 	}
 	if cfu.mutation.DescriptionCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: cabinetfault.FieldDescription,
-		})
+		_spec.ClearField(cabinetfault.FieldDescription, field.TypeString)
 	}
 	if cfu.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -599,7 +524,7 @@ func (cfu *CabinetFaultUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = cfu.modifiers
+	_spec.AddModifiers(cfu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, cfu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{cabinetfault.Label}
@@ -608,6 +533,7 @@ func (cfu *CabinetFaultUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	cfu.mutation.done = true
 	return n, nil
 }
 
@@ -749,6 +675,12 @@ func (cfuo *CabinetFaultUpdateOne) SetAttachments(s []string) *CabinetFaultUpdat
 	return cfuo
 }
 
+// AppendAttachments appends s to the "attachments" field.
+func (cfuo *CabinetFaultUpdateOne) AppendAttachments(s []string) *CabinetFaultUpdateOne {
+	cfuo.mutation.AppendAttachments(s)
+	return cfuo
+}
+
 // ClearAttachments clears the value of the "attachments" field.
 func (cfuo *CabinetFaultUpdateOne) ClearAttachments() *CabinetFaultUpdateOne {
 	cfuo.mutation.ClearAttachments()
@@ -833,49 +765,10 @@ func (cfuo *CabinetFaultUpdateOne) Select(field string, fields ...string) *Cabin
 
 // Save executes the query and returns the updated CabinetFault entity.
 func (cfuo *CabinetFaultUpdateOne) Save(ctx context.Context) (*CabinetFault, error) {
-	var (
-		err  error
-		node *CabinetFault
-	)
 	if err := cfuo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(cfuo.hooks) == 0 {
-		if err = cfuo.check(); err != nil {
-			return nil, err
-		}
-		node, err = cfuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CabinetFaultMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = cfuo.check(); err != nil {
-				return nil, err
-			}
-			cfuo.mutation = mutation
-			node, err = cfuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(cfuo.hooks) - 1; i >= 0; i-- {
-			if cfuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = cfuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, cfuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*CabinetFault)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from CabinetFaultMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*CabinetFault, CabinetFaultMutation](ctx, cfuo.sqlSave, cfuo.mutation, cfuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -936,6 +829,9 @@ func (cfuo *CabinetFaultUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder
 }
 
 func (cfuo *CabinetFaultUpdateOne) sqlSave(ctx context.Context) (_node *CabinetFault, err error) {
+	if err := cfuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   cabinetfault.Table,
@@ -971,109 +867,57 @@ func (cfuo *CabinetFaultUpdateOne) sqlSave(ctx context.Context) (_node *CabinetF
 		}
 	}
 	if value, ok := cfuo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: cabinetfault.FieldUpdatedAt,
-		})
+		_spec.SetField(cabinetfault.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := cfuo.mutation.DeletedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: cabinetfault.FieldDeletedAt,
-		})
+		_spec.SetField(cabinetfault.FieldDeletedAt, field.TypeTime, value)
 	}
 	if cfuo.mutation.DeletedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: cabinetfault.FieldDeletedAt,
-		})
+		_spec.ClearField(cabinetfault.FieldDeletedAt, field.TypeTime)
 	}
 	if cfuo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: cabinetfault.FieldCreator,
-		})
+		_spec.ClearField(cabinetfault.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := cfuo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinetfault.FieldLastModifier,
-		})
+		_spec.SetField(cabinetfault.FieldLastModifier, field.TypeJSON, value)
 	}
 	if cfuo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: cabinetfault.FieldLastModifier,
-		})
+		_spec.ClearField(cabinetfault.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := cfuo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinetfault.FieldRemark,
-		})
+		_spec.SetField(cabinetfault.FieldRemark, field.TypeString, value)
 	}
 	if cfuo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: cabinetfault.FieldRemark,
-		})
+		_spec.ClearField(cabinetfault.FieldRemark, field.TypeString)
 	}
 	if value, ok := cfuo.mutation.Status(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: cabinetfault.FieldStatus,
-		})
+		_spec.SetField(cabinetfault.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := cfuo.mutation.AddedStatus(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: cabinetfault.FieldStatus,
-		})
+		_spec.AddField(cabinetfault.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := cfuo.mutation.Fault(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinetfault.FieldFault,
-		})
+		_spec.SetField(cabinetfault.FieldFault, field.TypeString, value)
 	}
 	if cfuo.mutation.FaultCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: cabinetfault.FieldFault,
-		})
+		_spec.ClearField(cabinetfault.FieldFault, field.TypeString)
 	}
 	if value, ok := cfuo.mutation.Attachments(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinetfault.FieldAttachments,
+		_spec.SetField(cabinetfault.FieldAttachments, field.TypeJSON, value)
+	}
+	if value, ok := cfuo.mutation.AppendedAttachments(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, cabinetfault.FieldAttachments, value)
 		})
 	}
 	if cfuo.mutation.AttachmentsCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: cabinetfault.FieldAttachments,
-		})
+		_spec.ClearField(cabinetfault.FieldAttachments, field.TypeJSON)
 	}
 	if value, ok := cfuo.mutation.Description(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinetfault.FieldDescription,
-		})
+		_spec.SetField(cabinetfault.FieldDescription, field.TypeString, value)
 	}
 	if cfuo.mutation.DescriptionCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: cabinetfault.FieldDescription,
-		})
+		_spec.ClearField(cabinetfault.FieldDescription, field.TypeString)
 	}
 	if cfuo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1215,7 +1059,7 @@ func (cfuo *CabinetFaultUpdateOne) sqlSave(ctx context.Context) (_node *CabinetF
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = cfuo.modifiers
+	_spec.AddModifiers(cfuo.modifiers...)
 	_node = &CabinetFault{config: cfuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -1227,5 +1071,6 @@ func (cfuo *CabinetFaultUpdateOne) sqlSave(ctx context.Context) (_node *CabinetF
 		}
 		return nil, err
 	}
+	cfuo.mutation.done = true
 	return _node, nil
 }

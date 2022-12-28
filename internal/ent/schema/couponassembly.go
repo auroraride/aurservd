@@ -52,6 +52,7 @@ type CouponAssembly struct {
 func (CouponAssembly) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "coupon_assembly"},
+        entsql.WithComments(true),
     }
 }
 

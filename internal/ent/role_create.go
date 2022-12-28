@@ -99,50 +99,8 @@ func (rc *RoleCreate) Mutation() *RoleMutation {
 
 // Save creates the Role in the database.
 func (rc *RoleCreate) Save(ctx context.Context) (*Role, error) {
-	var (
-		err  error
-		node *Role
-	)
 	rc.defaults()
-	if len(rc.hooks) == 0 {
-		if err = rc.check(); err != nil {
-			return nil, err
-		}
-		node, err = rc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*RoleMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = rc.check(); err != nil {
-				return nil, err
-			}
-			rc.mutation = mutation
-			if node, err = rc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(rc.hooks) - 1; i >= 0; i-- {
-			if rc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = rc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, rc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Role)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from RoleMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Role, RoleMutation](ctx, rc.sqlSave, rc.mutation, rc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -201,6 +159,9 @@ func (rc *RoleCreate) check() error {
 }
 
 func (rc *RoleCreate) sqlSave(ctx context.Context) (*Role, error) {
+	if err := rc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := rc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, rc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -210,6 +171,8 @@ func (rc *RoleCreate) sqlSave(ctx context.Context) (*Role, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	rc.mutation.id = &_node.ID
+	rc.mutation.done = true
 	return _node, nil
 }
 
@@ -226,43 +189,23 @@ func (rc *RoleCreate) createSpec() (*Role, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = rc.conflict
 	if value, ok := rc.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: role.FieldName,
-		})
+		_spec.SetField(role.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := rc.mutation.Permissions(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: role.FieldPermissions,
-		})
+		_spec.SetField(role.FieldPermissions, field.TypeJSON, value)
 		_node.Permissions = value
 	}
 	if value, ok := rc.mutation.Buildin(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: role.FieldBuildin,
-		})
+		_spec.SetField(role.FieldBuildin, field.TypeBool, value)
 		_node.Buildin = value
 	}
 	if value, ok := rc.mutation.Super(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: role.FieldSuper,
-		})
+		_spec.SetField(role.FieldSuper, field.TypeBool, value)
 		_node.Super = value
 	}
 	if value, ok := rc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: role.FieldCreatedAt,
-		})
+		_spec.SetField(role.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if nodes := rc.mutation.ManagersIDs(); len(nodes) > 0 {

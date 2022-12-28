@@ -23,6 +23,7 @@ type CouponAssemblyQuery struct {
 	unique       *bool
 	order        []OrderFunc
 	fields       []string
+	inters       []Interceptor
 	predicates   []predicate.CouponAssembly
 	withTemplate *CouponTemplateQuery
 	modifiers    []func(*sql.Selector)
@@ -37,13 +38,13 @@ func (caq *CouponAssemblyQuery) Where(ps ...predicate.CouponAssembly) *CouponAss
 	return caq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (caq *CouponAssemblyQuery) Limit(limit int) *CouponAssemblyQuery {
 	caq.limit = &limit
 	return caq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (caq *CouponAssemblyQuery) Offset(offset int) *CouponAssemblyQuery {
 	caq.offset = &offset
 	return caq
@@ -56,7 +57,7 @@ func (caq *CouponAssemblyQuery) Unique(unique bool) *CouponAssemblyQuery {
 	return caq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (caq *CouponAssemblyQuery) Order(o ...OrderFunc) *CouponAssemblyQuery {
 	caq.order = append(caq.order, o...)
 	return caq
@@ -64,7 +65,7 @@ func (caq *CouponAssemblyQuery) Order(o ...OrderFunc) *CouponAssemblyQuery {
 
 // QueryTemplate chains the current query on the "template" edge.
 func (caq *CouponAssemblyQuery) QueryTemplate() *CouponTemplateQuery {
-	query := &CouponTemplateQuery{config: caq.config}
+	query := (&CouponTemplateClient{config: caq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := caq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -87,7 +88,7 @@ func (caq *CouponAssemblyQuery) QueryTemplate() *CouponTemplateQuery {
 // First returns the first CouponAssembly entity from the query.
 // Returns a *NotFoundError when no CouponAssembly was found.
 func (caq *CouponAssemblyQuery) First(ctx context.Context) (*CouponAssembly, error) {
-	nodes, err := caq.Limit(1).All(ctx)
+	nodes, err := caq.Limit(1).All(newQueryContext(ctx, TypeCouponAssembly, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +111,7 @@ func (caq *CouponAssemblyQuery) FirstX(ctx context.Context) *CouponAssembly {
 // Returns a *NotFoundError when no CouponAssembly ID was found.
 func (caq *CouponAssemblyQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = caq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = caq.Limit(1).IDs(newQueryContext(ctx, TypeCouponAssembly, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -133,7 +134,7 @@ func (caq *CouponAssemblyQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one CouponAssembly entity is found.
 // Returns a *NotFoundError when no CouponAssembly entities are found.
 func (caq *CouponAssemblyQuery) Only(ctx context.Context) (*CouponAssembly, error) {
-	nodes, err := caq.Limit(2).All(ctx)
+	nodes, err := caq.Limit(2).All(newQueryContext(ctx, TypeCouponAssembly, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +162,7 @@ func (caq *CouponAssemblyQuery) OnlyX(ctx context.Context) *CouponAssembly {
 // Returns a *NotFoundError when no entities are found.
 func (caq *CouponAssemblyQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = caq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = caq.Limit(2).IDs(newQueryContext(ctx, TypeCouponAssembly, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -186,10 +187,12 @@ func (caq *CouponAssemblyQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of CouponAssemblies.
 func (caq *CouponAssemblyQuery) All(ctx context.Context) ([]*CouponAssembly, error) {
+	ctx = newQueryContext(ctx, TypeCouponAssembly, "All")
 	if err := caq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return caq.sqlAll(ctx)
+	qr := querierAll[[]*CouponAssembly, *CouponAssemblyQuery]()
+	return withInterceptors[[]*CouponAssembly](ctx, caq, qr, caq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -204,6 +207,7 @@ func (caq *CouponAssemblyQuery) AllX(ctx context.Context) []*CouponAssembly {
 // IDs executes the query and returns a list of CouponAssembly IDs.
 func (caq *CouponAssemblyQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeCouponAssembly, "IDs")
 	if err := caq.Select(couponassembly.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -221,10 +225,11 @@ func (caq *CouponAssemblyQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (caq *CouponAssemblyQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeCouponAssembly, "Count")
 	if err := caq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return caq.sqlCount(ctx)
+	return withInterceptors[int](ctx, caq, querierCount[*CouponAssemblyQuery](), caq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -238,10 +243,15 @@ func (caq *CouponAssemblyQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (caq *CouponAssemblyQuery) Exist(ctx context.Context) (bool, error) {
-	if err := caq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeCouponAssembly, "Exist")
+	switch _, err := caq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return caq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -276,7 +286,7 @@ func (caq *CouponAssemblyQuery) Clone() *CouponAssemblyQuery {
 // WithTemplate tells the query-builder to eager-load the nodes that are connected to
 // the "template" edge. The optional arguments are used to configure the query builder of the edge.
 func (caq *CouponAssemblyQuery) WithTemplate(opts ...func(*CouponTemplateQuery)) *CouponAssemblyQuery {
-	query := &CouponTemplateQuery{config: caq.config}
+	query := (&CouponTemplateClient{config: caq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -299,16 +309,11 @@ func (caq *CouponAssemblyQuery) WithTemplate(opts ...func(*CouponTemplateQuery))
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (caq *CouponAssemblyQuery) GroupBy(field string, fields ...string) *CouponAssemblyGroupBy {
-	grbuild := &CouponAssemblyGroupBy{config: caq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := caq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return caq.sqlQuery(ctx), nil
-	}
+	caq.fields = append([]string{field}, fields...)
+	grbuild := &CouponAssemblyGroupBy{build: caq}
+	grbuild.flds = &caq.fields
 	grbuild.label = couponassembly.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -326,13 +331,28 @@ func (caq *CouponAssemblyQuery) GroupBy(field string, fields ...string) *CouponA
 //		Scan(ctx, &v)
 func (caq *CouponAssemblyQuery) Select(fields ...string) *CouponAssemblySelect {
 	caq.fields = append(caq.fields, fields...)
-	selbuild := &CouponAssemblySelect{CouponAssemblyQuery: caq}
-	selbuild.label = couponassembly.Label
-	selbuild.flds, selbuild.scan = &caq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &CouponAssemblySelect{CouponAssemblyQuery: caq}
+	sbuild.label = couponassembly.Label
+	sbuild.flds, sbuild.scan = &caq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a CouponAssemblySelect configured with the given aggregations.
+func (caq *CouponAssemblyQuery) Aggregate(fns ...AggregateFunc) *CouponAssemblySelect {
+	return caq.Select().Aggregate(fns...)
 }
 
 func (caq *CouponAssemblyQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range caq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, caq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range caq.fields {
 		if !couponassembly.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -423,17 +443,6 @@ func (caq *CouponAssemblyQuery) sqlCount(ctx context.Context) (int, error) {
 		_spec.Unique = caq.unique != nil && *caq.unique
 	}
 	return sqlgraph.CountNodes(ctx, caq.driver, _spec)
-}
-
-func (caq *CouponAssemblyQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := caq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
 }
 
 func (caq *CouponAssemblyQuery) querySpec() *sqlgraph.QuerySpec {
@@ -527,13 +536,8 @@ func (caq *CouponAssemblyQuery) Modify(modifiers ...func(s *sql.Selector)) *Coup
 
 // CouponAssemblyGroupBy is the group-by builder for CouponAssembly entities.
 type CouponAssemblyGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *CouponAssemblyQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -542,74 +546,77 @@ func (cagb *CouponAssemblyGroupBy) Aggregate(fns ...AggregateFunc) *CouponAssemb
 	return cagb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (cagb *CouponAssemblyGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := cagb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeCouponAssembly, "GroupBy")
+	if err := cagb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	cagb.sql = query
-	return cagb.sqlScan(ctx, v)
+	return scanWithInterceptors[*CouponAssemblyQuery, *CouponAssemblyGroupBy](ctx, cagb.build, cagb, cagb.build.inters, v)
 }
 
-func (cagb *CouponAssemblyGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range cagb.fields {
-		if !couponassembly.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (cagb *CouponAssemblyGroupBy) sqlScan(ctx context.Context, root *CouponAssemblyQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(cagb.fns))
+	for _, fn := range cagb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := cagb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*cagb.flds)+len(cagb.fns))
+		for _, f := range *cagb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*cagb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := cagb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := cagb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (cagb *CouponAssemblyGroupBy) sqlQuery() *sql.Selector {
-	selector := cagb.sql.Select()
-	aggregation := make([]string, 0, len(cagb.fns))
-	for _, fn := range cagb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(cagb.fields)+len(cagb.fns))
-		for _, f := range cagb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(cagb.fields...)...)
-}
-
 // CouponAssemblySelect is the builder for selecting fields of CouponAssembly entities.
 type CouponAssemblySelect struct {
 	*CouponAssemblyQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (cas *CouponAssemblySelect) Aggregate(fns ...AggregateFunc) *CouponAssemblySelect {
+	cas.fns = append(cas.fns, fns...)
+	return cas
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (cas *CouponAssemblySelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeCouponAssembly, "Select")
 	if err := cas.prepareQuery(ctx); err != nil {
 		return err
 	}
-	cas.sql = cas.CouponAssemblyQuery.sqlQuery(ctx)
-	return cas.sqlScan(ctx, v)
+	return scanWithInterceptors[*CouponAssemblyQuery, *CouponAssemblySelect](ctx, cas.CouponAssemblyQuery, cas, cas.inters, v)
 }
 
-func (cas *CouponAssemblySelect) sqlScan(ctx context.Context, v any) error {
+func (cas *CouponAssemblySelect) sqlScan(ctx context.Context, root *CouponAssemblyQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(cas.fns))
+	for _, fn := range cas.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*cas.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := cas.sql.Query()
+	query, args := selector.Query()
 	if err := cas.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

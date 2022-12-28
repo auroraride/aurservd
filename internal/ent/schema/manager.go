@@ -50,6 +50,7 @@ type Manager struct {
 func (Manager) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "manager"},
+        entsql.WithComments(true),
     }
 }
 

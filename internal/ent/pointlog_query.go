@@ -24,6 +24,7 @@ type PointLogQuery struct {
 	unique     *bool
 	order      []OrderFunc
 	fields     []string
+	inters     []Interceptor
 	predicates []predicate.PointLog
 	withRider  *RiderQuery
 	withOrder  *OrderQuery
@@ -39,13 +40,13 @@ func (plq *PointLogQuery) Where(ps ...predicate.PointLog) *PointLogQuery {
 	return plq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (plq *PointLogQuery) Limit(limit int) *PointLogQuery {
 	plq.limit = &limit
 	return plq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (plq *PointLogQuery) Offset(offset int) *PointLogQuery {
 	plq.offset = &offset
 	return plq
@@ -58,7 +59,7 @@ func (plq *PointLogQuery) Unique(unique bool) *PointLogQuery {
 	return plq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (plq *PointLogQuery) Order(o ...OrderFunc) *PointLogQuery {
 	plq.order = append(plq.order, o...)
 	return plq
@@ -66,7 +67,7 @@ func (plq *PointLogQuery) Order(o ...OrderFunc) *PointLogQuery {
 
 // QueryRider chains the current query on the "rider" edge.
 func (plq *PointLogQuery) QueryRider() *RiderQuery {
-	query := &RiderQuery{config: plq.config}
+	query := (&RiderClient{config: plq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := plq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -88,7 +89,7 @@ func (plq *PointLogQuery) QueryRider() *RiderQuery {
 
 // QueryOrder chains the current query on the "order" edge.
 func (plq *PointLogQuery) QueryOrder() *OrderQuery {
-	query := &OrderQuery{config: plq.config}
+	query := (&OrderClient{config: plq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := plq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -111,7 +112,7 @@ func (plq *PointLogQuery) QueryOrder() *OrderQuery {
 // First returns the first PointLog entity from the query.
 // Returns a *NotFoundError when no PointLog was found.
 func (plq *PointLogQuery) First(ctx context.Context) (*PointLog, error) {
-	nodes, err := plq.Limit(1).All(ctx)
+	nodes, err := plq.Limit(1).All(newQueryContext(ctx, TypePointLog, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +135,7 @@ func (plq *PointLogQuery) FirstX(ctx context.Context) *PointLog {
 // Returns a *NotFoundError when no PointLog ID was found.
 func (plq *PointLogQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = plq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = plq.Limit(1).IDs(newQueryContext(ctx, TypePointLog, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -157,7 +158,7 @@ func (plq *PointLogQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one PointLog entity is found.
 // Returns a *NotFoundError when no PointLog entities are found.
 func (plq *PointLogQuery) Only(ctx context.Context) (*PointLog, error) {
-	nodes, err := plq.Limit(2).All(ctx)
+	nodes, err := plq.Limit(2).All(newQueryContext(ctx, TypePointLog, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -185,7 +186,7 @@ func (plq *PointLogQuery) OnlyX(ctx context.Context) *PointLog {
 // Returns a *NotFoundError when no entities are found.
 func (plq *PointLogQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = plq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = plq.Limit(2).IDs(newQueryContext(ctx, TypePointLog, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -210,10 +211,12 @@ func (plq *PointLogQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of PointLogs.
 func (plq *PointLogQuery) All(ctx context.Context) ([]*PointLog, error) {
+	ctx = newQueryContext(ctx, TypePointLog, "All")
 	if err := plq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return plq.sqlAll(ctx)
+	qr := querierAll[[]*PointLog, *PointLogQuery]()
+	return withInterceptors[[]*PointLog](ctx, plq, qr, plq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -228,6 +231,7 @@ func (plq *PointLogQuery) AllX(ctx context.Context) []*PointLog {
 // IDs executes the query and returns a list of PointLog IDs.
 func (plq *PointLogQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypePointLog, "IDs")
 	if err := plq.Select(pointlog.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -245,10 +249,11 @@ func (plq *PointLogQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (plq *PointLogQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypePointLog, "Count")
 	if err := plq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return plq.sqlCount(ctx)
+	return withInterceptors[int](ctx, plq, querierCount[*PointLogQuery](), plq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -262,10 +267,15 @@ func (plq *PointLogQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (plq *PointLogQuery) Exist(ctx context.Context) (bool, error) {
-	if err := plq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypePointLog, "Exist")
+	switch _, err := plq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return plq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -301,7 +311,7 @@ func (plq *PointLogQuery) Clone() *PointLogQuery {
 // WithRider tells the query-builder to eager-load the nodes that are connected to
 // the "rider" edge. The optional arguments are used to configure the query builder of the edge.
 func (plq *PointLogQuery) WithRider(opts ...func(*RiderQuery)) *PointLogQuery {
-	query := &RiderQuery{config: plq.config}
+	query := (&RiderClient{config: plq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -312,7 +322,7 @@ func (plq *PointLogQuery) WithRider(opts ...func(*RiderQuery)) *PointLogQuery {
 // WithOrder tells the query-builder to eager-load the nodes that are connected to
 // the "order" edge. The optional arguments are used to configure the query builder of the edge.
 func (plq *PointLogQuery) WithOrder(opts ...func(*OrderQuery)) *PointLogQuery {
-	query := &OrderQuery{config: plq.config}
+	query := (&OrderClient{config: plq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -335,16 +345,11 @@ func (plq *PointLogQuery) WithOrder(opts ...func(*OrderQuery)) *PointLogQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (plq *PointLogQuery) GroupBy(field string, fields ...string) *PointLogGroupBy {
-	grbuild := &PointLogGroupBy{config: plq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := plq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return plq.sqlQuery(ctx), nil
-	}
+	plq.fields = append([]string{field}, fields...)
+	grbuild := &PointLogGroupBy{build: plq}
+	grbuild.flds = &plq.fields
 	grbuild.label = pointlog.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -362,13 +367,28 @@ func (plq *PointLogQuery) GroupBy(field string, fields ...string) *PointLogGroup
 //		Scan(ctx, &v)
 func (plq *PointLogQuery) Select(fields ...string) *PointLogSelect {
 	plq.fields = append(plq.fields, fields...)
-	selbuild := &PointLogSelect{PointLogQuery: plq}
-	selbuild.label = pointlog.Label
-	selbuild.flds, selbuild.scan = &plq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &PointLogSelect{PointLogQuery: plq}
+	sbuild.label = pointlog.Label
+	sbuild.flds, sbuild.scan = &plq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a PointLogSelect configured with the given aggregations.
+func (plq *PointLogQuery) Aggregate(fns ...AggregateFunc) *PointLogSelect {
+	return plq.Select().Aggregate(fns...)
 }
 
 func (plq *PointLogQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range plq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, plq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range plq.fields {
 		if !pointlog.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -497,17 +517,6 @@ func (plq *PointLogQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, plq.driver, _spec)
 }
 
-func (plq *PointLogQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := plq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (plq *PointLogQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -599,13 +608,8 @@ func (plq *PointLogQuery) Modify(modifiers ...func(s *sql.Selector)) *PointLogSe
 
 // PointLogGroupBy is the group-by builder for PointLog entities.
 type PointLogGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *PointLogQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -614,74 +618,77 @@ func (plgb *PointLogGroupBy) Aggregate(fns ...AggregateFunc) *PointLogGroupBy {
 	return plgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (plgb *PointLogGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := plgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypePointLog, "GroupBy")
+	if err := plgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	plgb.sql = query
-	return plgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*PointLogQuery, *PointLogGroupBy](ctx, plgb.build, plgb, plgb.build.inters, v)
 }
 
-func (plgb *PointLogGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range plgb.fields {
-		if !pointlog.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (plgb *PointLogGroupBy) sqlScan(ctx context.Context, root *PointLogQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(plgb.fns))
+	for _, fn := range plgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := plgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*plgb.flds)+len(plgb.fns))
+		for _, f := range *plgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*plgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := plgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := plgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (plgb *PointLogGroupBy) sqlQuery() *sql.Selector {
-	selector := plgb.sql.Select()
-	aggregation := make([]string, 0, len(plgb.fns))
-	for _, fn := range plgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(plgb.fields)+len(plgb.fns))
-		for _, f := range plgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(plgb.fields...)...)
-}
-
 // PointLogSelect is the builder for selecting fields of PointLog entities.
 type PointLogSelect struct {
 	*PointLogQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (pls *PointLogSelect) Aggregate(fns ...AggregateFunc) *PointLogSelect {
+	pls.fns = append(pls.fns, fns...)
+	return pls
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (pls *PointLogSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypePointLog, "Select")
 	if err := pls.prepareQuery(ctx); err != nil {
 		return err
 	}
-	pls.sql = pls.PointLogQuery.sqlQuery(ctx)
-	return pls.sqlScan(ctx, v)
+	return scanWithInterceptors[*PointLogQuery, *PointLogSelect](ctx, pls.PointLogQuery, pls, pls.inters, v)
 }
 
-func (pls *PointLogSelect) sqlScan(ctx context.Context, v any) error {
+func (pls *PointLogSelect) sqlScan(ctx context.Context, root *PointLogQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(pls.fns))
+	for _, fn := range pls.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*pls.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := pls.sql.Query()
+	query, args := selector.Query()
 	if err := pls.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

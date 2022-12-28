@@ -476,52 +476,10 @@ func (oc *OrderCreate) Mutation() *OrderMutation {
 
 // Save creates the Order in the database.
 func (oc *OrderCreate) Save(ctx context.Context) (*Order, error) {
-	var (
-		err  error
-		node *Order
-	)
 	if err := oc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(oc.hooks) == 0 {
-		if err = oc.check(); err != nil {
-			return nil, err
-		}
-		node, err = oc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*OrderMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = oc.check(); err != nil {
-				return nil, err
-			}
-			oc.mutation = mutation
-			if node, err = oc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(oc.hooks) - 1; i >= 0; i-- {
-			if oc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = oc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, oc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Order)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from OrderMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Order, OrderMutation](ctx, oc.sqlSave, oc.mutation, oc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -640,6 +598,9 @@ func (oc *OrderCreate) check() error {
 }
 
 func (oc *OrderCreate) sqlSave(ctx context.Context) (*Order, error) {
+	if err := oc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := oc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, oc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -649,6 +610,8 @@ func (oc *OrderCreate) sqlSave(ctx context.Context) (*Order, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	oc.mutation.id = &_node.ID
+	oc.mutation.done = true
 	return _node, nil
 }
 
@@ -665,163 +628,83 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = oc.conflict
 	if value, ok := oc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: order.FieldCreatedAt,
-		})
+		_spec.SetField(order.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := oc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: order.FieldUpdatedAt,
-		})
+		_spec.SetField(order.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := oc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: order.FieldDeletedAt,
-		})
+		_spec.SetField(order.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := oc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: order.FieldCreator,
-		})
+		_spec.SetField(order.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := oc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: order.FieldLastModifier,
-		})
+		_spec.SetField(order.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := oc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: order.FieldRemark,
-		})
+		_spec.SetField(order.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := oc.mutation.Status(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: order.FieldStatus,
-		})
+		_spec.SetField(order.FieldStatus, field.TypeUint8, value)
 		_node.Status = value
 	}
 	if value, ok := oc.mutation.Payway(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: order.FieldPayway,
-		})
+		_spec.SetField(order.FieldPayway, field.TypeUint8, value)
 		_node.Payway = value
 	}
 	if value, ok := oc.mutation.GetType(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
-			Value:  value,
-			Column: order.FieldType,
-		})
+		_spec.SetField(order.FieldType, field.TypeUint, value)
 		_node.Type = value
 	}
 	if value, ok := oc.mutation.OutTradeNo(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: order.FieldOutTradeNo,
-		})
+		_spec.SetField(order.FieldOutTradeNo, field.TypeString, value)
 		_node.OutTradeNo = value
 	}
 	if value, ok := oc.mutation.TradeNo(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: order.FieldTradeNo,
-		})
+		_spec.SetField(order.FieldTradeNo, field.TypeString, value)
 		_node.TradeNo = value
 	}
 	if value, ok := oc.mutation.Amount(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: order.FieldAmount,
-		})
+		_spec.SetField(order.FieldAmount, field.TypeFloat64, value)
 		_node.Amount = value
 	}
 	if value, ok := oc.mutation.Total(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: order.FieldTotal,
-		})
+		_spec.SetField(order.FieldTotal, field.TypeFloat64, value)
 		_node.Total = value
 	}
 	if value, ok := oc.mutation.RefundAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: order.FieldRefundAt,
-		})
+		_spec.SetField(order.FieldRefundAt, field.TypeTime, value)
 		_node.RefundAt = &value
 	}
 	if value, ok := oc.mutation.InitialDays(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: order.FieldInitialDays,
-		})
+		_spec.SetField(order.FieldInitialDays, field.TypeInt, value)
 		_node.InitialDays = value
 	}
 	if value, ok := oc.mutation.PastDays(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: order.FieldPastDays,
-		})
+		_spec.SetField(order.FieldPastDays, field.TypeInt, value)
 		_node.PastDays = value
 	}
 	if value, ok := oc.mutation.Points(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: order.FieldPoints,
-		})
+		_spec.SetField(order.FieldPoints, field.TypeInt64, value)
 		_node.Points = value
 	}
 	if value, ok := oc.mutation.PointRatio(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: order.FieldPointRatio,
-		})
+		_spec.SetField(order.FieldPointRatio, field.TypeFloat64, value)
 		_node.PointRatio = value
 	}
 	if value, ok := oc.mutation.CouponAmount(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: order.FieldCouponAmount,
-		})
+		_spec.SetField(order.FieldCouponAmount, field.TypeFloat64, value)
 		_node.CouponAmount = value
 	}
 	if value, ok := oc.mutation.DiscountNewly(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: order.FieldDiscountNewly,
-		})
+		_spec.SetField(order.FieldDiscountNewly, field.TypeFloat64, value)
 		_node.DiscountNewly = value
 	}
 	if nodes := oc.mutation.PlanIDs(); len(nodes) > 0 {

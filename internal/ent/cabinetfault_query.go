@@ -26,6 +26,7 @@ type CabinetFaultQuery struct {
 	unique      *bool
 	order       []OrderFunc
 	fields      []string
+	inters      []Interceptor
 	predicates  []predicate.CabinetFault
 	withCity    *CityQuery
 	withBranch  *BranchQuery
@@ -43,13 +44,13 @@ func (cfq *CabinetFaultQuery) Where(ps ...predicate.CabinetFault) *CabinetFaultQ
 	return cfq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (cfq *CabinetFaultQuery) Limit(limit int) *CabinetFaultQuery {
 	cfq.limit = &limit
 	return cfq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (cfq *CabinetFaultQuery) Offset(offset int) *CabinetFaultQuery {
 	cfq.offset = &offset
 	return cfq
@@ -62,7 +63,7 @@ func (cfq *CabinetFaultQuery) Unique(unique bool) *CabinetFaultQuery {
 	return cfq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (cfq *CabinetFaultQuery) Order(o ...OrderFunc) *CabinetFaultQuery {
 	cfq.order = append(cfq.order, o...)
 	return cfq
@@ -70,7 +71,7 @@ func (cfq *CabinetFaultQuery) Order(o ...OrderFunc) *CabinetFaultQuery {
 
 // QueryCity chains the current query on the "city" edge.
 func (cfq *CabinetFaultQuery) QueryCity() *CityQuery {
-	query := &CityQuery{config: cfq.config}
+	query := (&CityClient{config: cfq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cfq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -92,7 +93,7 @@ func (cfq *CabinetFaultQuery) QueryCity() *CityQuery {
 
 // QueryBranch chains the current query on the "branch" edge.
 func (cfq *CabinetFaultQuery) QueryBranch() *BranchQuery {
-	query := &BranchQuery{config: cfq.config}
+	query := (&BranchClient{config: cfq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cfq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -114,7 +115,7 @@ func (cfq *CabinetFaultQuery) QueryBranch() *BranchQuery {
 
 // QueryCabinet chains the current query on the "cabinet" edge.
 func (cfq *CabinetFaultQuery) QueryCabinet() *CabinetQuery {
-	query := &CabinetQuery{config: cfq.config}
+	query := (&CabinetClient{config: cfq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cfq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -136,7 +137,7 @@ func (cfq *CabinetFaultQuery) QueryCabinet() *CabinetQuery {
 
 // QueryRider chains the current query on the "rider" edge.
 func (cfq *CabinetFaultQuery) QueryRider() *RiderQuery {
-	query := &RiderQuery{config: cfq.config}
+	query := (&RiderClient{config: cfq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cfq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -159,7 +160,7 @@ func (cfq *CabinetFaultQuery) QueryRider() *RiderQuery {
 // First returns the first CabinetFault entity from the query.
 // Returns a *NotFoundError when no CabinetFault was found.
 func (cfq *CabinetFaultQuery) First(ctx context.Context) (*CabinetFault, error) {
-	nodes, err := cfq.Limit(1).All(ctx)
+	nodes, err := cfq.Limit(1).All(newQueryContext(ctx, TypeCabinetFault, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -182,7 +183,7 @@ func (cfq *CabinetFaultQuery) FirstX(ctx context.Context) *CabinetFault {
 // Returns a *NotFoundError when no CabinetFault ID was found.
 func (cfq *CabinetFaultQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = cfq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = cfq.Limit(1).IDs(newQueryContext(ctx, TypeCabinetFault, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -205,7 +206,7 @@ func (cfq *CabinetFaultQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one CabinetFault entity is found.
 // Returns a *NotFoundError when no CabinetFault entities are found.
 func (cfq *CabinetFaultQuery) Only(ctx context.Context) (*CabinetFault, error) {
-	nodes, err := cfq.Limit(2).All(ctx)
+	nodes, err := cfq.Limit(2).All(newQueryContext(ctx, TypeCabinetFault, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -233,7 +234,7 @@ func (cfq *CabinetFaultQuery) OnlyX(ctx context.Context) *CabinetFault {
 // Returns a *NotFoundError when no entities are found.
 func (cfq *CabinetFaultQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = cfq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = cfq.Limit(2).IDs(newQueryContext(ctx, TypeCabinetFault, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -258,10 +259,12 @@ func (cfq *CabinetFaultQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of CabinetFaults.
 func (cfq *CabinetFaultQuery) All(ctx context.Context) ([]*CabinetFault, error) {
+	ctx = newQueryContext(ctx, TypeCabinetFault, "All")
 	if err := cfq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return cfq.sqlAll(ctx)
+	qr := querierAll[[]*CabinetFault, *CabinetFaultQuery]()
+	return withInterceptors[[]*CabinetFault](ctx, cfq, qr, cfq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -276,6 +279,7 @@ func (cfq *CabinetFaultQuery) AllX(ctx context.Context) []*CabinetFault {
 // IDs executes the query and returns a list of CabinetFault IDs.
 func (cfq *CabinetFaultQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeCabinetFault, "IDs")
 	if err := cfq.Select(cabinetfault.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -293,10 +297,11 @@ func (cfq *CabinetFaultQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (cfq *CabinetFaultQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeCabinetFault, "Count")
 	if err := cfq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return cfq.sqlCount(ctx)
+	return withInterceptors[int](ctx, cfq, querierCount[*CabinetFaultQuery](), cfq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -310,10 +315,15 @@ func (cfq *CabinetFaultQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (cfq *CabinetFaultQuery) Exist(ctx context.Context) (bool, error) {
-	if err := cfq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeCabinetFault, "Exist")
+	switch _, err := cfq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return cfq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -351,7 +361,7 @@ func (cfq *CabinetFaultQuery) Clone() *CabinetFaultQuery {
 // WithCity tells the query-builder to eager-load the nodes that are connected to
 // the "city" edge. The optional arguments are used to configure the query builder of the edge.
 func (cfq *CabinetFaultQuery) WithCity(opts ...func(*CityQuery)) *CabinetFaultQuery {
-	query := &CityQuery{config: cfq.config}
+	query := (&CityClient{config: cfq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -362,7 +372,7 @@ func (cfq *CabinetFaultQuery) WithCity(opts ...func(*CityQuery)) *CabinetFaultQu
 // WithBranch tells the query-builder to eager-load the nodes that are connected to
 // the "branch" edge. The optional arguments are used to configure the query builder of the edge.
 func (cfq *CabinetFaultQuery) WithBranch(opts ...func(*BranchQuery)) *CabinetFaultQuery {
-	query := &BranchQuery{config: cfq.config}
+	query := (&BranchClient{config: cfq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -373,7 +383,7 @@ func (cfq *CabinetFaultQuery) WithBranch(opts ...func(*BranchQuery)) *CabinetFau
 // WithCabinet tells the query-builder to eager-load the nodes that are connected to
 // the "cabinet" edge. The optional arguments are used to configure the query builder of the edge.
 func (cfq *CabinetFaultQuery) WithCabinet(opts ...func(*CabinetQuery)) *CabinetFaultQuery {
-	query := &CabinetQuery{config: cfq.config}
+	query := (&CabinetClient{config: cfq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -384,7 +394,7 @@ func (cfq *CabinetFaultQuery) WithCabinet(opts ...func(*CabinetQuery)) *CabinetF
 // WithRider tells the query-builder to eager-load the nodes that are connected to
 // the "rider" edge. The optional arguments are used to configure the query builder of the edge.
 func (cfq *CabinetFaultQuery) WithRider(opts ...func(*RiderQuery)) *CabinetFaultQuery {
-	query := &RiderQuery{config: cfq.config}
+	query := (&RiderClient{config: cfq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -407,16 +417,11 @@ func (cfq *CabinetFaultQuery) WithRider(opts ...func(*RiderQuery)) *CabinetFault
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (cfq *CabinetFaultQuery) GroupBy(field string, fields ...string) *CabinetFaultGroupBy {
-	grbuild := &CabinetFaultGroupBy{config: cfq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := cfq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return cfq.sqlQuery(ctx), nil
-	}
+	cfq.fields = append([]string{field}, fields...)
+	grbuild := &CabinetFaultGroupBy{build: cfq}
+	grbuild.flds = &cfq.fields
 	grbuild.label = cabinetfault.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -434,13 +439,28 @@ func (cfq *CabinetFaultQuery) GroupBy(field string, fields ...string) *CabinetFa
 //		Scan(ctx, &v)
 func (cfq *CabinetFaultQuery) Select(fields ...string) *CabinetFaultSelect {
 	cfq.fields = append(cfq.fields, fields...)
-	selbuild := &CabinetFaultSelect{CabinetFaultQuery: cfq}
-	selbuild.label = cabinetfault.Label
-	selbuild.flds, selbuild.scan = &cfq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &CabinetFaultSelect{CabinetFaultQuery: cfq}
+	sbuild.label = cabinetfault.Label
+	sbuild.flds, sbuild.scan = &cfq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a CabinetFaultSelect configured with the given aggregations.
+func (cfq *CabinetFaultQuery) Aggregate(fns ...AggregateFunc) *CabinetFaultSelect {
+	return cfq.Select().Aggregate(fns...)
 }
 
 func (cfq *CabinetFaultQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range cfq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, cfq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range cfq.fields {
 		if !cabinetfault.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -632,17 +652,6 @@ func (cfq *CabinetFaultQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, cfq.driver, _spec)
 }
 
-func (cfq *CabinetFaultQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := cfq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (cfq *CabinetFaultQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -734,13 +743,8 @@ func (cfq *CabinetFaultQuery) Modify(modifiers ...func(s *sql.Selector)) *Cabine
 
 // CabinetFaultGroupBy is the group-by builder for CabinetFault entities.
 type CabinetFaultGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *CabinetFaultQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -749,74 +753,77 @@ func (cfgb *CabinetFaultGroupBy) Aggregate(fns ...AggregateFunc) *CabinetFaultGr
 	return cfgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (cfgb *CabinetFaultGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := cfgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeCabinetFault, "GroupBy")
+	if err := cfgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	cfgb.sql = query
-	return cfgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*CabinetFaultQuery, *CabinetFaultGroupBy](ctx, cfgb.build, cfgb, cfgb.build.inters, v)
 }
 
-func (cfgb *CabinetFaultGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range cfgb.fields {
-		if !cabinetfault.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (cfgb *CabinetFaultGroupBy) sqlScan(ctx context.Context, root *CabinetFaultQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(cfgb.fns))
+	for _, fn := range cfgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := cfgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*cfgb.flds)+len(cfgb.fns))
+		for _, f := range *cfgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*cfgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := cfgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := cfgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (cfgb *CabinetFaultGroupBy) sqlQuery() *sql.Selector {
-	selector := cfgb.sql.Select()
-	aggregation := make([]string, 0, len(cfgb.fns))
-	for _, fn := range cfgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(cfgb.fields)+len(cfgb.fns))
-		for _, f := range cfgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(cfgb.fields...)...)
-}
-
 // CabinetFaultSelect is the builder for selecting fields of CabinetFault entities.
 type CabinetFaultSelect struct {
 	*CabinetFaultQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (cfs *CabinetFaultSelect) Aggregate(fns ...AggregateFunc) *CabinetFaultSelect {
+	cfs.fns = append(cfs.fns, fns...)
+	return cfs
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (cfs *CabinetFaultSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeCabinetFault, "Select")
 	if err := cfs.prepareQuery(ctx); err != nil {
 		return err
 	}
-	cfs.sql = cfs.CabinetFaultQuery.sqlQuery(ctx)
-	return cfs.sqlScan(ctx, v)
+	return scanWithInterceptors[*CabinetFaultQuery, *CabinetFaultSelect](ctx, cfs.CabinetFaultQuery, cfs, cfs.inters, v)
 }
 
-func (cfs *CabinetFaultSelect) sqlScan(ctx context.Context, v any) error {
+func (cfs *CabinetFaultSelect) sqlScan(ctx context.Context, root *CabinetFaultQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(cfs.fns))
+	for _, fn := range cfs.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*cfs.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := cfs.sql.Query()
+	query, args := selector.Query()
 	if err := cfs.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

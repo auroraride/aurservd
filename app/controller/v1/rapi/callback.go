@@ -9,7 +9,7 @@ import (
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/payment"
-    jsoniter "github.com/json-iterator/go"
+    "github.com/goccy/go-json"
     "github.com/labstack/echo/v4"
     log "github.com/sirupsen/logrus"
     "io"
@@ -49,7 +49,7 @@ func (*callback) ESignCallback(c echo.Context) (err error) {
 func (*callback) AlipayCallback(c echo.Context) (err error) {
     res := payment.NewAlipay().Notification(c.Request())
 
-    b, _ := jsoniter.MarshalIndent(res, "", "  ")
+    b, _ := json.MarshalIndent(res, "", "  ")
     log.Infof("支付宝支付缓存更新: %s", b)
 
     service.NewOrder().DoPayment(res)

@@ -25,6 +25,7 @@ type EnterpriseStatementQuery struct {
 	unique         *bool
 	order          []OrderFunc
 	fields         []string
+	inters         []Interceptor
 	predicates     []predicate.EnterpriseStatement
 	withEnterprise *EnterpriseQuery
 	withBills      *EnterpriseBillQuery
@@ -40,13 +41,13 @@ func (esq *EnterpriseStatementQuery) Where(ps ...predicate.EnterpriseStatement) 
 	return esq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (esq *EnterpriseStatementQuery) Limit(limit int) *EnterpriseStatementQuery {
 	esq.limit = &limit
 	return esq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (esq *EnterpriseStatementQuery) Offset(offset int) *EnterpriseStatementQuery {
 	esq.offset = &offset
 	return esq
@@ -59,7 +60,7 @@ func (esq *EnterpriseStatementQuery) Unique(unique bool) *EnterpriseStatementQue
 	return esq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (esq *EnterpriseStatementQuery) Order(o ...OrderFunc) *EnterpriseStatementQuery {
 	esq.order = append(esq.order, o...)
 	return esq
@@ -67,7 +68,7 @@ func (esq *EnterpriseStatementQuery) Order(o ...OrderFunc) *EnterpriseStatementQ
 
 // QueryEnterprise chains the current query on the "enterprise" edge.
 func (esq *EnterpriseStatementQuery) QueryEnterprise() *EnterpriseQuery {
-	query := &EnterpriseQuery{config: esq.config}
+	query := (&EnterpriseClient{config: esq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := esq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -89,7 +90,7 @@ func (esq *EnterpriseStatementQuery) QueryEnterprise() *EnterpriseQuery {
 
 // QueryBills chains the current query on the "bills" edge.
 func (esq *EnterpriseStatementQuery) QueryBills() *EnterpriseBillQuery {
-	query := &EnterpriseBillQuery{config: esq.config}
+	query := (&EnterpriseBillClient{config: esq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := esq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -112,7 +113,7 @@ func (esq *EnterpriseStatementQuery) QueryBills() *EnterpriseBillQuery {
 // First returns the first EnterpriseStatement entity from the query.
 // Returns a *NotFoundError when no EnterpriseStatement was found.
 func (esq *EnterpriseStatementQuery) First(ctx context.Context) (*EnterpriseStatement, error) {
-	nodes, err := esq.Limit(1).All(ctx)
+	nodes, err := esq.Limit(1).All(newQueryContext(ctx, TypeEnterpriseStatement, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +136,7 @@ func (esq *EnterpriseStatementQuery) FirstX(ctx context.Context) *EnterpriseStat
 // Returns a *NotFoundError when no EnterpriseStatement ID was found.
 func (esq *EnterpriseStatementQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = esq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = esq.Limit(1).IDs(newQueryContext(ctx, TypeEnterpriseStatement, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -158,7 +159,7 @@ func (esq *EnterpriseStatementQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one EnterpriseStatement entity is found.
 // Returns a *NotFoundError when no EnterpriseStatement entities are found.
 func (esq *EnterpriseStatementQuery) Only(ctx context.Context) (*EnterpriseStatement, error) {
-	nodes, err := esq.Limit(2).All(ctx)
+	nodes, err := esq.Limit(2).All(newQueryContext(ctx, TypeEnterpriseStatement, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -186,7 +187,7 @@ func (esq *EnterpriseStatementQuery) OnlyX(ctx context.Context) *EnterpriseState
 // Returns a *NotFoundError when no entities are found.
 func (esq *EnterpriseStatementQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = esq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = esq.Limit(2).IDs(newQueryContext(ctx, TypeEnterpriseStatement, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -211,10 +212,12 @@ func (esq *EnterpriseStatementQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of EnterpriseStatements.
 func (esq *EnterpriseStatementQuery) All(ctx context.Context) ([]*EnterpriseStatement, error) {
+	ctx = newQueryContext(ctx, TypeEnterpriseStatement, "All")
 	if err := esq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return esq.sqlAll(ctx)
+	qr := querierAll[[]*EnterpriseStatement, *EnterpriseStatementQuery]()
+	return withInterceptors[[]*EnterpriseStatement](ctx, esq, qr, esq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -229,6 +232,7 @@ func (esq *EnterpriseStatementQuery) AllX(ctx context.Context) []*EnterpriseStat
 // IDs executes the query and returns a list of EnterpriseStatement IDs.
 func (esq *EnterpriseStatementQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeEnterpriseStatement, "IDs")
 	if err := esq.Select(enterprisestatement.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -246,10 +250,11 @@ func (esq *EnterpriseStatementQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (esq *EnterpriseStatementQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeEnterpriseStatement, "Count")
 	if err := esq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return esq.sqlCount(ctx)
+	return withInterceptors[int](ctx, esq, querierCount[*EnterpriseStatementQuery](), esq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -263,10 +268,15 @@ func (esq *EnterpriseStatementQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (esq *EnterpriseStatementQuery) Exist(ctx context.Context) (bool, error) {
-	if err := esq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeEnterpriseStatement, "Exist")
+	switch _, err := esq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return esq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -302,7 +312,7 @@ func (esq *EnterpriseStatementQuery) Clone() *EnterpriseStatementQuery {
 // WithEnterprise tells the query-builder to eager-load the nodes that are connected to
 // the "enterprise" edge. The optional arguments are used to configure the query builder of the edge.
 func (esq *EnterpriseStatementQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *EnterpriseStatementQuery {
-	query := &EnterpriseQuery{config: esq.config}
+	query := (&EnterpriseClient{config: esq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -313,7 +323,7 @@ func (esq *EnterpriseStatementQuery) WithEnterprise(opts ...func(*EnterpriseQuer
 // WithBills tells the query-builder to eager-load the nodes that are connected to
 // the "bills" edge. The optional arguments are used to configure the query builder of the edge.
 func (esq *EnterpriseStatementQuery) WithBills(opts ...func(*EnterpriseBillQuery)) *EnterpriseStatementQuery {
-	query := &EnterpriseBillQuery{config: esq.config}
+	query := (&EnterpriseBillClient{config: esq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -336,16 +346,11 @@ func (esq *EnterpriseStatementQuery) WithBills(opts ...func(*EnterpriseBillQuery
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (esq *EnterpriseStatementQuery) GroupBy(field string, fields ...string) *EnterpriseStatementGroupBy {
-	grbuild := &EnterpriseStatementGroupBy{config: esq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := esq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return esq.sqlQuery(ctx), nil
-	}
+	esq.fields = append([]string{field}, fields...)
+	grbuild := &EnterpriseStatementGroupBy{build: esq}
+	grbuild.flds = &esq.fields
 	grbuild.label = enterprisestatement.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -363,13 +368,28 @@ func (esq *EnterpriseStatementQuery) GroupBy(field string, fields ...string) *En
 //		Scan(ctx, &v)
 func (esq *EnterpriseStatementQuery) Select(fields ...string) *EnterpriseStatementSelect {
 	esq.fields = append(esq.fields, fields...)
-	selbuild := &EnterpriseStatementSelect{EnterpriseStatementQuery: esq}
-	selbuild.label = enterprisestatement.Label
-	selbuild.flds, selbuild.scan = &esq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &EnterpriseStatementSelect{EnterpriseStatementQuery: esq}
+	sbuild.label = enterprisestatement.Label
+	sbuild.flds, sbuild.scan = &esq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a EnterpriseStatementSelect configured with the given aggregations.
+func (esq *EnterpriseStatementQuery) Aggregate(fns ...AggregateFunc) *EnterpriseStatementSelect {
+	return esq.Select().Aggregate(fns...)
 }
 
 func (esq *EnterpriseStatementQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range esq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, esq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range esq.fields {
 		if !enterprisestatement.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -497,17 +517,6 @@ func (esq *EnterpriseStatementQuery) sqlCount(ctx context.Context) (int, error) 
 	return sqlgraph.CountNodes(ctx, esq.driver, _spec)
 }
 
-func (esq *EnterpriseStatementQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := esq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (esq *EnterpriseStatementQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -599,13 +608,8 @@ func (esq *EnterpriseStatementQuery) Modify(modifiers ...func(s *sql.Selector)) 
 
 // EnterpriseStatementGroupBy is the group-by builder for EnterpriseStatement entities.
 type EnterpriseStatementGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *EnterpriseStatementQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -614,74 +618,77 @@ func (esgb *EnterpriseStatementGroupBy) Aggregate(fns ...AggregateFunc) *Enterpr
 	return esgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (esgb *EnterpriseStatementGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := esgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeEnterpriseStatement, "GroupBy")
+	if err := esgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	esgb.sql = query
-	return esgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*EnterpriseStatementQuery, *EnterpriseStatementGroupBy](ctx, esgb.build, esgb, esgb.build.inters, v)
 }
 
-func (esgb *EnterpriseStatementGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range esgb.fields {
-		if !enterprisestatement.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (esgb *EnterpriseStatementGroupBy) sqlScan(ctx context.Context, root *EnterpriseStatementQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(esgb.fns))
+	for _, fn := range esgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := esgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*esgb.flds)+len(esgb.fns))
+		for _, f := range *esgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*esgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := esgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := esgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (esgb *EnterpriseStatementGroupBy) sqlQuery() *sql.Selector {
-	selector := esgb.sql.Select()
-	aggregation := make([]string, 0, len(esgb.fns))
-	for _, fn := range esgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(esgb.fields)+len(esgb.fns))
-		for _, f := range esgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(esgb.fields...)...)
-}
-
 // EnterpriseStatementSelect is the builder for selecting fields of EnterpriseStatement entities.
 type EnterpriseStatementSelect struct {
 	*EnterpriseStatementQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (ess *EnterpriseStatementSelect) Aggregate(fns ...AggregateFunc) *EnterpriseStatementSelect {
+	ess.fns = append(ess.fns, fns...)
+	return ess
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (ess *EnterpriseStatementSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeEnterpriseStatement, "Select")
 	if err := ess.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ess.sql = ess.EnterpriseStatementQuery.sqlQuery(ctx)
-	return ess.sqlScan(ctx, v)
+	return scanWithInterceptors[*EnterpriseStatementQuery, *EnterpriseStatementSelect](ctx, ess.EnterpriseStatementQuery, ess, ess.inters, v)
 }
 
-func (ess *EnterpriseStatementSelect) sqlScan(ctx context.Context, v any) error {
+func (ess *EnterpriseStatementSelect) sqlScan(ctx context.Context, root *EnterpriseStatementQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(ess.fns))
+	for _, fn := range ess.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*ess.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := ess.sql.Query()
+	query, args := selector.Query()
 	if err := ess.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

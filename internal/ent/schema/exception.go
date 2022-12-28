@@ -20,6 +20,7 @@ type Exception struct {
 func (Exception) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "exception"},
+        entsql.WithComments(true),
     }
 }
 

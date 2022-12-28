@@ -93,43 +93,10 @@ func (su *SettingUpdate) Mutation() *SettingMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (su *SettingUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	if err := su.defaults(); err != nil {
 		return 0, err
 	}
-	if len(su.hooks) == 0 {
-		if err = su.check(); err != nil {
-			return 0, err
-		}
-		affected, err = su.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*SettingMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = su.check(); err != nil {
-				return 0, err
-			}
-			su.mutation = mutation
-			affected, err = su.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(su.hooks) - 1; i >= 0; i-- {
-			if su.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = su.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, su.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, SettingMutation](ctx, su.sqlSave, su.mutation, su.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -183,6 +150,9 @@ func (su *SettingUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Settin
 }
 
 func (su *SettingUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := su.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   setting.Table,
@@ -201,66 +171,33 @@ func (su *SettingUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := su.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: setting.FieldUpdatedAt,
-		})
+		_spec.SetField(setting.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if su.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: setting.FieldCreator,
-		})
+		_spec.ClearField(setting.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := su.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: setting.FieldLastModifier,
-		})
+		_spec.SetField(setting.FieldLastModifier, field.TypeJSON, value)
 	}
 	if su.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: setting.FieldLastModifier,
-		})
+		_spec.ClearField(setting.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := su.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: setting.FieldRemark,
-		})
+		_spec.SetField(setting.FieldRemark, field.TypeString, value)
 	}
 	if su.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: setting.FieldRemark,
-		})
+		_spec.ClearField(setting.FieldRemark, field.TypeString)
 	}
 	if value, ok := su.mutation.Key(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: setting.FieldKey,
-		})
+		_spec.SetField(setting.FieldKey, field.TypeString, value)
 	}
 	if value, ok := su.mutation.Desc(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: setting.FieldDesc,
-		})
+		_spec.SetField(setting.FieldDesc, field.TypeString, value)
 	}
 	if value, ok := su.mutation.Content(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: setting.FieldContent,
-		})
+		_spec.SetField(setting.FieldContent, field.TypeString, value)
 	}
-	_spec.Modifiers = su.modifiers
+	_spec.AddModifiers(su.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, su.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{setting.Label}
@@ -269,6 +206,7 @@ func (su *SettingUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	su.mutation.done = true
 	return n, nil
 }
 
@@ -351,49 +289,10 @@ func (suo *SettingUpdateOne) Select(field string, fields ...string) *SettingUpda
 
 // Save executes the query and returns the updated Setting entity.
 func (suo *SettingUpdateOne) Save(ctx context.Context) (*Setting, error) {
-	var (
-		err  error
-		node *Setting
-	)
 	if err := suo.defaults(); err != nil {
 		return nil, err
 	}
-	if len(suo.hooks) == 0 {
-		if err = suo.check(); err != nil {
-			return nil, err
-		}
-		node, err = suo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*SettingMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = suo.check(); err != nil {
-				return nil, err
-			}
-			suo.mutation = mutation
-			node, err = suo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(suo.hooks) - 1; i >= 0; i-- {
-			if suo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = suo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, suo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Setting)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from SettingMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Setting, SettingMutation](ctx, suo.sqlSave, suo.mutation, suo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -447,6 +346,9 @@ func (suo *SettingUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Se
 }
 
 func (suo *SettingUpdateOne) sqlSave(ctx context.Context) (_node *Setting, err error) {
+	if err := suo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   setting.Table,
@@ -482,66 +384,33 @@ func (suo *SettingUpdateOne) sqlSave(ctx context.Context) (_node *Setting, err e
 		}
 	}
 	if value, ok := suo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: setting.FieldUpdatedAt,
-		})
+		_spec.SetField(setting.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if suo.mutation.CreatorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: setting.FieldCreator,
-		})
+		_spec.ClearField(setting.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := suo.mutation.LastModifier(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: setting.FieldLastModifier,
-		})
+		_spec.SetField(setting.FieldLastModifier, field.TypeJSON, value)
 	}
 	if suo.mutation.LastModifierCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: setting.FieldLastModifier,
-		})
+		_spec.ClearField(setting.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := suo.mutation.Remark(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: setting.FieldRemark,
-		})
+		_spec.SetField(setting.FieldRemark, field.TypeString, value)
 	}
 	if suo.mutation.RemarkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: setting.FieldRemark,
-		})
+		_spec.ClearField(setting.FieldRemark, field.TypeString)
 	}
 	if value, ok := suo.mutation.Key(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: setting.FieldKey,
-		})
+		_spec.SetField(setting.FieldKey, field.TypeString, value)
 	}
 	if value, ok := suo.mutation.Desc(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: setting.FieldDesc,
-		})
+		_spec.SetField(setting.FieldDesc, field.TypeString, value)
 	}
 	if value, ok := suo.mutation.Content(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: setting.FieldContent,
-		})
+		_spec.SetField(setting.FieldContent, field.TypeString, value)
 	}
-	_spec.Modifiers = suo.modifiers
+	_spec.AddModifiers(suo.modifiers...)
 	_node = &Setting{config: suo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -553,5 +422,6 @@ func (suo *SettingUpdateOne) sqlSave(ctx context.Context) (_node *Setting, err e
 		}
 		return nil, err
 	}
+	suo.mutation.done = true
 	return _node, nil
 }

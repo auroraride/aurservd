@@ -286,52 +286,10 @@ func (pc *PlanCreate) Mutation() *PlanMutation {
 
 // Save creates the Plan in the database.
 func (pc *PlanCreate) Save(ctx context.Context) (*Plan, error) {
-	var (
-		err  error
-		node *Plan
-	)
 	if err := pc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(pc.hooks) == 0 {
-		if err = pc.check(); err != nil {
-			return nil, err
-		}
-		node, err = pc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*PlanMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = pc.check(); err != nil {
-				return nil, err
-			}
-			pc.mutation = mutation
-			if node, err = pc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(pc.hooks) - 1; i >= 0; i-- {
-			if pc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = pc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, pc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Plan)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from PlanMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Plan, PlanMutation](ctx, pc.sqlSave, pc.mutation, pc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -422,6 +380,9 @@ func (pc *PlanCreate) check() error {
 }
 
 func (pc *PlanCreate) sqlSave(ctx context.Context) (*Plan, error) {
+	if err := pc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := pc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, pc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -431,6 +392,8 @@ func (pc *PlanCreate) sqlSave(ctx context.Context) (*Plan, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	pc.mutation.id = &_node.ID
+	pc.mutation.done = true
 	return _node, nil
 }
 
@@ -447,155 +410,79 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = pc.conflict
 	if value, ok := pc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: plan.FieldCreatedAt,
-		})
+		_spec.SetField(plan.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := pc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: plan.FieldUpdatedAt,
-		})
+		_spec.SetField(plan.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := pc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: plan.FieldDeletedAt,
-		})
+		_spec.SetField(plan.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := pc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: plan.FieldCreator,
-		})
+		_spec.SetField(plan.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := pc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: plan.FieldLastModifier,
-		})
+		_spec.SetField(plan.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := pc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: plan.FieldRemark,
-		})
+		_spec.SetField(plan.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := pc.mutation.Model(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: plan.FieldModel,
-		})
+		_spec.SetField(plan.FieldModel, field.TypeString, value)
 		_node.Model = value
 	}
 	if value, ok := pc.mutation.Enable(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: plan.FieldEnable,
-		})
+		_spec.SetField(plan.FieldEnable, field.TypeBool, value)
 		_node.Enable = value
 	}
 	if value, ok := pc.mutation.GetType(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: plan.FieldType,
-		})
+		_spec.SetField(plan.FieldType, field.TypeUint8, value)
 		_node.Type = value
 	}
 	if value, ok := pc.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: plan.FieldName,
-		})
+		_spec.SetField(plan.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := pc.mutation.Start(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: plan.FieldStart,
-		})
+		_spec.SetField(plan.FieldStart, field.TypeTime, value)
 		_node.Start = value
 	}
 	if value, ok := pc.mutation.End(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: plan.FieldEnd,
-		})
+		_spec.SetField(plan.FieldEnd, field.TypeTime, value)
 		_node.End = value
 	}
 	if value, ok := pc.mutation.Price(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: plan.FieldPrice,
-		})
+		_spec.SetField(plan.FieldPrice, field.TypeFloat64, value)
 		_node.Price = value
 	}
 	if value, ok := pc.mutation.Days(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
-			Value:  value,
-			Column: plan.FieldDays,
-		})
+		_spec.SetField(plan.FieldDays, field.TypeUint, value)
 		_node.Days = value
 	}
 	if value, ok := pc.mutation.Commission(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: plan.FieldCommission,
-		})
+		_spec.SetField(plan.FieldCommission, field.TypeFloat64, value)
 		_node.Commission = value
 	}
 	if value, ok := pc.mutation.Original(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: plan.FieldOriginal,
-		})
+		_spec.SetField(plan.FieldOriginal, field.TypeFloat64, value)
 		_node.Original = value
 	}
 	if value, ok := pc.mutation.Desc(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: plan.FieldDesc,
-		})
+		_spec.SetField(plan.FieldDesc, field.TypeString, value)
 		_node.Desc = value
 	}
 	if value, ok := pc.mutation.DiscountNewly(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: plan.FieldDiscountNewly,
-		})
+		_spec.SetField(plan.FieldDiscountNewly, field.TypeFloat64, value)
 		_node.DiscountNewly = value
 	}
 	if value, ok := pc.mutation.Notes(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: plan.FieldNotes,
-		})
+		_spec.SetField(plan.FieldNotes, field.TypeJSON, value)
 		_node.Notes = value
 	}
 	if nodes := pc.mutation.BrandIDs(); len(nodes) > 0 {

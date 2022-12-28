@@ -186,41 +186,8 @@ func (sru *SubscribeReminderUpdate) ClearRider() *SubscribeReminderUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (sru *SubscribeReminderUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	sru.defaults()
-	if len(sru.hooks) == 0 {
-		if err = sru.check(); err != nil {
-			return 0, err
-		}
-		affected, err = sru.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*SubscribeReminderMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = sru.check(); err != nil {
-				return 0, err
-			}
-			sru.mutation = mutation
-			affected, err = sru.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(sru.hooks) - 1; i >= 0; i-- {
-			if sru.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = sru.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, sru.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, SubscribeReminderMutation](ctx, sru.sqlSave, sru.mutation, sru.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -279,6 +246,9 @@ func (sru *SubscribeReminderUpdate) Modify(modifiers ...func(u *sql.UpdateBuilde
 }
 
 func (sru *SubscribeReminderUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := sru.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   subscribereminder.Table,
@@ -297,94 +267,43 @@ func (sru *SubscribeReminderUpdate) sqlSave(ctx context.Context) (n int, err err
 		}
 	}
 	if value, ok := sru.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribereminder.FieldUpdatedAt,
-		})
+		_spec.SetField(subscribereminder.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := sru.mutation.GetType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: subscribereminder.FieldType,
-		})
+		_spec.SetField(subscribereminder.FieldType, field.TypeEnum, value)
 	}
 	if value, ok := sru.mutation.Phone(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribereminder.FieldPhone,
-		})
+		_spec.SetField(subscribereminder.FieldPhone, field.TypeString, value)
 	}
 	if value, ok := sru.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribereminder.FieldName,
-		})
+		_spec.SetField(subscribereminder.FieldName, field.TypeString, value)
 	}
 	if value, ok := sru.mutation.Success(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: subscribereminder.FieldSuccess,
-		})
+		_spec.SetField(subscribereminder.FieldSuccess, field.TypeBool, value)
 	}
 	if value, ok := sru.mutation.Days(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribereminder.FieldDays,
-		})
+		_spec.SetField(subscribereminder.FieldDays, field.TypeInt, value)
 	}
 	if value, ok := sru.mutation.AddedDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribereminder.FieldDays,
-		})
+		_spec.AddField(subscribereminder.FieldDays, field.TypeInt, value)
 	}
 	if value, ok := sru.mutation.PlanName(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribereminder.FieldPlanName,
-		})
+		_spec.SetField(subscribereminder.FieldPlanName, field.TypeString, value)
 	}
 	if value, ok := sru.mutation.Date(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribereminder.FieldDate,
-		})
+		_spec.SetField(subscribereminder.FieldDate, field.TypeString, value)
 	}
 	if value, ok := sru.mutation.Fee(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: subscribereminder.FieldFee,
-		})
+		_spec.SetField(subscribereminder.FieldFee, field.TypeFloat64, value)
 	}
 	if value, ok := sru.mutation.AddedFee(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: subscribereminder.FieldFee,
-		})
+		_spec.AddField(subscribereminder.FieldFee, field.TypeFloat64, value)
 	}
 	if value, ok := sru.mutation.FeeFormula(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribereminder.FieldFeeFormula,
-		})
+		_spec.SetField(subscribereminder.FieldFeeFormula, field.TypeString, value)
 	}
 	if sru.mutation.FeeFormulaCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: subscribereminder.FieldFeeFormula,
-		})
+		_spec.ClearField(subscribereminder.FieldFeeFormula, field.TypeString)
 	}
 	if sru.mutation.SubscribeCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -491,7 +410,7 @@ func (sru *SubscribeReminderUpdate) sqlSave(ctx context.Context) (n int, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = sru.modifiers
+	_spec.AddModifiers(sru.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, sru.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{subscribereminder.Label}
@@ -500,6 +419,7 @@ func (sru *SubscribeReminderUpdate) sqlSave(ctx context.Context) (n int, err err
 		}
 		return 0, err
 	}
+	sru.mutation.done = true
 	return n, nil
 }
 
@@ -673,47 +593,8 @@ func (sruo *SubscribeReminderUpdateOne) Select(field string, fields ...string) *
 
 // Save executes the query and returns the updated SubscribeReminder entity.
 func (sruo *SubscribeReminderUpdateOne) Save(ctx context.Context) (*SubscribeReminder, error) {
-	var (
-		err  error
-		node *SubscribeReminder
-	)
 	sruo.defaults()
-	if len(sruo.hooks) == 0 {
-		if err = sruo.check(); err != nil {
-			return nil, err
-		}
-		node, err = sruo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*SubscribeReminderMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = sruo.check(); err != nil {
-				return nil, err
-			}
-			sruo.mutation = mutation
-			node, err = sruo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(sruo.hooks) - 1; i >= 0; i-- {
-			if sruo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = sruo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, sruo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*SubscribeReminder)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from SubscribeReminderMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*SubscribeReminder, SubscribeReminderMutation](ctx, sruo.sqlSave, sruo.mutation, sruo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -772,6 +653,9 @@ func (sruo *SubscribeReminderUpdateOne) Modify(modifiers ...func(u *sql.UpdateBu
 }
 
 func (sruo *SubscribeReminderUpdateOne) sqlSave(ctx context.Context) (_node *SubscribeReminder, err error) {
+	if err := sruo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   subscribereminder.Table,
@@ -807,94 +691,43 @@ func (sruo *SubscribeReminderUpdateOne) sqlSave(ctx context.Context) (_node *Sub
 		}
 	}
 	if value, ok := sruo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: subscribereminder.FieldUpdatedAt,
-		})
+		_spec.SetField(subscribereminder.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := sruo.mutation.GetType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: subscribereminder.FieldType,
-		})
+		_spec.SetField(subscribereminder.FieldType, field.TypeEnum, value)
 	}
 	if value, ok := sruo.mutation.Phone(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribereminder.FieldPhone,
-		})
+		_spec.SetField(subscribereminder.FieldPhone, field.TypeString, value)
 	}
 	if value, ok := sruo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribereminder.FieldName,
-		})
+		_spec.SetField(subscribereminder.FieldName, field.TypeString, value)
 	}
 	if value, ok := sruo.mutation.Success(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: subscribereminder.FieldSuccess,
-		})
+		_spec.SetField(subscribereminder.FieldSuccess, field.TypeBool, value)
 	}
 	if value, ok := sruo.mutation.Days(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribereminder.FieldDays,
-		})
+		_spec.SetField(subscribereminder.FieldDays, field.TypeInt, value)
 	}
 	if value, ok := sruo.mutation.AddedDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribereminder.FieldDays,
-		})
+		_spec.AddField(subscribereminder.FieldDays, field.TypeInt, value)
 	}
 	if value, ok := sruo.mutation.PlanName(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribereminder.FieldPlanName,
-		})
+		_spec.SetField(subscribereminder.FieldPlanName, field.TypeString, value)
 	}
 	if value, ok := sruo.mutation.Date(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribereminder.FieldDate,
-		})
+		_spec.SetField(subscribereminder.FieldDate, field.TypeString, value)
 	}
 	if value, ok := sruo.mutation.Fee(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: subscribereminder.FieldFee,
-		})
+		_spec.SetField(subscribereminder.FieldFee, field.TypeFloat64, value)
 	}
 	if value, ok := sruo.mutation.AddedFee(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: subscribereminder.FieldFee,
-		})
+		_spec.AddField(subscribereminder.FieldFee, field.TypeFloat64, value)
 	}
 	if value, ok := sruo.mutation.FeeFormula(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribereminder.FieldFeeFormula,
-		})
+		_spec.SetField(subscribereminder.FieldFeeFormula, field.TypeString, value)
 	}
 	if sruo.mutation.FeeFormulaCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: subscribereminder.FieldFeeFormula,
-		})
+		_spec.ClearField(subscribereminder.FieldFeeFormula, field.TypeString)
 	}
 	if sruo.mutation.SubscribeCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1001,7 +834,7 @@ func (sruo *SubscribeReminderUpdateOne) sqlSave(ctx context.Context) (_node *Sub
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_spec.Modifiers = sruo.modifiers
+	_spec.AddModifiers(sruo.modifiers...)
 	_node = &SubscribeReminder{config: sruo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -1013,5 +846,6 @@ func (sruo *SubscribeReminderUpdateOne) sqlSave(ctx context.Context) (_node *Sub
 		}
 		return nil, err
 	}
+	sruo.mutation.done = true
 	return _node, nil
 }

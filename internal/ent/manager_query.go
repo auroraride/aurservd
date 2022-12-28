@@ -23,6 +23,7 @@ type ManagerQuery struct {
 	unique     *bool
 	order      []OrderFunc
 	fields     []string
+	inters     []Interceptor
 	predicates []predicate.Manager
 	withRole   *RoleQuery
 	modifiers  []func(*sql.Selector)
@@ -37,13 +38,13 @@ func (mq *ManagerQuery) Where(ps ...predicate.Manager) *ManagerQuery {
 	return mq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (mq *ManagerQuery) Limit(limit int) *ManagerQuery {
 	mq.limit = &limit
 	return mq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (mq *ManagerQuery) Offset(offset int) *ManagerQuery {
 	mq.offset = &offset
 	return mq
@@ -56,7 +57,7 @@ func (mq *ManagerQuery) Unique(unique bool) *ManagerQuery {
 	return mq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (mq *ManagerQuery) Order(o ...OrderFunc) *ManagerQuery {
 	mq.order = append(mq.order, o...)
 	return mq
@@ -64,7 +65,7 @@ func (mq *ManagerQuery) Order(o ...OrderFunc) *ManagerQuery {
 
 // QueryRole chains the current query on the "role" edge.
 func (mq *ManagerQuery) QueryRole() *RoleQuery {
-	query := &RoleQuery{config: mq.config}
+	query := (&RoleClient{config: mq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := mq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -87,7 +88,7 @@ func (mq *ManagerQuery) QueryRole() *RoleQuery {
 // First returns the first Manager entity from the query.
 // Returns a *NotFoundError when no Manager was found.
 func (mq *ManagerQuery) First(ctx context.Context) (*Manager, error) {
-	nodes, err := mq.Limit(1).All(ctx)
+	nodes, err := mq.Limit(1).All(newQueryContext(ctx, TypeManager, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +111,7 @@ func (mq *ManagerQuery) FirstX(ctx context.Context) *Manager {
 // Returns a *NotFoundError when no Manager ID was found.
 func (mq *ManagerQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = mq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = mq.Limit(1).IDs(newQueryContext(ctx, TypeManager, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -133,7 +134,7 @@ func (mq *ManagerQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Manager entity is found.
 // Returns a *NotFoundError when no Manager entities are found.
 func (mq *ManagerQuery) Only(ctx context.Context) (*Manager, error) {
-	nodes, err := mq.Limit(2).All(ctx)
+	nodes, err := mq.Limit(2).All(newQueryContext(ctx, TypeManager, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +162,7 @@ func (mq *ManagerQuery) OnlyX(ctx context.Context) *Manager {
 // Returns a *NotFoundError when no entities are found.
 func (mq *ManagerQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = mq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = mq.Limit(2).IDs(newQueryContext(ctx, TypeManager, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -186,10 +187,12 @@ func (mq *ManagerQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Managers.
 func (mq *ManagerQuery) All(ctx context.Context) ([]*Manager, error) {
+	ctx = newQueryContext(ctx, TypeManager, "All")
 	if err := mq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return mq.sqlAll(ctx)
+	qr := querierAll[[]*Manager, *ManagerQuery]()
+	return withInterceptors[[]*Manager](ctx, mq, qr, mq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -204,6 +207,7 @@ func (mq *ManagerQuery) AllX(ctx context.Context) []*Manager {
 // IDs executes the query and returns a list of Manager IDs.
 func (mq *ManagerQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeManager, "IDs")
 	if err := mq.Select(manager.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -221,10 +225,11 @@ func (mq *ManagerQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (mq *ManagerQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeManager, "Count")
 	if err := mq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return mq.sqlCount(ctx)
+	return withInterceptors[int](ctx, mq, querierCount[*ManagerQuery](), mq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -238,10 +243,15 @@ func (mq *ManagerQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (mq *ManagerQuery) Exist(ctx context.Context) (bool, error) {
-	if err := mq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeManager, "Exist")
+	switch _, err := mq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return mq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -276,7 +286,7 @@ func (mq *ManagerQuery) Clone() *ManagerQuery {
 // WithRole tells the query-builder to eager-load the nodes that are connected to
 // the "role" edge. The optional arguments are used to configure the query builder of the edge.
 func (mq *ManagerQuery) WithRole(opts ...func(*RoleQuery)) *ManagerQuery {
-	query := &RoleQuery{config: mq.config}
+	query := (&RoleClient{config: mq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -299,16 +309,11 @@ func (mq *ManagerQuery) WithRole(opts ...func(*RoleQuery)) *ManagerQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (mq *ManagerQuery) GroupBy(field string, fields ...string) *ManagerGroupBy {
-	grbuild := &ManagerGroupBy{config: mq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := mq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return mq.sqlQuery(ctx), nil
-	}
+	mq.fields = append([]string{field}, fields...)
+	grbuild := &ManagerGroupBy{build: mq}
+	grbuild.flds = &mq.fields
 	grbuild.label = manager.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -326,13 +331,28 @@ func (mq *ManagerQuery) GroupBy(field string, fields ...string) *ManagerGroupBy 
 //		Scan(ctx, &v)
 func (mq *ManagerQuery) Select(fields ...string) *ManagerSelect {
 	mq.fields = append(mq.fields, fields...)
-	selbuild := &ManagerSelect{ManagerQuery: mq}
-	selbuild.label = manager.Label
-	selbuild.flds, selbuild.scan = &mq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &ManagerSelect{ManagerQuery: mq}
+	sbuild.label = manager.Label
+	sbuild.flds, sbuild.scan = &mq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a ManagerSelect configured with the given aggregations.
+func (mq *ManagerQuery) Aggregate(fns ...AggregateFunc) *ManagerSelect {
+	return mq.Select().Aggregate(fns...)
 }
 
 func (mq *ManagerQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range mq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, mq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range mq.fields {
 		if !manager.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -428,17 +448,6 @@ func (mq *ManagerQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, mq.driver, _spec)
 }
 
-func (mq *ManagerQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := mq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (mq *ManagerQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -530,13 +539,8 @@ func (mq *ManagerQuery) Modify(modifiers ...func(s *sql.Selector)) *ManagerSelec
 
 // ManagerGroupBy is the group-by builder for Manager entities.
 type ManagerGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *ManagerQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -545,74 +549,77 @@ func (mgb *ManagerGroupBy) Aggregate(fns ...AggregateFunc) *ManagerGroupBy {
 	return mgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (mgb *ManagerGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := mgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeManager, "GroupBy")
+	if err := mgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	mgb.sql = query
-	return mgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*ManagerQuery, *ManagerGroupBy](ctx, mgb.build, mgb, mgb.build.inters, v)
 }
 
-func (mgb *ManagerGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range mgb.fields {
-		if !manager.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (mgb *ManagerGroupBy) sqlScan(ctx context.Context, root *ManagerQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(mgb.fns))
+	for _, fn := range mgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := mgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*mgb.flds)+len(mgb.fns))
+		for _, f := range *mgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*mgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := mgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := mgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (mgb *ManagerGroupBy) sqlQuery() *sql.Selector {
-	selector := mgb.sql.Select()
-	aggregation := make([]string, 0, len(mgb.fns))
-	for _, fn := range mgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(mgb.fields)+len(mgb.fns))
-		for _, f := range mgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(mgb.fields...)...)
-}
-
 // ManagerSelect is the builder for selecting fields of Manager entities.
 type ManagerSelect struct {
 	*ManagerQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (ms *ManagerSelect) Aggregate(fns ...AggregateFunc) *ManagerSelect {
+	ms.fns = append(ms.fns, fns...)
+	return ms
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (ms *ManagerSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeManager, "Select")
 	if err := ms.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ms.sql = ms.ManagerQuery.sqlQuery(ctx)
-	return ms.sqlScan(ctx, v)
+	return scanWithInterceptors[*ManagerQuery, *ManagerSelect](ctx, ms.ManagerQuery, ms, ms.inters, v)
 }
 
-func (ms *ManagerSelect) sqlScan(ctx context.Context, v any) error {
+func (ms *ManagerSelect) sqlScan(ctx context.Context, root *ManagerQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(ms.fns))
+	for _, fn := range ms.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*ms.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := ms.sql.Query()
+	query, args := selector.Query()
 	if err := ms.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

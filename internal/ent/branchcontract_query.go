@@ -23,6 +23,7 @@ type BranchContractQuery struct {
 	unique     *bool
 	order      []OrderFunc
 	fields     []string
+	inters     []Interceptor
 	predicates []predicate.BranchContract
 	withBranch *BranchQuery
 	modifiers  []func(*sql.Selector)
@@ -37,13 +38,13 @@ func (bcq *BranchContractQuery) Where(ps ...predicate.BranchContract) *BranchCon
 	return bcq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (bcq *BranchContractQuery) Limit(limit int) *BranchContractQuery {
 	bcq.limit = &limit
 	return bcq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (bcq *BranchContractQuery) Offset(offset int) *BranchContractQuery {
 	bcq.offset = &offset
 	return bcq
@@ -56,7 +57,7 @@ func (bcq *BranchContractQuery) Unique(unique bool) *BranchContractQuery {
 	return bcq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (bcq *BranchContractQuery) Order(o ...OrderFunc) *BranchContractQuery {
 	bcq.order = append(bcq.order, o...)
 	return bcq
@@ -64,7 +65,7 @@ func (bcq *BranchContractQuery) Order(o ...OrderFunc) *BranchContractQuery {
 
 // QueryBranch chains the current query on the "branch" edge.
 func (bcq *BranchContractQuery) QueryBranch() *BranchQuery {
-	query := &BranchQuery{config: bcq.config}
+	query := (&BranchClient{config: bcq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := bcq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -87,7 +88,7 @@ func (bcq *BranchContractQuery) QueryBranch() *BranchQuery {
 // First returns the first BranchContract entity from the query.
 // Returns a *NotFoundError when no BranchContract was found.
 func (bcq *BranchContractQuery) First(ctx context.Context) (*BranchContract, error) {
-	nodes, err := bcq.Limit(1).All(ctx)
+	nodes, err := bcq.Limit(1).All(newQueryContext(ctx, TypeBranchContract, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +111,7 @@ func (bcq *BranchContractQuery) FirstX(ctx context.Context) *BranchContract {
 // Returns a *NotFoundError when no BranchContract ID was found.
 func (bcq *BranchContractQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = bcq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = bcq.Limit(1).IDs(newQueryContext(ctx, TypeBranchContract, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -133,7 +134,7 @@ func (bcq *BranchContractQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one BranchContract entity is found.
 // Returns a *NotFoundError when no BranchContract entities are found.
 func (bcq *BranchContractQuery) Only(ctx context.Context) (*BranchContract, error) {
-	nodes, err := bcq.Limit(2).All(ctx)
+	nodes, err := bcq.Limit(2).All(newQueryContext(ctx, TypeBranchContract, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +162,7 @@ func (bcq *BranchContractQuery) OnlyX(ctx context.Context) *BranchContract {
 // Returns a *NotFoundError when no entities are found.
 func (bcq *BranchContractQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = bcq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = bcq.Limit(2).IDs(newQueryContext(ctx, TypeBranchContract, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -186,10 +187,12 @@ func (bcq *BranchContractQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of BranchContracts.
 func (bcq *BranchContractQuery) All(ctx context.Context) ([]*BranchContract, error) {
+	ctx = newQueryContext(ctx, TypeBranchContract, "All")
 	if err := bcq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return bcq.sqlAll(ctx)
+	qr := querierAll[[]*BranchContract, *BranchContractQuery]()
+	return withInterceptors[[]*BranchContract](ctx, bcq, qr, bcq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -204,6 +207,7 @@ func (bcq *BranchContractQuery) AllX(ctx context.Context) []*BranchContract {
 // IDs executes the query and returns a list of BranchContract IDs.
 func (bcq *BranchContractQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeBranchContract, "IDs")
 	if err := bcq.Select(branchcontract.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -221,10 +225,11 @@ func (bcq *BranchContractQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (bcq *BranchContractQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeBranchContract, "Count")
 	if err := bcq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return bcq.sqlCount(ctx)
+	return withInterceptors[int](ctx, bcq, querierCount[*BranchContractQuery](), bcq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -238,10 +243,15 @@ func (bcq *BranchContractQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (bcq *BranchContractQuery) Exist(ctx context.Context) (bool, error) {
-	if err := bcq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeBranchContract, "Exist")
+	switch _, err := bcq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return bcq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -276,7 +286,7 @@ func (bcq *BranchContractQuery) Clone() *BranchContractQuery {
 // WithBranch tells the query-builder to eager-load the nodes that are connected to
 // the "branch" edge. The optional arguments are used to configure the query builder of the edge.
 func (bcq *BranchContractQuery) WithBranch(opts ...func(*BranchQuery)) *BranchContractQuery {
-	query := &BranchQuery{config: bcq.config}
+	query := (&BranchClient{config: bcq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -299,16 +309,11 @@ func (bcq *BranchContractQuery) WithBranch(opts ...func(*BranchQuery)) *BranchCo
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (bcq *BranchContractQuery) GroupBy(field string, fields ...string) *BranchContractGroupBy {
-	grbuild := &BranchContractGroupBy{config: bcq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := bcq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return bcq.sqlQuery(ctx), nil
-	}
+	bcq.fields = append([]string{field}, fields...)
+	grbuild := &BranchContractGroupBy{build: bcq}
+	grbuild.flds = &bcq.fields
 	grbuild.label = branchcontract.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -326,13 +331,28 @@ func (bcq *BranchContractQuery) GroupBy(field string, fields ...string) *BranchC
 //		Scan(ctx, &v)
 func (bcq *BranchContractQuery) Select(fields ...string) *BranchContractSelect {
 	bcq.fields = append(bcq.fields, fields...)
-	selbuild := &BranchContractSelect{BranchContractQuery: bcq}
-	selbuild.label = branchcontract.Label
-	selbuild.flds, selbuild.scan = &bcq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &BranchContractSelect{BranchContractQuery: bcq}
+	sbuild.label = branchcontract.Label
+	sbuild.flds, sbuild.scan = &bcq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a BranchContractSelect configured with the given aggregations.
+func (bcq *BranchContractQuery) Aggregate(fns ...AggregateFunc) *BranchContractSelect {
+	return bcq.Select().Aggregate(fns...)
 }
 
 func (bcq *BranchContractQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range bcq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, bcq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range bcq.fields {
 		if !branchcontract.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -423,17 +443,6 @@ func (bcq *BranchContractQuery) sqlCount(ctx context.Context) (int, error) {
 		_spec.Unique = bcq.unique != nil && *bcq.unique
 	}
 	return sqlgraph.CountNodes(ctx, bcq.driver, _spec)
-}
-
-func (bcq *BranchContractQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := bcq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
 }
 
 func (bcq *BranchContractQuery) querySpec() *sqlgraph.QuerySpec {
@@ -527,13 +536,8 @@ func (bcq *BranchContractQuery) Modify(modifiers ...func(s *sql.Selector)) *Bran
 
 // BranchContractGroupBy is the group-by builder for BranchContract entities.
 type BranchContractGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *BranchContractQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -542,74 +546,77 @@ func (bcgb *BranchContractGroupBy) Aggregate(fns ...AggregateFunc) *BranchContra
 	return bcgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (bcgb *BranchContractGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := bcgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeBranchContract, "GroupBy")
+	if err := bcgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	bcgb.sql = query
-	return bcgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*BranchContractQuery, *BranchContractGroupBy](ctx, bcgb.build, bcgb, bcgb.build.inters, v)
 }
 
-func (bcgb *BranchContractGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range bcgb.fields {
-		if !branchcontract.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (bcgb *BranchContractGroupBy) sqlScan(ctx context.Context, root *BranchContractQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(bcgb.fns))
+	for _, fn := range bcgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := bcgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*bcgb.flds)+len(bcgb.fns))
+		for _, f := range *bcgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*bcgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := bcgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := bcgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (bcgb *BranchContractGroupBy) sqlQuery() *sql.Selector {
-	selector := bcgb.sql.Select()
-	aggregation := make([]string, 0, len(bcgb.fns))
-	for _, fn := range bcgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(bcgb.fields)+len(bcgb.fns))
-		for _, f := range bcgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(bcgb.fields...)...)
-}
-
 // BranchContractSelect is the builder for selecting fields of BranchContract entities.
 type BranchContractSelect struct {
 	*BranchContractQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (bcs *BranchContractSelect) Aggregate(fns ...AggregateFunc) *BranchContractSelect {
+	bcs.fns = append(bcs.fns, fns...)
+	return bcs
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (bcs *BranchContractSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeBranchContract, "Select")
 	if err := bcs.prepareQuery(ctx); err != nil {
 		return err
 	}
-	bcs.sql = bcs.BranchContractQuery.sqlQuery(ctx)
-	return bcs.sqlScan(ctx, v)
+	return scanWithInterceptors[*BranchContractQuery, *BranchContractSelect](ctx, bcs.BranchContractQuery, bcs, bcs.inters, v)
 }
 
-func (bcs *BranchContractSelect) sqlScan(ctx context.Context, v any) error {
+func (bcs *BranchContractSelect) sqlScan(ctx context.Context, root *BranchContractQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(bcs.fns))
+	for _, fn := range bcs.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*bcs.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := bcs.sql.Query()
+	query, args := selector.Query()
 	if err := bcs.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

@@ -28,6 +28,7 @@ type BranchQuery struct {
 	unique        *bool
 	order         []OrderFunc
 	fields        []string
+	inters        []Interceptor
 	predicates    []predicate.Branch
 	withCity      *CityQuery
 	withContracts *BranchContractQuery
@@ -46,13 +47,13 @@ func (bq *BranchQuery) Where(ps ...predicate.Branch) *BranchQuery {
 	return bq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (bq *BranchQuery) Limit(limit int) *BranchQuery {
 	bq.limit = &limit
 	return bq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (bq *BranchQuery) Offset(offset int) *BranchQuery {
 	bq.offset = &offset
 	return bq
@@ -65,7 +66,7 @@ func (bq *BranchQuery) Unique(unique bool) *BranchQuery {
 	return bq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (bq *BranchQuery) Order(o ...OrderFunc) *BranchQuery {
 	bq.order = append(bq.order, o...)
 	return bq
@@ -73,7 +74,7 @@ func (bq *BranchQuery) Order(o ...OrderFunc) *BranchQuery {
 
 // QueryCity chains the current query on the "city" edge.
 func (bq *BranchQuery) QueryCity() *CityQuery {
-	query := &CityQuery{config: bq.config}
+	query := (&CityClient{config: bq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := bq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -95,7 +96,7 @@ func (bq *BranchQuery) QueryCity() *CityQuery {
 
 // QueryContracts chains the current query on the "contracts" edge.
 func (bq *BranchQuery) QueryContracts() *BranchContractQuery {
-	query := &BranchContractQuery{config: bq.config}
+	query := (&BranchContractClient{config: bq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := bq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -117,7 +118,7 @@ func (bq *BranchQuery) QueryContracts() *BranchContractQuery {
 
 // QueryCabinets chains the current query on the "cabinets" edge.
 func (bq *BranchQuery) QueryCabinets() *CabinetQuery {
-	query := &CabinetQuery{config: bq.config}
+	query := (&CabinetClient{config: bq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := bq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -139,7 +140,7 @@ func (bq *BranchQuery) QueryCabinets() *CabinetQuery {
 
 // QueryFaults chains the current query on the "faults" edge.
 func (bq *BranchQuery) QueryFaults() *CabinetFaultQuery {
-	query := &CabinetFaultQuery{config: bq.config}
+	query := (&CabinetFaultClient{config: bq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := bq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -161,7 +162,7 @@ func (bq *BranchQuery) QueryFaults() *CabinetFaultQuery {
 
 // QueryStores chains the current query on the "stores" edge.
 func (bq *BranchQuery) QueryStores() *StoreQuery {
-	query := &StoreQuery{config: bq.config}
+	query := (&StoreClient{config: bq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := bq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -184,7 +185,7 @@ func (bq *BranchQuery) QueryStores() *StoreQuery {
 // First returns the first Branch entity from the query.
 // Returns a *NotFoundError when no Branch was found.
 func (bq *BranchQuery) First(ctx context.Context) (*Branch, error) {
-	nodes, err := bq.Limit(1).All(ctx)
+	nodes, err := bq.Limit(1).All(newQueryContext(ctx, TypeBranch, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -207,7 +208,7 @@ func (bq *BranchQuery) FirstX(ctx context.Context) *Branch {
 // Returns a *NotFoundError when no Branch ID was found.
 func (bq *BranchQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = bq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = bq.Limit(1).IDs(newQueryContext(ctx, TypeBranch, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -230,7 +231,7 @@ func (bq *BranchQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Branch entity is found.
 // Returns a *NotFoundError when no Branch entities are found.
 func (bq *BranchQuery) Only(ctx context.Context) (*Branch, error) {
-	nodes, err := bq.Limit(2).All(ctx)
+	nodes, err := bq.Limit(2).All(newQueryContext(ctx, TypeBranch, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -258,7 +259,7 @@ func (bq *BranchQuery) OnlyX(ctx context.Context) *Branch {
 // Returns a *NotFoundError when no entities are found.
 func (bq *BranchQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = bq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = bq.Limit(2).IDs(newQueryContext(ctx, TypeBranch, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -283,10 +284,12 @@ func (bq *BranchQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Branches.
 func (bq *BranchQuery) All(ctx context.Context) ([]*Branch, error) {
+	ctx = newQueryContext(ctx, TypeBranch, "All")
 	if err := bq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return bq.sqlAll(ctx)
+	qr := querierAll[[]*Branch, *BranchQuery]()
+	return withInterceptors[[]*Branch](ctx, bq, qr, bq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -301,6 +304,7 @@ func (bq *BranchQuery) AllX(ctx context.Context) []*Branch {
 // IDs executes the query and returns a list of Branch IDs.
 func (bq *BranchQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
+	ctx = newQueryContext(ctx, TypeBranch, "IDs")
 	if err := bq.Select(branch.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -318,10 +322,11 @@ func (bq *BranchQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (bq *BranchQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeBranch, "Count")
 	if err := bq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return bq.sqlCount(ctx)
+	return withInterceptors[int](ctx, bq, querierCount[*BranchQuery](), bq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -335,10 +340,15 @@ func (bq *BranchQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (bq *BranchQuery) Exist(ctx context.Context) (bool, error) {
-	if err := bq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeBranch, "Exist")
+	switch _, err := bq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return bq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -377,7 +387,7 @@ func (bq *BranchQuery) Clone() *BranchQuery {
 // WithCity tells the query-builder to eager-load the nodes that are connected to
 // the "city" edge. The optional arguments are used to configure the query builder of the edge.
 func (bq *BranchQuery) WithCity(opts ...func(*CityQuery)) *BranchQuery {
-	query := &CityQuery{config: bq.config}
+	query := (&CityClient{config: bq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -388,7 +398,7 @@ func (bq *BranchQuery) WithCity(opts ...func(*CityQuery)) *BranchQuery {
 // WithContracts tells the query-builder to eager-load the nodes that are connected to
 // the "contracts" edge. The optional arguments are used to configure the query builder of the edge.
 func (bq *BranchQuery) WithContracts(opts ...func(*BranchContractQuery)) *BranchQuery {
-	query := &BranchContractQuery{config: bq.config}
+	query := (&BranchContractClient{config: bq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -399,7 +409,7 @@ func (bq *BranchQuery) WithContracts(opts ...func(*BranchContractQuery)) *Branch
 // WithCabinets tells the query-builder to eager-load the nodes that are connected to
 // the "cabinets" edge. The optional arguments are used to configure the query builder of the edge.
 func (bq *BranchQuery) WithCabinets(opts ...func(*CabinetQuery)) *BranchQuery {
-	query := &CabinetQuery{config: bq.config}
+	query := (&CabinetClient{config: bq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -410,7 +420,7 @@ func (bq *BranchQuery) WithCabinets(opts ...func(*CabinetQuery)) *BranchQuery {
 // WithFaults tells the query-builder to eager-load the nodes that are connected to
 // the "faults" edge. The optional arguments are used to configure the query builder of the edge.
 func (bq *BranchQuery) WithFaults(opts ...func(*CabinetFaultQuery)) *BranchQuery {
-	query := &CabinetFaultQuery{config: bq.config}
+	query := (&CabinetFaultClient{config: bq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -421,7 +431,7 @@ func (bq *BranchQuery) WithFaults(opts ...func(*CabinetFaultQuery)) *BranchQuery
 // WithStores tells the query-builder to eager-load the nodes that are connected to
 // the "stores" edge. The optional arguments are used to configure the query builder of the edge.
 func (bq *BranchQuery) WithStores(opts ...func(*StoreQuery)) *BranchQuery {
-	query := &StoreQuery{config: bq.config}
+	query := (&StoreClient{config: bq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -444,16 +454,11 @@ func (bq *BranchQuery) WithStores(opts ...func(*StoreQuery)) *BranchQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (bq *BranchQuery) GroupBy(field string, fields ...string) *BranchGroupBy {
-	grbuild := &BranchGroupBy{config: bq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := bq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return bq.sqlQuery(ctx), nil
-	}
+	bq.fields = append([]string{field}, fields...)
+	grbuild := &BranchGroupBy{build: bq}
+	grbuild.flds = &bq.fields
 	grbuild.label = branch.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -471,13 +476,28 @@ func (bq *BranchQuery) GroupBy(field string, fields ...string) *BranchGroupBy {
 //		Scan(ctx, &v)
 func (bq *BranchQuery) Select(fields ...string) *BranchSelect {
 	bq.fields = append(bq.fields, fields...)
-	selbuild := &BranchSelect{BranchQuery: bq}
-	selbuild.label = branch.Label
-	selbuild.flds, selbuild.scan = &bq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &BranchSelect{BranchQuery: bq}
+	sbuild.label = branch.Label
+	sbuild.flds, sbuild.scan = &bq.fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a BranchSelect configured with the given aggregations.
+func (bq *BranchQuery) Aggregate(fns ...AggregateFunc) *BranchSelect {
+	return bq.Select().Aggregate(fns...)
 }
 
 func (bq *BranchQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range bq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, bq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range bq.fields {
 		if !branch.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -713,17 +733,6 @@ func (bq *BranchQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, bq.driver, _spec)
 }
 
-func (bq *BranchQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := bq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (bq *BranchQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -815,13 +824,8 @@ func (bq *BranchQuery) Modify(modifiers ...func(s *sql.Selector)) *BranchSelect 
 
 // BranchGroupBy is the group-by builder for Branch entities.
 type BranchGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *BranchQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -830,74 +834,77 @@ func (bgb *BranchGroupBy) Aggregate(fns ...AggregateFunc) *BranchGroupBy {
 	return bgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (bgb *BranchGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := bgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeBranch, "GroupBy")
+	if err := bgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	bgb.sql = query
-	return bgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*BranchQuery, *BranchGroupBy](ctx, bgb.build, bgb, bgb.build.inters, v)
 }
 
-func (bgb *BranchGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range bgb.fields {
-		if !branch.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (bgb *BranchGroupBy) sqlScan(ctx context.Context, root *BranchQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(bgb.fns))
+	for _, fn := range bgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := bgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*bgb.flds)+len(bgb.fns))
+		for _, f := range *bgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*bgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := bgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := bgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (bgb *BranchGroupBy) sqlQuery() *sql.Selector {
-	selector := bgb.sql.Select()
-	aggregation := make([]string, 0, len(bgb.fns))
-	for _, fn := range bgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(bgb.fields)+len(bgb.fns))
-		for _, f := range bgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(bgb.fields...)...)
-}
-
 // BranchSelect is the builder for selecting fields of Branch entities.
 type BranchSelect struct {
 	*BranchQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (bs *BranchSelect) Aggregate(fns ...AggregateFunc) *BranchSelect {
+	bs.fns = append(bs.fns, fns...)
+	return bs
 }
 
 // Scan applies the selector query and scans the result into the given value.
 func (bs *BranchSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeBranch, "Select")
 	if err := bs.prepareQuery(ctx); err != nil {
 		return err
 	}
-	bs.sql = bs.BranchQuery.sqlQuery(ctx)
-	return bs.sqlScan(ctx, v)
+	return scanWithInterceptors[*BranchQuery, *BranchSelect](ctx, bs.BranchQuery, bs, bs.inters, v)
 }
 
-func (bs *BranchSelect) sqlScan(ctx context.Context, v any) error {
+func (bs *BranchSelect) sqlScan(ctx context.Context, root *BranchQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(bs.fns))
+	for _, fn := range bs.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*bs.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := bs.sql.Query()
+	query, args := selector.Query()
 	if err := bs.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

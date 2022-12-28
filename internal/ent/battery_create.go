@@ -176,52 +176,10 @@ func (bc *BatteryCreate) Mutation() *BatteryMutation {
 
 // Save creates the Battery in the database.
 func (bc *BatteryCreate) Save(ctx context.Context) (*Battery, error) {
-	var (
-		err  error
-		node *Battery
-	)
 	if err := bc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(bc.hooks) == 0 {
-		if err = bc.check(); err != nil {
-			return nil, err
-		}
-		node, err = bc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*BatteryMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = bc.check(); err != nil {
-				return nil, err
-			}
-			bc.mutation = mutation
-			if node, err = bc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(bc.hooks) - 1; i >= 0; i-- {
-			if bc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = bc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, bc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Battery)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from BatteryMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Battery, BatteryMutation](ctx, bc.sqlSave, bc.mutation, bc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -296,6 +254,9 @@ func (bc *BatteryCreate) check() error {
 }
 
 func (bc *BatteryCreate) sqlSave(ctx context.Context) (*Battery, error) {
+	if err := bc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := bc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, bc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -305,6 +266,8 @@ func (bc *BatteryCreate) sqlSave(ctx context.Context) (*Battery, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	bc.mutation.id = &_node.ID
+	bc.mutation.done = true
 	return _node, nil
 }
 
@@ -321,75 +284,39 @@ func (bc *BatteryCreate) createSpec() (*Battery, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = bc.conflict
 	if value, ok := bc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: battery.FieldCreatedAt,
-		})
+		_spec.SetField(battery.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := bc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: battery.FieldUpdatedAt,
-		})
+		_spec.SetField(battery.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := bc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: battery.FieldDeletedAt,
-		})
+		_spec.SetField(battery.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := bc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: battery.FieldCreator,
-		})
+		_spec.SetField(battery.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := bc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: battery.FieldLastModifier,
-		})
+		_spec.SetField(battery.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := bc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: battery.FieldRemark,
-		})
+		_spec.SetField(battery.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := bc.mutation.Sn(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: battery.FieldSn,
-		})
+		_spec.SetField(battery.FieldSn, field.TypeString, value)
 		_node.Sn = value
 	}
 	if value, ok := bc.mutation.Enable(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: battery.FieldEnable,
-		})
+		_spec.SetField(battery.FieldEnable, field.TypeBool, value)
 		_node.Enable = value
 	}
 	if value, ok := bc.mutation.Model(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: battery.FieldModel,
-		})
+		_spec.SetField(battery.FieldModel, field.TypeString, value)
 		_node.Model = value
 	}
 	if nodes := bc.mutation.CityIDs(); len(nodes) > 0 {

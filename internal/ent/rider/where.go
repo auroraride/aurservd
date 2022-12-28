@@ -12,1622 +12,1062 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uint64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uint64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uint64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.Rider(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uint64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.Rider(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uint64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.Rider(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uint64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.Rider(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uint64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.Rider(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uint64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.Rider(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uint64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.Rider(sql.FieldLTE(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
 func DeletedAt(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
 func Remark(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldRemark, v))
 }
 
 // StationID applies equality check predicate on the "station_id" field. It's identical to StationIDEQ.
 func StationID(v uint64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStationID), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldStationID, v))
 }
 
 // PersonID applies equality check predicate on the "person_id" field. It's identical to PersonIDEQ.
 func PersonID(v uint64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPersonID), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldPersonID, v))
 }
 
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldName, v))
 }
 
 // IDCardNumber applies equality check predicate on the "id_card_number" field. It's identical to IDCardNumberEQ.
 func IDCardNumber(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldIDCardNumber, v))
 }
 
 // EnterpriseID applies equality check predicate on the "enterprise_id" field. It's identical to EnterpriseIDEQ.
 func EnterpriseID(v uint64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEnterpriseID), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldEnterpriseID, v))
 }
 
 // Phone applies equality check predicate on the "phone" field. It's identical to PhoneEQ.
 func Phone(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPhone), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldPhone, v))
 }
 
 // DeviceType applies equality check predicate on the "device_type" field. It's identical to DeviceTypeEQ.
 func DeviceType(v uint8) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeviceType), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldDeviceType, v))
 }
 
 // LastDevice applies equality check predicate on the "last_device" field. It's identical to LastDeviceEQ.
 func LastDevice(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLastDevice), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldLastDevice, v))
 }
 
 // IsNewDevice applies equality check predicate on the "is_new_device" field. It's identical to IsNewDeviceEQ.
 func IsNewDevice(v bool) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIsNewDevice), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldIsNewDevice, v))
 }
 
 // LastFace applies equality check predicate on the "last_face" field. It's identical to LastFaceEQ.
 func LastFace(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLastFace), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldLastFace, v))
 }
 
 // PushID applies equality check predicate on the "push_id" field. It's identical to PushIDEQ.
 func PushID(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPushID), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldPushID, v))
 }
 
 // LastSigninAt applies equality check predicate on the "last_signin_at" field. It's identical to LastSigninAtEQ.
 func LastSigninAt(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLastSigninAt), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldLastSigninAt, v))
 }
 
 // Blocked applies equality check predicate on the "blocked" field. It's identical to BlockedEQ.
 func Blocked(v bool) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBlocked), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldBlocked, v))
 }
 
 // Points applies equality check predicate on the "points" field. It's identical to PointsEQ.
 func Points(v int64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPoints), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldPoints, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
 func CreatedAtNEQ(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Rider(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Rider(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.Rider(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtGT applies the GT predicate on the "created_at" field.
 func CreatedAtGT(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Rider(sql.FieldGT(FieldCreatedAt, v))
 }
 
 // CreatedAtGTE applies the GTE predicate on the "created_at" field.
 func CreatedAtGTE(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Rider(sql.FieldGTE(FieldCreatedAt, v))
 }
 
 // CreatedAtLT applies the LT predicate on the "created_at" field.
 func CreatedAtLT(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Rider(sql.FieldLT(FieldCreatedAt, v))
 }
 
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.Rider(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
 func UpdatedAtEQ(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
 func UpdatedAtNEQ(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Rider(sql.FieldNEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Rider(sql.FieldIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.Rider(sql.FieldNotIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtGT applies the GT predicate on the "updated_at" field.
 func UpdatedAtGT(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Rider(sql.FieldGT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
 func UpdatedAtGTE(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Rider(sql.FieldGTE(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLT applies the LT predicate on the "updated_at" field.
 func UpdatedAtLT(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Rider(sql.FieldLT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.Rider(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
 func DeletedAtEQ(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
 func DeletedAtNEQ(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Rider(sql.FieldNEQ(FieldDeletedAt, v))
 }
 
 // DeletedAtIn applies the In predicate on the "deleted_at" field.
 func DeletedAtIn(vs ...time.Time) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.Rider(sql.FieldIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
 func DeletedAtNotIn(vs ...time.Time) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDeletedAt), v...))
-	})
+	return predicate.Rider(sql.FieldNotIn(FieldDeletedAt, vs...))
 }
 
 // DeletedAtGT applies the GT predicate on the "deleted_at" field.
 func DeletedAtGT(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Rider(sql.FieldGT(FieldDeletedAt, v))
 }
 
 // DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
 func DeletedAtGTE(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Rider(sql.FieldGTE(FieldDeletedAt, v))
 }
 
 // DeletedAtLT applies the LT predicate on the "deleted_at" field.
 func DeletedAtLT(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Rider(sql.FieldLT(FieldDeletedAt, v))
 }
 
 // DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
 func DeletedAtLTE(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDeletedAt), v))
-	})
+	return predicate.Rider(sql.FieldLTE(FieldDeletedAt, v))
 }
 
 // DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
 func DeletedAtIsNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.Rider(sql.FieldIsNull(FieldDeletedAt))
 }
 
 // DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
 func DeletedAtNotNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDeletedAt)))
-	})
+	return predicate.Rider(sql.FieldNotNull(FieldDeletedAt))
 }
 
 // CreatorIsNil applies the IsNil predicate on the "creator" field.
 func CreatorIsNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCreator)))
-	})
+	return predicate.Rider(sql.FieldIsNull(FieldCreator))
 }
 
 // CreatorNotNil applies the NotNil predicate on the "creator" field.
 func CreatorNotNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCreator)))
-	})
+	return predicate.Rider(sql.FieldNotNull(FieldCreator))
 }
 
 // LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
 func LastModifierIsNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Rider(sql.FieldIsNull(FieldLastModifier))
 }
 
 // LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
 func LastModifierNotNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLastModifier)))
-	})
+	return predicate.Rider(sql.FieldNotNull(FieldLastModifier))
 }
 
 // RemarkEQ applies the EQ predicate on the "remark" field.
 func RemarkEQ(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRemark), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldRemark, v))
 }
 
 // RemarkNEQ applies the NEQ predicate on the "remark" field.
 func RemarkNEQ(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRemark), v))
-	})
+	return predicate.Rider(sql.FieldNEQ(FieldRemark, v))
 }
 
 // RemarkIn applies the In predicate on the "remark" field.
 func RemarkIn(vs ...string) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRemark), v...))
-	})
+	return predicate.Rider(sql.FieldIn(FieldRemark, vs...))
 }
 
 // RemarkNotIn applies the NotIn predicate on the "remark" field.
 func RemarkNotIn(vs ...string) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRemark), v...))
-	})
+	return predicate.Rider(sql.FieldNotIn(FieldRemark, vs...))
 }
 
 // RemarkGT applies the GT predicate on the "remark" field.
 func RemarkGT(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRemark), v))
-	})
+	return predicate.Rider(sql.FieldGT(FieldRemark, v))
 }
 
 // RemarkGTE applies the GTE predicate on the "remark" field.
 func RemarkGTE(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRemark), v))
-	})
+	return predicate.Rider(sql.FieldGTE(FieldRemark, v))
 }
 
 // RemarkLT applies the LT predicate on the "remark" field.
 func RemarkLT(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRemark), v))
-	})
+	return predicate.Rider(sql.FieldLT(FieldRemark, v))
 }
 
 // RemarkLTE applies the LTE predicate on the "remark" field.
 func RemarkLTE(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRemark), v))
-	})
+	return predicate.Rider(sql.FieldLTE(FieldRemark, v))
 }
 
 // RemarkContains applies the Contains predicate on the "remark" field.
 func RemarkContains(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRemark), v))
-	})
+	return predicate.Rider(sql.FieldContains(FieldRemark, v))
 }
 
 // RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
 func RemarkHasPrefix(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRemark), v))
-	})
+	return predicate.Rider(sql.FieldHasPrefix(FieldRemark, v))
 }
 
 // RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
 func RemarkHasSuffix(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRemark), v))
-	})
+	return predicate.Rider(sql.FieldHasSuffix(FieldRemark, v))
 }
 
 // RemarkIsNil applies the IsNil predicate on the "remark" field.
 func RemarkIsNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRemark)))
-	})
+	return predicate.Rider(sql.FieldIsNull(FieldRemark))
 }
 
 // RemarkNotNil applies the NotNil predicate on the "remark" field.
 func RemarkNotNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRemark)))
-	})
+	return predicate.Rider(sql.FieldNotNull(FieldRemark))
 }
 
 // RemarkEqualFold applies the EqualFold predicate on the "remark" field.
 func RemarkEqualFold(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRemark), v))
-	})
+	return predicate.Rider(sql.FieldEqualFold(FieldRemark, v))
 }
 
 // RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
 func RemarkContainsFold(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
-	})
+	return predicate.Rider(sql.FieldContainsFold(FieldRemark, v))
 }
 
 // StationIDEQ applies the EQ predicate on the "station_id" field.
 func StationIDEQ(v uint64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStationID), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldStationID, v))
 }
 
 // StationIDNEQ applies the NEQ predicate on the "station_id" field.
 func StationIDNEQ(v uint64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStationID), v))
-	})
+	return predicate.Rider(sql.FieldNEQ(FieldStationID, v))
 }
 
 // StationIDIn applies the In predicate on the "station_id" field.
 func StationIDIn(vs ...uint64) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldStationID), v...))
-	})
+	return predicate.Rider(sql.FieldIn(FieldStationID, vs...))
 }
 
 // StationIDNotIn applies the NotIn predicate on the "station_id" field.
 func StationIDNotIn(vs ...uint64) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldStationID), v...))
-	})
+	return predicate.Rider(sql.FieldNotIn(FieldStationID, vs...))
 }
 
 // StationIDIsNil applies the IsNil predicate on the "station_id" field.
 func StationIDIsNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldStationID)))
-	})
+	return predicate.Rider(sql.FieldIsNull(FieldStationID))
 }
 
 // StationIDNotNil applies the NotNil predicate on the "station_id" field.
 func StationIDNotNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldStationID)))
-	})
+	return predicate.Rider(sql.FieldNotNull(FieldStationID))
 }
 
 // PersonIDEQ applies the EQ predicate on the "person_id" field.
 func PersonIDEQ(v uint64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPersonID), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldPersonID, v))
 }
 
 // PersonIDNEQ applies the NEQ predicate on the "person_id" field.
 func PersonIDNEQ(v uint64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPersonID), v))
-	})
+	return predicate.Rider(sql.FieldNEQ(FieldPersonID, v))
 }
 
 // PersonIDIn applies the In predicate on the "person_id" field.
 func PersonIDIn(vs ...uint64) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldPersonID), v...))
-	})
+	return predicate.Rider(sql.FieldIn(FieldPersonID, vs...))
 }
 
 // PersonIDNotIn applies the NotIn predicate on the "person_id" field.
 func PersonIDNotIn(vs ...uint64) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldPersonID), v...))
-	})
+	return predicate.Rider(sql.FieldNotIn(FieldPersonID, vs...))
 }
 
 // PersonIDIsNil applies the IsNil predicate on the "person_id" field.
 func PersonIDIsNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldPersonID)))
-	})
+	return predicate.Rider(sql.FieldIsNull(FieldPersonID))
 }
 
 // PersonIDNotNil applies the NotNil predicate on the "person_id" field.
 func PersonIDNotNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldPersonID)))
-	})
+	return predicate.Rider(sql.FieldNotNull(FieldPersonID))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldName, v))
 }
 
 // NameNEQ applies the NEQ predicate on the "name" field.
 func NameNEQ(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldName), v))
-	})
+	return predicate.Rider(sql.FieldNEQ(FieldName, v))
 }
 
 // NameIn applies the In predicate on the "name" field.
 func NameIn(vs ...string) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldName), v...))
-	})
+	return predicate.Rider(sql.FieldIn(FieldName, vs...))
 }
 
 // NameNotIn applies the NotIn predicate on the "name" field.
 func NameNotIn(vs ...string) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldName), v...))
-	})
+	return predicate.Rider(sql.FieldNotIn(FieldName, vs...))
 }
 
 // NameGT applies the GT predicate on the "name" field.
 func NameGT(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldName), v))
-	})
+	return predicate.Rider(sql.FieldGT(FieldName, v))
 }
 
 // NameGTE applies the GTE predicate on the "name" field.
 func NameGTE(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldName), v))
-	})
+	return predicate.Rider(sql.FieldGTE(FieldName, v))
 }
 
 // NameLT applies the LT predicate on the "name" field.
 func NameLT(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldName), v))
-	})
+	return predicate.Rider(sql.FieldLT(FieldName, v))
 }
 
 // NameLTE applies the LTE predicate on the "name" field.
 func NameLTE(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldName), v))
-	})
+	return predicate.Rider(sql.FieldLTE(FieldName, v))
 }
 
 // NameContains applies the Contains predicate on the "name" field.
 func NameContains(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldName), v))
-	})
+	return predicate.Rider(sql.FieldContains(FieldName, v))
 }
 
 // NameHasPrefix applies the HasPrefix predicate on the "name" field.
 func NameHasPrefix(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldName), v))
-	})
+	return predicate.Rider(sql.FieldHasPrefix(FieldName, v))
 }
 
 // NameHasSuffix applies the HasSuffix predicate on the "name" field.
 func NameHasSuffix(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldName), v))
-	})
+	return predicate.Rider(sql.FieldHasSuffix(FieldName, v))
 }
 
 // NameIsNil applies the IsNil predicate on the "name" field.
 func NameIsNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldName)))
-	})
+	return predicate.Rider(sql.FieldIsNull(FieldName))
 }
 
 // NameNotNil applies the NotNil predicate on the "name" field.
 func NameNotNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldName)))
-	})
+	return predicate.Rider(sql.FieldNotNull(FieldName))
 }
 
 // NameEqualFold applies the EqualFold predicate on the "name" field.
 func NameEqualFold(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldName), v))
-	})
+	return predicate.Rider(sql.FieldEqualFold(FieldName, v))
 }
 
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldName), v))
-	})
+	return predicate.Rider(sql.FieldContainsFold(FieldName, v))
 }
 
 // IDCardNumberEQ applies the EQ predicate on the "id_card_number" field.
 func IDCardNumberEQ(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldIDCardNumber, v))
 }
 
 // IDCardNumberNEQ applies the NEQ predicate on the "id_card_number" field.
 func IDCardNumberNEQ(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Rider(sql.FieldNEQ(FieldIDCardNumber, v))
 }
 
 // IDCardNumberIn applies the In predicate on the "id_card_number" field.
 func IDCardNumberIn(vs ...string) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldIDCardNumber), v...))
-	})
+	return predicate.Rider(sql.FieldIn(FieldIDCardNumber, vs...))
 }
 
 // IDCardNumberNotIn applies the NotIn predicate on the "id_card_number" field.
 func IDCardNumberNotIn(vs ...string) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldIDCardNumber), v...))
-	})
+	return predicate.Rider(sql.FieldNotIn(FieldIDCardNumber, vs...))
 }
 
 // IDCardNumberGT applies the GT predicate on the "id_card_number" field.
 func IDCardNumberGT(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Rider(sql.FieldGT(FieldIDCardNumber, v))
 }
 
 // IDCardNumberGTE applies the GTE predicate on the "id_card_number" field.
 func IDCardNumberGTE(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Rider(sql.FieldGTE(FieldIDCardNumber, v))
 }
 
 // IDCardNumberLT applies the LT predicate on the "id_card_number" field.
 func IDCardNumberLT(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Rider(sql.FieldLT(FieldIDCardNumber, v))
 }
 
 // IDCardNumberLTE applies the LTE predicate on the "id_card_number" field.
 func IDCardNumberLTE(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Rider(sql.FieldLTE(FieldIDCardNumber, v))
 }
 
 // IDCardNumberContains applies the Contains predicate on the "id_card_number" field.
 func IDCardNumberContains(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Rider(sql.FieldContains(FieldIDCardNumber, v))
 }
 
 // IDCardNumberHasPrefix applies the HasPrefix predicate on the "id_card_number" field.
 func IDCardNumberHasPrefix(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Rider(sql.FieldHasPrefix(FieldIDCardNumber, v))
 }
 
 // IDCardNumberHasSuffix applies the HasSuffix predicate on the "id_card_number" field.
 func IDCardNumberHasSuffix(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Rider(sql.FieldHasSuffix(FieldIDCardNumber, v))
 }
 
 // IDCardNumberIsNil applies the IsNil predicate on the "id_card_number" field.
 func IDCardNumberIsNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldIDCardNumber)))
-	})
+	return predicate.Rider(sql.FieldIsNull(FieldIDCardNumber))
 }
 
 // IDCardNumberNotNil applies the NotNil predicate on the "id_card_number" field.
 func IDCardNumberNotNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldIDCardNumber)))
-	})
+	return predicate.Rider(sql.FieldNotNull(FieldIDCardNumber))
 }
 
 // IDCardNumberEqualFold applies the EqualFold predicate on the "id_card_number" field.
 func IDCardNumberEqualFold(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Rider(sql.FieldEqualFold(FieldIDCardNumber, v))
 }
 
 // IDCardNumberContainsFold applies the ContainsFold predicate on the "id_card_number" field.
 func IDCardNumberContainsFold(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldIDCardNumber), v))
-	})
+	return predicate.Rider(sql.FieldContainsFold(FieldIDCardNumber, v))
 }
 
 // EnterpriseIDEQ applies the EQ predicate on the "enterprise_id" field.
 func EnterpriseIDEQ(v uint64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEnterpriseID), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldEnterpriseID, v))
 }
 
 // EnterpriseIDNEQ applies the NEQ predicate on the "enterprise_id" field.
 func EnterpriseIDNEQ(v uint64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEnterpriseID), v))
-	})
+	return predicate.Rider(sql.FieldNEQ(FieldEnterpriseID, v))
 }
 
 // EnterpriseIDIn applies the In predicate on the "enterprise_id" field.
 func EnterpriseIDIn(vs ...uint64) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldEnterpriseID), v...))
-	})
+	return predicate.Rider(sql.FieldIn(FieldEnterpriseID, vs...))
 }
 
 // EnterpriseIDNotIn applies the NotIn predicate on the "enterprise_id" field.
 func EnterpriseIDNotIn(vs ...uint64) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldEnterpriseID), v...))
-	})
+	return predicate.Rider(sql.FieldNotIn(FieldEnterpriseID, vs...))
 }
 
 // EnterpriseIDIsNil applies the IsNil predicate on the "enterprise_id" field.
 func EnterpriseIDIsNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldEnterpriseID)))
-	})
+	return predicate.Rider(sql.FieldIsNull(FieldEnterpriseID))
 }
 
 // EnterpriseIDNotNil applies the NotNil predicate on the "enterprise_id" field.
 func EnterpriseIDNotNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldEnterpriseID)))
-	})
+	return predicate.Rider(sql.FieldNotNull(FieldEnterpriseID))
 }
 
 // PhoneEQ applies the EQ predicate on the "phone" field.
 func PhoneEQ(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPhone), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldPhone, v))
 }
 
 // PhoneNEQ applies the NEQ predicate on the "phone" field.
 func PhoneNEQ(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPhone), v))
-	})
+	return predicate.Rider(sql.FieldNEQ(FieldPhone, v))
 }
 
 // PhoneIn applies the In predicate on the "phone" field.
 func PhoneIn(vs ...string) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldPhone), v...))
-	})
+	return predicate.Rider(sql.FieldIn(FieldPhone, vs...))
 }
 
 // PhoneNotIn applies the NotIn predicate on the "phone" field.
 func PhoneNotIn(vs ...string) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldPhone), v...))
-	})
+	return predicate.Rider(sql.FieldNotIn(FieldPhone, vs...))
 }
 
 // PhoneGT applies the GT predicate on the "phone" field.
 func PhoneGT(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldPhone), v))
-	})
+	return predicate.Rider(sql.FieldGT(FieldPhone, v))
 }
 
 // PhoneGTE applies the GTE predicate on the "phone" field.
 func PhoneGTE(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldPhone), v))
-	})
+	return predicate.Rider(sql.FieldGTE(FieldPhone, v))
 }
 
 // PhoneLT applies the LT predicate on the "phone" field.
 func PhoneLT(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldPhone), v))
-	})
+	return predicate.Rider(sql.FieldLT(FieldPhone, v))
 }
 
 // PhoneLTE applies the LTE predicate on the "phone" field.
 func PhoneLTE(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldPhone), v))
-	})
+	return predicate.Rider(sql.FieldLTE(FieldPhone, v))
 }
 
 // PhoneContains applies the Contains predicate on the "phone" field.
 func PhoneContains(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldPhone), v))
-	})
+	return predicate.Rider(sql.FieldContains(FieldPhone, v))
 }
 
 // PhoneHasPrefix applies the HasPrefix predicate on the "phone" field.
 func PhoneHasPrefix(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldPhone), v))
-	})
+	return predicate.Rider(sql.FieldHasPrefix(FieldPhone, v))
 }
 
 // PhoneHasSuffix applies the HasSuffix predicate on the "phone" field.
 func PhoneHasSuffix(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldPhone), v))
-	})
+	return predicate.Rider(sql.FieldHasSuffix(FieldPhone, v))
 }
 
 // PhoneEqualFold applies the EqualFold predicate on the "phone" field.
 func PhoneEqualFold(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldPhone), v))
-	})
+	return predicate.Rider(sql.FieldEqualFold(FieldPhone, v))
 }
 
 // PhoneContainsFold applies the ContainsFold predicate on the "phone" field.
 func PhoneContainsFold(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldPhone), v))
-	})
+	return predicate.Rider(sql.FieldContainsFold(FieldPhone, v))
 }
 
 // ContactIsNil applies the IsNil predicate on the "contact" field.
 func ContactIsNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldContact)))
-	})
+	return predicate.Rider(sql.FieldIsNull(FieldContact))
 }
 
 // ContactNotNil applies the NotNil predicate on the "contact" field.
 func ContactNotNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldContact)))
-	})
+	return predicate.Rider(sql.FieldNotNull(FieldContact))
 }
 
 // DeviceTypeEQ applies the EQ predicate on the "device_type" field.
 func DeviceTypeEQ(v uint8) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeviceType), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldDeviceType, v))
 }
 
 // DeviceTypeNEQ applies the NEQ predicate on the "device_type" field.
 func DeviceTypeNEQ(v uint8) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDeviceType), v))
-	})
+	return predicate.Rider(sql.FieldNEQ(FieldDeviceType, v))
 }
 
 // DeviceTypeIn applies the In predicate on the "device_type" field.
 func DeviceTypeIn(vs ...uint8) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDeviceType), v...))
-	})
+	return predicate.Rider(sql.FieldIn(FieldDeviceType, vs...))
 }
 
 // DeviceTypeNotIn applies the NotIn predicate on the "device_type" field.
 func DeviceTypeNotIn(vs ...uint8) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDeviceType), v...))
-	})
+	return predicate.Rider(sql.FieldNotIn(FieldDeviceType, vs...))
 }
 
 // DeviceTypeGT applies the GT predicate on the "device_type" field.
 func DeviceTypeGT(v uint8) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDeviceType), v))
-	})
+	return predicate.Rider(sql.FieldGT(FieldDeviceType, v))
 }
 
 // DeviceTypeGTE applies the GTE predicate on the "device_type" field.
 func DeviceTypeGTE(v uint8) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDeviceType), v))
-	})
+	return predicate.Rider(sql.FieldGTE(FieldDeviceType, v))
 }
 
 // DeviceTypeLT applies the LT predicate on the "device_type" field.
 func DeviceTypeLT(v uint8) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDeviceType), v))
-	})
+	return predicate.Rider(sql.FieldLT(FieldDeviceType, v))
 }
 
 // DeviceTypeLTE applies the LTE predicate on the "device_type" field.
 func DeviceTypeLTE(v uint8) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDeviceType), v))
-	})
+	return predicate.Rider(sql.FieldLTE(FieldDeviceType, v))
 }
 
 // DeviceTypeIsNil applies the IsNil predicate on the "device_type" field.
 func DeviceTypeIsNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDeviceType)))
-	})
+	return predicate.Rider(sql.FieldIsNull(FieldDeviceType))
 }
 
 // DeviceTypeNotNil applies the NotNil predicate on the "device_type" field.
 func DeviceTypeNotNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDeviceType)))
-	})
+	return predicate.Rider(sql.FieldNotNull(FieldDeviceType))
 }
 
 // LastDeviceEQ applies the EQ predicate on the "last_device" field.
 func LastDeviceEQ(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLastDevice), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldLastDevice, v))
 }
 
 // LastDeviceNEQ applies the NEQ predicate on the "last_device" field.
 func LastDeviceNEQ(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldLastDevice), v))
-	})
+	return predicate.Rider(sql.FieldNEQ(FieldLastDevice, v))
 }
 
 // LastDeviceIn applies the In predicate on the "last_device" field.
 func LastDeviceIn(vs ...string) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldLastDevice), v...))
-	})
+	return predicate.Rider(sql.FieldIn(FieldLastDevice, vs...))
 }
 
 // LastDeviceNotIn applies the NotIn predicate on the "last_device" field.
 func LastDeviceNotIn(vs ...string) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldLastDevice), v...))
-	})
+	return predicate.Rider(sql.FieldNotIn(FieldLastDevice, vs...))
 }
 
 // LastDeviceGT applies the GT predicate on the "last_device" field.
 func LastDeviceGT(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldLastDevice), v))
-	})
+	return predicate.Rider(sql.FieldGT(FieldLastDevice, v))
 }
 
 // LastDeviceGTE applies the GTE predicate on the "last_device" field.
 func LastDeviceGTE(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldLastDevice), v))
-	})
+	return predicate.Rider(sql.FieldGTE(FieldLastDevice, v))
 }
 
 // LastDeviceLT applies the LT predicate on the "last_device" field.
 func LastDeviceLT(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldLastDevice), v))
-	})
+	return predicate.Rider(sql.FieldLT(FieldLastDevice, v))
 }
 
 // LastDeviceLTE applies the LTE predicate on the "last_device" field.
 func LastDeviceLTE(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldLastDevice), v))
-	})
+	return predicate.Rider(sql.FieldLTE(FieldLastDevice, v))
 }
 
 // LastDeviceContains applies the Contains predicate on the "last_device" field.
 func LastDeviceContains(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldLastDevice), v))
-	})
+	return predicate.Rider(sql.FieldContains(FieldLastDevice, v))
 }
 
 // LastDeviceHasPrefix applies the HasPrefix predicate on the "last_device" field.
 func LastDeviceHasPrefix(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldLastDevice), v))
-	})
+	return predicate.Rider(sql.FieldHasPrefix(FieldLastDevice, v))
 }
 
 // LastDeviceHasSuffix applies the HasSuffix predicate on the "last_device" field.
 func LastDeviceHasSuffix(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldLastDevice), v))
-	})
+	return predicate.Rider(sql.FieldHasSuffix(FieldLastDevice, v))
 }
 
 // LastDeviceIsNil applies the IsNil predicate on the "last_device" field.
 func LastDeviceIsNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLastDevice)))
-	})
+	return predicate.Rider(sql.FieldIsNull(FieldLastDevice))
 }
 
 // LastDeviceNotNil applies the NotNil predicate on the "last_device" field.
 func LastDeviceNotNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLastDevice)))
-	})
+	return predicate.Rider(sql.FieldNotNull(FieldLastDevice))
 }
 
 // LastDeviceEqualFold applies the EqualFold predicate on the "last_device" field.
 func LastDeviceEqualFold(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldLastDevice), v))
-	})
+	return predicate.Rider(sql.FieldEqualFold(FieldLastDevice, v))
 }
 
 // LastDeviceContainsFold applies the ContainsFold predicate on the "last_device" field.
 func LastDeviceContainsFold(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldLastDevice), v))
-	})
+	return predicate.Rider(sql.FieldContainsFold(FieldLastDevice, v))
 }
 
 // IsNewDeviceEQ applies the EQ predicate on the "is_new_device" field.
 func IsNewDeviceEQ(v bool) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIsNewDevice), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldIsNewDevice, v))
 }
 
 // IsNewDeviceNEQ applies the NEQ predicate on the "is_new_device" field.
 func IsNewDeviceNEQ(v bool) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldIsNewDevice), v))
-	})
+	return predicate.Rider(sql.FieldNEQ(FieldIsNewDevice, v))
 }
 
 // LastFaceEQ applies the EQ predicate on the "last_face" field.
 func LastFaceEQ(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLastFace), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldLastFace, v))
 }
 
 // LastFaceNEQ applies the NEQ predicate on the "last_face" field.
 func LastFaceNEQ(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldLastFace), v))
-	})
+	return predicate.Rider(sql.FieldNEQ(FieldLastFace, v))
 }
 
 // LastFaceIn applies the In predicate on the "last_face" field.
 func LastFaceIn(vs ...string) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldLastFace), v...))
-	})
+	return predicate.Rider(sql.FieldIn(FieldLastFace, vs...))
 }
 
 // LastFaceNotIn applies the NotIn predicate on the "last_face" field.
 func LastFaceNotIn(vs ...string) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldLastFace), v...))
-	})
+	return predicate.Rider(sql.FieldNotIn(FieldLastFace, vs...))
 }
 
 // LastFaceGT applies the GT predicate on the "last_face" field.
 func LastFaceGT(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldLastFace), v))
-	})
+	return predicate.Rider(sql.FieldGT(FieldLastFace, v))
 }
 
 // LastFaceGTE applies the GTE predicate on the "last_face" field.
 func LastFaceGTE(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldLastFace), v))
-	})
+	return predicate.Rider(sql.FieldGTE(FieldLastFace, v))
 }
 
 // LastFaceLT applies the LT predicate on the "last_face" field.
 func LastFaceLT(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldLastFace), v))
-	})
+	return predicate.Rider(sql.FieldLT(FieldLastFace, v))
 }
 
 // LastFaceLTE applies the LTE predicate on the "last_face" field.
 func LastFaceLTE(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldLastFace), v))
-	})
+	return predicate.Rider(sql.FieldLTE(FieldLastFace, v))
 }
 
 // LastFaceContains applies the Contains predicate on the "last_face" field.
 func LastFaceContains(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldLastFace), v))
-	})
+	return predicate.Rider(sql.FieldContains(FieldLastFace, v))
 }
 
 // LastFaceHasPrefix applies the HasPrefix predicate on the "last_face" field.
 func LastFaceHasPrefix(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldLastFace), v))
-	})
+	return predicate.Rider(sql.FieldHasPrefix(FieldLastFace, v))
 }
 
 // LastFaceHasSuffix applies the HasSuffix predicate on the "last_face" field.
 func LastFaceHasSuffix(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldLastFace), v))
-	})
+	return predicate.Rider(sql.FieldHasSuffix(FieldLastFace, v))
 }
 
 // LastFaceIsNil applies the IsNil predicate on the "last_face" field.
 func LastFaceIsNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLastFace)))
-	})
+	return predicate.Rider(sql.FieldIsNull(FieldLastFace))
 }
 
 // LastFaceNotNil applies the NotNil predicate on the "last_face" field.
 func LastFaceNotNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLastFace)))
-	})
+	return predicate.Rider(sql.FieldNotNull(FieldLastFace))
 }
 
 // LastFaceEqualFold applies the EqualFold predicate on the "last_face" field.
 func LastFaceEqualFold(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldLastFace), v))
-	})
+	return predicate.Rider(sql.FieldEqualFold(FieldLastFace, v))
 }
 
 // LastFaceContainsFold applies the ContainsFold predicate on the "last_face" field.
 func LastFaceContainsFold(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldLastFace), v))
-	})
+	return predicate.Rider(sql.FieldContainsFold(FieldLastFace, v))
 }
 
 // PushIDEQ applies the EQ predicate on the "push_id" field.
 func PushIDEQ(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPushID), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldPushID, v))
 }
 
 // PushIDNEQ applies the NEQ predicate on the "push_id" field.
 func PushIDNEQ(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPushID), v))
-	})
+	return predicate.Rider(sql.FieldNEQ(FieldPushID, v))
 }
 
 // PushIDIn applies the In predicate on the "push_id" field.
 func PushIDIn(vs ...string) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldPushID), v...))
-	})
+	return predicate.Rider(sql.FieldIn(FieldPushID, vs...))
 }
 
 // PushIDNotIn applies the NotIn predicate on the "push_id" field.
 func PushIDNotIn(vs ...string) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldPushID), v...))
-	})
+	return predicate.Rider(sql.FieldNotIn(FieldPushID, vs...))
 }
 
 // PushIDGT applies the GT predicate on the "push_id" field.
 func PushIDGT(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldPushID), v))
-	})
+	return predicate.Rider(sql.FieldGT(FieldPushID, v))
 }
 
 // PushIDGTE applies the GTE predicate on the "push_id" field.
 func PushIDGTE(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldPushID), v))
-	})
+	return predicate.Rider(sql.FieldGTE(FieldPushID, v))
 }
 
 // PushIDLT applies the LT predicate on the "push_id" field.
 func PushIDLT(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldPushID), v))
-	})
+	return predicate.Rider(sql.FieldLT(FieldPushID, v))
 }
 
 // PushIDLTE applies the LTE predicate on the "push_id" field.
 func PushIDLTE(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldPushID), v))
-	})
+	return predicate.Rider(sql.FieldLTE(FieldPushID, v))
 }
 
 // PushIDContains applies the Contains predicate on the "push_id" field.
 func PushIDContains(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldPushID), v))
-	})
+	return predicate.Rider(sql.FieldContains(FieldPushID, v))
 }
 
 // PushIDHasPrefix applies the HasPrefix predicate on the "push_id" field.
 func PushIDHasPrefix(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldPushID), v))
-	})
+	return predicate.Rider(sql.FieldHasPrefix(FieldPushID, v))
 }
 
 // PushIDHasSuffix applies the HasSuffix predicate on the "push_id" field.
 func PushIDHasSuffix(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldPushID), v))
-	})
+	return predicate.Rider(sql.FieldHasSuffix(FieldPushID, v))
 }
 
 // PushIDIsNil applies the IsNil predicate on the "push_id" field.
 func PushIDIsNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldPushID)))
-	})
+	return predicate.Rider(sql.FieldIsNull(FieldPushID))
 }
 
 // PushIDNotNil applies the NotNil predicate on the "push_id" field.
 func PushIDNotNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldPushID)))
-	})
+	return predicate.Rider(sql.FieldNotNull(FieldPushID))
 }
 
 // PushIDEqualFold applies the EqualFold predicate on the "push_id" field.
 func PushIDEqualFold(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldPushID), v))
-	})
+	return predicate.Rider(sql.FieldEqualFold(FieldPushID, v))
 }
 
 // PushIDContainsFold applies the ContainsFold predicate on the "push_id" field.
 func PushIDContainsFold(v string) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldPushID), v))
-	})
+	return predicate.Rider(sql.FieldContainsFold(FieldPushID, v))
 }
 
 // LastSigninAtEQ applies the EQ predicate on the "last_signin_at" field.
 func LastSigninAtEQ(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLastSigninAt), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldLastSigninAt, v))
 }
 
 // LastSigninAtNEQ applies the NEQ predicate on the "last_signin_at" field.
 func LastSigninAtNEQ(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldLastSigninAt), v))
-	})
+	return predicate.Rider(sql.FieldNEQ(FieldLastSigninAt, v))
 }
 
 // LastSigninAtIn applies the In predicate on the "last_signin_at" field.
 func LastSigninAtIn(vs ...time.Time) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldLastSigninAt), v...))
-	})
+	return predicate.Rider(sql.FieldIn(FieldLastSigninAt, vs...))
 }
 
 // LastSigninAtNotIn applies the NotIn predicate on the "last_signin_at" field.
 func LastSigninAtNotIn(vs ...time.Time) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldLastSigninAt), v...))
-	})
+	return predicate.Rider(sql.FieldNotIn(FieldLastSigninAt, vs...))
 }
 
 // LastSigninAtGT applies the GT predicate on the "last_signin_at" field.
 func LastSigninAtGT(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldLastSigninAt), v))
-	})
+	return predicate.Rider(sql.FieldGT(FieldLastSigninAt, v))
 }
 
 // LastSigninAtGTE applies the GTE predicate on the "last_signin_at" field.
 func LastSigninAtGTE(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldLastSigninAt), v))
-	})
+	return predicate.Rider(sql.FieldGTE(FieldLastSigninAt, v))
 }
 
 // LastSigninAtLT applies the LT predicate on the "last_signin_at" field.
 func LastSigninAtLT(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldLastSigninAt), v))
-	})
+	return predicate.Rider(sql.FieldLT(FieldLastSigninAt, v))
 }
 
 // LastSigninAtLTE applies the LTE predicate on the "last_signin_at" field.
 func LastSigninAtLTE(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldLastSigninAt), v))
-	})
+	return predicate.Rider(sql.FieldLTE(FieldLastSigninAt, v))
 }
 
 // LastSigninAtIsNil applies the IsNil predicate on the "last_signin_at" field.
 func LastSigninAtIsNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLastSigninAt)))
-	})
+	return predicate.Rider(sql.FieldIsNull(FieldLastSigninAt))
 }
 
 // LastSigninAtNotNil applies the NotNil predicate on the "last_signin_at" field.
 func LastSigninAtNotNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLastSigninAt)))
-	})
+	return predicate.Rider(sql.FieldNotNull(FieldLastSigninAt))
 }
 
 // BlockedEQ applies the EQ predicate on the "blocked" field.
 func BlockedEQ(v bool) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBlocked), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldBlocked, v))
 }
 
 // BlockedNEQ applies the NEQ predicate on the "blocked" field.
 func BlockedNEQ(v bool) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBlocked), v))
-	})
+	return predicate.Rider(sql.FieldNEQ(FieldBlocked, v))
 }
 
 // PointsEQ applies the EQ predicate on the "points" field.
 func PointsEQ(v int64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPoints), v))
-	})
+	return predicate.Rider(sql.FieldEQ(FieldPoints, v))
 }
 
 // PointsNEQ applies the NEQ predicate on the "points" field.
 func PointsNEQ(v int64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPoints), v))
-	})
+	return predicate.Rider(sql.FieldNEQ(FieldPoints, v))
 }
 
 // PointsIn applies the In predicate on the "points" field.
 func PointsIn(vs ...int64) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldPoints), v...))
-	})
+	return predicate.Rider(sql.FieldIn(FieldPoints, vs...))
 }
 
 // PointsNotIn applies the NotIn predicate on the "points" field.
 func PointsNotIn(vs ...int64) predicate.Rider {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldPoints), v...))
-	})
+	return predicate.Rider(sql.FieldNotIn(FieldPoints, vs...))
 }
 
 // PointsGT applies the GT predicate on the "points" field.
 func PointsGT(v int64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldPoints), v))
-	})
+	return predicate.Rider(sql.FieldGT(FieldPoints, v))
 }
 
 // PointsGTE applies the GTE predicate on the "points" field.
 func PointsGTE(v int64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldPoints), v))
-	})
+	return predicate.Rider(sql.FieldGTE(FieldPoints, v))
 }
 
 // PointsLT applies the LT predicate on the "points" field.
 func PointsLT(v int64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldPoints), v))
-	})
+	return predicate.Rider(sql.FieldLT(FieldPoints, v))
 }
 
 // PointsLTE applies the LTE predicate on the "points" field.
 func PointsLTE(v int64) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldPoints), v))
-	})
+	return predicate.Rider(sql.FieldLTE(FieldPoints, v))
 }
 
 // HasStation applies the HasEdge predicate on the "station" edge.
@@ -1635,7 +1075,6 @@ func HasStation() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StationTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, StationTable, StationColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1663,7 +1102,6 @@ func HasPerson() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PersonTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, PersonTable, PersonColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1691,7 +1129,6 @@ func HasEnterprise() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EnterpriseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, EnterpriseTable, EnterpriseColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1719,7 +1156,6 @@ func HasContracts() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ContractsTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, ContractsTable, ContractsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1747,7 +1183,6 @@ func HasFaults() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(FaultsTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, FaultsTable, FaultsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1775,7 +1210,6 @@ func HasOrders() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(OrdersTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, OrdersTable, OrdersColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1803,7 +1237,6 @@ func HasExchanges() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ExchangesTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, ExchangesTable, ExchangesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1831,7 +1264,6 @@ func HasSubscribes() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SubscribesTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, SubscribesTable, SubscribesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1859,7 +1291,6 @@ func HasStocks() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StocksTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, StocksTable, StocksColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -1887,7 +1318,6 @@ func HasFollowups() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(FollowupsTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, FollowupsTable, FollowupsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

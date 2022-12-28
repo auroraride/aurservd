@@ -280,52 +280,10 @@ func (pc *PersonCreate) Mutation() *PersonMutation {
 
 // Save creates the Person in the database.
 func (pc *PersonCreate) Save(ctx context.Context) (*Person, error) {
-	var (
-		err  error
-		node *Person
-	)
 	if err := pc.defaults(); err != nil {
 		return nil, err
 	}
-	if len(pc.hooks) == 0 {
-		if err = pc.check(); err != nil {
-			return nil, err
-		}
-		node, err = pc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*PersonMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = pc.check(); err != nil {
-				return nil, err
-			}
-			pc.mutation = mutation
-			if node, err = pc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(pc.hooks) - 1; i >= 0; i-- {
-			if pc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = pc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, pc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Person)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from PersonMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Person, PersonMutation](ctx, pc.sqlSave, pc.mutation, pc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -415,6 +373,9 @@ func (pc *PersonCreate) check() error {
 }
 
 func (pc *PersonCreate) sqlSave(ctx context.Context) (*Person, error) {
+	if err := pc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := pc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, pc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -424,6 +385,8 @@ func (pc *PersonCreate) sqlSave(ctx context.Context) (*Person, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = uint64(id)
+	pc.mutation.id = &_node.ID
+	pc.mutation.done = true
 	return _node, nil
 }
 
@@ -440,155 +403,79 @@ func (pc *PersonCreate) createSpec() (*Person, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = pc.conflict
 	if value, ok := pc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: person.FieldCreatedAt,
-		})
+		_spec.SetField(person.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := pc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: person.FieldUpdatedAt,
-		})
+		_spec.SetField(person.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := pc.mutation.DeletedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: person.FieldDeletedAt,
-		})
+		_spec.SetField(person.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := pc.mutation.Creator(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: person.FieldCreator,
-		})
+		_spec.SetField(person.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := pc.mutation.LastModifier(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: person.FieldLastModifier,
-		})
+		_spec.SetField(person.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := pc.mutation.Remark(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldRemark,
-		})
+		_spec.SetField(person.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := pc.mutation.Status(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: person.FieldStatus,
-		})
+		_spec.SetField(person.FieldStatus, field.TypeUint8, value)
 		_node.Status = value
 	}
 	if value, ok := pc.mutation.Banned(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: person.FieldBanned,
-		})
+		_spec.SetField(person.FieldBanned, field.TypeBool, value)
 		_node.Banned = value
 	}
 	if value, ok := pc.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldName,
-		})
+		_spec.SetField(person.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := pc.mutation.IDCardNumber(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldIDCardNumber,
-		})
+		_spec.SetField(person.FieldIDCardNumber, field.TypeString, value)
 		_node.IDCardNumber = value
 	}
 	if value, ok := pc.mutation.IDCardType(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: person.FieldIDCardType,
-		})
+		_spec.SetField(person.FieldIDCardType, field.TypeUint8, value)
 		_node.IDCardType = value
 	}
 	if value, ok := pc.mutation.IDCardPortrait(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldIDCardPortrait,
-		})
+		_spec.SetField(person.FieldIDCardPortrait, field.TypeString, value)
 		_node.IDCardPortrait = value
 	}
 	if value, ok := pc.mutation.IDCardNational(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldIDCardNational,
-		})
+		_spec.SetField(person.FieldIDCardNational, field.TypeString, value)
 		_node.IDCardNational = value
 	}
 	if value, ok := pc.mutation.AuthFace(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldAuthFace,
-		})
+		_spec.SetField(person.FieldAuthFace, field.TypeString, value)
 		_node.AuthFace = value
 	}
 	if value, ok := pc.mutation.AuthResult(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: person.FieldAuthResult,
-		})
+		_spec.SetField(person.FieldAuthResult, field.TypeJSON, value)
 		_node.AuthResult = value
 	}
 	if value, ok := pc.mutation.AuthAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: person.FieldAuthAt,
-		})
+		_spec.SetField(person.FieldAuthAt, field.TypeTime, value)
 		_node.AuthAt = &value
 	}
 	if value, ok := pc.mutation.EsignAccountID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldEsignAccountID,
-		})
+		_spec.SetField(person.FieldEsignAccountID, field.TypeString, value)
 		_node.EsignAccountID = value
 	}
 	if value, ok := pc.mutation.BaiduVerifyToken(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldBaiduVerifyToken,
-		})
+		_spec.SetField(person.FieldBaiduVerifyToken, field.TypeString, value)
 		_node.BaiduVerifyToken = value
 	}
 	if value, ok := pc.mutation.BaiduLogID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldBaiduLogID,
-		})
+		_spec.SetField(person.FieldBaiduLogID, field.TypeString, value)
 		_node.BaiduLogID = value
 	}
 	if nodes := pc.mutation.RiderIDs(); len(nodes) > 0 {

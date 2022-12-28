@@ -60,6 +60,9 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
     cs := NewCabinet()
     cab := cs.QueryOneSerialX(req.Serial)
 
+    if cab.Intelligent {
+    }
+
     // 更新一次电柜状态
     err := cs.UpdateStatus(cab)
     if err != nil {

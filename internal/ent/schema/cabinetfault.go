@@ -19,6 +19,7 @@ type CabinetFault struct {
 func (CabinetFault) Annotations() []schema.Annotation {
     return []schema.Annotation{
         entsql.Annotation{Table: "cabinet_fault"},
+        entsql.WithComments(true),
     }
 }
 

@@ -6,7 +6,7 @@
 package model
 
 import (
-    jsoniter "github.com/json-iterator/go"
+    "github.com/goccy/go-json"
     "go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -45,11 +45,11 @@ type RiderExchangeInfo struct {
 }
 
 func (c *RiderExchangeInfo) MarshalBinary() ([]byte, error) {
-    return jsoniter.Marshal(c)
+    return json.Marshal(c)
 }
 
 func (c *RiderExchangeInfo) UnmarshalBinary(data []byte) error {
-    return jsoniter.Unmarshal(data, c)
+    return json.Unmarshal(data, c)
 }
 
 // RiderExchangeProcessReq 请求换电
