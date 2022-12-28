@@ -25,6 +25,8 @@ func loadRideRoutes() {
 
     // 引入骑手api需要的中间件
     g.Use(
+        middleware.DeviceMiddleware(),
+        middleware.RiderMiddleware(),
         middleware.BodyDumpRawWithInterval(map[string]bool{
             "/rider/v1/city":                   true,
             "/rider/v1/socket":                 true,
@@ -35,8 +37,6 @@ func loadRideRoutes() {
             "/rider/callback/wechatpay/refund": true,
             "/rider/v1/branch":                 true,
         }),
-        middleware.DeviceMiddleware(),
-        middleware.RiderMiddleware(),
     )
 
     g.POST("/signin", rapi.Rider.Signin)                  // 登录
