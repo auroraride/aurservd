@@ -687,13 +687,68 @@ func (s *cabinetService) Sync(data *am.CabinetSyncData) {
         if c.Online {
             health = model.CabinetHealthStatusOnline
         }
-        if c.Status == " " {
+        if c.Status == am.StatusAbnormal {
+            health = model.CabinetHealthStatusFault
         }
         updater.SetHealth(health)
     }
 
-    bins := data.Bins
-    if len(bins) > 0 {
+    if len(data.Bins) > 0 {
+        var (
+            bins model.CabinetBins
+
+            bn, bf, bc, be, bl int
+        )
+        for _, b := range data.Bins {
+            hasBattery := b.BatteryExists && b.BatterySn != ""
+            var (
+                isFull bool
+                remark string
+            )
+            if b.Remark != nil {
+                remark = *b.Remark
+            }
+            // 电池数
+            if hasBattery {
+                bn += 1
+                if b.Soc >= model.IntelligentBatteryFullSoc {
+                    // 满电
+                    bf += 1
+                    isFull = true
+                } else {
+                    // 充电
+                    bc += 1
+                }
+            } else {
+                // 空仓
+                be += 1
+            }
+            // 锁仓
+            if !b.Enable {
+                bl += 1
+            }
+
+            bins = append(bins, &model.CabinetBin{
+                Index:       b.Ordinal - 1,
+                Name:        b.Name,
+                BatterySN:   b.BatterySn,
+                Full:        isFull,
+                Battery:     hasBattery,
+                Electricity: model.BatteryElectricity(b.Soc),
+                OpenStatus:  b.Open,
+                DoorHealth:  b.Health && b.Enable,
+                Current:     b.Current,
+                Voltage:     b.Voltage,
+                Remark:      remark,
+            })
+        }
+
+        updater.SetDoors(len(data.Bins)).
+            SetBatteryNum(bn).
+            SetBatteryFullNum(bf).
+            SetBatteryChargingNum(bc).
+            SetEmptyBinNum(be).
+            SetLockedBinNum(bl)
     }
 
     _ = updater.Exec(s.ctx)

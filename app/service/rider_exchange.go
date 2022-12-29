@@ -8,16 +8,20 @@ package service
 import (
     "context"
     "fmt"
+    am "github.com/auroraride/adapter/model"
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/provider"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/exchange"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
+    "github.com/go-resty/resty/v2"
+    "github.com/goccy/go-json"
     log "github.com/sirupsen/logrus"
     "time"
 )
@@ -44,6 +48,76 @@ func NewRiderExchange(r *ent.Rider) *riderExchangeService {
     return s
 }
 
+func (s *riderExchangeService) IntelligentGetProcess(cab *ent.Cabinet, sub *ent.Subscribe, br model.CabinetBrand) *model.RiderExchangeInfo {
+    var url string
+
+    switch br {
+    case model.CabinetBrandKaixin:
+        url = ar.Config.Adapter.Kaixin.Api
+    default:
+        snag.Panic("电柜错误")
+    }
+
+    r, err := resty.New().R().
+        SetHeader(am.HeaderUserID, s.rider.Phone).
+        SetHeader(am.HeaderUserType, am.UserTypeRider.String()).
+        SetBody(&am.ExchangeUsableRequest{
+            Serial: cab.Serial,
+            Minsoc: cache.Float64(model.SettingExchangeMinBattery),
+            Lock:   10,
+        }).
+        Post(url)
+    if err != nil {
+        log.Errorf("换电信息请求失败: %v", err)
+        snag.Panic("请求失败")
+    }
+
+    b := r.Body()
+    log.Printf("换电请求成功: %s", string(b))
+
+    // 解析换电信息
+    res := new(am.ExchangeUsableResponse)
+    err = json.Unmarshal(b, res)
+    if err != nil {
+        log.Errorf("换电信息结果解析失败: %v", err)
+        snag.Panic("请求失败")
+    }
+
+    pro := model.RiderCabinetOperateProcess{
+        EmptyBin: &model.CabinetBinBasicInfo{
+            Index: res.Empty.Ordinal - 1,
+        },
+    }
+
+    fully := &model.CabinetBinBasicInfo{
+        Index:       res.Fully.Ordinal - 1,
+        Voltage:     res.Fully.Voltage,
+        Electricity: model.BatteryElectricity(res.Fully.Soc),
+    }
+
+    if res.Fully.Soc >= model.IntelligentBatteryFullSoc {
+        pro.FullBin = fully
+    } else {
+        pro.Alternative = fully
+    }
+
+    return &model.RiderExchangeInfo{
+        ID:                         cab.ID,
+        UUID:                       res.UUID,
+        Full:                       cab.BatteryFullNum > 0,
+        Name:                       cab.Name,
+        Health:                     model.CabinetHealthStatusOnline,
+        Serial:                     cab.Serial,
+        Doors:                      cab.Doors,
+        BatteryNum:                 cab.BatteryNum,
+        BatteryFullNum:             cab.BatteryFullNum,
+        Brand:                      model.CabinetBrand(cab.Brand),
+        Model:                      sub.Model,
+        CityID:                     sub.CityID,
+        RiderCabinetOperateProcess: pro,
+    }
+}
+
 // GetProcess 获取待换电信息
 func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq) *model.RiderExchangeInfo {
     NewSetting().SystemMaintainX()
@@ -61,6 +135,7 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
     cab := cs.QueryOneSerialX(req.Serial)
 
     if cab.Intelligent {
+        return s.IntelligentGetProcess(cab, sub, model.CabinetBrand(cab.Brand))
     }
 
     // 更新一次电柜状态

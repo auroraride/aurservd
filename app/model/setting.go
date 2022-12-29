@@ -6,6 +6,10 @@
 package model
 
 const (
+    IntelligentBatteryFullSoc float64 = 95.0 // 智能电池定义满电soc TODO: 具体数值待定义
+)
+
+const (
     SettingDeposit                = "DEPOSIT"                  // 押金
     SettingRenewal                = "RENEWAL"                  // 退订多久后重签计算佣金
     SettingCabinetFault           = "CABINET_FAULT"            // 电柜故障

@@ -14,8 +14,7 @@ import (
 )
 
 func kaixin() {
-    addr := ar.Config.Adapter.Kaixin
-    s := tcp.NewServer(addr, log.StandardLogger(), &codec.HeaderLength{}, func(b []byte) {
+    s := tcp.NewServer(ar.Config.Adapter.Kaixin.TcpBind, log.StandardLogger(), &codec.HeaderLength{}, func(b []byte) {
         fmt.Println(string(b))
         // req := new(model.CabinetSyncRequest)
         // _ = json.Unmarshal(b, req)
