@@ -57,7 +57,7 @@ type EsignConfig struct {
 type config struct {
     Debug   bool
     Adapter struct {
-        Cabinet string
+        Kaixin string
     }
     App struct {
         Address      string

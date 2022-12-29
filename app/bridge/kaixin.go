@@ -12,8 +12,8 @@ import (
     log "github.com/sirupsen/logrus"
 )
 
-func cabinet() {
-    addr := ar.Config.Adapter.Cabinet
+func kaixin() {
+    addr := ar.Config.Adapter.Kaixin
     s := tcp.NewServer(addr, log.StandardLogger(), &codec.HeaderLength{}, func(b []byte) {
         // fmt.Println(string(b))
         // req := new(model.CabinetSyncRequest)
