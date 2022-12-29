@@ -3,9 +3,10 @@
 // Created at 2022-12-25
 // Based on aurservd by liasica, magicrolan@qq.com.
 
-package bridge
+package notice
 
 import (
+    "fmt"
     "github.com/auroraride/adapter/codec"
     "github.com/auroraride/adapter/tcp"
     "github.com/auroraride/aurservd/internal/ar"
@@ -15,7 +16,7 @@ import (
 func kaixin() {
     addr := ar.Config.Adapter.Kaixin
     s := tcp.NewServer(addr, log.StandardLogger(), &codec.HeaderLength{}, func(b []byte) {
-        // fmt.Println(string(b))
+        fmt.Println(string(b))
         // req := new(model.CabinetSyncRequest)
         // _ = json.Unmarshal(b, req)
         // service.NewCabinet().Sync(req)
