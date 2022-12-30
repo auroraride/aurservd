@@ -8209,6 +8209,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "智能柜套餐筛选 0:全部 1:是 2:否",
+                        "name": "intelligent",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "电池型号",
                         "name": "model",
@@ -15160,6 +15166,23 @@ const docTemplate = `{
                 }
             }
         },
+        "model.BinInfo": {
+            "type": "object",
+            "properties": {
+                "electricity": {
+                    "description": "当前电量",
+                    "type": "number"
+                },
+                "index": {
+                    "description": "仓位index",
+                    "type": "integer"
+                },
+                "voltage": {
+                    "description": "电压(V)",
+                    "type": "number"
+                }
+            }
+        },
         "model.BranchContract": {
             "type": "object",
             "required": [
@@ -16114,23 +16137,6 @@ const docTemplate = `{
                 },
                 "voltage": {
                     "description": "电压(V)",
-                    "type": "number"
-                }
-            }
-        },
-        "model.CabinetBinBasicInfo": {
-            "type": "object",
-            "properties": {
-                "electricity": {
-                    "description": "当前电量",
-                    "type": "number"
-                },
-                "index": {
-                    "description": "仓位index",
-                    "type": "integer"
-                },
-                "voltage": {
-                    "description": "电压",
                     "type": "number"
                 }
             }
@@ -19532,6 +19538,7 @@ const docTemplate = `{
                 "cities",
                 "complexes",
                 "end",
+                "intelligent",
                 "name",
                 "start",
                 "type"
@@ -19564,6 +19571,10 @@ const docTemplate = `{
                 "end": {
                     "description": "结束日期 ",
                     "type": "string"
+                },
+                "intelligent": {
+                    "description": "是否智能柜套餐",
+                    "type": "boolean"
                 },
                 "name": {
                     "description": "骑士卡名称 ",
@@ -19750,6 +19761,10 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "intelligent": {
+                    "description": "是否智能柜套餐",
+                    "type": "boolean"
                 },
                 "name": {
                     "description": "名称",
@@ -20388,7 +20403,7 @@ const docTemplate = `{
                     "description": "备选方案",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.CabinetBinBasicInfo"
+                            "$ref": "#/definitions/model.BinInfo"
                         }
                     ]
                 },
@@ -20416,7 +20431,7 @@ const docTemplate = `{
                     "description": "空仓位",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.CabinetBinBasicInfo"
+                            "$ref": "#/definitions/model.BinInfo"
                         }
                     ]
                 },
@@ -20428,7 +20443,7 @@ const docTemplate = `{
                     "description": "满电仓位",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.CabinetBinBasicInfo"
+                            "$ref": "#/definitions/model.BinInfo"
                         }
                     ]
                 },

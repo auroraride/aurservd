@@ -95,6 +95,7 @@ func (Subscribe) Fields() []ent.Field {
         field.Time("agent_end_at").Optional().Nillable().Comment("代理商处到期日期"),
         field.String("formula").Optional().Nillable().Comment("计算公式"),
         field.Bool("need_contract").Default(false).Comment("是否需要签约"),
+        field.Bool("intelligent").Default(false).Comment("是否智能柜套餐"),
     }
 }
 

@@ -1078,6 +1078,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			plan.FieldParentID:      {Type: field.TypeUint64, Column: plan.FieldParentID},
 			plan.FieldDiscountNewly: {Type: field.TypeFloat64, Column: plan.FieldDiscountNewly},
 			plan.FieldNotes:         {Type: field.TypeJSON, Column: plan.FieldNotes},
+			plan.FieldIntelligent:   {Type: field.TypeBool, Column: plan.FieldIntelligent},
 		},
 	}
 	graph.Nodes[36] = &sqlgraph.Node{
@@ -1354,6 +1355,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldAgentEndAt:        {Type: field.TypeTime, Column: subscribe.FieldAgentEndAt},
 			subscribe.FieldFormula:           {Type: field.TypeString, Column: subscribe.FieldFormula},
 			subscribe.FieldNeedContract:      {Type: field.TypeBool, Column: subscribe.FieldNeedContract},
+			subscribe.FieldIntelligent:       {Type: field.TypeBool, Column: subscribe.FieldIntelligent},
 		},
 	}
 	graph.Nodes[46] = &sqlgraph.Node{
@@ -9829,6 +9831,11 @@ func (f *PlanFilter) WhereNotes(p entql.BytesP) {
 	f.Where(p.Field(plan.FieldNotes))
 }
 
+// WhereIntelligent applies the entql bool predicate on the intelligent field.
+func (f *PlanFilter) WhereIntelligent(p entql.BoolP) {
+	f.Where(p.Field(plan.FieldIntelligent))
+}
+
 // WhereHasBrand applies a predicate to check if query has an edge brand.
 func (f *PlanFilter) WhereHasBrand() {
 	f.Where(entql.HasEdge("brand"))
@@ -11531,6 +11538,11 @@ func (f *SubscribeFilter) WhereFormula(p entql.StringP) {
 // WhereNeedContract applies the entql bool predicate on the need_contract field.
 func (f *SubscribeFilter) WhereNeedContract(p entql.BoolP) {
 	f.Where(p.Field(subscribe.FieldNeedContract))
+}
+
+// WhereIntelligent applies the entql bool predicate on the intelligent field.
+func (f *SubscribeFilter) WhereIntelligent(p entql.BoolP) {
+	f.Where(p.Field(subscribe.FieldIntelligent))
 }
 
 // WhereHasPlan applies a predicate to check if query has an edge plan.

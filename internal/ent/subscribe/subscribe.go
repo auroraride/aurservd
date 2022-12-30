@@ -89,6 +89,8 @@ const (
 	FieldFormula = "formula"
 	// FieldNeedContract holds the string denoting the need_contract field in the database.
 	FieldNeedContract = "need_contract"
+	// FieldIntelligent holds the string denoting the intelligent field in the database.
+	FieldIntelligent = "intelligent"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
@@ -278,6 +280,7 @@ var Columns = []string{
 	FieldAgentEndAt,
 	FieldFormula,
 	FieldNeedContract,
+	FieldIntelligent,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -323,4 +326,6 @@ var (
 	DefaultPauseOverdue bool
 	// DefaultNeedContract holds the default value on creation for the "need_contract" field.
 	DefaultNeedContract bool
+	// DefaultIntelligent holds the default value on creation for the "intelligent" field.
+	DefaultIntelligent bool
 )

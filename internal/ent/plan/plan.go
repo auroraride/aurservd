@@ -55,6 +55,8 @@ const (
 	FieldDiscountNewly = "discount_newly"
 	// FieldNotes holds the string denoting the notes field in the database.
 	FieldNotes = "notes"
+	// FieldIntelligent holds the string denoting the intelligent field in the database.
+	FieldIntelligent = "intelligent"
 	// EdgeBrand holds the string denoting the brand edge name in mutations.
 	EdgeBrand = "brand"
 	// EdgeCities holds the string denoting the cities edge name in mutations.
@@ -111,6 +113,7 @@ var Columns = []string{
 	FieldParentID,
 	FieldDiscountNewly,
 	FieldNotes,
+	FieldIntelligent,
 }
 
 var (
@@ -146,4 +149,6 @@ var (
 	DefaultType uint8
 	// DefaultDiscountNewly holds the default value on creation for the "discount_newly" field.
 	DefaultDiscountNewly float64
+	// DefaultIntelligent holds the default value on creation for the "intelligent" field.
+	DefaultIntelligent bool
 )

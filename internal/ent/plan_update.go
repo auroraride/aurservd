@@ -321,6 +321,20 @@ func (pu *PlanUpdate) ClearNotes() *PlanUpdate {
 	return pu
 }
 
+// SetIntelligent sets the "intelligent" field.
+func (pu *PlanUpdate) SetIntelligent(b bool) *PlanUpdate {
+	pu.mutation.SetIntelligent(b)
+	return pu
+}
+
+// SetNillableIntelligent sets the "intelligent" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableIntelligent(b *bool) *PlanUpdate {
+	if b != nil {
+		pu.SetIntelligent(*b)
+	}
+	return pu
+}
+
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (pu *PlanUpdate) SetBrand(e *EbikeBrand) *PlanUpdate {
 	return pu.SetBrandID(e.ID)
@@ -583,6 +597,9 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if pu.mutation.NotesCleared() {
 		_spec.ClearField(plan.FieldNotes, field.TypeJSON)
+	}
+	if value, ok := pu.mutation.Intelligent(); ok {
+		_spec.SetField(plan.FieldIntelligent, field.TypeBool, value)
 	}
 	if pu.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1072,6 +1089,20 @@ func (puo *PlanUpdateOne) ClearNotes() *PlanUpdateOne {
 	return puo
 }
 
+// SetIntelligent sets the "intelligent" field.
+func (puo *PlanUpdateOne) SetIntelligent(b bool) *PlanUpdateOne {
+	puo.mutation.SetIntelligent(b)
+	return puo
+}
+
+// SetNillableIntelligent sets the "intelligent" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableIntelligent(b *bool) *PlanUpdateOne {
+	if b != nil {
+		puo.SetIntelligent(*b)
+	}
+	return puo
+}
+
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (puo *PlanUpdateOne) SetBrand(e *EbikeBrand) *PlanUpdateOne {
 	return puo.SetBrandID(e.ID)
@@ -1358,6 +1389,9 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 	}
 	if puo.mutation.NotesCleared() {
 		_spec.ClearField(plan.FieldNotes, field.TypeJSON)
+	}
+	if value, ok := puo.mutation.Intelligent(); ok {
+		_spec.SetField(plan.FieldIntelligent, field.TypeBool, value)
 	}
 	if puo.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -3,7 +3,7 @@
 TARGET='auroraride'
 
 if [ "$1" == 'next' ]; then
-    TARGET='auroraride'
+    TARGET='auroraride_next'
 fi
 
 echo "同步数据库: $TARGET"

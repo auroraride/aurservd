@@ -20,8 +20,9 @@ import (
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
-    "github.com/goccy/go-json"
+    "github.com/go-resty/resty/v2"
     log "github.com/sirupsen/logrus"
+    "go.mongodb.org/mongo-driver/bson/primitive"
     "time"
 )
 
@@ -36,67 +37,18 @@ type riderExchangeService struct {
     subscribe *ent.Subscribe
     exchange  *ent.Exchange
     task      *ec.Task
+
+    intelligentKey string
 }
 
 func NewRiderExchange(r *ent.Rider) *riderExchangeService {
     s := &riderExchangeService{
-        maxTime: 180 * time.Second,
-        rider:   r,
+        maxTime:        180 * time.Second,
+        rider:          r,
+        intelligentKey: "INTELLIGENT-CABINET-EXCHANGE",
     }
     s.ctx = context.WithValue(context.Background(), "rider", r)
     return s
-}
-
-func (s *riderExchangeService) IntelligentGetProcess(serial string, br model.CabinetBrand) (info *model.RiderCabinetOperateProcess) {
-    var url string
-
-    switch br {
-    case model.CabinetBrandKaixin:
-        url = ar.Config.Adapter.Kaixin.Api
-    default:
-        snag.Panic("电柜错误")
-    }
-
-    r, err := NewAdapter(url, s.rider).Post("/exchange/usable", &am.ExchangeUsableRequest{
-        Serial: serial,
-        Minsoc: cache.Float64(model.SettingExchangeMinBattery),
-        Lock:   10,
-    })
-    if err != nil {
-        log.Errorf("换电信息请求失败: %v", err)
-        snag.Panic("请求失败")
-    }
-
-    b := r.Body()
-    log.Printf("换电请求成功: %s", string(b))
-
-    // 解析换电信息
-    res := new(am.ExchangeUsableResponse)
-    err = json.Unmarshal(b, res)
-    if err != nil {
-        log.Errorf("换电信息结果解析失败: %v", err)
-        snag.Panic("请求失败")
-    }
-
-    info = &model.RiderCabinetOperateProcess{
-        EmptyBin: &model.BinInfo{
-            Index: res.Empty.Ordinal - 1,
-        },
-    }
-
-    fully := &model.BinInfo{
-        Index:       res.Fully.Ordinal - 1,
-        Voltage:     res.Fully.Voltage,
-        Electricity: model.BatteryElectricity(res.Fully.Soc),
-    }
-
-    if res.Fully.Soc >= model.IntelligentBatteryFullSoc {
-        info.FullBin = fully
-    } else {
-        info.Alternative = fully
-    }
-
-    return
 }
 
 // GetProcess 获取待换电信息
@@ -115,13 +67,27 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
     cs := NewCabinet()
     cab := cs.QueryOneSerialX(req.Serial)
 
+    // 检查可用电池型号
+    if !cs.ModelInclude(cab, sub.Model) {
+        snag.Panic("电池型号不兼容")
+    }
+
     var (
         info  *model.RiderCabinetOperateProcess
         fully *model.BinInfo
+        uid   string
     )
 
     // 判断设备是否智能设备
-    if !cab.Intelligent {
+    if cab.Intelligent {
+        if !sub.Intelligent {
+            snag.Panic("套餐不匹配")
+        }
+        if cab.Status == model.CabinetStatusMaintenance.Value() {
+            snag.Panic("电柜开小差了, 请联系客服")
+        }
+        uid, info = NewIntelligentCabinet(s.rider).ExchangeUsable(cab.Serial, model.CabinetBrand(cab.Brand))
+    } else {
         // 更新一次电柜状态
         err := cs.UpdateStatus(cab)
         if err != nil {
@@ -130,67 +96,59 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
         }
 
         info = cs.Usable(cab)
-    }
 
-    // 检查可用电池型号
-    if !cs.ModelInclude(cab, sub.Model) {
-        snag.Panic("电池型号不兼容")
-    }
+        // 查询电柜是否可使用
+        NewCabinet().BusinessableX(cab)
 
-    // 查询电柜是否可使用
-    NewCabinet().BusinessableX(cab)
+        ec.BusyX(cab.Serial)
 
-    ec.BusyX(cab.Serial)
-
-    // 判断设备是否智能设备
-    if cab.Intelligent {
-        info = s.IntelligentGetProcess(cab.Serial, model.CabinetBrand(cab.Brand))
-    }
-
-    if info.EmptyBin == nil || (info.FullBin == nil && info.Alternative == nil) {
-        snag.Panic("电柜仓位不可用")
-    }
-
-    if info.Alternative != nil {
-        fully = &model.BinInfo{
-            Index:       info.Alternative.Index,
-            Electricity: info.Alternative.Electricity,
-            Voltage:     info.Alternative.Voltage,
+        if info.EmptyBin == nil || (info.FullBin == nil && info.Alternative == nil) {
+            snag.Panic("电柜仓位不可用")
         }
-    } else {
-        fully = &model.BinInfo{
-            Index:       info.FullBin.Index,
-            Electricity: info.FullBin.Electricity,
-            Voltage:     info.FullBin.Voltage,
-        }
-    }
 
-    task := &ec.Task{
-        Serial:    cab.Serial,
-        CabinetID: cab.ID,
-        Job:       ec.JobExchange,
-        Rider: &ec.Rider{
-            ID:    s.rider.ID,
-            Name:  s.rider.Name,
-            Phone: s.rider.Phone,
-        },
-        Cabinet: cab.GetTaskInfo(),
-        Exchange: &ec.Exchange{
-            Model:       sub.Model,
-            Alternative: info.Alternative != nil,
-            Empty: &model.BinInfo{
-                Index: info.EmptyBin.Index,
+        if info.Alternative != nil {
+            fully = &model.BinInfo{
+                Index:       info.Alternative.Index,
+                Electricity: info.Alternative.Electricity,
+                Voltage:     info.Alternative.Voltage,
+            }
+        } else {
+            fully = &model.BinInfo{
+                Index:       info.FullBin.Index,
+                Electricity: info.FullBin.Electricity,
+                Voltage:     info.FullBin.Voltage,
+            }
+        }
+
+        t := &ec.Task{
+            Serial:    cab.Serial,
+            CabinetID: cab.ID,
+            Job:       ec.JobExchange,
+            Rider: &ec.Rider{
+                ID:    s.rider.ID,
+                Name:  s.rider.Name,
+                Phone: s.rider.Phone,
             },
-            Fully: fully,
-        },
-    }
+            Cabinet: cab.GetTaskInfo(),
+            Exchange: &ec.Exchange{
+                Model:       sub.Model,
+                Alternative: info.Alternative != nil,
+                Empty: &model.BinInfo{
+                    Index: info.EmptyBin.Index,
+                },
+                Fully: fully,
+            },
+        }
 
-    task = task.CreateX()
+        t = t.CreateX()
+
+        uid = t.ID.Hex()
+    }
 
     // TODO 修改前端返回值
     res = &model.RiderExchangeInfo{
         ID:                         cab.ID,
-        UUID:                       task.ID.Hex(),
+        UUID:                       uid,
         Full:                       info.FullBin != nil,
         Name:                       cab.Name,
         Health:                     cab.Health,
@@ -204,7 +162,11 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
         Brand:                      model.CabinetBrand(cab.Brand),
     }
 
-    tools.NewLog().Infof("[换电信息:%s]\n%s\n", task.ID.Hex(), res)
+    if cab.Intelligent {
+        cache.HSet(s.ctx, s.intelligentKey, uid, res)
+    }
+
+    tools.NewLog().Infof("[换电信息:%s]\n%s\n", uid, res)
 
     return res
 }
@@ -213,6 +175,11 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
 func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     // 是否有生效中套餐
     sub := NewSubscribe().RecentX(s.rider.ID)
+
+    if !sub.Intelligent {
+        snag.Panic("套餐不匹配")
+    }
+
     s.subscribe = sub
 
     // 检查用户是否可以办理业务
@@ -231,40 +198,82 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         snag.Panic(fmt.Sprintf("换电过于频繁, %d分钟可再次换电", iv))
     }
 
-    // 查找任务
-    task := ec.QueryID(req.UUID)
+    var (
+        cab  *ent.Cabinet
+        info model.RiderExchangeInfo
+        tcab *ec.Cabinet
+        tex  *ec.Exchange
+        t    *ec.Task
+    )
 
-    // 判断任务是否存在, 并且比对存储骑手信息是否相符
-    if task == nil || task.Status > 0 || task.StartAt != nil || task.Job != ec.JobExchange || task.Exchange == nil || task.IsDeactived() || task.Rider == nil || task.Rider.ID != s.rider.ID {
-        snag.Panic("未找到信息, 请重新扫码")
-    }
-
-    cab := NewCabinet().QueryOneSerialX(task.Serial)
-    var be model.BatteryElectricity
-    if task.Exchange.Alternative && !req.Alternative {
-        snag.Panic("非满电换电取消")
-    }
+    // 尝试从缓存获取智能电柜换电信息
+    err := cache.HGet(s.ctx, s.intelligentKey, req.UUID).Scan(&info)
 
     // 判断设备是否智能设备
-    if !cab.Intelligent {
+    if err == nil {
+        cab = NewCabinet().QueryOne(info.ID)
+        if cab == nil {
+            snag.Panic("未找到电柜信息")
+        }
+        if cab.Status == model.CabinetStatusMaintenance.Value() {
+            snag.Panic("电柜开小差了, 请联系客服")
+        }
+        tex = &ec.Exchange{
+            Model:       sub.Model,
+            Alternative: info.Alternative != nil,
+            Empty: &model.BinInfo{
+                Index: info.EmptyBin.Index,
+            },
+        }
+
+        tcab = cab.GetTaskInfo()
+        tex.Fully = info.FullBin
+        if info.Alternative != nil {
+            tex.Fully = info.Alternative
+        }
+    } else {
         // 更新一次电柜状态
-        err := NewCabinet().UpdateStatus(cab)
+        err = NewCabinet().UpdateStatus(cab)
         if err != nil {
             log.Error(err)
             snag.Panic("电柜状态获取失败")
         }
+
+        // 查找任务
+        var uid primitive.ObjectID
+        uid, err = primitive.ObjectIDFromHex(req.UUID)
+        if err != nil {
+            snag.Panic("换电任务获取失败, 请重新扫码")
+        }
+
+        t = ec.QueryID(uid)
+
+        // 判断任务是否存在, 并且比对存储骑手信息是否相符
+        if t == nil || t.Status > 0 || t.StartAt != nil || t.Job != ec.JobExchange || t.Exchange == nil || t.IsDeactived() || t.Rider == nil || t.Rider.ID != s.rider.ID {
+            snag.Panic("未找到信息, 请重新扫码")
+        }
+
+        cab = NewCabinet().QueryOneSerialX(t.Serial)
+        var be model.BatteryElectricity
+        if t.Exchange.Alternative && !req.Alternative {
+            snag.Panic("非满电换电取消")
+        }
+
+        // 检查电柜是否繁忙
+        if x := ec.Obtain(ec.ObtainReq{Serial: cab.Serial}); x != nil && x.ID != uid {
+            snag.Panic("电柜忙, 请稍后重试")
+        }
+
+        // 查询电柜是否可使用
+        NewCabinet().BusinessableX(cab)
+
+        s.logger = logging.NewExchangeLog(s.rider.ID, t.ID.Hex(), cab.Serial, s.rider.Phone, be.IsBatteryFull())
+        s.cabinet = cab
+        s.task = t
+
+        tcab = t.Cabinet
+        tex = t.Exchange
     }
-
-    // 检查电柜是否繁忙
-    if x := ec.Obtain(ec.ObtainReq{Serial: cab.Serial}); x != nil && x.ID != req.UUID {
-        snag.Panic("电柜忙, 请稍后重试")
-    }
-
-    // 查询电柜是否可使用
-    NewCabinet().BusinessableX(cab)
-
-    s.logger = logging.NewExchangeLog(s.rider.ID, task.ID.Hex(), cab.Serial, s.rider.Phone, be.IsBatteryFull())
-    s.cabinet = cab
 
     // 记录换电人
     // TODO 超时处理
@@ -273,17 +282,17 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         SetRiderID(s.rider.ID).
         SetCityID(*cab.CityID).
         SetInfo(&ec.ExchangeInfo{
-            Cabinet:  task.Cabinet,
-            Exchange: task.Exchange,
+            Cabinet:  tcab,
+            Exchange: tex,
         }).
-        SetUUID(task.ID.Hex()).
+        SetUUID(req.UUID).
         SetCabinetID(cab.ID).
         SetSuccess(false).
         SetModel(s.subscribe.Model).
         SetNillableEnterpriseID(s.subscribe.EnterpriseID).
         SetNillableStationID(s.subscribe.StationID).
         SetSubscribeID(s.subscribe.ID).
-        SetAlternative(task.Exchange.Alternative).
+        SetAlternative(tex.Alternative).
         SetStartAt(time.Now()).
         Save(s.ctx)
 
@@ -291,17 +300,31 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         snag.Panic("换电失败")
     }
 
-    // 开始任务
-    task.Start(func(task *ec.Task) {
-        task.Exchange.ExchangeID = s.exchange.ID
-        task.Exchange.Steps = []*ec.ExchangeStepInfo{
-            {Step: ec.ExchangeStepOpenEmpty, Time: time.Now()},
+    if cab.Intelligent {
+        // TODO: 换电
+        var r *resty.Response
+        r, err = NewAdapter(ar.Config.Adapter.Kaixin.Api, s.rider).Post("/exchange/do", &am.ExchangeRequest{
+            UUID:    req.UUID,
+            Expires: 30,
+            TimeOut: 120,
+            Minsoc:  model.IntelligentBatteryFullSoc,
+        })
+        if err != nil {
+            snag.Panic(err)
         }
-    })
+        fmt.Println(r)
+    } else {
+        // 开始任务
+        t.Start(func(task *ec.Task) {
+            task.Exchange.ExchangeID = s.exchange.ID
+            task.Exchange.Steps = []*ec.ExchangeStepInfo{
+                {Step: ec.ExchangeStepOpenEmpty, Time: time.Now()},
+            }
+        })
 
-    // 处理换电流程
-    s.task = task
-    go s.ProcessByStep()
+        // 处理换电流程
+        go s.ProcessByStep()
+    }
 }
 
 // ProcessNextStep 开始下一个步骤

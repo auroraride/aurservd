@@ -70,7 +70,7 @@ func (Coupon) Fields() []ent.Field {
         field.Time("expires_at").Optional().Comment("过期时间"),
         field.Time("used_at").Optional().Nillable().Comment("使用时间"),
         field.JSON("duration", &model.CouponDuration{}).Comment("有效期规则"),
-        field.JSON("plans", []model.Plan{}).Optional().Comment("可用骑士卡"),
+        field.JSON("plans", []*model.Plan{}).Optional().Comment("可用骑士卡"),
         field.JSON("cities", []model.City{}).Optional().Comment("可用城市"),
     }
 }

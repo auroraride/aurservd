@@ -28,9 +28,10 @@ var (
 
 // Plan 骑士卡基础信息
 type Plan struct {
-    ID   uint64 `json:"id"`   // 骑士卡ID
-    Name string `json:"name"` // 骑士卡名称
-    Days uint   `json:"days"` // 骑士卡天数
+    ID          uint64 `json:"id"`          // 骑士卡ID
+    Name        string `json:"name"`        // 骑士卡名称
+    Days        uint   `json:"days"`        // 骑士卡天数
+    Intelligent bool   `json:"intelligent"` // 是否智能电柜套餐
 }
 
 type PlanComplexes []PlanComplex
@@ -61,11 +62,8 @@ type PlanCreateReq struct {
 
     Enable bool     `json:"enable"` // 是否启用
     Notes  []string `json:"notes"`  // 购买须知
-}
 
-type PlanModifyReq struct {
-    ID uint64 `json:"id" param:"id" validate:"required" trans:"骑士卡ID"`
-    PlanCreateReq
+    Intelligent *bool `json:"intelligent" validate:"required"` // 是否智能柜套餐
 }
 
 // PlanEnableModifyReq 骑士卡状态修改请求
@@ -78,12 +76,13 @@ type PlanEnableModifyReq struct {
 type PlanListReq struct {
     PaginationReq
 
-    CityID  *uint64   `json:"cityId" query:"cityId"`         // 城市ID
-    Name    *string   `json:"name" query:"name"`             // 骑士卡名称
-    Enable  *bool     `json:"enable" query:"enable"`         // 启用状态
-    Model   *string   `json:"model" query:"model"`           // 电池型号
-    Type    *PlanType `json:"type" query:"type" enums:"1,2"` // 骑士卡类别, 不携带字段为全部, 1:单电 2:车加电
-    BrandID *uint64   `json:"brandId" query:"brandId"`       // 电车型号
+    Intelligent *uint8    `json:"intelligent" query:"intelligent"` // 智能柜套餐筛选 0:全部 1:是 2:否
+    CityID      *uint64   `json:"cityId" query:"cityId"`           // 城市ID
+    Name        *string   `json:"name" query:"name"`               // 骑士卡名称
+    Enable      *bool     `json:"enable" query:"enable"`           // 启用状态
+    Model       *string   `json:"model" query:"model"`             // 电池型号
+    Type        *PlanType `json:"type" query:"type" enums:"1,2"`   // 骑士卡类别, 不携带字段为全部, 1:单电 2:车加电
+    BrandID     *uint64   `json:"brandId" query:"brandId"`         // 电车型号
 }
 
 type PlanListRes struct {
@@ -96,8 +95,9 @@ type PlanListRes struct {
     Cities    []City           `json:"cities"`    // 可用城市
     Complexes []*PlanComplexes `json:"complexes"` // 详情集合(按电池型号分组)
 
-    Brand *EbikeBrand `json:"brand,omitempty"` // 电车型号
-    Notes []string    `json:"notes,omitempty"` // 购买须知
+    Brand       *EbikeBrand `json:"brand,omitempty"` // 电车型号
+    Notes       []string    `json:"notes,omitempty"` // 购买须知
+    Intelligent bool        `json:"intelligent"`     // 是否智能柜套餐
 }
 
 // PlanListRiderReq 骑士卡列表请求

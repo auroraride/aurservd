@@ -61,6 +61,8 @@ type Plan struct {
 	DiscountNewly float64 `json:"discount_newly,omitempty"`
 	// 购买须知
 	Notes []string `json:"notes,omitempty"`
+	// 是否智能柜套餐
+	Intelligent bool `json:"intelligent,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlanQuery when eager-loading is set.
 	Edges PlanEdges `json:"edges"`
@@ -132,7 +134,7 @@ func (*Plan) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case plan.FieldCreator, plan.FieldLastModifier, plan.FieldNotes:
 			values[i] = new([]byte)
-		case plan.FieldEnable:
+		case plan.FieldEnable, plan.FieldIntelligent:
 			values[i] = new(sql.NullBool)
 		case plan.FieldPrice, plan.FieldCommission, plan.FieldOriginal, plan.FieldDiscountNewly:
 			values[i] = new(sql.NullFloat64)
@@ -298,6 +300,12 @@ func (pl *Plan) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field notes: %w", err)
 				}
 			}
+		case plan.FieldIntelligent:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field intelligent", values[i])
+			} else if value.Valid {
+				pl.Intelligent = value.Bool
+			}
 		}
 	}
 	return nil
@@ -414,6 +422,9 @@ func (pl *Plan) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("notes=")
 	builder.WriteString(fmt.Sprintf("%v", pl.Notes))
+	builder.WriteString(", ")
+	builder.WriteString("intelligent=")
+	builder.WriteString(fmt.Sprintf("%v", pl.Intelligent))
 	builder.WriteByte(')')
 	return builder.String()
 }

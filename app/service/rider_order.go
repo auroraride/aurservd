@@ -101,11 +101,7 @@ func (s *riderOrderService) Detail(item *ent.Order) model.Order {
     // 骑士卡订阅订单
     op := item.Edges.Plan
     if op != nil {
-        res.Plan = &model.Plan{
-            ID:   op.ID,
-            Name: op.Name,
-            Days: op.Days,
-        }
+        res.Plan = op.BasicInfo()
     }
 
     // 骑手信息

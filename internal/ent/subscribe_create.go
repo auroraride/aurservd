@@ -530,6 +530,20 @@ func (sc *SubscribeCreate) SetNillableNeedContract(b *bool) *SubscribeCreate {
 	return sc
 }
 
+// SetIntelligent sets the "intelligent" field.
+func (sc *SubscribeCreate) SetIntelligent(b bool) *SubscribeCreate {
+	sc.mutation.SetIntelligent(b)
+	return sc
+}
+
+// SetNillableIntelligent sets the "intelligent" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableIntelligent(b *bool) *SubscribeCreate {
+	if b != nil {
+		sc.SetIntelligent(*b)
+	}
+	return sc
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (sc *SubscribeCreate) SetPlan(p *Plan) *SubscribeCreate {
 	return sc.SetPlanID(p.ID)
@@ -751,6 +765,10 @@ func (sc *SubscribeCreate) defaults() error {
 		v := subscribe.DefaultNeedContract
 		sc.mutation.SetNeedContract(v)
 	}
+	if _, ok := sc.mutation.Intelligent(); !ok {
+		v := subscribe.DefaultIntelligent
+		sc.mutation.SetIntelligent(v)
+	}
 	return nil
 }
 
@@ -800,6 +818,9 @@ func (sc *SubscribeCreate) check() error {
 	}
 	if _, ok := sc.mutation.NeedContract(); !ok {
 		return &ValidationError{Name: "need_contract", err: errors.New(`ent: missing required field "Subscribe.need_contract"`)}
+	}
+	if _, ok := sc.mutation.Intelligent(); !ok {
+		return &ValidationError{Name: "intelligent", err: errors.New(`ent: missing required field "Subscribe.intelligent"`)}
 	}
 	if _, ok := sc.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Subscribe.city"`)}
@@ -947,6 +968,10 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 	if value, ok := sc.mutation.NeedContract(); ok {
 		_spec.SetField(subscribe.FieldNeedContract, field.TypeBool, value)
 		_node.NeedContract = value
+	}
+	if value, ok := sc.mutation.Intelligent(); ok {
+		_spec.SetField(subscribe.FieldIntelligent, field.TypeBool, value)
+		_node.Intelligent = value
 	}
 	if nodes := sc.mutation.PlanIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1915,6 +1940,18 @@ func (u *SubscribeUpsert) UpdateNeedContract() *SubscribeUpsert {
 	return u
 }
 
+// SetIntelligent sets the "intelligent" field.
+func (u *SubscribeUpsert) SetIntelligent(v bool) *SubscribeUpsert {
+	u.Set(subscribe.FieldIntelligent, v)
+	return u
+}
+
+// UpdateIntelligent sets the "intelligent" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateIntelligent() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldIntelligent)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -2663,6 +2700,20 @@ func (u *SubscribeUpsertOne) SetNeedContract(v bool) *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) UpdateNeedContract() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.UpdateNeedContract()
+	})
+}
+
+// SetIntelligent sets the "intelligent" field.
+func (u *SubscribeUpsertOne) SetIntelligent(v bool) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetIntelligent(v)
+	})
+}
+
+// UpdateIntelligent sets the "intelligent" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateIntelligent() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateIntelligent()
 	})
 }
 
@@ -3576,6 +3627,20 @@ func (u *SubscribeUpsertBulk) SetNeedContract(v bool) *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) UpdateNeedContract() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.UpdateNeedContract()
+	})
+}
+
+// SetIntelligent sets the "intelligent" field.
+func (u *SubscribeUpsertBulk) SetIntelligent(v bool) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetIntelligent(v)
+	})
+}
+
+// UpdateIntelligent sets the "intelligent" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateIntelligent() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateIntelligent()
 	})
 }
 

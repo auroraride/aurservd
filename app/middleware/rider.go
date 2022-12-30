@@ -57,7 +57,7 @@ func riderLogin(token, pushId string, needLogin bool) (u *ent.Rider) {
     id, _ := cache.Get(context.Background(), token).Uint64()
     u, err = s.GetRiderById(id)
     // 判定是否需要登录
-    if err != nil {
+    if err != nil && needLogin {
         log.Errorf("用户查询失败: %v", err)
     }
     if needLogin && (err != nil || u == nil) {

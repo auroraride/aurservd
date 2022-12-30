@@ -24,7 +24,7 @@ func NewAdapter(baseUrl string, params ...any) *adapterService {
 }
 
 func (s *adapterService) Request() *resty.Request {
-    r := resty.New().R()
+    r := resty.New().SetBaseURL(s.baseUrl).R()
 
     switch true {
     default:

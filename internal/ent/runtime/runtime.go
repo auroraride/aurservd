@@ -902,6 +902,10 @@ func init() {
 	planDescDiscountNewly := planFields[12].Descriptor()
 	// plan.DefaultDiscountNewly holds the default value on creation for the discount_newly field.
 	plan.DefaultDiscountNewly = planDescDiscountNewly.Default.(float64)
+	// planDescIntelligent is the schema descriptor for intelligent field.
+	planDescIntelligent := planFields[14].Descriptor()
+	// plan.DefaultIntelligent holds the default value on creation for the intelligent field.
+	plan.DefaultIntelligent = planDescIntelligent.Default.(bool)
 	planintroduceMixin := schema.PlanIntroduce{}.Mixin()
 	planintroduceMixinFields0 := planintroduceMixin[0].Fields()
 	_ = planintroduceMixinFields0
@@ -1161,6 +1165,10 @@ func init() {
 	subscribeDescNeedContract := subscribeFields[23].Descriptor()
 	// subscribe.DefaultNeedContract holds the default value on creation for the need_contract field.
 	subscribe.DefaultNeedContract = subscribeDescNeedContract.Default.(bool)
+	// subscribeDescIntelligent is the schema descriptor for intelligent field.
+	subscribeDescIntelligent := subscribeFields[24].Descriptor()
+	// subscribe.DefaultIntelligent holds the default value on creation for the intelligent field.
+	subscribe.DefaultIntelligent = subscribeDescIntelligent.Default.(bool)
 	subscribealterMixin := schema.SubscribeAlter{}.Mixin()
 	subscribealterMixinHooks2 := subscribealterMixin[2].Hooks()
 	subscribealter.Hooks[0] = subscribealterMixinHooks2[0]

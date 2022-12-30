@@ -179,11 +179,7 @@ func (s *subscribeService) Detail(sub *ent.Subscribe) *model.Subscribe {
 
     if sub.Edges.Plan != nil {
         p := sub.Edges.Plan
-        res.Plan = &model.Plan{
-            ID:   p.ID,
-            Name: p.Name,
-            Days: p.Days,
-        }
+        res.Plan = p.BasicInfo()
 
         res.Models = []model.BatteryModel{
             {Model: p.Model},

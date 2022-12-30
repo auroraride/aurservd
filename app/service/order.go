@@ -320,11 +320,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
             Coupons:       req.Coupons,
             DiscountNewly: p.DiscountNewly,
             EbikeBrandID:  p.BrandID,
-            Plan: &model.Plan{
-                ID:   p.ID,
-                Name: p.Name,
-                Days: p.Days,
-            },
+            Plan:          p.BasicInfo(),
         },
     }
 
@@ -613,6 +609,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
                 SetInitialOrderID(o.ID).
                 AddOrders(o).
                 SetNillableBrandID(trade.EbikeBrandID).
+                SetIntelligent(trade.Plan.Intelligent).
                 SetNeedContract(true)
             if do != nil {
                 sq.AddOrders(do)

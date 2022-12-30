@@ -1197,6 +1197,18 @@ definitions:
         description: 单价
         type: number
     type: object
+  model.BinInfo:
+    properties:
+      electricity:
+        description: 当前电量
+        type: number
+      index:
+        description: 仓位index
+        type: integer
+      voltage:
+        description: 电压(V)
+        type: number
+    type: object
   model.BranchContract:
     properties:
       area:
@@ -1869,18 +1881,6 @@ definitions:
         type: string
       voltage:
         description: 电压(V)
-        type: number
-    type: object
-  model.CabinetBinBasicInfo:
-    properties:
-      electricity:
-        description: 当前电量
-        type: number
-      index:
-        description: 仓位index
-        type: integer
-      voltage:
-        description: 电压
         type: number
     type: object
   model.CabinetCreateReq:
@@ -4308,6 +4308,9 @@ definitions:
       end:
         description: '结束日期 '
         type: string
+      intelligent:
+        description: 是否智能柜套餐
+        type: boolean
       name:
         description: '骑士卡名称 '
         type: string
@@ -4326,6 +4329,7 @@ definitions:
     - cities
     - complexes
     - end
+    - intelligent
     - name
     - start
     - type
@@ -4442,6 +4446,9 @@ definitions:
         type: string
       id:
         type: integer
+      intelligent:
+        description: 是否智能柜套餐
+        type: boolean
       name:
         description: 名称
         type: string
@@ -4888,7 +4895,7 @@ definitions:
     properties:
       alternative:
         allOf:
-        - $ref: '#/definitions/model.CabinetBinBasicInfo'
+        - $ref: '#/definitions/model.BinInfo'
         description: 备选方案
       batteryFullNum:
         description: 总满电电池数
@@ -4907,14 +4914,14 @@ definitions:
         type: integer
       emptyBin:
         allOf:
-        - $ref: '#/definitions/model.CabinetBinBasicInfo'
+        - $ref: '#/definitions/model.BinInfo'
         description: 空仓位
       full:
         description: 是否有满电电池
         type: boolean
       fullBin:
         allOf:
-        - $ref: '#/definitions/model.CabinetBinBasicInfo'
+        - $ref: '#/definitions/model.BinInfo'
         description: 满电仓位
       health:
         description: 电柜健康状态 0离线 1正常 2故障
@@ -11952,6 +11959,10 @@ paths:
         in: query
         name: enable
         type: boolean
+      - description: 智能柜套餐筛选 0:全部 1:是 2:否
+        in: query
+        name: intelligent
+        type: integer
       - description: 电池型号
         in: query
         name: model

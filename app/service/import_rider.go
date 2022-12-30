@@ -276,6 +276,7 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
             SetPlanID(req.PlanID).
             SetCityID(req.CityID).
             SetModel(s.plan.Model).
+            SetIntelligent(s.plan.Intelligent).
             SetNeedContract(false).
             SetRemaining(tools.NewTime().LastDays(end.Carbon2Time(), time.Now())).
             SetNillableBrandID(brandID).

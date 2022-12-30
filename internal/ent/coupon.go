@@ -60,7 +60,7 @@ type Coupon struct {
 	// 有效期规则
 	Duration *model.CouponDuration `json:"duration,omitempty"`
 	// 可用骑士卡
-	Plans []model.Plan `json:"plans,omitempty"`
+	Plans []*model.Plan `json:"plans,omitempty"`
 	// 可用城市
 	Cities []model.City `json:"cities,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.

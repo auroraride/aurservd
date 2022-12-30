@@ -110,10 +110,10 @@ type Task struct {
     StopAt      *time.Time `json:"stopAt,omitempty" bson:"stopAt,omitempty"`   // 结束时间
     Message     string     `json:"message,omitempty" bson:"message,omitempty"` // 失败消息
 
-    Cabinet          Cabinet        `json:"cabinet" bson:"cabinet"`                             // 电柜信息
-    Rider            *Rider         `json:"rider" bson:"rider,omitempty"`                       // 骑手信息
-    Exchange         *Exchange      `json:"exchange" bson:"exchange,omitempty"`                 // 换电信息
-    BussinessBinInfo *model.BinInfo `json:"bussinessBinInfo" bson:"bussinessBinInfo,omitempty"` // 业务仓位
+    Cabinet          *Cabinet       `json:"cabinet" bson:"cabinet"`                                       // 电柜信息
+    Rider            *Rider         `json:"rider" bson:"rider,omitempty"`                                 // 骑手信息
+    Exchange         *Exchange      `json:"exchange" bson:"exchange,omitempty"`                           // 换电信息
+    BussinessBinInfo *model.BinInfo `json:"bussinessBinInfo,omitempty" bson:"bussinessBinInfo,omitempty"` // 业务仓位
 }
 
 func (t *Task) MarshalBinary() ([]byte, error) {

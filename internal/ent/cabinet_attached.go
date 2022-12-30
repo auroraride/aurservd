@@ -11,8 +11,8 @@ import (
     "github.com/auroraride/aurservd/internal/ent/business"
 )
 
-func (c *Cabinet) GetTaskInfo() ec.Cabinet {
-    return ec.Cabinet{
+func (c *Cabinet) GetTaskInfo() *ec.Cabinet {
+    return &ec.Cabinet{
         Health:         c.Health,
         Doors:          c.Doors,
         BatteryNum:     c.BatteryNum,

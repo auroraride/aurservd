@@ -209,7 +209,7 @@ func (cc *CouponCreate) SetDuration(md *model.CouponDuration) *CouponCreate {
 }
 
 // SetPlans sets the "plans" field.
-func (cc *CouponCreate) SetPlans(m []model.Plan) *CouponCreate {
+func (cc *CouponCreate) SetPlans(m []*model.Plan) *CouponCreate {
 	cc.mutation.SetPlans(m)
 	return cc
 }
@@ -821,7 +821,7 @@ func (u *CouponUpsert) UpdateDuration() *CouponUpsert {
 }
 
 // SetPlans sets the "plans" field.
-func (u *CouponUpsert) SetPlans(v []model.Plan) *CouponUpsert {
+func (u *CouponUpsert) SetPlans(v []*model.Plan) *CouponUpsert {
 	u.Set(coupon.FieldPlans, v)
 	return u
 }
@@ -1181,7 +1181,7 @@ func (u *CouponUpsertOne) UpdateDuration() *CouponUpsertOne {
 }
 
 // SetPlans sets the "plans" field.
-func (u *CouponUpsertOne) SetPlans(v []model.Plan) *CouponUpsertOne {
+func (u *CouponUpsertOne) SetPlans(v []*model.Plan) *CouponUpsertOne {
 	return u.Update(func(s *CouponUpsert) {
 		s.SetPlans(v)
 	})
@@ -1709,7 +1709,7 @@ func (u *CouponUpsertBulk) UpdateDuration() *CouponUpsertBulk {
 }
 
 // SetPlans sets the "plans" field.
-func (u *CouponUpsertBulk) SetPlans(v []model.Plan) *CouponUpsertBulk {
+func (u *CouponUpsertBulk) SetPlans(v []*model.Plan) *CouponUpsertBulk {
 	return u.Update(func(s *CouponUpsert) {
 		s.SetPlans(v)
 	})

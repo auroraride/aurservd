@@ -7,9 +7,19 @@ package ent
 
 import (
     "fmt"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/shopspring/decimal"
     "math"
 )
+
+func (pl *Plan) BasicInfo() *model.Plan {
+    return &model.Plan{
+        ID:          pl.ID,
+        Name:        pl.Name,
+        Days:        pl.Days,
+        Intelligent: pl.Intelligent,
+    }
+}
 
 func (pl *Plan) OverdueFee(remaining int) (fee float64, formula string) {
     fee, _ = decimal.NewFromFloat(pl.Price).Div(decimal.NewFromInt(int64(pl.Days))).Mul(decimal.NewFromInt(int64(remaining)).Neg()).Mul(decimal.NewFromFloat(1.24)).Float64()

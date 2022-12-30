@@ -235,6 +235,11 @@ func NeedContract(v bool) predicate.Subscribe {
 	return predicate.Subscribe(sql.FieldEQ(FieldNeedContract, v))
 }
 
+// Intelligent applies equality check predicate on the "intelligent" field. It's identical to IntelligentEQ.
+func Intelligent(v bool) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldEQ(FieldIntelligent, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Subscribe {
 	return predicate.Subscribe(sql.FieldEQ(FieldCreatedAt, v))
@@ -1723,6 +1728,16 @@ func NeedContractEQ(v bool) predicate.Subscribe {
 // NeedContractNEQ applies the NEQ predicate on the "need_contract" field.
 func NeedContractNEQ(v bool) predicate.Subscribe {
 	return predicate.Subscribe(sql.FieldNEQ(FieldNeedContract, v))
+}
+
+// IntelligentEQ applies the EQ predicate on the "intelligent" field.
+func IntelligentEQ(v bool) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldEQ(FieldIntelligent, v))
+}
+
+// IntelligentNEQ applies the NEQ predicate on the "intelligent" field.
+func IntelligentNEQ(v bool) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldNEQ(FieldIntelligent, v))
 }
 
 // HasPlan applies the HasEdge predicate on the "plan" edge.

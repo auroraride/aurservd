@@ -81,8 +81,8 @@ type CouponTemplateCreateReq struct {
 }
 
 type CouponTemplateMeta struct {
-    Plans  []Plan `json:"plans,omitempty"`  // 绑定骑士卡
-    Cities []City `json:"cities,omitempty"` // 可用城市
+    Plans  []*Plan `json:"plans,omitempty"`  // 绑定骑士卡
+    Cities []City  `json:"cities,omitempty"` // 可用城市
     CouponTemplate
 }
 

@@ -239,13 +239,13 @@ func (cu *CouponUpdate) SetDuration(md *model.CouponDuration) *CouponUpdate {
 }
 
 // SetPlans sets the "plans" field.
-func (cu *CouponUpdate) SetPlans(m []model.Plan) *CouponUpdate {
+func (cu *CouponUpdate) SetPlans(m []*model.Plan) *CouponUpdate {
 	cu.mutation.SetPlans(m)
 	return cu
 }
 
 // AppendPlans appends m to the "plans" field.
-func (cu *CouponUpdate) AppendPlans(m []model.Plan) *CouponUpdate {
+func (cu *CouponUpdate) AppendPlans(m []*model.Plan) *CouponUpdate {
 	cu.mutation.AppendPlans(m)
 	return cu
 }
@@ -887,13 +887,13 @@ func (cuo *CouponUpdateOne) SetDuration(md *model.CouponDuration) *CouponUpdateO
 }
 
 // SetPlans sets the "plans" field.
-func (cuo *CouponUpdateOne) SetPlans(m []model.Plan) *CouponUpdateOne {
+func (cuo *CouponUpdateOne) SetPlans(m []*model.Plan) *CouponUpdateOne {
 	cuo.mutation.SetPlans(m)
 	return cuo
 }
 
 // AppendPlans appends m to the "plans" field.
-func (cuo *CouponUpdateOne) AppendPlans(m []model.Plan) *CouponUpdateOne {
+func (cuo *CouponUpdateOne) AppendPlans(m []*model.Plan) *CouponUpdateOne {
 	cuo.mutation.AppendPlans(m)
 	return cuo
 }

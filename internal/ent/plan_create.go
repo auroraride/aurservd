@@ -239,6 +239,20 @@ func (pc *PlanCreate) SetNotes(s []string) *PlanCreate {
 	return pc
 }
 
+// SetIntelligent sets the "intelligent" field.
+func (pc *PlanCreate) SetIntelligent(b bool) *PlanCreate {
+	pc.mutation.SetIntelligent(b)
+	return pc
+}
+
+// SetNillableIntelligent sets the "intelligent" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableIntelligent(b *bool) *PlanCreate {
+	if b != nil {
+		pc.SetIntelligent(*b)
+	}
+	return pc
+}
+
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (pc *PlanCreate) SetBrand(e *EbikeBrand) *PlanCreate {
 	return pc.SetBrandID(e.ID)
@@ -338,6 +352,10 @@ func (pc *PlanCreate) defaults() error {
 		v := plan.DefaultDiscountNewly
 		pc.mutation.SetDiscountNewly(v)
 	}
+	if _, ok := pc.mutation.Intelligent(); !ok {
+		v := plan.DefaultIntelligent
+		pc.mutation.SetIntelligent(v)
+	}
 	return nil
 }
 
@@ -375,6 +393,9 @@ func (pc *PlanCreate) check() error {
 	}
 	if _, ok := pc.mutation.DiscountNewly(); !ok {
 		return &ValidationError{Name: "discount_newly", err: errors.New(`ent: missing required field "Plan.discount_newly"`)}
+	}
+	if _, ok := pc.mutation.Intelligent(); !ok {
+		return &ValidationError{Name: "intelligent", err: errors.New(`ent: missing required field "Plan.intelligent"`)}
 	}
 	return nil
 }
@@ -484,6 +505,10 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.Notes(); ok {
 		_spec.SetField(plan.FieldNotes, field.TypeJSON, value)
 		_node.Notes = value
+	}
+	if value, ok := pc.mutation.Intelligent(); ok {
+		_spec.SetField(plan.FieldIntelligent, field.TypeBool, value)
+		_node.Intelligent = value
 	}
 	if nodes := pc.mutation.BrandIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -933,6 +958,18 @@ func (u *PlanUpsert) ClearNotes() *PlanUpsert {
 	return u
 }
 
+// SetIntelligent sets the "intelligent" field.
+func (u *PlanUpsert) SetIntelligent(v bool) *PlanUpsert {
+	u.Set(plan.FieldIntelligent, v)
+	return u
+}
+
+// UpdateIntelligent sets the "intelligent" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateIntelligent() *PlanUpsert {
+	u.SetExcluded(plan.FieldIntelligent)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1349,6 +1386,20 @@ func (u *PlanUpsertOne) UpdateNotes() *PlanUpsertOne {
 func (u *PlanUpsertOne) ClearNotes() *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.ClearNotes()
+	})
+}
+
+// SetIntelligent sets the "intelligent" field.
+func (u *PlanUpsertOne) SetIntelligent(v bool) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetIntelligent(v)
+	})
+}
+
+// UpdateIntelligent sets the "intelligent" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateIntelligent() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateIntelligent()
 	})
 }
 
@@ -1930,6 +1981,20 @@ func (u *PlanUpsertBulk) UpdateNotes() *PlanUpsertBulk {
 func (u *PlanUpsertBulk) ClearNotes() *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.ClearNotes()
+	})
+}
+
+// SetIntelligent sets the "intelligent" field.
+func (u *PlanUpsertBulk) SetIntelligent(v bool) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetIntelligent(v)
+	})
+}
+
+// UpdateIntelligent sets the "intelligent" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateIntelligent() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateIntelligent()
 	})
 }
 

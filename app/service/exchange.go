@@ -272,11 +272,7 @@ func (s *exchangeService) EmployeeList(req *model.ExchangeEmployeeListReq) *mode
             if sub != nil {
                 p := sub.Edges.Plan
                 if p != nil {
-                    res.Plan = &model.Plan{
-                        ID:   p.ID,
-                        Name: p.Name,
-                        Days: p.Days,
-                    }
+                    res.Plan = p.BasicInfo()
                 }
             }
 

@@ -106,13 +106,9 @@ func (s *couponTemplateService) CityAndPlan(meta *model.CouponTemplateMeta, citi
         if len(ps) != len(*plans) {
             snag.Panic("骑士卡有错")
         }
-        meta.Plans = make([]model.Plan, len(ps))
+        meta.Plans = make([]*model.Plan, len(ps))
         for i, p := range ps {
-            meta.Plans[i] = model.Plan{
-                ID:   p.ID,
-                Name: p.Name,
-                Days: p.Days,
-            }
+            meta.Plans[i] = p.BasicInfo()
         }
     }
 }

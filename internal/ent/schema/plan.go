@@ -73,6 +73,7 @@ func (Plan) Fields() []ent.Field {
         field.Uint64("parent_id").Optional().Nillable().Comment("父级"),
         field.Float("discount_newly").Default(0).Comment("新签减免"),
         field.Strings("notes").Optional().Comment("购买须知"),
+        field.Bool("intelligent").Default(false).Comment("是否智能柜套餐"),
     }
 }
 

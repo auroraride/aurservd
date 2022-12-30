@@ -54,8 +54,8 @@ func (c *RiderExchangeInfo) UnmarshalBinary(data []byte) error {
 
 // RiderExchangeProcessReq 请求换电
 type RiderExchangeProcessReq struct {
-    UUID        primitive.ObjectID `json:"uuid" validate:"required"` // 操作ID
-    Alternative bool               `json:"alternative"`              // 是否使用备选方案
+    UUID        string `json:"uuid" validate:"required"` // 操作ID
+    Alternative bool   `json:"alternative"`              // 是否使用备选方案
 }
 
 // RiderExchangeProcessRes 换电操作步骤返回

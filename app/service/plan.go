@@ -166,7 +166,8 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
             SetEnd(end).
             SetNotes(req.Notes).
             SetNillableBrandID(brandID).
-            SetType(req.Type.Value())
+            SetType(req.Type.Value()).
+            SetIntelligent(*req.Intelligent)
 
         for i, cl := range req.Complexes {
             c := creator.Clone().
@@ -266,15 +267,16 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanListRes) 
     })
 
     res = model.PlanListRes{
-        ID:        item.ID,
-        Type:      model.PlanType(item.Type),
-        Name:      item.Name,
-        Enable:    item.Enable,
-        Start:     item.Start.Format(carbon.DateLayout),
-        End:       item.End.Format(carbon.DateLayout),
-        Cities:    make([]model.City, len(item.Edges.Cities)),
-        Complexes: make([]*model.PlanComplexes, 0),
-        Notes:     item.Notes,
+        ID:          item.ID,
+        Type:        model.PlanType(item.Type),
+        Name:        item.Name,
+        Enable:      item.Enable,
+        Start:       item.Start.Format(carbon.DateLayout),
+        End:         item.End.Format(carbon.DateLayout),
+        Cities:      make([]model.City, len(item.Edges.Cities)),
+        Complexes:   make([]*model.PlanComplexes, 0),
+        Notes:       item.Notes,
+        Intelligent: item.Intelligent,
     }
 
     // 电车型号
@@ -336,6 +338,9 @@ func (s *planService) List(req *model.PlanListReq) *model.PaginationRes {
         WithBrand().
         Order(ent.Desc(plan.FieldStart), ent.Asc(plan.FieldEnd))
 
+    if req.Intelligent != nil {
+        q.Where(plan.Intelligent(*req.Intelligent == 1))
+    }
     if req.CityID != nil {
         q.Where(plan.HasCitiesWith(city.ID(*req.CityID)))
     }

@@ -255,11 +255,7 @@ func (s *businessService) basicDetail(item *ent.Business) (res model.BusinessEmp
 
     p := item.Edges.Plan
     if p != nil {
-        res.Plan = &model.Plan{
-            ID:   p.ID,
-            Name: p.Name,
-            Days: p.Days,
-        }
+        res.Plan = p.BasicInfo()
     }
 
     e := item.Edges.Enterprise

@@ -148,7 +148,7 @@ type Coupon struct {
     ExpiredAt string  `json:"expiredAt"`        // 过期时间
     Code      string  `json:"code"`             // 券码
     Exclusive bool    `json:"exclusive"`        // 与其他类型券是否互斥
-    Plans     []Plan  `json:"plans,omitempty"`  // 可用骑士卡, 不存在此字段则不限制
+    Plans     []*Plan `json:"plans,omitempty"`  // 可用骑士卡, 不存在此字段则不限制
     Cities    []City  `json:"cities,omitempty"` // 可用城市, 不存在此字段则不限制
 }
 

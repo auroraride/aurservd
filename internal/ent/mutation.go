@@ -23341,8 +23341,8 @@ type CouponMutation struct {
 	expires_at      *time.Time
 	used_at         *time.Time
 	duration        **model.CouponDuration
-	plans           *[]model.Plan
-	appendplans     []model.Plan
+	plans           *[]*model.Plan
+	appendplans     []*model.Plan
 	cities          *[]model.City
 	appendcities    []model.City
 	clearedFields   map[string]struct{}
@@ -24252,13 +24252,13 @@ func (m *CouponMutation) ResetDuration() {
 }
 
 // SetPlans sets the "plans" field.
-func (m *CouponMutation) SetPlans(value []model.Plan) {
+func (m *CouponMutation) SetPlans(value []*model.Plan) {
 	m.plans = &value
 	m.appendplans = nil
 }
 
 // Plans returns the value of the "plans" field in the mutation.
-func (m *CouponMutation) Plans() (r []model.Plan, exists bool) {
+func (m *CouponMutation) Plans() (r []*model.Plan, exists bool) {
 	v := m.plans
 	if v == nil {
 		return
@@ -24269,7 +24269,7 @@ func (m *CouponMutation) Plans() (r []model.Plan, exists bool) {
 // OldPlans returns the old "plans" field's value of the Coupon entity.
 // If the Coupon object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CouponMutation) OldPlans(ctx context.Context) (v []model.Plan, err error) {
+func (m *CouponMutation) OldPlans(ctx context.Context) (v []*model.Plan, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldPlans is only allowed on UpdateOne operations")
 	}
@@ -24284,12 +24284,12 @@ func (m *CouponMutation) OldPlans(ctx context.Context) (v []model.Plan, err erro
 }
 
 // AppendPlans adds value to the "plans" field.
-func (m *CouponMutation) AppendPlans(value []model.Plan) {
+func (m *CouponMutation) AppendPlans(value []*model.Plan) {
 	m.appendplans = append(m.appendplans, value...)
 }
 
 // AppendedPlans returns the list of values that were appended to the "plans" field in this mutation.
-func (m *CouponMutation) AppendedPlans() ([]model.Plan, bool) {
+func (m *CouponMutation) AppendedPlans() ([]*model.Plan, bool) {
 	if len(m.appendplans) == 0 {
 		return nil, false
 	}
@@ -24839,7 +24839,7 @@ func (m *CouponMutation) SetField(name string, value ent.Value) error {
 		m.SetDuration(v)
 		return nil
 	case coupon.FieldPlans:
-		v, ok := value.([]model.Plan)
+		v, ok := value.([]*model.Plan)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -52918,6 +52918,7 @@ type PlanMutation struct {
 	adddiscount_newly *float64
 	notes             *[]string
 	appendnotes       []string
+	intelligent       *bool
 	clearedFields     map[string]struct{}
 	brand             *uint64
 	clearedbrand      bool
@@ -54055,6 +54056,42 @@ func (m *PlanMutation) ResetNotes() {
 	delete(m.clearedFields, plan.FieldNotes)
 }
 
+// SetIntelligent sets the "intelligent" field.
+func (m *PlanMutation) SetIntelligent(b bool) {
+	m.intelligent = &b
+}
+
+// Intelligent returns the value of the "intelligent" field in the mutation.
+func (m *PlanMutation) Intelligent() (r bool, exists bool) {
+	v := m.intelligent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIntelligent returns the old "intelligent" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldIntelligent(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIntelligent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIntelligent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIntelligent: %w", err)
+	}
+	return oldValue.Intelligent, nil
+}
+
+// ResetIntelligent resets all changes to the "intelligent" field.
+func (m *PlanMutation) ResetIntelligent() {
+	m.intelligent = nil
+}
+
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (m *PlanMutation) ClearBrand() {
 	m.clearedbrand = true
@@ -54249,7 +54286,7 @@ func (m *PlanMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlanMutation) Fields() []string {
-	fields := make([]string, 0, 21)
+	fields := make([]string, 0, 22)
 	if m.created_at != nil {
 		fields = append(fields, plan.FieldCreatedAt)
 	}
@@ -54313,6 +54350,9 @@ func (m *PlanMutation) Fields() []string {
 	if m.notes != nil {
 		fields = append(fields, plan.FieldNotes)
 	}
+	if m.intelligent != nil {
+		fields = append(fields, plan.FieldIntelligent)
+	}
 	return fields
 }
 
@@ -54363,6 +54403,8 @@ func (m *PlanMutation) Field(name string) (ent.Value, bool) {
 		return m.DiscountNewly()
 	case plan.FieldNotes:
 		return m.Notes()
+	case plan.FieldIntelligent:
+		return m.Intelligent()
 	}
 	return nil, false
 }
@@ -54414,6 +54456,8 @@ func (m *PlanMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldDiscountNewly(ctx)
 	case plan.FieldNotes:
 		return m.OldNotes(ctx)
+	case plan.FieldIntelligent:
+		return m.OldIntelligent(ctx)
 	}
 	return nil, fmt.Errorf("unknown Plan field %s", name)
 }
@@ -54569,6 +54613,13 @@ func (m *PlanMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetNotes(v)
+		return nil
+	case plan.FieldIntelligent:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIntelligent(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Plan field %s", name)
@@ -54819,6 +54870,9 @@ func (m *PlanMutation) ResetField(name string) error {
 		return nil
 	case plan.FieldNotes:
 		m.ResetNotes()
+		return nil
+	case plan.FieldIntelligent:
+		m.ResetIntelligent()
 		return nil
 	}
 	return fmt.Errorf("unknown Plan field %s", name)
@@ -66935,6 +66989,7 @@ type SubscribeMutation struct {
 	agent_end_at         *time.Time
 	formula              *string
 	need_contract        *bool
+	intelligent          *bool
 	clearedFields        map[string]struct{}
 	plan                 *uint64
 	clearedplan          bool
@@ -68924,6 +68979,42 @@ func (m *SubscribeMutation) ResetNeedContract() {
 	m.need_contract = nil
 }
 
+// SetIntelligent sets the "intelligent" field.
+func (m *SubscribeMutation) SetIntelligent(b bool) {
+	m.intelligent = &b
+}
+
+// Intelligent returns the value of the "intelligent" field in the mutation.
+func (m *SubscribeMutation) Intelligent() (r bool, exists bool) {
+	v := m.intelligent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIntelligent returns the old "intelligent" field's value of the Subscribe entity.
+// If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeMutation) OldIntelligent(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIntelligent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIntelligent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIntelligent: %w", err)
+	}
+	return oldValue.Intelligent, nil
+}
+
+// ResetIntelligent resets all changes to the "intelligent" field.
+func (m *SubscribeMutation) ResetIntelligent() {
+	m.intelligent = nil
+}
+
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *SubscribeMutation) ClearPlan() {
 	m.clearedplan = true
@@ -69514,7 +69605,7 @@ func (m *SubscribeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscribeMutation) Fields() []string {
-	fields := make([]string, 0, 38)
+	fields := make([]string, 0, 39)
 	if m.created_at != nil {
 		fields = append(fields, subscribe.FieldCreatedAt)
 	}
@@ -69629,6 +69720,9 @@ func (m *SubscribeMutation) Fields() []string {
 	if m.need_contract != nil {
 		fields = append(fields, subscribe.FieldNeedContract)
 	}
+	if m.intelligent != nil {
+		fields = append(fields, subscribe.FieldIntelligent)
+	}
 	return fields
 }
 
@@ -69713,6 +69807,8 @@ func (m *SubscribeMutation) Field(name string) (ent.Value, bool) {
 		return m.Formula()
 	case subscribe.FieldNeedContract:
 		return m.NeedContract()
+	case subscribe.FieldIntelligent:
+		return m.Intelligent()
 	}
 	return nil, false
 }
@@ -69798,6 +69894,8 @@ func (m *SubscribeMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldFormula(ctx)
 	case subscribe.FieldNeedContract:
 		return m.OldNeedContract(ctx)
+	case subscribe.FieldIntelligent:
+		return m.OldIntelligent(ctx)
 	}
 	return nil, fmt.Errorf("unknown Subscribe field %s", name)
 }
@@ -70072,6 +70170,13 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetNeedContract(v)
+		return nil
+	case subscribe.FieldIntelligent:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIntelligent(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe field %s", name)
@@ -70487,6 +70592,9 @@ func (m *SubscribeMutation) ResetField(name string) error {
 		return nil
 	case subscribe.FieldNeedContract:
 		m.ResetNeedContract()
+		return nil
+	case subscribe.FieldIntelligent:
+		m.ResetIntelligent()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe field %s", name)

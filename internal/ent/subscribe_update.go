@@ -683,6 +683,20 @@ func (su *SubscribeUpdate) SetNillableNeedContract(b *bool) *SubscribeUpdate {
 	return su
 }
 
+// SetIntelligent sets the "intelligent" field.
+func (su *SubscribeUpdate) SetIntelligent(b bool) *SubscribeUpdate {
+	su.mutation.SetIntelligent(b)
+	return su
+}
+
+// SetNillableIntelligent sets the "intelligent" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableIntelligent(b *bool) *SubscribeUpdate {
+	if b != nil {
+		su.SetIntelligent(*b)
+	}
+	return su
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (su *SubscribeUpdate) SetPlan(p *Plan) *SubscribeUpdate {
 	return su.SetPlanID(p.ID)
@@ -1206,6 +1220,9 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := su.mutation.NeedContract(); ok {
 		_spec.SetField(subscribe.FieldNeedContract, field.TypeBool, value)
+	}
+	if value, ok := su.mutation.Intelligent(); ok {
+		_spec.SetField(subscribe.FieldIntelligent, field.TypeBool, value)
 	}
 	if su.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -2522,6 +2539,20 @@ func (suo *SubscribeUpdateOne) SetNillableNeedContract(b *bool) *SubscribeUpdate
 	return suo
 }
 
+// SetIntelligent sets the "intelligent" field.
+func (suo *SubscribeUpdateOne) SetIntelligent(b bool) *SubscribeUpdateOne {
+	suo.mutation.SetIntelligent(b)
+	return suo
+}
+
+// SetNillableIntelligent sets the "intelligent" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableIntelligent(b *bool) *SubscribeUpdateOne {
+	if b != nil {
+		suo.SetIntelligent(*b)
+	}
+	return suo
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (suo *SubscribeUpdateOne) SetPlan(p *Plan) *SubscribeUpdateOne {
 	return suo.SetPlanID(p.ID)
@@ -3069,6 +3100,9 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 	}
 	if value, ok := suo.mutation.NeedContract(); ok {
 		_spec.SetField(subscribe.FieldNeedContract, field.TypeBool, value)
+	}
+	if value, ok := suo.mutation.Intelligent(); ok {
+		_spec.SetField(subscribe.FieldIntelligent, field.TypeBool, value)
 	}
 	if suo.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{

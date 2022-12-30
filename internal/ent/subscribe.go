@@ -105,6 +105,8 @@ type Subscribe struct {
 	Formula *string `json:"formula,omitempty"`
 	// 是否需要签约
 	NeedContract bool `json:"need_contract,omitempty"`
+	// 是否智能柜套餐
+	Intelligent bool `json:"intelligent,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribeQuery when eager-loading is set.
 	Edges SubscribeEdges `json:"edges"`
@@ -344,7 +346,7 @@ func (*Subscribe) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case subscribe.FieldCreator, subscribe.FieldLastModifier:
 			values[i] = new([]byte)
-		case subscribe.FieldPauseOverdue, subscribe.FieldNeedContract:
+		case subscribe.FieldPauseOverdue, subscribe.FieldNeedContract, subscribe.FieldIntelligent:
 			values[i] = new(sql.NullBool)
 		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldStationID, subscribe.FieldStoreID, subscribe.FieldCabinetID, subscribe.FieldBrandID, subscribe.FieldEbikeID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldEnterpriseID, subscribe.FieldStatus, subscribe.FieldType, subscribe.FieldInitialDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays, subscribe.FieldSuspendDays, subscribe.FieldRenewalDays, subscribe.FieldOverdueDays, subscribe.FieldRemaining:
 			values[i] = new(sql.NullInt64)
@@ -622,6 +624,12 @@ func (s *Subscribe) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.NeedContract = value.Bool
 			}
+		case subscribe.FieldIntelligent:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field intelligent", values[i])
+			} else if value.Valid {
+				s.Intelligent = value.Bool
+			}
 		}
 	}
 	return nil
@@ -877,6 +885,9 @@ func (s *Subscribe) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("need_contract=")
 	builder.WriteString(fmt.Sprintf("%v", s.NeedContract))
+	builder.WriteString(", ")
+	builder.WriteString("intelligent=")
+	builder.WriteString(fmt.Sprintf("%v", s.Intelligent))
 	builder.WriteByte(')')
 	return builder.String()
 }

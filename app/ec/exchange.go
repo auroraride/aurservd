@@ -106,7 +106,7 @@ func (e *Exchange) StepResult(step ExchangeStep) *ExchangeStepInfo {
 }
 
 type ExchangeInfo struct {
-    Cabinet  Cabinet   `json:"cabinet"`           // 电柜信息
+    Cabinet  *Cabinet  `json:"cabinet"`           // 电柜信息
     Exchange *Exchange `json:"exchange"`          // 换电信息
     Message  string    `json:"message,omitempty"` // 错误信息
 }

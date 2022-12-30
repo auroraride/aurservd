@@ -145,6 +145,11 @@ func DiscountNewly(v float64) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldDiscountNewly, v))
 }
 
+// Intelligent applies equality check predicate on the "intelligent" field. It's identical to IntelligentEQ.
+func Intelligent(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldIntelligent, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldCreatedAt, v))
@@ -993,6 +998,16 @@ func NotesIsNil() predicate.Plan {
 // NotesNotNil applies the NotNil predicate on the "notes" field.
 func NotesNotNil() predicate.Plan {
 	return predicate.Plan(sql.FieldNotNull(FieldNotes))
+}
+
+// IntelligentEQ applies the EQ predicate on the "intelligent" field.
+func IntelligentEQ(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldIntelligent, v))
+}
+
+// IntelligentNEQ applies the NEQ predicate on the "intelligent" field.
+func IntelligentNEQ(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldNEQ(FieldIntelligent, v))
 }
 
 // HasBrand applies the HasEdge predicate on the "brand" edge.

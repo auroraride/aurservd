@@ -694,10 +694,14 @@ func (s *cabinetService) Sync(data *am.CabinetSyncData) {
         updater.SetHealth(health)
     }
 
+    var bins model.CabinetBins
+
+    if data.Full {
+        bins = cab.Bin
+    }
+
     if len(data.Bins) > 0 {
         var (
-            bins model.CabinetBins
-
             bn, bf, bc, be, bl int
         )
         for _, b := range data.Bins {
@@ -729,7 +733,7 @@ func (s *cabinetService) Sync(data *am.CabinetSyncData) {
                 bl += 1
             }
 
-            bins = append(bins, &model.CabinetBin{
+            cb := &model.CabinetBin{
                 Index:       b.Ordinal - 1,
                 Name:        b.Name,
                 BatterySN:   b.BatterySn,
@@ -741,15 +745,28 @@ func (s *cabinetService) Sync(data *am.CabinetSyncData) {
                 Current:     b.Current,
                 Voltage:     b.Voltage,
                 Remark:      remark,
-            })
+            }
+
+            if data.Full || len(cab.Bin) < len(data.Bins) {
+                bins = append(bins, cb)
+            }
+
+            if !data.Full {
+                for i, xb := range bins {
+                    if xb.Index+1 == b.Ordinal {
+                        bins[i] = cb
+                    }
+                }
+            }
         }
 
-        updater.SetDoors(len(data.Bins)).
+        updater.SetDoors(len(bins)).
             SetBatteryNum(bn).
             SetBatteryFullNum(bf).
             SetBatteryChargingNum(bc).
             SetEmptyBinNum(be).
-            SetLockedBinNum(bl)
+            SetLockedBinNum(bl).
+            SetBin(bins)
     }
 
     _ = updater.Exec(s.ctx)
