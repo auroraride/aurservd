@@ -491,8 +491,9 @@ func (s *cabinetService) ModelInclude(item *ent.Cabinet, model string) bool {
 }
 
 // Usable 获取换电可用仓位信息
-func (s *cabinetService) Usable(cab *ent.Cabinet) (op model.RiderCabinetOperateProcess) {
+func (s *cabinetService) Usable(cab *ent.Cabinet) (op *model.RiderCabinetOperateProcess) {
     max, empty := cab.Bin.MaxEmpty()
+    op = &model.RiderCabinetOperateProcess{}
 
     min := cache.Float64(model.SettingExchangeMinBattery)
     if max.Electricity.Value() < min {
@@ -503,11 +504,11 @@ func (s *cabinetService) Usable(cab *ent.Cabinet) (op model.RiderCabinetOperateP
         snag.Panic("电柜异常, 无法换电")
     }
 
-    op.EmptyBin = &model.CabinetBinBasicInfo{
+    op.EmptyBin = &model.BinInfo{
         Index: empty.Index,
     }
 
-    maxInfo := &model.CabinetBinBasicInfo{
+    maxInfo := &model.BinInfo{
         Index:       max.Index,
         Voltage:     max.Voltage,
         Electricity: max.Electricity,

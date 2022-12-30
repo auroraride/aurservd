@@ -35,8 +35,8 @@ type riderBusinessService struct {
     subscribe *ent.Subscribe
 
     task  *ec.Task
-    max   *ec.BinInfo
-    empty *ec.BinInfo
+    max   *model.BinInfo
+    empty *model.BinInfo
 
     bt business.Type
 }
@@ -115,7 +115,7 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
         if empty == nil {
             snag.Panic("电柜异常")
         }
-        s.empty = &ec.BinInfo{Index: empty.Index}
+        s.empty = &model.BinInfo{Index: empty.Index}
         break
     case business.TypeActive, business.TypeContinue:
         if bn < 2 {
@@ -124,7 +124,7 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
         if max == nil {
             snag.Panic("电柜异常")
         }
-        s.max = &ec.BinInfo{
+        s.max = &model.BinInfo{
             Index:       max.Index,
             Electricity: max.Electricity,
             Voltage:     max.Voltage,
@@ -156,7 +156,7 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
     s.task = task.CreateX()
 }
 
-func (s *riderBusinessService) open(bin *ec.BinInfo, remark string) (status bool, err error) {
+func (s *riderBusinessService) open(bin *model.BinInfo, remark string) (status bool, err error) {
     s.task.Start()
     s.task.BussinessBinInfo = bin
 
@@ -177,7 +177,7 @@ func (s *riderBusinessService) open(bin *ec.BinInfo, remark string) (status bool
     return
 }
 
-func (s *riderBusinessService) putin() *ec.BinInfo {
+func (s *riderBusinessService) putin() *model.BinInfo {
     status, err := s.open(s.empty, model.RiderCabinetOperateReasonEmpty)
     ts := s.task.Status
 
@@ -265,7 +265,7 @@ func (s *riderBusinessService) battery() (ds ec.DoorStatus) {
     }
 }
 
-func (s *riderBusinessService) putout() *ec.BinInfo {
+func (s *riderBusinessService) putout() *model.BinInfo {
     status, err := s.open(s.max, model.RiderCabinetOperateReasonFull)
 
     defer func() {
@@ -332,7 +332,7 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
 
     srv := NewBusinessRider(s.rider)
     srv.SetCabinet(s.cabinet).
-        SetTask(func() *ec.BinInfo {
+        SetTask(func() *model.BinInfo {
             // 更新分配信息
             _ = allo.Update().SetStatus(model.AllocateStatusSigned.Value()).SetCabinetID(s.cabinet.ID).Exec(s.ctx)
             return s.putout()
@@ -350,7 +350,7 @@ func (s *riderBusinessService) Continue(req *model.BusinessCabinetReq) model.Bus
         snag.Panic("骑士卡状态错误")
     }
 
-    NewBusinessRider(s.rider).SetTask(func() *ec.BinInfo {
+    NewBusinessRider(s.rider).SetTask(func() *model.BinInfo {
         return s.putout()
     }).SetCabinet(s.cabinet).Continue(req.ID)
     return model.BusinessCabinetStatus{
@@ -367,7 +367,7 @@ func (s *riderBusinessService) Unsubscribe(req *model.BusinessCabinetReq) model.
 
     go func() {
         err := snag.WithPanic(func() {
-            NewBusinessRider(s.rider).SetTask(func() *ec.BinInfo {
+            NewBusinessRider(s.rider).SetTask(func() *model.BinInfo {
                 return s.putin()
             }).SetCabinet(s.cabinet).UnSubscribe(req.ID)
         })
@@ -393,7 +393,7 @@ func (s *riderBusinessService) Pause(req *model.BusinessCabinetReq) model.Busine
         err := snag.WithPanic(
             func() {
                 NewBusinessRider(s.rider).
-                    SetTask(func() *ec.BinInfo {
+                    SetTask(func() *model.BinInfo {
                         return s.putin()
                     }).
                     SetCabinet(s.cabinet).

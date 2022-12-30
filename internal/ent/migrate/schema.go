@@ -784,7 +784,7 @@ var (
 		{Name: "sim_date", Type: field.TypeTime, Nullable: true, Comment: "SIM卡到期日期"},
 		{Name: "transferred", Type: field.TypeBool, Comment: "电池是否已调拨", Default: false},
 		{Name: "intelligent", Type: field.TypeBool, Comment: "是否智能柜", Default: false},
-		{Name: "health", Type: field.TypeUint8, Comment: "健康状态 0未知 1正常 2离线 3故障", Default: 0},
+		{Name: "health", Type: field.TypeUint8, Comment: "健康状态 0:离线 1:正常 2:故障", Default: 0},
 		{Name: "bin", Type: field.TypeJSON, Nullable: true, Comment: "仓位信息"},
 		{Name: "battery_num", Type: field.TypeInt, Comment: "电池总数", Default: 0},
 		{Name: "battery_full_num", Type: field.TypeInt, Comment: "满电总数", Default: 0},

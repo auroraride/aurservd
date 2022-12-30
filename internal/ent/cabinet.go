@@ -62,7 +62,7 @@ type Cabinet struct {
 	Transferred bool `json:"transferred,omitempty"`
 	// 是否智能柜
 	Intelligent bool `json:"intelligent,omitempty"`
-	// 健康状态 0未知 1正常 2离线 3故障
+	// 健康状态 0:离线 1:正常 2:故障
 	Health uint8 `json:"health,omitempty"`
 	// 仓位信息
 	Bin model.CabinetBins `json:"bin,omitempty"`

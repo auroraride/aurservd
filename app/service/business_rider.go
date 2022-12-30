@@ -8,7 +8,6 @@ package service
 import (
     "context"
     "fmt"
-    "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
@@ -39,7 +38,7 @@ type businessRiderService struct {
     subscribe    *ent.Subscribe
     reserve      *ent.Reserve
 
-    task func() *ec.BinInfo // 电柜任务
+    task func() *model.BinInfo // 电柜任务
 
     storeID, employeeID, cabinetID, subscribeID *uint64
 
@@ -130,7 +129,7 @@ func (s *businessRiderService) SetEbike(info *model.EbikeBusinessInfo) *business
     return s
 }
 
-func (s *businessRiderService) SetTask(task func() *ec.BinInfo) *businessRiderService {
+func (s *businessRiderService) SetTask(task func() *model.BinInfo) *businessRiderService {
     if task != nil {
         s.task = task
     }
@@ -353,7 +352,7 @@ func (s *businessRiderService) preprocess(bt business.Type, sub *ent.Subscribe) 
 }
 
 // doTask 处理电柜任务
-func (s *businessRiderService) doTask() (bin *ec.BinInfo, err error) {
+func (s *businessRiderService) doTask() (bin *model.BinInfo, err error) {
     defer func() {
         if v := recover(); v != nil {
             err = fmt.Errorf("%v", v)
@@ -394,7 +393,7 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
         business.TypeContinue:    "计费中",
     }
 
-    var bin *ec.BinInfo
+    var bin *model.BinInfo
     var err error
 
     // 放入电池优先执行

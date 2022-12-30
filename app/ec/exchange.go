@@ -7,6 +7,7 @@ package ec
 
 import (
     "fmt"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/golang-module/carbon/v2"
     "time"
 )
@@ -51,8 +52,8 @@ type Exchange struct {
     ExchangeID  uint64              `json:"exchangeId" bson:"exchangeId"`   // 数据库换电ID
     Alternative bool                `json:"alternative" bson:"alternative"` // 是否备选方案
     Model       string              `json:"model" bson:"model"`             // 电池型号
-    Empty       *BinInfo            `json:"empty" bson:"empty"`             // 空仓位
-    Fully       *BinInfo            `json:"fully" bson:"fully"`             // 满电仓位
+    Empty       *model.BinInfo      `json:"empty" bson:"empty"`             // 空仓位
+    Fully       *model.BinInfo      `json:"fully" bson:"fully"`             // 满电仓位
     Steps       []*ExchangeStepInfo `json:"steps" bson:"steps"`             // 步骤信息
 }
 
@@ -85,7 +86,7 @@ func (e *Exchange) StartNextStep() {
 }
 
 // CurrentBin 获取当前操作仓位信息
-func (e *Exchange) CurrentBin() *BinInfo {
+func (e *Exchange) CurrentBin() *model.BinInfo {
     step := e.CurrentStep().Step
     if step < ExchangeStepOpenFull {
         return e.Empty

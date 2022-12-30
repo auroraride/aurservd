@@ -12546,7 +12546,7 @@ type BusinessMutation struct {
 	last_modifier     **model.Modifier
 	remark            *string
 	_type             *business.Type
-	bin_info          **ec.BinInfo
+	bin_info          **model.BinInfo
 	stock_sn          *string
 	clearedFields     map[string]struct{}
 	rider             *uint64
@@ -13377,12 +13377,12 @@ func (m *BusinessMutation) ResetType() {
 }
 
 // SetBinInfo sets the "bin_info" field.
-func (m *BusinessMutation) SetBinInfo(ei *ec.BinInfo) {
-	m.bin_info = &ei
+func (m *BusinessMutation) SetBinInfo(mi *model.BinInfo) {
+	m.bin_info = &mi
 }
 
 // BinInfo returns the value of the "bin_info" field in the mutation.
-func (m *BusinessMutation) BinInfo() (r *ec.BinInfo, exists bool) {
+func (m *BusinessMutation) BinInfo() (r *model.BinInfo, exists bool) {
 	v := m.bin_info
 	if v == nil {
 		return
@@ -13393,7 +13393,7 @@ func (m *BusinessMutation) BinInfo() (r *ec.BinInfo, exists bool) {
 // OldBinInfo returns the old "bin_info" field's value of the Business entity.
 // If the Business object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BusinessMutation) OldBinInfo(ctx context.Context) (v *ec.BinInfo, err error) {
+func (m *BusinessMutation) OldBinInfo(ctx context.Context) (v *model.BinInfo, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldBinInfo is only allowed on UpdateOne operations")
 	}
@@ -14008,7 +14008,7 @@ func (m *BusinessMutation) SetField(name string, value ent.Value) error {
 		m.SetType(v)
 		return nil
 	case business.FieldBinInfo:
-		v, ok := value.(*ec.BinInfo)
+		v, ok := value.(*model.BinInfo)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

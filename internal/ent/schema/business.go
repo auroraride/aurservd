@@ -8,7 +8,7 @@ import (
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
-    "github.com/auroraride/aurservd/app/ec"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -58,7 +58,7 @@ func (Business) Annotations() []schema.Annotation {
 func (Business) Fields() []ent.Field {
     return []ent.Field{
         field.Enum("type").Values("active", "pause", "continue", "unsubscribe").Comment("业务类型"),
-        field.JSON("bin_info", &ec.BinInfo{}).Optional().Comment("仓位信息"),
+        field.JSON("bin_info", &model.BinInfo{}).Optional().Comment("仓位信息"),
         field.String("stock_sn").Optional().Comment("出入库编码"),
     }
 }

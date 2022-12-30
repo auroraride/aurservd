@@ -6,6 +6,7 @@
 package model
 
 import (
+    "fmt"
     "sort"
 )
 
@@ -300,11 +301,20 @@ type CabinetDoorOperateReq struct {
     Operation *CabinetDoorOperate `json:"operation" validate:"required"` // 操作方式 1:开仓 2:锁定(标记为故障) 3:解锁(取消标记故障)
 }
 
-// CabinetBinBasicInfo 电柜仓位基础属性
-type CabinetBinBasicInfo struct {
-    Index       int                `json:"index"`       // 仓位index
-    Voltage     float64            `json:"voltage"`     // 电压
-    Electricity BatteryElectricity `json:"electricity"` // 电量
+// BinInfo 任务电柜仓位信息
+type BinInfo struct {
+    Index       int                `json:"index" bson:"index"`             // 仓位index
+    Electricity BatteryElectricity `json:"electricity" bson:"electricity"` // 电量
+    Voltage     float64            `json:"voltage" bson:"voltage"`         // 电压(V)
+}
+
+func (b *BinInfo) String() string {
+    return fmt.Sprintf(
+        "%d号仓, 电压: %.2fV, 电流: %2.fA",
+        b.Index+1,
+        b.Voltage,
+        b.Electricity,
+    )
 }
 
 type YundongDeployInfo struct {

@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
@@ -243,8 +242,8 @@ func (bu *BusinessUpdate) SetType(b business.Type) *BusinessUpdate {
 }
 
 // SetBinInfo sets the "bin_info" field.
-func (bu *BusinessUpdate) SetBinInfo(ei *ec.BinInfo) *BusinessUpdate {
-	bu.mutation.SetBinInfo(ei)
+func (bu *BusinessUpdate) SetBinInfo(mi *model.BinInfo) *BusinessUpdate {
+	bu.mutation.SetBinInfo(mi)
 	return bu
 }
 
@@ -1045,8 +1044,8 @@ func (buo *BusinessUpdateOne) SetType(b business.Type) *BusinessUpdateOne {
 }
 
 // SetBinInfo sets the "bin_info" field.
-func (buo *BusinessUpdateOne) SetBinInfo(ei *ec.BinInfo) *BusinessUpdateOne {
-	buo.mutation.SetBinInfo(ei)
+func (buo *BusinessUpdateOne) SetBinInfo(mi *model.BinInfo) *BusinessUpdateOne {
+	buo.mutation.SetBinInfo(mi)
 	return buo
 }
 

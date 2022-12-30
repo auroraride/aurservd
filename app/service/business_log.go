@@ -7,7 +7,6 @@ package service
 
 import (
     "context"
-    "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/business"
@@ -77,7 +76,7 @@ func (s *businessLogService) SetCabinet(cab *ent.Cabinet) *businessLogService {
     return s
 }
 
-func (s *businessLogService) SetBinInfo(bin *ec.BinInfo) *businessLogService {
+func (s *businessLogService) SetBinInfo(bin *model.BinInfo) *businessLogService {
     if bin != nil {
         s.creator.SetBinInfo(bin)
     }

@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
@@ -61,7 +60,7 @@ type Business struct {
 	// 业务类型
 	Type business.Type `json:"type,omitempty"`
 	// 仓位信息
-	BinInfo *ec.BinInfo `json:"bin_info,omitempty"`
+	BinInfo *model.BinInfo `json:"bin_info,omitempty"`
 	// 出入库编码
 	StockSn string `json:"stock_sn,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.

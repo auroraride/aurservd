@@ -6,7 +6,6 @@
 package ec
 
 import (
-    "fmt"
     "github.com/auroraride/aurservd/app/model"
 )
 
@@ -47,22 +46,6 @@ var DoorError = map[DoorStatus]string{
     DoorStatusFail:         "仓门故障",
     DoorStatusBatteryFull:  "电池未取出",
     DoorStatusBatteryEmpty: "电池未放入",
-}
-
-// BinInfo 任务电柜仓位信息
-type BinInfo struct {
-    Index       int                      `json:"index" bson:"index"`             // 仓位index
-    Electricity model.BatteryElectricity `json:"electricity" bson:"electricity"` // 电量
-    Voltage     float64                  `json:"voltage" bson:"voltage"`         // 电压(V)
-}
-
-func (b *BinInfo) String() string {
-    return fmt.Sprintf(
-        "%d号仓, 电压: %.2fV, 电流: %2.fA",
-        b.Index+1,
-        b.Voltage,
-        b.Electricity,
-    )
 }
 
 // Cabinet 任务电柜设备信息

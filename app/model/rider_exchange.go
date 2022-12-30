@@ -22,9 +22,9 @@ type RiderCabinetOperateInfoReq struct {
 
 // RiderCabinetOperateProcess 换电流程获取仓门属性
 type RiderCabinetOperateProcess struct {
-    EmptyBin    *CabinetBinBasicInfo `json:"emptyBin,omitempty"`    // 空仓位
-    FullBin     *CabinetBinBasicInfo `json:"fullBin,omitempty"`     // 满电仓位
-    Alternative *CabinetBinBasicInfo `json:"alternative,omitempty"` // 备选方案
+    EmptyBin    *BinInfo `json:"emptyBin,omitempty"`    // 空仓位
+    FullBin     *BinInfo `json:"fullBin,omitempty"`     // 满电仓位
+    Alternative *BinInfo `json:"alternative,omitempty"` // 备选方案
 }
 
 // RiderExchangeInfo 待换电信息
@@ -41,7 +41,7 @@ type RiderExchangeInfo struct {
     Brand          CabinetBrand `json:"brand"`          // 电柜型号
     Model          string       `json:"model"`          // 电池型号
     CityID         uint64       `json:"cityId"`         // 城市ID
-    RiderCabinetOperateProcess
+    *RiderCabinetOperateProcess
 }
 
 func (c *RiderExchangeInfo) MarshalBinary() ([]byte, error) {
