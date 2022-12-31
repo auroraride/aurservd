@@ -668,8 +668,8 @@ func (s *cabinetService) Transfer(req *model.CabinetTransferReq) {
 
 }
 
-// Sync TODO 电柜同步
-func (s *cabinetService) Sync(data *adapter.CabinetSyncData) {
+// Sync 电柜同步
+func (s *cabinetService) Sync(data *adapter.CabinetMessage) {
     if data.Serial == "" {
         log.Error("[SYNC] 缺少参数 serial")
         return

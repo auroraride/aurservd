@@ -7,6 +7,7 @@ package service
 
 import (
     "fmt"
+    "github.com/auroraride/adapter"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -39,6 +40,32 @@ func (s *batteryService) QueryIDX(id uint64) (b *ent.Battery) {
         snag.Panic("未找到电池")
     }
     return
+}
+
+func (s *batteryService) QuerySn(sn string) (bat *ent.Battery, err error) {
+    return s.orm.Query().Where(battery.Sn(sn)).First(s.ctx)
+}
+
+// LoadOrStore 查找或创建电池
+func (s *batteryService) LoadOrStore(sn string, cityID uint64) (bat *ent.Battery, err error) {
+    bat, _ = s.orm.Query().Where(battery.Sn(sn)).First(s.ctx)
+    if bat != nil {
+        return
+    }
+
+    ab := adapter.ParseBatterySN(sn)
+    return s.orm.Create().SetSn(sn).SetModel(ab.Model).SetCityID(cityID).Save(s.ctx)
+}
+
+// UpdateRider 更新骑手
+func (s *batteryService) UpdateRider(sn string, riderID uint64) error {
+    updater := s.orm.Update().Where(battery.Sn(sn))
+    if riderID == 0 {
+        updater.ClearRiderID()
+    } else {
+        updater.SetRiderID(riderID)
+    }
+    return updater.Exec(s.ctx)
 }
 
 // TODO 电池需要做库存管理
@@ -207,28 +234,4 @@ func (s *batteryService) List(req *model.BatteryListReq) *model.PaginationRes {
         }
         return
     })
-}
-
-func (s *batteryService) QuerySn(sn string) (bat *ent.Battery, err error) {
-    return s.orm.Query().Where(battery.Sn(sn)).First(s.ctx)
-}
-
-// LoadOrCreate 查找或创建电池
-func (s *batteryService) LoadOrCreate(sn, m string, cityID uint64) (bat *ent.Battery, err error) {
-    bat, _ = s.orm.Query().Where(battery.Sn(sn)).First(s.ctx)
-    if bat != nil {
-        return
-    }
-    return s.orm.Create().SetSn(sn).SetModel(m).SetCityID(cityID).Save(s.ctx)
-}
-
-// UpdateRider 更新骑手
-func (s *batteryService) UpdateRider(sn string, riderID uint64) error {
-    updater := s.orm.Update().Where(battery.Sn(sn))
-    if riderID == 0 {
-        updater.ClearRiderID()
-    } else {
-        updater.SetRiderID(riderID)
-    }
-    return updater.Exec(s.ctx)
 }

@@ -97,8 +97,7 @@ func (s *intelligentCabinetService) exchangeCacheKey(uid string) string {
 }
 
 // Exchange 请求换电
-// TODO 换电成功后绑定电池编号
-func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange) {
+func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *ent.Subscribe, cab *ent.Cabinet) {
     var (
         stopAt        *time.Time
         duration      float64
@@ -117,7 +116,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange) {
             // 若换电失败, 标记任务失败
             _ = cache.Set(s.ctx, s.exchangeCacheKey(uid), &model.ExchangeStepResultCache{
                 Index: -1,
-                Results: []*adapter.ExchangeStepResult{
+                Results: []*adapter.ExchangeStepMessage{
                     {Step: adapter.ExchangeStepFirst, Message: err.Error(), Success: false},
                 },
             }, 10*time.Minute).Err()
@@ -140,7 +139,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange) {
             // 查找电池
             // TODO 是否自动添加电池???
             var bat *ent.Battery
-            bat, _ = NewBattery().QuerySn(afterBattery)
+            bat, _ = NewBattery().LoadOrStore(afterBattery, *cab.CityID)
             if bat == nil {
                 log.Error("用户订阅更新失败, 未找到电池信息")
             }
@@ -159,6 +158,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange) {
     var r *resty.Response
     r, err = NewAdapter(ar.Config.Adapter.Kaixin.Api, s.rider).Post("/exchange/do", &adapter.ExchangeRequest{
         UUID:    uid,
+        Battery: *sub.BatterySn,
         Expires: model.IntelligentScanExpires,
         TimeOut: model.IntelligentExchangeTimeout,
         Minsoc:  cache.Float64(model.SettingExchangeMinBattery),
@@ -202,10 +202,12 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange) {
     }
 }
 
-func (s *intelligentCabinetService) ExchangeStep(req *adapter.ExchangeStepResult) {
+func (s *intelligentCabinetService) ExchangeStep(req *adapter.ExchangeStepMessage) {
     if req.Step == 0 {
         return
     }
+
+    // 检查电池是否存在
 
     key := s.exchangeCacheKey(req.UUID)
 
@@ -266,7 +268,7 @@ func (s *intelligentCabinetService) ExchangeResult(uid string) (res *model.Rider
     }
 }
 
-func (s *intelligentCabinetService) ExchangeCheckX(sub *ent.Subscribe, cab *ent.Cabinet) {
+func (s *intelligentCabinetService) ExchangeCensorX(sub *ent.Subscribe, cab *ent.Cabinet) {
     if cab.Status == model.CabinetStatusMaintenance.Value() {
         snag.Panic("电柜开小差了, 请联系客服")
     }

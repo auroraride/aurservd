@@ -74,7 +74,7 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
 
     // 判断设备是否智能设备
     if cab.Intelligent {
-        NewIntelligentCabinet(s.rider).ExchangeCheckX(sub, cab)
+        NewIntelligentCabinet(s.rider).ExchangeCensorX(sub, cab)
         uid, info = NewIntelligentCabinet(s.rider).ExchangeUsable(cab.Serial, model.CabinetBrand(cab.Brand))
     } else {
         // 更新一次电柜状态
@@ -198,7 +198,7 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     // 判断设备是否智能设备
     if err == nil {
         cab = NewCabinet().QueryOneSerialX(info.Serial)
-        NewIntelligentCabinet(s.rider).ExchangeCheckX(sub, cab)
+        NewIntelligentCabinet(s.rider).ExchangeCensorX(sub, cab)
 
         batterySN = sub.BatterySn
 
@@ -286,7 +286,7 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     }
 
     if cab.Intelligent {
-        go NewIntelligentCabinet(s.rider).Exchange(req.UUID, s.exchange)
+        go NewIntelligentCabinet(s.rider).Exchange(req.UUID, s.exchange, s.subscribe, s.cabinet)
     } else {
         // 开始任务
         t.Start(func(task *ec.Task) {
