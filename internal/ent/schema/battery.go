@@ -76,7 +76,7 @@ func (Battery) Mixin() []ent.Mixin {
         internal.DeleteMixin{},
         internal.Modifier{},
 
-        CityMixin{},                  // 所在城市
+        CityMixin{Optional: true},    // 所在城市
         RiderMixin{Optional: true},   // 所在骑手
         CabinetMixin{Optional: true}, // 所在电柜
     }

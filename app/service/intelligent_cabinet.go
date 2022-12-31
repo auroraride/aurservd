@@ -99,12 +99,12 @@ func (s *intelligentCabinetService) exchangeCacheKey(uid string) string {
 // Exchange 请求换电
 func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *ent.Subscribe, cab *ent.Cabinet) {
     var (
-        stopAt        *time.Time
-        duration      float64
-        success       bool
-        err           error
-        afterBattery  string
-        beforeBattery string
+        stopAt   *time.Time
+        duration float64
+        success  bool
+        err      error
+        putout   string
+        putin    string
     )
 
     defer func() {
@@ -115,7 +115,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 
             // 若换电失败, 标记任务失败
             _ = cache.Set(s.ctx, s.exchangeCacheKey(uid), &model.ExchangeStepResultCache{
-                Index: -1,
+                Index: 0,
                 Results: []*adapter.ExchangeStepMessage{
                     {Step: adapter.ExchangeStepFirst, Message: err.Error(), Success: false},
                 },
@@ -132,26 +132,20 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
             SetSuccess(success).
             SetFinishAt(*stopAt).
             SetDuration(int(duration)).
-            SetAfterBattery(afterBattery).
+            SetPutoutBattery(putout).
+            SetPutinBattery(putin).
             Exec(s.ctx)
 
-        if success {
-            // 查找电池
-            // TODO 是否自动添加电池???
-            var bat *ent.Battery
-            bat, _ = NewBattery().LoadOrStore(afterBattery, *cab.CityID)
-            if bat == nil {
-                log.Error("用户订阅更新失败, 未找到电池信息")
-            }
+        bs := NewBattery()
 
-            // 更新套餐
-            _ = ent.Database.Subscribe.UpdateOneID(ex.SubscribeID).SetBatterySn(bat.Sn).SetBatteryID(bat.ID).Exec(s.ctx)
+        // 更新用户取走的电池
+        if putout != "" {
+            bs.RiderPutout(putout, sub)
+        }
 
-            // 更新电池
-            _ = NewBattery().UpdateRider(afterBattery, ex.RiderID)
-
-            // 清除之前电池用户信息
-            _ = NewBattery().UpdateRider(beforeBattery, 0)
+        // 更新放入的电池
+        if putin != "" {
+            bs.RiderPutin(putin, cab)
         }
     }()
 
@@ -182,8 +176,8 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
         }
 
         if res.Data.Success {
-            beforeBattery = res.Data.BeforeBattery
-            afterBattery = res.Data.AfterBattery
+            putin = res.Data.PutinBattery
+            putout = res.Data.PutoutBattery
             success = true
             steps := res.Data.Results
             n := len(steps)
@@ -229,43 +223,46 @@ func (s *intelligentCabinetService) ExchangeResult(uid string) (res *model.Rider
         Status: uint8(ec.TaskStatusProcessing),
     }
 
-    ticker := time.NewTicker(1 * time.Second)
     start := time.Now()
-    for {
-        select {
-        case <-ticker.C:
-            c := &model.ExchangeStepResultCache{}
-            err := cache.Get(s.ctx, key).Scan(c)
-            if err != nil {
-                continue
-            }
 
-            n := len(c.Results)
-            index := c.Index
-            if index >= n {
-                continue
-            }
+    ticker := time.NewTicker(1 * time.Second)
+    defer ticker.Stop()
 
-            if n-1 == index {
-                index = n - 1
-            } else {
-                index += 1
-            }
-
-            data := c.Results[index]
-            res.Step = uint8(data.Step)
-            res.Message = data.Message
-            if data.Success {
-                res.Status = uint8(ec.TaskStatusSuccess)
-            }
-
-            res.Stop = data.Step == adapter.ExchangeStepFourth || !data.Success
-
-            if res.Stop || time.Now().Sub(start).Seconds() > 30 {
-                return
-            }
+    for ; true; <-ticker.C {
+        if time.Now().Sub(start).Seconds() > 30 {
+            return
         }
+
+        c := &model.ExchangeStepResultCache{}
+        err := cache.Get(s.ctx, key).Scan(c)
+        if err != nil {
+            continue
+        }
+
+        n := len(c.Results)
+        index := c.Index
+        if index >= n {
+            continue
+        }
+
+        data := c.Results[index]
+        res.Step = uint8(data.Step)
+        res.Message = data.Message
+        if data.Success {
+            res.Status = uint8(ec.TaskStatusSuccess)
+        }
+
+        res.Stop = data.Step == adapter.ExchangeStepFourth || !data.Success
+
+        if !res.Stop {
+            ttl, _ := cache.TTL(s.ctx, key).Result()
+            c.Index += 1
+            cache.Set(s.ctx, key, c, ttl)
+        }
+        return
     }
+
+    return
 }
 
 func (s *intelligentCabinetService) ExchangeCensorX(sub *ent.Subscribe, cab *ent.Cabinet) {

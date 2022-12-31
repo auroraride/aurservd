@@ -350,6 +350,16 @@ func CityIDNotIn(vs ...uint64) predicate.Battery {
 	return predicate.Battery(sql.FieldNotIn(FieldCityID, vs...))
 }
 
+// CityIDIsNil applies the IsNil predicate on the "city_id" field.
+func CityIDIsNil() predicate.Battery {
+	return predicate.Battery(sql.FieldIsNull(FieldCityID))
+}
+
+// CityIDNotNil applies the NotNil predicate on the "city_id" field.
+func CityIDNotNil() predicate.Battery {
+	return predicate.Battery(sql.FieldNotNull(FieldCityID))
+}
+
 // RiderIDEQ applies the EQ predicate on the "rider_id" field.
 func RiderIDEQ(v uint64) predicate.Battery {
 	return predicate.Battery(sql.FieldEQ(FieldRiderID, v))

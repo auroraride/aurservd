@@ -34,7 +34,7 @@ type Battery struct {
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
 	// 城市ID
-	CityID uint64 `json:"city_id,omitempty"`
+	CityID *uint64 `json:"city_id,omitempty"`
 	// 骑手ID
 	RiderID *uint64 `json:"rider_id,omitempty"`
 	// 电柜ID
@@ -183,7 +183,8 @@ func (b *Battery) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field city_id", values[i])
 			} else if value.Valid {
-				b.CityID = uint64(value.Int64)
+				b.CityID = new(uint64)
+				*b.CityID = uint64(value.Int64)
 			}
 		case battery.FieldRiderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -280,8 +281,10 @@ func (b *Battery) String() string {
 	builder.WriteString("remark=")
 	builder.WriteString(b.Remark)
 	builder.WriteString(", ")
-	builder.WriteString("city_id=")
-	builder.WriteString(fmt.Sprintf("%v", b.CityID))
+	if v := b.CityID; v != nil {
+		builder.WriteString("city_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	if v := b.RiderID; v != nil {
 		builder.WriteString("rider_id=")

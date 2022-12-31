@@ -283,30 +283,44 @@ func (ec *ExchangeCreate) SetNillableDuration(i *int) *ExchangeCreate {
 	return ec
 }
 
-// SetBeforeBattery sets the "before_battery" field.
-func (ec *ExchangeCreate) SetBeforeBattery(s string) *ExchangeCreate {
-	ec.mutation.SetBeforeBattery(s)
+// SetRiderBattery sets the "rider_battery" field.
+func (ec *ExchangeCreate) SetRiderBattery(s string) *ExchangeCreate {
+	ec.mutation.SetRiderBattery(s)
 	return ec
 }
 
-// SetNillableBeforeBattery sets the "before_battery" field if the given value is not nil.
-func (ec *ExchangeCreate) SetNillableBeforeBattery(s *string) *ExchangeCreate {
+// SetNillableRiderBattery sets the "rider_battery" field if the given value is not nil.
+func (ec *ExchangeCreate) SetNillableRiderBattery(s *string) *ExchangeCreate {
 	if s != nil {
-		ec.SetBeforeBattery(*s)
+		ec.SetRiderBattery(*s)
 	}
 	return ec
 }
 
-// SetAfterBattery sets the "after_battery" field.
-func (ec *ExchangeCreate) SetAfterBattery(s string) *ExchangeCreate {
-	ec.mutation.SetAfterBattery(s)
+// SetPutinBattery sets the "putin_battery" field.
+func (ec *ExchangeCreate) SetPutinBattery(s string) *ExchangeCreate {
+	ec.mutation.SetPutinBattery(s)
 	return ec
 }
 
-// SetNillableAfterBattery sets the "after_battery" field if the given value is not nil.
-func (ec *ExchangeCreate) SetNillableAfterBattery(s *string) *ExchangeCreate {
+// SetNillablePutinBattery sets the "putin_battery" field if the given value is not nil.
+func (ec *ExchangeCreate) SetNillablePutinBattery(s *string) *ExchangeCreate {
 	if s != nil {
-		ec.SetAfterBattery(*s)
+		ec.SetPutinBattery(*s)
+	}
+	return ec
+}
+
+// SetPutoutBattery sets the "putout_battery" field.
+func (ec *ExchangeCreate) SetPutoutBattery(s string) *ExchangeCreate {
+	ec.mutation.SetPutoutBattery(s)
+	return ec
+}
+
+// SetNillablePutoutBattery sets the "putout_battery" field if the given value is not nil.
+func (ec *ExchangeCreate) SetNillablePutoutBattery(s *string) *ExchangeCreate {
+	if s != nil {
+		ec.SetPutoutBattery(*s)
 	}
 	return ec
 }
@@ -544,13 +558,17 @@ func (ec *ExchangeCreate) createSpec() (*Exchange, *sqlgraph.CreateSpec) {
 		_spec.SetField(exchange.FieldDuration, field.TypeInt, value)
 		_node.Duration = value
 	}
-	if value, ok := ec.mutation.BeforeBattery(); ok {
-		_spec.SetField(exchange.FieldBeforeBattery, field.TypeString, value)
-		_node.BeforeBattery = &value
+	if value, ok := ec.mutation.RiderBattery(); ok {
+		_spec.SetField(exchange.FieldRiderBattery, field.TypeString, value)
+		_node.RiderBattery = &value
 	}
-	if value, ok := ec.mutation.AfterBattery(); ok {
-		_spec.SetField(exchange.FieldAfterBattery, field.TypeString, value)
-		_node.AfterBattery = &value
+	if value, ok := ec.mutation.PutinBattery(); ok {
+		_spec.SetField(exchange.FieldPutinBattery, field.TypeString, value)
+		_node.PutinBattery = &value
+	}
+	if value, ok := ec.mutation.PutoutBattery(); ok {
+		_spec.SetField(exchange.FieldPutoutBattery, field.TypeString, value)
+		_node.PutoutBattery = &value
 	}
 	if nodes := ec.mutation.SubscribeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1100,39 +1118,57 @@ func (u *ExchangeUpsert) ClearDuration() *ExchangeUpsert {
 	return u
 }
 
-// SetBeforeBattery sets the "before_battery" field.
-func (u *ExchangeUpsert) SetBeforeBattery(v string) *ExchangeUpsert {
-	u.Set(exchange.FieldBeforeBattery, v)
+// SetRiderBattery sets the "rider_battery" field.
+func (u *ExchangeUpsert) SetRiderBattery(v string) *ExchangeUpsert {
+	u.Set(exchange.FieldRiderBattery, v)
 	return u
 }
 
-// UpdateBeforeBattery sets the "before_battery" field to the value that was provided on create.
-func (u *ExchangeUpsert) UpdateBeforeBattery() *ExchangeUpsert {
-	u.SetExcluded(exchange.FieldBeforeBattery)
+// UpdateRiderBattery sets the "rider_battery" field to the value that was provided on create.
+func (u *ExchangeUpsert) UpdateRiderBattery() *ExchangeUpsert {
+	u.SetExcluded(exchange.FieldRiderBattery)
 	return u
 }
 
-// ClearBeforeBattery clears the value of the "before_battery" field.
-func (u *ExchangeUpsert) ClearBeforeBattery() *ExchangeUpsert {
-	u.SetNull(exchange.FieldBeforeBattery)
+// ClearRiderBattery clears the value of the "rider_battery" field.
+func (u *ExchangeUpsert) ClearRiderBattery() *ExchangeUpsert {
+	u.SetNull(exchange.FieldRiderBattery)
 	return u
 }
 
-// SetAfterBattery sets the "after_battery" field.
-func (u *ExchangeUpsert) SetAfterBattery(v string) *ExchangeUpsert {
-	u.Set(exchange.FieldAfterBattery, v)
+// SetPutinBattery sets the "putin_battery" field.
+func (u *ExchangeUpsert) SetPutinBattery(v string) *ExchangeUpsert {
+	u.Set(exchange.FieldPutinBattery, v)
 	return u
 }
 
-// UpdateAfterBattery sets the "after_battery" field to the value that was provided on create.
-func (u *ExchangeUpsert) UpdateAfterBattery() *ExchangeUpsert {
-	u.SetExcluded(exchange.FieldAfterBattery)
+// UpdatePutinBattery sets the "putin_battery" field to the value that was provided on create.
+func (u *ExchangeUpsert) UpdatePutinBattery() *ExchangeUpsert {
+	u.SetExcluded(exchange.FieldPutinBattery)
 	return u
 }
 
-// ClearAfterBattery clears the value of the "after_battery" field.
-func (u *ExchangeUpsert) ClearAfterBattery() *ExchangeUpsert {
-	u.SetNull(exchange.FieldAfterBattery)
+// ClearPutinBattery clears the value of the "putin_battery" field.
+func (u *ExchangeUpsert) ClearPutinBattery() *ExchangeUpsert {
+	u.SetNull(exchange.FieldPutinBattery)
+	return u
+}
+
+// SetPutoutBattery sets the "putout_battery" field.
+func (u *ExchangeUpsert) SetPutoutBattery(v string) *ExchangeUpsert {
+	u.Set(exchange.FieldPutoutBattery, v)
+	return u
+}
+
+// UpdatePutoutBattery sets the "putout_battery" field to the value that was provided on create.
+func (u *ExchangeUpsert) UpdatePutoutBattery() *ExchangeUpsert {
+	u.SetExcluded(exchange.FieldPutoutBattery)
+	return u
+}
+
+// ClearPutoutBattery clears the value of the "putout_battery" field.
+func (u *ExchangeUpsert) ClearPutoutBattery() *ExchangeUpsert {
+	u.SetNull(exchange.FieldPutoutBattery)
 	return u
 }
 
@@ -1576,45 +1612,66 @@ func (u *ExchangeUpsertOne) ClearDuration() *ExchangeUpsertOne {
 	})
 }
 
-// SetBeforeBattery sets the "before_battery" field.
-func (u *ExchangeUpsertOne) SetBeforeBattery(v string) *ExchangeUpsertOne {
+// SetRiderBattery sets the "rider_battery" field.
+func (u *ExchangeUpsertOne) SetRiderBattery(v string) *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
-		s.SetBeforeBattery(v)
+		s.SetRiderBattery(v)
 	})
 }
 
-// UpdateBeforeBattery sets the "before_battery" field to the value that was provided on create.
-func (u *ExchangeUpsertOne) UpdateBeforeBattery() *ExchangeUpsertOne {
+// UpdateRiderBattery sets the "rider_battery" field to the value that was provided on create.
+func (u *ExchangeUpsertOne) UpdateRiderBattery() *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
-		s.UpdateBeforeBattery()
+		s.UpdateRiderBattery()
 	})
 }
 
-// ClearBeforeBattery clears the value of the "before_battery" field.
-func (u *ExchangeUpsertOne) ClearBeforeBattery() *ExchangeUpsertOne {
+// ClearRiderBattery clears the value of the "rider_battery" field.
+func (u *ExchangeUpsertOne) ClearRiderBattery() *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
-		s.ClearBeforeBattery()
+		s.ClearRiderBattery()
 	})
 }
 
-// SetAfterBattery sets the "after_battery" field.
-func (u *ExchangeUpsertOne) SetAfterBattery(v string) *ExchangeUpsertOne {
+// SetPutinBattery sets the "putin_battery" field.
+func (u *ExchangeUpsertOne) SetPutinBattery(v string) *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
-		s.SetAfterBattery(v)
+		s.SetPutinBattery(v)
 	})
 }
 
-// UpdateAfterBattery sets the "after_battery" field to the value that was provided on create.
-func (u *ExchangeUpsertOne) UpdateAfterBattery() *ExchangeUpsertOne {
+// UpdatePutinBattery sets the "putin_battery" field to the value that was provided on create.
+func (u *ExchangeUpsertOne) UpdatePutinBattery() *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
-		s.UpdateAfterBattery()
+		s.UpdatePutinBattery()
 	})
 }
 
-// ClearAfterBattery clears the value of the "after_battery" field.
-func (u *ExchangeUpsertOne) ClearAfterBattery() *ExchangeUpsertOne {
+// ClearPutinBattery clears the value of the "putin_battery" field.
+func (u *ExchangeUpsertOne) ClearPutinBattery() *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
-		s.ClearAfterBattery()
+		s.ClearPutinBattery()
+	})
+}
+
+// SetPutoutBattery sets the "putout_battery" field.
+func (u *ExchangeUpsertOne) SetPutoutBattery(v string) *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetPutoutBattery(v)
+	})
+}
+
+// UpdatePutoutBattery sets the "putout_battery" field to the value that was provided on create.
+func (u *ExchangeUpsertOne) UpdatePutoutBattery() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdatePutoutBattery()
+	})
+}
+
+// ClearPutoutBattery clears the value of the "putout_battery" field.
+func (u *ExchangeUpsertOne) ClearPutoutBattery() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearPutoutBattery()
 	})
 }
 
@@ -2220,45 +2277,66 @@ func (u *ExchangeUpsertBulk) ClearDuration() *ExchangeUpsertBulk {
 	})
 }
 
-// SetBeforeBattery sets the "before_battery" field.
-func (u *ExchangeUpsertBulk) SetBeforeBattery(v string) *ExchangeUpsertBulk {
+// SetRiderBattery sets the "rider_battery" field.
+func (u *ExchangeUpsertBulk) SetRiderBattery(v string) *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
-		s.SetBeforeBattery(v)
+		s.SetRiderBattery(v)
 	})
 }
 
-// UpdateBeforeBattery sets the "before_battery" field to the value that was provided on create.
-func (u *ExchangeUpsertBulk) UpdateBeforeBattery() *ExchangeUpsertBulk {
+// UpdateRiderBattery sets the "rider_battery" field to the value that was provided on create.
+func (u *ExchangeUpsertBulk) UpdateRiderBattery() *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
-		s.UpdateBeforeBattery()
+		s.UpdateRiderBattery()
 	})
 }
 
-// ClearBeforeBattery clears the value of the "before_battery" field.
-func (u *ExchangeUpsertBulk) ClearBeforeBattery() *ExchangeUpsertBulk {
+// ClearRiderBattery clears the value of the "rider_battery" field.
+func (u *ExchangeUpsertBulk) ClearRiderBattery() *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
-		s.ClearBeforeBattery()
+		s.ClearRiderBattery()
 	})
 }
 
-// SetAfterBattery sets the "after_battery" field.
-func (u *ExchangeUpsertBulk) SetAfterBattery(v string) *ExchangeUpsertBulk {
+// SetPutinBattery sets the "putin_battery" field.
+func (u *ExchangeUpsertBulk) SetPutinBattery(v string) *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
-		s.SetAfterBattery(v)
+		s.SetPutinBattery(v)
 	})
 }
 
-// UpdateAfterBattery sets the "after_battery" field to the value that was provided on create.
-func (u *ExchangeUpsertBulk) UpdateAfterBattery() *ExchangeUpsertBulk {
+// UpdatePutinBattery sets the "putin_battery" field to the value that was provided on create.
+func (u *ExchangeUpsertBulk) UpdatePutinBattery() *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
-		s.UpdateAfterBattery()
+		s.UpdatePutinBattery()
 	})
 }
 
-// ClearAfterBattery clears the value of the "after_battery" field.
-func (u *ExchangeUpsertBulk) ClearAfterBattery() *ExchangeUpsertBulk {
+// ClearPutinBattery clears the value of the "putin_battery" field.
+func (u *ExchangeUpsertBulk) ClearPutinBattery() *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
-		s.ClearAfterBattery()
+		s.ClearPutinBattery()
+	})
+}
+
+// SetPutoutBattery sets the "putout_battery" field.
+func (u *ExchangeUpsertBulk) SetPutoutBattery(v string) *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetPutoutBattery(v)
+	})
+}
+
+// UpdatePutoutBattery sets the "putout_battery" field to the value that was provided on create.
+func (u *ExchangeUpsertBulk) UpdatePutoutBattery() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdatePutoutBattery()
+	})
+}
+
+// ClearPutoutBattery clears the value of the "putout_battery" field.
+func (u *ExchangeUpsertBulk) ClearPutoutBattery() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearPutoutBattery()
 	})
 }
 

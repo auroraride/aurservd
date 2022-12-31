@@ -13,8 +13,10 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/battery"
     "github.com/auroraride/aurservd/internal/ent/city"
+    "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
+    log "github.com/sirupsen/logrus"
     "strings"
 )
 
@@ -46,26 +48,39 @@ func (s *batteryService) QuerySn(sn string) (bat *ent.Battery, err error) {
     return s.orm.Query().Where(battery.Sn(sn)).First(s.ctx)
 }
 
-// LoadOrStore 查找或创建电池
-func (s *batteryService) LoadOrStore(sn string, cityID uint64) (bat *ent.Battery, err error) {
-    bat, _ = s.orm.Query().Where(battery.Sn(sn)).First(s.ctx)
+func (s *batteryService) LoadOrStore(sn string) (bat *ent.Battery, err error) {
+    bat, _ = s.QuerySn(sn)
     if bat != nil {
         return
     }
-
     ab := adapter.ParseBatterySN(sn)
-    return s.orm.Create().SetSn(sn).SetModel(ab.Model).SetCityID(cityID).Save(s.ctx)
+    return s.orm.Create().SetModel(ab.Model).SetSn(sn).Save(s.ctx)
 }
 
-// UpdateRider 更新骑手
-func (s *batteryService) UpdateRider(sn string, riderID uint64) error {
-    updater := s.orm.Update().Where(battery.Sn(sn))
-    if riderID == 0 {
-        updater.ClearRiderID()
-    } else {
-        updater.SetRiderID(riderID)
+// PutinCabinet 电池放入电柜
+func (s *batteryService) PutinCabinet(sn string, cab *ent.Cabinet) (bat *ent.Battery, err error) {
+    ab := adapter.ParseBatterySN(sn)
+    if ab.Model == "" {
+        log.Errorf("电池更新失败, 未找到型号: %#v", *ab)
     }
-    return updater.Exec(s.ctx)
+
+    var (
+        cityID    *uint64
+        cabinetID *uint64
+    )
+
+    if cab == nil {
+        log.Errorf("电池更新失败, 未找到电柜: %#v", *ab)
+    } else {
+        cityID = cab.CityID
+        cabinetID = silk.UInt64(cab.ID)
+    }
+
+    bat, _ = s.orm.Query().Where(battery.Sn(sn)).First(s.ctx)
+    if bat != nil {
+        return bat.Update().SetNillableCabinetID(cabinetID).SetModel(ab.Model).SetNillableCityID(cityID).ClearRiderID().Save(s.ctx)
+    }
+    return s.orm.Create().SetSn(sn).SetModel(ab.Model).SetNillableCityID(cityID).SetNillableCabinetID(cabinetID).Save(s.ctx)
 }
 
 // TODO 电池需要做库存管理
@@ -234,4 +249,48 @@ func (s *batteryService) List(req *model.BatteryListReq) *model.PaginationRes {
         }
         return
     })
+}
+
+func (s *batteryService) Sync(data *adapter.BatteryMessage) {
+    if data.Cabinet == "" {
+        log.Errorf("[SYNC] 电池:%s 缺少参数 cabinetSerial", data.SN)
+        return
+    }
+
+    if data.SN == "" {
+        log.Error("[SYNC] 电池缺少参数 sn")
+        return
+    }
+
+    // 查找电柜
+    cab := NewCabinet().QueryOneSerial(data.Cabinet)
+    if cab == nil {
+        log.Errorf("[SYNC] 电池:%s 未找到电柜", data.SN)
+        return
+    }
+
+    // 更新或创建电池
+    _, _ = s.PutinCabinet(data.SN, cab)
+}
+
+// RiderPutout 骑手取走电池
+func (s *batteryService) RiderPutout(sn string, sub *ent.Subscribe) {
+    bat, _ := s.LoadOrStore(sn)
+
+    if bat == nil {
+        log.Error("电池订阅更新失败, 未找到电池信息")
+        return
+    }
+
+    // 更新订阅
+    _ = ent.Database.Subscribe.UpdateOneID(sub.ID).SetBatterySn(bat.Sn).SetBatteryID(bat.ID).Exec(s.ctx)
+
+    // 更新电池
+    _ = bat.Update().ClearCabinetID().SetRiderID(sub.RiderID).Exec(s.ctx)
+}
+
+// RiderPutin 骑手放入电池
+func (s *batteryService) RiderPutin(sn string, cab *ent.Cabinet) {
+    // TODO 是否记录骑手信息?
+    _, _ = s.PutinCabinet(sn, cab)
 }

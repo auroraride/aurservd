@@ -97,6 +97,20 @@ func (bu *BatteryUpdate) SetCityID(u uint64) *BatteryUpdate {
 	return bu
 }
 
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (bu *BatteryUpdate) SetNillableCityID(u *uint64) *BatteryUpdate {
+	if u != nil {
+		bu.SetCityID(*u)
+	}
+	return bu
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (bu *BatteryUpdate) ClearCityID() *BatteryUpdate {
+	bu.mutation.ClearCityID()
+	return bu
+}
+
 // SetRiderID sets the "rider_id" field.
 func (bu *BatteryUpdate) SetRiderID(u uint64) *BatteryUpdate {
 	bu.mutation.SetRiderID(u)
@@ -243,14 +257,6 @@ func (bu *BatteryUpdate) defaults() error {
 	return nil
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (bu *BatteryUpdate) check() error {
-	if _, ok := bu.mutation.CityID(); bu.mutation.CityCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Battery.city"`)
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (bu *BatteryUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *BatteryUpdate {
 	bu.modifiers = append(bu.modifiers, modifiers...)
@@ -258,9 +264,6 @@ func (bu *BatteryUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Batter
 }
 
 func (bu *BatteryUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := bu.check(); err != nil {
-		return n, err
-	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   battery.Table,
@@ -502,6 +505,20 @@ func (buo *BatteryUpdateOne) SetCityID(u uint64) *BatteryUpdateOne {
 	return buo
 }
 
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (buo *BatteryUpdateOne) SetNillableCityID(u *uint64) *BatteryUpdateOne {
+	if u != nil {
+		buo.SetCityID(*u)
+	}
+	return buo
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (buo *BatteryUpdateOne) ClearCityID() *BatteryUpdateOne {
+	buo.mutation.ClearCityID()
+	return buo
+}
+
 // SetRiderID sets the "rider_id" field.
 func (buo *BatteryUpdateOne) SetRiderID(u uint64) *BatteryUpdateOne {
 	buo.mutation.SetRiderID(u)
@@ -655,14 +672,6 @@ func (buo *BatteryUpdateOne) defaults() error {
 	return nil
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (buo *BatteryUpdateOne) check() error {
-	if _, ok := buo.mutation.CityID(); buo.mutation.CityCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Battery.city"`)
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (buo *BatteryUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *BatteryUpdateOne {
 	buo.modifiers = append(buo.modifiers, modifiers...)
@@ -670,9 +679,6 @@ func (buo *BatteryUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Ba
 }
 
 func (buo *BatteryUpdateOne) sqlSave(ctx context.Context) (_node *Battery, err error) {
-	if err := buo.check(); err != nil {
-		return _node, err
-	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   battery.Table,

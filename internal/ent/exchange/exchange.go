@@ -59,10 +59,12 @@ const (
 	FieldFinishAt = "finish_at"
 	// FieldDuration holds the string denoting the duration field in the database.
 	FieldDuration = "duration"
-	// FieldBeforeBattery holds the string denoting the before_battery field in the database.
-	FieldBeforeBattery = "before_battery"
-	// FieldAfterBattery holds the string denoting the after_battery field in the database.
-	FieldAfterBattery = "after_battery"
+	// FieldRiderBattery holds the string denoting the rider_battery field in the database.
+	FieldRiderBattery = "rider_battery"
+	// FieldPutinBattery holds the string denoting the putin_battery field in the database.
+	FieldPutinBattery = "putin_battery"
+	// FieldPutoutBattery holds the string denoting the putout_battery field in the database.
+	FieldPutoutBattery = "putout_battery"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
 	EdgeSubscribe = "subscribe"
 	// EdgeCity holds the string denoting the city edge name in mutations.
@@ -165,8 +167,9 @@ var Columns = []string{
 	FieldStartAt,
 	FieldFinishAt,
 	FieldDuration,
-	FieldBeforeBattery,
-	FieldAfterBattery,
+	FieldRiderBattery,
+	FieldPutinBattery,
+	FieldPutoutBattery,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

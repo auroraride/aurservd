@@ -354,43 +354,63 @@ func (eu *ExchangeUpdate) ClearDuration() *ExchangeUpdate {
 	return eu
 }
 
-// SetBeforeBattery sets the "before_battery" field.
-func (eu *ExchangeUpdate) SetBeforeBattery(s string) *ExchangeUpdate {
-	eu.mutation.SetBeforeBattery(s)
+// SetRiderBattery sets the "rider_battery" field.
+func (eu *ExchangeUpdate) SetRiderBattery(s string) *ExchangeUpdate {
+	eu.mutation.SetRiderBattery(s)
 	return eu
 }
 
-// SetNillableBeforeBattery sets the "before_battery" field if the given value is not nil.
-func (eu *ExchangeUpdate) SetNillableBeforeBattery(s *string) *ExchangeUpdate {
+// SetNillableRiderBattery sets the "rider_battery" field if the given value is not nil.
+func (eu *ExchangeUpdate) SetNillableRiderBattery(s *string) *ExchangeUpdate {
 	if s != nil {
-		eu.SetBeforeBattery(*s)
+		eu.SetRiderBattery(*s)
 	}
 	return eu
 }
 
-// ClearBeforeBattery clears the value of the "before_battery" field.
-func (eu *ExchangeUpdate) ClearBeforeBattery() *ExchangeUpdate {
-	eu.mutation.ClearBeforeBattery()
+// ClearRiderBattery clears the value of the "rider_battery" field.
+func (eu *ExchangeUpdate) ClearRiderBattery() *ExchangeUpdate {
+	eu.mutation.ClearRiderBattery()
 	return eu
 }
 
-// SetAfterBattery sets the "after_battery" field.
-func (eu *ExchangeUpdate) SetAfterBattery(s string) *ExchangeUpdate {
-	eu.mutation.SetAfterBattery(s)
+// SetPutinBattery sets the "putin_battery" field.
+func (eu *ExchangeUpdate) SetPutinBattery(s string) *ExchangeUpdate {
+	eu.mutation.SetPutinBattery(s)
 	return eu
 }
 
-// SetNillableAfterBattery sets the "after_battery" field if the given value is not nil.
-func (eu *ExchangeUpdate) SetNillableAfterBattery(s *string) *ExchangeUpdate {
+// SetNillablePutinBattery sets the "putin_battery" field if the given value is not nil.
+func (eu *ExchangeUpdate) SetNillablePutinBattery(s *string) *ExchangeUpdate {
 	if s != nil {
-		eu.SetAfterBattery(*s)
+		eu.SetPutinBattery(*s)
 	}
 	return eu
 }
 
-// ClearAfterBattery clears the value of the "after_battery" field.
-func (eu *ExchangeUpdate) ClearAfterBattery() *ExchangeUpdate {
-	eu.mutation.ClearAfterBattery()
+// ClearPutinBattery clears the value of the "putin_battery" field.
+func (eu *ExchangeUpdate) ClearPutinBattery() *ExchangeUpdate {
+	eu.mutation.ClearPutinBattery()
+	return eu
+}
+
+// SetPutoutBattery sets the "putout_battery" field.
+func (eu *ExchangeUpdate) SetPutoutBattery(s string) *ExchangeUpdate {
+	eu.mutation.SetPutoutBattery(s)
+	return eu
+}
+
+// SetNillablePutoutBattery sets the "putout_battery" field if the given value is not nil.
+func (eu *ExchangeUpdate) SetNillablePutoutBattery(s *string) *ExchangeUpdate {
+	if s != nil {
+		eu.SetPutoutBattery(*s)
+	}
+	return eu
+}
+
+// ClearPutoutBattery clears the value of the "putout_battery" field.
+func (eu *ExchangeUpdate) ClearPutoutBattery() *ExchangeUpdate {
+	eu.mutation.ClearPutoutBattery()
 	return eu
 }
 
@@ -644,17 +664,23 @@ func (eu *ExchangeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if eu.mutation.DurationCleared() {
 		_spec.ClearField(exchange.FieldDuration, field.TypeInt)
 	}
-	if value, ok := eu.mutation.BeforeBattery(); ok {
-		_spec.SetField(exchange.FieldBeforeBattery, field.TypeString, value)
+	if value, ok := eu.mutation.RiderBattery(); ok {
+		_spec.SetField(exchange.FieldRiderBattery, field.TypeString, value)
 	}
-	if eu.mutation.BeforeBatteryCleared() {
-		_spec.ClearField(exchange.FieldBeforeBattery, field.TypeString)
+	if eu.mutation.RiderBatteryCleared() {
+		_spec.ClearField(exchange.FieldRiderBattery, field.TypeString)
 	}
-	if value, ok := eu.mutation.AfterBattery(); ok {
-		_spec.SetField(exchange.FieldAfterBattery, field.TypeString, value)
+	if value, ok := eu.mutation.PutinBattery(); ok {
+		_spec.SetField(exchange.FieldPutinBattery, field.TypeString, value)
 	}
-	if eu.mutation.AfterBatteryCleared() {
-		_spec.ClearField(exchange.FieldAfterBattery, field.TypeString)
+	if eu.mutation.PutinBatteryCleared() {
+		_spec.ClearField(exchange.FieldPutinBattery, field.TypeString)
+	}
+	if value, ok := eu.mutation.PutoutBattery(); ok {
+		_spec.SetField(exchange.FieldPutoutBattery, field.TypeString, value)
+	}
+	if eu.mutation.PutoutBatteryCleared() {
+		_spec.ClearField(exchange.FieldPutoutBattery, field.TypeString)
 	}
 	if eu.mutation.SubscribeCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1271,43 +1297,63 @@ func (euo *ExchangeUpdateOne) ClearDuration() *ExchangeUpdateOne {
 	return euo
 }
 
-// SetBeforeBattery sets the "before_battery" field.
-func (euo *ExchangeUpdateOne) SetBeforeBattery(s string) *ExchangeUpdateOne {
-	euo.mutation.SetBeforeBattery(s)
+// SetRiderBattery sets the "rider_battery" field.
+func (euo *ExchangeUpdateOne) SetRiderBattery(s string) *ExchangeUpdateOne {
+	euo.mutation.SetRiderBattery(s)
 	return euo
 }
 
-// SetNillableBeforeBattery sets the "before_battery" field if the given value is not nil.
-func (euo *ExchangeUpdateOne) SetNillableBeforeBattery(s *string) *ExchangeUpdateOne {
+// SetNillableRiderBattery sets the "rider_battery" field if the given value is not nil.
+func (euo *ExchangeUpdateOne) SetNillableRiderBattery(s *string) *ExchangeUpdateOne {
 	if s != nil {
-		euo.SetBeforeBattery(*s)
+		euo.SetRiderBattery(*s)
 	}
 	return euo
 }
 
-// ClearBeforeBattery clears the value of the "before_battery" field.
-func (euo *ExchangeUpdateOne) ClearBeforeBattery() *ExchangeUpdateOne {
-	euo.mutation.ClearBeforeBattery()
+// ClearRiderBattery clears the value of the "rider_battery" field.
+func (euo *ExchangeUpdateOne) ClearRiderBattery() *ExchangeUpdateOne {
+	euo.mutation.ClearRiderBattery()
 	return euo
 }
 
-// SetAfterBattery sets the "after_battery" field.
-func (euo *ExchangeUpdateOne) SetAfterBattery(s string) *ExchangeUpdateOne {
-	euo.mutation.SetAfterBattery(s)
+// SetPutinBattery sets the "putin_battery" field.
+func (euo *ExchangeUpdateOne) SetPutinBattery(s string) *ExchangeUpdateOne {
+	euo.mutation.SetPutinBattery(s)
 	return euo
 }
 
-// SetNillableAfterBattery sets the "after_battery" field if the given value is not nil.
-func (euo *ExchangeUpdateOne) SetNillableAfterBattery(s *string) *ExchangeUpdateOne {
+// SetNillablePutinBattery sets the "putin_battery" field if the given value is not nil.
+func (euo *ExchangeUpdateOne) SetNillablePutinBattery(s *string) *ExchangeUpdateOne {
 	if s != nil {
-		euo.SetAfterBattery(*s)
+		euo.SetPutinBattery(*s)
 	}
 	return euo
 }
 
-// ClearAfterBattery clears the value of the "after_battery" field.
-func (euo *ExchangeUpdateOne) ClearAfterBattery() *ExchangeUpdateOne {
-	euo.mutation.ClearAfterBattery()
+// ClearPutinBattery clears the value of the "putin_battery" field.
+func (euo *ExchangeUpdateOne) ClearPutinBattery() *ExchangeUpdateOne {
+	euo.mutation.ClearPutinBattery()
+	return euo
+}
+
+// SetPutoutBattery sets the "putout_battery" field.
+func (euo *ExchangeUpdateOne) SetPutoutBattery(s string) *ExchangeUpdateOne {
+	euo.mutation.SetPutoutBattery(s)
+	return euo
+}
+
+// SetNillablePutoutBattery sets the "putout_battery" field if the given value is not nil.
+func (euo *ExchangeUpdateOne) SetNillablePutoutBattery(s *string) *ExchangeUpdateOne {
+	if s != nil {
+		euo.SetPutoutBattery(*s)
+	}
+	return euo
+}
+
+// ClearPutoutBattery clears the value of the "putout_battery" field.
+func (euo *ExchangeUpdateOne) ClearPutoutBattery() *ExchangeUpdateOne {
+	euo.mutation.ClearPutoutBattery()
 	return euo
 }
 
@@ -1585,17 +1631,23 @@ func (euo *ExchangeUpdateOne) sqlSave(ctx context.Context) (_node *Exchange, err
 	if euo.mutation.DurationCleared() {
 		_spec.ClearField(exchange.FieldDuration, field.TypeInt)
 	}
-	if value, ok := euo.mutation.BeforeBattery(); ok {
-		_spec.SetField(exchange.FieldBeforeBattery, field.TypeString, value)
+	if value, ok := euo.mutation.RiderBattery(); ok {
+		_spec.SetField(exchange.FieldRiderBattery, field.TypeString, value)
 	}
-	if euo.mutation.BeforeBatteryCleared() {
-		_spec.ClearField(exchange.FieldBeforeBattery, field.TypeString)
+	if euo.mutation.RiderBatteryCleared() {
+		_spec.ClearField(exchange.FieldRiderBattery, field.TypeString)
 	}
-	if value, ok := euo.mutation.AfterBattery(); ok {
-		_spec.SetField(exchange.FieldAfterBattery, field.TypeString, value)
+	if value, ok := euo.mutation.PutinBattery(); ok {
+		_spec.SetField(exchange.FieldPutinBattery, field.TypeString, value)
 	}
-	if euo.mutation.AfterBatteryCleared() {
-		_spec.ClearField(exchange.FieldAfterBattery, field.TypeString)
+	if euo.mutation.PutinBatteryCleared() {
+		_spec.ClearField(exchange.FieldPutinBattery, field.TypeString)
+	}
+	if value, ok := euo.mutation.PutoutBattery(); ok {
+		_spec.SetField(exchange.FieldPutoutBattery, field.TypeString, value)
+	}
+	if euo.mutation.PutoutBatteryCleared() {
+		_spec.ClearField(exchange.FieldPutoutBattery, field.TypeString)
 	}
 	if euo.mutation.SubscribeCleared() {
 		edge := &sqlgraph.EdgeSpec{

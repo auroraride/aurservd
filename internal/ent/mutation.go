@@ -8040,7 +8040,7 @@ func (m *BatteryMutation) CityID() (r uint64, exists bool) {
 // OldCityID returns the old "city_id" field's value of the Battery entity.
 // If the Battery object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BatteryMutation) OldCityID(ctx context.Context) (v uint64, err error) {
+func (m *BatteryMutation) OldCityID(ctx context.Context) (v *uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCityID is only allowed on UpdateOne operations")
 	}
@@ -8054,9 +8054,22 @@ func (m *BatteryMutation) OldCityID(ctx context.Context) (v uint64, err error) {
 	return oldValue.CityID, nil
 }
 
+// ClearCityID clears the value of the "city_id" field.
+func (m *BatteryMutation) ClearCityID() {
+	m.city = nil
+	m.clearedFields[battery.FieldCityID] = struct{}{}
+}
+
+// CityIDCleared returns if the "city_id" field was cleared in this mutation.
+func (m *BatteryMutation) CityIDCleared() bool {
+	_, ok := m.clearedFields[battery.FieldCityID]
+	return ok
+}
+
 // ResetCityID resets all changes to the "city_id" field.
 func (m *BatteryMutation) ResetCityID() {
 	m.city = nil
+	delete(m.clearedFields, battery.FieldCityID)
 }
 
 // SetRiderID sets the "rider_id" field.
@@ -8272,7 +8285,7 @@ func (m *BatteryMutation) ClearCity() {
 
 // CityCleared reports if the "city" edge to the City entity was cleared.
 func (m *BatteryMutation) CityCleared() bool {
-	return m.clearedcity
+	return m.CityIDCleared() || m.clearedcity
 }
 
 // CityIDs returns the "city" edge IDs in the mutation.
@@ -8617,6 +8630,9 @@ func (m *BatteryMutation) ClearedFields() []string {
 	if m.FieldCleared(battery.FieldRemark) {
 		fields = append(fields, battery.FieldRemark)
 	}
+	if m.FieldCleared(battery.FieldCityID) {
+		fields = append(fields, battery.FieldCityID)
+	}
 	if m.FieldCleared(battery.FieldRiderID) {
 		fields = append(fields, battery.FieldRiderID)
 	}
@@ -8648,6 +8664,9 @@ func (m *BatteryMutation) ClearField(name string) error {
 		return nil
 	case battery.FieldRemark:
 		m.ClearRemark()
+		return nil
+	case battery.FieldCityID:
+		m.ClearCityID()
 		return nil
 	case battery.FieldRiderID:
 		m.ClearRiderID()
@@ -41624,8 +41643,9 @@ type ExchangeMutation struct {
 	finish_at         *time.Time
 	duration          *int
 	addduration       *int
-	before_battery    *string
-	after_battery     *string
+	rider_battery     *string
+	putin_battery     *string
+	putout_battery    *string
 	clearedFields     map[string]struct{}
 	subscribe         *uint64
 	clearedsubscribe  bool
@@ -42793,102 +42813,151 @@ func (m *ExchangeMutation) ResetDuration() {
 	delete(m.clearedFields, exchange.FieldDuration)
 }
 
-// SetBeforeBattery sets the "before_battery" field.
-func (m *ExchangeMutation) SetBeforeBattery(s string) {
-	m.before_battery = &s
+// SetRiderBattery sets the "rider_battery" field.
+func (m *ExchangeMutation) SetRiderBattery(s string) {
+	m.rider_battery = &s
 }
 
-// BeforeBattery returns the value of the "before_battery" field in the mutation.
-func (m *ExchangeMutation) BeforeBattery() (r string, exists bool) {
-	v := m.before_battery
+// RiderBattery returns the value of the "rider_battery" field in the mutation.
+func (m *ExchangeMutation) RiderBattery() (r string, exists bool) {
+	v := m.rider_battery
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldBeforeBattery returns the old "before_battery" field's value of the Exchange entity.
+// OldRiderBattery returns the old "rider_battery" field's value of the Exchange entity.
 // If the Exchange object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ExchangeMutation) OldBeforeBattery(ctx context.Context) (v *string, err error) {
+func (m *ExchangeMutation) OldRiderBattery(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBeforeBattery is only allowed on UpdateOne operations")
+		return v, errors.New("OldRiderBattery is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBeforeBattery requires an ID field in the mutation")
+		return v, errors.New("OldRiderBattery requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBeforeBattery: %w", err)
+		return v, fmt.Errorf("querying old value for OldRiderBattery: %w", err)
 	}
-	return oldValue.BeforeBattery, nil
+	return oldValue.RiderBattery, nil
 }
 
-// ClearBeforeBattery clears the value of the "before_battery" field.
-func (m *ExchangeMutation) ClearBeforeBattery() {
-	m.before_battery = nil
-	m.clearedFields[exchange.FieldBeforeBattery] = struct{}{}
+// ClearRiderBattery clears the value of the "rider_battery" field.
+func (m *ExchangeMutation) ClearRiderBattery() {
+	m.rider_battery = nil
+	m.clearedFields[exchange.FieldRiderBattery] = struct{}{}
 }
 
-// BeforeBatteryCleared returns if the "before_battery" field was cleared in this mutation.
-func (m *ExchangeMutation) BeforeBatteryCleared() bool {
-	_, ok := m.clearedFields[exchange.FieldBeforeBattery]
+// RiderBatteryCleared returns if the "rider_battery" field was cleared in this mutation.
+func (m *ExchangeMutation) RiderBatteryCleared() bool {
+	_, ok := m.clearedFields[exchange.FieldRiderBattery]
 	return ok
 }
 
-// ResetBeforeBattery resets all changes to the "before_battery" field.
-func (m *ExchangeMutation) ResetBeforeBattery() {
-	m.before_battery = nil
-	delete(m.clearedFields, exchange.FieldBeforeBattery)
+// ResetRiderBattery resets all changes to the "rider_battery" field.
+func (m *ExchangeMutation) ResetRiderBattery() {
+	m.rider_battery = nil
+	delete(m.clearedFields, exchange.FieldRiderBattery)
 }
 
-// SetAfterBattery sets the "after_battery" field.
-func (m *ExchangeMutation) SetAfterBattery(s string) {
-	m.after_battery = &s
+// SetPutinBattery sets the "putin_battery" field.
+func (m *ExchangeMutation) SetPutinBattery(s string) {
+	m.putin_battery = &s
 }
 
-// AfterBattery returns the value of the "after_battery" field in the mutation.
-func (m *ExchangeMutation) AfterBattery() (r string, exists bool) {
-	v := m.after_battery
+// PutinBattery returns the value of the "putin_battery" field in the mutation.
+func (m *ExchangeMutation) PutinBattery() (r string, exists bool) {
+	v := m.putin_battery
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldAfterBattery returns the old "after_battery" field's value of the Exchange entity.
+// OldPutinBattery returns the old "putin_battery" field's value of the Exchange entity.
 // If the Exchange object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ExchangeMutation) OldAfterBattery(ctx context.Context) (v *string, err error) {
+func (m *ExchangeMutation) OldPutinBattery(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAfterBattery is only allowed on UpdateOne operations")
+		return v, errors.New("OldPutinBattery is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAfterBattery requires an ID field in the mutation")
+		return v, errors.New("OldPutinBattery requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAfterBattery: %w", err)
+		return v, fmt.Errorf("querying old value for OldPutinBattery: %w", err)
 	}
-	return oldValue.AfterBattery, nil
+	return oldValue.PutinBattery, nil
 }
 
-// ClearAfterBattery clears the value of the "after_battery" field.
-func (m *ExchangeMutation) ClearAfterBattery() {
-	m.after_battery = nil
-	m.clearedFields[exchange.FieldAfterBattery] = struct{}{}
+// ClearPutinBattery clears the value of the "putin_battery" field.
+func (m *ExchangeMutation) ClearPutinBattery() {
+	m.putin_battery = nil
+	m.clearedFields[exchange.FieldPutinBattery] = struct{}{}
 }
 
-// AfterBatteryCleared returns if the "after_battery" field was cleared in this mutation.
-func (m *ExchangeMutation) AfterBatteryCleared() bool {
-	_, ok := m.clearedFields[exchange.FieldAfterBattery]
+// PutinBatteryCleared returns if the "putin_battery" field was cleared in this mutation.
+func (m *ExchangeMutation) PutinBatteryCleared() bool {
+	_, ok := m.clearedFields[exchange.FieldPutinBattery]
 	return ok
 }
 
-// ResetAfterBattery resets all changes to the "after_battery" field.
-func (m *ExchangeMutation) ResetAfterBattery() {
-	m.after_battery = nil
-	delete(m.clearedFields, exchange.FieldAfterBattery)
+// ResetPutinBattery resets all changes to the "putin_battery" field.
+func (m *ExchangeMutation) ResetPutinBattery() {
+	m.putin_battery = nil
+	delete(m.clearedFields, exchange.FieldPutinBattery)
+}
+
+// SetPutoutBattery sets the "putout_battery" field.
+func (m *ExchangeMutation) SetPutoutBattery(s string) {
+	m.putout_battery = &s
+}
+
+// PutoutBattery returns the value of the "putout_battery" field in the mutation.
+func (m *ExchangeMutation) PutoutBattery() (r string, exists bool) {
+	v := m.putout_battery
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPutoutBattery returns the old "putout_battery" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldPutoutBattery(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPutoutBattery is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPutoutBattery requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPutoutBattery: %w", err)
+	}
+	return oldValue.PutoutBattery, nil
+}
+
+// ClearPutoutBattery clears the value of the "putout_battery" field.
+func (m *ExchangeMutation) ClearPutoutBattery() {
+	m.putout_battery = nil
+	m.clearedFields[exchange.FieldPutoutBattery] = struct{}{}
+}
+
+// PutoutBatteryCleared returns if the "putout_battery" field was cleared in this mutation.
+func (m *ExchangeMutation) PutoutBatteryCleared() bool {
+	_, ok := m.clearedFields[exchange.FieldPutoutBattery]
+	return ok
+}
+
+// ResetPutoutBattery resets all changes to the "putout_battery" field.
+func (m *ExchangeMutation) ResetPutoutBattery() {
+	m.putout_battery = nil
+	delete(m.clearedFields, exchange.FieldPutoutBattery)
 }
 
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
@@ -43133,7 +43202,7 @@ func (m *ExchangeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ExchangeMutation) Fields() []string {
-	fields := make([]string, 0, 25)
+	fields := make([]string, 0, 26)
 	if m.created_at != nil {
 		fields = append(fields, exchange.FieldCreatedAt)
 	}
@@ -43203,11 +43272,14 @@ func (m *ExchangeMutation) Fields() []string {
 	if m.duration != nil {
 		fields = append(fields, exchange.FieldDuration)
 	}
-	if m.before_battery != nil {
-		fields = append(fields, exchange.FieldBeforeBattery)
+	if m.rider_battery != nil {
+		fields = append(fields, exchange.FieldRiderBattery)
 	}
-	if m.after_battery != nil {
-		fields = append(fields, exchange.FieldAfterBattery)
+	if m.putin_battery != nil {
+		fields = append(fields, exchange.FieldPutinBattery)
+	}
+	if m.putout_battery != nil {
+		fields = append(fields, exchange.FieldPutoutBattery)
 	}
 	return fields
 }
@@ -43263,10 +43335,12 @@ func (m *ExchangeMutation) Field(name string) (ent.Value, bool) {
 		return m.FinishAt()
 	case exchange.FieldDuration:
 		return m.Duration()
-	case exchange.FieldBeforeBattery:
-		return m.BeforeBattery()
-	case exchange.FieldAfterBattery:
-		return m.AfterBattery()
+	case exchange.FieldRiderBattery:
+		return m.RiderBattery()
+	case exchange.FieldPutinBattery:
+		return m.PutinBattery()
+	case exchange.FieldPutoutBattery:
+		return m.PutoutBattery()
 	}
 	return nil, false
 }
@@ -43322,10 +43396,12 @@ func (m *ExchangeMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldFinishAt(ctx)
 	case exchange.FieldDuration:
 		return m.OldDuration(ctx)
-	case exchange.FieldBeforeBattery:
-		return m.OldBeforeBattery(ctx)
-	case exchange.FieldAfterBattery:
-		return m.OldAfterBattery(ctx)
+	case exchange.FieldRiderBattery:
+		return m.OldRiderBattery(ctx)
+	case exchange.FieldPutinBattery:
+		return m.OldPutinBattery(ctx)
+	case exchange.FieldPutoutBattery:
+		return m.OldPutoutBattery(ctx)
 	}
 	return nil, fmt.Errorf("unknown Exchange field %s", name)
 }
@@ -43496,19 +43572,26 @@ func (m *ExchangeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDuration(v)
 		return nil
-	case exchange.FieldBeforeBattery:
+	case exchange.FieldRiderBattery:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetBeforeBattery(v)
+		m.SetRiderBattery(v)
 		return nil
-	case exchange.FieldAfterBattery:
+	case exchange.FieldPutinBattery:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetAfterBattery(v)
+		m.SetPutinBattery(v)
+		return nil
+	case exchange.FieldPutoutBattery:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPutoutBattery(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Exchange field %s", name)
@@ -43597,11 +43680,14 @@ func (m *ExchangeMutation) ClearedFields() []string {
 	if m.FieldCleared(exchange.FieldDuration) {
 		fields = append(fields, exchange.FieldDuration)
 	}
-	if m.FieldCleared(exchange.FieldBeforeBattery) {
-		fields = append(fields, exchange.FieldBeforeBattery)
+	if m.FieldCleared(exchange.FieldRiderBattery) {
+		fields = append(fields, exchange.FieldRiderBattery)
 	}
-	if m.FieldCleared(exchange.FieldAfterBattery) {
-		fields = append(fields, exchange.FieldAfterBattery)
+	if m.FieldCleared(exchange.FieldPutinBattery) {
+		fields = append(fields, exchange.FieldPutinBattery)
+	}
+	if m.FieldCleared(exchange.FieldPutoutBattery) {
+		fields = append(fields, exchange.FieldPutoutBattery)
 	}
 	return fields
 }
@@ -43659,11 +43745,14 @@ func (m *ExchangeMutation) ClearField(name string) error {
 	case exchange.FieldDuration:
 		m.ClearDuration()
 		return nil
-	case exchange.FieldBeforeBattery:
-		m.ClearBeforeBattery()
+	case exchange.FieldRiderBattery:
+		m.ClearRiderBattery()
 		return nil
-	case exchange.FieldAfterBattery:
-		m.ClearAfterBattery()
+	case exchange.FieldPutinBattery:
+		m.ClearPutinBattery()
+		return nil
+	case exchange.FieldPutoutBattery:
+		m.ClearPutoutBattery()
 		return nil
 	}
 	return fmt.Errorf("unknown Exchange nullable field %s", name)
@@ -43742,11 +43831,14 @@ func (m *ExchangeMutation) ResetField(name string) error {
 	case exchange.FieldDuration:
 		m.ResetDuration()
 		return nil
-	case exchange.FieldBeforeBattery:
-		m.ResetBeforeBattery()
+	case exchange.FieldRiderBattery:
+		m.ResetRiderBattery()
 		return nil
-	case exchange.FieldAfterBattery:
-		m.ResetAfterBattery()
+	case exchange.FieldPutinBattery:
+		m.ResetPutinBattery()
+		return nil
+	case exchange.FieldPutoutBattery:
+		m.ResetPutoutBattery()
 		return nil
 	}
 	return fmt.Errorf("unknown Exchange field %s", name)

@@ -28,6 +28,8 @@ func NewCabinetTask() *cabinetTask {
 func (t *cabinetTask) Start() {
     if ar.Config.Task.Cabinet {
         ticker := time.NewTicker(t.max)
+        defer ticker.Stop()
+
         for {
             select {
             case <-ticker.C:

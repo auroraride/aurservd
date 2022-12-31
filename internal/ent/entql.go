@@ -873,8 +873,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			exchange.FieldStartAt:       {Type: field.TypeTime, Column: exchange.FieldStartAt},
 			exchange.FieldFinishAt:      {Type: field.TypeTime, Column: exchange.FieldFinishAt},
 			exchange.FieldDuration:      {Type: field.TypeInt, Column: exchange.FieldDuration},
-			exchange.FieldBeforeBattery: {Type: field.TypeString, Column: exchange.FieldBeforeBattery},
-			exchange.FieldAfterBattery:  {Type: field.TypeString, Column: exchange.FieldAfterBattery},
+			exchange.FieldRiderBattery:  {Type: field.TypeString, Column: exchange.FieldRiderBattery},
+			exchange.FieldPutinBattery:  {Type: field.TypeString, Column: exchange.FieldPutinBattery},
+			exchange.FieldPutoutBattery: {Type: field.TypeString, Column: exchange.FieldPutoutBattery},
 		},
 	}
 	graph.Nodes[29] = &sqlgraph.Node{
@@ -8661,14 +8662,19 @@ func (f *ExchangeFilter) WhereDuration(p entql.IntP) {
 	f.Where(p.Field(exchange.FieldDuration))
 }
 
-// WhereBeforeBattery applies the entql string predicate on the before_battery field.
-func (f *ExchangeFilter) WhereBeforeBattery(p entql.StringP) {
-	f.Where(p.Field(exchange.FieldBeforeBattery))
+// WhereRiderBattery applies the entql string predicate on the rider_battery field.
+func (f *ExchangeFilter) WhereRiderBattery(p entql.StringP) {
+	f.Where(p.Field(exchange.FieldRiderBattery))
 }
 
-// WhereAfterBattery applies the entql string predicate on the after_battery field.
-func (f *ExchangeFilter) WhereAfterBattery(p entql.StringP) {
-	f.Where(p.Field(exchange.FieldAfterBattery))
+// WherePutinBattery applies the entql string predicate on the putin_battery field.
+func (f *ExchangeFilter) WherePutinBattery(p entql.StringP) {
+	f.Where(p.Field(exchange.FieldPutinBattery))
+}
+
+// WherePutoutBattery applies the entql string predicate on the putout_battery field.
+func (f *ExchangeFilter) WherePutoutBattery(p entql.StringP) {
+	f.Where(p.Field(exchange.FieldPutoutBattery))
 }
 
 // WhereHasSubscribe applies a predicate to check if query has an edge subscribe.

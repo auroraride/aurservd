@@ -100,6 +100,14 @@ func (bc *BatteryCreate) SetCityID(u uint64) *BatteryCreate {
 	return bc
 }
 
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (bc *BatteryCreate) SetNillableCityID(u *uint64) *BatteryCreate {
+	if u != nil {
+		bc.SetCityID(*u)
+	}
+	return bc
+}
+
 // SetRiderID sets the "rider_id" field.
 func (bc *BatteryCreate) SetRiderID(u uint64) *BatteryCreate {
 	bc.mutation.SetRiderID(u)
@@ -235,9 +243,6 @@ func (bc *BatteryCreate) check() error {
 	if _, ok := bc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Battery.updated_at"`)}
 	}
-	if _, ok := bc.mutation.CityID(); !ok {
-		return &ValidationError{Name: "city_id", err: errors.New(`ent: missing required field "Battery.city_id"`)}
-	}
 	if _, ok := bc.mutation.Sn(); !ok {
 		return &ValidationError{Name: "sn", err: errors.New(`ent: missing required field "Battery.sn"`)}
 	}
@@ -246,9 +251,6 @@ func (bc *BatteryCreate) check() error {
 	}
 	if _, ok := bc.mutation.Model(); !ok {
 		return &ValidationError{Name: "model", err: errors.New(`ent: missing required field "Battery.model"`)}
-	}
-	if _, ok := bc.mutation.CityID(); !ok {
-		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Battery.city"`)}
 	}
 	return nil
 }
@@ -336,7 +338,7 @@ func (bc *BatteryCreate) createSpec() (*Battery, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.CityID = nodes[0]
+		_node.CityID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := bc.mutation.RiderIDs(); len(nodes) > 0 {
@@ -506,6 +508,12 @@ func (u *BatteryUpsert) SetCityID(v uint64) *BatteryUpsert {
 // UpdateCityID sets the "city_id" field to the value that was provided on create.
 func (u *BatteryUpsert) UpdateCityID() *BatteryUpsert {
 	u.SetExcluded(battery.FieldCityID)
+	return u
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *BatteryUpsert) ClearCityID() *BatteryUpsert {
+	u.SetNull(battery.FieldCityID)
 	return u
 }
 
@@ -717,6 +725,13 @@ func (u *BatteryUpsertOne) SetCityID(v uint64) *BatteryUpsertOne {
 func (u *BatteryUpsertOne) UpdateCityID() *BatteryUpsertOne {
 	return u.Update(func(s *BatteryUpsert) {
 		s.UpdateCityID()
+	})
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *BatteryUpsertOne) ClearCityID() *BatteryUpsertOne {
+	return u.Update(func(s *BatteryUpsert) {
+		s.ClearCityID()
 	})
 }
 
@@ -1102,6 +1117,13 @@ func (u *BatteryUpsertBulk) SetCityID(v uint64) *BatteryUpsertBulk {
 func (u *BatteryUpsertBulk) UpdateCityID() *BatteryUpsertBulk {
 	return u.Update(func(s *BatteryUpsert) {
 		s.UpdateCityID()
+	})
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *BatteryUpsertBulk) ClearCityID() *BatteryUpsertBulk {
+	return u.Update(func(s *BatteryUpsert) {
+		s.ClearCityID()
 	})
 }
 

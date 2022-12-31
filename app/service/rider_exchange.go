@@ -184,12 +184,11 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     }
 
     var (
-        cab       *ent.Cabinet
-        info      model.RiderExchangeInfo
-        tcab      *ec.Cabinet
-        tex       *ec.Exchange
-        t         *ec.Task
-        batterySN *string
+        cab  *ent.Cabinet
+        info model.RiderExchangeInfo
+        tcab *ec.Cabinet
+        tex  *ec.Exchange
+        t    *ec.Task
     )
 
     // 尝试从缓存获取智能电柜换电信息
@@ -199,8 +198,6 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     if err == nil {
         cab = NewCabinet().QueryOneSerialX(info.Serial)
         NewIntelligentCabinet(s.rider).ExchangeCensorX(sub, cab)
-
-        batterySN = sub.BatterySn
 
         tex = &ec.Exchange{
             Model:       sub.Model,
@@ -278,7 +275,7 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         SetSubscribeID(s.subscribe.ID).
         SetAlternative(tex.Alternative).
         SetStartAt(time.Now()).
-        SetNillableBeforeBattery(batterySN).
+        SetNillableRiderBattery(sub.BatterySn).
         Save(s.ctx)
 
     if s.exchange == nil {
@@ -286,7 +283,7 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     }
 
     if cab.Intelligent {
-        go NewIntelligentCabinet(s.rider).Exchange(req.UUID, s.exchange, s.subscribe, s.cabinet)
+        go NewIntelligentCabinet(s.rider).Exchange(req.UUID, s.exchange, sub, cab)
     } else {
         // 开始任务
         t.Start(func(task *ec.Task) {

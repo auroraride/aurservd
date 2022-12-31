@@ -40,8 +40,9 @@ func (Exchange) Fields() []ent.Field {
         field.Time("start_at").Optional().Comment("换电开始时间"),
         field.Time("finish_at").Optional().Comment("换电结束时间"),
         field.Int("duration").Optional().Comment("换电耗时(s)"),
-        field.String("before_battery").Optional().Nillable().Comment("换电之前电池编号"),
-        field.String("after_battery").Optional().Nillable().Comment("换电之后电池编号"),
+        field.String("rider_battery").Optional().Nillable().Comment("骑手当前电池编号"),
+        field.String("putin_battery").Optional().Nillable().Comment("放入电池编号"),
+        field.String("putout_battery").Optional().Nillable().Comment("取出电池编号"),
     }
 }
 
@@ -76,7 +77,8 @@ func (Exchange) Indexes() []ent.Index {
         index.Fields("employee_id"),
         index.Fields("success"),
         index.Fields("model"),
-        index.Fields("before_battery"),
-        index.Fields("after_battery"),
+        index.Fields("rider_battery"),
+        index.Fields("putin_battery"),
+        index.Fields("putout_battery"),
     }
 }

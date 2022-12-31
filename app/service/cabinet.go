@@ -696,7 +696,7 @@ func (s *cabinetService) Sync(data *adapter.CabinetMessage) {
 
     var bins model.CabinetBins
 
-    if data.Full {
+    if !data.Full {
         bins = cab.Bin
     }
 
@@ -757,6 +757,10 @@ func (s *cabinetService) Sync(data *adapter.CabinetMessage) {
                         bins[i] = cb
                     }
                 }
+            }
+
+            if b.BatterySn != "" && cab.CityID != nil {
+                _, _ = NewBattery().PutinCabinet(b.BatterySn, cab)
             }
         }
 
