@@ -6,7 +6,7 @@
 package service
 
 import (
-    am "github.com/auroraride/adapter/model"
+    "github.com/auroraride/adapter"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/go-resty/resty/v2"
 )
@@ -28,13 +28,13 @@ func (s *adapterService) Request() *resty.Request {
 
     switch true {
     default:
-        snag.Panic("为找到用户信息")
+        snag.Panic("未找到用户信息")
     case s.rider != nil:
-        r.SetHeader(am.HeaderUserID, s.rider.Phone).SetHeader(am.HeaderUserType, am.UserTypeRider.String())
+        r.SetHeader(adapter.HeaderUserID, s.rider.Phone).SetHeader(adapter.HeaderUserType, adapter.UserTypeRider.String())
     case s.employee != nil:
-        r.SetHeader(am.HeaderUserID, s.employee.Phone).SetHeader(am.HeaderUserType, am.UserTypeEmployee.String())
+        r.SetHeader(adapter.HeaderUserID, s.employee.Phone).SetHeader(adapter.HeaderUserType, adapter.UserTypeEmployee.String())
     case s.modifier != nil:
-        r.SetHeader(am.HeaderUserID, s.modifier.Phone).SetHeader(am.HeaderUserType, am.UserTypeManager.String())
+        r.SetHeader(adapter.HeaderUserID, s.modifier.Phone).SetHeader(adapter.HeaderUserType, adapter.UserTypeManager.String())
     }
 
     return r

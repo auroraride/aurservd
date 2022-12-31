@@ -8795,6 +8795,22 @@ func (c *SubscribeClient) QueryEbike(s *Subscribe) *EbikeQuery {
 	return query
 }
 
+// QueryBattery queries the battery edge of a Subscribe.
+func (c *SubscribeClient) QueryBattery(s *Subscribe) *BatteryQuery {
+	query := (&BatteryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
+			sqlgraph.To(battery.Table, battery.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.BatteryTable, subscribe.BatteryColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryRider queries the rider edge of a Subscribe.
 func (c *SubscribeClient) QueryRider(s *Subscribe) *RiderQuery {
 	query := (&RiderClient{config: c.config}).Query()

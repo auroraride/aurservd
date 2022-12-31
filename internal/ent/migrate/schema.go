@@ -2152,6 +2152,8 @@ var (
 		{Name: "start_at", Type: field.TypeTime, Nullable: true, Comment: "换电开始时间"},
 		{Name: "finish_at", Type: field.TypeTime, Nullable: true, Comment: "换电结束时间"},
 		{Name: "duration", Type: field.TypeInt, Nullable: true, Comment: "换电耗时(s)"},
+		{Name: "before_battery", Type: field.TypeString, Nullable: true, Comment: "换电之前电池编号"},
+		{Name: "after_battery", Type: field.TypeString, Nullable: true, Comment: "换电之后电池编号"},
 		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "subscribe_id", Type: field.TypeUint64},
@@ -2169,49 +2171,49 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "exchange_cabinet_exchanges",
-				Columns:    []*schema.Column{ExchangeColumns[16]},
+				Columns:    []*schema.Column{ExchangeColumns[18]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "exchange_employee_exchanges",
-				Columns:    []*schema.Column{ExchangeColumns[17]},
+				Columns:    []*schema.Column{ExchangeColumns[19]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "exchange_subscribe_subscribe",
-				Columns:    []*schema.Column{ExchangeColumns[18]},
+				Columns:    []*schema.Column{ExchangeColumns[20]},
 				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "exchange_city_city",
-				Columns:    []*schema.Column{ExchangeColumns[19]},
+				Columns:    []*schema.Column{ExchangeColumns[21]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "exchange_store_store",
-				Columns:    []*schema.Column{ExchangeColumns[20]},
+				Columns:    []*schema.Column{ExchangeColumns[22]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "exchange_enterprise_enterprise",
-				Columns:    []*schema.Column{ExchangeColumns[21]},
+				Columns:    []*schema.Column{ExchangeColumns[23]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "exchange_enterprise_station_station",
-				Columns:    []*schema.Column{ExchangeColumns[22]},
+				Columns:    []*schema.Column{ExchangeColumns[24]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "exchange_rider_exchanges",
-				Columns:    []*schema.Column{ExchangeColumns[23]},
+				Columns:    []*schema.Column{ExchangeColumns[25]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -2230,42 +2232,42 @@ var (
 			{
 				Name:    "exchange_subscribe_id",
 				Unique:  false,
-				Columns: []*schema.Column{ExchangeColumns[18]},
+				Columns: []*schema.Column{ExchangeColumns[20]},
 			},
 			{
 				Name:    "exchange_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{ExchangeColumns[19]},
+				Columns: []*schema.Column{ExchangeColumns[21]},
 			},
 			{
 				Name:    "exchange_store_id",
 				Unique:  false,
-				Columns: []*schema.Column{ExchangeColumns[20]},
+				Columns: []*schema.Column{ExchangeColumns[22]},
 			},
 			{
 				Name:    "exchange_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{ExchangeColumns[21]},
+				Columns: []*schema.Column{ExchangeColumns[23]},
 			},
 			{
 				Name:    "exchange_station_id",
 				Unique:  false,
-				Columns: []*schema.Column{ExchangeColumns[22]},
+				Columns: []*schema.Column{ExchangeColumns[24]},
 			},
 			{
 				Name:    "exchange_cabinet_id",
 				Unique:  false,
-				Columns: []*schema.Column{ExchangeColumns[16]},
+				Columns: []*schema.Column{ExchangeColumns[18]},
 			},
 			{
 				Name:    "exchange_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{ExchangeColumns[23]},
+				Columns: []*schema.Column{ExchangeColumns[25]},
 			},
 			{
 				Name:    "exchange_employee_id",
 				Unique:  false,
-				Columns: []*schema.Column{ExchangeColumns[17]},
+				Columns: []*schema.Column{ExchangeColumns[19]},
 			},
 			{
 				Name:    "exchange_success",
@@ -2276,6 +2278,16 @@ var (
 				Name:    "exchange_model",
 				Unique:  false,
 				Columns: []*schema.Column{ExchangeColumns[11]},
+			},
+			{
+				Name:    "exchange_before_battery",
+				Unique:  false,
+				Columns: []*schema.Column{ExchangeColumns[16]},
+			},
+			{
+				Name:    "exchange_after_battery",
+				Unique:  false,
+				Columns: []*schema.Column{ExchangeColumns[17]},
 			},
 		},
 	}
@@ -3512,6 +3524,7 @@ var (
 		{Name: "formula", Type: field.TypeString, Nullable: true, Comment: "计算公式"},
 		{Name: "need_contract", Type: field.TypeBool, Comment: "是否需要签约", Default: false},
 		{Name: "intelligent", Type: field.TypeBool, Comment: "是否智能柜套餐", Default: false},
+		{Name: "battery_sn", Type: field.TypeString, Nullable: true, Comment: "智能电池编号"},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "rider_id", Type: field.TypeUint64},
 		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
@@ -3522,6 +3535,7 @@ var (
 		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "ebike_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "battery_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "initial_order_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// SubscribeTable holds the schema information for the "subscribe" table.
@@ -3532,67 +3546,73 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "subscribe_enterprise_subscribes",
-				Columns:    []*schema.Column{SubscribeColumns[29]},
+				Columns:    []*schema.Column{SubscribeColumns[30]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_rider_subscribes",
-				Columns:    []*schema.Column{SubscribeColumns[30]},
+				Columns:    []*schema.Column{SubscribeColumns[31]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "subscribe_plan_plan",
-				Columns:    []*schema.Column{SubscribeColumns[31]},
+				Columns:    []*schema.Column{SubscribeColumns[32]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_employee_employee",
-				Columns:    []*schema.Column{SubscribeColumns[32]},
+				Columns:    []*schema.Column{SubscribeColumns[33]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_city_city",
-				Columns:    []*schema.Column{SubscribeColumns[33]},
+				Columns:    []*schema.Column{SubscribeColumns[34]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "subscribe_enterprise_station_station",
-				Columns:    []*schema.Column{SubscribeColumns[34]},
+				Columns:    []*schema.Column{SubscribeColumns[35]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_store_store",
-				Columns:    []*schema.Column{SubscribeColumns[35]},
+				Columns:    []*schema.Column{SubscribeColumns[36]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_cabinet_cabinet",
-				Columns:    []*schema.Column{SubscribeColumns[36]},
+				Columns:    []*schema.Column{SubscribeColumns[37]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_ebike_brand_brand",
-				Columns:    []*schema.Column{SubscribeColumns[37]},
+				Columns:    []*schema.Column{SubscribeColumns[38]},
 				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_ebike_ebike",
-				Columns:    []*schema.Column{SubscribeColumns[38]},
+				Columns:    []*schema.Column{SubscribeColumns[39]},
 				RefColumns: []*schema.Column{EbikeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
+				Symbol:     "subscribe_battery_battery",
+				Columns:    []*schema.Column{SubscribeColumns[40]},
+				RefColumns: []*schema.Column{BatteryColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
 				Symbol:     "subscribe_order_initial_order",
-				Columns:    []*schema.Column{SubscribeColumns[39]},
+				Columns:    []*schema.Column{SubscribeColumns[41]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -3611,52 +3631,57 @@ var (
 			{
 				Name:    "subscribe_plan_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[31]},
+				Columns: []*schema.Column{SubscribeColumns[32]},
 			},
 			{
 				Name:    "subscribe_employee_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[32]},
+				Columns: []*schema.Column{SubscribeColumns[33]},
 			},
 			{
 				Name:    "subscribe_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[33]},
+				Columns: []*schema.Column{SubscribeColumns[34]},
 			},
 			{
 				Name:    "subscribe_station_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[34]},
+				Columns: []*schema.Column{SubscribeColumns[35]},
 			},
 			{
 				Name:    "subscribe_store_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[35]},
+				Columns: []*schema.Column{SubscribeColumns[36]},
 			},
 			{
 				Name:    "subscribe_cabinet_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[36]},
+				Columns: []*schema.Column{SubscribeColumns[37]},
 			},
 			{
 				Name:    "subscribe_brand_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[37]},
+				Columns: []*schema.Column{SubscribeColumns[38]},
 			},
 			{
 				Name:    "subscribe_ebike_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[38]},
+				Columns: []*schema.Column{SubscribeColumns[39]},
+			},
+			{
+				Name:    "subscribe_battery_id",
+				Unique:  false,
+				Columns: []*schema.Column{SubscribeColumns[40]},
 			},
 			{
 				Name:    "subscribe_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[30]},
+				Columns: []*schema.Column{SubscribeColumns[31]},
 			},
 			{
 				Name:    "subscribe_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[29]},
+				Columns: []*schema.Column{SubscribeColumns[30]},
 			},
 			{
 				Name:    "subscribe_paused_at",
@@ -4458,7 +4483,8 @@ func init() {
 	SubscribeTable.ForeignKeys[7].RefTable = CabinetTable
 	SubscribeTable.ForeignKeys[8].RefTable = EbikeBrandTable
 	SubscribeTable.ForeignKeys[9].RefTable = EbikeTable
-	SubscribeTable.ForeignKeys[10].RefTable = OrderTable
+	SubscribeTable.ForeignKeys[10].RefTable = BatteryTable
+	SubscribeTable.ForeignKeys[11].RefTable = OrderTable
 	SubscribeTable.Annotation = &entsql.Annotation{
 		Table: "subscribe",
 	}

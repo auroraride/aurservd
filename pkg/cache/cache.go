@@ -24,6 +24,12 @@ var (
     HGet    func(ctx context.Context, key, field string) *redis.StringCmd
     HGetAll func(ctx context.Context, key string) *redis.StringStringMapCmd
 
+    Rpush func(ctx context.Context, key string, values ...interface{}) *redis.IntCmd
+    BRPop func(ctx context.Context, timeout time.Duration, keys ...string) *redis.StringSliceCmd
+
+    Lpush func(ctx context.Context, key string, values ...interface{}) *redis.IntCmd
+    BLPop func(ctx context.Context, timeout time.Duration, keys ...string) *redis.StringSliceCmd
+
     Expire func(ctx context.Context, key string, expiration time.Duration) *redis.BoolCmd
 
     TTL func(ctx context.Context, key string) *redis.DurationCmd
@@ -44,6 +50,12 @@ func CreateClient(addr, password string, db int) {
     HDel = client.HDel
     HGet = client.HGet
     HGetAll = client.HGetAll
+
+    Rpush = client.RPush
+    BRPop = client.BRPop
+
+    Lpush = client.LPush
+    BLPop = client.BLPop
 
     Expire = client.Expire
 

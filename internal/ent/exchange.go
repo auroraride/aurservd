@@ -73,6 +73,10 @@ type Exchange struct {
 	FinishAt time.Time `json:"finish_at,omitempty"`
 	// 换电耗时(s)
 	Duration int `json:"duration,omitempty"`
+	// 换电之前电池编号
+	BeforeBattery *string `json:"before_battery,omitempty"`
+	// 换电之后电池编号
+	AfterBattery *string `json:"after_battery,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ExchangeQuery when eager-loading is set.
 	Edges ExchangeEdges `json:"edges"`
@@ -216,7 +220,7 @@ func (*Exchange) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case exchange.FieldID, exchange.FieldSubscribeID, exchange.FieldCityID, exchange.FieldStoreID, exchange.FieldEnterpriseID, exchange.FieldStationID, exchange.FieldRiderID, exchange.FieldEmployeeID, exchange.FieldCabinetID, exchange.FieldDuration:
 			values[i] = new(sql.NullInt64)
-		case exchange.FieldRemark, exchange.FieldUUID, exchange.FieldModel:
+		case exchange.FieldRemark, exchange.FieldUUID, exchange.FieldModel, exchange.FieldBeforeBattery, exchange.FieldAfterBattery:
 			values[i] = new(sql.NullString)
 		case exchange.FieldCreatedAt, exchange.FieldUpdatedAt, exchange.FieldDeletedAt, exchange.FieldStartAt, exchange.FieldFinishAt:
 			values[i] = new(sql.NullTime)
@@ -392,6 +396,20 @@ func (e *Exchange) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.Duration = int(value.Int64)
 			}
+		case exchange.FieldBeforeBattery:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field before_battery", values[i])
+			} else if value.Valid {
+				e.BeforeBattery = new(string)
+				*e.BeforeBattery = value.String
+			}
+		case exchange.FieldAfterBattery:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field after_battery", values[i])
+			} else if value.Valid {
+				e.AfterBattery = new(string)
+				*e.AfterBattery = value.String
+			}
 		}
 	}
 	return nil
@@ -538,6 +556,16 @@ func (e *Exchange) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("duration=")
 	builder.WriteString(fmt.Sprintf("%v", e.Duration))
+	builder.WriteString(", ")
+	if v := e.BeforeBattery; v != nil {
+		builder.WriteString("before_battery=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := e.AfterBattery; v != nil {
+		builder.WriteString("after_battery=")
+		builder.WriteString(*v)
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -283,6 +283,34 @@ func (ec *ExchangeCreate) SetNillableDuration(i *int) *ExchangeCreate {
 	return ec
 }
 
+// SetBeforeBattery sets the "before_battery" field.
+func (ec *ExchangeCreate) SetBeforeBattery(s string) *ExchangeCreate {
+	ec.mutation.SetBeforeBattery(s)
+	return ec
+}
+
+// SetNillableBeforeBattery sets the "before_battery" field if the given value is not nil.
+func (ec *ExchangeCreate) SetNillableBeforeBattery(s *string) *ExchangeCreate {
+	if s != nil {
+		ec.SetBeforeBattery(*s)
+	}
+	return ec
+}
+
+// SetAfterBattery sets the "after_battery" field.
+func (ec *ExchangeCreate) SetAfterBattery(s string) *ExchangeCreate {
+	ec.mutation.SetAfterBattery(s)
+	return ec
+}
+
+// SetNillableAfterBattery sets the "after_battery" field if the given value is not nil.
+func (ec *ExchangeCreate) SetNillableAfterBattery(s *string) *ExchangeCreate {
+	if s != nil {
+		ec.SetAfterBattery(*s)
+	}
+	return ec
+}
+
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (ec *ExchangeCreate) SetSubscribe(s *Subscribe) *ExchangeCreate {
 	return ec.SetSubscribeID(s.ID)
@@ -515,6 +543,14 @@ func (ec *ExchangeCreate) createSpec() (*Exchange, *sqlgraph.CreateSpec) {
 	if value, ok := ec.mutation.Duration(); ok {
 		_spec.SetField(exchange.FieldDuration, field.TypeInt, value)
 		_node.Duration = value
+	}
+	if value, ok := ec.mutation.BeforeBattery(); ok {
+		_spec.SetField(exchange.FieldBeforeBattery, field.TypeString, value)
+		_node.BeforeBattery = &value
+	}
+	if value, ok := ec.mutation.AfterBattery(); ok {
+		_spec.SetField(exchange.FieldAfterBattery, field.TypeString, value)
+		_node.AfterBattery = &value
 	}
 	if nodes := ec.mutation.SubscribeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1064,6 +1100,42 @@ func (u *ExchangeUpsert) ClearDuration() *ExchangeUpsert {
 	return u
 }
 
+// SetBeforeBattery sets the "before_battery" field.
+func (u *ExchangeUpsert) SetBeforeBattery(v string) *ExchangeUpsert {
+	u.Set(exchange.FieldBeforeBattery, v)
+	return u
+}
+
+// UpdateBeforeBattery sets the "before_battery" field to the value that was provided on create.
+func (u *ExchangeUpsert) UpdateBeforeBattery() *ExchangeUpsert {
+	u.SetExcluded(exchange.FieldBeforeBattery)
+	return u
+}
+
+// ClearBeforeBattery clears the value of the "before_battery" field.
+func (u *ExchangeUpsert) ClearBeforeBattery() *ExchangeUpsert {
+	u.SetNull(exchange.FieldBeforeBattery)
+	return u
+}
+
+// SetAfterBattery sets the "after_battery" field.
+func (u *ExchangeUpsert) SetAfterBattery(v string) *ExchangeUpsert {
+	u.Set(exchange.FieldAfterBattery, v)
+	return u
+}
+
+// UpdateAfterBattery sets the "after_battery" field to the value that was provided on create.
+func (u *ExchangeUpsert) UpdateAfterBattery() *ExchangeUpsert {
+	u.SetExcluded(exchange.FieldAfterBattery)
+	return u
+}
+
+// ClearAfterBattery clears the value of the "after_battery" field.
+func (u *ExchangeUpsert) ClearAfterBattery() *ExchangeUpsert {
+	u.SetNull(exchange.FieldAfterBattery)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1501,6 +1573,48 @@ func (u *ExchangeUpsertOne) UpdateDuration() *ExchangeUpsertOne {
 func (u *ExchangeUpsertOne) ClearDuration() *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.ClearDuration()
+	})
+}
+
+// SetBeforeBattery sets the "before_battery" field.
+func (u *ExchangeUpsertOne) SetBeforeBattery(v string) *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetBeforeBattery(v)
+	})
+}
+
+// UpdateBeforeBattery sets the "before_battery" field to the value that was provided on create.
+func (u *ExchangeUpsertOne) UpdateBeforeBattery() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateBeforeBattery()
+	})
+}
+
+// ClearBeforeBattery clears the value of the "before_battery" field.
+func (u *ExchangeUpsertOne) ClearBeforeBattery() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearBeforeBattery()
+	})
+}
+
+// SetAfterBattery sets the "after_battery" field.
+func (u *ExchangeUpsertOne) SetAfterBattery(v string) *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetAfterBattery(v)
+	})
+}
+
+// UpdateAfterBattery sets the "after_battery" field to the value that was provided on create.
+func (u *ExchangeUpsertOne) UpdateAfterBattery() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateAfterBattery()
+	})
+}
+
+// ClearAfterBattery clears the value of the "after_battery" field.
+func (u *ExchangeUpsertOne) ClearAfterBattery() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearAfterBattery()
 	})
 }
 
@@ -2103,6 +2217,48 @@ func (u *ExchangeUpsertBulk) UpdateDuration() *ExchangeUpsertBulk {
 func (u *ExchangeUpsertBulk) ClearDuration() *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.ClearDuration()
+	})
+}
+
+// SetBeforeBattery sets the "before_battery" field.
+func (u *ExchangeUpsertBulk) SetBeforeBattery(v string) *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetBeforeBattery(v)
+	})
+}
+
+// UpdateBeforeBattery sets the "before_battery" field to the value that was provided on create.
+func (u *ExchangeUpsertBulk) UpdateBeforeBattery() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateBeforeBattery()
+	})
+}
+
+// ClearBeforeBattery clears the value of the "before_battery" field.
+func (u *ExchangeUpsertBulk) ClearBeforeBattery() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearBeforeBattery()
+	})
+}
+
+// SetAfterBattery sets the "after_battery" field.
+func (u *ExchangeUpsertBulk) SetAfterBattery(v string) *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetAfterBattery(v)
+	})
+}
+
+// UpdateAfterBattery sets the "after_battery" field to the value that was provided on create.
+func (u *ExchangeUpsertBulk) UpdateAfterBattery() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateAfterBattery()
+	})
+}
+
+// ClearAfterBattery clears the value of the "after_battery" field.
+func (u *ExchangeUpsertBulk) ClearAfterBattery() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearAfterBattery()
 	})
 }
 

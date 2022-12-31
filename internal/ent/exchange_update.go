@@ -354,6 +354,46 @@ func (eu *ExchangeUpdate) ClearDuration() *ExchangeUpdate {
 	return eu
 }
 
+// SetBeforeBattery sets the "before_battery" field.
+func (eu *ExchangeUpdate) SetBeforeBattery(s string) *ExchangeUpdate {
+	eu.mutation.SetBeforeBattery(s)
+	return eu
+}
+
+// SetNillableBeforeBattery sets the "before_battery" field if the given value is not nil.
+func (eu *ExchangeUpdate) SetNillableBeforeBattery(s *string) *ExchangeUpdate {
+	if s != nil {
+		eu.SetBeforeBattery(*s)
+	}
+	return eu
+}
+
+// ClearBeforeBattery clears the value of the "before_battery" field.
+func (eu *ExchangeUpdate) ClearBeforeBattery() *ExchangeUpdate {
+	eu.mutation.ClearBeforeBattery()
+	return eu
+}
+
+// SetAfterBattery sets the "after_battery" field.
+func (eu *ExchangeUpdate) SetAfterBattery(s string) *ExchangeUpdate {
+	eu.mutation.SetAfterBattery(s)
+	return eu
+}
+
+// SetNillableAfterBattery sets the "after_battery" field if the given value is not nil.
+func (eu *ExchangeUpdate) SetNillableAfterBattery(s *string) *ExchangeUpdate {
+	if s != nil {
+		eu.SetAfterBattery(*s)
+	}
+	return eu
+}
+
+// ClearAfterBattery clears the value of the "after_battery" field.
+func (eu *ExchangeUpdate) ClearAfterBattery() *ExchangeUpdate {
+	eu.mutation.ClearAfterBattery()
+	return eu
+}
+
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (eu *ExchangeUpdate) SetSubscribe(s *Subscribe) *ExchangeUpdate {
 	return eu.SetSubscribeID(s.ID)
@@ -603,6 +643,18 @@ func (eu *ExchangeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if eu.mutation.DurationCleared() {
 		_spec.ClearField(exchange.FieldDuration, field.TypeInt)
+	}
+	if value, ok := eu.mutation.BeforeBattery(); ok {
+		_spec.SetField(exchange.FieldBeforeBattery, field.TypeString, value)
+	}
+	if eu.mutation.BeforeBatteryCleared() {
+		_spec.ClearField(exchange.FieldBeforeBattery, field.TypeString)
+	}
+	if value, ok := eu.mutation.AfterBattery(); ok {
+		_spec.SetField(exchange.FieldAfterBattery, field.TypeString, value)
+	}
+	if eu.mutation.AfterBatteryCleared() {
+		_spec.ClearField(exchange.FieldAfterBattery, field.TypeString)
 	}
 	if eu.mutation.SubscribeCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1219,6 +1271,46 @@ func (euo *ExchangeUpdateOne) ClearDuration() *ExchangeUpdateOne {
 	return euo
 }
 
+// SetBeforeBattery sets the "before_battery" field.
+func (euo *ExchangeUpdateOne) SetBeforeBattery(s string) *ExchangeUpdateOne {
+	euo.mutation.SetBeforeBattery(s)
+	return euo
+}
+
+// SetNillableBeforeBattery sets the "before_battery" field if the given value is not nil.
+func (euo *ExchangeUpdateOne) SetNillableBeforeBattery(s *string) *ExchangeUpdateOne {
+	if s != nil {
+		euo.SetBeforeBattery(*s)
+	}
+	return euo
+}
+
+// ClearBeforeBattery clears the value of the "before_battery" field.
+func (euo *ExchangeUpdateOne) ClearBeforeBattery() *ExchangeUpdateOne {
+	euo.mutation.ClearBeforeBattery()
+	return euo
+}
+
+// SetAfterBattery sets the "after_battery" field.
+func (euo *ExchangeUpdateOne) SetAfterBattery(s string) *ExchangeUpdateOne {
+	euo.mutation.SetAfterBattery(s)
+	return euo
+}
+
+// SetNillableAfterBattery sets the "after_battery" field if the given value is not nil.
+func (euo *ExchangeUpdateOne) SetNillableAfterBattery(s *string) *ExchangeUpdateOne {
+	if s != nil {
+		euo.SetAfterBattery(*s)
+	}
+	return euo
+}
+
+// ClearAfterBattery clears the value of the "after_battery" field.
+func (euo *ExchangeUpdateOne) ClearAfterBattery() *ExchangeUpdateOne {
+	euo.mutation.ClearAfterBattery()
+	return euo
+}
+
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (euo *ExchangeUpdateOne) SetSubscribe(s *Subscribe) *ExchangeUpdateOne {
 	return euo.SetSubscribeID(s.ID)
@@ -1492,6 +1584,18 @@ func (euo *ExchangeUpdateOne) sqlSave(ctx context.Context) (_node *Exchange, err
 	}
 	if euo.mutation.DurationCleared() {
 		_spec.ClearField(exchange.FieldDuration, field.TypeInt)
+	}
+	if value, ok := euo.mutation.BeforeBattery(); ok {
+		_spec.SetField(exchange.FieldBeforeBattery, field.TypeString, value)
+	}
+	if euo.mutation.BeforeBatteryCleared() {
+		_spec.ClearField(exchange.FieldBeforeBattery, field.TypeString)
+	}
+	if value, ok := euo.mutation.AfterBattery(); ok {
+		_spec.SetField(exchange.FieldAfterBattery, field.TypeString, value)
+	}
+	if euo.mutation.AfterBatteryCleared() {
+		_spec.ClearField(exchange.FieldAfterBattery, field.TypeString)
 	}
 	if euo.mutation.SubscribeCleared() {
 		edge := &sqlgraph.EdgeSpec{

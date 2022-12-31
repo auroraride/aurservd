@@ -208,3 +208,27 @@ func (s *batteryService) List(req *model.BatteryListReq) *model.PaginationRes {
         return
     })
 }
+
+func (s *batteryService) QuerySn(sn string) (bat *ent.Battery, err error) {
+    return s.orm.Query().Where(battery.Sn(sn)).First(s.ctx)
+}
+
+// LoadOrCreate 查找或创建电池
+func (s *batteryService) LoadOrCreate(sn, m string, cityID uint64) (bat *ent.Battery, err error) {
+    bat, _ = s.orm.Query().Where(battery.Sn(sn)).First(s.ctx)
+    if bat != nil {
+        return
+    }
+    return s.orm.Create().SetSn(sn).SetModel(m).SetCityID(cityID).Save(s.ctx)
+}
+
+// UpdateRider 更新骑手
+func (s *batteryService) UpdateRider(sn string, riderID uint64) error {
+    updater := s.orm.Update().Where(battery.Sn(sn))
+    if riderID == 0 {
+        updater.ClearRiderID()
+    } else {
+        updater.SetRiderID(riderID)
+    }
+    return updater.Exec(s.ctx)
+}

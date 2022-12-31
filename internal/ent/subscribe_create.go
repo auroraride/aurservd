@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
@@ -206,6 +207,20 @@ func (sc *SubscribeCreate) SetEbikeID(u uint64) *SubscribeCreate {
 func (sc *SubscribeCreate) SetNillableEbikeID(u *uint64) *SubscribeCreate {
 	if u != nil {
 		sc.SetEbikeID(*u)
+	}
+	return sc
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (sc *SubscribeCreate) SetBatteryID(u uint64) *SubscribeCreate {
+	sc.mutation.SetBatteryID(u)
+	return sc
+}
+
+// SetNillableBatteryID sets the "battery_id" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableBatteryID(u *uint64) *SubscribeCreate {
+	if u != nil {
+		sc.SetBatteryID(*u)
 	}
 	return sc
 }
@@ -544,6 +559,20 @@ func (sc *SubscribeCreate) SetNillableIntelligent(b *bool) *SubscribeCreate {
 	return sc
 }
 
+// SetBatterySn sets the "battery_sn" field.
+func (sc *SubscribeCreate) SetBatterySn(s string) *SubscribeCreate {
+	sc.mutation.SetBatterySn(s)
+	return sc
+}
+
+// SetNillableBatterySn sets the "battery_sn" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableBatterySn(s *string) *SubscribeCreate {
+	if s != nil {
+		sc.SetBatterySn(*s)
+	}
+	return sc
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (sc *SubscribeCreate) SetPlan(p *Plan) *SubscribeCreate {
 	return sc.SetPlanID(p.ID)
@@ -582,6 +611,11 @@ func (sc *SubscribeCreate) SetBrand(e *EbikeBrand) *SubscribeCreate {
 // SetEbike sets the "ebike" edge to the Ebike entity.
 func (sc *SubscribeCreate) SetEbike(e *Ebike) *SubscribeCreate {
 	return sc.SetEbikeID(e.ID)
+}
+
+// SetBattery sets the "battery" edge to the Battery entity.
+func (sc *SubscribeCreate) SetBattery(b *Battery) *SubscribeCreate {
+	return sc.SetBatteryID(b.ID)
 }
 
 // SetRider sets the "rider" edge to the Rider entity.
@@ -973,6 +1007,10 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 		_spec.SetField(subscribe.FieldIntelligent, field.TypeBool, value)
 		_node.Intelligent = value
 	}
+	if value, ok := sc.mutation.BatterySn(); ok {
+		_spec.SetField(subscribe.FieldBatterySn, field.TypeString, value)
+		_node.BatterySn = &value
+	}
 	if nodes := sc.mutation.PlanIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1131,6 +1169,26 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.EbikeID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.BatteryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.BatteryTable,
+			Columns: []string{subscribe.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: battery.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.BatteryID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := sc.mutation.RiderIDs(); len(nodes) > 0 {
@@ -1544,6 +1602,24 @@ func (u *SubscribeUpsert) ClearEbikeID() *SubscribeUpsert {
 	return u
 }
 
+// SetBatteryID sets the "battery_id" field.
+func (u *SubscribeUpsert) SetBatteryID(v uint64) *SubscribeUpsert {
+	u.Set(subscribe.FieldBatteryID, v)
+	return u
+}
+
+// UpdateBatteryID sets the "battery_id" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateBatteryID() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldBatteryID)
+	return u
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (u *SubscribeUpsert) ClearBatteryID() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldBatteryID)
+	return u
+}
+
 // SetRiderID sets the "rider_id" field.
 func (u *SubscribeUpsert) SetRiderID(v uint64) *SubscribeUpsert {
 	u.Set(subscribe.FieldRiderID, v)
@@ -1952,6 +2028,24 @@ func (u *SubscribeUpsert) UpdateIntelligent() *SubscribeUpsert {
 	return u
 }
 
+// SetBatterySn sets the "battery_sn" field.
+func (u *SubscribeUpsert) SetBatterySn(v string) *SubscribeUpsert {
+	u.Set(subscribe.FieldBatterySn, v)
+	return u
+}
+
+// UpdateBatterySn sets the "battery_sn" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateBatterySn() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldBatterySn)
+	return u
+}
+
+// ClearBatterySn clears the value of the "battery_sn" field.
+func (u *SubscribeUpsert) ClearBatterySn() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldBatterySn)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -2238,6 +2332,27 @@ func (u *SubscribeUpsertOne) UpdateEbikeID() *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) ClearEbikeID() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearEbikeID()
+	})
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (u *SubscribeUpsertOne) SetBatteryID(v uint64) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetBatteryID(v)
+	})
+}
+
+// UpdateBatteryID sets the "battery_id" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateBatteryID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateBatteryID()
+	})
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (u *SubscribeUpsertOne) ClearBatteryID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearBatteryID()
 	})
 }
 
@@ -2717,6 +2832,27 @@ func (u *SubscribeUpsertOne) UpdateIntelligent() *SubscribeUpsertOne {
 	})
 }
 
+// SetBatterySn sets the "battery_sn" field.
+func (u *SubscribeUpsertOne) SetBatterySn(v string) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetBatterySn(v)
+	})
+}
+
+// UpdateBatterySn sets the "battery_sn" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateBatterySn() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateBatterySn()
+	})
+}
+
+// ClearBatterySn clears the value of the "battery_sn" field.
+func (u *SubscribeUpsertOne) ClearBatterySn() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearBatterySn()
+	})
+}
+
 // Exec executes the query.
 func (u *SubscribeUpsertOne) Exec(ctx context.Context) error {
 	if len(u.create.conflict) == 0 {
@@ -3165,6 +3301,27 @@ func (u *SubscribeUpsertBulk) UpdateEbikeID() *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) ClearEbikeID() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearEbikeID()
+	})
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (u *SubscribeUpsertBulk) SetBatteryID(v uint64) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetBatteryID(v)
+	})
+}
+
+// UpdateBatteryID sets the "battery_id" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateBatteryID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateBatteryID()
+	})
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (u *SubscribeUpsertBulk) ClearBatteryID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearBatteryID()
 	})
 }
 
@@ -3641,6 +3798,27 @@ func (u *SubscribeUpsertBulk) SetIntelligent(v bool) *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) UpdateIntelligent() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.UpdateIntelligent()
+	})
+}
+
+// SetBatterySn sets the "battery_sn" field.
+func (u *SubscribeUpsertBulk) SetBatterySn(v string) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetBatterySn(v)
+	})
+}
+
+// UpdateBatterySn sets the "battery_sn" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateBatterySn() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateBatterySn()
+	})
+}
+
+// ClearBatterySn clears the value of the "battery_sn" field.
+func (u *SubscribeUpsertBulk) ClearBatterySn() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearBatterySn()
 	})
 }
 

@@ -8,19 +8,16 @@ package service
 import (
     "context"
     "fmt"
-    am "github.com/auroraride/adapter/model"
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/provider"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/exchange"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
-    "github.com/go-resty/resty/v2"
     log "github.com/sirupsen/logrus"
     "go.mongodb.org/mongo-driver/bson/primitive"
     "time"
@@ -37,15 +34,12 @@ type riderExchangeService struct {
     subscribe *ent.Subscribe
     exchange  *ent.Exchange
     task      *ec.Task
-
-    intelligentKey string
 }
 
 func NewRiderExchange(r *ent.Rider) *riderExchangeService {
     s := &riderExchangeService{
-        maxTime:        180 * time.Second,
-        rider:          r,
-        intelligentKey: "INTELLIGENT-CABINET-EXCHANGE",
+        maxTime: 180 * time.Second,
+        rider:   r,
     }
     s.ctx = context.WithValue(context.Background(), "rider", r)
     return s
@@ -80,12 +74,7 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
 
     // 判断设备是否智能设备
     if cab.Intelligent {
-        if !sub.Intelligent {
-            snag.Panic("套餐不匹配")
-        }
-        if cab.Status == model.CabinetStatusMaintenance.Value() {
-            snag.Panic("电柜开小差了, 请联系客服")
-        }
+        NewIntelligentCabinet(s.rider).ExchangeCheckX(sub, cab)
         uid, info = NewIntelligentCabinet(s.rider).ExchangeUsable(cab.Serial, model.CabinetBrand(cab.Brand))
     } else {
         // 更新一次电柜状态
@@ -163,7 +152,7 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
     }
 
     if cab.Intelligent {
-        cache.HSet(s.ctx, s.intelligentKey, uid, res)
+        cache.Set(s.ctx, uid, res, 10*time.Minute)
     }
 
     tools.NewLog().Infof("[换电信息:%s]\n%s\n", uid, res)
@@ -175,10 +164,6 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
 func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     // 是否有生效中套餐
     sub := NewSubscribe().RecentX(s.rider.ID)
-
-    if !sub.Intelligent {
-        snag.Panic("套餐不匹配")
-    }
 
     s.subscribe = sub
 
@@ -199,25 +184,24 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     }
 
     var (
-        cab  *ent.Cabinet
-        info model.RiderExchangeInfo
-        tcab *ec.Cabinet
-        tex  *ec.Exchange
-        t    *ec.Task
+        cab       *ent.Cabinet
+        info      model.RiderExchangeInfo
+        tcab      *ec.Cabinet
+        tex       *ec.Exchange
+        t         *ec.Task
+        batterySN *string
     )
 
     // 尝试从缓存获取智能电柜换电信息
-    err := cache.HGet(s.ctx, s.intelligentKey, req.UUID).Scan(&info)
+    err := cache.Get(s.ctx, req.UUID).Scan(&info)
 
     // 判断设备是否智能设备
     if err == nil {
-        cab = NewCabinet().QueryOne(info.ID)
-        if cab == nil {
-            snag.Panic("未找到电柜信息")
-        }
-        if cab.Status == model.CabinetStatusMaintenance.Value() {
-            snag.Panic("电柜开小差了, 请联系客服")
-        }
+        cab = NewCabinet().QueryOneSerialX(info.Serial)
+        NewIntelligentCabinet(s.rider).ExchangeCheckX(sub, cab)
+
+        batterySN = sub.BatterySn
+
         tex = &ec.Exchange{
             Model:       sub.Model,
             Alternative: info.Alternative != nil,
@@ -294,6 +278,7 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         SetSubscribeID(s.subscribe.ID).
         SetAlternative(tex.Alternative).
         SetStartAt(time.Now()).
+        SetNillableBeforeBattery(batterySN).
         Save(s.ctx)
 
     if s.exchange == nil {
@@ -301,18 +286,7 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     }
 
     if cab.Intelligent {
-        // TODO: 换电
-        var r *resty.Response
-        r, err = NewAdapter(ar.Config.Adapter.Kaixin.Api, s.rider).Post("/exchange/do", &am.ExchangeRequest{
-            UUID:    req.UUID,
-            Expires: 30,
-            TimeOut: 120,
-            Minsoc:  model.IntelligentBatteryFullSoc,
-        })
-        if err != nil {
-            snag.Panic(err)
-        }
-        fmt.Println(r)
+        go NewIntelligentCabinet(s.rider).Exchange(req.UUID, s.exchange)
     } else {
         // 开始任务
         t.Start(func(task *ec.Task) {
@@ -625,22 +599,37 @@ func (s *riderExchangeService) ProcessLog() bool {
 
 // GetProcessStatus 长轮询获取状态
 func (s *riderExchangeService) GetProcessStatus(req *model.RiderExchangeProcessStatusReq) (res *model.RiderExchangeProcessRes) {
+    info := new(model.RiderExchangeInfo)
+    // 尝试从缓存获取智能电柜换电信息
+    err := cache.Get(s.ctx, req.UUID).Scan(info)
+    if err == nil {
+        return NewIntelligentCabinet().ExchangeResult(req.UUID)
+    }
+
     start := time.Now()
+    var uid primitive.ObjectID
+    uid, err = primitive.ObjectIDFromHex(req.UUID)
+    if err != nil || uid.IsZero() {
+        snag.Panic("未找到换电操作")
+    }
+    ticker := time.NewTicker(1 * time.Second)
     for {
-        task := ec.QueryID(req.UUID)
-        if task == nil {
-            snag.Panic("未找到换电操作")
+        select {
+        case <-ticker.C:
+            task := ec.QueryID(uid)
+            if task == nil {
+                snag.Panic("未找到换电操作")
+            }
+            cs := task.Exchange.CurrentStep()
+            res = &model.RiderExchangeProcessRes{
+                Step:    uint8(cs.Step),
+                Status:  uint8(cs.Status),
+                Message: task.Message,
+                Stop:    task.StopAt != nil,
+            }
+            if cs.IsSuccess() || res.Stop || time.Now().Sub(start).Seconds() > 30 {
+                return
+            }
         }
-        cs := task.Exchange.CurrentStep()
-        res = &model.RiderExchangeProcessRes{
-            Step:    uint8(cs.Step),
-            Status:  uint8(cs.Status),
-            Message: task.Message,
-            Stop:    task.StopAt != nil,
-        }
-        if cs.IsSuccess() || res.Stop || time.Now().Sub(start).Seconds() > 30 {
-            return
-        }
-        time.Sleep(1 * time.Second)
     }
 }

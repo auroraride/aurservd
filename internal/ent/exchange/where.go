@@ -150,6 +150,16 @@ func Duration(v int) predicate.Exchange {
 	return predicate.Exchange(sql.FieldEQ(FieldDuration, v))
 }
 
+// BeforeBattery applies equality check predicate on the "before_battery" field. It's identical to BeforeBatteryEQ.
+func BeforeBattery(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldEQ(FieldBeforeBattery, v))
+}
+
+// AfterBattery applies equality check predicate on the "after_battery" field. It's identical to AfterBatteryEQ.
+func AfterBattery(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldEQ(FieldAfterBattery, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Exchange {
 	return predicate.Exchange(sql.FieldEQ(FieldCreatedAt, v))
@@ -903,6 +913,156 @@ func DurationIsNil() predicate.Exchange {
 // DurationNotNil applies the NotNil predicate on the "duration" field.
 func DurationNotNil() predicate.Exchange {
 	return predicate.Exchange(sql.FieldNotNull(FieldDuration))
+}
+
+// BeforeBatteryEQ applies the EQ predicate on the "before_battery" field.
+func BeforeBatteryEQ(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldEQ(FieldBeforeBattery, v))
+}
+
+// BeforeBatteryNEQ applies the NEQ predicate on the "before_battery" field.
+func BeforeBatteryNEQ(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldNEQ(FieldBeforeBattery, v))
+}
+
+// BeforeBatteryIn applies the In predicate on the "before_battery" field.
+func BeforeBatteryIn(vs ...string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldIn(FieldBeforeBattery, vs...))
+}
+
+// BeforeBatteryNotIn applies the NotIn predicate on the "before_battery" field.
+func BeforeBatteryNotIn(vs ...string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldNotIn(FieldBeforeBattery, vs...))
+}
+
+// BeforeBatteryGT applies the GT predicate on the "before_battery" field.
+func BeforeBatteryGT(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldGT(FieldBeforeBattery, v))
+}
+
+// BeforeBatteryGTE applies the GTE predicate on the "before_battery" field.
+func BeforeBatteryGTE(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldGTE(FieldBeforeBattery, v))
+}
+
+// BeforeBatteryLT applies the LT predicate on the "before_battery" field.
+func BeforeBatteryLT(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldLT(FieldBeforeBattery, v))
+}
+
+// BeforeBatteryLTE applies the LTE predicate on the "before_battery" field.
+func BeforeBatteryLTE(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldLTE(FieldBeforeBattery, v))
+}
+
+// BeforeBatteryContains applies the Contains predicate on the "before_battery" field.
+func BeforeBatteryContains(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldContains(FieldBeforeBattery, v))
+}
+
+// BeforeBatteryHasPrefix applies the HasPrefix predicate on the "before_battery" field.
+func BeforeBatteryHasPrefix(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldHasPrefix(FieldBeforeBattery, v))
+}
+
+// BeforeBatteryHasSuffix applies the HasSuffix predicate on the "before_battery" field.
+func BeforeBatteryHasSuffix(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldHasSuffix(FieldBeforeBattery, v))
+}
+
+// BeforeBatteryIsNil applies the IsNil predicate on the "before_battery" field.
+func BeforeBatteryIsNil() predicate.Exchange {
+	return predicate.Exchange(sql.FieldIsNull(FieldBeforeBattery))
+}
+
+// BeforeBatteryNotNil applies the NotNil predicate on the "before_battery" field.
+func BeforeBatteryNotNil() predicate.Exchange {
+	return predicate.Exchange(sql.FieldNotNull(FieldBeforeBattery))
+}
+
+// BeforeBatteryEqualFold applies the EqualFold predicate on the "before_battery" field.
+func BeforeBatteryEqualFold(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldEqualFold(FieldBeforeBattery, v))
+}
+
+// BeforeBatteryContainsFold applies the ContainsFold predicate on the "before_battery" field.
+func BeforeBatteryContainsFold(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldContainsFold(FieldBeforeBattery, v))
+}
+
+// AfterBatteryEQ applies the EQ predicate on the "after_battery" field.
+func AfterBatteryEQ(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldEQ(FieldAfterBattery, v))
+}
+
+// AfterBatteryNEQ applies the NEQ predicate on the "after_battery" field.
+func AfterBatteryNEQ(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldNEQ(FieldAfterBattery, v))
+}
+
+// AfterBatteryIn applies the In predicate on the "after_battery" field.
+func AfterBatteryIn(vs ...string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldIn(FieldAfterBattery, vs...))
+}
+
+// AfterBatteryNotIn applies the NotIn predicate on the "after_battery" field.
+func AfterBatteryNotIn(vs ...string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldNotIn(FieldAfterBattery, vs...))
+}
+
+// AfterBatteryGT applies the GT predicate on the "after_battery" field.
+func AfterBatteryGT(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldGT(FieldAfterBattery, v))
+}
+
+// AfterBatteryGTE applies the GTE predicate on the "after_battery" field.
+func AfterBatteryGTE(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldGTE(FieldAfterBattery, v))
+}
+
+// AfterBatteryLT applies the LT predicate on the "after_battery" field.
+func AfterBatteryLT(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldLT(FieldAfterBattery, v))
+}
+
+// AfterBatteryLTE applies the LTE predicate on the "after_battery" field.
+func AfterBatteryLTE(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldLTE(FieldAfterBattery, v))
+}
+
+// AfterBatteryContains applies the Contains predicate on the "after_battery" field.
+func AfterBatteryContains(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldContains(FieldAfterBattery, v))
+}
+
+// AfterBatteryHasPrefix applies the HasPrefix predicate on the "after_battery" field.
+func AfterBatteryHasPrefix(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldHasPrefix(FieldAfterBattery, v))
+}
+
+// AfterBatteryHasSuffix applies the HasSuffix predicate on the "after_battery" field.
+func AfterBatteryHasSuffix(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldHasSuffix(FieldAfterBattery, v))
+}
+
+// AfterBatteryIsNil applies the IsNil predicate on the "after_battery" field.
+func AfterBatteryIsNil() predicate.Exchange {
+	return predicate.Exchange(sql.FieldIsNull(FieldAfterBattery))
+}
+
+// AfterBatteryNotNil applies the NotNil predicate on the "after_battery" field.
+func AfterBatteryNotNil() predicate.Exchange {
+	return predicate.Exchange(sql.FieldNotNull(FieldAfterBattery))
+}
+
+// AfterBatteryEqualFold applies the EqualFold predicate on the "after_battery" field.
+func AfterBatteryEqualFold(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldEqualFold(FieldAfterBattery, v))
+}
+
+// AfterBatteryContainsFold applies the ContainsFold predicate on the "after_battery" field.
+func AfterBatteryContainsFold(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldContainsFold(FieldAfterBattery, v))
 }
 
 // HasSubscribe applies the HasEdge predicate on the "subscribe" edge.

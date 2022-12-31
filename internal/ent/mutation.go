@@ -41624,6 +41624,8 @@ type ExchangeMutation struct {
 	finish_at         *time.Time
 	duration          *int
 	addduration       *int
+	before_battery    *string
+	after_battery     *string
 	clearedFields     map[string]struct{}
 	subscribe         *uint64
 	clearedsubscribe  bool
@@ -42791,6 +42793,104 @@ func (m *ExchangeMutation) ResetDuration() {
 	delete(m.clearedFields, exchange.FieldDuration)
 }
 
+// SetBeforeBattery sets the "before_battery" field.
+func (m *ExchangeMutation) SetBeforeBattery(s string) {
+	m.before_battery = &s
+}
+
+// BeforeBattery returns the value of the "before_battery" field in the mutation.
+func (m *ExchangeMutation) BeforeBattery() (r string, exists bool) {
+	v := m.before_battery
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBeforeBattery returns the old "before_battery" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldBeforeBattery(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBeforeBattery is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBeforeBattery requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBeforeBattery: %w", err)
+	}
+	return oldValue.BeforeBattery, nil
+}
+
+// ClearBeforeBattery clears the value of the "before_battery" field.
+func (m *ExchangeMutation) ClearBeforeBattery() {
+	m.before_battery = nil
+	m.clearedFields[exchange.FieldBeforeBattery] = struct{}{}
+}
+
+// BeforeBatteryCleared returns if the "before_battery" field was cleared in this mutation.
+func (m *ExchangeMutation) BeforeBatteryCleared() bool {
+	_, ok := m.clearedFields[exchange.FieldBeforeBattery]
+	return ok
+}
+
+// ResetBeforeBattery resets all changes to the "before_battery" field.
+func (m *ExchangeMutation) ResetBeforeBattery() {
+	m.before_battery = nil
+	delete(m.clearedFields, exchange.FieldBeforeBattery)
+}
+
+// SetAfterBattery sets the "after_battery" field.
+func (m *ExchangeMutation) SetAfterBattery(s string) {
+	m.after_battery = &s
+}
+
+// AfterBattery returns the value of the "after_battery" field in the mutation.
+func (m *ExchangeMutation) AfterBattery() (r string, exists bool) {
+	v := m.after_battery
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAfterBattery returns the old "after_battery" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldAfterBattery(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAfterBattery is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAfterBattery requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAfterBattery: %w", err)
+	}
+	return oldValue.AfterBattery, nil
+}
+
+// ClearAfterBattery clears the value of the "after_battery" field.
+func (m *ExchangeMutation) ClearAfterBattery() {
+	m.after_battery = nil
+	m.clearedFields[exchange.FieldAfterBattery] = struct{}{}
+}
+
+// AfterBatteryCleared returns if the "after_battery" field was cleared in this mutation.
+func (m *ExchangeMutation) AfterBatteryCleared() bool {
+	_, ok := m.clearedFields[exchange.FieldAfterBattery]
+	return ok
+}
+
+// ResetAfterBattery resets all changes to the "after_battery" field.
+func (m *ExchangeMutation) ResetAfterBattery() {
+	m.after_battery = nil
+	delete(m.clearedFields, exchange.FieldAfterBattery)
+}
+
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *ExchangeMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
@@ -43033,7 +43133,7 @@ func (m *ExchangeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ExchangeMutation) Fields() []string {
-	fields := make([]string, 0, 23)
+	fields := make([]string, 0, 25)
 	if m.created_at != nil {
 		fields = append(fields, exchange.FieldCreatedAt)
 	}
@@ -43103,6 +43203,12 @@ func (m *ExchangeMutation) Fields() []string {
 	if m.duration != nil {
 		fields = append(fields, exchange.FieldDuration)
 	}
+	if m.before_battery != nil {
+		fields = append(fields, exchange.FieldBeforeBattery)
+	}
+	if m.after_battery != nil {
+		fields = append(fields, exchange.FieldAfterBattery)
+	}
 	return fields
 }
 
@@ -43157,6 +43263,10 @@ func (m *ExchangeMutation) Field(name string) (ent.Value, bool) {
 		return m.FinishAt()
 	case exchange.FieldDuration:
 		return m.Duration()
+	case exchange.FieldBeforeBattery:
+		return m.BeforeBattery()
+	case exchange.FieldAfterBattery:
+		return m.AfterBattery()
 	}
 	return nil, false
 }
@@ -43212,6 +43322,10 @@ func (m *ExchangeMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldFinishAt(ctx)
 	case exchange.FieldDuration:
 		return m.OldDuration(ctx)
+	case exchange.FieldBeforeBattery:
+		return m.OldBeforeBattery(ctx)
+	case exchange.FieldAfterBattery:
+		return m.OldAfterBattery(ctx)
 	}
 	return nil, fmt.Errorf("unknown Exchange field %s", name)
 }
@@ -43382,6 +43496,20 @@ func (m *ExchangeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDuration(v)
 		return nil
+	case exchange.FieldBeforeBattery:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBeforeBattery(v)
+		return nil
+	case exchange.FieldAfterBattery:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAfterBattery(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Exchange field %s", name)
 }
@@ -43469,6 +43597,12 @@ func (m *ExchangeMutation) ClearedFields() []string {
 	if m.FieldCleared(exchange.FieldDuration) {
 		fields = append(fields, exchange.FieldDuration)
 	}
+	if m.FieldCleared(exchange.FieldBeforeBattery) {
+		fields = append(fields, exchange.FieldBeforeBattery)
+	}
+	if m.FieldCleared(exchange.FieldAfterBattery) {
+		fields = append(fields, exchange.FieldAfterBattery)
+	}
 	return fields
 }
 
@@ -43524,6 +43658,12 @@ func (m *ExchangeMutation) ClearField(name string) error {
 		return nil
 	case exchange.FieldDuration:
 		m.ClearDuration()
+		return nil
+	case exchange.FieldBeforeBattery:
+		m.ClearBeforeBattery()
+		return nil
+	case exchange.FieldAfterBattery:
+		m.ClearAfterBattery()
 		return nil
 	}
 	return fmt.Errorf("unknown Exchange nullable field %s", name)
@@ -43601,6 +43741,12 @@ func (m *ExchangeMutation) ResetField(name string) error {
 		return nil
 	case exchange.FieldDuration:
 		m.ResetDuration()
+		return nil
+	case exchange.FieldBeforeBattery:
+		m.ResetBeforeBattery()
+		return nil
+	case exchange.FieldAfterBattery:
+		m.ResetAfterBattery()
 		return nil
 	}
 	return fmt.Errorf("unknown Exchange field %s", name)
@@ -66990,6 +67136,7 @@ type SubscribeMutation struct {
 	formula              *string
 	need_contract        *bool
 	intelligent          *bool
+	battery_sn           *string
 	clearedFields        map[string]struct{}
 	plan                 *uint64
 	clearedplan          bool
@@ -67007,6 +67154,8 @@ type SubscribeMutation struct {
 	clearedbrand         bool
 	ebike                *uint64
 	clearedebike         bool
+	battery              *uint64
+	clearedbattery       bool
 	rider                *uint64
 	clearedrider         bool
 	enterprise           *uint64
@@ -67776,6 +67925,55 @@ func (m *SubscribeMutation) EbikeIDCleared() bool {
 func (m *SubscribeMutation) ResetEbikeID() {
 	m.ebike = nil
 	delete(m.clearedFields, subscribe.FieldEbikeID)
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (m *SubscribeMutation) SetBatteryID(u uint64) {
+	m.battery = &u
+}
+
+// BatteryID returns the value of the "battery_id" field in the mutation.
+func (m *SubscribeMutation) BatteryID() (r uint64, exists bool) {
+	v := m.battery
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBatteryID returns the old "battery_id" field's value of the Subscribe entity.
+// If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeMutation) OldBatteryID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBatteryID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBatteryID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBatteryID: %w", err)
+	}
+	return oldValue.BatteryID, nil
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (m *SubscribeMutation) ClearBatteryID() {
+	m.battery = nil
+	m.clearedFields[subscribe.FieldBatteryID] = struct{}{}
+}
+
+// BatteryIDCleared returns if the "battery_id" field was cleared in this mutation.
+func (m *SubscribeMutation) BatteryIDCleared() bool {
+	_, ok := m.clearedFields[subscribe.FieldBatteryID]
+	return ok
+}
+
+// ResetBatteryID resets all changes to the "battery_id" field.
+func (m *SubscribeMutation) ResetBatteryID() {
+	m.battery = nil
+	delete(m.clearedFields, subscribe.FieldBatteryID)
 }
 
 // SetRiderID sets the "rider_id" field.
@@ -69015,6 +69213,55 @@ func (m *SubscribeMutation) ResetIntelligent() {
 	m.intelligent = nil
 }
 
+// SetBatterySn sets the "battery_sn" field.
+func (m *SubscribeMutation) SetBatterySn(s string) {
+	m.battery_sn = &s
+}
+
+// BatterySn returns the value of the "battery_sn" field in the mutation.
+func (m *SubscribeMutation) BatterySn() (r string, exists bool) {
+	v := m.battery_sn
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBatterySn returns the old "battery_sn" field's value of the Subscribe entity.
+// If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeMutation) OldBatterySn(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBatterySn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBatterySn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBatterySn: %w", err)
+	}
+	return oldValue.BatterySn, nil
+}
+
+// ClearBatterySn clears the value of the "battery_sn" field.
+func (m *SubscribeMutation) ClearBatterySn() {
+	m.battery_sn = nil
+	m.clearedFields[subscribe.FieldBatterySn] = struct{}{}
+}
+
+// BatterySnCleared returns if the "battery_sn" field was cleared in this mutation.
+func (m *SubscribeMutation) BatterySnCleared() bool {
+	_, ok := m.clearedFields[subscribe.FieldBatterySn]
+	return ok
+}
+
+// ResetBatterySn resets all changes to the "battery_sn" field.
+func (m *SubscribeMutation) ResetBatterySn() {
+	m.battery_sn = nil
+	delete(m.clearedFields, subscribe.FieldBatterySn)
+}
+
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *SubscribeMutation) ClearPlan() {
 	m.clearedplan = true
@@ -69221,6 +69468,32 @@ func (m *SubscribeMutation) EbikeIDs() (ids []uint64) {
 func (m *SubscribeMutation) ResetEbike() {
 	m.ebike = nil
 	m.clearedebike = false
+}
+
+// ClearBattery clears the "battery" edge to the Battery entity.
+func (m *SubscribeMutation) ClearBattery() {
+	m.clearedbattery = true
+}
+
+// BatteryCleared reports if the "battery" edge to the Battery entity was cleared.
+func (m *SubscribeMutation) BatteryCleared() bool {
+	return m.BatteryIDCleared() || m.clearedbattery
+}
+
+// BatteryIDs returns the "battery" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// BatteryID instead. It exists only for internal usage by the builders.
+func (m *SubscribeMutation) BatteryIDs() (ids []uint64) {
+	if id := m.battery; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetBattery resets all changes to the "battery" edge.
+func (m *SubscribeMutation) ResetBattery() {
+	m.battery = nil
+	m.clearedbattery = false
 }
 
 // ClearRider clears the "rider" edge to the Rider entity.
@@ -69605,7 +69878,7 @@ func (m *SubscribeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscribeMutation) Fields() []string {
-	fields := make([]string, 0, 39)
+	fields := make([]string, 0, 41)
 	if m.created_at != nil {
 		fields = append(fields, subscribe.FieldCreatedAt)
 	}
@@ -69647,6 +69920,9 @@ func (m *SubscribeMutation) Fields() []string {
 	}
 	if m.ebike != nil {
 		fields = append(fields, subscribe.FieldEbikeID)
+	}
+	if m.battery != nil {
+		fields = append(fields, subscribe.FieldBatteryID)
 	}
 	if m.rider != nil {
 		fields = append(fields, subscribe.FieldRiderID)
@@ -69723,6 +69999,9 @@ func (m *SubscribeMutation) Fields() []string {
 	if m.intelligent != nil {
 		fields = append(fields, subscribe.FieldIntelligent)
 	}
+	if m.battery_sn != nil {
+		fields = append(fields, subscribe.FieldBatterySn)
+	}
 	return fields
 }
 
@@ -69759,6 +70038,8 @@ func (m *SubscribeMutation) Field(name string) (ent.Value, bool) {
 		return m.BrandID()
 	case subscribe.FieldEbikeID:
 		return m.EbikeID()
+	case subscribe.FieldBatteryID:
+		return m.BatteryID()
 	case subscribe.FieldRiderID:
 		return m.RiderID()
 	case subscribe.FieldInitialOrderID:
@@ -69809,6 +70090,8 @@ func (m *SubscribeMutation) Field(name string) (ent.Value, bool) {
 		return m.NeedContract()
 	case subscribe.FieldIntelligent:
 		return m.Intelligent()
+	case subscribe.FieldBatterySn:
+		return m.BatterySn()
 	}
 	return nil, false
 }
@@ -69846,6 +70129,8 @@ func (m *SubscribeMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldBrandID(ctx)
 	case subscribe.FieldEbikeID:
 		return m.OldEbikeID(ctx)
+	case subscribe.FieldBatteryID:
+		return m.OldBatteryID(ctx)
 	case subscribe.FieldRiderID:
 		return m.OldRiderID(ctx)
 	case subscribe.FieldInitialOrderID:
@@ -69896,6 +70181,8 @@ func (m *SubscribeMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldNeedContract(ctx)
 	case subscribe.FieldIntelligent:
 		return m.OldIntelligent(ctx)
+	case subscribe.FieldBatterySn:
+		return m.OldBatterySn(ctx)
 	}
 	return nil, fmt.Errorf("unknown Subscribe field %s", name)
 }
@@ -70002,6 +70289,13 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEbikeID(v)
+		return nil
+	case subscribe.FieldBatteryID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBatteryID(v)
 		return nil
 	case subscribe.FieldRiderID:
 		v, ok := value.(uint64)
@@ -70178,6 +70472,13 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetIntelligent(v)
 		return nil
+	case subscribe.FieldBatterySn:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBatterySn(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Subscribe field %s", name)
 }
@@ -70352,6 +70653,9 @@ func (m *SubscribeMutation) ClearedFields() []string {
 	if m.FieldCleared(subscribe.FieldEbikeID) {
 		fields = append(fields, subscribe.FieldEbikeID)
 	}
+	if m.FieldCleared(subscribe.FieldBatteryID) {
+		fields = append(fields, subscribe.FieldBatteryID)
+	}
 	if m.FieldCleared(subscribe.FieldInitialOrderID) {
 		fields = append(fields, subscribe.FieldInitialOrderID)
 	}
@@ -70387,6 +70691,9 @@ func (m *SubscribeMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(subscribe.FieldFormula) {
 		fields = append(fields, subscribe.FieldFormula)
+	}
+	if m.FieldCleared(subscribe.FieldBatterySn) {
+		fields = append(fields, subscribe.FieldBatterySn)
 	}
 	return fields
 }
@@ -70435,6 +70742,9 @@ func (m *SubscribeMutation) ClearField(name string) error {
 	case subscribe.FieldEbikeID:
 		m.ClearEbikeID()
 		return nil
+	case subscribe.FieldBatteryID:
+		m.ClearBatteryID()
+		return nil
 	case subscribe.FieldInitialOrderID:
 		m.ClearInitialOrderID()
 		return nil
@@ -70470,6 +70780,9 @@ func (m *SubscribeMutation) ClearField(name string) error {
 		return nil
 	case subscribe.FieldFormula:
 		m.ClearFormula()
+		return nil
+	case subscribe.FieldBatterySn:
+		m.ClearBatterySn()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe nullable field %s", name)
@@ -70520,6 +70833,9 @@ func (m *SubscribeMutation) ResetField(name string) error {
 		return nil
 	case subscribe.FieldEbikeID:
 		m.ResetEbikeID()
+		return nil
+	case subscribe.FieldBatteryID:
+		m.ResetBatteryID()
 		return nil
 	case subscribe.FieldRiderID:
 		m.ResetRiderID()
@@ -70596,13 +70912,16 @@ func (m *SubscribeMutation) ResetField(name string) error {
 	case subscribe.FieldIntelligent:
 		m.ResetIntelligent()
 		return nil
+	case subscribe.FieldBatterySn:
+		m.ResetBatterySn()
+		return nil
 	}
 	return fmt.Errorf("unknown Subscribe field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *SubscribeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 16)
+	edges := make([]string, 0, 17)
 	if m.plan != nil {
 		edges = append(edges, subscribe.EdgePlan)
 	}
@@ -70626,6 +70945,9 @@ func (m *SubscribeMutation) AddedEdges() []string {
 	}
 	if m.ebike != nil {
 		edges = append(edges, subscribe.EdgeEbike)
+	}
+	if m.battery != nil {
+		edges = append(edges, subscribe.EdgeBattery)
 	}
 	if m.rider != nil {
 		edges = append(edges, subscribe.EdgeRider)
@@ -70690,6 +71012,10 @@ func (m *SubscribeMutation) AddedIDs(name string) []ent.Value {
 		if id := m.ebike; id != nil {
 			return []ent.Value{*id}
 		}
+	case subscribe.EdgeBattery:
+		if id := m.battery; id != nil {
+			return []ent.Value{*id}
+		}
 	case subscribe.EdgeRider:
 		if id := m.rider; id != nil {
 			return []ent.Value{*id}
@@ -70738,7 +71064,7 @@ func (m *SubscribeMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *SubscribeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 16)
+	edges := make([]string, 0, 17)
 	if m.removedpauses != nil {
 		edges = append(edges, subscribe.EdgePauses)
 	}
@@ -70797,7 +71123,7 @@ func (m *SubscribeMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *SubscribeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 16)
+	edges := make([]string, 0, 17)
 	if m.clearedplan {
 		edges = append(edges, subscribe.EdgePlan)
 	}
@@ -70821,6 +71147,9 @@ func (m *SubscribeMutation) ClearedEdges() []string {
 	}
 	if m.clearedebike {
 		edges = append(edges, subscribe.EdgeEbike)
+	}
+	if m.clearedbattery {
+		edges = append(edges, subscribe.EdgeBattery)
 	}
 	if m.clearedrider {
 		edges = append(edges, subscribe.EdgeRider)
@@ -70869,6 +71198,8 @@ func (m *SubscribeMutation) EdgeCleared(name string) bool {
 		return m.clearedbrand
 	case subscribe.EdgeEbike:
 		return m.clearedebike
+	case subscribe.EdgeBattery:
+		return m.clearedbattery
 	case subscribe.EdgeRider:
 		return m.clearedrider
 	case subscribe.EdgeEnterprise:
@@ -70917,6 +71248,9 @@ func (m *SubscribeMutation) ClearEdge(name string) error {
 	case subscribe.EdgeEbike:
 		m.ClearEbike()
 		return nil
+	case subscribe.EdgeBattery:
+		m.ClearBattery()
+		return nil
 	case subscribe.EdgeRider:
 		m.ClearRider()
 		return nil
@@ -70957,6 +71291,9 @@ func (m *SubscribeMutation) ResetEdge(name string) error {
 		return nil
 	case subscribe.EdgeEbike:
 		m.ResetEbike()
+		return nil
+	case subscribe.EdgeBattery:
+		m.ResetBattery()
 		return nil
 	case subscribe.EdgeRider:
 		m.ResetRider()

@@ -41,6 +41,8 @@ const (
 	FieldBrandID = "brand_id"
 	// FieldEbikeID holds the string denoting the ebike_id field in the database.
 	FieldEbikeID = "ebike_id"
+	// FieldBatteryID holds the string denoting the battery_id field in the database.
+	FieldBatteryID = "battery_id"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
 	FieldRiderID = "rider_id"
 	// FieldInitialOrderID holds the string denoting the initial_order_id field in the database.
@@ -91,6 +93,8 @@ const (
 	FieldNeedContract = "need_contract"
 	// FieldIntelligent holds the string denoting the intelligent field in the database.
 	FieldIntelligent = "intelligent"
+	// FieldBatterySn holds the string denoting the battery_sn field in the database.
+	FieldBatterySn = "battery_sn"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
@@ -107,6 +111,8 @@ const (
 	EdgeBrand = "brand"
 	// EdgeEbike holds the string denoting the ebike edge name in mutations.
 	EdgeEbike = "ebike"
+	// EdgeBattery holds the string denoting the battery edge name in mutations.
+	EdgeBattery = "battery"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
@@ -181,6 +187,13 @@ const (
 	EbikeInverseTable = "ebike"
 	// EbikeColumn is the table column denoting the ebike relation/edge.
 	EbikeColumn = "ebike_id"
+	// BatteryTable is the table that holds the battery relation/edge.
+	BatteryTable = "subscribe"
+	// BatteryInverseTable is the table name for the Battery entity.
+	// It exists in this package in order to avoid circular dependency with the "battery" package.
+	BatteryInverseTable = "battery"
+	// BatteryColumn is the table column denoting the battery relation/edge.
+	BatteryColumn = "battery_id"
 	// RiderTable is the table that holds the rider relation/edge.
 	RiderTable = "subscribe"
 	// RiderInverseTable is the table name for the Rider entity.
@@ -256,6 +269,7 @@ var Columns = []string{
 	FieldCabinetID,
 	FieldBrandID,
 	FieldEbikeID,
+	FieldBatteryID,
 	FieldRiderID,
 	FieldInitialOrderID,
 	FieldEnterpriseID,
@@ -281,6 +295,7 @@ var Columns = []string{
 	FieldFormula,
 	FieldNeedContract,
 	FieldIntelligent,
+	FieldBatterySn,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

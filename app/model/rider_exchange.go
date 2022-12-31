@@ -7,7 +7,6 @@ package model
 
 import (
     "github.com/goccy/go-json"
-    "go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 const (
@@ -68,5 +67,5 @@ type RiderExchangeProcessRes struct {
 
 // RiderExchangeProcessStatusReq 获取操作状态
 type RiderExchangeProcessStatusReq struct {
-    UUID primitive.ObjectID `json:"uuid" query:"uuid" trans:"操作ID"`
+    UUID string `json:"uuid" query:"uuid" trans:"操作ID"`
 }

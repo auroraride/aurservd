@@ -5,6 +5,11 @@
 
 package model
 
+import (
+    "github.com/auroraride/adapter"
+    "github.com/goccy/go-json"
+)
+
 // ExchangeCabinet 电柜换电
 type ExchangeCabinet struct {
     Alternative bool `json:"alternative"` // 是否使用备选方案
@@ -107,4 +112,17 @@ type ExchangeManagerListRes struct {
     Full        string            `json:"full,omitempty"`       // 满电仓位信息, 门店换电不存在
     Empty       string            `json:"empty,omitempty"`      // 空仓位信息, 门店换电不存在
     Error       string            `json:"error,omitempty"`      // 换电失败原因
+}
+
+type ExchangeStepResultCache struct {
+    Index   int                           `json:"index"`   // 当前展示的步骤index
+    Results []*adapter.ExchangeStepResult `json:"results"` // 步骤列表
+}
+
+func (r *ExchangeStepResultCache) MarshalBinary() ([]byte, error) {
+    return json.Marshal(r)
+}
+
+func (r *ExchangeStepResultCache) UnmarshalBinary(data []byte) error {
+    return json.Unmarshal(data, r)
 }

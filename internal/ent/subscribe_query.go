@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
@@ -48,6 +49,7 @@ type SubscribeQuery struct {
 	withCabinet      *CabinetQuery
 	withBrand        *EbikeBrandQuery
 	withEbike        *EbikeQuery
+	withBattery      *BatteryQuery
 	withRider        *RiderQuery
 	withEnterprise   *EnterpriseQuery
 	withPauses       *SubscribePauseQuery
@@ -262,6 +264,28 @@ func (sq *SubscribeQuery) QueryEbike() *EbikeQuery {
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, selector),
 			sqlgraph.To(ebike.Table, ebike.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.EbikeTable, subscribe.EbikeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryBattery chains the current query on the "battery" edge.
+func (sq *SubscribeQuery) QueryBattery() *BatteryQuery {
+	query := (&BatteryClient{config: sq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, selector),
+			sqlgraph.To(battery.Table, battery.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.BatteryTable, subscribe.BatteryColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -643,6 +667,7 @@ func (sq *SubscribeQuery) Clone() *SubscribeQuery {
 		withCabinet:      sq.withCabinet.Clone(),
 		withBrand:        sq.withBrand.Clone(),
 		withEbike:        sq.withEbike.Clone(),
+		withBattery:      sq.withBattery.Clone(),
 		withRider:        sq.withRider.Clone(),
 		withEnterprise:   sq.withEnterprise.Clone(),
 		withPauses:       sq.withPauses.Clone(),
@@ -743,6 +768,17 @@ func (sq *SubscribeQuery) WithEbike(opts ...func(*EbikeQuery)) *SubscribeQuery {
 		opt(query)
 	}
 	sq.withEbike = query
+	return sq
+}
+
+// WithBattery tells the query-builder to eager-load the nodes that are connected to
+// the "battery" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *SubscribeQuery) WithBattery(opts ...func(*BatteryQuery)) *SubscribeQuery {
+	query := (&BatteryClient{config: sq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withBattery = query
 	return sq
 }
 
@@ -912,7 +948,7 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 	var (
 		nodes       = []*Subscribe{}
 		_spec       = sq.querySpec()
-		loadedTypes = [16]bool{
+		loadedTypes = [17]bool{
 			sq.withPlan != nil,
 			sq.withEmployee != nil,
 			sq.withCity != nil,
@@ -921,6 +957,7 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 			sq.withCabinet != nil,
 			sq.withBrand != nil,
 			sq.withEbike != nil,
+			sq.withBattery != nil,
 			sq.withRider != nil,
 			sq.withEnterprise != nil,
 			sq.withPauses != nil,
@@ -997,6 +1034,12 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 	if query := sq.withEbike; query != nil {
 		if err := sq.loadEbike(ctx, query, nodes, nil,
 			func(n *Subscribe, e *Ebike) { n.Edges.Ebike = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := sq.withBattery; query != nil {
+		if err := sq.loadBattery(ctx, query, nodes, nil,
+			func(n *Subscribe, e *Battery) { n.Edges.Battery = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1278,6 +1321,35 @@ func (sq *SubscribeQuery) loadEbike(ctx context.Context, query *EbikeQuery, node
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "ebike_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (sq *SubscribeQuery) loadBattery(ctx context.Context, query *BatteryQuery, nodes []*Subscribe, init func(*Subscribe), assign func(*Subscribe, *Battery)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Subscribe)
+	for i := range nodes {
+		if nodes[i].BatteryID == nil {
+			continue
+		}
+		fk := *nodes[i].BatteryID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(battery.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "battery_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

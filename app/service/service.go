@@ -51,6 +51,9 @@ func newService(params ...any) (bs *BaseService) {
                 Name:  p.Name,
             }
             ctx = context.WithValue(ctx, "rider", bs.rider)
+        case *model.Rider:
+            bs.rider = p
+            ctx = context.WithValue(ctx, "rider", bs.rider)
         case *ent.Manager:
             bs.modifier = &model.Modifier{
                 ID:    p.ID,

@@ -850,29 +850,31 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Exchange",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			exchange.FieldCreatedAt:    {Type: field.TypeTime, Column: exchange.FieldCreatedAt},
-			exchange.FieldUpdatedAt:    {Type: field.TypeTime, Column: exchange.FieldUpdatedAt},
-			exchange.FieldDeletedAt:    {Type: field.TypeTime, Column: exchange.FieldDeletedAt},
-			exchange.FieldCreator:      {Type: field.TypeJSON, Column: exchange.FieldCreator},
-			exchange.FieldLastModifier: {Type: field.TypeJSON, Column: exchange.FieldLastModifier},
-			exchange.FieldRemark:       {Type: field.TypeString, Column: exchange.FieldRemark},
-			exchange.FieldSubscribeID:  {Type: field.TypeUint64, Column: exchange.FieldSubscribeID},
-			exchange.FieldCityID:       {Type: field.TypeUint64, Column: exchange.FieldCityID},
-			exchange.FieldStoreID:      {Type: field.TypeUint64, Column: exchange.FieldStoreID},
-			exchange.FieldEnterpriseID: {Type: field.TypeUint64, Column: exchange.FieldEnterpriseID},
-			exchange.FieldStationID:    {Type: field.TypeUint64, Column: exchange.FieldStationID},
-			exchange.FieldRiderID:      {Type: field.TypeUint64, Column: exchange.FieldRiderID},
-			exchange.FieldEmployeeID:   {Type: field.TypeUint64, Column: exchange.FieldEmployeeID},
-			exchange.FieldUUID:         {Type: field.TypeString, Column: exchange.FieldUUID},
-			exchange.FieldCabinetID:    {Type: field.TypeUint64, Column: exchange.FieldCabinetID},
-			exchange.FieldSuccess:      {Type: field.TypeBool, Column: exchange.FieldSuccess},
-			exchange.FieldDetail:       {Type: field.TypeJSON, Column: exchange.FieldDetail},
-			exchange.FieldInfo:         {Type: field.TypeJSON, Column: exchange.FieldInfo},
-			exchange.FieldModel:        {Type: field.TypeString, Column: exchange.FieldModel},
-			exchange.FieldAlternative:  {Type: field.TypeBool, Column: exchange.FieldAlternative},
-			exchange.FieldStartAt:      {Type: field.TypeTime, Column: exchange.FieldStartAt},
-			exchange.FieldFinishAt:     {Type: field.TypeTime, Column: exchange.FieldFinishAt},
-			exchange.FieldDuration:     {Type: field.TypeInt, Column: exchange.FieldDuration},
+			exchange.FieldCreatedAt:     {Type: field.TypeTime, Column: exchange.FieldCreatedAt},
+			exchange.FieldUpdatedAt:     {Type: field.TypeTime, Column: exchange.FieldUpdatedAt},
+			exchange.FieldDeletedAt:     {Type: field.TypeTime, Column: exchange.FieldDeletedAt},
+			exchange.FieldCreator:       {Type: field.TypeJSON, Column: exchange.FieldCreator},
+			exchange.FieldLastModifier:  {Type: field.TypeJSON, Column: exchange.FieldLastModifier},
+			exchange.FieldRemark:        {Type: field.TypeString, Column: exchange.FieldRemark},
+			exchange.FieldSubscribeID:   {Type: field.TypeUint64, Column: exchange.FieldSubscribeID},
+			exchange.FieldCityID:        {Type: field.TypeUint64, Column: exchange.FieldCityID},
+			exchange.FieldStoreID:       {Type: field.TypeUint64, Column: exchange.FieldStoreID},
+			exchange.FieldEnterpriseID:  {Type: field.TypeUint64, Column: exchange.FieldEnterpriseID},
+			exchange.FieldStationID:     {Type: field.TypeUint64, Column: exchange.FieldStationID},
+			exchange.FieldRiderID:       {Type: field.TypeUint64, Column: exchange.FieldRiderID},
+			exchange.FieldEmployeeID:    {Type: field.TypeUint64, Column: exchange.FieldEmployeeID},
+			exchange.FieldUUID:          {Type: field.TypeString, Column: exchange.FieldUUID},
+			exchange.FieldCabinetID:     {Type: field.TypeUint64, Column: exchange.FieldCabinetID},
+			exchange.FieldSuccess:       {Type: field.TypeBool, Column: exchange.FieldSuccess},
+			exchange.FieldDetail:        {Type: field.TypeJSON, Column: exchange.FieldDetail},
+			exchange.FieldInfo:          {Type: field.TypeJSON, Column: exchange.FieldInfo},
+			exchange.FieldModel:         {Type: field.TypeString, Column: exchange.FieldModel},
+			exchange.FieldAlternative:   {Type: field.TypeBool, Column: exchange.FieldAlternative},
+			exchange.FieldStartAt:       {Type: field.TypeTime, Column: exchange.FieldStartAt},
+			exchange.FieldFinishAt:      {Type: field.TypeTime, Column: exchange.FieldFinishAt},
+			exchange.FieldDuration:      {Type: field.TypeInt, Column: exchange.FieldDuration},
+			exchange.FieldBeforeBattery: {Type: field.TypeString, Column: exchange.FieldBeforeBattery},
+			exchange.FieldAfterBattery:  {Type: field.TypeString, Column: exchange.FieldAfterBattery},
 		},
 	}
 	graph.Nodes[29] = &sqlgraph.Node{
@@ -1331,6 +1333,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldCabinetID:         {Type: field.TypeUint64, Column: subscribe.FieldCabinetID},
 			subscribe.FieldBrandID:           {Type: field.TypeUint64, Column: subscribe.FieldBrandID},
 			subscribe.FieldEbikeID:           {Type: field.TypeUint64, Column: subscribe.FieldEbikeID},
+			subscribe.FieldBatteryID:         {Type: field.TypeUint64, Column: subscribe.FieldBatteryID},
 			subscribe.FieldRiderID:           {Type: field.TypeUint64, Column: subscribe.FieldRiderID},
 			subscribe.FieldInitialOrderID:    {Type: field.TypeUint64, Column: subscribe.FieldInitialOrderID},
 			subscribe.FieldEnterpriseID:      {Type: field.TypeUint64, Column: subscribe.FieldEnterpriseID},
@@ -1356,6 +1359,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldFormula:           {Type: field.TypeString, Column: subscribe.FieldFormula},
 			subscribe.FieldNeedContract:      {Type: field.TypeBool, Column: subscribe.FieldNeedContract},
 			subscribe.FieldIntelligent:       {Type: field.TypeBool, Column: subscribe.FieldIntelligent},
+			subscribe.FieldBatterySn:         {Type: field.TypeString, Column: subscribe.FieldBatterySn},
 		},
 	}
 	graph.Nodes[46] = &sqlgraph.Node{
@@ -3545,6 +3549,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Subscribe",
 		"Ebike",
+	)
+	graph.MustAddE(
+		"battery",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.BatteryTable,
+			Columns: []string{subscribe.BatteryColumn},
+			Bidi:    false,
+		},
+		"Subscribe",
+		"Battery",
 	)
 	graph.MustAddE(
 		"rider",
@@ -8645,6 +8661,16 @@ func (f *ExchangeFilter) WhereDuration(p entql.IntP) {
 	f.Where(p.Field(exchange.FieldDuration))
 }
 
+// WhereBeforeBattery applies the entql string predicate on the before_battery field.
+func (f *ExchangeFilter) WhereBeforeBattery(p entql.StringP) {
+	f.Where(p.Field(exchange.FieldBeforeBattery))
+}
+
+// WhereAfterBattery applies the entql string predicate on the after_battery field.
+func (f *ExchangeFilter) WhereAfterBattery(p entql.StringP) {
+	f.Where(p.Field(exchange.FieldAfterBattery))
+}
+
 // WhereHasSubscribe applies a predicate to check if query has an edge subscribe.
 func (f *ExchangeFilter) WhereHasSubscribe() {
 	f.Where(entql.HasEdge("subscribe"))
@@ -11420,6 +11446,11 @@ func (f *SubscribeFilter) WhereEbikeID(p entql.Uint64P) {
 	f.Where(p.Field(subscribe.FieldEbikeID))
 }
 
+// WhereBatteryID applies the entql uint64 predicate on the battery_id field.
+func (f *SubscribeFilter) WhereBatteryID(p entql.Uint64P) {
+	f.Where(p.Field(subscribe.FieldBatteryID))
+}
+
 // WhereRiderID applies the entql uint64 predicate on the rider_id field.
 func (f *SubscribeFilter) WhereRiderID(p entql.Uint64P) {
 	f.Where(p.Field(subscribe.FieldRiderID))
@@ -11545,6 +11576,11 @@ func (f *SubscribeFilter) WhereIntelligent(p entql.BoolP) {
 	f.Where(p.Field(subscribe.FieldIntelligent))
 }
 
+// WhereBatterySn applies the entql string predicate on the battery_sn field.
+func (f *SubscribeFilter) WhereBatterySn(p entql.StringP) {
+	f.Where(p.Field(subscribe.FieldBatterySn))
+}
+
 // WhereHasPlan applies a predicate to check if query has an edge plan.
 func (f *SubscribeFilter) WhereHasPlan() {
 	f.Where(entql.HasEdge("plan"))
@@ -11651,6 +11687,20 @@ func (f *SubscribeFilter) WhereHasEbike() {
 // WhereHasEbikeWith applies a predicate to check if query has an edge ebike with a given conditions (other predicates).
 func (f *SubscribeFilter) WhereHasEbikeWith(preds ...predicate.Ebike) {
 	f.Where(entql.HasEdgeWith("ebike", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasBattery applies a predicate to check if query has an edge battery.
+func (f *SubscribeFilter) WhereHasBattery() {
+	f.Where(entql.HasEdge("battery"))
+}
+
+// WhereHasBatteryWith applies a predicate to check if query has an edge battery with a given conditions (other predicates).
+func (f *SubscribeFilter) WhereHasBatteryWith(preds ...predicate.Battery) {
+	f.Where(entql.HasEdgeWith("battery", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
