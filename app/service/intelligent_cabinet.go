@@ -17,7 +17,9 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/go-resty/resty/v2"
     "github.com/goccy/go-json"
+    "github.com/google/uuid"
     log "github.com/sirupsen/logrus"
+    "golang.org/x/exp/slices"
     "net/http"
     "time"
 )
@@ -98,11 +100,15 @@ func (s *intelligentCabinetService) exchangeCacheKey(uid string) string {
 
 // Exchange 请求换电
 func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *ent.Subscribe, cab *ent.Cabinet) {
+    id, err := uuid.Parse(uid)
+    if err != nil {
+        snag.Panic("请求参数错误")
+    }
+
     var (
         stopAt   *time.Time
         duration float64
         success  bool
-        err      error
         putout   string
         putin    string
     )
@@ -117,7 +123,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
             _ = cache.Set(s.ctx, s.exchangeCacheKey(uid), &model.ExchangeStepResultCache{
                 Index: 0,
                 Results: []*adapter.ExchangeStepMessage{
-                    {Step: adapter.ExchangeStepFirst, Message: err.Error(), Success: false},
+                    {Step: 1, Message: err.Error(), Success: false},
                 },
             }, 10*time.Minute).Err()
         }
@@ -151,10 +157,10 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 
     var r *resty.Response
     r, err = NewAdapter(ar.Config.Adapter.Kaixin.Api, s.rider).Post("/exchange/do", &adapter.ExchangeRequest{
-        UUID:    uid,
+        UUID:    id,
         Battery: *sub.BatterySn,
         Expires: model.IntelligentScanExpires,
-        TimeOut: model.IntelligentExchangeTimeout,
+        Timeout: model.IntelligentExchangeTimeout,
         Minsoc:  cache.Float64(model.SettingExchangeMinBattery),
     })
 
@@ -201,13 +207,18 @@ func (s *intelligentCabinetService) ExchangeStep(req *adapter.ExchangeStepMessag
         return
     }
 
-    // 检查电池是否存在
-
+    // TODO 检查电池是否存在???
     key := s.exchangeCacheKey(req.UUID)
 
     c := &model.ExchangeStepResultCache{}
     _ = cache.Get(s.ctx, key).Scan(c)
     c.Results = append(c.Results, req)
+
+    // 排序
+    slices.SortFunc(c.Results, func(a, b *adapter.ExchangeStepMessage) bool {
+        return a.Step <= b.Step
+    })
+
     err := cache.Set(s.ctx, key, c, 10*time.Minute).Err()
     if err != nil {
         log.Error(err)
@@ -241,18 +252,21 @@ func (s *intelligentCabinetService) ExchangeResult(uid string) (res *model.Rider
 
         n := len(c.Results)
         index := c.Index
+
+        // 当前的数据
+        if index == n {
+            s.stepResult(index-1, c, res)
+            if res.Step < uint8(ec.ExchangeStepPutOut) {
+                res.Step += 1
+            }
+            res.Status = uint8(ec.TaskStatusProcessing)
+        }
+
         if index >= n {
             continue
         }
 
-        data := c.Results[index]
-        res.Step = uint8(data.Step)
-        res.Message = data.Message
-        if data.Success {
-            res.Status = uint8(ec.TaskStatusSuccess)
-        }
-
-        res.Stop = data.Step == adapter.ExchangeStepFourth || !data.Success
+        s.stepResult(index, c, res)
 
         if !res.Stop {
             ttl, _ := cache.TTL(s.ctx, key).Result()
@@ -263,6 +277,17 @@ func (s *intelligentCabinetService) ExchangeResult(uid string) (res *model.Rider
     }
 
     return
+}
+
+func (s *intelligentCabinetService) stepResult(index int, c *model.ExchangeStepResultCache, res *model.RiderExchangeProcessRes) {
+    data := c.Results[index]
+    res.Step = uint8(data.Step)
+    res.Message = data.Message
+    if data.Success {
+        res.Status = uint8(ec.TaskStatusSuccess)
+    }
+
+    res.Stop = data.Step == 4 || !data.Success
 }
 
 func (s *intelligentCabinetService) ExchangeCensorX(sub *ent.Subscribe, cab *ent.Cabinet) {

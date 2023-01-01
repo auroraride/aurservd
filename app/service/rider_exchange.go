@@ -599,9 +599,9 @@ func (s *riderExchangeService) GetProcessStatus(req *model.RiderExchangeProcessS
     info := new(model.RiderExchangeInfo)
     // 尝试从缓存获取智能电柜换电信息
     err := cache.Get(s.ctx, req.UUID).Scan(info)
-    if err == nil {
-        return NewIntelligentCabinet().ExchangeResult(req.UUID)
-    }
+    // if err == nil {
+    return NewIntelligentCabinet().ExchangeResult(req.UUID)
+    // }
 
     start := time.Now()
     var uid primitive.ObjectID

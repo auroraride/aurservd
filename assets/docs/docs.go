@@ -19483,6 +19483,10 @@ const docTemplate = `{
                     "description": "骑士卡ID",
                     "type": "integer"
                 },
+                "intelligent": {
+                    "description": "是否智能电柜套餐",
+                    "type": "boolean"
+                },
                 "name": {
                     "description": "骑士卡名称",
                     "type": "string"
