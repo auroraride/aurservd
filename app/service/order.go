@@ -318,7 +318,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
             PointRatio:    model.PointRatio,
             CouponAmount:  camount,
             Coupons:       req.Coupons,
-            DiscountNewly: p.DiscountNewly,
+            DiscountNewly: ramount,
             EbikeBrandID:  p.BrandID,
             Plan:          p.BasicInfo(),
         },

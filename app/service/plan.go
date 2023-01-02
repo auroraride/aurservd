@@ -19,6 +19,7 @@ import (
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     log "github.com/sirupsen/logrus"
+    "golang.org/x/exp/slices"
     "sort"
     "strings"
     "time"
@@ -439,8 +440,9 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
     NewRider().CheckForBusiness(s.rider)
 
     // 判断是否有生效订阅
-    if sub, _ := NewSubscribe().QueryEffective(s.rider.ID); sub != nil {
-        snag.Panic("骑手有生效中的订阅, 无法新购")
+    _, sub := NewSubscribe().RecentDetail(s.rider.ID)
+    if sub != nil && slices.Contains(model.SubscribeNotUnSubscribed(), sub.Status) {
+        snag.Panic("骑手当前有其他订阅, 无法新购")
     }
 
     // 需缴纳押金金额
@@ -468,6 +470,8 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
     serv := NewPlanIntroduce()
     intro := serv.QueryMap()
 
+    t, _ := NewOrder().PreconditionNewly(sub)
+
     for _, item := range items {
         key := s.Key(item.Model, item.BrandID)
         m, ok := mmap[key]
@@ -486,13 +490,19 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
             }
             mmap[key] = m
         }
+
+        var ramount float64
+        if t == model.OrderTypeNewly && item.DiscountNewly > 0 {
+            ramount = item.DiscountNewly
+        }
+
         *m.Children = append(*m.Children, model.PlanDaysPriceOption{
             ID:            item.ID,
             Name:          item.Name,
             Price:         item.Price,
             Days:          item.Days,
             Original:      item.Original,
-            DiscountNewly: item.DiscountNewly,
+            DiscountNewly: ramount,
             HasEbike:      item.BrandID != nil,
         })
 
