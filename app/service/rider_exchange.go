@@ -76,7 +76,7 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
     // 判断设备是否智能设备
     if cab.Intelligent {
         NewIntelligentCabinet(s.rider).BusinessCensorX(adapter.BusinessExchange, sub, cab)
-        uid, info = NewIntelligentCabinet(s.rider).ExchangeUsable(cab.Serial, model.CabinetBrand(cab.Brand))
+        uid, info = NewIntelligentCabinet(s.rider).ExchangeUsable(sub.Model, cab.Serial, model.CabinetBrand(cab.Brand))
     } else {
         // 更新一次电柜状态
         err := cs.UpdateStatus(cab)

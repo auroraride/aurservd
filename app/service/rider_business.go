@@ -99,7 +99,7 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
 
         // 获取仓位信息
         var err error
-        s.response.UUID, s.response.Index, err = NewIntelligentCabinet(s.rider).BusinessUsable(bus, cab.Serial)
+        s.response.UUID, s.response.Index, err = NewIntelligentCabinet(s.rider).BusinessUsable(bus, cab.Serial, sub.Model)
         if err != nil {
             snag.Panic(err)
         }

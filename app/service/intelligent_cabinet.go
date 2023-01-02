@@ -35,7 +35,7 @@ func NewIntelligentCabinet(params ...any) *intelligentCabinetService {
 }
 
 // ExchangeUsable 获取换电信息
-func (s *intelligentCabinetService) ExchangeUsable(serial string, br model.CabinetBrand) (uid string, info *model.RiderCabinetOperateProcess) {
+func (s *intelligentCabinetService) ExchangeUsable(bm, serial string, br model.CabinetBrand) (uid string, info *model.RiderCabinetOperateProcess) {
     var url string
 
     switch br {
@@ -49,6 +49,7 @@ func (s *intelligentCabinetService) ExchangeUsable(serial string, br model.Cabin
         Serial: serial,
         Minsoc: cache.Float64(model.SettingExchangeMinBattery),
         Lock:   10,
+        Model:  bm,
     })
     if err != nil {
         log.Errorf("换电信息请求失败: %v", err)
@@ -333,12 +334,13 @@ func (s *intelligentCabinetService) BusinessCensorX(bus adapter.Business, sub *e
 }
 
 // BusinessUsable 获取可用的业务仓位信息
-func (s *intelligentCabinetService) BusinessUsable(bus adapter.Business, serial string) (uid string, index int, err error) {
+func (s *intelligentCabinetService) BusinessUsable(bus adapter.Business, serial, bm string) (uid string, index int, err error) {
     var r *resty.Response
     r, err = NewAdapter(ar.Config.Adapter.Kaixin.Api, s.rider).Post("/business/usable", &adapter.BusinuessUsableRequest{
         Minsoc:   cache.Float64(model.SettingExchangeMinBattery),
         Business: bus,
         Serial:   serial,
+        Model:    bm,
     })
     if err != nil {
         return
@@ -392,6 +394,7 @@ func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Busine
         Serial:   cab.Serial,
         Timeout:  model.IntelligentBusinessStepTimeout,
         Battery:  batterySN,
+        Model:    sub.Model,
     })
 
     res := new(adapter.ResponseStuff[adapter.BusinessResponse])
