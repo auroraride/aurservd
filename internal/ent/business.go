@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -57,6 +58,8 @@ type Business struct {
 	StationID *uint64 `json:"station_id,omitempty"`
 	// 电柜ID
 	CabinetID *uint64 `json:"cabinet_id,omitempty"`
+	// BatteryID holds the value of the "battery_id" field.
+	BatteryID *uint64 `json:"battery_id,omitempty"`
 	// 业务类型
 	Type business.Type `json:"type,omitempty"`
 	// 仓位信息
@@ -88,9 +91,11 @@ type BusinessEdges struct {
 	Station *EnterpriseStation `json:"station,omitempty"`
 	// Cabinet holds the value of the cabinet edge.
 	Cabinet *Cabinet `json:"cabinet,omitempty"`
+	// Battery holds the value of the battery edge.
+	Battery *Battery `json:"battery,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [9]bool
+	loadedTypes [10]bool
 }
 
 // RiderOrErr returns the Rider value or an error if the edge
@@ -210,6 +215,19 @@ func (e BusinessEdges) CabinetOrErr() (*Cabinet, error) {
 	return nil, &NotLoadedError{edge: "cabinet"}
 }
 
+// BatteryOrErr returns the Battery value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e BusinessEdges) BatteryOrErr() (*Battery, error) {
+	if e.loadedTypes[9] {
+		if e.Battery == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: battery.Label}
+		}
+		return e.Battery, nil
+	}
+	return nil, &NotLoadedError{edge: "battery"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Business) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -217,7 +235,7 @@ func (*Business) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case business.FieldCreator, business.FieldLastModifier, business.FieldBinInfo:
 			values[i] = new([]byte)
-		case business.FieldID, business.FieldRiderID, business.FieldCityID, business.FieldSubscribeID, business.FieldEmployeeID, business.FieldStoreID, business.FieldPlanID, business.FieldEnterpriseID, business.FieldStationID, business.FieldCabinetID:
+		case business.FieldID, business.FieldRiderID, business.FieldCityID, business.FieldSubscribeID, business.FieldEmployeeID, business.FieldStoreID, business.FieldPlanID, business.FieldEnterpriseID, business.FieldStationID, business.FieldCabinetID, business.FieldBatteryID:
 			values[i] = new(sql.NullInt64)
 		case business.FieldRemark, business.FieldType, business.FieldStockSn:
 			values[i] = new(sql.NullString)
@@ -345,6 +363,13 @@ func (b *Business) assignValues(columns []string, values []any) error {
 				b.CabinetID = new(uint64)
 				*b.CabinetID = uint64(value.Int64)
 			}
+		case business.FieldBatteryID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field battery_id", values[i])
+			} else if value.Valid {
+				b.BatteryID = new(uint64)
+				*b.BatteryID = uint64(value.Int64)
+			}
 		case business.FieldType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
@@ -413,6 +438,11 @@ func (b *Business) QueryStation() *EnterpriseStationQuery {
 // QueryCabinet queries the "cabinet" edge of the Business entity.
 func (b *Business) QueryCabinet() *CabinetQuery {
 	return (&BusinessClient{config: b.config}).QueryCabinet(b)
+}
+
+// QueryBattery queries the "battery" edge of the Business entity.
+func (b *Business) QueryBattery() *BatteryQuery {
+	return (&BusinessClient{config: b.config}).QueryBattery(b)
 }
 
 // Update returns a builder for updating this Business.
@@ -494,6 +524,11 @@ func (b *Business) String() string {
 	builder.WriteString(", ")
 	if v := b.CabinetID; v != nil {
 		builder.WriteString("cabinet_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := b.BatteryID; v != nil {
+		builder.WriteString("battery_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

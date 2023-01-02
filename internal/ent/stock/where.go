@@ -95,6 +95,11 @@ func BrandID(v uint64) predicate.Stock {
 	return predicate.Stock(sql.FieldEQ(FieldBrandID, v))
 }
 
+// BatteryID applies equality check predicate on the "battery_id" field. It's identical to BatteryIDEQ.
+func BatteryID(v uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldEQ(FieldBatteryID, v))
+}
+
 // ParentID applies equality check predicate on the "parent_id" field. It's identical to ParentIDEQ.
 func ParentID(v uint64) predicate.Stock {
 	return predicate.Stock(sql.FieldEQ(FieldParentID, v))
@@ -488,6 +493,36 @@ func BrandIDIsNil() predicate.Stock {
 // BrandIDNotNil applies the NotNil predicate on the "brand_id" field.
 func BrandIDNotNil() predicate.Stock {
 	return predicate.Stock(sql.FieldNotNull(FieldBrandID))
+}
+
+// BatteryIDEQ applies the EQ predicate on the "battery_id" field.
+func BatteryIDEQ(v uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldEQ(FieldBatteryID, v))
+}
+
+// BatteryIDNEQ applies the NEQ predicate on the "battery_id" field.
+func BatteryIDNEQ(v uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldNEQ(FieldBatteryID, v))
+}
+
+// BatteryIDIn applies the In predicate on the "battery_id" field.
+func BatteryIDIn(vs ...uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldIn(FieldBatteryID, vs...))
+}
+
+// BatteryIDNotIn applies the NotIn predicate on the "battery_id" field.
+func BatteryIDNotIn(vs ...uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldNotIn(FieldBatteryID, vs...))
+}
+
+// BatteryIDIsNil applies the IsNil predicate on the "battery_id" field.
+func BatteryIDIsNil() predicate.Stock {
+	return predicate.Stock(sql.FieldIsNull(FieldBatteryID))
+}
+
+// BatteryIDNotNil applies the NotNil predicate on the "battery_id" field.
+func BatteryIDNotNil() predicate.Stock {
+	return predicate.Stock(sql.FieldNotNull(FieldBatteryID))
 }
 
 // ParentIDEQ applies the EQ predicate on the "parent_id" field.
@@ -1044,6 +1079,33 @@ func HasBrandWith(preds ...predicate.EbikeBrand) predicate.Stock {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(BrandInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, BrandTable, BrandColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasBattery applies the HasEdge predicate on the "battery" edge.
+func HasBattery() predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, BatteryTable, BatteryColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasBatteryWith applies the HasEdge predicate on the "battery" edge with a given conditions (other predicates).
+func HasBatteryWith(preds ...predicate.Battery) predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(BatteryInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, BatteryTable, BatteryColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

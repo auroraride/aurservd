@@ -40,3 +40,9 @@ type BatteryListRes struct {
     Rider   *Rider            `json:"rider,omitempty"`   // 骑手
     Cabinet *CabinetBasicInfo `json:"cabinet,omitempty"` // 电柜
 }
+
+type Battery struct {
+    ID    uint64 `json:"id"`
+    SN    string `json:"sn"`    // 编号
+    Model string `json:"model"` // 型号
+}

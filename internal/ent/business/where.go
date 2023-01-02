@@ -120,6 +120,11 @@ func CabinetID(v uint64) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldCabinetID, v))
 }
 
+// BatteryID applies equality check predicate on the "battery_id" field. It's identical to BatteryIDEQ.
+func BatteryID(v uint64) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldBatteryID, v))
+}
+
 // StockSn applies equality check predicate on the "stock_sn" field. It's identical to StockSnEQ.
 func StockSn(v string) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldStockSn, v))
@@ -590,6 +595,36 @@ func CabinetIDNotNil() predicate.Business {
 	return predicate.Business(sql.FieldNotNull(FieldCabinetID))
 }
 
+// BatteryIDEQ applies the EQ predicate on the "battery_id" field.
+func BatteryIDEQ(v uint64) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldBatteryID, v))
+}
+
+// BatteryIDNEQ applies the NEQ predicate on the "battery_id" field.
+func BatteryIDNEQ(v uint64) predicate.Business {
+	return predicate.Business(sql.FieldNEQ(FieldBatteryID, v))
+}
+
+// BatteryIDIn applies the In predicate on the "battery_id" field.
+func BatteryIDIn(vs ...uint64) predicate.Business {
+	return predicate.Business(sql.FieldIn(FieldBatteryID, vs...))
+}
+
+// BatteryIDNotIn applies the NotIn predicate on the "battery_id" field.
+func BatteryIDNotIn(vs ...uint64) predicate.Business {
+	return predicate.Business(sql.FieldNotIn(FieldBatteryID, vs...))
+}
+
+// BatteryIDIsNil applies the IsNil predicate on the "battery_id" field.
+func BatteryIDIsNil() predicate.Business {
+	return predicate.Business(sql.FieldIsNull(FieldBatteryID))
+}
+
+// BatteryIDNotNil applies the NotNil predicate on the "battery_id" field.
+func BatteryIDNotNil() predicate.Business {
+	return predicate.Business(sql.FieldNotNull(FieldBatteryID))
+}
+
 // TypeEQ applies the EQ predicate on the "type" field.
 func TypeEQ(v Type) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldType, v))
@@ -929,6 +964,33 @@ func HasCabinetWith(preds ...predicate.Cabinet) predicate.Business {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(CabinetInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, CabinetTable, CabinetColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasBattery applies the HasEdge predicate on the "battery" edge.
+func HasBattery() predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, BatteryTable, BatteryColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasBatteryWith applies the HasEdge predicate on the "battery" edge with a given conditions (other predicates).
+func HasBatteryWith(preds ...predicate.Battery) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(BatteryInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, BatteryTable, BatteryColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

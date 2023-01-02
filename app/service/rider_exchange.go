@@ -8,6 +8,7 @@ package service
 import (
     "context"
     "fmt"
+    "github.com/auroraride/adapter"
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
@@ -74,7 +75,7 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
 
     // 判断设备是否智能设备
     if cab.Intelligent {
-        NewIntelligentCabinet(s.rider).ExchangeCensorX(sub, cab)
+        NewIntelligentCabinet(s.rider).BusinessCensorX(adapter.BusinessExchange, sub, cab)
         uid, info = NewIntelligentCabinet(s.rider).ExchangeUsable(cab.Serial, model.CabinetBrand(cab.Brand))
     } else {
         // 更新一次电柜状态
@@ -197,7 +198,7 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     // 判断设备是否智能设备
     if err == nil {
         cab = NewCabinet().QueryOneSerialX(info.Serial)
-        NewIntelligentCabinet(s.rider).ExchangeCensorX(sub, cab)
+        NewIntelligentCabinet(s.rider).BusinessCensorX(adapter.BusinessExchange, sub, cab)
 
         tex = &ec.Exchange{
             Model:       sub.Model,
@@ -599,9 +600,9 @@ func (s *riderExchangeService) GetProcessStatus(req *model.RiderExchangeProcessS
     info := new(model.RiderExchangeInfo)
     // 尝试从缓存获取智能电柜换电信息
     err := cache.Get(s.ctx, req.UUID).Scan(info)
-    // if err == nil {
-    return NewIntelligentCabinet().ExchangeResult(req.UUID)
-    // }
+    if err == nil {
+        return NewIntelligentCabinet(s.rider).ExchangeResult(req.UUID)
+    }
 
     start := time.Now()
     var uid primitive.ObjectID

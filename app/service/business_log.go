@@ -99,6 +99,13 @@ func (s *businessLogService) setSubscribe(sub *ent.Subscribe) {
         SetNillablePlanID(sub.PlanID)
 }
 
+func (s *businessLogService) SetBattery(bat *model.Battery) *businessLogService {
+    if bat != nil {
+        s.creator.SetBatteryID(bat.ID)
+    }
+    return s
+}
+
 func (s *businessLogService) Save(typ business.Type) (*ent.Business, error) {
     return s.creator.SetType(typ).Save(s.ctx)
 }

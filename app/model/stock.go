@@ -16,7 +16,7 @@ const (
 
 const (
     StockTypeTransfer         uint8 = iota // 调拨 (出库入库)
-    StockTypeRiderActive                   // 骑手领取电池 (出库)
+    StockTypeRiderActive                   // 骑手激活电池 (出库)
     StockTypeRiderPause                    // 骑手寄存电池 (入库)
     StockTypeRiderContinue                 // 骑手结束寄存电池 (出库)
     StockTypeRiderUnSubscribe              // 骑手归还电池 (入库)
@@ -256,7 +256,8 @@ type StockBusinessReq struct {
     CabinetID   *uint64 `json:"cabinetId"`   // 电柜ID
     SubscribeID *uint64 `json:"subscribeId"` // 订阅ID
 
-    Ebike *EbikeBusinessInfo `json:"ebike"` // 电车信息
+    Ebike   *EbikeBusinessInfo `json:"ebike"`   // 电车信息
+    Battery *Battery           `json:"battery"` // 电池信息
 }
 
 type StockEmployeeOverviewBattery struct {

@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
@@ -37,6 +38,7 @@ type StockQuery struct {
 	withSubscribe *SubscribeQuery
 	withEbike     *EbikeQuery
 	withBrand     *EbikeBrandQuery
+	withBattery   *BatteryQuery
 	withStore     *StoreQuery
 	withCabinet   *CabinetQuery
 	withRider     *RiderQuery
@@ -163,6 +165,28 @@ func (sq *StockQuery) QueryBrand() *EbikeBrandQuery {
 			sqlgraph.From(stock.Table, stock.FieldID, selector),
 			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, stock.BrandTable, stock.BrandColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryBattery chains the current query on the "battery" edge.
+func (sq *StockQuery) QueryBattery() *BatteryQuery {
+	query := (&BatteryClient{config: sq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, selector),
+			sqlgraph.To(battery.Table, battery.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stock.BatteryTable, stock.BatteryColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -518,6 +542,7 @@ func (sq *StockQuery) Clone() *StockQuery {
 		withSubscribe: sq.withSubscribe.Clone(),
 		withEbike:     sq.withEbike.Clone(),
 		withBrand:     sq.withBrand.Clone(),
+		withBattery:   sq.withBattery.Clone(),
 		withStore:     sq.withStore.Clone(),
 		withCabinet:   sq.withCabinet.Clone(),
 		withRider:     sq.withRider.Clone(),
@@ -573,6 +598,17 @@ func (sq *StockQuery) WithBrand(opts ...func(*EbikeBrandQuery)) *StockQuery {
 		opt(query)
 	}
 	sq.withBrand = query
+	return sq
+}
+
+// WithBattery tells the query-builder to eager-load the nodes that are connected to
+// the "battery" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *StockQuery) WithBattery(opts ...func(*BatteryQuery)) *StockQuery {
+	query := (&BatteryClient{config: sq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withBattery = query
 	return sq
 }
 
@@ -732,11 +768,12 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 		nodes       = []*Stock{}
 		withFKs     = sq.withFKs
 		_spec       = sq.querySpec()
-		loadedTypes = [11]bool{
+		loadedTypes = [12]bool{
 			sq.withCity != nil,
 			sq.withSubscribe != nil,
 			sq.withEbike != nil,
 			sq.withBrand != nil,
+			sq.withBattery != nil,
 			sq.withStore != nil,
 			sq.withCabinet != nil,
 			sq.withRider != nil,
@@ -746,7 +783,7 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 			sq.withChildren != nil,
 		}
 	)
-	if sq.withCity != nil || sq.withSubscribe != nil || sq.withEbike != nil || sq.withBrand != nil || sq.withStore != nil || sq.withCabinet != nil || sq.withRider != nil || sq.withEmployee != nil || sq.withSpouse != nil || sq.withParent != nil {
+	if sq.withCity != nil || sq.withSubscribe != nil || sq.withEbike != nil || sq.withBrand != nil || sq.withBattery != nil || sq.withStore != nil || sq.withCabinet != nil || sq.withRider != nil || sq.withEmployee != nil || sq.withSpouse != nil || sq.withParent != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -794,6 +831,12 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 	if query := sq.withBrand; query != nil {
 		if err := sq.loadBrand(ctx, query, nodes, nil,
 			func(n *Stock, e *EbikeBrand) { n.Edges.Brand = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := sq.withBattery; query != nil {
+		if err := sq.loadBattery(ctx, query, nodes, nil,
+			func(n *Stock, e *Battery) { n.Edges.Battery = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -952,6 +995,35 @@ func (sq *StockQuery) loadBrand(ctx context.Context, query *EbikeBrandQuery, nod
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "brand_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (sq *StockQuery) loadBattery(ctx context.Context, query *BatteryQuery, nodes []*Stock, init func(*Stock), assign func(*Stock, *Battery)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Stock)
+	for i := range nodes {
+		if nodes[i].BatteryID == nil {
+			continue
+		}
+		fk := *nodes[i].BatteryID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(battery.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "battery_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

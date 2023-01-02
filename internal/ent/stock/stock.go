@@ -34,6 +34,8 @@ const (
 	FieldEbikeID = "ebike_id"
 	// FieldBrandID holds the string denoting the brand_id field in the database.
 	FieldBrandID = "brand_id"
+	// FieldBatteryID holds the string denoting the battery_id field in the database.
+	FieldBatteryID = "battery_id"
 	// FieldParentID holds the string denoting the parent_id field in the database.
 	FieldParentID = "parent_id"
 	// FieldSn holds the string denoting the sn field in the database.
@@ -64,6 +66,8 @@ const (
 	EdgeEbike = "ebike"
 	// EdgeBrand holds the string denoting the brand edge name in mutations.
 	EdgeBrand = "brand"
+	// EdgeBattery holds the string denoting the battery edge name in mutations.
+	EdgeBattery = "battery"
 	// EdgeStore holds the string denoting the store edge name in mutations.
 	EdgeStore = "store"
 	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
@@ -108,6 +112,13 @@ const (
 	BrandInverseTable = "ebike_brand"
 	// BrandColumn is the table column denoting the brand relation/edge.
 	BrandColumn = "brand_id"
+	// BatteryTable is the table that holds the battery relation/edge.
+	BatteryTable = "stock"
+	// BatteryInverseTable is the table name for the Battery entity.
+	// It exists in this package in order to avoid circular dependency with the "battery" package.
+	BatteryInverseTable = "battery"
+	// BatteryColumn is the table column denoting the battery relation/edge.
+	BatteryColumn = "battery_id"
 	// StoreTable is the table that holds the store relation/edge.
 	StoreTable = "stock"
 	// StoreInverseTable is the table name for the Store entity.
@@ -163,6 +174,7 @@ var Columns = []string{
 	FieldSubscribeID,
 	FieldEbikeID,
 	FieldBrandID,
+	FieldBatteryID,
 	FieldParentID,
 	FieldSn,
 	FieldType,

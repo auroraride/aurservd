@@ -36,7 +36,7 @@ func kaixin() {
 
         case adapter.TypeExchangeStep:
             // 换电步骤
-            service.NewIntelligentCabinet().ExchangeStep(message.(*adapter.ExchangeStepMessage))
+            service.NewIntelligentCabinet().ExchangeStepSync(message.(*adapter.ExchangeStepMessage))
         }
 
     })

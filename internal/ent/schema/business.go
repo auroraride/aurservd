@@ -84,6 +84,7 @@ func (Business) Mixin() []ent.Mixin {
         EnterpriseMixin{Optional: true},
         StationMixin{Optional: true},
         CabinetMixin{Optional: true},
+        BatteryMixin{Optional: true},
     }
 }
 

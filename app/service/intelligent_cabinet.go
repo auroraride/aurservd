@@ -6,6 +6,7 @@
 package service
 
 import (
+    "errors"
     "fmt"
     "github.com/auroraride/adapter"
     "github.com/auroraride/aurservd/app/ec"
@@ -20,7 +21,6 @@ import (
     "github.com/google/uuid"
     log "github.com/sirupsen/logrus"
     "golang.org/x/exp/slices"
-    "net/http"
     "time"
 )
 
@@ -59,15 +59,16 @@ func (s *intelligentCabinetService) ExchangeUsable(serial string, br model.Cabin
     log.Printf("换电请求成功: %s", string(b))
 
     // 解析换电信息
-    res := new(adapter.ResponseStuff[adapter.ExchangeUsableResponse])
+    res := new(adapter.ResponseStuff[adapter.CabinetBinUsableResponse])
     err = json.Unmarshal(b, res)
     if err != nil {
         log.Errorf("换电信息结果解析失败: %v", err)
         snag.Panic("请求失败")
     }
 
-    if res.Code != http.StatusOK {
-        snag.Panic(res.Message)
+    err = res.VerifyResponse()
+    if err != nil {
+        snag.Panic(err.Error())
     }
 
     v := res.Data
@@ -146,12 +147,14 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 
         // 更新用户取走的电池
         if putout != "" {
-            bs.RiderPutout(putout, sub)
+            bat := bs.RiderPutout(putout, sub)
+            // 更新订阅
+            _ = ent.Database.Subscribe.UpdateOneID(sub.ID).SetBatterySn(bat.Sn).SetBatteryID(bat.ID).Exec(s.ctx)
         }
 
         // 更新放入的电池
         if putin != "" {
-            bs.RiderPutin(putin, cab)
+            bs.RiderPutin(putin, sub, cab)
         }
     }()
 
@@ -159,8 +162,8 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
     r, err = NewAdapter(ar.Config.Adapter.Kaixin.Api, s.rider).Post("/exchange/do", &adapter.ExchangeRequest{
         UUID:    id,
         Battery: *sub.BatterySn,
-        Expires: model.IntelligentScanExpires,
-        Timeout: model.IntelligentExchangeTimeout,
+        Expires: model.IntelligentBusinessScanExpires,
+        Timeout: model.IntelligentBusinessStepTimeout,
         Minsoc:  cache.Float64(model.SettingExchangeMinBattery),
     })
 
@@ -175,12 +178,12 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
         res := new(adapter.ResponseStuff[adapter.ExchangeResponse])
         _ = json.Unmarshal(b, res)
 
-        // 若换电成功 直接返回
-        if res.Code != http.StatusOK {
-            err = fmt.Errorf("%s", res.Message)
+        err = res.VerifyResponse()
+        if err != nil {
             return
         }
 
+        // 若换电成功 直接返回
         if res.Data.Success {
             putin = res.Data.PutinBattery
             putout = res.Data.PutoutBattery
@@ -202,7 +205,8 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
     }
 }
 
-func (s *intelligentCabinetService) ExchangeStep(req *adapter.ExchangeStepMessage) {
+// ExchangeStepSync 换电步骤同步
+func (s *intelligentCabinetService) ExchangeStepSync(req *adapter.ExchangeStepMessage) {
     if req.Step == 0 {
         return
     }
@@ -255,7 +259,7 @@ func (s *intelligentCabinetService) ExchangeResult(uid string) (res *model.Rider
 
         // 当前的数据
         if index == n {
-            s.stepResult(index-1, c, res)
+            s.exchangeStepResultFromCache(index-1, c, res)
             if res.Step < uint8(ec.ExchangeStepPutOut) {
                 res.Step += 1
             }
@@ -266,7 +270,7 @@ func (s *intelligentCabinetService) ExchangeResult(uid string) (res *model.Rider
             continue
         }
 
-        s.stepResult(index, c, res)
+        s.exchangeStepResultFromCache(index, c, res)
 
         if !res.Stop {
             ttl, _ := cache.TTL(s.ctx, key).Result()
@@ -279,7 +283,8 @@ func (s *intelligentCabinetService) ExchangeResult(uid string) (res *model.Rider
     return
 }
 
-func (s *intelligentCabinetService) stepResult(index int, c *model.ExchangeStepResultCache, res *model.RiderExchangeProcessRes) {
+// stepResult 获取换电步骤结果
+func (s *intelligentCabinetService) exchangeStepResultFromCache(index int, c *model.ExchangeStepResultCache, res *model.RiderExchangeProcessRes) {
     data := c.Results[index]
     res.Step = uint8(data.Step)
     res.Message = data.Message
@@ -290,21 +295,30 @@ func (s *intelligentCabinetService) stepResult(index int, c *model.ExchangeStepR
     res.Stop = data.Step == 4 || !data.Success
 }
 
-func (s *intelligentCabinetService) ExchangeCensorX(sub *ent.Subscribe, cab *ent.Cabinet) {
+// BusinessCensorX 校验用户是否可以使用智能柜办理业务
+func (s *intelligentCabinetService) BusinessCensorX(bus adapter.Business, sub *ent.Subscribe, cab *ent.Cabinet) (bat *ent.Battery) {
+    if !cab.Intelligent {
+        return
+    }
+
+    // 判定电柜状态
     if cab.Status == model.CabinetStatusMaintenance.Value() {
         snag.Panic("电柜开小差了, 请联系客服")
     }
 
-    if cab.Intelligent {
-        if !sub.Intelligent {
-            snag.Panic("套餐不匹配")
-        }
+    // 判定是否智能电柜套餐
+    if !sub.Intelligent {
+        snag.Panic("套餐不匹配")
+    }
+
+    // 业务如果需要电池, 查找电池信息
+    if bus.BatteryNeed() {
+        // 判定是否智能电池
         if sub.BatterySn == nil || sub.BatteryID == nil {
             snag.Panic("必须是智能电池")
         }
 
-        // 查找电池信息
-        bat, _ := NewBattery().QuerySn(*sub.BatterySn)
+        bat, _ = NewBattery().QuerySn(*sub.BatterySn)
         if bat == nil {
             snag.Panic("未找到电池信息")
         }
@@ -314,4 +328,125 @@ func (s *intelligentCabinetService) ExchangeCensorX(sub *ent.Subscribe, cab *ent
             snag.Panic("电池型号不兼容")
         }
     }
+
+    return
+}
+
+// BusinessUsable 获取可用的业务仓位信息
+func (s *intelligentCabinetService) BusinessUsable(bus adapter.Business, serial string) (uid string, index int, err error) {
+    var r *resty.Response
+    r, err = NewAdapter(ar.Config.Adapter.Kaixin.Api, s.rider).Post("/business/usable", &adapter.BusinuessUsableRequest{
+        Minsoc:   cache.Float64(model.SettingExchangeMinBattery),
+        Business: bus,
+        Serial:   serial,
+    })
+    if err != nil {
+        return
+    }
+
+    res := new(adapter.ResponseStuff[adapter.CabinetBinUsableResponse])
+    err = json.Unmarshal(r.Body(), &res)
+    if err != nil {
+        return
+    }
+
+    err = res.VerifyResponse()
+    if err != nil {
+        return
+    }
+
+    uid = res.Data.UUID
+    index = res.Data.BusinessBin.Ordinal - 1
+    return
+}
+
+// DoBusiness 请求办理业务
+func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Business, sub *ent.Subscribe, riderBat *ent.Battery, cab *ent.Cabinet) (info *model.BinInfo, batinfo *model.Battery, err error) {
+    defer func() {
+        // 缓存任务返回
+        data := &model.BusinessCabinetStatusRes{
+            Success: err == nil,
+            Stop:    true,
+        }
+        if err != nil {
+            data.Message = err.Error()
+        }
+        cache.Set(s.ctx, uidstr, data, 10*time.Minute)
+    }()
+
+    var uid uuid.UUID
+    uid, err = uuid.Parse(uidstr)
+    if err != nil {
+        return
+    }
+
+    var batterySN string
+    if riderBat != nil {
+        batterySN = riderBat.Sn
+    }
+
+    var r *resty.Response
+    r, err = NewAdapter(ar.Config.Adapter.Kaixin.Api, s.rider).Post("/business/do", &adapter.BusinessRequest{
+        UUID:     uid,
+        Business: bus,
+        Serial:   cab.Serial,
+        Timeout:  model.IntelligentBusinessStepTimeout,
+        Battery:  batterySN,
+    })
+
+    res := new(adapter.ResponseStuff[adapter.BusinessResponse])
+    err = json.Unmarshal(r.Body(), &res)
+    if err != nil {
+        return
+    }
+
+    err = res.VerifyResponse()
+    if err != nil {
+        return
+    }
+
+    // TODO 失败后电池信息是否更新
+    if res.Data.Error != "" {
+        err = errors.New(res.Data.Error)
+        return
+    }
+
+    var sn string
+    var putin bool
+    results := res.Data.Results
+
+    switch bus {
+    case adapter.BusinessActive, adapter.BusinessContinue:
+        sn = results[0].Before.BatterySN
+    case adapter.BusinessPause, adapter.BusinessUnsubscribe:
+        sn = results[1].After.BatterySN
+        putin = true
+    }
+
+    b := results[1].After
+    info = &model.BinInfo{
+        Index:       b.Ordinal - 1,
+        Electricity: model.BatteryElectricity(b.Soc),
+        Voltage:     b.Voltage,
+    }
+
+    bs := NewBattery(s.rider)
+    var bat *ent.Battery
+    if putin {
+        bat = bs.RiderPutin(sn, sub, cab)
+        // 更新订阅
+        _ = ent.Database.Subscribe.UpdateOneID(sub.ID).ClearBatterySn().ClearBatteryID().Exec(s.ctx)
+    } else {
+        bat = bs.RiderPutout(sn, sub)
+        // 更新订阅
+        _ = ent.Database.Subscribe.UpdateOneID(sub.ID).SetBatterySn(bat.Sn).SetBatteryID(bat.ID).Exec(s.ctx)
+    }
+
+    batinfo = &model.Battery{
+        ID:    bat.ID,
+        SN:    sn,
+        Model: bat.Model,
+    }
+
+    return
 }

@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
@@ -173,6 +174,26 @@ func (su *StockUpdate) SetNillableBrandID(u *uint64) *StockUpdate {
 // ClearBrandID clears the value of the "brand_id" field.
 func (su *StockUpdate) ClearBrandID() *StockUpdate {
 	su.mutation.ClearBrandID()
+	return su
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (su *StockUpdate) SetBatteryID(u uint64) *StockUpdate {
+	su.mutation.SetBatteryID(u)
+	return su
+}
+
+// SetNillableBatteryID sets the "battery_id" field if the given value is not nil.
+func (su *StockUpdate) SetNillableBatteryID(u *uint64) *StockUpdate {
+	if u != nil {
+		su.SetBatteryID(*u)
+	}
+	return su
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (su *StockUpdate) ClearBatteryID() *StockUpdate {
+	su.mutation.ClearBatteryID()
 	return su
 }
 
@@ -355,6 +376,11 @@ func (su *StockUpdate) SetBrand(e *EbikeBrand) *StockUpdate {
 	return su.SetBrandID(e.ID)
 }
 
+// SetBattery sets the "battery" edge to the Battery entity.
+func (su *StockUpdate) SetBattery(b *Battery) *StockUpdate {
+	return su.SetBatteryID(b.ID)
+}
+
 // SetStore sets the "store" edge to the Store entity.
 func (su *StockUpdate) SetStore(s *Store) *StockUpdate {
 	return su.SetStoreID(s.ID)
@@ -440,6 +466,12 @@ func (su *StockUpdate) ClearEbike() *StockUpdate {
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (su *StockUpdate) ClearBrand() *StockUpdate {
 	su.mutation.ClearBrand()
+	return su
+}
+
+// ClearBattery clears the "battery" edge to the Battery entity.
+func (su *StockUpdate) ClearBattery() *StockUpdate {
+	su.mutation.ClearBattery()
 	return su
 }
 
@@ -756,6 +788,41 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: ebikebrand.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if su.mutation.BatteryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.BatteryTable,
+			Columns: []string{stock.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: battery.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.BatteryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.BatteryTable,
+			Columns: []string{stock.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: battery.FieldID,
 				},
 			},
 		}
@@ -1188,6 +1255,26 @@ func (suo *StockUpdateOne) ClearBrandID() *StockUpdateOne {
 	return suo
 }
 
+// SetBatteryID sets the "battery_id" field.
+func (suo *StockUpdateOne) SetBatteryID(u uint64) *StockUpdateOne {
+	suo.mutation.SetBatteryID(u)
+	return suo
+}
+
+// SetNillableBatteryID sets the "battery_id" field if the given value is not nil.
+func (suo *StockUpdateOne) SetNillableBatteryID(u *uint64) *StockUpdateOne {
+	if u != nil {
+		suo.SetBatteryID(*u)
+	}
+	return suo
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (suo *StockUpdateOne) ClearBatteryID() *StockUpdateOne {
+	suo.mutation.ClearBatteryID()
+	return suo
+}
+
 // SetParentID sets the "parent_id" field.
 func (suo *StockUpdateOne) SetParentID(u uint64) *StockUpdateOne {
 	suo.mutation.SetParentID(u)
@@ -1367,6 +1454,11 @@ func (suo *StockUpdateOne) SetBrand(e *EbikeBrand) *StockUpdateOne {
 	return suo.SetBrandID(e.ID)
 }
 
+// SetBattery sets the "battery" edge to the Battery entity.
+func (suo *StockUpdateOne) SetBattery(b *Battery) *StockUpdateOne {
+	return suo.SetBatteryID(b.ID)
+}
+
 // SetStore sets the "store" edge to the Store entity.
 func (suo *StockUpdateOne) SetStore(s *Store) *StockUpdateOne {
 	return suo.SetStoreID(s.ID)
@@ -1452,6 +1544,12 @@ func (suo *StockUpdateOne) ClearEbike() *StockUpdateOne {
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (suo *StockUpdateOne) ClearBrand() *StockUpdateOne {
 	suo.mutation.ClearBrand()
+	return suo
+}
+
+// ClearBattery clears the "battery" edge to the Battery entity.
+func (suo *StockUpdateOne) ClearBattery() *StockUpdateOne {
+	suo.mutation.ClearBattery()
 	return suo
 }
 
@@ -1792,6 +1890,41 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: ebikebrand.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.BatteryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.BatteryTable,
+			Columns: []string{stock.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: battery.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.BatteryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.BatteryTable,
+			Columns: []string{stock.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: battery.FieldID,
 				},
 			},
 		}

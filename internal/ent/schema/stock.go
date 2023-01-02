@@ -72,6 +72,9 @@ func (Stock) Mixin() []ent.Mixin {
         // 电车
         EbikeMixin{Optional: true},
         EbikeBrandMixin{Optional: true},
+
+        // 电池
+        BatteryMixin{Optional: true},
     }
 }
 

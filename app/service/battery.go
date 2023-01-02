@@ -274,23 +274,24 @@ func (s *batteryService) Sync(data *adapter.BatteryMessage) {
 }
 
 // RiderPutout 骑手取走电池
-func (s *batteryService) RiderPutout(sn string, sub *ent.Subscribe) {
-    bat, _ := s.LoadOrStore(sn)
+func (s *batteryService) RiderPutout(sn string, sub *ent.Subscribe) (bat *ent.Battery) {
+    bat, _ = s.LoadOrStore(sn)
 
     if bat == nil {
         log.Error("电池订阅更新失败, 未找到电池信息")
         return
     }
 
-    // 更新订阅
-    _ = ent.Database.Subscribe.UpdateOneID(sub.ID).SetBatterySn(bat.Sn).SetBatteryID(bat.ID).Exec(s.ctx)
-
     // 更新电池
     _ = bat.Update().ClearCabinetID().SetRiderID(sub.RiderID).Exec(s.ctx)
+
+    return
 }
 
 // RiderPutin 骑手放入电池
-func (s *batteryService) RiderPutin(sn string, cab *ent.Cabinet) {
+func (s *batteryService) RiderPutin(sn string, sub *ent.Subscribe, cab *ent.Cabinet) (bat *ent.Battery) {
     // TODO 是否记录骑手信息?
-    _, _ = s.PutinCabinet(sn, cab)
+    bat, _ = s.PutinCabinet(sn, cab)
+
+    return
 }

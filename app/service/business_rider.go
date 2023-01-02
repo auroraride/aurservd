@@ -38,7 +38,7 @@ type businessRiderService struct {
     subscribe    *ent.Subscribe
     reserve      *ent.Reserve
 
-    task func() *model.BinInfo // 电柜任务
+    task func() (*model.BinInfo, *model.Battery, error) // 电柜任务
 
     storeID, employeeID, cabinetID, subscribeID *uint64
 
@@ -129,7 +129,7 @@ func (s *businessRiderService) SetEbike(info *model.EbikeBusinessInfo) *business
     return s
 }
 
-func (s *businessRiderService) SetTask(task func() *model.BinInfo) *businessRiderService {
+func (s *businessRiderService) SetTask(task func() (*model.BinInfo, *model.Battery, error)) *businessRiderService {
     if task != nil {
         s.task = task
     }
@@ -352,14 +352,14 @@ func (s *businessRiderService) preprocess(bt business.Type, sub *ent.Subscribe) 
 }
 
 // doTask 处理电柜任务
-func (s *businessRiderService) doTask() (bin *model.BinInfo, err error) {
+func (s *businessRiderService) doTask() (bin *model.BinInfo, bat *model.Battery, err error) {
     defer func() {
         if v := recover(); v != nil {
             err = fmt.Errorf("%v", v)
         }
     }()
 
-    bin = s.task()
+    bin, bat, err = s.task()
     return
 }
 
@@ -397,8 +397,9 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
     var err error
 
     // 放入电池优先执行
+    var bat *model.Battery
     if s.task != nil && (bt == business.TypePause || bt == business.TypeUnsubscribe) {
-        bin, err = s.doTask()
+        bin, bat, err = s.doTask()
         if err != nil {
             snag.Panic(err)
         }
@@ -410,8 +411,9 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
         co, _ = ent.Database.Commission.QueryNotDeleted().Where(commission.SubscribeID(s.subscribe.ID)).First(s.ctx)
     }
 
+    // 库存管理
+    // TODO 智能电池
     var sk *ent.Stock
-
     ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
         cb(tx)
 
@@ -428,7 +430,8 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
                 CabinetID:   s.cabinetID,
                 SubscribeID: s.subscribeID,
 
-                Ebike: s.ebikeInfo,
+                Ebike:   s.ebikeInfo,
+                Battery: bat,
             },
         )
 
@@ -439,11 +442,14 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
         return err
     })
 
-    // 取出电池优后执行
+    // 取出电池滞后执行
     if s.task != nil && (bt == business.TypeActive || bt == business.TypeContinue) {
-        bin, err = s.doTask()
+        bin, bat, err = s.doTask()
         if err != nil {
             log.Error(err)
+        }
+        if bat != nil && s.cabinet.Intelligent {
+            _ = sk.Update().SetBatteryID(bat.ID).Exec(s.ctx)
         }
     }
 
@@ -456,6 +462,7 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
         SetStore(s.store).
         SetBinInfo(bin).
         SetStock(sk).
+        SetBattery(bat).
         Save(bt)
     var bussinessID *uint64
     revStatus := model.ReserveStatusFail

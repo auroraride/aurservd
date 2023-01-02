@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -235,6 +236,26 @@ func (bu *BusinessUpdate) ClearCabinetID() *BusinessUpdate {
 	return bu
 }
 
+// SetBatteryID sets the "battery_id" field.
+func (bu *BusinessUpdate) SetBatteryID(u uint64) *BusinessUpdate {
+	bu.mutation.SetBatteryID(u)
+	return bu
+}
+
+// SetNillableBatteryID sets the "battery_id" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableBatteryID(u *uint64) *BusinessUpdate {
+	if u != nil {
+		bu.SetBatteryID(*u)
+	}
+	return bu
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (bu *BusinessUpdate) ClearBatteryID() *BusinessUpdate {
+	bu.mutation.ClearBatteryID()
+	return bu
+}
+
 // SetType sets the "type" field.
 func (bu *BusinessUpdate) SetType(b business.Type) *BusinessUpdate {
 	bu.mutation.SetType(b)
@@ -318,6 +339,11 @@ func (bu *BusinessUpdate) SetCabinet(c *Cabinet) *BusinessUpdate {
 	return bu.SetCabinetID(c.ID)
 }
 
+// SetBattery sets the "battery" edge to the Battery entity.
+func (bu *BusinessUpdate) SetBattery(b *Battery) *BusinessUpdate {
+	return bu.SetBatteryID(b.ID)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (bu *BusinessUpdate) Mutation() *BusinessMutation {
 	return bu.mutation
@@ -374,6 +400,12 @@ func (bu *BusinessUpdate) ClearStation() *BusinessUpdate {
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (bu *BusinessUpdate) ClearCabinet() *BusinessUpdate {
 	bu.mutation.ClearCabinet()
+	return bu
+}
+
+// ClearBattery clears the "battery" edge to the Battery entity.
+func (bu *BusinessUpdate) ClearBattery() *BusinessUpdate {
+	bu.mutation.ClearBattery()
 	return bu
 }
 
@@ -819,6 +851,41 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if bu.mutation.BatteryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   business.BatteryTable,
+			Columns: []string{business.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: battery.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.BatteryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   business.BatteryTable,
+			Columns: []string{business.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: battery.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(bu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -1037,6 +1104,26 @@ func (buo *BusinessUpdateOne) ClearCabinetID() *BusinessUpdateOne {
 	return buo
 }
 
+// SetBatteryID sets the "battery_id" field.
+func (buo *BusinessUpdateOne) SetBatteryID(u uint64) *BusinessUpdateOne {
+	buo.mutation.SetBatteryID(u)
+	return buo
+}
+
+// SetNillableBatteryID sets the "battery_id" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableBatteryID(u *uint64) *BusinessUpdateOne {
+	if u != nil {
+		buo.SetBatteryID(*u)
+	}
+	return buo
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (buo *BusinessUpdateOne) ClearBatteryID() *BusinessUpdateOne {
+	buo.mutation.ClearBatteryID()
+	return buo
+}
+
 // SetType sets the "type" field.
 func (buo *BusinessUpdateOne) SetType(b business.Type) *BusinessUpdateOne {
 	buo.mutation.SetType(b)
@@ -1120,6 +1207,11 @@ func (buo *BusinessUpdateOne) SetCabinet(c *Cabinet) *BusinessUpdateOne {
 	return buo.SetCabinetID(c.ID)
 }
 
+// SetBattery sets the "battery" edge to the Battery entity.
+func (buo *BusinessUpdateOne) SetBattery(b *Battery) *BusinessUpdateOne {
+	return buo.SetBatteryID(b.ID)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (buo *BusinessUpdateOne) Mutation() *BusinessMutation {
 	return buo.mutation
@@ -1176,6 +1268,12 @@ func (buo *BusinessUpdateOne) ClearStation() *BusinessUpdateOne {
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (buo *BusinessUpdateOne) ClearCabinet() *BusinessUpdateOne {
 	buo.mutation.ClearCabinet()
+	return buo
+}
+
+// ClearBattery clears the "battery" edge to the Battery entity.
+func (buo *BusinessUpdateOne) ClearBattery() *BusinessUpdateOne {
+	buo.mutation.ClearBattery()
 	return buo
 }
 
@@ -1637,6 +1735,41 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: cabinet.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.BatteryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   business.BatteryTable,
+			Columns: []string{business.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: battery.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.BatteryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   business.BatteryTable,
+			Columns: []string{business.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: battery.FieldID,
 				},
 			},
 		}

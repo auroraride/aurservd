@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
@@ -151,6 +152,20 @@ func (sc *StockCreate) SetBrandID(u uint64) *StockCreate {
 func (sc *StockCreate) SetNillableBrandID(u *uint64) *StockCreate {
 	if u != nil {
 		sc.SetBrandID(*u)
+	}
+	return sc
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (sc *StockCreate) SetBatteryID(u uint64) *StockCreate {
+	sc.mutation.SetBatteryID(u)
+	return sc
+}
+
+// SetNillableBatteryID sets the "battery_id" field if the given value is not nil.
+func (sc *StockCreate) SetNillableBatteryID(u *uint64) *StockCreate {
+	if u != nil {
+		sc.SetBatteryID(*u)
 	}
 	return sc
 }
@@ -295,6 +310,11 @@ func (sc *StockCreate) SetEbike(e *Ebike) *StockCreate {
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (sc *StockCreate) SetBrand(e *EbikeBrand) *StockCreate {
 	return sc.SetBrandID(e.ID)
+}
+
+// SetBattery sets the "battery" edge to the Battery entity.
+func (sc *StockCreate) SetBattery(b *Battery) *StockCreate {
+	return sc.SetBatteryID(b.ID)
 }
 
 // SetStore sets the "store" edge to the Store entity.
@@ -601,6 +621,26 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.BrandID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.BatteryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.BatteryTable,
+			Columns: []string{stock.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: battery.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.BatteryID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := sc.mutation.StoreIDs(); len(nodes) > 0 {
@@ -929,6 +969,24 @@ func (u *StockUpsert) UpdateBrandID() *StockUpsert {
 // ClearBrandID clears the value of the "brand_id" field.
 func (u *StockUpsert) ClearBrandID() *StockUpsert {
 	u.SetNull(stock.FieldBrandID)
+	return u
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (u *StockUpsert) SetBatteryID(v uint64) *StockUpsert {
+	u.Set(stock.FieldBatteryID, v)
+	return u
+}
+
+// UpdateBatteryID sets the "battery_id" field to the value that was provided on create.
+func (u *StockUpsert) UpdateBatteryID() *StockUpsert {
+	u.SetExcluded(stock.FieldBatteryID)
+	return u
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (u *StockUpsert) ClearBatteryID() *StockUpsert {
+	u.SetNull(stock.FieldBatteryID)
 	return u
 }
 
@@ -1303,6 +1361,27 @@ func (u *StockUpsertOne) UpdateBrandID() *StockUpsertOne {
 func (u *StockUpsertOne) ClearBrandID() *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
 		s.ClearBrandID()
+	})
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (u *StockUpsertOne) SetBatteryID(v uint64) *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.SetBatteryID(v)
+	})
+}
+
+// UpdateBatteryID sets the "battery_id" field to the value that was provided on create.
+func (u *StockUpsertOne) UpdateBatteryID() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateBatteryID()
+	})
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (u *StockUpsertOne) ClearBatteryID() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.ClearBatteryID()
 	})
 }
 
@@ -1866,6 +1945,27 @@ func (u *StockUpsertBulk) UpdateBrandID() *StockUpsertBulk {
 func (u *StockUpsertBulk) ClearBrandID() *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
 		s.ClearBrandID()
+	})
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (u *StockUpsertBulk) SetBatteryID(v uint64) *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.SetBatteryID(v)
+	})
+}
+
+// UpdateBatteryID sets the "battery_id" field to the value that was provided on create.
+func (u *StockUpsertBulk) UpdateBatteryID() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateBatteryID()
+	})
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (u *StockUpsertBulk) ClearBatteryID() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.ClearBatteryID()
 	})
 }
 

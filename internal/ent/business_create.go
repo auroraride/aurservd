@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -202,6 +203,20 @@ func (bc *BusinessCreate) SetNillableCabinetID(u *uint64) *BusinessCreate {
 	return bc
 }
 
+// SetBatteryID sets the "battery_id" field.
+func (bc *BusinessCreate) SetBatteryID(u uint64) *BusinessCreate {
+	bc.mutation.SetBatteryID(u)
+	return bc
+}
+
+// SetNillableBatteryID sets the "battery_id" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillableBatteryID(u *uint64) *BusinessCreate {
+	if u != nil {
+		bc.SetBatteryID(*u)
+	}
+	return bc
+}
+
 // SetType sets the "type" field.
 func (bc *BusinessCreate) SetType(b business.Type) *BusinessCreate {
 	bc.mutation.SetType(b)
@@ -271,6 +286,11 @@ func (bc *BusinessCreate) SetStation(e *EnterpriseStation) *BusinessCreate {
 // SetCabinet sets the "cabinet" edge to the Cabinet entity.
 func (bc *BusinessCreate) SetCabinet(c *Cabinet) *BusinessCreate {
 	return bc.SetCabinetID(c.ID)
+}
+
+// SetBattery sets the "battery" edge to the Battery entity.
+func (bc *BusinessCreate) SetBattery(b *Battery) *BusinessCreate {
+	return bc.SetBatteryID(b.ID)
 }
 
 // Mutation returns the BusinessMutation object of the builder.
@@ -610,6 +630,26 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 		_node.CabinetID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := bc.mutation.BatteryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   business.BatteryTable,
+			Columns: []string{business.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: battery.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.BatteryID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -869,6 +909,24 @@ func (u *BusinessUpsert) UpdateCabinetID() *BusinessUpsert {
 // ClearCabinetID clears the value of the "cabinet_id" field.
 func (u *BusinessUpsert) ClearCabinetID() *BusinessUpsert {
 	u.SetNull(business.FieldCabinetID)
+	return u
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (u *BusinessUpsert) SetBatteryID(v uint64) *BusinessUpsert {
+	u.Set(business.FieldBatteryID, v)
+	return u
+}
+
+// UpdateBatteryID sets the "battery_id" field to the value that was provided on create.
+func (u *BusinessUpsert) UpdateBatteryID() *BusinessUpsert {
+	u.SetExcluded(business.FieldBatteryID)
+	return u
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (u *BusinessUpsert) ClearBatteryID() *BusinessUpsert {
+	u.SetNull(business.FieldBatteryID)
 	return u
 }
 
@@ -1210,6 +1268,27 @@ func (u *BusinessUpsertOne) UpdateCabinetID() *BusinessUpsertOne {
 func (u *BusinessUpsertOne) ClearCabinetID() *BusinessUpsertOne {
 	return u.Update(func(s *BusinessUpsert) {
 		s.ClearCabinetID()
+	})
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (u *BusinessUpsertOne) SetBatteryID(v uint64) *BusinessUpsertOne {
+	return u.Update(func(s *BusinessUpsert) {
+		s.SetBatteryID(v)
+	})
+}
+
+// UpdateBatteryID sets the "battery_id" field to the value that was provided on create.
+func (u *BusinessUpsertOne) UpdateBatteryID() *BusinessUpsertOne {
+	return u.Update(func(s *BusinessUpsert) {
+		s.UpdateBatteryID()
+	})
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (u *BusinessUpsertOne) ClearBatteryID() *BusinessUpsertOne {
+	return u.Update(func(s *BusinessUpsert) {
+		s.ClearBatteryID()
 	})
 }
 
@@ -1721,6 +1800,27 @@ func (u *BusinessUpsertBulk) UpdateCabinetID() *BusinessUpsertBulk {
 func (u *BusinessUpsertBulk) ClearCabinetID() *BusinessUpsertBulk {
 	return u.Update(func(s *BusinessUpsert) {
 		s.ClearCabinetID()
+	})
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (u *BusinessUpsertBulk) SetBatteryID(v uint64) *BusinessUpsertBulk {
+	return u.Update(func(s *BusinessUpsert) {
+		s.SetBatteryID(v)
+	})
+}
+
+// UpdateBatteryID sets the "battery_id" field to the value that was provided on create.
+func (u *BusinessUpsertBulk) UpdateBatteryID() *BusinessUpsertBulk {
+	return u.Update(func(s *BusinessUpsert) {
+		s.UpdateBatteryID()
+	})
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (u *BusinessUpsertBulk) ClearBatteryID() *BusinessUpsertBulk {
+	return u.Update(func(s *BusinessUpsert) {
+		s.ClearBatteryID()
 	})
 }
 

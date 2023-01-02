@@ -632,6 +632,7 @@ var (
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "station_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "battery_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// BusinessTable holds the schema information for the "business" table.
 	BusinessTable = &schema.Table{
@@ -693,6 +694,12 @@ var (
 				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
+			{
+				Symbol:     "business_battery_battery",
+				Columns:    []*schema.Column{BusinessColumns[19]},
+				RefColumns: []*schema.Column{BatteryColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
 		},
 		Indexes: []*schema.Index{
 			{
@@ -749,6 +756,11 @@ var (
 				Name:    "business_cabinet_id",
 				Unique:  false,
 				Columns: []*schema.Column{BusinessColumns[18]},
+			},
+			{
+				Name:    "business_battery_id",
+				Unique:  false,
+				Columns: []*schema.Column{BusinessColumns[19]},
 			},
 			{
 				Name:    "business_type",
@@ -3246,6 +3258,7 @@ var (
 		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "ebike_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "battery_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "stock_spouse", Type: field.TypeUint64, Unique: true, Nullable: true},
 		{Name: "parent_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
@@ -3299,20 +3312,26 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "stock_stock_spouse",
+				Symbol:     "stock_battery_battery",
 				Columns:    []*schema.Column{StockColumns[20]},
-				RefColumns: []*schema.Column{StockColumns[0]},
+				RefColumns: []*schema.Column{BatteryColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "stock_stock_children",
+				Symbol:     "stock_stock_spouse",
 				Columns:    []*schema.Column{StockColumns[21]},
 				RefColumns: []*schema.Column{StockColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "stock_store_stocks",
+				Symbol:     "stock_stock_children",
 				Columns:    []*schema.Column{StockColumns[22]},
+				RefColumns: []*schema.Column{StockColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "stock_store_stocks",
+				Columns:    []*schema.Column{StockColumns[23]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -3359,9 +3378,14 @@ var (
 				Columns: []*schema.Column{StockColumns[19]},
 			},
 			{
+				Name:    "stock_battery_id",
+				Unique:  false,
+				Columns: []*schema.Column{StockColumns[20]},
+			},
+			{
 				Name:    "stock_store_id",
 				Unique:  false,
-				Columns: []*schema.Column{StockColumns[22]},
+				Columns: []*schema.Column{StockColumns[23]},
 			},
 			{
 				Name:    "stock_cabinet_id",
@@ -3401,7 +3425,7 @@ var (
 			{
 				Name:    "stock_parent_id",
 				Unique:  false,
-				Columns: []*schema.Column{StockColumns[21]},
+				Columns: []*schema.Column{StockColumns[22]},
 			},
 			{
 				Name:    "stock_name",
@@ -4280,6 +4304,7 @@ func init() {
 	BusinessTable.ForeignKeys[6].RefTable = EnterpriseTable
 	BusinessTable.ForeignKeys[7].RefTable = EnterpriseStationTable
 	BusinessTable.ForeignKeys[8].RefTable = CabinetTable
+	BusinessTable.ForeignKeys[9].RefTable = BatteryTable
 	BusinessTable.Annotation = &entsql.Annotation{
 		Table: "business",
 	}
@@ -4467,9 +4492,10 @@ func init() {
 	StockTable.ForeignKeys[4].RefTable = SubscribeTable
 	StockTable.ForeignKeys[5].RefTable = EbikeTable
 	StockTable.ForeignKeys[6].RefTable = EbikeBrandTable
-	StockTable.ForeignKeys[7].RefTable = StockTable
+	StockTable.ForeignKeys[7].RefTable = BatteryTable
 	StockTable.ForeignKeys[8].RefTable = StockTable
-	StockTable.ForeignKeys[9].RefTable = StoreTable
+	StockTable.ForeignKeys[9].RefTable = StockTable
+	StockTable.ForeignKeys[10].RefTable = StoreTable
 	StockTable.Annotation = &entsql.Annotation{
 		Table: "stock",
 	}

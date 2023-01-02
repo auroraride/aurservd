@@ -5,7 +5,9 @@
 
 package model
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+    "github.com/goccy/go-json"
+)
 
 type BusinessSubscribeReq struct {
     ID        uint64  `json:"id" validate:"required" trans:"订阅ID"`
@@ -24,13 +26,21 @@ type BusinessCabinetStatus struct {
 }
 
 type BusinessCabinetStatusReq struct {
-    UUID primitive.ObjectID `json:"uuid" validate:"required" query:"uuid" trans:"操作ID"`
+    UUID string `json:"uuid" validate:"required" query:"uuid" trans:"操作ID"`
 }
 
 type BusinessCabinetStatusRes struct {
     Success bool   `json:"success"` // 是否成功
     Stop    bool   `json:"stop"`    // 是否终止
     Message string `json:"message"` // 失败消息
+}
+
+func (r *BusinessCabinetStatusRes) MarshalBinary() ([]byte, error) {
+    return json.Marshal(r)
+}
+
+func (r *BusinessCabinetStatusRes) UnmarshalBinary(data []byte) error {
+    return json.Unmarshal(data, r)
 }
 
 type BusinessPauseInfoRes struct {

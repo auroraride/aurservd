@@ -8,17 +8,19 @@ package service
 import (
     "context"
     "fmt"
+    "github.com/auroraride/adapter"
     "github.com/auroraride/aurservd/app/ec"
-    "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/allocate"
     "github.com/auroraride/aurservd/internal/ent/business"
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
+    "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
     log "github.com/sirupsen/logrus"
+    "go.mongodb.org/mongo-driver/bson/primitive"
     "time"
 )
 
@@ -29,7 +31,6 @@ type riderBusinessService struct {
     ctx     context.Context
     rider   *ent.Rider
     maxTime time.Duration // 单步骤最大处理时长
-    logger  *logging.ExchangeLog
 
     cabinet   *ent.Cabinet
     subscribe *ent.Subscribe
@@ -39,6 +40,10 @@ type riderBusinessService struct {
     empty *model.BinInfo
 
     bt business.Type
+
+    battery *ent.Battery
+
+    response model.BusinessCabinetStatus
 }
 
 func NewRiderBusiness(rider *ent.Rider) *riderBusinessService {
@@ -58,6 +63,7 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
     cs := NewCabinet()
 
     cab := cs.QueryOneSerialX(serial)
+    // TODO 智能电池是否需要调拨
     if !cab.Transferred {
         snag.Panic("电柜资产异常")
     }
@@ -72,6 +78,8 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
         snag.Panic("车电订阅无法自主办理业务")
     }
 
+    s.bt = bt
+    s.cabinet = cab
     s.subscribe = sub
 
     // 检查可用电池型号
@@ -82,80 +90,96 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
     // 查询电柜是否可使用
     NewCabinet().BusinessableX(cab)
 
-    ec.BusyX(serial)
+    // 判定是否智能电柜
+    if cab.Intelligent {
+        bus, _ := NewBusiness().Convert(bt)
 
-    err := NewCabinet().UpdateStatus(cab)
-    if err != nil {
-        snag.Panic(err)
+        // 验证是否可以办理业务
+        s.battery = NewIntelligentCabinet(s.rider).BusinessCensorX(bus, sub, cab)
+
+        // 获取仓位信息
+        var err error
+        s.response.UUID, s.response.Index, err = NewIntelligentCabinet(s.rider).BusinessUsable(bus, cab.Serial)
+        if err != nil {
+            snag.Panic(err)
+        }
+    } else {
+        ec.BusyX(serial)
+        err := NewCabinet().UpdateStatus(cab)
+        if err != nil {
+            snag.Panic(err)
+        }
+
+        max, empty := cab.Bin.MaxEmpty()
+        var bn, en int
+        for _, bin := range cab.Bin {
+            // 仓位锁仓跳过计算
+            if !bin.DoorHealth {
+                continue
+            }
+            if bin.Battery {
+                // 有电池
+                bn += 1
+            } else {
+                // 无电池
+                en += 1
+            }
+        }
+
+        var target *model.BinInfo
+        switch bt {
+        case business.TypePause, business.TypeUnsubscribe:
+            if en < 2 {
+                snag.Panic("仓位不足, 无法处理当前业务")
+            }
+            if empty == nil {
+                snag.Panic("电柜异常")
+            }
+            s.empty = &model.BinInfo{Index: empty.Index}
+            target = s.empty
+            break
+        case business.TypeActive, business.TypeContinue:
+            if bn < 2 {
+                snag.Panic("电池不足, 无法处理当前业务")
+            }
+            if max == nil {
+                snag.Panic("电柜异常")
+            }
+            s.max = &model.BinInfo{
+                Index:       max.Index,
+                Electricity: max.Electricity,
+                Voltage:     max.Voltage,
+            }
+            target = s.max
+            break
+        }
+
+        jobs := map[business.Type]ec.Job{
+            business.TypeActive:      ec.JobRiderActive,
+            business.TypeUnsubscribe: ec.JobRiderUnSubscribe,
+            business.TypePause:       ec.JobPause,
+            business.TypeContinue:    ec.JobContinue,
+        }
+
+        task := &ec.Task{
+            Job:       jobs[bt],
+            Serial:    cab.Serial,
+            CabinetID: cab.ID,
+            Cabinet:   cab.GetTaskInfo(),
+            Rider: &ec.Rider{
+                ID:    s.rider.ID,
+                Name:  s.rider.Name,
+                Phone: s.rider.Phone,
+            },
+        }
+        s.task = task.CreateX()
+
+        s.response.UUID = s.task.ID.Hex()
+        s.response.Index = target.Index
     }
-
-    max, empty := cab.Bin.MaxEmpty()
-
-    var bn, en int
-
-    for _, bin := range cab.Bin {
-        // 仓位锁仓跳过计算
-        if !bin.DoorHealth {
-            continue
-        }
-        if bin.Battery {
-            // 有电池
-            bn += 1
-        } else {
-            // 无电池
-            en += 1
-        }
-    }
-
-    switch bt {
-    case business.TypePause, business.TypeUnsubscribe:
-        if en < 2 {
-            snag.Panic("仓位不足, 无法处理当前业务")
-        }
-        if empty == nil {
-            snag.Panic("电柜异常")
-        }
-        s.empty = &model.BinInfo{Index: empty.Index}
-        break
-    case business.TypeActive, business.TypeContinue:
-        if bn < 2 {
-            snag.Panic("电池不足, 无法处理当前业务")
-        }
-        if max == nil {
-            snag.Panic("电柜异常")
-        }
-        s.max = &model.BinInfo{
-            Index:       max.Index,
-            Electricity: max.Electricity,
-            Voltage:     max.Voltage,
-        }
-        break
-    }
-
-    s.bt = bt
-    s.cabinet = cab
-
-    jobs := map[business.Type]ec.Job{
-        business.TypeActive:      ec.JobRiderActive,
-        business.TypeUnsubscribe: ec.JobRiderUnSubscribe,
-        business.TypePause:       ec.JobPause,
-        business.TypeContinue:    ec.JobContinue,
-    }
-
-    task := &ec.Task{
-        Job:       jobs[bt],
-        Serial:    cab.Serial,
-        CabinetID: cab.ID,
-        Cabinet:   cab.GetTaskInfo(),
-        Rider: &ec.Rider{
-            ID:    s.rider.ID,
-            Name:  s.rider.Name,
-            Phone: s.rider.Phone,
-        },
-    }
-    s.task = task.CreateX()
 }
 
+// 非智能电柜 - 开仓
 func (s *riderBusinessService) open(bin *model.BinInfo, remark string) (status bool, err error) {
     s.task.Start()
     s.task.BussinessBinInfo = bin
@@ -177,7 +201,8 @@ func (s *riderBusinessService) open(bin *model.BinInfo, remark string) (status b
     return
 }
 
-func (s *riderBusinessService) putin() *model.BinInfo {
+// 非智能电柜 - 放入电池
+func (s *riderBusinessService) putin() (*model.BinInfo, *model.Battery, error) {
     status, err := s.open(s.empty, model.RiderCabinetOperateReasonEmpty)
     ts := s.task.Status
 
@@ -194,16 +219,16 @@ func (s *riderBusinessService) putin() *model.BinInfo {
     }
 
     for {
-        ds := s.battery()
+        ds := s.batteryDetect()
         if ds == ec.DoorStatusClose {
             // 强制睡眠两秒: 原因是有可能柜门会晃动导致似关非关, 延时来获取正确状态
             time.Sleep(2 * time.Second)
-            ds = s.battery()
+            ds = s.batteryDetect()
         }
         switch ds {
         case ec.DoorStatusClose:
             ts = ec.TaskStatusSuccess
-            return s.empty
+            return s.empty, nil, nil
         case ec.DoorStatusOpen:
             ts = ec.TaskStatusProcessing
             break
@@ -230,8 +255,8 @@ func (s *riderBusinessService) putin() *model.BinInfo {
     }
 }
 
-// battery 电池检测
-func (s *riderBusinessService) battery() (ds ec.DoorStatus) {
+// 非智能电柜 - 电池检测
+func (s *riderBusinessService) batteryDetect() (ds ec.DoorStatus) {
     ds = NewCabinet().DoorOpenStatus(s.cabinet, s.empty.Index)
     cbin := s.cabinet.Bin[s.empty.Index]
     pe := cbin.Electricity
@@ -261,11 +286,12 @@ func (s *riderBusinessService) battery() (ds ec.DoorStatus) {
         return ec.DoorStatusBatteryEmpty
     } else {
         time.Sleep(1 * time.Second)
-        return s.battery()
+        return s.batteryDetect()
     }
 }
 
-func (s *riderBusinessService) putout() *model.BinInfo {
+// 非智能电柜 - 取走电池
+func (s *riderBusinessService) putout() (*model.BinInfo, *model.Battery, error) {
     status, err := s.open(s.max, model.RiderCabinetOperateReasonFull)
 
     defer func() {
@@ -280,10 +306,11 @@ func (s *riderBusinessService) putout() *model.BinInfo {
         snag.Panic(err)
     }
 
-    return s.max
+    return s.max, nil, nil
 }
 
 // Active 骑手自主激活
+// TODO 分配信息是否需要记录电池编号
 func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.BusinessCabinetStatus {
     // 预处理
     s.preprocess(req.Serial, business.TypeActive)
@@ -330,18 +357,19 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
         snag.Panic("未找到分配信息")
     }
 
-    srv := NewBusinessRider(s.rider)
-    srv.SetCabinet(s.cabinet).
-        SetTask(func() *model.BinInfo {
+    NewBusinessRider(s.rider).
+        SetCabinet(s.cabinet).
+        SetTask(func() (*model.BinInfo, *model.Battery, error) {
             // 更新分配信息
             _ = allo.Update().SetStatus(model.AllocateStatusSigned.Value()).SetCabinetID(s.cabinet.ID).Exec(s.ctx)
+            if s.cabinet.Intelligent {
+                return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessActive, s.subscribe, nil, s.cabinet)
+            }
             return s.putout()
         }).
         Active(s.subscribe, allo)
-    return model.BusinessCabinetStatus{
-        UUID:  s.task.ID.Hex(),
-        Index: s.max.Index,
-    }
+
+    return s.response
 }
 
 func (s *riderBusinessService) Continue(req *model.BusinessCabinetReq) model.BusinessCabinetStatus {
@@ -350,13 +378,29 @@ func (s *riderBusinessService) Continue(req *model.BusinessCabinetReq) model.Bus
         snag.Panic("骑士卡状态错误")
     }
 
-    NewBusinessRider(s.rider).SetTask(func() *model.BinInfo {
-        return s.putout()
-    }).SetCabinet(s.cabinet).Continue(req.ID)
-    return model.BusinessCabinetStatus{
-        UUID:  s.task.ID.Hex(),
-        Index: s.max.Index,
-    }
+    // ↓ 2023-01-02 添加了异步操作
+    go func() {
+        err := snag.WithPanic(func() {
+            // ↑ 2023-01-02 添加了异步操作
+            NewBusinessRider(s.rider).
+                SetCabinet(s.cabinet).
+                SetTask(func() (*model.BinInfo, *model.Battery, error) {
+                    if s.cabinet.Intelligent {
+                        return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessContinue, s.subscribe, nil, s.cabinet)
+                    }
+                    return s.putout()
+                }).
+                Continue(req.ID)
+            // ↓ 2023-01-02 添加了异步操作
+        })
+
+        if err != nil {
+            log.Error(err)
+        }
+    }()
+    // ↑ 2023-01-02 添加了异步操作
+
+    return s.response
 }
 
 func (s *riderBusinessService) Unsubscribe(req *model.BusinessCabinetReq) model.BusinessCabinetStatus {
@@ -367,9 +411,15 @@ func (s *riderBusinessService) Unsubscribe(req *model.BusinessCabinetReq) model.
 
     go func() {
         err := snag.WithPanic(func() {
-            NewBusinessRider(s.rider).SetTask(func() *model.BinInfo {
-                return s.putin()
-            }).SetCabinet(s.cabinet).UnSubscribe(req.ID)
+            NewBusinessRider(s.rider).
+                SetCabinet(s.cabinet).
+                SetTask(func() (*model.BinInfo, *model.Battery, error) {
+                    if s.cabinet.Intelligent {
+                        return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessUnsubscribe, s.subscribe, s.battery, s.cabinet)
+                    }
+                    return s.putin()
+                }).
+                UnSubscribe(req.ID)
         })
 
         if err != nil {
@@ -377,10 +427,7 @@ func (s *riderBusinessService) Unsubscribe(req *model.BusinessCabinetReq) model.
         }
     }()
 
-    return model.BusinessCabinetStatus{
-        UUID:  s.task.ID.Hex(),
-        Index: s.empty.Index,
-    }
+    return s.response
 }
 
 func (s *riderBusinessService) Pause(req *model.BusinessCabinetReq) model.BusinessCabinetStatus {
@@ -390,40 +437,46 @@ func (s *riderBusinessService) Pause(req *model.BusinessCabinetReq) model.Busine
     }
 
     go func() {
-        err := snag.WithPanic(
-            func() {
-                NewBusinessRider(s.rider).
-                    SetTask(func() *model.BinInfo {
-                        return s.putin()
-                    }).
-                    SetCabinet(s.cabinet).
-                    Pause(req.ID)
-            },
-        )
+        err := snag.WithPanic(func() {
+            NewBusinessRider(s.rider).
+                SetTask(func() (*model.BinInfo, *model.Battery, error) {
+                    if s.cabinet.Intelligent {
+                        return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessPause, s.subscribe, s.battery, s.cabinet)
+                    }
+                    return s.putin()
+                }).
+                SetCabinet(s.cabinet).
+                Pause(req.ID)
+        })
         if err != nil {
             log.Error(err)
         }
     }()
 
-    return model.BusinessCabinetStatus{
-        UUID:  s.task.ID.Hex(),
-        Index: s.empty.Index,
-    }
+    return s.response
 }
 
 // Status 业务操作状态
 func (s *riderBusinessService) Status(req *model.BusinessCabinetStatusReq) (res model.BusinessCabinetStatusRes) {
     start := time.Now()
     for {
-        task := ec.QueryID(req.UUID)
-        if task == nil {
-            snag.Panic("未找到业务操作")
+        // 通过ID类型判断是否智能柜业务
+        // 尝试解析mongodb id, 若成功解析, 则是非智能柜业务
+        taskID, err := primitive.ObjectIDFromHex(req.UUID)
+        if err == nil {
+            t := ec.QueryID(taskID)
+            if t == nil {
+                snag.Panic("未找到业务操作")
+            }
+            if t.Status == ec.TaskStatusFail || t.Status == ec.TaskStatusSuccess {
+                res.Success = t.Status == ec.TaskStatusSuccess
+                res.Stop = true
+                res.Message = t.Message
+            }
+        } else {
+            _ = cache.Get(s.ctx, req.UUID).Scan(&res)
         }
-        if task.Status == ec.TaskStatusFail || task.Status == ec.TaskStatusSuccess {
-            res.Success = task.Status == ec.TaskStatusSuccess
-            res.Stop = true
-            res.Message = task.Message
-        }
+
         if res.Stop || time.Now().Sub(start).Seconds() > 30 {
             return
         }

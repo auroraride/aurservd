@@ -10,6 +10,7 @@ import (
     "entgo.io/ent/dialect/sql"
     "entgo.io/ent/dialect/sql/sqljson"
     "fmt"
+    "github.com/auroraride/adapter"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -592,4 +593,19 @@ func (s *businessService) Export(req *model.BusinessExportReq) model.ExportRes {
         }
         tools.NewExcel(path).AddValues(rows).Done()
     })
+}
+
+func (s *businessService) Convert(bus business.Type) (adapter.Business, error) {
+    switch bus {
+    default:
+        return "", adapter.ErrorBusiness
+    case business.TypeActive:
+        return adapter.BusinessActive, nil
+    case business.TypePause:
+        return adapter.BusinessPause, nil
+    case business.TypeContinue:
+        return adapter.BusinessContinue, nil
+    case business.TypeUnsubscribe:
+        return adapter.BusinessUnsubscribe, nil
+    }
 }

@@ -6,9 +6,9 @@
 package model
 
 const (
-    IntelligentBatteryFullSoc  float64 = 95.0 // 智能电池定义满电soc TODO: 具体数值待定义
-    IntelligentScanExpires     int64   = 30   // 智能电柜换电 - 扫码有效期(s)
-    IntelligentExchangeTimeout int64   = 120  // 智能电柜换电 - 操作超时(s)
+    IntelligentBatteryFullSoc      float64 = 95.0 // 智能电池定义满电soc TODO: 具体数值待定义
+    IntelligentBusinessScanExpires int64   = 30   // 智能电柜业务 - 扫码有效期(s)
+    IntelligentBusinessStepTimeout int64   = 120  // 智能电柜业务 - 操作超时(s)
 )
 
 const (

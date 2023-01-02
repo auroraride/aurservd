@@ -44,6 +44,8 @@ const (
 	FieldStationID = "station_id"
 	// FieldCabinetID holds the string denoting the cabinet_id field in the database.
 	FieldCabinetID = "cabinet_id"
+	// FieldBatteryID holds the string denoting the battery_id field in the database.
+	FieldBatteryID = "battery_id"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
 	// FieldBinInfo holds the string denoting the bin_info field in the database.
@@ -68,6 +70,8 @@ const (
 	EdgeStation = "station"
 	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
 	EdgeCabinet = "cabinet"
+	// EdgeBattery holds the string denoting the battery edge name in mutations.
+	EdgeBattery = "battery"
 	// Table holds the table name of the business in the database.
 	Table = "business"
 	// RiderTable is the table that holds the rider relation/edge.
@@ -133,6 +137,13 @@ const (
 	CabinetInverseTable = "cabinet"
 	// CabinetColumn is the table column denoting the cabinet relation/edge.
 	CabinetColumn = "cabinet_id"
+	// BatteryTable is the table that holds the battery relation/edge.
+	BatteryTable = "business"
+	// BatteryInverseTable is the table name for the Battery entity.
+	// It exists in this package in order to avoid circular dependency with the "battery" package.
+	BatteryInverseTable = "battery"
+	// BatteryColumn is the table column denoting the battery relation/edge.
+	BatteryColumn = "battery_id"
 )
 
 // Columns holds all SQL columns for business fields.
@@ -153,6 +164,7 @@ var Columns = []string{
 	FieldEnterpriseID,
 	FieldStationID,
 	FieldCabinetID,
+	FieldBatteryID,
 	FieldType,
 	FieldBinInfo,
 	FieldStockSn,

@@ -12586,6 +12586,8 @@ type BusinessMutation struct {
 	clearedstation    bool
 	cabinet           *uint64
 	clearedcabinet    bool
+	battery           *uint64
+	clearedbattery    bool
 	done              bool
 	oldValue          func(context.Context) (*Business, error)
 	predicates        []predicate.Business
@@ -13359,6 +13361,55 @@ func (m *BusinessMutation) ResetCabinetID() {
 	delete(m.clearedFields, business.FieldCabinetID)
 }
 
+// SetBatteryID sets the "battery_id" field.
+func (m *BusinessMutation) SetBatteryID(u uint64) {
+	m.battery = &u
+}
+
+// BatteryID returns the value of the "battery_id" field in the mutation.
+func (m *BusinessMutation) BatteryID() (r uint64, exists bool) {
+	v := m.battery
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBatteryID returns the old "battery_id" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldBatteryID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBatteryID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBatteryID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBatteryID: %w", err)
+	}
+	return oldValue.BatteryID, nil
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (m *BusinessMutation) ClearBatteryID() {
+	m.battery = nil
+	m.clearedFields[business.FieldBatteryID] = struct{}{}
+}
+
+// BatteryIDCleared returns if the "battery_id" field was cleared in this mutation.
+func (m *BusinessMutation) BatteryIDCleared() bool {
+	_, ok := m.clearedFields[business.FieldBatteryID]
+	return ok
+}
+
+// ResetBatteryID resets all changes to the "battery_id" field.
+func (m *BusinessMutation) ResetBatteryID() {
+	m.battery = nil
+	delete(m.clearedFields, business.FieldBatteryID)
+}
+
 // SetType sets the "type" field.
 func (m *BusinessMutation) SetType(b business.Type) {
 	m._type = &b
@@ -13727,6 +13778,32 @@ func (m *BusinessMutation) ResetCabinet() {
 	m.clearedcabinet = false
 }
 
+// ClearBattery clears the "battery" edge to the Battery entity.
+func (m *BusinessMutation) ClearBattery() {
+	m.clearedbattery = true
+}
+
+// BatteryCleared reports if the "battery" edge to the Battery entity was cleared.
+func (m *BusinessMutation) BatteryCleared() bool {
+	return m.BatteryIDCleared() || m.clearedbattery
+}
+
+// BatteryIDs returns the "battery" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// BatteryID instead. It exists only for internal usage by the builders.
+func (m *BusinessMutation) BatteryIDs() (ids []uint64) {
+	if id := m.battery; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetBattery resets all changes to the "battery" edge.
+func (m *BusinessMutation) ResetBattery() {
+	m.battery = nil
+	m.clearedbattery = false
+}
+
 // Where appends a list predicates to the BusinessMutation builder.
 func (m *BusinessMutation) Where(ps ...predicate.Business) {
 	m.predicates = append(m.predicates, ps...)
@@ -13761,7 +13838,7 @@ func (m *BusinessMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *BusinessMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, business.FieldCreatedAt)
 	}
@@ -13806,6 +13883,9 @@ func (m *BusinessMutation) Fields() []string {
 	}
 	if m.cabinet != nil {
 		fields = append(fields, business.FieldCabinetID)
+	}
+	if m.battery != nil {
+		fields = append(fields, business.FieldBatteryID)
 	}
 	if m._type != nil {
 		fields = append(fields, business.FieldType)
@@ -13854,6 +13934,8 @@ func (m *BusinessMutation) Field(name string) (ent.Value, bool) {
 		return m.StationID()
 	case business.FieldCabinetID:
 		return m.CabinetID()
+	case business.FieldBatteryID:
+		return m.BatteryID()
 	case business.FieldType:
 		return m.GetType()
 	case business.FieldBinInfo:
@@ -13899,6 +13981,8 @@ func (m *BusinessMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldStationID(ctx)
 	case business.FieldCabinetID:
 		return m.OldCabinetID(ctx)
+	case business.FieldBatteryID:
+		return m.OldBatteryID(ctx)
 	case business.FieldType:
 		return m.OldType(ctx)
 	case business.FieldBinInfo:
@@ -14019,6 +14103,13 @@ func (m *BusinessMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetCabinetID(v)
 		return nil
+	case business.FieldBatteryID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBatteryID(v)
+		return nil
 	case business.FieldType:
 		v, ok := value.(business.Type)
 		if !ok {
@@ -14103,6 +14194,9 @@ func (m *BusinessMutation) ClearedFields() []string {
 	if m.FieldCleared(business.FieldCabinetID) {
 		fields = append(fields, business.FieldCabinetID)
 	}
+	if m.FieldCleared(business.FieldBatteryID) {
+		fields = append(fields, business.FieldBatteryID)
+	}
 	if m.FieldCleared(business.FieldBinInfo) {
 		fields = append(fields, business.FieldBinInfo)
 	}
@@ -14152,6 +14246,9 @@ func (m *BusinessMutation) ClearField(name string) error {
 		return nil
 	case business.FieldCabinetID:
 		m.ClearCabinetID()
+		return nil
+	case business.FieldBatteryID:
+		m.ClearBatteryID()
 		return nil
 	case business.FieldBinInfo:
 		m.ClearBinInfo()
@@ -14212,6 +14309,9 @@ func (m *BusinessMutation) ResetField(name string) error {
 	case business.FieldCabinetID:
 		m.ResetCabinetID()
 		return nil
+	case business.FieldBatteryID:
+		m.ResetBatteryID()
+		return nil
 	case business.FieldType:
 		m.ResetType()
 		return nil
@@ -14227,7 +14327,7 @@ func (m *BusinessMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *BusinessMutation) AddedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.rider != nil {
 		edges = append(edges, business.EdgeRider)
 	}
@@ -14254,6 +14354,9 @@ func (m *BusinessMutation) AddedEdges() []string {
 	}
 	if m.cabinet != nil {
 		edges = append(edges, business.EdgeCabinet)
+	}
+	if m.battery != nil {
+		edges = append(edges, business.EdgeBattery)
 	}
 	return edges
 }
@@ -14298,13 +14401,17 @@ func (m *BusinessMutation) AddedIDs(name string) []ent.Value {
 		if id := m.cabinet; id != nil {
 			return []ent.Value{*id}
 		}
+	case business.EdgeBattery:
+		if id := m.battery; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *BusinessMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	return edges
 }
 
@@ -14316,7 +14423,7 @@ func (m *BusinessMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *BusinessMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.clearedrider {
 		edges = append(edges, business.EdgeRider)
 	}
@@ -14344,6 +14451,9 @@ func (m *BusinessMutation) ClearedEdges() []string {
 	if m.clearedcabinet {
 		edges = append(edges, business.EdgeCabinet)
 	}
+	if m.clearedbattery {
+		edges = append(edges, business.EdgeBattery)
+	}
 	return edges
 }
 
@@ -14369,6 +14479,8 @@ func (m *BusinessMutation) EdgeCleared(name string) bool {
 		return m.clearedstation
 	case business.EdgeCabinet:
 		return m.clearedcabinet
+	case business.EdgeBattery:
+		return m.clearedbattery
 	}
 	return false
 }
@@ -14404,6 +14516,9 @@ func (m *BusinessMutation) ClearEdge(name string) error {
 	case business.EdgeCabinet:
 		m.ClearCabinet()
 		return nil
+	case business.EdgeBattery:
+		m.ClearBattery()
+		return nil
 	}
 	return fmt.Errorf("unknown Business unique edge %s", name)
 }
@@ -14438,6 +14553,9 @@ func (m *BusinessMutation) ResetEdge(name string) error {
 		return nil
 	case business.EdgeCabinet:
 		m.ResetCabinet()
+		return nil
+	case business.EdgeBattery:
+		m.ResetBattery()
 		return nil
 	}
 	return fmt.Errorf("unknown Business edge %s", name)
@@ -63129,6 +63247,8 @@ type StockMutation struct {
 	clearedebike     bool
 	brand            *uint64
 	clearedbrand     bool
+	battery          *uint64
+	clearedbattery   bool
 	store            *uint64
 	clearedstore     bool
 	cabinet          *uint64
@@ -63709,6 +63829,55 @@ func (m *StockMutation) BrandIDCleared() bool {
 func (m *StockMutation) ResetBrandID() {
 	m.brand = nil
 	delete(m.clearedFields, stock.FieldBrandID)
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (m *StockMutation) SetBatteryID(u uint64) {
+	m.battery = &u
+}
+
+// BatteryID returns the value of the "battery_id" field in the mutation.
+func (m *StockMutation) BatteryID() (r uint64, exists bool) {
+	v := m.battery
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBatteryID returns the old "battery_id" field's value of the Stock entity.
+// If the Stock object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StockMutation) OldBatteryID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBatteryID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBatteryID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBatteryID: %w", err)
+	}
+	return oldValue.BatteryID, nil
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (m *StockMutation) ClearBatteryID() {
+	m.battery = nil
+	m.clearedFields[stock.FieldBatteryID] = struct{}{}
+}
+
+// BatteryIDCleared returns if the "battery_id" field was cleared in this mutation.
+func (m *StockMutation) BatteryIDCleared() bool {
+	_, ok := m.clearedFields[stock.FieldBatteryID]
+	return ok
+}
+
+// ResetBatteryID resets all changes to the "battery_id" field.
+func (m *StockMutation) ResetBatteryID() {
+	m.battery = nil
+	delete(m.clearedFields, stock.FieldBatteryID)
 }
 
 // SetParentID sets the "parent_id" field.
@@ -64329,6 +64498,32 @@ func (m *StockMutation) ResetBrand() {
 	m.clearedbrand = false
 }
 
+// ClearBattery clears the "battery" edge to the Battery entity.
+func (m *StockMutation) ClearBattery() {
+	m.clearedbattery = true
+}
+
+// BatteryCleared reports if the "battery" edge to the Battery entity was cleared.
+func (m *StockMutation) BatteryCleared() bool {
+	return m.BatteryIDCleared() || m.clearedbattery
+}
+
+// BatteryIDs returns the "battery" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// BatteryID instead. It exists only for internal usage by the builders.
+func (m *StockMutation) BatteryIDs() (ids []uint64) {
+	if id := m.battery; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetBattery resets all changes to the "battery" edge.
+func (m *StockMutation) ResetBattery() {
+	m.battery = nil
+	m.clearedbattery = false
+}
+
 // ClearStore clears the "store" edge to the Store entity.
 func (m *StockMutation) ClearStore() {
 	m.clearedstore = true
@@ -64586,7 +64781,7 @@ func (m *StockMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StockMutation) Fields() []string {
-	fields := make([]string, 0, 21)
+	fields := make([]string, 0, 22)
 	if m.created_at != nil {
 		fields = append(fields, stock.FieldCreatedAt)
 	}
@@ -64616,6 +64811,9 @@ func (m *StockMutation) Fields() []string {
 	}
 	if m.brand != nil {
 		fields = append(fields, stock.FieldBrandID)
+	}
+	if m.battery != nil {
+		fields = append(fields, stock.FieldBatteryID)
 	}
 	if m.parent != nil {
 		fields = append(fields, stock.FieldParentID)
@@ -64678,6 +64876,8 @@ func (m *StockMutation) Field(name string) (ent.Value, bool) {
 		return m.EbikeID()
 	case stock.FieldBrandID:
 		return m.BrandID()
+	case stock.FieldBatteryID:
+		return m.BatteryID()
 	case stock.FieldParentID:
 		return m.ParentID()
 	case stock.FieldSn:
@@ -64729,6 +64929,8 @@ func (m *StockMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldEbikeID(ctx)
 	case stock.FieldBrandID:
 		return m.OldBrandID(ctx)
+	case stock.FieldBatteryID:
+		return m.OldBatteryID(ctx)
 	case stock.FieldParentID:
 		return m.OldParentID(ctx)
 	case stock.FieldSn:
@@ -64829,6 +65031,13 @@ func (m *StockMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetBrandID(v)
+		return nil
+	case stock.FieldBatteryID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBatteryID(v)
 		return nil
 	case stock.FieldParentID:
 		v, ok := value.(uint64)
@@ -64988,6 +65197,9 @@ func (m *StockMutation) ClearedFields() []string {
 	if m.FieldCleared(stock.FieldBrandID) {
 		fields = append(fields, stock.FieldBrandID)
 	}
+	if m.FieldCleared(stock.FieldBatteryID) {
+		fields = append(fields, stock.FieldBatteryID)
+	}
 	if m.FieldCleared(stock.FieldParentID) {
 		fields = append(fields, stock.FieldParentID)
 	}
@@ -65043,6 +65255,9 @@ func (m *StockMutation) ClearField(name string) error {
 		return nil
 	case stock.FieldBrandID:
 		m.ClearBrandID()
+		return nil
+	case stock.FieldBatteryID:
+		m.ClearBatteryID()
 		return nil
 	case stock.FieldParentID:
 		m.ClearParentID()
@@ -65100,6 +65315,9 @@ func (m *StockMutation) ResetField(name string) error {
 	case stock.FieldBrandID:
 		m.ResetBrandID()
 		return nil
+	case stock.FieldBatteryID:
+		m.ResetBatteryID()
+		return nil
 	case stock.FieldParentID:
 		m.ResetParentID()
 		return nil
@@ -65139,7 +65357,7 @@ func (m *StockMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *StockMutation) AddedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.city != nil {
 		edges = append(edges, stock.EdgeCity)
 	}
@@ -65151,6 +65369,9 @@ func (m *StockMutation) AddedEdges() []string {
 	}
 	if m.brand != nil {
 		edges = append(edges, stock.EdgeBrand)
+	}
+	if m.battery != nil {
+		edges = append(edges, stock.EdgeBattery)
 	}
 	if m.store != nil {
 		edges = append(edges, stock.EdgeStore)
@@ -65196,6 +65417,10 @@ func (m *StockMutation) AddedIDs(name string) []ent.Value {
 		if id := m.brand; id != nil {
 			return []ent.Value{*id}
 		}
+	case stock.EdgeBattery:
+		if id := m.battery; id != nil {
+			return []ent.Value{*id}
+		}
 	case stock.EdgeStore:
 		if id := m.store; id != nil {
 			return []ent.Value{*id}
@@ -65232,7 +65457,7 @@ func (m *StockMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *StockMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.removedchildren != nil {
 		edges = append(edges, stock.EdgeChildren)
 	}
@@ -65255,7 +65480,7 @@ func (m *StockMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *StockMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.clearedcity {
 		edges = append(edges, stock.EdgeCity)
 	}
@@ -65267,6 +65492,9 @@ func (m *StockMutation) ClearedEdges() []string {
 	}
 	if m.clearedbrand {
 		edges = append(edges, stock.EdgeBrand)
+	}
+	if m.clearedbattery {
+		edges = append(edges, stock.EdgeBattery)
 	}
 	if m.clearedstore {
 		edges = append(edges, stock.EdgeStore)
@@ -65304,6 +65532,8 @@ func (m *StockMutation) EdgeCleared(name string) bool {
 		return m.clearedebike
 	case stock.EdgeBrand:
 		return m.clearedbrand
+	case stock.EdgeBattery:
+		return m.clearedbattery
 	case stock.EdgeStore:
 		return m.clearedstore
 	case stock.EdgeCabinet:
@@ -65337,6 +65567,9 @@ func (m *StockMutation) ClearEdge(name string) error {
 		return nil
 	case stock.EdgeBrand:
 		m.ClearBrand()
+		return nil
+	case stock.EdgeBattery:
+		m.ClearBattery()
 		return nil
 	case stock.EdgeStore:
 		m.ClearStore()
@@ -65375,6 +65608,9 @@ func (m *StockMutation) ResetEdge(name string) error {
 		return nil
 	case stock.EdgeBrand:
 		m.ResetBrand()
+		return nil
+	case stock.EdgeBattery:
+		m.ResetBattery()
 		return nil
 	case stock.EdgeStore:
 		m.ResetStore()

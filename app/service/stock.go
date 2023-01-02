@@ -23,6 +23,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/predicate"
     "github.com/auroraride/aurservd/internal/ent/stock"
     "github.com/auroraride/aurservd/internal/ent/store"
+    "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/goccy/go-json"
@@ -354,10 +355,15 @@ func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (s
 
     son := creator.Clone()
 
+    var batID *uint64
+    if req.Battery != nil {
+        batID = silk.UInt64(req.Battery.ID)
+    }
     sk, err = creator.SetName(req.Model).
         SetModel(req.Model).
         SetMaterial(stock.MaterialBattery).
         SetSn(tools.NewUnique().NewSN()).
+        SetNillableBatteryID(batID). // 设置智能电池ID
         Save(s.ctx)
     if err != nil {
         return
