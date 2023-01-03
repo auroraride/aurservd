@@ -10,8 +10,8 @@ require (
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.18
 	github.com/alibabacloud-go/dyvmsapi-20170525/v2 v2.1.4
 	github.com/alibabacloud-go/tea v1.1.20
-	github.com/aliyun/alibaba-cloud-sdk-go v1.62.106
-	github.com/aliyun/aliyun-log-go-sdk v0.1.42
+	github.com/aliyun/alibaba-cloud-sdk-go v1.62.108
+	github.com/aliyun/aliyun-log-go-sdk v0.1.43
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.6+incompatible
 	github.com/auroraride/adapter v0.0.0
 	github.com/fsnotify/fsnotify v1.6.0
@@ -79,8 +79,8 @@ require (
 	github.com/go-kit/log v0.2.1 // indirect
 	github.com/go-logfmt/logfmt v0.5.1 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
-	github.com/go-openapi/jsonpointer v0.19.5 // indirect
-	github.com/go-openapi/jsonreference v0.20.0 // indirect
+	github.com/go-openapi/jsonpointer v0.19.6 // indirect
+	github.com/go-openapi/jsonreference v0.20.1 // indirect
 	github.com/go-openapi/spec v0.20.7 // indirect
 	github.com/go-openapi/swag v0.22.3 // indirect
 	github.com/gofrs/uuid v4.2.0+incompatible // indirect
