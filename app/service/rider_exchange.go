@@ -214,13 +214,6 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
             tex.Fully = info.Alternative
         }
     } else {
-        // 更新一次电柜状态
-        err = NewCabinet().UpdateStatus(cab)
-        if err != nil {
-            log.Error(err)
-            snag.Panic("电柜状态获取失败")
-        }
-
         // 查找任务
         var uid primitive.ObjectID
         uid, err = primitive.ObjectIDFromHex(req.UUID)
@@ -239,6 +232,13 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         var be model.BatteryElectricity
         if t.Exchange.Alternative && !req.Alternative {
             snag.Panic("非满电换电取消")
+        }
+
+        // 更新一次电柜状态
+        err = NewCabinet().UpdateStatus(cab)
+        if err != nil {
+            log.Error(err)
+            snag.Panic("电柜状态获取失败")
         }
 
         // 检查电柜是否繁忙
