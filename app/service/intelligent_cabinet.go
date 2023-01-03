@@ -114,6 +114,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
         success  bool
         putout   string
         putin    string
+        empty    *model.BinInfo
     )
 
     defer func() {
@@ -134,6 +135,10 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
         if stopAt == nil {
             stopAt = silk.Pointer(time.Now())
             duration = stopAt.Sub(ex.StartAt).Seconds()
+        }
+
+        if empty != nil {
+            ex.Info.Exchange.Empty = empty
         }
 
         // 保存数据库
@@ -193,9 +198,17 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
             steps := res.Data.Results
             n := len(steps)
             for i, result := range steps {
+                after := result.After
                 duration += result.Duration
                 if i == n-1 {
                     stopAt = result.StopAt
+                }
+                if i == ec.ExchangeStepPutInto.Int() && after != nil {
+                    empty = &model.BinInfo{
+                        Index:       after.Ordinal - 1,
+                        Electricity: model.BatteryElectricity(after.Current),
+                        Voltage:     after.Voltage,
+                    }
                 }
             }
             return

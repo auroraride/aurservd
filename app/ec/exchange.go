@@ -23,6 +23,10 @@ const (
     ExchangeStepPutOut                            // 第四步, 取出新电池并关闭仓门
 )
 
+func (es ExchangeStep) Int() int {
+    return int(es)
+}
+
 func (es ExchangeStep) String() string {
     switch es {
     case ExchangeStepOpenEmpty:
