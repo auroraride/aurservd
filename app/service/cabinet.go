@@ -678,6 +678,7 @@ func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
     cab, _ := s.orm.QueryNotDeleted().Where(cabinet.Serial(data.Serial)).WithModels().First(s.ctx)
     if cab == nil {
         log.Errorf("[SYNC] 未找到电柜信息, 请先添加电柜: %s", data.Serial)
+        return
     }
 
     updater := cab.Update()
