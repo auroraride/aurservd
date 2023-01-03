@@ -8,6 +8,7 @@ package service
 import (
     "fmt"
     "github.com/auroraride/adapter"
+    "github.com/auroraride/adapter/defs/cabdef"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -251,7 +252,7 @@ func (s *batteryService) List(req *model.BatteryListReq) *model.PaginationRes {
     })
 }
 
-func (s *batteryService) Sync(data *adapter.BatteryMessage) {
+func (s *batteryService) Sync(data *cabdef.BatteryMessage) {
     if data.Cabinet == "" {
         log.Errorf("[SYNC] 电池:%s 缺少参数 cabinetSerial", data.SN)
         return

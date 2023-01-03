@@ -9,6 +9,7 @@ import (
     "errors"
     "fmt"
     "github.com/auroraride/adapter"
+    "github.com/auroraride/adapter/defs/cabdef"
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
@@ -45,7 +46,7 @@ func (s *intelligentCabinetService) ExchangeUsable(bm, serial string, br model.C
         snag.Panic("电柜错误")
     }
 
-    r, err := NewAdapter(url, s.rider).Post("/exchange/usable", &adapter.ExchangeUsableRequest{
+    r, err := NewAdapter(url, s.rider).Post("/exchange/usable", &cabdef.ExchangeUsableRequest{
         Serial: serial,
         Minsoc: cache.Float64(model.SettingExchangeMinBattery),
         Lock:   10,
@@ -60,7 +61,7 @@ func (s *intelligentCabinetService) ExchangeUsable(bm, serial string, br model.C
     log.Printf("换电请求成功: %s", string(b))
 
     // 解析换电信息
-    res := new(adapter.ResponseStuff[adapter.CabinetBinUsableResponse])
+    res := new(adapter.ResponseStuff[cabdef.CabinetBinUsableResponse])
     err = json.Unmarshal(b, res)
     if err != nil {
         log.Errorf("换电信息结果解析失败: %v", err)
@@ -124,7 +125,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
             // 若换电失败, 标记任务失败
             _ = cache.Set(s.ctx, s.exchangeCacheKey(uid), &model.ExchangeStepResultCache{
                 Index: 0,
-                Results: []*adapter.ExchangeStepMessage{
+                Results: []*cabdef.ExchangeStepMessage{
                     {Step: 1, Message: err.Error(), Success: false},
                 },
             }, 10*time.Minute).Err()
@@ -160,7 +161,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
     }()
 
     var r *resty.Response
-    r, err = NewAdapter(ar.Config.Adapter.Kaixin.Api, s.rider).Post("/exchange/do", &adapter.ExchangeRequest{
+    r, err = NewAdapter(ar.Config.Adapter.Kaixin.Api, s.rider).Post("/exchange/do", &cabdef.ExchangeRequest{
         UUID:    id,
         Battery: *sub.BatterySn,
         Expires: model.IntelligentBusinessScanExpires,
@@ -176,7 +177,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
         log.Infof("换电请求完成: %s", string(b))
 
         // 解析换电结果
-        res := new(adapter.ResponseStuff[adapter.ExchangeResponse])
+        res := new(adapter.ResponseStuff[cabdef.ExchangeResponse])
         _ = json.Unmarshal(b, res)
 
         err = res.VerifyResponse()
@@ -207,7 +208,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 }
 
 // ExchangeStepSync 换电步骤同步
-func (s *intelligentCabinetService) ExchangeStepSync(req *adapter.ExchangeStepMessage) {
+func (s *intelligentCabinetService) ExchangeStepSync(req *cabdef.ExchangeStepMessage) {
     if req.Step == 0 {
         return
     }
@@ -220,7 +221,7 @@ func (s *intelligentCabinetService) ExchangeStepSync(req *adapter.ExchangeStepMe
     c.Results = append(c.Results, req)
 
     // 排序
-    slices.SortFunc(c.Results, func(a, b *adapter.ExchangeStepMessage) bool {
+    slices.SortFunc(c.Results, func(a, b *cabdef.ExchangeStepMessage) bool {
         return a.Step <= b.Step
     })
 
@@ -336,7 +337,7 @@ func (s *intelligentCabinetService) BusinessCensorX(bus adapter.Business, sub *e
 // BusinessUsable 获取可用的业务仓位信息
 func (s *intelligentCabinetService) BusinessUsable(bus adapter.Business, serial, bm string) (uid string, index int, err error) {
     var r *resty.Response
-    r, err = NewAdapter(ar.Config.Adapter.Kaixin.Api, s.rider).Post("/business/usable", &adapter.BusinuessUsableRequest{
+    r, err = NewAdapter(ar.Config.Adapter.Kaixin.Api, s.rider).Post("/business/usable", &cabdef.BusinuessUsableRequest{
         Minsoc:   cache.Float64(model.SettingExchangeMinBattery),
         Business: bus,
         Serial:   serial,
@@ -346,7 +347,7 @@ func (s *intelligentCabinetService) BusinessUsable(bus adapter.Business, serial,
         return
     }
 
-    res := new(adapter.ResponseStuff[adapter.CabinetBinUsableResponse])
+    res := new(adapter.ResponseStuff[cabdef.CabinetBinUsableResponse])
     err = json.Unmarshal(r.Body(), &res)
     if err != nil {
         return
@@ -388,7 +389,7 @@ func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Busine
     }
 
     var r *resty.Response
-    r, err = NewAdapter(ar.Config.Adapter.Kaixin.Api, s.rider).Post("/business/do", &adapter.BusinessRequest{
+    r, err = NewAdapter(ar.Config.Adapter.Kaixin.Api, s.rider).Post("/business/do", &cabdef.BusinessRequest{
         UUID:     uid,
         Business: bus,
         Serial:   cab.Serial,
@@ -397,7 +398,7 @@ func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Busine
         Model:    sub.Model,
     })
 
-    res := new(adapter.ResponseStuff[adapter.BusinessResponse])
+    res := new(adapter.ResponseStuff[cabdef.BusinessResponse])
     err = json.Unmarshal(r.Body(), &res)
     if err != nil {
         return

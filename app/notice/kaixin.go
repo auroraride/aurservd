@@ -6,8 +6,9 @@
 package notice
 
 import (
-    "github.com/auroraride/adapter"
     "github.com/auroraride/adapter/codec"
+    "github.com/auroraride/adapter/defs/cabdef"
+    "github.com/auroraride/adapter/message"
     "github.com/auroraride/adapter/tcp"
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/internal/ar"
@@ -18,7 +19,7 @@ func kaixin() {
     s := tcp.NewServer(ar.Config.Adapter.Kaixin.TcpBind, log.StandardLogger(), &codec.HeaderLength{}, func(b []byte) {
         // fmt.Println(string(b))
 
-        t, message, err := adapter.Unpack(b)
+        t, msg, err := message.Unpack(b)
         if err != nil {
             log.Errorf("同步消息解析失败: %v", err)
             return
@@ -26,17 +27,17 @@ func kaixin() {
 
         switch t {
 
-        case adapter.TypeCabinet:
+        case message.TypeCabkitSync:
             // 同步电柜
-            service.NewCabinet().Sync(message.(*adapter.CabinetMessage))
+            service.NewCabinet().Sync(msg.(*cabdef.CabinetMessage))
 
-        case adapter.TypeBattery:
+        case message.TypeCabkitBattery:
             // 同步电池信息
-            service.NewBattery().Sync(message.(*adapter.BatteryMessage))
+            service.NewBattery().Sync(msg.(*cabdef.BatteryMessage))
 
-        case adapter.TypeExchangeStep:
+        case message.TypeCabkitExchangeStep:
             // 换电步骤
-            service.NewIntelligentCabinet().ExchangeStepSync(message.(*adapter.ExchangeStepMessage))
+            service.NewIntelligentCabinet().ExchangeStepSync(msg.(*cabdef.ExchangeStepMessage))
         }
 
     })

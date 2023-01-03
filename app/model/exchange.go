@@ -6,7 +6,7 @@
 package model
 
 import (
-    "github.com/auroraride/adapter"
+    "github.com/auroraride/adapter/defs/cabdef"
     "github.com/goccy/go-json"
 )
 
@@ -115,8 +115,8 @@ type ExchangeManagerListRes struct {
 }
 
 type ExchangeStepResultCache struct {
-    Index   int                            `json:"index"`   // 当前展示的步骤index
-    Results []*adapter.ExchangeStepMessage `json:"results"` // 步骤列表
+    Index   int                           `json:"index"`   // 当前展示的步骤index
+    Results []*cabdef.ExchangeStepMessage `json:"results"` // 步骤列表
 }
 
 func (r *ExchangeStepResultCache) MarshalBinary() ([]byte, error) {

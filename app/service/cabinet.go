@@ -13,7 +13,7 @@ import (
     "fmt"
     "github.com/alibabacloud-go/tea/tea"
     sls "github.com/aliyun/aliyun-log-go-sdk"
-    "github.com/auroraride/adapter"
+    "github.com/auroraride/adapter/defs/cabdef"
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
@@ -669,7 +669,7 @@ func (s *cabinetService) Transfer(req *model.CabinetTransferReq) {
 }
 
 // Sync 电柜同步
-func (s *cabinetService) Sync(data *adapter.CabinetMessage) {
+func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
     if data.Serial == "" {
         log.Error("[SYNC] 缺少参数 serial")
         return
@@ -688,7 +688,7 @@ func (s *cabinetService) Sync(data *adapter.CabinetMessage) {
         if c.Online {
             health = model.CabinetHealthStatusOnline
         }
-        if c.Status == adapter.StatusAbnormal {
+        if c.Status == cabdef.StatusAbnormal {
             health = model.CabinetHealthStatusFault
         }
         updater.SetHealth(health)
