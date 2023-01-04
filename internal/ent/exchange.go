@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
+	jsoniter "github.com/json-iterator/go"
 )
 
 // Exchange is the model entity for the Exchange schema.
@@ -60,7 +61,7 @@ type Exchange struct {
 	// 是否成功
 	Success bool `json:"success,omitempty"`
 	// 电柜换电信息
-	Detail json.RawMessage `json:"detail,omitempty"`
+	Detail jsoniter.RawMessage `json:"detail,omitempty"`
 	// 电柜换电信息
 	Info *ec.ExchangeInfo `json:"info,omitempty"`
 	// 电池型号

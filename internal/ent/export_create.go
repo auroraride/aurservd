@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -14,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/export"
 	"github.com/auroraride/aurservd/internal/ent/manager"
+	jsoniter "github.com/json-iterator/go"
 )
 
 // ExportCreate is the builder for creating a Export entity.
@@ -155,7 +155,7 @@ func (ec *ExportCreate) SetNillableDuration(i *int64) *ExportCreate {
 }
 
 // SetCondition sets the "condition" field.
-func (ec *ExportCreate) SetCondition(jm json.RawMessage) *ExportCreate {
+func (ec *ExportCreate) SetCondition(jm jsoniter.RawMessage) *ExportCreate {
 	ec.mutation.SetCondition(jm)
 	return ec
 }
@@ -575,7 +575,7 @@ func (u *ExportUpsert) ClearDuration() *ExportUpsert {
 }
 
 // SetCondition sets the "condition" field.
-func (u *ExportUpsert) SetCondition(v json.RawMessage) *ExportUpsert {
+func (u *ExportUpsert) SetCondition(v jsoniter.RawMessage) *ExportUpsert {
 	u.Set(export.FieldCondition, v)
 	return u
 }
@@ -851,7 +851,7 @@ func (u *ExportUpsertOne) ClearDuration() *ExportUpsertOne {
 }
 
 // SetCondition sets the "condition" field.
-func (u *ExportUpsertOne) SetCondition(v json.RawMessage) *ExportUpsertOne {
+func (u *ExportUpsertOne) SetCondition(v jsoniter.RawMessage) *ExportUpsertOne {
 	return u.Update(func(s *ExportUpsert) {
 		s.SetCondition(v)
 	})
@@ -1296,7 +1296,7 @@ func (u *ExportUpsertBulk) ClearDuration() *ExportUpsertBulk {
 }
 
 // SetCondition sets the "condition" field.
-func (u *ExportUpsertBulk) SetCondition(v json.RawMessage) *ExportUpsertBulk {
+func (u *ExportUpsertBulk) SetCondition(v jsoniter.RawMessage) *ExportUpsertBulk {
 	return u.Update(func(s *ExportUpsert) {
 		s.SetCondition(v)
 	})

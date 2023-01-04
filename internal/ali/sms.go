@@ -10,7 +10,7 @@ import (
     openapi "github.com/alibabacloud-go/darabonba-openapi/client"
     dysmsapi "github.com/alibabacloud-go/dysmsapi-20170525/v2/client"
     "github.com/auroraride/aurservd/internal/ar"
-    "github.com/goccy/go-json"
+    jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
     "strings"
 )
@@ -52,7 +52,7 @@ func (c *smsClient) SetTemplate(tmpl string) *smsClient {
 
 // SetParam 设置参数
 func (c *smsClient) SetParam(items map[string]string) *smsClient {
-    b, _ := json.Marshal(items)
+    b, _ := jsoniter.Marshal(items)
     c.data = string(b)
     return c
 }

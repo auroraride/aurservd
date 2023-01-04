@@ -7,7 +7,6 @@ package service
 
 import (
     "context"
-    "encoding/json"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
@@ -18,6 +17,7 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
+    jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
     "golang.org/x/exp/slices"
     "sort"
@@ -540,7 +540,7 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
     settings, _ := ent.Database.Setting.Query().Where(setting.KeyIn(model.SettingPlanBatteryDescription, model.SettingPlanEbikeDescription)).All(context.Background())
     for _, sm := range settings {
         var v model.SettingPlanDescription
-        err := json.Unmarshal([]byte(sm.Content), &v)
+        err := jsoniter.Unmarshal([]byte(sm.Content), &v)
         if err == nil {
             switch sm.Key {
             case model.SettingPlanBatteryDescription:

@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -25,6 +24,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
+	jsoniter "github.com/json-iterator/go"
 )
 
 // ExchangeUpdate is the builder for updating Exchange entities.
@@ -238,13 +238,13 @@ func (eu *ExchangeUpdate) SetNillableSuccess(b *bool) *ExchangeUpdate {
 }
 
 // SetDetail sets the "detail" field.
-func (eu *ExchangeUpdate) SetDetail(jm json.RawMessage) *ExchangeUpdate {
+func (eu *ExchangeUpdate) SetDetail(jm jsoniter.RawMessage) *ExchangeUpdate {
 	eu.mutation.SetDetail(jm)
 	return eu
 }
 
 // AppendDetail appends jm to the "detail" field.
-func (eu *ExchangeUpdate) AppendDetail(jm json.RawMessage) *ExchangeUpdate {
+func (eu *ExchangeUpdate) AppendDetail(jm jsoniter.RawMessage) *ExchangeUpdate {
 	eu.mutation.AppendDetail(jm)
 	return eu
 }
@@ -1181,13 +1181,13 @@ func (euo *ExchangeUpdateOne) SetNillableSuccess(b *bool) *ExchangeUpdateOne {
 }
 
 // SetDetail sets the "detail" field.
-func (euo *ExchangeUpdateOne) SetDetail(jm json.RawMessage) *ExchangeUpdateOne {
+func (euo *ExchangeUpdateOne) SetDetail(jm jsoniter.RawMessage) *ExchangeUpdateOne {
 	euo.mutation.SetDetail(jm)
 	return euo
 }
 
 // AppendDetail appends jm to the "detail" field.
-func (euo *ExchangeUpdateOne) AppendDetail(jm json.RawMessage) *ExchangeUpdateOne {
+func (euo *ExchangeUpdateOne) AppendDetail(jm jsoniter.RawMessage) *ExchangeUpdateOne {
 	euo.mutation.AppendDetail(jm)
 	return euo
 }

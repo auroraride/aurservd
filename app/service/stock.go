@@ -26,8 +26,8 @@ import (
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
-    "github.com/goccy/go-json"
     "github.com/golang-module/carbon/v2"
+    jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
     "math"
     "sort"
@@ -305,7 +305,7 @@ func (s *stockService) BatteryOverview(req *model.StockOverviewReq) (items []mod
             break
         }
         var item model.StockBatteryOverviewRes
-        _ = json.Unmarshal(b, &item)
+        _ = jsoniter.Unmarshal(b, &item)
         items = append(items, item)
     }
 

@@ -5,9 +5,7 @@
 
 package model
 
-import (
-    "github.com/goccy/go-json"
-)
+import jsoniter "github.com/json-iterator/go"
 
 type SocketBinaryMessage interface {
     Bytes() []byte
@@ -18,6 +16,6 @@ type SocketMessage struct {
 }
 
 func (res *SocketMessage) Bytes() []byte {
-    b, _ := json.Marshal(res)
+    b, _ := jsoniter.Marshal(res)
     return b
 }

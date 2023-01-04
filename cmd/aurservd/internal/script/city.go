@@ -12,7 +12,7 @@ import (
     "github.com/auroraride/aurservd/internal/amap"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/city"
-    "github.com/goccy/go-json"
+    jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
     "github.com/spf13/cobra"
     "io/ioutil"
@@ -39,7 +39,7 @@ func cityCenterCmd() *cobra.Command {
                 Children []City  `json:"children,omitempty"`
             }
             var items []City
-            err := json.Unmarshal(assets.City, &items)
+            err := jsoniter.Unmarshal(assets.City, &items)
             if err != nil {
                 log.Fatal(err)
             }
@@ -130,7 +130,7 @@ func cityJsonCmd() *cobra.Command {
                 }
                 items[i] = item
             }
-            b, _ := json.MarshalIndent(items, "", "  ")
+            b, _ := jsoniter.MarshalIndent(items, "", "  ")
             _ = ioutil.WriteFile("assets/city.json", b, 0755)
         },
     }

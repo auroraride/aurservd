@@ -5,9 +5,7 @@
 
 package model
 
-import (
-    "github.com/goccy/go-json"
-)
+import jsoniter "github.com/json-iterator/go"
 
 const (
     RiderCabinetOperateReasonEmpty = "开空电仓"
@@ -44,11 +42,11 @@ type RiderExchangeInfo struct {
 }
 
 func (c *RiderExchangeInfo) MarshalBinary() ([]byte, error) {
-    return json.Marshal(c)
+    return jsoniter.Marshal(c)
 }
 
 func (c *RiderExchangeInfo) UnmarshalBinary(data []byte) error {
-    return json.Unmarshal(data, c)
+    return jsoniter.Unmarshal(data, c)
 }
 
 // RiderExchangeProcessReq 请求换电

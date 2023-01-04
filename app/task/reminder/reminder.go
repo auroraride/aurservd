@@ -15,8 +15,8 @@ import (
     "github.com/auroraride/aurservd/internal/ent/setting"
     "github.com/auroraride/aurservd/internal/ent/subscribereminder"
     "github.com/auroraride/aurservd/pkg/silk"
-    "github.com/goccy/go-json"
     "github.com/golang-module/carbon/v2"
+    jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
     "sync"
     "time"
@@ -81,7 +81,7 @@ func newReminder() {
     notice := new(model.SettingReminderNotice)
     sm, _ := ent.Database.Setting.Query().Where(setting.Key(model.SettingReminder)).First(context.Background())
     if sm != nil {
-        err := json.Unmarshal([]byte(sm.Content), notice)
+        err := jsoniter.Unmarshal([]byte(sm.Content), notice)
         if err == nil {
             for _, d := range notice.Sms {
                 if d >= 0 {
@@ -218,7 +218,7 @@ func (r *reminderTask) sendvms(task *Task) {
     if task.Days < 0 {
         data.Days = silk.Pointer(task.Days)
     }
-    b, _ := json.Marshal(data)
+    b, _ := jsoniter.Marshal(data)
 
     vms := task.vms
     task.Success = ali.NewVms().SendVoiceMessageByTts(

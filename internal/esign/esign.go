@@ -11,7 +11,7 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/go-resty/resty/v2"
-    "github.com/goccy/go-json"
+    jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
     "strconv"
     "time"
@@ -140,7 +140,7 @@ func (e *Esign) request(api, method string, body interface{}, data interface{}) 
     res := new(commonRes)
     res.Data = data
     if body != nil {
-        b, _ := json.Marshal(body)
+        b, _ := jsoniter.Marshal(body)
         md5 = utils.Md5Base64String(string(b))
     }
     singnature, raw := e.getSign(api, method, md5)
@@ -182,7 +182,7 @@ func (e *Esign) request(api, method string, body interface{}, data interface{}) 
             Response: string(r.Body()),
         }
 
-        b, _ := json.Marshal(logdata)
+        b, _ := jsoniter.Marshal(logdata)
         log.Info(string(b))
     }
     e.isResSuccess(r, res)

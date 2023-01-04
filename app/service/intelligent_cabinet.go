@@ -18,8 +18,8 @@ import (
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/go-resty/resty/v2"
-    "github.com/goccy/go-json"
     "github.com/google/uuid"
+    jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
     "golang.org/x/exp/slices"
     "time"
@@ -62,7 +62,7 @@ func (s *intelligentCabinetService) ExchangeUsable(bm, serial string, br model.C
 
     // 解析换电信息
     res := new(adapter.ResponseStuff[cabdef.CabinetBinUsableResponse])
-    err = json.Unmarshal(b, res)
+    err = jsoniter.Unmarshal(b, res)
     if err != nil {
         log.Errorf("换电信息结果解析失败: %v", err)
         snag.Panic("请求失败")
@@ -183,7 +183,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 
         // 解析换电结果
         res := new(adapter.ResponseStuff[cabdef.ExchangeResponse])
-        _ = json.Unmarshal(b, res)
+        _ = jsoniter.Unmarshal(b, res)
 
         err = res.VerifyResponse()
         if err != nil {
@@ -361,7 +361,7 @@ func (s *intelligentCabinetService) BusinessUsable(bus adapter.Business, serial,
     }
 
     res := new(adapter.ResponseStuff[cabdef.CabinetBinUsableResponse])
-    err = json.Unmarshal(r.Body(), &res)
+    err = jsoniter.Unmarshal(r.Body(), &res)
     if err != nil {
         return
     }
@@ -412,7 +412,7 @@ func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Busine
     })
 
     res := new(adapter.ResponseStuff[cabdef.BusinessResponse])
-    err = json.Unmarshal(r.Body(), &res)
+    err = jsoniter.Unmarshal(r.Body(), &res)
     if err != nil {
         return
     }

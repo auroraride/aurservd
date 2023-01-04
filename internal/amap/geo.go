@@ -6,10 +6,10 @@
 package amap
 
 import (
-    "encoding/json"
     "errors"
     "fmt"
     "github.com/go-resty/resty/v2"
+    jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
 )
 
@@ -74,7 +74,7 @@ type ReGeoRes struct {
 }
 
 func (r *ReGeoRes) String() string {
-    b, _ := json.Marshal(r)
+    b, _ := jsoniter.Marshal(r)
     return string(b)
 }
 

@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"sync"
@@ -64,6 +63,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
 	"github.com/google/uuid"
+	jsoniter "github.com/json-iterator/go"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -41752,8 +41752,8 @@ type ExchangeMutation struct {
 	remark            *string
 	uuid              *string
 	success           *bool
-	detail            *json.RawMessage
-	appenddetail      json.RawMessage
+	detail            *jsoniter.RawMessage
+	appenddetail      jsoniter.RawMessage
 	info              **ec.ExchangeInfo
 	model             *string
 	alternative       *bool
@@ -42578,13 +42578,13 @@ func (m *ExchangeMutation) ResetSuccess() {
 }
 
 // SetDetail sets the "detail" field.
-func (m *ExchangeMutation) SetDetail(jm json.RawMessage) {
+func (m *ExchangeMutation) SetDetail(jm jsoniter.RawMessage) {
 	m.detail = &jm
 	m.appenddetail = nil
 }
 
 // Detail returns the value of the "detail" field in the mutation.
-func (m *ExchangeMutation) Detail() (r json.RawMessage, exists bool) {
+func (m *ExchangeMutation) Detail() (r jsoniter.RawMessage, exists bool) {
 	v := m.detail
 	if v == nil {
 		return
@@ -42595,7 +42595,7 @@ func (m *ExchangeMutation) Detail() (r json.RawMessage, exists bool) {
 // OldDetail returns the old "detail" field's value of the Exchange entity.
 // If the Exchange object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ExchangeMutation) OldDetail(ctx context.Context) (v json.RawMessage, err error) {
+func (m *ExchangeMutation) OldDetail(ctx context.Context) (v jsoniter.RawMessage, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDetail is only allowed on UpdateOne operations")
 	}
@@ -42610,12 +42610,12 @@ func (m *ExchangeMutation) OldDetail(ctx context.Context) (v json.RawMessage, er
 }
 
 // AppendDetail adds jm to the "detail" field.
-func (m *ExchangeMutation) AppendDetail(jm json.RawMessage) {
+func (m *ExchangeMutation) AppendDetail(jm jsoniter.RawMessage) {
 	m.appenddetail = append(m.appenddetail, jm...)
 }
 
 // AppendedDetail returns the list of values that were appended to the "detail" field in this mutation.
-func (m *ExchangeMutation) AppendedDetail() (json.RawMessage, bool) {
+func (m *ExchangeMutation) AppendedDetail() (jsoniter.RawMessage, bool) {
 	if len(m.appenddetail) == 0 {
 		return nil, false
 	}
@@ -43642,7 +43642,7 @@ func (m *ExchangeMutation) SetField(name string, value ent.Value) error {
 		m.SetSuccess(v)
 		return nil
 	case exchange.FieldDetail:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsoniter.RawMessage)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -44180,8 +44180,8 @@ type ExportMutation struct {
 	finish_at       *time.Time
 	duration        *int64
 	addduration     *int64
-	condition       *json.RawMessage
-	appendcondition json.RawMessage
+	condition       *jsoniter.RawMessage
+	appendcondition jsoniter.RawMessage
 	info            *map[string]interface{}
 	remark          *string
 	clearedFields   map[string]struct{}
@@ -44793,13 +44793,13 @@ func (m *ExportMutation) ResetDuration() {
 }
 
 // SetCondition sets the "condition" field.
-func (m *ExportMutation) SetCondition(jm json.RawMessage) {
+func (m *ExportMutation) SetCondition(jm jsoniter.RawMessage) {
 	m.condition = &jm
 	m.appendcondition = nil
 }
 
 // Condition returns the value of the "condition" field in the mutation.
-func (m *ExportMutation) Condition() (r json.RawMessage, exists bool) {
+func (m *ExportMutation) Condition() (r jsoniter.RawMessage, exists bool) {
 	v := m.condition
 	if v == nil {
 		return
@@ -44810,7 +44810,7 @@ func (m *ExportMutation) Condition() (r json.RawMessage, exists bool) {
 // OldCondition returns the old "condition" field's value of the Export entity.
 // If the Export object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ExportMutation) OldCondition(ctx context.Context) (v json.RawMessage, err error) {
+func (m *ExportMutation) OldCondition(ctx context.Context) (v jsoniter.RawMessage, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCondition is only allowed on UpdateOne operations")
 	}
@@ -44825,12 +44825,12 @@ func (m *ExportMutation) OldCondition(ctx context.Context) (v json.RawMessage, e
 }
 
 // AppendCondition adds jm to the "condition" field.
-func (m *ExportMutation) AppendCondition(jm json.RawMessage) {
+func (m *ExportMutation) AppendCondition(jm jsoniter.RawMessage) {
 	m.appendcondition = append(m.appendcondition, jm...)
 }
 
 // AppendedCondition returns the list of values that were appended to the "condition" field in this mutation.
-func (m *ExportMutation) AppendedCondition() (json.RawMessage, bool) {
+func (m *ExportMutation) AppendedCondition() (jsoniter.RawMessage, bool) {
 	if len(m.appendcondition) == 0 {
 		return nil, false
 	}
@@ -45191,7 +45191,7 @@ func (m *ExportMutation) SetField(name string, value ent.Value) error {
 		m.SetDuration(v)
 		return nil
 	case export.FieldCondition:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsoniter.RawMessage)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

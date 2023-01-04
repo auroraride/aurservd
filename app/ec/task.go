@@ -11,7 +11,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/mgo"
     "github.com/auroraride/aurservd/pkg/snag"
-    "github.com/goccy/go-json"
+    jsoniter "github.com/json-iterator/go"
     "github.com/qiniu/qmgo/operator"
     log "github.com/sirupsen/logrus"
     "go.mongodb.org/mongo-driver/bson"
@@ -117,11 +117,11 @@ type Task struct {
 }
 
 func (t *Task) MarshalBinary() ([]byte, error) {
-    return json.Marshal(t)
+    return jsoniter.Marshal(t)
 }
 
 func (t *Task) UnmarshalBinary(data []byte) error {
-    return json.Unmarshal(data, t)
+    return jsoniter.Unmarshal(data, t)
 }
 
 func (t *Task) String() string {

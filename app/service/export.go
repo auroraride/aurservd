@@ -14,8 +14,8 @@ import (
     "github.com/auroraride/aurservd/internal/ent/export"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
-    "github.com/goccy/go-json"
     "github.com/golang-module/carbon/v2"
+    jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
     "net/url"
     "path/filepath"
@@ -43,7 +43,7 @@ func NewExportWithModifier(m *model.Modifier) *exportService {
 func (s *exportService) Start(taxonomy string, con any, data map[string]interface{}, remark string, cb func(path string)) model.ExportRes {
     sn := tools.NewUnique().NewSN()
     go func() {
-        b, _ := json.Marshal(con)
+        b, _ := jsoniter.Marshal(con)
 
         var ex *ent.Export
         var message string

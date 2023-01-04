@@ -7,7 +7,7 @@ package model
 
 import (
     "errors"
-    "github.com/goccy/go-json"
+    jsoniter "github.com/json-iterator/go"
     "strings"
 )
 
@@ -57,9 +57,9 @@ func (d DeviceType) Value() uint8 {
 }
 
 func (d *Device) MarshalBinary() ([]byte, error) {
-    return json.Marshal(d)
+    return jsoniter.Marshal(d)
 }
 
 func (d *Device) UnmarshalBinary(data []byte) error {
-    return json.Unmarshal(data, d)
+    return jsoniter.Unmarshal(data, d)
 }

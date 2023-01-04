@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -16,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/export"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	jsoniter "github.com/json-iterator/go"
 )
 
 // ExportUpdate is the builder for updating Export entities.
@@ -185,13 +185,13 @@ func (eu *ExportUpdate) ClearDuration() *ExportUpdate {
 }
 
 // SetCondition sets the "condition" field.
-func (eu *ExportUpdate) SetCondition(jm json.RawMessage) *ExportUpdate {
+func (eu *ExportUpdate) SetCondition(jm jsoniter.RawMessage) *ExportUpdate {
 	eu.mutation.SetCondition(jm)
 	return eu
 }
 
 // AppendCondition appends jm to the "condition" field.
-func (eu *ExportUpdate) AppendCondition(jm json.RawMessage) *ExportUpdate {
+func (eu *ExportUpdate) AppendCondition(jm jsoniter.RawMessage) *ExportUpdate {
 	eu.mutation.AppendCondition(jm)
 	return eu
 }
@@ -576,13 +576,13 @@ func (euo *ExportUpdateOne) ClearDuration() *ExportUpdateOne {
 }
 
 // SetCondition sets the "condition" field.
-func (euo *ExportUpdateOne) SetCondition(jm json.RawMessage) *ExportUpdateOne {
+func (euo *ExportUpdateOne) SetCondition(jm jsoniter.RawMessage) *ExportUpdateOne {
 	euo.mutation.SetCondition(jm)
 	return euo
 }
 
 // AppendCondition appends jm to the "condition" field.
-func (euo *ExportUpdateOne) AppendCondition(jm json.RawMessage) *ExportUpdateOne {
+func (euo *ExportUpdateOne) AppendCondition(jm jsoniter.RawMessage) *ExportUpdateOne {
 	euo.mutation.AppendCondition(jm)
 	return euo
 }

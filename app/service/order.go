@@ -7,7 +7,6 @@ package service
 
 import (
     "context"
-    "encoding/json"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
@@ -26,6 +25,7 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
+    jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
     "time"
 )
@@ -436,7 +436,7 @@ func (s *orderService) FeePaid(trade *model.PaymentOverdueFee) {
         return
     }
 
-    j, _ := json.MarshalIndent(trade, "", "  ")
+    j, _ := jsoniter.MarshalIndent(trade, "", "  ")
     log.Infof("[FEE PAID %s] %s", trade.OutTradeNo, j)
 
     ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
@@ -483,7 +483,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
         return
     }
 
-    j, _ := json.MarshalIndent(trade, "", "  ")
+    j, _ := jsoniter.MarshalIndent(trade, "", "  ")
     log.Infof("[ORDER PAID %s] %s", trade.OutTradeNo, j)
 
     var sub *ent.Subscribe

@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -23,6 +22,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
+	jsoniter "github.com/json-iterator/go"
 )
 
 // ExchangeCreate is the builder for creating a Exchange entity.
@@ -210,7 +210,7 @@ func (ec *ExchangeCreate) SetNillableSuccess(b *bool) *ExchangeCreate {
 }
 
 // SetDetail sets the "detail" field.
-func (ec *ExchangeCreate) SetDetail(jm json.RawMessage) *ExchangeCreate {
+func (ec *ExchangeCreate) SetDetail(jm jsoniter.RawMessage) *ExchangeCreate {
 	ec.mutation.SetDetail(jm)
 	return ec
 }
@@ -999,7 +999,7 @@ func (u *ExchangeUpsert) UpdateSuccess() *ExchangeUpsert {
 }
 
 // SetDetail sets the "detail" field.
-func (u *ExchangeUpsert) SetDetail(v json.RawMessage) *ExchangeUpsert {
+func (u *ExchangeUpsert) SetDetail(v jsoniter.RawMessage) *ExchangeUpsert {
 	u.Set(exchange.FieldDetail, v)
 	return u
 }
@@ -1473,7 +1473,7 @@ func (u *ExchangeUpsertOne) UpdateSuccess() *ExchangeUpsertOne {
 }
 
 // SetDetail sets the "detail" field.
-func (u *ExchangeUpsertOne) SetDetail(v json.RawMessage) *ExchangeUpsertOne {
+func (u *ExchangeUpsertOne) SetDetail(v jsoniter.RawMessage) *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.SetDetail(v)
 	})
@@ -2138,7 +2138,7 @@ func (u *ExchangeUpsertBulk) UpdateSuccess() *ExchangeUpsertBulk {
 }
 
 // SetDetail sets the "detail" field.
-func (u *ExchangeUpsertBulk) SetDetail(v json.RawMessage) *ExchangeUpsertBulk {
+func (u *ExchangeUpsertBulk) SetDetail(v jsoniter.RawMessage) *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.SetDetail(v)
 	})

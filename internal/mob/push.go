@@ -9,7 +9,6 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/go-resty/resty/v2"
-    "github.com/goccy/go-json"
     log "github.com/sirupsen/logrus"
 )
 
@@ -126,7 +125,7 @@ func (m *mobPush) SendMessage(req Req) {
         data.PushNotify.ExtrasMapList = append(data.PushNotify.ExtrasMapList, d)
     }
     // 排序并转换json字符串
-    b, _ := json.Marshal(data)
+    b, _ := jsoniter.Marshal(data)
     s := string(b)
     // client.SetHeaders()
     // 生成sign

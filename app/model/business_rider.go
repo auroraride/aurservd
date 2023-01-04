@@ -5,9 +5,7 @@
 
 package model
 
-import (
-    "github.com/goccy/go-json"
-)
+import jsoniter "github.com/json-iterator/go"
 
 type BusinessSubscribeReq struct {
     ID        uint64  `json:"id" validate:"required" trans:"订阅ID"`
@@ -36,11 +34,11 @@ type BusinessCabinetStatusRes struct {
 }
 
 func (r *BusinessCabinetStatusRes) MarshalBinary() ([]byte, error) {
-    return json.Marshal(r)
+    return jsoniter.Marshal(r)
 }
 
 func (r *BusinessCabinetStatusRes) UnmarshalBinary(data []byte) error {
-    return json.Unmarshal(data, r)
+    return jsoniter.Unmarshal(data, r)
 }
 
 type BusinessPauseInfoRes struct {

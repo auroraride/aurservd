@@ -13,7 +13,7 @@ import (
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
-    "github.com/goccy/go-json"
+    jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
     "github.com/wechatpay-apiv3/wechatpay-go/core"
     "github.com/wechatpay-apiv3/wechatpay-go/core/auth/verifiers"
@@ -108,7 +108,7 @@ func (c *wechatClient) AppPayDemo() (string, string, error) {
     out.PrepayWithRequestPaymentResponse = resp
     out.AppID = cfg.AppID
 
-    b, _ := json.Marshal(out)
+    b, _ := jsoniter.Marshal(out)
 
     return string(b), no, nil
 }
@@ -149,7 +149,7 @@ func (c *wechatClient) AppPay(pc *model.PaymentCache) (string, error) {
     out.PrepayWithRequestPaymentResponse = resp
     out.AppID = cfg.AppID
 
-    b, _ := json.Marshal(out)
+    b, _ := jsoniter.Marshal(out)
 
     return string(b), nil
 }
@@ -232,8 +232,8 @@ func (c *wechatClient) Notification(req *http.Request) *model.PaymentCache {
         return nil
     }
 
-    b, _ := json.MarshalIndent(transaction, "", "  ")
-    nb, _ := json.MarshalIndent(nq, "", "  ")
+    b, _ := jsoniter.MarshalIndent(transaction, "", "  ")
+    nb, _ := jsoniter.MarshalIndent(nq, "", "  ")
     log.Infof("微信支付回调反馈\n%s\n%s", b, nb)
 
     pc := new(model.PaymentCache)
@@ -245,7 +245,7 @@ func (c *wechatClient) Notification(req *http.Request) *model.PaymentCache {
         return nil
     }
 
-    b, _ = json.MarshalIndent(pc, "", "  ")
+    b, _ = jsoniter.MarshalIndent(pc, "", "  ")
     log.Infof("获取到微信支付回调缓存: %s", b)
 
     state := transaction.TradeState
@@ -267,7 +267,7 @@ func (c *wechatClient) Notification(req *http.Request) *model.PaymentCache {
         return nil
     }
 
-    b, _ = json.MarshalIndent(pc, "", "  ")
+    b, _ = jsoniter.MarshalIndent(pc, "", "  ")
     log.Infof("微信支付缓存更新: %s", b)
 
     return pc
@@ -299,8 +299,8 @@ func (c *wechatClient) RefundNotification(req *http.Request) *model.PaymentCache
         return nil
     }
 
-    b, _ := json.MarshalIndent(transaction, "", "  ")
-    nb, _ := json.MarshalIndent(nq, "", "  ")
+    b, _ := jsoniter.MarshalIndent(transaction, "", "  ")
+    nb, _ := jsoniter.MarshalIndent(nq, "", "  ")
     log.Infof("微信退款回调反馈\n%s\n%s", b, nb)
 
     pc := new(model.PaymentCache)
@@ -312,7 +312,7 @@ func (c *wechatClient) RefundNotification(req *http.Request) *model.PaymentCache
         return nil
     }
 
-    b, _ = json.MarshalIndent(pc, "", "  ")
+    b, _ = jsoniter.MarshalIndent(pc, "", "  ")
     log.Infof("获取到微信退款回调缓存: %s", b)
 
     if transaction.RefundStatus != "SUCCESS" {
@@ -323,7 +323,7 @@ func (c *wechatClient) RefundNotification(req *http.Request) *model.PaymentCache
     pc.Refund.Request = true
     pc.Refund.Time = transaction.SuccessTime
 
-    b, _ = json.MarshalIndent(pc, "", "  ")
+    b, _ = jsoniter.MarshalIndent(pc, "", "  ")
     log.Infof("微信退款缓存更新: %s", b)
 
     return pc

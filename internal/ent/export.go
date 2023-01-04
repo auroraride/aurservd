@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/internal/ent/export"
 	"github.com/auroraride/aurservd/internal/ent/manager"
+	jsoniter "github.com/json-iterator/go"
 )
 
 // Export is the model entity for the Export schema.
@@ -41,7 +42,7 @@ type Export struct {
 	// 耗时
 	Duration int64 `json:"duration,omitempty"`
 	// 筛选条件
-	Condition json.RawMessage `json:"condition,omitempty"`
+	Condition jsoniter.RawMessage `json:"condition,omitempty"`
 	// 详细信息
 	Info map[string]interface{} `json:"info,omitempty"`
 	// 备注信息

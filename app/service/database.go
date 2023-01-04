@@ -13,7 +13,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/role"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/utils"
-    "github.com/goccy/go-json"
+    jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
 )
 
@@ -70,7 +70,7 @@ func cityInitial() {
     // 导入城市
     log.Println("导入城市")
     var items []R
-    err := json.Unmarshal(assets.City, &items)
+    err := jsoniter.Unmarshal(assets.City, &items)
     if err == nil {
         ent.WithTxPanic(ctx, func(tx *ent.Tx) error {
             for _, item := range items {

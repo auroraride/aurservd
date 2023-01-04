@@ -13,7 +13,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/setting"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
-    "github.com/goccy/go-json"
+    jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
     "strconv"
     "strings"
@@ -70,7 +70,7 @@ func (s *settingService) Initialize() {
         if sm == nil {
             // 创建
             var err error
-            b, _ := json.Marshal(set.Default)
+            b, _ := jsoniter.Marshal(set.Default)
             sm, err = s.orm.Create().SetKey(k).
                 SetDesc(set.Desc).
                 SetContent(string(b)).
@@ -115,7 +115,7 @@ func GetSetting[T any](key string) (v T, err error) {
         return
     }
 
-    err = json.Unmarshal([]byte(set.Content), &v)
+    err = jsoniter.Unmarshal([]byte(set.Content), &v)
     return
 }
 
@@ -136,7 +136,7 @@ func (s *settingService) GetSetting(key string) (v any) {
         return d.Default
     }
 
-    err = json.Unmarshal([]byte(set.Content), &d.Default)
+    err = jsoniter.Unmarshal([]byte(set.Content), &d.Default)
     if err != nil {
         log.Error(err)
     }
