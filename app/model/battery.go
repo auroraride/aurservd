@@ -54,3 +54,11 @@ type BatteryBind struct {
     RiderID   uint64 `json:"riderId" validate:"required"`   // 骑手ID
     BatteryID uint64 `json:"batteryId" validate:"required"` // 电池ID
 }
+
+// BatteryDetail 电池信息
+type BatteryDetail struct {
+    ID    uint64  `json:"id"`    // 电池ID
+    Model string  `json:"model"` // 电池型号
+    SN    string  `json:"sn"`    // 电池编码
+    Soc   float64 `json:"soc"`   // 当前电量, 暂时隐藏
+}

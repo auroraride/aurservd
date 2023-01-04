@@ -8,6 +8,7 @@ package ent
 import (
     "context"
     "fmt"
+    "github.com/auroraride/aurservd/internal/ent/battery"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/ebike"
@@ -64,6 +65,10 @@ func (eb *EbikeBrand) GetExportInfo() string {
     return eb.Name
 }
 
+func (b *Battery) GetExportInfo() string {
+    return b.Sn
+}
+
 type ExportInfo struct {
     id    uint64
     table string
@@ -98,6 +103,8 @@ func (ei *ExportInfo) GetExportInfoData() string {
         m, _ = Database.Ebike.Query().Where(ebike.ID(ei.id)).First(ctx)
     case ebikebrand.Table:
         m, _ = Database.EbikeBrand.Query().Where(ebikebrand.ID(ei.id)).First(ctx)
+    case battery.Table:
+        m, _ = Database.Battery.Query().Where(battery.ID(ei.id)).First(ctx)
     }
     if m == nil {
         return ""

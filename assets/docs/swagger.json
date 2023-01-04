@@ -8823,6 +8823,12 @@
                     },
                     {
                         "type": "integer",
+                        "description": "电池筛选",
+                        "name": "batteryId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "城市筛选",
                         "name": "cityId",
                         "in": "query"
@@ -11612,6 +11618,38 @@
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v1/battery": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "RA001 获取电池详情",
+                "operationId": "RiderBatteryDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.BatteryDetail"
                         }
                     }
                 }
@@ -15155,6 +15193,27 @@
                 "sn": {
                     "description": "电池编号 ",
                     "type": "string"
+                }
+            }
+        },
+        "model.BatteryDetail": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "电池ID",
+                    "type": "integer"
+                },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "电池编码",
+                    "type": "string"
+                },
+                "soc": {
+                    "description": "当前电量, 暂时隐藏",
+                    "type": "number"
                 }
             }
         },
@@ -20673,6 +20732,14 @@
                     "description": "余额",
                     "type": "number"
                 },
+                "battery": {
+                    "description": "当前电池, 有可能不存在",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Battery"
+                        }
+                    ]
+                },
                 "city": {
                     "description": "所在城市, 有可能不存在",
                     "allOf": [
@@ -20814,6 +20881,10 @@
                         2,
                         3
                     ]
+                },
+                "batteryId": {
+                    "description": "电池筛选",
+                    "type": "integer"
                 },
                 "cityId": {
                     "description": "城市筛选",

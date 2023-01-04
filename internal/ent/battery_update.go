@@ -112,26 +112,6 @@ func (bu *BatteryUpdate) ClearCityID() *BatteryUpdate {
 	return bu
 }
 
-// SetRiderID sets the "rider_id" field.
-func (bu *BatteryUpdate) SetRiderID(u uint64) *BatteryUpdate {
-	bu.mutation.SetRiderID(u)
-	return bu
-}
-
-// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
-func (bu *BatteryUpdate) SetNillableRiderID(u *uint64) *BatteryUpdate {
-	if u != nil {
-		bu.SetRiderID(*u)
-	}
-	return bu
-}
-
-// ClearRiderID clears the value of the "rider_id" field.
-func (bu *BatteryUpdate) ClearRiderID() *BatteryUpdate {
-	bu.mutation.ClearRiderID()
-	return bu
-}
-
 // SetCabinetID sets the "cabinet_id" field.
 func (bu *BatteryUpdate) SetCabinetID(u uint64) *BatteryUpdate {
 	bu.mutation.SetCabinetID(u)
@@ -172,6 +152,26 @@ func (bu *BatteryUpdate) ClearSubscribeID() *BatteryUpdate {
 	return bu
 }
 
+// SetRiderID sets the "rider_id" field.
+func (bu *BatteryUpdate) SetRiderID(u uint64) *BatteryUpdate {
+	bu.mutation.SetRiderID(u)
+	return bu
+}
+
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (bu *BatteryUpdate) SetNillableRiderID(u *uint64) *BatteryUpdate {
+	if u != nil {
+		bu.SetRiderID(*u)
+	}
+	return bu
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (bu *BatteryUpdate) ClearRiderID() *BatteryUpdate {
+	bu.mutation.ClearRiderID()
+	return bu
+}
+
 // SetSn sets the "sn" field.
 func (bu *BatteryUpdate) SetSn(s string) *BatteryUpdate {
 	bu.mutation.SetSn(s)
@@ -203,11 +203,6 @@ func (bu *BatteryUpdate) SetCity(c *City) *BatteryUpdate {
 	return bu.SetCityID(c.ID)
 }
 
-// SetRider sets the "rider" edge to the Rider entity.
-func (bu *BatteryUpdate) SetRider(r *Rider) *BatteryUpdate {
-	return bu.SetRiderID(r.ID)
-}
-
 // SetCabinet sets the "cabinet" edge to the Cabinet entity.
 func (bu *BatteryUpdate) SetCabinet(c *Cabinet) *BatteryUpdate {
 	return bu.SetCabinetID(c.ID)
@@ -216,6 +211,11 @@ func (bu *BatteryUpdate) SetCabinet(c *Cabinet) *BatteryUpdate {
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (bu *BatteryUpdate) SetSubscribe(s *Subscribe) *BatteryUpdate {
 	return bu.SetSubscribeID(s.ID)
+}
+
+// SetRider sets the "rider" edge to the Rider entity.
+func (bu *BatteryUpdate) SetRider(r *Rider) *BatteryUpdate {
+	return bu.SetRiderID(r.ID)
 }
 
 // Mutation returns the BatteryMutation object of the builder.
@@ -229,12 +229,6 @@ func (bu *BatteryUpdate) ClearCity() *BatteryUpdate {
 	return bu
 }
 
-// ClearRider clears the "rider" edge to the Rider entity.
-func (bu *BatteryUpdate) ClearRider() *BatteryUpdate {
-	bu.mutation.ClearRider()
-	return bu
-}
-
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (bu *BatteryUpdate) ClearCabinet() *BatteryUpdate {
 	bu.mutation.ClearCabinet()
@@ -244,6 +238,12 @@ func (bu *BatteryUpdate) ClearCabinet() *BatteryUpdate {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (bu *BatteryUpdate) ClearSubscribe() *BatteryUpdate {
 	bu.mutation.ClearSubscribe()
+	return bu
+}
+
+// ClearRider clears the "rider" edge to the Rider entity.
+func (bu *BatteryUpdate) ClearRider() *BatteryUpdate {
+	bu.mutation.ClearRider()
 	return bu
 }
 
@@ -381,41 +381,6 @@ func (bu *BatteryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if bu.mutation.RiderCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   battery.RiderTable,
-			Columns: []string{battery.RiderColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := bu.mutation.RiderIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   battery.RiderTable,
-			Columns: []string{battery.RiderColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if bu.mutation.CabinetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -478,6 +443,41 @@ func (bu *BatteryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if bu.mutation.RiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   battery.RiderTable,
+			Columns: []string{battery.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: rider.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   battery.RiderTable,
+			Columns: []string{battery.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: rider.FieldID,
 				},
 			},
 		}
@@ -586,26 +586,6 @@ func (buo *BatteryUpdateOne) ClearCityID() *BatteryUpdateOne {
 	return buo
 }
 
-// SetRiderID sets the "rider_id" field.
-func (buo *BatteryUpdateOne) SetRiderID(u uint64) *BatteryUpdateOne {
-	buo.mutation.SetRiderID(u)
-	return buo
-}
-
-// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
-func (buo *BatteryUpdateOne) SetNillableRiderID(u *uint64) *BatteryUpdateOne {
-	if u != nil {
-		buo.SetRiderID(*u)
-	}
-	return buo
-}
-
-// ClearRiderID clears the value of the "rider_id" field.
-func (buo *BatteryUpdateOne) ClearRiderID() *BatteryUpdateOne {
-	buo.mutation.ClearRiderID()
-	return buo
-}
-
 // SetCabinetID sets the "cabinet_id" field.
 func (buo *BatteryUpdateOne) SetCabinetID(u uint64) *BatteryUpdateOne {
 	buo.mutation.SetCabinetID(u)
@@ -646,6 +626,26 @@ func (buo *BatteryUpdateOne) ClearSubscribeID() *BatteryUpdateOne {
 	return buo
 }
 
+// SetRiderID sets the "rider_id" field.
+func (buo *BatteryUpdateOne) SetRiderID(u uint64) *BatteryUpdateOne {
+	buo.mutation.SetRiderID(u)
+	return buo
+}
+
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (buo *BatteryUpdateOne) SetNillableRiderID(u *uint64) *BatteryUpdateOne {
+	if u != nil {
+		buo.SetRiderID(*u)
+	}
+	return buo
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (buo *BatteryUpdateOne) ClearRiderID() *BatteryUpdateOne {
+	buo.mutation.ClearRiderID()
+	return buo
+}
+
 // SetSn sets the "sn" field.
 func (buo *BatteryUpdateOne) SetSn(s string) *BatteryUpdateOne {
 	buo.mutation.SetSn(s)
@@ -677,11 +677,6 @@ func (buo *BatteryUpdateOne) SetCity(c *City) *BatteryUpdateOne {
 	return buo.SetCityID(c.ID)
 }
 
-// SetRider sets the "rider" edge to the Rider entity.
-func (buo *BatteryUpdateOne) SetRider(r *Rider) *BatteryUpdateOne {
-	return buo.SetRiderID(r.ID)
-}
-
 // SetCabinet sets the "cabinet" edge to the Cabinet entity.
 func (buo *BatteryUpdateOne) SetCabinet(c *Cabinet) *BatteryUpdateOne {
 	return buo.SetCabinetID(c.ID)
@@ -690,6 +685,11 @@ func (buo *BatteryUpdateOne) SetCabinet(c *Cabinet) *BatteryUpdateOne {
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (buo *BatteryUpdateOne) SetSubscribe(s *Subscribe) *BatteryUpdateOne {
 	return buo.SetSubscribeID(s.ID)
+}
+
+// SetRider sets the "rider" edge to the Rider entity.
+func (buo *BatteryUpdateOne) SetRider(r *Rider) *BatteryUpdateOne {
+	return buo.SetRiderID(r.ID)
 }
 
 // Mutation returns the BatteryMutation object of the builder.
@@ -703,12 +703,6 @@ func (buo *BatteryUpdateOne) ClearCity() *BatteryUpdateOne {
 	return buo
 }
 
-// ClearRider clears the "rider" edge to the Rider entity.
-func (buo *BatteryUpdateOne) ClearRider() *BatteryUpdateOne {
-	buo.mutation.ClearRider()
-	return buo
-}
-
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (buo *BatteryUpdateOne) ClearCabinet() *BatteryUpdateOne {
 	buo.mutation.ClearCabinet()
@@ -718,6 +712,12 @@ func (buo *BatteryUpdateOne) ClearCabinet() *BatteryUpdateOne {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (buo *BatteryUpdateOne) ClearSubscribe() *BatteryUpdateOne {
 	buo.mutation.ClearSubscribe()
+	return buo
+}
+
+// ClearRider clears the "rider" edge to the Rider entity.
+func (buo *BatteryUpdateOne) ClearRider() *BatteryUpdateOne {
+	buo.mutation.ClearRider()
 	return buo
 }
 
@@ -879,41 +879,6 @@ func (buo *BatteryUpdateOne) sqlSave(ctx context.Context) (_node *Battery, err e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if buo.mutation.RiderCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   battery.RiderTable,
-			Columns: []string{battery.RiderColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := buo.mutation.RiderIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   battery.RiderTable,
-			Columns: []string{battery.RiderColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if buo.mutation.CabinetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -976,6 +941,41 @@ func (buo *BatteryUpdateOne) sqlSave(ctx context.Context) (_node *Battery, err e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.RiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   battery.RiderTable,
+			Columns: []string{battery.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: rider.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   battery.RiderTable,
+			Columns: []string{battery.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: rider.FieldID,
 				},
 			},
 		}

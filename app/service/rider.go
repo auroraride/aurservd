@@ -17,6 +17,7 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/baidu"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/battery"
     "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/contract"
     "github.com/auroraride/aurservd/internal/ent/ebikebrand"
@@ -575,6 +576,11 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
         info["电车型号"] = ent.NewExportInfo(req.EbikeBrandID, ebikebrand.Table)
         q.Where(rider.HasSubscribesWith(subscribe.BrandID(req.EbikeBrandID)))
     }
+
+    if req.BatteryID != 0 {
+        info["电池型号"] = ent.NewExportInfo(req.BatteryID, battery.Table)
+        q.Where(rider.HasBatteryWith(battery.ID(req.BatteryID)))
+    }
     return
 }
 
@@ -691,6 +697,9 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
         ri.DeletedAt = item.DeletedAt.Format(carbon.DateTimeLayout)
         ri.Remark = item.Remark
     }
+
+    // 获取电池
+    // bat := item.Edges
     return ri
 }
 

@@ -59,6 +59,7 @@ func (Battery) Annotations() []schema.Annotation {
 // Fields of the Battery.
 func (Battery) Fields() []ent.Field {
     return []ent.Field{
+        field.Uint64("rider_id").Optional().Nillable().Comment("骑手ID"),
         field.String("sn").Unique().Comment("电池编号"),
         field.Bool("enable").Default(true).Comment("是否启用"),
         field.String("model").Comment("电池型号"),
@@ -67,7 +68,9 @@ func (Battery) Fields() []ent.Field {
 
 // Edges of the Battery.
 func (Battery) Edges() []ent.Edge {
-    return []ent.Edge{}
+    return []ent.Edge{
+        edge.From("rider", Rider.Type).Ref("battery").Unique().Field("rider_id").Comment("所属骑手"),
+    }
 }
 
 func (Battery) Mixin() []ent.Mixin {
@@ -77,7 +80,6 @@ func (Battery) Mixin() []ent.Mixin {
         internal.Modifier{},
 
         CityMixin{Optional: true},      // 所在城市
-        RiderMixin{Optional: true},     // 所在骑手
         CabinetMixin{Optional: true},   // 所在电柜
         SubscribeMixin{Optional: true}, // 所在订阅
     }

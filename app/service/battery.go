@@ -46,6 +46,18 @@ func (s *batteryService) QueryIDX(id uint64) (b *ent.Battery) {
     return
 }
 
+func (s *batteryService) QueryRiderID(id uint64) (*ent.Battery, error) {
+    return s.orm.Query().Where(battery.RiderID(id)).First(s.ctx)
+}
+
+func (s *batteryService) QueryRiderIDX(id uint64) (b *ent.Battery) {
+    b, _ = s.QueryRiderID(id)
+    if b == nil {
+        snag.Panic("未找到电池")
+    }
+    return
+}
+
 func (s *batteryService) QuerySn(sn string) (bat *ent.Battery, err error) {
     return s.orm.Query().Where(battery.Sn(sn)).First(s.ctx)
 }
@@ -139,7 +151,7 @@ func (s *batteryService) BatchCreate(c echo.Context) []string {
     }
 
     for _, row := range rows {
-        sn := row[2]
+        sn := row[1]
         if m[sn] {
             failed = append(failed, fmt.Sprintf("编号%s已存在", sn))
             continue
@@ -348,4 +360,17 @@ func (s *batteryService) Bind(req *model.BatteryBind) {
         SetDiff(before, after).
         SetModifier(s.modifier).
         Send()
+}
+
+func (s *batteryService) RiderDetail(riderID uint64) (res model.BatteryDetail) {
+    bat, _ := s.QueryRiderID(riderID)
+    if bat != nil {
+        res = model.BatteryDetail{
+            ID:    bat.ID,
+            Model: bat.Model,
+            SN:    bat.Sn,
+            Soc:   0,
+        }
+    }
+    return
 }

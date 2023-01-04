@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -415,6 +416,21 @@ func (rc *RiderCreate) AddFollowups(r ...*RiderFollowUp) *RiderCreate {
 	return rc.AddFollowupIDs(ids...)
 }
 
+// AddBatteryIDs adds the "battery" edge to the Battery entity by IDs.
+func (rc *RiderCreate) AddBatteryIDs(ids ...uint64) *RiderCreate {
+	rc.mutation.AddBatteryIDs(ids...)
+	return rc
+}
+
+// AddBattery adds the "battery" edges to the Battery entity.
+func (rc *RiderCreate) AddBattery(b ...*Battery) *RiderCreate {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return rc.AddBatteryIDs(ids...)
+}
+
 // Mutation returns the RiderMutation object of the builder.
 func (rc *RiderCreate) Mutation() *RiderMutation {
 	return rc.mutation
@@ -806,6 +822,25 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: riderfollowup.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.BatteryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.BatteryTable,
+			Columns: []string{rider.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: battery.FieldID,
 				},
 			},
 		}

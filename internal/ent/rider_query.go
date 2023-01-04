@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -45,6 +46,7 @@ type RiderQuery struct {
 	withSubscribes *SubscribeQuery
 	withStocks     *StockQuery
 	withFollowups  *RiderFollowUpQuery
+	withBattery    *BatteryQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -302,6 +304,28 @@ func (rq *RiderQuery) QueryFollowups() *RiderFollowUpQuery {
 	return query
 }
 
+// QueryBattery chains the current query on the "battery" edge.
+func (rq *RiderQuery) QueryBattery() *BatteryQuery {
+	query := (&BatteryClient{config: rq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rider.Table, rider.FieldID, selector),
+			sqlgraph.To(battery.Table, battery.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, rider.BatteryTable, rider.BatteryColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Rider entity from the query.
 // Returns a *NotFoundError when no Rider was found.
 func (rq *RiderQuery) First(ctx context.Context) (*Rider, error) {
@@ -502,6 +526,7 @@ func (rq *RiderQuery) Clone() *RiderQuery {
 		withSubscribes: rq.withSubscribes.Clone(),
 		withStocks:     rq.withStocks.Clone(),
 		withFollowups:  rq.withFollowups.Clone(),
+		withBattery:    rq.withBattery.Clone(),
 		// clone intermediate query.
 		sql:    rq.sql.Clone(),
 		path:   rq.path,
@@ -619,6 +644,17 @@ func (rq *RiderQuery) WithFollowups(opts ...func(*RiderFollowUpQuery)) *RiderQue
 	return rq
 }
 
+// WithBattery tells the query-builder to eager-load the nodes that are connected to
+// the "battery" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *RiderQuery) WithBattery(opts ...func(*BatteryQuery)) *RiderQuery {
+	query := (&BatteryClient{config: rq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withBattery = query
+	return rq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -697,7 +733,7 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 	var (
 		nodes       = []*Rider{}
 		_spec       = rq.querySpec()
-		loadedTypes = [10]bool{
+		loadedTypes = [11]bool{
 			rq.withStation != nil,
 			rq.withPerson != nil,
 			rq.withEnterprise != nil,
@@ -708,6 +744,7 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 			rq.withSubscribes != nil,
 			rq.withStocks != nil,
 			rq.withFollowups != nil,
+			rq.withBattery != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -795,6 +832,13 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 		if err := rq.loadFollowups(ctx, query, nodes,
 			func(n *Rider) { n.Edges.Followups = []*RiderFollowUp{} },
 			func(n *Rider, e *RiderFollowUp) { n.Edges.Followups = append(n.Edges.Followups, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := rq.withBattery; query != nil {
+		if err := rq.loadBattery(ctx, query, nodes,
+			func(n *Rider) { n.Edges.Battery = []*Battery{} },
+			func(n *Rider, e *Battery) { n.Edges.Battery = append(n.Edges.Battery, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1081,6 +1125,36 @@ func (rq *RiderQuery) loadFollowups(ctx context.Context, query *RiderFollowUpQue
 	}
 	return nil
 }
+func (rq *RiderQuery) loadBattery(ctx context.Context, query *BatteryQuery, nodes []*Rider, init func(*Rider), assign func(*Rider, *Battery)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Rider)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.Where(predicate.Battery(func(s *sql.Selector) {
+		s.Where(sql.InValues(rider.BatteryColumn, fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.RiderID
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "rider_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "rider_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 
 func (rq *RiderQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := rq.querySpec()
@@ -1196,6 +1270,7 @@ var (
 	RiderQueryWithSubscribes RiderQueryWith = "Subscribes"
 	RiderQueryWithStocks     RiderQueryWith = "Stocks"
 	RiderQueryWithFollowups  RiderQueryWith = "Followups"
+	RiderQueryWithBattery    RiderQueryWith = "Battery"
 )
 
 func (rq *RiderQuery) With(withEdges ...RiderQueryWith) *RiderQuery {
@@ -1221,6 +1296,8 @@ func (rq *RiderQuery) With(withEdges ...RiderQueryWith) *RiderQuery {
 			rq.WithStocks()
 		case RiderQueryWithFollowups:
 			rq.WithFollowups()
+		case RiderQueryWithBattery:
+			rq.WithBattery()
 		}
 	}
 	return rq

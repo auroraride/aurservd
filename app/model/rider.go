@@ -104,6 +104,7 @@ type RiderListFilter struct {
     Suspend         *bool             `json:"suspend,omitempty" query:"suspend"`                                           // 是否筛选暂停扣费中, 不携带此参数获取全部, 携带此参数`true`暂停中 `false`非暂停
     Model           string            `json:"model,omitempty" query:"model"`                                               // 电池型号筛选
     EbikeBrandID    uint64            `json:"ebikeBrandId" query:"ebikeBrandId"`                                           // 电车型号筛选
+    BatteryID       uint64            `json:"batteryId" query:"batteryId"`                                                 // 电池筛选
 }
 
 // RiderItemSubscribe 骑手骑士卡简单信息
@@ -144,6 +145,8 @@ type RiderItem struct {
     Contact *RiderContact `json:"contact,omitempty"`
     // 所在城市, 有可能不存在
     City *City `json:"city,omitempty"`
+    // 当前电池, 有可能不存在
+    Battery *Battery `json:"battery,omitempty"`
 }
 
 // RiderBlockReq 封禁或解封骑手账号

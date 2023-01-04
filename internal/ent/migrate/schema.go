@@ -382,9 +382,9 @@ var (
 		{Name: "enable", Type: field.TypeBool, Comment: "是否启用", Default: true},
 		{Name: "model", Type: field.TypeString, Comment: "电池型号"},
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "rider_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "rider_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// BatteryTable holds the schema information for the "battery" table.
 	BatteryTable = &schema.Table{
@@ -399,21 +399,21 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "battery_rider_rider",
-				Columns:    []*schema.Column{BatteryColumns[11]},
-				RefColumns: []*schema.Column{RiderColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
 				Symbol:     "battery_cabinet_cabinet",
-				Columns:    []*schema.Column{BatteryColumns[12]},
+				Columns:    []*schema.Column{BatteryColumns[11]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "battery_subscribe_subscribe",
-				Columns:    []*schema.Column{BatteryColumns[13]},
+				Columns:    []*schema.Column{BatteryColumns[12]},
 				RefColumns: []*schema.Column{SubscribeColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "battery_rider_battery",
+				Columns:    []*schema.Column{BatteryColumns[13]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -434,19 +434,14 @@ var (
 				Columns: []*schema.Column{BatteryColumns[10]},
 			},
 			{
-				Name:    "battery_rider_id",
+				Name:    "battery_cabinet_id",
 				Unique:  false,
 				Columns: []*schema.Column{BatteryColumns[11]},
 			},
 			{
-				Name:    "battery_cabinet_id",
-				Unique:  false,
-				Columns: []*schema.Column{BatteryColumns[12]},
-			},
-			{
 				Name:    "battery_subscribe_id",
 				Unique:  false,
-				Columns: []*schema.Column{BatteryColumns[13]},
+				Columns: []*schema.Column{BatteryColumns[12]},
 			},
 			{
 				Name:    "battery_enable",
@@ -4314,9 +4309,9 @@ func init() {
 		Table: "attendance",
 	}
 	BatteryTable.ForeignKeys[0].RefTable = CityTable
-	BatteryTable.ForeignKeys[1].RefTable = RiderTable
-	BatteryTable.ForeignKeys[2].RefTable = CabinetTable
-	BatteryTable.ForeignKeys[3].RefTable = SubscribeTable
+	BatteryTable.ForeignKeys[1].RefTable = CabinetTable
+	BatteryTable.ForeignKeys[2].RefTable = SubscribeTable
+	BatteryTable.ForeignKeys[3].RefTable = RiderTable
 	BatteryTable.Annotation = &entsql.Annotation{
 		Table: "battery",
 	}

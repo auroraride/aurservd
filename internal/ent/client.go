@@ -1481,22 +1481,6 @@ func (c *BatteryClient) QueryCity(b *Battery) *CityQuery {
 	return query
 }
 
-// QueryRider queries the rider edge of a Battery.
-func (c *BatteryClient) QueryRider(b *Battery) *RiderQuery {
-	query := (&RiderClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := b.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(battery.Table, battery.FieldID, id),
-			sqlgraph.To(rider.Table, rider.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, battery.RiderTable, battery.RiderColumn),
-		)
-		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryCabinet queries the cabinet edge of a Battery.
 func (c *BatteryClient) QueryCabinet(b *Battery) *CabinetQuery {
 	query := (&CabinetClient{config: c.config}).Query()
@@ -1522,6 +1506,22 @@ func (c *BatteryClient) QuerySubscribe(b *Battery) *SubscribeQuery {
 			sqlgraph.From(battery.Table, battery.FieldID, id),
 			sqlgraph.To(subscribe.Table, subscribe.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, battery.SubscribeTable, battery.SubscribeColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRider queries the rider edge of a Battery.
+func (c *BatteryClient) QueryRider(b *Battery) *RiderQuery {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(battery.Table, battery.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, battery.RiderTable, battery.RiderColumn),
 		)
 		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
 		return fromV, nil
@@ -7665,6 +7665,22 @@ func (c *RiderClient) QueryFollowups(r *Rider) *RiderFollowUpQuery {
 			sqlgraph.From(rider.Table, rider.FieldID, id),
 			sqlgraph.To(riderfollowup.Table, riderfollowup.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, rider.FollowupsTable, rider.FollowupsColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBattery queries the battery edge of a Rider.
+func (c *RiderClient) QueryBattery(r *Rider) *BatteryQuery {
+	query := (&BatteryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rider.Table, rider.FieldID, id),
+			sqlgraph.To(battery.Table, battery.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, rider.BatteryTable, rider.BatteryColumn),
 		)
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil

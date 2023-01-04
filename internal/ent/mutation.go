@@ -7648,12 +7648,12 @@ type BatteryMutation struct {
 	clearedFields    map[string]struct{}
 	city             *uint64
 	clearedcity      bool
-	rider            *uint64
-	clearedrider     bool
 	cabinet          *uint64
 	clearedcabinet   bool
 	subscribe        *uint64
 	clearedsubscribe bool
+	rider            *uint64
+	clearedrider     bool
 	done             bool
 	oldValue         func(context.Context) (*Battery, error)
 	predicates       []predicate.Battery
@@ -8074,55 +8074,6 @@ func (m *BatteryMutation) ResetCityID() {
 	delete(m.clearedFields, battery.FieldCityID)
 }
 
-// SetRiderID sets the "rider_id" field.
-func (m *BatteryMutation) SetRiderID(u uint64) {
-	m.rider = &u
-}
-
-// RiderID returns the value of the "rider_id" field in the mutation.
-func (m *BatteryMutation) RiderID() (r uint64, exists bool) {
-	v := m.rider
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRiderID returns the old "rider_id" field's value of the Battery entity.
-// If the Battery object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BatteryMutation) OldRiderID(ctx context.Context) (v *uint64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRiderID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRiderID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRiderID: %w", err)
-	}
-	return oldValue.RiderID, nil
-}
-
-// ClearRiderID clears the value of the "rider_id" field.
-func (m *BatteryMutation) ClearRiderID() {
-	m.rider = nil
-	m.clearedFields[battery.FieldRiderID] = struct{}{}
-}
-
-// RiderIDCleared returns if the "rider_id" field was cleared in this mutation.
-func (m *BatteryMutation) RiderIDCleared() bool {
-	_, ok := m.clearedFields[battery.FieldRiderID]
-	return ok
-}
-
-// ResetRiderID resets all changes to the "rider_id" field.
-func (m *BatteryMutation) ResetRiderID() {
-	m.rider = nil
-	delete(m.clearedFields, battery.FieldRiderID)
-}
-
 // SetCabinetID sets the "cabinet_id" field.
 func (m *BatteryMutation) SetCabinetID(u uint64) {
 	m.cabinet = &u
@@ -8219,6 +8170,55 @@ func (m *BatteryMutation) SubscribeIDCleared() bool {
 func (m *BatteryMutation) ResetSubscribeID() {
 	m.subscribe = nil
 	delete(m.clearedFields, battery.FieldSubscribeID)
+}
+
+// SetRiderID sets the "rider_id" field.
+func (m *BatteryMutation) SetRiderID(u uint64) {
+	m.rider = &u
+}
+
+// RiderID returns the value of the "rider_id" field in the mutation.
+func (m *BatteryMutation) RiderID() (r uint64, exists bool) {
+	v := m.rider
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRiderID returns the old "rider_id" field's value of the Battery entity.
+// If the Battery object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BatteryMutation) OldRiderID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRiderID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRiderID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRiderID: %w", err)
+	}
+	return oldValue.RiderID, nil
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (m *BatteryMutation) ClearRiderID() {
+	m.rider = nil
+	m.clearedFields[battery.FieldRiderID] = struct{}{}
+}
+
+// RiderIDCleared returns if the "rider_id" field was cleared in this mutation.
+func (m *BatteryMutation) RiderIDCleared() bool {
+	_, ok := m.clearedFields[battery.FieldRiderID]
+	return ok
+}
+
+// ResetRiderID resets all changes to the "rider_id" field.
+func (m *BatteryMutation) ResetRiderID() {
+	m.rider = nil
+	delete(m.clearedFields, battery.FieldRiderID)
 }
 
 // SetSn sets the "sn" field.
@@ -8355,32 +8355,6 @@ func (m *BatteryMutation) ResetCity() {
 	m.clearedcity = false
 }
 
-// ClearRider clears the "rider" edge to the Rider entity.
-func (m *BatteryMutation) ClearRider() {
-	m.clearedrider = true
-}
-
-// RiderCleared reports if the "rider" edge to the Rider entity was cleared.
-func (m *BatteryMutation) RiderCleared() bool {
-	return m.RiderIDCleared() || m.clearedrider
-}
-
-// RiderIDs returns the "rider" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// RiderID instead. It exists only for internal usage by the builders.
-func (m *BatteryMutation) RiderIDs() (ids []uint64) {
-	if id := m.rider; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetRider resets all changes to the "rider" edge.
-func (m *BatteryMutation) ResetRider() {
-	m.rider = nil
-	m.clearedrider = false
-}
-
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (m *BatteryMutation) ClearCabinet() {
 	m.clearedcabinet = true
@@ -8431,6 +8405,32 @@ func (m *BatteryMutation) SubscribeIDs() (ids []uint64) {
 func (m *BatteryMutation) ResetSubscribe() {
 	m.subscribe = nil
 	m.clearedsubscribe = false
+}
+
+// ClearRider clears the "rider" edge to the Rider entity.
+func (m *BatteryMutation) ClearRider() {
+	m.clearedrider = true
+}
+
+// RiderCleared reports if the "rider" edge to the Rider entity was cleared.
+func (m *BatteryMutation) RiderCleared() bool {
+	return m.RiderIDCleared() || m.clearedrider
+}
+
+// RiderIDs returns the "rider" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// RiderID instead. It exists only for internal usage by the builders.
+func (m *BatteryMutation) RiderIDs() (ids []uint64) {
+	if id := m.rider; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetRider resets all changes to the "rider" edge.
+func (m *BatteryMutation) ResetRider() {
+	m.rider = nil
+	m.clearedrider = false
 }
 
 // Where appends a list predicates to the BatteryMutation builder.
@@ -8489,14 +8489,14 @@ func (m *BatteryMutation) Fields() []string {
 	if m.city != nil {
 		fields = append(fields, battery.FieldCityID)
 	}
-	if m.rider != nil {
-		fields = append(fields, battery.FieldRiderID)
-	}
 	if m.cabinet != nil {
 		fields = append(fields, battery.FieldCabinetID)
 	}
 	if m.subscribe != nil {
 		fields = append(fields, battery.FieldSubscribeID)
+	}
+	if m.rider != nil {
+		fields = append(fields, battery.FieldRiderID)
 	}
 	if m.sn != nil {
 		fields = append(fields, battery.FieldSn)
@@ -8529,12 +8529,12 @@ func (m *BatteryMutation) Field(name string) (ent.Value, bool) {
 		return m.Remark()
 	case battery.FieldCityID:
 		return m.CityID()
-	case battery.FieldRiderID:
-		return m.RiderID()
 	case battery.FieldCabinetID:
 		return m.CabinetID()
 	case battery.FieldSubscribeID:
 		return m.SubscribeID()
+	case battery.FieldRiderID:
+		return m.RiderID()
 	case battery.FieldSn:
 		return m.Sn()
 	case battery.FieldEnable:
@@ -8564,12 +8564,12 @@ func (m *BatteryMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldRemark(ctx)
 	case battery.FieldCityID:
 		return m.OldCityID(ctx)
-	case battery.FieldRiderID:
-		return m.OldRiderID(ctx)
 	case battery.FieldCabinetID:
 		return m.OldCabinetID(ctx)
 	case battery.FieldSubscribeID:
 		return m.OldSubscribeID(ctx)
+	case battery.FieldRiderID:
+		return m.OldRiderID(ctx)
 	case battery.FieldSn:
 		return m.OldSn(ctx)
 	case battery.FieldEnable:
@@ -8634,13 +8634,6 @@ func (m *BatteryMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetCityID(v)
 		return nil
-	case battery.FieldRiderID:
-		v, ok := value.(uint64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRiderID(v)
-		return nil
 	case battery.FieldCabinetID:
 		v, ok := value.(uint64)
 		if !ok {
@@ -8654,6 +8647,13 @@ func (m *BatteryMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSubscribeID(v)
+		return nil
+	case battery.FieldRiderID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRiderID(v)
 		return nil
 	case battery.FieldSn:
 		v, ok := value.(string)
@@ -8724,14 +8724,14 @@ func (m *BatteryMutation) ClearedFields() []string {
 	if m.FieldCleared(battery.FieldCityID) {
 		fields = append(fields, battery.FieldCityID)
 	}
-	if m.FieldCleared(battery.FieldRiderID) {
-		fields = append(fields, battery.FieldRiderID)
-	}
 	if m.FieldCleared(battery.FieldCabinetID) {
 		fields = append(fields, battery.FieldCabinetID)
 	}
 	if m.FieldCleared(battery.FieldSubscribeID) {
 		fields = append(fields, battery.FieldSubscribeID)
+	}
+	if m.FieldCleared(battery.FieldRiderID) {
+		fields = append(fields, battery.FieldRiderID)
 	}
 	return fields
 }
@@ -8762,14 +8762,14 @@ func (m *BatteryMutation) ClearField(name string) error {
 	case battery.FieldCityID:
 		m.ClearCityID()
 		return nil
-	case battery.FieldRiderID:
-		m.ClearRiderID()
-		return nil
 	case battery.FieldCabinetID:
 		m.ClearCabinetID()
 		return nil
 	case battery.FieldSubscribeID:
 		m.ClearSubscribeID()
+		return nil
+	case battery.FieldRiderID:
+		m.ClearRiderID()
 		return nil
 	}
 	return fmt.Errorf("unknown Battery nullable field %s", name)
@@ -8800,14 +8800,14 @@ func (m *BatteryMutation) ResetField(name string) error {
 	case battery.FieldCityID:
 		m.ResetCityID()
 		return nil
-	case battery.FieldRiderID:
-		m.ResetRiderID()
-		return nil
 	case battery.FieldCabinetID:
 		m.ResetCabinetID()
 		return nil
 	case battery.FieldSubscribeID:
 		m.ResetSubscribeID()
+		return nil
+	case battery.FieldRiderID:
+		m.ResetRiderID()
 		return nil
 	case battery.FieldSn:
 		m.ResetSn()
@@ -8828,14 +8828,14 @@ func (m *BatteryMutation) AddedEdges() []string {
 	if m.city != nil {
 		edges = append(edges, battery.EdgeCity)
 	}
-	if m.rider != nil {
-		edges = append(edges, battery.EdgeRider)
-	}
 	if m.cabinet != nil {
 		edges = append(edges, battery.EdgeCabinet)
 	}
 	if m.subscribe != nil {
 		edges = append(edges, battery.EdgeSubscribe)
+	}
+	if m.rider != nil {
+		edges = append(edges, battery.EdgeRider)
 	}
 	return edges
 }
@@ -8848,16 +8848,16 @@ func (m *BatteryMutation) AddedIDs(name string) []ent.Value {
 		if id := m.city; id != nil {
 			return []ent.Value{*id}
 		}
-	case battery.EdgeRider:
-		if id := m.rider; id != nil {
-			return []ent.Value{*id}
-		}
 	case battery.EdgeCabinet:
 		if id := m.cabinet; id != nil {
 			return []ent.Value{*id}
 		}
 	case battery.EdgeSubscribe:
 		if id := m.subscribe; id != nil {
+			return []ent.Value{*id}
+		}
+	case battery.EdgeRider:
+		if id := m.rider; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -8882,14 +8882,14 @@ func (m *BatteryMutation) ClearedEdges() []string {
 	if m.clearedcity {
 		edges = append(edges, battery.EdgeCity)
 	}
-	if m.clearedrider {
-		edges = append(edges, battery.EdgeRider)
-	}
 	if m.clearedcabinet {
 		edges = append(edges, battery.EdgeCabinet)
 	}
 	if m.clearedsubscribe {
 		edges = append(edges, battery.EdgeSubscribe)
+	}
+	if m.clearedrider {
+		edges = append(edges, battery.EdgeRider)
 	}
 	return edges
 }
@@ -8900,12 +8900,12 @@ func (m *BatteryMutation) EdgeCleared(name string) bool {
 	switch name {
 	case battery.EdgeCity:
 		return m.clearedcity
-	case battery.EdgeRider:
-		return m.clearedrider
 	case battery.EdgeCabinet:
 		return m.clearedcabinet
 	case battery.EdgeSubscribe:
 		return m.clearedsubscribe
+	case battery.EdgeRider:
+		return m.clearedrider
 	}
 	return false
 }
@@ -8917,14 +8917,14 @@ func (m *BatteryMutation) ClearEdge(name string) error {
 	case battery.EdgeCity:
 		m.ClearCity()
 		return nil
-	case battery.EdgeRider:
-		m.ClearRider()
-		return nil
 	case battery.EdgeCabinet:
 		m.ClearCabinet()
 		return nil
 	case battery.EdgeSubscribe:
 		m.ClearSubscribe()
+		return nil
+	case battery.EdgeRider:
+		m.ClearRider()
 		return nil
 	}
 	return fmt.Errorf("unknown Battery unique edge %s", name)
@@ -8937,14 +8937,14 @@ func (m *BatteryMutation) ResetEdge(name string) error {
 	case battery.EdgeCity:
 		m.ResetCity()
 		return nil
-	case battery.EdgeRider:
-		m.ResetRider()
-		return nil
 	case battery.EdgeCabinet:
 		m.ResetCabinet()
 		return nil
 	case battery.EdgeSubscribe:
 		m.ResetSubscribe()
+		return nil
+	case battery.EdgeRider:
+		m.ResetRider()
 		return nil
 	}
 	return fmt.Errorf("unknown Battery edge %s", name)
@@ -58578,6 +58578,9 @@ type RiderMutation struct {
 	followups         map[uint64]struct{}
 	removedfollowups  map[uint64]struct{}
 	clearedfollowups  bool
+	battery           map[uint64]struct{}
+	removedbattery    map[uint64]struct{}
+	clearedbattery    bool
 	done              bool
 	oldValue          func(context.Context) (*Rider, error)
 	predicates        []predicate.Rider
@@ -60129,6 +60132,60 @@ func (m *RiderMutation) ResetFollowups() {
 	m.removedfollowups = nil
 }
 
+// AddBatteryIDs adds the "battery" edge to the Battery entity by ids.
+func (m *RiderMutation) AddBatteryIDs(ids ...uint64) {
+	if m.battery == nil {
+		m.battery = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.battery[ids[i]] = struct{}{}
+	}
+}
+
+// ClearBattery clears the "battery" edge to the Battery entity.
+func (m *RiderMutation) ClearBattery() {
+	m.clearedbattery = true
+}
+
+// BatteryCleared reports if the "battery" edge to the Battery entity was cleared.
+func (m *RiderMutation) BatteryCleared() bool {
+	return m.clearedbattery
+}
+
+// RemoveBatteryIDs removes the "battery" edge to the Battery entity by IDs.
+func (m *RiderMutation) RemoveBatteryIDs(ids ...uint64) {
+	if m.removedbattery == nil {
+		m.removedbattery = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.battery, ids[i])
+		m.removedbattery[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedBattery returns the removed IDs of the "battery" edge to the Battery entity.
+func (m *RiderMutation) RemovedBatteryIDs() (ids []uint64) {
+	for id := range m.removedbattery {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// BatteryIDs returns the "battery" edge IDs in the mutation.
+func (m *RiderMutation) BatteryIDs() (ids []uint64) {
+	for id := range m.battery {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetBattery resets all changes to the "battery" edge.
+func (m *RiderMutation) ResetBattery() {
+	m.battery = nil
+	m.clearedbattery = false
+	m.removedbattery = nil
+}
+
 // Where appends a list predicates to the RiderMutation builder.
 func (m *RiderMutation) Where(ps ...predicate.Rider) {
 	m.predicates = append(m.predicates, ps...)
@@ -60722,7 +60779,7 @@ func (m *RiderMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *RiderMutation) AddedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.station != nil {
 		edges = append(edges, rider.EdgeStation)
 	}
@@ -60752,6 +60809,9 @@ func (m *RiderMutation) AddedEdges() []string {
 	}
 	if m.followups != nil {
 		edges = append(edges, rider.EdgeFollowups)
+	}
+	if m.battery != nil {
+		edges = append(edges, rider.EdgeBattery)
 	}
 	return edges
 }
@@ -60814,13 +60874,19 @@ func (m *RiderMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case rider.EdgeBattery:
+		ids := make([]ent.Value, 0, len(m.battery))
+		for id := range m.battery {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *RiderMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.removedcontracts != nil {
 		edges = append(edges, rider.EdgeContracts)
 	}
@@ -60841,6 +60907,9 @@ func (m *RiderMutation) RemovedEdges() []string {
 	}
 	if m.removedfollowups != nil {
 		edges = append(edges, rider.EdgeFollowups)
+	}
+	if m.removedbattery != nil {
+		edges = append(edges, rider.EdgeBattery)
 	}
 	return edges
 }
@@ -60891,13 +60960,19 @@ func (m *RiderMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case rider.EdgeBattery:
+		ids := make([]ent.Value, 0, len(m.removedbattery))
+		for id := range m.removedbattery {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *RiderMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.clearedstation {
 		edges = append(edges, rider.EdgeStation)
 	}
@@ -60928,6 +61003,9 @@ func (m *RiderMutation) ClearedEdges() []string {
 	if m.clearedfollowups {
 		edges = append(edges, rider.EdgeFollowups)
 	}
+	if m.clearedbattery {
+		edges = append(edges, rider.EdgeBattery)
+	}
 	return edges
 }
 
@@ -60955,6 +61033,8 @@ func (m *RiderMutation) EdgeCleared(name string) bool {
 		return m.clearedstocks
 	case rider.EdgeFollowups:
 		return m.clearedfollowups
+	case rider.EdgeBattery:
+		return m.clearedbattery
 	}
 	return false
 }
@@ -61009,6 +61089,9 @@ func (m *RiderMutation) ResetEdge(name string) error {
 		return nil
 	case rider.EdgeFollowups:
 		m.ResetFollowups()
+		return nil
+	case rider.EdgeBattery:
+		m.ResetBattery()
 		return nil
 	}
 	return fmt.Errorf("unknown Rider edge %s", name)

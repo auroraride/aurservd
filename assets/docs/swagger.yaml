@@ -1145,6 +1145,21 @@ definitions:
     - cityId
     - sn
     type: object
+  model.BatteryDetail:
+    properties:
+      id:
+        description: 电池ID
+        type: integer
+      model:
+        description: 电池型号
+        type: string
+      sn:
+        description: 电池编码
+        type: string
+      soc:
+        description: 当前电量, 暂时隐藏
+        type: number
+    type: object
   model.BatteryListRes:
     properties:
       cabinet:
@@ -5028,6 +5043,10 @@ definitions:
       balance:
         description: 余额
         type: number
+      battery:
+        allOf:
+        - $ref: '#/definitions/model.Battery'
+        description: 当前电池, 有可能不存在
       city:
         allOf:
         - $ref: '#/definitions/model.City'
@@ -5119,6 +5138,9 @@ definitions:
         - 1
         - 2
         - 3
+        type: integer
+      batteryId:
+        description: 电池筛选
         type: integer
       cityId:
         description: 城市筛选
@@ -12389,6 +12411,10 @@ paths:
         in: query
         name: authStatus
         type: integer
+      - description: 电池筛选
+        in: query
+        name: batteryId
+        type: integer
       - description: 城市筛选
         in: query
         name: cityId
@@ -14194,6 +14220,27 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: R1004 实名认证结果
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/battery:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderBatteryDetail
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.BatteryDetail'
+      summary: RA001 获取电池详情
       tags:
       - '[R]骑手接口'
   /rider/v1/branch:
