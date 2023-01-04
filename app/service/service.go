@@ -126,7 +126,9 @@ func (s *BaseService) GetXlsxRows(c echo.Context, start, columnsNumber int, pkIn
     }(r)
 
     sheet := r.GetSheetName(0)
-    rows, err = r.GetRows(sheet)
+
+    var rawRows [][]string
+    rawRows, err = r.GetRows(sheet)
 
     if err != nil {
         snag.Panic(err)
@@ -134,14 +136,19 @@ func (s *BaseService) GetXlsxRows(c echo.Context, start, columnsNumber int, pkIn
 
     // 主键 => 行数(i+1)
     m := make(map[string]int)
-    for i, columns := range rows {
+    for i, columns := range rawRows {
+        if i < start-1 {
+            continue
+        }
         // 排错
         if len(columns) < columnsNumber {
             failed = append(failed, fmt.Sprintf("格式错误:%s", strings.Join(columns, ",")))
             continue
         }
-        for j, column := range columns {
-            t := strings.TrimSpace(column)
+
+        column := make([]string, columnsNumber)
+        for j, rc := range columns {
+            t := strings.TrimSpace(rc)
             // 去重
             if j == pkIndex {
                 if target, ok := m[t]; ok {
@@ -151,8 +158,10 @@ func (s *BaseService) GetXlsxRows(c echo.Context, start, columnsNumber int, pkIn
                 m[t] = i + 1
                 pks = append(pks, t)
             }
-            rows[i][j] = t
+            column[j] = t
         }
+
+        rows = append(rows, column)
     }
 
     if len(rows) < start {
