@@ -6,7 +6,6 @@
 package model
 
 type BatteryCreateReq struct {
-    Model  string `json:"model" validate:"required" trans:"电池型号"`
     SN     string `json:"sn" validate:"required" trans:"电池编号"`
     CityID uint64 `json:"cityId" validate:"required" trans:"城市"`
 

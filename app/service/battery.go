@@ -92,9 +92,15 @@ func (s *batteryService) Create(req *model.BatteryCreateReq) {
     if req.Enable != nil {
         enable = *req.Enable
     }
+
+    // 解析电池编号
+    ab := adapter.ParseBatterySN(req.SN)
+    if ab.Model == "" {
+        snag.Panic("电池编号解析失败, 请擦亮你的双眼")
+    }
     _, err := s.orm.Create().
         SetSn(req.SN).
-        SetModel(req.Model).
+        SetModel(ab.Model).
         SetEnable(enable).
         SetCityID(req.CityID).
         Save(s.ctx)
@@ -135,6 +141,13 @@ func (s *batteryService) BatchCreate(c echo.Context) []string {
         sn := row[2]
         if m[sn] {
             failed = append(failed, fmt.Sprintf("编号%s已存在", sn))
+            continue
+        }
+
+        // 解析电池编号
+        ab := adapter.ParseBatterySN(sn)
+        if ab.Model == "" {
+            failed = append(failed, fmt.Sprintf("电池编号%s解析失败, 请擦亮你的双眼", sn))
             continue
         }
 
