@@ -893,6 +893,37 @@ func (sq *StoreQuery) Modify(modifiers ...func(s *sql.Selector)) *StoreSelect {
 	return sq.Select()
 }
 
+type StoreQueryWith string
+
+var (
+	StoreQueryWithCity        StoreQueryWith = "City"
+	StoreQueryWithBranch      StoreQueryWith = "Branch"
+	StoreQueryWithEmployee    StoreQueryWith = "Employee"
+	StoreQueryWithStocks      StoreQueryWith = "Stocks"
+	StoreQueryWithAttendances StoreQueryWith = "Attendances"
+	StoreQueryWithExceptions  StoreQueryWith = "Exceptions"
+)
+
+func (sq *StoreQuery) With(withEdges ...StoreQueryWith) *StoreQuery {
+	for _, v := range withEdges {
+		switch v {
+		case StoreQueryWithCity:
+			sq.WithCity()
+		case StoreQueryWithBranch:
+			sq.WithBranch()
+		case StoreQueryWithEmployee:
+			sq.WithEmployee()
+		case StoreQueryWithStocks:
+			sq.WithStocks()
+		case StoreQueryWithAttendances:
+			sq.WithAttendances()
+		case StoreQueryWithExceptions:
+			sq.WithExceptions()
+		}
+	}
+	return sq
+}
+
 // StoreGroupBy is the group-by builder for Store entities.
 type StoreGroupBy struct {
 	selector

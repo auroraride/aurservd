@@ -45,3 +45,12 @@ type Battery struct {
     SN    string `json:"sn"`    // 编号
     Model string `json:"model"` // 型号
 }
+
+type BatterySearchReq struct {
+    Serial string `json:"serial" query:"serial" trans:"流水号" validate:"required,min=4"`
+}
+
+type BatteryBind struct {
+    RiderID   uint64 `json:"riderId" validate:"required"`   // 骑手ID
+    BatteryID uint64 `json:"batteryId" validate:"required"` // 电池ID
+}

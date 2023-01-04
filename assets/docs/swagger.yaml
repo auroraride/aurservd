@@ -1107,6 +1107,29 @@ definitions:
     - lng
     - sn
     type: object
+  model.Battery:
+    properties:
+      id:
+        type: integer
+      model:
+        description: 型号
+        type: string
+      sn:
+        description: 编号
+        type: string
+    type: object
+  model.BatteryBind:
+    properties:
+      batteryId:
+        description: 电池ID
+        type: integer
+      riderId:
+        description: 骑手ID
+        type: integer
+    required:
+    - batteryId
+    - riderId
+    type: object
   model.BatteryCreateReq:
     properties:
       cityId:
@@ -1115,15 +1138,11 @@ definitions:
       enable:
         description: 是否启用, 需默认为`true`
         type: boolean
-      model:
-        description: '电池型号 '
-        type: string
       sn:
         description: '电池编号 '
         type: string
     required:
     - cityId
-    - model
     - sn
     type: object
   model.BatteryListRes:
@@ -8428,6 +8447,33 @@ paths:
       summary: M4006 批量导入电池
       tags:
       - '[M]管理接口'
+  /manager/v1/battery/bind:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerBatteryBind
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 绑定参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BatteryBind'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M4008 绑定骑手
+      tags:
+      - '[M]管理接口'
   /manager/v1/battery/model:
     delete:
       consumes:
@@ -12662,6 +12708,34 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M7010 修改骑手资料
+      tags:
+      - '[M]管理接口'
+  /manager/v1/selection/battery/serial:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSelectionBatterySerial
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 流水号
+        in: query
+        name: serial
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.Battery'
+            type: array
+      summary: MB016 按流水号搜索电池
       tags:
       - '[M]管理接口'
   /manager/v1/selection/branch:

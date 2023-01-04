@@ -534,6 +534,22 @@ func (orq *OrderRefundQuery) Modify(modifiers ...func(s *sql.Selector)) *OrderRe
 	return orq.Select()
 }
 
+type OrderRefundQueryWith string
+
+var (
+	OrderRefundQueryWithOrder OrderRefundQueryWith = "Order"
+)
+
+func (orq *OrderRefundQuery) With(withEdges ...OrderRefundQueryWith) *OrderRefundQuery {
+	for _, v := range withEdges {
+		switch v {
+		case OrderRefundQueryWithOrder:
+			orq.WithOrder()
+		}
+	}
+	return orq
+}
+
 // OrderRefundGroupBy is the group-by builder for OrderRefund entities.
 type OrderRefundGroupBy struct {
 	selector

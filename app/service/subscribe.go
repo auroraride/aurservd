@@ -246,7 +246,7 @@ func (s *subscribeService) RecentDetail(riderID uint64) (*model.Subscribe, *ent.
 }
 
 // QueryEffective 获取骑手当前生效中的订阅
-func (s *subscribeService) QueryEffective(riderID uint64) (*ent.Subscribe, error) {
+func (s *subscribeService) QueryEffective(riderID uint64, edges ...ent.SubscribeQueryWith) (*ent.Subscribe, error) {
     return ent.Database.Subscribe.QueryNotDeleted().
         Where(
             subscribe.RiderID(riderID),
@@ -256,7 +256,17 @@ func (s *subscribeService) QueryEffective(riderID uint64) (*ent.Subscribe, error
                 model.SubscribeStatusPaused,
                 model.SubscribeStatusOverdue,
             ),
-        ).First(s.ctx)
+        ).
+        With(edges...).
+        First(s.ctx)
+}
+
+func (s *subscribeService) QueryEffectiveX(riderID uint64, edges ...ent.SubscribeQueryWith) *ent.Subscribe {
+    sub, _ := s.QueryEffective(riderID, edges...)
+    if sub == nil {
+        snag.Panic("未找到生效中的订阅")
+    }
+    return sub
 }
 
 // QueryAllRidersEffective 获取所有骑手生效中的订阅

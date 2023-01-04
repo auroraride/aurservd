@@ -384,6 +384,7 @@ var (
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "rider_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// BatteryTable holds the schema information for the "battery" table.
 	BatteryTable = &schema.Table{
@@ -407,6 +408,12 @@ var (
 				Symbol:     "battery_cabinet_cabinet",
 				Columns:    []*schema.Column{BatteryColumns[12]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "battery_subscribe_subscribe",
+				Columns:    []*schema.Column{BatteryColumns[13]},
+				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -437,6 +444,11 @@ var (
 				Columns: []*schema.Column{BatteryColumns[12]},
 			},
 			{
+				Name:    "battery_subscribe_id",
+				Unique:  false,
+				Columns: []*schema.Column{BatteryColumns[13]},
+			},
+			{
 				Name:    "battery_enable",
 				Unique:  false,
 				Columns: []*schema.Column{BatteryColumns[8]},
@@ -451,6 +463,7 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{BatteryColumns[7]},
 				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
 						"postgres": "GIN",
 					},
@@ -475,6 +488,7 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{BatteryModelColumns[1]},
 				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
 						"postgres": "GIN",
 					},
@@ -548,6 +562,7 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{BranchColumns[7]},
 				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
 						"postgres": "GIN",
 					},
@@ -856,6 +871,7 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{CabinetColumns[9]},
 				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
 						"postgres": "GIN",
 					},
@@ -866,6 +882,7 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{CabinetColumns[10]},
 				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
 						"postgres": "GIN",
 					},
@@ -876,6 +893,7 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{CabinetColumns[21]},
 				Annotation: &entsql.IndexAnnotation{
+					OpClass: "jsonb_ops",
 					Types: map[string]string{
 						"postgres": "GIN",
 					},
@@ -1300,6 +1318,7 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{CouponColumns[6]},
 				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
 						"postgres": "GIN",
 					},
@@ -1560,6 +1579,7 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{EmployeeColumns[8]},
 				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
 						"postgres": "GIN",
 					},
@@ -1570,6 +1590,7 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{EmployeeColumns[9]},
 				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
 						"postgres": "GIN",
 					},
@@ -1647,6 +1668,7 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{EnterpriseColumns[7]},
 				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
 						"postgres": "GIN",
 					},
@@ -1657,6 +1679,7 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{EnterpriseColumns[10]},
 				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
 						"postgres": "GIN",
 					},
@@ -1667,6 +1690,7 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{EnterpriseColumns[11]},
 				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
 						"postgres": "GIN",
 					},
@@ -1677,6 +1701,7 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{EnterpriseColumns[12]},
 				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
 						"postgres": "GIN",
 					},
@@ -2464,6 +2489,7 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{ManagerColumns[7]},
 				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
 						"postgres": "GIN",
 					},
@@ -2474,6 +2500,7 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{ManagerColumns[8]},
 				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
 						"postgres": "GIN",
 					},
@@ -2730,6 +2757,7 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{PersonColumns[9]},
 				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
 						"postgres": "GIN",
 					},
@@ -2828,6 +2856,7 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{PlanColumns[10]},
 				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
 						"postgres": "GIN",
 					},
@@ -3088,6 +3117,7 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{RiderColumns[9]},
 				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
 						"postgres": "GIN",
 					},
@@ -3098,6 +3128,7 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{RiderColumns[7]},
 				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
 						"postgres": "GIN",
 					},
@@ -3407,6 +3438,7 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{StockColumns[9]},
 				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
 						"postgres": "GIN",
 					},
@@ -3516,6 +3548,7 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{StoreColumns[8]},
 				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
 						"postgres": "GIN",
 					},
@@ -4055,6 +4088,7 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{SubscribeReminderColumns[5]},
 				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
 						"postgres": "GIN",
 					},
@@ -4065,6 +4099,7 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{SubscribeReminderColumns[4]},
 				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
 						"postgres": "GIN",
 					},
@@ -4281,6 +4316,7 @@ func init() {
 	BatteryTable.ForeignKeys[0].RefTable = CityTable
 	BatteryTable.ForeignKeys[1].RefTable = RiderTable
 	BatteryTable.ForeignKeys[2].RefTable = CabinetTable
+	BatteryTable.ForeignKeys[3].RefTable = SubscribeTable
 	BatteryTable.Annotation = &entsql.Annotation{
 		Table: "battery",
 	}

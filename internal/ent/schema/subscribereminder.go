@@ -60,11 +60,13 @@ func (SubscribeReminder) Indexes() []ent.Index {
             entsql.IndexTypes(map[string]string{
                 dialect.Postgres: "GIN",
             }),
+            entsql.OpClass("gin_trgm_ops"),
         ),
         index.Fields("phone").Annotations(
             entsql.IndexTypes(map[string]string{
                 dialect.Postgres: "GIN",
             }),
+            entsql.OpClass("gin_trgm_ops"),
         ),
     }
 }

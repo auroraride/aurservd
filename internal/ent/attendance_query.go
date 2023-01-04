@@ -603,6 +603,25 @@ func (aq *AttendanceQuery) Modify(modifiers ...func(s *sql.Selector)) *Attendanc
 	return aq.Select()
 }
 
+type AttendanceQueryWith string
+
+var (
+	AttendanceQueryWithStore    AttendanceQueryWith = "Store"
+	AttendanceQueryWithEmployee AttendanceQueryWith = "Employee"
+)
+
+func (aq *AttendanceQuery) With(withEdges ...AttendanceQueryWith) *AttendanceQuery {
+	for _, v := range withEdges {
+		switch v {
+		case AttendanceQueryWithStore:
+			aq.WithStore()
+		case AttendanceQueryWithEmployee:
+			aq.WithEmployee()
+		}
+	}
+	return aq
+}
+
 // AttendanceGroupBy is the group-by builder for Attendance entities.
 type AttendanceGroupBy struct {
 	selector

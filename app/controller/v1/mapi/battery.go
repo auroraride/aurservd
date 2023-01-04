@@ -124,3 +124,19 @@ func (*battery) Modify(c echo.Context) (err error) {
     service.NewBattery(ctx.Modifier).Modify(req)
     return ctx.SendResponse()
 }
+
+// Bind
+// @ID           ManagerBatteryBind
+// @Router       /manager/v1/battery/bind [POST]
+// @Summary      M4008 绑定骑手
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body  model.BatteryBind  true  "绑定参数"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*battery) Bind(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.BatteryBind](c)
+    service.NewBattery(ctx.Modifier).Bind(req)
+    return ctx.SendResponse()
+}

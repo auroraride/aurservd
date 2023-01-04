@@ -31,6 +31,8 @@ const (
 	FieldRiderID = "rider_id"
 	// FieldCabinetID holds the string denoting the cabinet_id field in the database.
 	FieldCabinetID = "cabinet_id"
+	// FieldSubscribeID holds the string denoting the subscribe_id field in the database.
+	FieldSubscribeID = "subscribe_id"
 	// FieldSn holds the string denoting the sn field in the database.
 	FieldSn = "sn"
 	// FieldEnable holds the string denoting the enable field in the database.
@@ -43,6 +45,8 @@ const (
 	EdgeRider = "rider"
 	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
 	EdgeCabinet = "cabinet"
+	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
+	EdgeSubscribe = "subscribe"
 	// Table holds the table name of the battery in the database.
 	Table = "battery"
 	// CityTable is the table that holds the city relation/edge.
@@ -66,6 +70,13 @@ const (
 	CabinetInverseTable = "cabinet"
 	// CabinetColumn is the table column denoting the cabinet relation/edge.
 	CabinetColumn = "cabinet_id"
+	// SubscribeTable is the table that holds the subscribe relation/edge.
+	SubscribeTable = "battery"
+	// SubscribeInverseTable is the table name for the Subscribe entity.
+	// It exists in this package in order to avoid circular dependency with the "subscribe" package.
+	SubscribeInverseTable = "subscribe"
+	// SubscribeColumn is the table column denoting the subscribe relation/edge.
+	SubscribeColumn = "subscribe_id"
 )
 
 // Columns holds all SQL columns for battery fields.
@@ -80,6 +91,7 @@ var Columns = []string{
 	FieldCityID,
 	FieldRiderID,
 	FieldCabinetID,
+	FieldSubscribeID,
 	FieldSn,
 	FieldEnable,
 	FieldModel,

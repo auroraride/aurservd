@@ -894,6 +894,37 @@ func (cq *CommissionQuery) Modify(modifiers ...func(s *sql.Selector)) *Commissio
 	return cq.Select()
 }
 
+type CommissionQueryWith string
+
+var (
+	CommissionQueryWithBusiness  CommissionQueryWith = "Business"
+	CommissionQueryWithSubscribe CommissionQueryWith = "Subscribe"
+	CommissionQueryWithPlan      CommissionQueryWith = "Plan"
+	CommissionQueryWithRider     CommissionQueryWith = "Rider"
+	CommissionQueryWithOrder     CommissionQueryWith = "Order"
+	CommissionQueryWithEmployee  CommissionQueryWith = "Employee"
+)
+
+func (cq *CommissionQuery) With(withEdges ...CommissionQueryWith) *CommissionQuery {
+	for _, v := range withEdges {
+		switch v {
+		case CommissionQueryWithBusiness:
+			cq.WithBusiness()
+		case CommissionQueryWithSubscribe:
+			cq.WithSubscribe()
+		case CommissionQueryWithPlan:
+			cq.WithPlan()
+		case CommissionQueryWithRider:
+			cq.WithRider()
+		case CommissionQueryWithOrder:
+			cq.WithOrder()
+		case CommissionQueryWithEmployee:
+			cq.WithEmployee()
+		}
+	}
+	return cq
+}
+
 // CommissionGroupBy is the group-by builder for Commission entities.
 type CommissionGroupBy struct {
 	selector

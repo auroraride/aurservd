@@ -744,6 +744,31 @@ func (rq *ReserveQuery) Modify(modifiers ...func(s *sql.Selector)) *ReserveSelec
 	return rq.Select()
 }
 
+type ReserveQueryWith string
+
+var (
+	ReserveQueryWithCabinet  ReserveQueryWith = "Cabinet"
+	ReserveQueryWithRider    ReserveQueryWith = "Rider"
+	ReserveQueryWithCity     ReserveQueryWith = "City"
+	ReserveQueryWithBusiness ReserveQueryWith = "Business"
+)
+
+func (rq *ReserveQuery) With(withEdges ...ReserveQueryWith) *ReserveQuery {
+	for _, v := range withEdges {
+		switch v {
+		case ReserveQueryWithCabinet:
+			rq.WithCabinet()
+		case ReserveQueryWithRider:
+			rq.WithRider()
+		case ReserveQueryWithCity:
+			rq.WithCity()
+		case ReserveQueryWithBusiness:
+			rq.WithBusiness()
+		}
+	}
+	return rq
+}
+
 // ReserveGroupBy is the group-by builder for Reserve entities.
 type ReserveGroupBy struct {
 	selector

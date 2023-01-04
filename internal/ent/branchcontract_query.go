@@ -534,6 +534,22 @@ func (bcq *BranchContractQuery) Modify(modifiers ...func(s *sql.Selector)) *Bran
 	return bcq.Select()
 }
 
+type BranchContractQueryWith string
+
+var (
+	BranchContractQueryWithBranch BranchContractQueryWith = "Branch"
+)
+
+func (bcq *BranchContractQuery) With(withEdges ...BranchContractQueryWith) *BranchContractQuery {
+	for _, v := range withEdges {
+		switch v {
+		case BranchContractQueryWithBranch:
+			bcq.WithBranch()
+		}
+	}
+	return bcq
+}
+
 // BranchContractGroupBy is the group-by builder for BranchContract entities.
 type BranchContractGroupBy struct {
 	selector

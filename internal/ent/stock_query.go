@@ -1338,6 +1338,55 @@ func (sq *StockQuery) Modify(modifiers ...func(s *sql.Selector)) *StockSelect {
 	return sq.Select()
 }
 
+type StockQueryWith string
+
+var (
+	StockQueryWithCity      StockQueryWith = "City"
+	StockQueryWithSubscribe StockQueryWith = "Subscribe"
+	StockQueryWithEbike     StockQueryWith = "Ebike"
+	StockQueryWithBrand     StockQueryWith = "Brand"
+	StockQueryWithBattery   StockQueryWith = "Battery"
+	StockQueryWithStore     StockQueryWith = "Store"
+	StockQueryWithCabinet   StockQueryWith = "Cabinet"
+	StockQueryWithRider     StockQueryWith = "Rider"
+	StockQueryWithEmployee  StockQueryWith = "Employee"
+	StockQueryWithSpouse    StockQueryWith = "Spouse"
+	StockQueryWithParent    StockQueryWith = "Parent"
+	StockQueryWithChildren  StockQueryWith = "Children"
+)
+
+func (sq *StockQuery) With(withEdges ...StockQueryWith) *StockQuery {
+	for _, v := range withEdges {
+		switch v {
+		case StockQueryWithCity:
+			sq.WithCity()
+		case StockQueryWithSubscribe:
+			sq.WithSubscribe()
+		case StockQueryWithEbike:
+			sq.WithEbike()
+		case StockQueryWithBrand:
+			sq.WithBrand()
+		case StockQueryWithBattery:
+			sq.WithBattery()
+		case StockQueryWithStore:
+			sq.WithStore()
+		case StockQueryWithCabinet:
+			sq.WithCabinet()
+		case StockQueryWithRider:
+			sq.WithRider()
+		case StockQueryWithEmployee:
+			sq.WithEmployee()
+		case StockQueryWithSpouse:
+			sq.WithSpouse()
+		case StockQueryWithParent:
+			sq.WithParent()
+		case StockQueryWithChildren:
+			sq.WithChildren()
+		}
+	}
+	return sq
+}
+
 // StockGroupBy is the group-by builder for Stock entities.
 type StockGroupBy struct {
 	selector

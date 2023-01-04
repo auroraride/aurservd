@@ -12,6 +12,7 @@ import (
     "github.com/auroraride/aurservd/app/workwx"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/battery"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/coupontemplate"
@@ -462,5 +463,23 @@ func (s *selectionService) EbikeBrand() (items []model.SelectOption) {
             Label: b.Name,
         }
     }
+    return
+}
+
+func (s *selectionService) BatterySerialSearch(req *model.BatterySearchReq) (res []*model.Battery) {
+    res = make([]*model.Battery, 0)
+    if len(req.Serial) < 4 {
+        return
+    }
+
+    items, _ := ent.Database.Battery.Query().Where(battery.SnHasSuffix(req.Serial)).All(s.ctx)
+    for _, item := range items {
+        res = append(res, &model.Battery{
+            ID:    item.ID,
+            SN:    item.Sn,
+            Model: item.Model,
+        })
+    }
+
     return
 }

@@ -537,6 +537,22 @@ func (mq *ManagerQuery) Modify(modifiers ...func(s *sql.Selector)) *ManagerSelec
 	return mq.Select()
 }
 
+type ManagerQueryWith string
+
+var (
+	ManagerQueryWithRole ManagerQueryWith = "Role"
+)
+
+func (mq *ManagerQuery) With(withEdges ...ManagerQueryWith) *ManagerQuery {
+	for _, v := range withEdges {
+		switch v {
+		case ManagerQueryWithRole:
+			mq.WithRole()
+		}
+	}
+	return mq
+}
+
 // ManagerGroupBy is the group-by builder for Manager entities.
 type ManagerGroupBy struct {
 	selector

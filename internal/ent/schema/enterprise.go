@@ -106,21 +106,25 @@ func (Enterprise) Indexes() []ent.Index {
             entsql.IndexTypes(map[string]string{
                 dialect.Postgres: "GIN",
             }),
+            entsql.OpClass("gin_trgm_ops"),
         ),
         index.Fields("contact_name").Annotations(
             entsql.IndexTypes(map[string]string{
                 dialect.Postgres: "GIN",
             }),
+            entsql.OpClass("gin_trgm_ops"),
         ),
         index.Fields("contact_phone").Annotations(
             entsql.IndexTypes(map[string]string{
                 dialect.Postgres: "GIN",
             }),
+            entsql.OpClass("gin_trgm_ops"),
         ),
         index.Fields("idcard_number").Annotations(
             entsql.IndexTypes(map[string]string{
                 dialect.Postgres: "GIN",
             }),
+            entsql.OpClass("gin_trgm_ops"),
         ),
     }
 }

@@ -741,6 +741,31 @@ func (ssq *SubscribeSuspendQuery) Modify(modifiers ...func(s *sql.Selector)) *Su
 	return ssq.Select()
 }
 
+type SubscribeSuspendQueryWith string
+
+var (
+	SubscribeSuspendQueryWithCity      SubscribeSuspendQueryWith = "City"
+	SubscribeSuspendQueryWithRider     SubscribeSuspendQueryWith = "Rider"
+	SubscribeSuspendQueryWithSubscribe SubscribeSuspendQueryWith = "Subscribe"
+	SubscribeSuspendQueryWithPause     SubscribeSuspendQueryWith = "Pause"
+)
+
+func (ssq *SubscribeSuspendQuery) With(withEdges ...SubscribeSuspendQueryWith) *SubscribeSuspendQuery {
+	for _, v := range withEdges {
+		switch v {
+		case SubscribeSuspendQueryWithCity:
+			ssq.WithCity()
+		case SubscribeSuspendQueryWithRider:
+			ssq.WithRider()
+		case SubscribeSuspendQueryWithSubscribe:
+			ssq.WithSubscribe()
+		case SubscribeSuspendQueryWithPause:
+			ssq.WithPause()
+		}
+	}
+	return ssq
+}
+
 // SubscribeSuspendGroupBy is the group-by builder for SubscribeSuspend entities.
 type SubscribeSuspendGroupBy struct {
 	selector

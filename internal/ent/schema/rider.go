@@ -109,11 +109,13 @@ func (Rider) Indexes() []ent.Index {
             entsql.IndexTypes(map[string]string{
                 dialect.Postgres: "GIN",
             }),
+            entsql.OpClass("gin_trgm_ops"),
         ),
         index.Fields("name").Annotations(
             entsql.IndexTypes(map[string]string{
                 dialect.Postgres: "GIN",
             }),
+            entsql.OpClass("gin_trgm_ops"),
         ),
         index.Fields("id_card_number"),
         index.Fields("person_id"),

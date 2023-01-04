@@ -63,11 +63,12 @@ const (
 )
 
 type Esign struct {
-    Config   ar.EsignConfig
-    headers  map[string]string
-    client   *resty.Request
-    redirect string
-    sn       string
+    Config        ar.EsignConfig
+    headers       map[string]string
+    client        *resty.Request
+    redirect      string
+    serialization jsoniter.Config
+    sn            string
 }
 
 type commonRes struct {
@@ -89,7 +90,8 @@ func New() *Esign {
         snag.Panic("环境设置失败")
     }
     return &Esign{
-        Config: config,
+        serialization: jsoniter.Config{SortMapKeys: true},
+        Config:        config,
         headers: map[string]string{
             "X-Tsign-Open-App-Id":    config.Appid,
             "Content-Type":           headerContentType,
@@ -140,8 +142,8 @@ func (e *Esign) request(api, method string, body interface{}, data interface{}) 
     res := new(commonRes)
     res.Data = data
     if body != nil {
-        b, _ := jsoniter.Marshal(body)
-        md5 = utils.Md5Base64String(string(b))
+        bodyString, _ = e.serialization.Froze().MarshalToString(body)
+        md5 = utils.Md5Base64String(bodyString)
     }
     singnature, raw := e.getSign(api, method, md5)
     req := resty.New().
@@ -182,8 +184,8 @@ func (e *Esign) request(api, method string, body interface{}, data interface{}) 
             Response: string(r.Body()),
         }
 
-        b, _ := jsoniter.Marshal(logdata)
-        log.Info(string(b))
+        logstr, _ := e.serialization.Froze().MarshalToString(logdata)
+        log.Info(logstr)
     }
     e.isResSuccess(r, res)
     return res.Data

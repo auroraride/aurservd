@@ -1038,6 +1038,43 @@ func (eq *EnterpriseQuery) Modify(modifiers ...func(s *sql.Selector)) *Enterpris
 	return eq.Select()
 }
 
+type EnterpriseQueryWith string
+
+var (
+	EnterpriseQueryWithCity       EnterpriseQueryWith = "City"
+	EnterpriseQueryWithRiders     EnterpriseQueryWith = "Riders"
+	EnterpriseQueryWithContracts  EnterpriseQueryWith = "Contracts"
+	EnterpriseQueryWithPrices     EnterpriseQueryWith = "Prices"
+	EnterpriseQueryWithSubscribes EnterpriseQueryWith = "Subscribes"
+	EnterpriseQueryWithStatements EnterpriseQueryWith = "Statements"
+	EnterpriseQueryWithStations   EnterpriseQueryWith = "Stations"
+	EnterpriseQueryWithBills      EnterpriseQueryWith = "Bills"
+)
+
+func (eq *EnterpriseQuery) With(withEdges ...EnterpriseQueryWith) *EnterpriseQuery {
+	for _, v := range withEdges {
+		switch v {
+		case EnterpriseQueryWithCity:
+			eq.WithCity()
+		case EnterpriseQueryWithRiders:
+			eq.WithRiders()
+		case EnterpriseQueryWithContracts:
+			eq.WithContracts()
+		case EnterpriseQueryWithPrices:
+			eq.WithPrices()
+		case EnterpriseQueryWithSubscribes:
+			eq.WithSubscribes()
+		case EnterpriseQueryWithStatements:
+			eq.WithStatements()
+		case EnterpriseQueryWithStations:
+			eq.WithStations()
+		case EnterpriseQueryWithBills:
+			eq.WithBills()
+		}
+	}
+	return eq
+}
+
 // EnterpriseGroupBy is the group-by builder for Enterprise entities.
 type EnterpriseGroupBy struct {
 	selector

@@ -672,6 +672,28 @@ func (eq *ExceptionQuery) Modify(modifiers ...func(s *sql.Selector)) *ExceptionS
 	return eq.Select()
 }
 
+type ExceptionQueryWith string
+
+var (
+	ExceptionQueryWithCity     ExceptionQueryWith = "City"
+	ExceptionQueryWithEmployee ExceptionQueryWith = "Employee"
+	ExceptionQueryWithStore    ExceptionQueryWith = "Store"
+)
+
+func (eq *ExceptionQuery) With(withEdges ...ExceptionQueryWith) *ExceptionQuery {
+	for _, v := range withEdges {
+		switch v {
+		case ExceptionQueryWithCity:
+			eq.WithCity()
+		case ExceptionQueryWithEmployee:
+			eq.WithEmployee()
+		case ExceptionQueryWithStore:
+			eq.WithStore()
+		}
+	}
+	return eq
+}
+
 // ExceptionGroupBy is the group-by builder for Exception entities.
 type ExceptionGroupBy struct {
 	selector

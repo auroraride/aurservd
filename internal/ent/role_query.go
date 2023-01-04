@@ -540,6 +540,22 @@ func (rq *RoleQuery) Modify(modifiers ...func(s *sql.Selector)) *RoleSelect {
 	return rq.Select()
 }
 
+type RoleQueryWith string
+
+var (
+	RoleQueryWithManagers RoleQueryWith = "Managers"
+)
+
+func (rq *RoleQuery) With(withEdges ...RoleQueryWith) *RoleQuery {
+	for _, v := range withEdges {
+		switch v {
+		case RoleQueryWithManagers:
+			rq.WithManagers()
+		}
+	}
+	return rq
+}
+
 // RoleGroupBy is the group-by builder for Role entities.
 type RoleGroupBy struct {
 	selector

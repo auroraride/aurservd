@@ -888,6 +888,37 @@ func (aq *AssistanceQuery) Modify(modifiers ...func(s *sql.Selector)) *Assistanc
 	return aq.Select()
 }
 
+type AssistanceQueryWith string
+
+var (
+	AssistanceQueryWithStore     AssistanceQueryWith = "Store"
+	AssistanceQueryWithRider     AssistanceQueryWith = "Rider"
+	AssistanceQueryWithSubscribe AssistanceQueryWith = "Subscribe"
+	AssistanceQueryWithCity      AssistanceQueryWith = "City"
+	AssistanceQueryWithOrder     AssistanceQueryWith = "Order"
+	AssistanceQueryWithEmployee  AssistanceQueryWith = "Employee"
+)
+
+func (aq *AssistanceQuery) With(withEdges ...AssistanceQueryWith) *AssistanceQuery {
+	for _, v := range withEdges {
+		switch v {
+		case AssistanceQueryWithStore:
+			aq.WithStore()
+		case AssistanceQueryWithRider:
+			aq.WithRider()
+		case AssistanceQueryWithSubscribe:
+			aq.WithSubscribe()
+		case AssistanceQueryWithCity:
+			aq.WithCity()
+		case AssistanceQueryWithOrder:
+			aq.WithOrder()
+		case AssistanceQueryWithEmployee:
+			aq.WithEmployee()
+		}
+	}
+	return aq
+}
+
 // AssistanceGroupBy is the group-by builder for Assistance entities.
 type AssistanceGroupBy struct {
 	selector

@@ -1034,6 +1034,43 @@ func (aq *AllocateQuery) Modify(modifiers ...func(s *sql.Selector)) *AllocateSel
 	return aq.Select()
 }
 
+type AllocateQueryWith string
+
+var (
+	AllocateQueryWithRider     AllocateQueryWith = "Rider"
+	AllocateQueryWithSubscribe AllocateQueryWith = "Subscribe"
+	AllocateQueryWithEmployee  AllocateQueryWith = "Employee"
+	AllocateQueryWithCabinet   AllocateQueryWith = "Cabinet"
+	AllocateQueryWithStore     AllocateQueryWith = "Store"
+	AllocateQueryWithEbike     AllocateQueryWith = "Ebike"
+	AllocateQueryWithBrand     AllocateQueryWith = "Brand"
+	AllocateQueryWithContract  AllocateQueryWith = "Contract"
+)
+
+func (aq *AllocateQuery) With(withEdges ...AllocateQueryWith) *AllocateQuery {
+	for _, v := range withEdges {
+		switch v {
+		case AllocateQueryWithRider:
+			aq.WithRider()
+		case AllocateQueryWithSubscribe:
+			aq.WithSubscribe()
+		case AllocateQueryWithEmployee:
+			aq.WithEmployee()
+		case AllocateQueryWithCabinet:
+			aq.WithCabinet()
+		case AllocateQueryWithStore:
+			aq.WithStore()
+		case AllocateQueryWithEbike:
+			aq.WithEbike()
+		case AllocateQueryWithBrand:
+			aq.WithBrand()
+		case AllocateQueryWithContract:
+			aq.WithContract()
+		}
+	}
+	return aq
+}
+
 // AllocateGroupBy is the group-by builder for Allocate entities.
 type AllocateGroupBy struct {
 	selector

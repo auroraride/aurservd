@@ -1176,6 +1176,49 @@ func (bq *BusinessQuery) Modify(modifiers ...func(s *sql.Selector)) *BusinessSel
 	return bq.Select()
 }
 
+type BusinessQueryWith string
+
+var (
+	BusinessQueryWithRider      BusinessQueryWith = "Rider"
+	BusinessQueryWithCity       BusinessQueryWith = "City"
+	BusinessQueryWithSubscribe  BusinessQueryWith = "Subscribe"
+	BusinessQueryWithEmployee   BusinessQueryWith = "Employee"
+	BusinessQueryWithStore      BusinessQueryWith = "Store"
+	BusinessQueryWithPlan       BusinessQueryWith = "Plan"
+	BusinessQueryWithEnterprise BusinessQueryWith = "Enterprise"
+	BusinessQueryWithStation    BusinessQueryWith = "Station"
+	BusinessQueryWithCabinet    BusinessQueryWith = "Cabinet"
+	BusinessQueryWithBattery    BusinessQueryWith = "Battery"
+)
+
+func (bq *BusinessQuery) With(withEdges ...BusinessQueryWith) *BusinessQuery {
+	for _, v := range withEdges {
+		switch v {
+		case BusinessQueryWithRider:
+			bq.WithRider()
+		case BusinessQueryWithCity:
+			bq.WithCity()
+		case BusinessQueryWithSubscribe:
+			bq.WithSubscribe()
+		case BusinessQueryWithEmployee:
+			bq.WithEmployee()
+		case BusinessQueryWithStore:
+			bq.WithStore()
+		case BusinessQueryWithPlan:
+			bq.WithPlan()
+		case BusinessQueryWithEnterprise:
+			bq.WithEnterprise()
+		case BusinessQueryWithStation:
+			bq.WithStation()
+		case BusinessQueryWithCabinet:
+			bq.WithCabinet()
+		case BusinessQueryWithBattery:
+			bq.WithBattery()
+		}
+	}
+	return bq
+}
+
 // BusinessGroupBy is the group-by builder for Business entities.
 type BusinessGroupBy struct {
 	selector

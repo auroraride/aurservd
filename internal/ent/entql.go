@@ -214,6 +214,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			battery.FieldCityID:       {Type: field.TypeUint64, Column: battery.FieldCityID},
 			battery.FieldRiderID:      {Type: field.TypeUint64, Column: battery.FieldRiderID},
 			battery.FieldCabinetID:    {Type: field.TypeUint64, Column: battery.FieldCabinetID},
+			battery.FieldSubscribeID:  {Type: field.TypeUint64, Column: battery.FieldSubscribeID},
 			battery.FieldSn:           {Type: field.TypeString, Column: battery.FieldSn},
 			battery.FieldEnable:       {Type: field.TypeBool, Column: battery.FieldEnable},
 			battery.FieldModel:        {Type: field.TypeString, Column: battery.FieldModel},
@@ -1716,6 +1717,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Battery",
 		"Cabinet",
+	)
+	graph.MustAddE(
+		"subscribe",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   battery.SubscribeTable,
+			Columns: []string{battery.SubscribeColumn},
+			Bidi:    false,
+		},
+		"Battery",
+		"Subscribe",
 	)
 	graph.MustAddE(
 		"cabinets",
@@ -4831,6 +4844,11 @@ func (f *BatteryFilter) WhereCabinetID(p entql.Uint64P) {
 	f.Where(p.Field(battery.FieldCabinetID))
 }
 
+// WhereSubscribeID applies the entql uint64 predicate on the subscribe_id field.
+func (f *BatteryFilter) WhereSubscribeID(p entql.Uint64P) {
+	f.Where(p.Field(battery.FieldSubscribeID))
+}
+
 // WhereSn applies the entql string predicate on the sn field.
 func (f *BatteryFilter) WhereSn(p entql.StringP) {
 	f.Where(p.Field(battery.FieldSn))
@@ -4882,6 +4900,20 @@ func (f *BatteryFilter) WhereHasCabinet() {
 // WhereHasCabinetWith applies a predicate to check if query has an edge cabinet with a given conditions (other predicates).
 func (f *BatteryFilter) WhereHasCabinetWith(preds ...predicate.Cabinet) {
 	f.Where(entql.HasEdgeWith("cabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasSubscribe applies a predicate to check if query has an edge subscribe.
+func (f *BatteryFilter) WhereHasSubscribe() {
+	f.Where(entql.HasEdge("subscribe"))
+}
+
+// WhereHasSubscribeWith applies a predicate to check if query has an edge subscribe with a given conditions (other predicates).
+func (f *BatteryFilter) WhereHasSubscribeWith(preds ...predicate.Subscribe) {
+	f.Where(entql.HasEdgeWith("subscribe", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

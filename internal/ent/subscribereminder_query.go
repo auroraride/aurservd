@@ -672,6 +672,28 @@ func (srq *SubscribeReminderQuery) Modify(modifiers ...func(s *sql.Selector)) *S
 	return srq.Select()
 }
 
+type SubscribeReminderQueryWith string
+
+var (
+	SubscribeReminderQueryWithSubscribe SubscribeReminderQueryWith = "Subscribe"
+	SubscribeReminderQueryWithPlan      SubscribeReminderQueryWith = "Plan"
+	SubscribeReminderQueryWithRider     SubscribeReminderQueryWith = "Rider"
+)
+
+func (srq *SubscribeReminderQuery) With(withEdges ...SubscribeReminderQueryWith) *SubscribeReminderQuery {
+	for _, v := range withEdges {
+		switch v {
+		case SubscribeReminderQueryWithSubscribe:
+			srq.WithSubscribe()
+		case SubscribeReminderQueryWithPlan:
+			srq.WithPlan()
+		case SubscribeReminderQueryWithRider:
+			srq.WithRider()
+		}
+	}
+	return srq
+}
+
 // SubscribeReminderGroupBy is the group-by builder for SubscribeReminder entities.
 type SubscribeReminderGroupBy struct {
 	selector

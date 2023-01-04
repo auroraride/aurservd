@@ -59,6 +59,7 @@ func loadManagerRoutes() {
     g.POST("/battery", mapi.Battery.Create)
     g.PUT("/battery/:id", mapi.Battery.Modify)
     g.POST("/battery/batch", mapi.Battery.BatchCreate)
+    g.POST("/battery/bind", mapi.Battery.Bind)
 
     // 电柜
     g.POST("/cabinet", mapi.Cabinet.Create)
@@ -174,6 +175,7 @@ func loadManagerRoutes() {
     g.GET("/selection/model", mapi.Selection.Model)
     g.GET("/selection/coupon/template", mapi.Selection.CouponTemplate)
     g.GET("/selection/ebike/brand", mapi.Selection.EbikeBrand)
+    g.GET("/selection/battery/serial", mapi.Selection.BatterySerial)
 
     // 救援
     g.GET("/assistance", mapi.Assistance.List)

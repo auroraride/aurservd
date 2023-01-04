@@ -534,6 +534,22 @@ func (esq *EnterpriseStationQuery) Modify(modifiers ...func(s *sql.Selector)) *E
 	return esq.Select()
 }
 
+type EnterpriseStationQueryWith string
+
+var (
+	EnterpriseStationQueryWithEnterprise EnterpriseStationQueryWith = "Enterprise"
+)
+
+func (esq *EnterpriseStationQuery) With(withEdges ...EnterpriseStationQueryWith) *EnterpriseStationQuery {
+	for _, v := range withEdges {
+		switch v {
+		case EnterpriseStationQueryWithEnterprise:
+			esq.WithEnterprise()
+		}
+	}
+	return esq
+}
+
 // EnterpriseStationGroupBy is the group-by builder for EnterpriseStation entities.
 type EnterpriseStationGroupBy struct {
 	selector

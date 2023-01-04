@@ -750,6 +750,31 @@ func (cq *ContractQuery) Modify(modifiers ...func(s *sql.Selector)) *ContractSel
 	return cq.Select()
 }
 
+type ContractQueryWith string
+
+var (
+	ContractQueryWithSubscribe ContractQueryWith = "Subscribe"
+	ContractQueryWithEmployee  ContractQueryWith = "Employee"
+	ContractQueryWithRider     ContractQueryWith = "Rider"
+	ContractQueryWithAllocate  ContractQueryWith = "Allocate"
+)
+
+func (cq *ContractQuery) With(withEdges ...ContractQueryWith) *ContractQuery {
+	for _, v := range withEdges {
+		switch v {
+		case ContractQueryWithSubscribe:
+			cq.WithSubscribe()
+		case ContractQueryWithEmployee:
+			cq.WithEmployee()
+		case ContractQueryWithRider:
+			cq.WithRider()
+		case ContractQueryWithAllocate:
+			cq.WithAllocate()
+		}
+	}
+	return cq
+}
+
 // ContractGroupBy is the group-by builder for Contract entities.
 type ContractGroupBy struct {
 	selector

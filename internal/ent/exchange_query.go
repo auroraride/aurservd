@@ -1029,6 +1029,43 @@ func (eq *ExchangeQuery) Modify(modifiers ...func(s *sql.Selector)) *ExchangeSel
 	return eq.Select()
 }
 
+type ExchangeQueryWith string
+
+var (
+	ExchangeQueryWithSubscribe  ExchangeQueryWith = "Subscribe"
+	ExchangeQueryWithCity       ExchangeQueryWith = "City"
+	ExchangeQueryWithStore      ExchangeQueryWith = "Store"
+	ExchangeQueryWithEnterprise ExchangeQueryWith = "Enterprise"
+	ExchangeQueryWithStation    ExchangeQueryWith = "Station"
+	ExchangeQueryWithCabinet    ExchangeQueryWith = "Cabinet"
+	ExchangeQueryWithRider      ExchangeQueryWith = "Rider"
+	ExchangeQueryWithEmployee   ExchangeQueryWith = "Employee"
+)
+
+func (eq *ExchangeQuery) With(withEdges ...ExchangeQueryWith) *ExchangeQuery {
+	for _, v := range withEdges {
+		switch v {
+		case ExchangeQueryWithSubscribe:
+			eq.WithSubscribe()
+		case ExchangeQueryWithCity:
+			eq.WithCity()
+		case ExchangeQueryWithStore:
+			eq.WithStore()
+		case ExchangeQueryWithEnterprise:
+			eq.WithEnterprise()
+		case ExchangeQueryWithStation:
+			eq.WithStation()
+		case ExchangeQueryWithCabinet:
+			eq.WithCabinet()
+		case ExchangeQueryWithRider:
+			eq.WithRider()
+		case ExchangeQueryWithEmployee:
+			eq.WithEmployee()
+		}
+	}
+	return eq
+}
+
 // ExchangeGroupBy is the group-by builder for Exchange entities.
 type ExchangeGroupBy struct {
 	selector

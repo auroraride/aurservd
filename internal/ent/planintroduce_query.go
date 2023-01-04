@@ -537,6 +537,22 @@ func (piq *PlanIntroduceQuery) Modify(modifiers ...func(s *sql.Selector)) *PlanI
 	return piq.Select()
 }
 
+type PlanIntroduceQueryWith string
+
+var (
+	PlanIntroduceQueryWithBrand PlanIntroduceQueryWith = "Brand"
+)
+
+func (piq *PlanIntroduceQuery) With(withEdges ...PlanIntroduceQueryWith) *PlanIntroduceQuery {
+	for _, v := range withEdges {
+		switch v {
+		case PlanIntroduceQueryWithBrand:
+			piq.WithBrand()
+		}
+	}
+	return piq
+}
+
 // PlanIntroduceGroupBy is the group-by builder for PlanIntroduce entities.
 type PlanIntroduceGroupBy struct {
 	selector

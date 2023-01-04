@@ -1308,6 +1308,55 @@ func (oq *OrderQuery) Modify(modifiers ...func(s *sql.Selector)) *OrderSelect {
 	return oq.Select()
 }
 
+type OrderQueryWith string
+
+var (
+	OrderQueryWithPlan       OrderQueryWith = "Plan"
+	OrderQueryWithCity       OrderQueryWith = "City"
+	OrderQueryWithBrand      OrderQueryWith = "Brand"
+	OrderQueryWithEbike      OrderQueryWith = "Ebike"
+	OrderQueryWithRider      OrderQueryWith = "Rider"
+	OrderQueryWithSubscribe  OrderQueryWith = "Subscribe"
+	OrderQueryWithCommission OrderQueryWith = "Commission"
+	OrderQueryWithParent     OrderQueryWith = "Parent"
+	OrderQueryWithChildren   OrderQueryWith = "Children"
+	OrderQueryWithRefund     OrderQueryWith = "Refund"
+	OrderQueryWithAssistance OrderQueryWith = "Assistance"
+	OrderQueryWithCoupons    OrderQueryWith = "Coupons"
+)
+
+func (oq *OrderQuery) With(withEdges ...OrderQueryWith) *OrderQuery {
+	for _, v := range withEdges {
+		switch v {
+		case OrderQueryWithPlan:
+			oq.WithPlan()
+		case OrderQueryWithCity:
+			oq.WithCity()
+		case OrderQueryWithBrand:
+			oq.WithBrand()
+		case OrderQueryWithEbike:
+			oq.WithEbike()
+		case OrderQueryWithRider:
+			oq.WithRider()
+		case OrderQueryWithSubscribe:
+			oq.WithSubscribe()
+		case OrderQueryWithCommission:
+			oq.WithCommission()
+		case OrderQueryWithParent:
+			oq.WithParent()
+		case OrderQueryWithChildren:
+			oq.WithChildren()
+		case OrderQueryWithRefund:
+			oq.WithRefund()
+		case OrderQueryWithAssistance:
+			oq.WithAssistance()
+		case OrderQueryWithCoupons:
+			oq.WithCoupons()
+		}
+	}
+	return oq
+}
+
 // OrderGroupBy is the group-by builder for Order entities.
 type OrderGroupBy struct {
 	selector

@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // BatteryUpdate is the builder for updating Battery entities.
@@ -151,6 +152,26 @@ func (bu *BatteryUpdate) ClearCabinetID() *BatteryUpdate {
 	return bu
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (bu *BatteryUpdate) SetSubscribeID(u uint64) *BatteryUpdate {
+	bu.mutation.SetSubscribeID(u)
+	return bu
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (bu *BatteryUpdate) SetNillableSubscribeID(u *uint64) *BatteryUpdate {
+	if u != nil {
+		bu.SetSubscribeID(*u)
+	}
+	return bu
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (bu *BatteryUpdate) ClearSubscribeID() *BatteryUpdate {
+	bu.mutation.ClearSubscribeID()
+	return bu
+}
+
 // SetSn sets the "sn" field.
 func (bu *BatteryUpdate) SetSn(s string) *BatteryUpdate {
 	bu.mutation.SetSn(s)
@@ -192,6 +213,11 @@ func (bu *BatteryUpdate) SetCabinet(c *Cabinet) *BatteryUpdate {
 	return bu.SetCabinetID(c.ID)
 }
 
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (bu *BatteryUpdate) SetSubscribe(s *Subscribe) *BatteryUpdate {
+	return bu.SetSubscribeID(s.ID)
+}
+
 // Mutation returns the BatteryMutation object of the builder.
 func (bu *BatteryUpdate) Mutation() *BatteryMutation {
 	return bu.mutation
@@ -212,6 +238,12 @@ func (bu *BatteryUpdate) ClearRider() *BatteryUpdate {
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (bu *BatteryUpdate) ClearCabinet() *BatteryUpdate {
 	bu.mutation.ClearCabinet()
+	return bu
+}
+
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (bu *BatteryUpdate) ClearSubscribe() *BatteryUpdate {
+	bu.mutation.ClearSubscribe()
 	return bu
 }
 
@@ -419,6 +451,41 @@ func (bu *BatteryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if bu.mutation.SubscribeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   battery.SubscribeTable,
+			Columns: []string{battery.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   battery.SubscribeTable,
+			Columns: []string{battery.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(bu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -559,6 +626,26 @@ func (buo *BatteryUpdateOne) ClearCabinetID() *BatteryUpdateOne {
 	return buo
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (buo *BatteryUpdateOne) SetSubscribeID(u uint64) *BatteryUpdateOne {
+	buo.mutation.SetSubscribeID(u)
+	return buo
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (buo *BatteryUpdateOne) SetNillableSubscribeID(u *uint64) *BatteryUpdateOne {
+	if u != nil {
+		buo.SetSubscribeID(*u)
+	}
+	return buo
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (buo *BatteryUpdateOne) ClearSubscribeID() *BatteryUpdateOne {
+	buo.mutation.ClearSubscribeID()
+	return buo
+}
+
 // SetSn sets the "sn" field.
 func (buo *BatteryUpdateOne) SetSn(s string) *BatteryUpdateOne {
 	buo.mutation.SetSn(s)
@@ -600,6 +687,11 @@ func (buo *BatteryUpdateOne) SetCabinet(c *Cabinet) *BatteryUpdateOne {
 	return buo.SetCabinetID(c.ID)
 }
 
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (buo *BatteryUpdateOne) SetSubscribe(s *Subscribe) *BatteryUpdateOne {
+	return buo.SetSubscribeID(s.ID)
+}
+
 // Mutation returns the BatteryMutation object of the builder.
 func (buo *BatteryUpdateOne) Mutation() *BatteryMutation {
 	return buo.mutation
@@ -620,6 +712,12 @@ func (buo *BatteryUpdateOne) ClearRider() *BatteryUpdateOne {
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (buo *BatteryUpdateOne) ClearCabinet() *BatteryUpdateOne {
 	buo.mutation.ClearCabinet()
+	return buo
+}
+
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (buo *BatteryUpdateOne) ClearSubscribe() *BatteryUpdateOne {
+	buo.mutation.ClearSubscribe()
 	return buo
 }
 
@@ -843,6 +941,41 @@ func (buo *BatteryUpdateOne) sqlSave(ctx context.Context) (_node *Battery, err e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: cabinet.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.SubscribeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   battery.SubscribeTable,
+			Columns: []string{battery.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   battery.SubscribeTable,
+			Columns: []string{battery.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
 				},
 			},
 		}

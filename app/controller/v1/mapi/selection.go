@@ -231,3 +231,18 @@ func (*selection) EbikeBrand(c echo.Context) (err error) {
     ctx := app.Context(c)
     return ctx.SendResponse(service.NewSelection().EbikeBrand())
 }
+
+// BatterySerial
+// @ID           ManagerSelectionBatterySerial
+// @Router       /manager/v1/selection/battery/serial [GET]
+// @Summary      MB016 按流水号搜索电池
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        serial  query  string  true  "流水号"
+// @Success      200  {object}  []model.Battery  "请求成功"
+func (*selection) BatterySerial(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.BatterySearchReq](c)
+    return ctx.SendResponse(service.NewSelection().BatterySerialSearch(req))
+}

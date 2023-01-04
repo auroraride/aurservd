@@ -1513,6 +1513,22 @@ func (c *BatteryClient) QueryCabinet(b *Battery) *CabinetQuery {
 	return query
 }
 
+// QuerySubscribe queries the subscribe edge of a Battery.
+func (c *BatteryClient) QuerySubscribe(b *Battery) *SubscribeQuery {
+	query := (&SubscribeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(battery.Table, battery.FieldID, id),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, battery.SubscribeTable, battery.SubscribeColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *BatteryClient) Hooks() []Hook {
 	hooks := c.hooks.Battery

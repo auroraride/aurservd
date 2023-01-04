@@ -606,6 +606,25 @@ func (plq *PointLogQuery) Modify(modifiers ...func(s *sql.Selector)) *PointLogSe
 	return plq.Select()
 }
 
+type PointLogQueryWith string
+
+var (
+	PointLogQueryWithRider PointLogQueryWith = "Rider"
+	PointLogQueryWithOrder PointLogQueryWith = "Order"
+)
+
+func (plq *PointLogQuery) With(withEdges ...PointLogQueryWith) *PointLogQuery {
+	for _, v := range withEdges {
+		switch v {
+		case PointLogQueryWithRider:
+			plq.WithRider()
+		case PointLogQueryWithOrder:
+			plq.WithOrder()
+		}
+	}
+	return plq
+}
+
 // PointLogGroupBy is the group-by builder for PointLog entities.
 type PointLogGroupBy struct {
 	selector

@@ -9,6 +9,7 @@ import (
     "fmt"
     "github.com/auroraride/adapter"
     "github.com/auroraride/adapter/defs/cabdef"
+    "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -79,7 +80,7 @@ func (s *batteryService) PutinCabinet(sn string, cab *ent.Cabinet) (bat *ent.Bat
 
     bat, _ = s.orm.Query().Where(battery.Sn(sn)).First(s.ctx)
     if bat != nil {
-        return bat.Update().SetNillableCabinetID(cabinetID).SetModel(ab.Model).SetNillableCityID(cityID).ClearRiderID().Save(s.ctx)
+        return bat.Update().SetNillableCabinetID(cabinetID).SetModel(ab.Model).SetNillableCityID(cityID).ClearRiderID().ClearSubscribeID().Save(s.ctx)
     }
     return s.orm.Create().SetSn(sn).SetModel(ab.Model).SetNillableCityID(cityID).SetNillableCabinetID(cabinetID).Save(s.ctx)
 }
@@ -297,7 +298,7 @@ func (s *batteryService) RiderPutout(sn string, sub *ent.Subscribe) (bat *ent.Ba
     }
 
     // 更新电池
-    _ = bat.Update().ClearCabinetID().SetRiderID(sub.RiderID).Exec(s.ctx)
+    _ = bat.Update().ClearCabinetID().SetSubscribeID(sub.ID).SetRiderID(sub.RiderID).Exec(s.ctx)
 
     return
 }
@@ -308,4 +309,43 @@ func (s *batteryService) RiderPutin(sn string, sub *ent.Subscribe, cab *ent.Cabi
     bat, _ = s.PutinCabinet(sn, cab)
 
     return
+}
+
+// Bind 绑定骑手
+func (s *batteryService) Bind(req *model.BatteryBind) {
+    // 查找骑手
+    r := NewRider().Query(req.RiderID)
+
+    // 查找订阅
+    sub := NewSubscribe().QueryEffectiveX(r.ID, ent.SubscribeQueryWithBattery, ent.SubscribeQueryWithRider)
+    if sub.BatteryID != nil {
+        snag.Panic("当前骑手有绑定中的电池, 无法重复绑定")
+    }
+
+    // 查找电池
+    bat := NewBattery().QueryIDX(req.BatteryID)
+    if bat.RiderID != nil || bat.SubscribeID != nil {
+        snag.Panic("当前电池有绑定中的骑手, 无法重复绑定")
+    }
+
+    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+        // 绑定骑手
+        err = sub.Update().SetBatteryID(bat.ID).SetBatterySn(bat.Sn).Exec(s.ctx)
+        if err != nil {
+            return
+        }
+
+        // 更新电池
+        return bat.Update().SetSubscribeID(sub.ID).SetRiderID(sub.RiderID).Exec(s.ctx)
+    })
+
+    // diff
+    var before, after string
+
+    go logging.NewOperateLog().
+        SetOperate(model.OperateBindBattery).
+        SetRef(sub.Edges.Rider).
+        SetDiff(before, after).
+        SetModifier(s.modifier).
+        Send()
 }

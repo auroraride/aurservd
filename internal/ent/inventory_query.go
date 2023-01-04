@@ -461,6 +461,18 @@ func (iq *InventoryQuery) Modify(modifiers ...func(s *sql.Selector)) *InventoryS
 	return iq.Select()
 }
 
+type InventoryQueryWith string
+
+var ()
+
+func (iq *InventoryQuery) With(withEdges ...InventoryQueryWith) *InventoryQuery {
+	for _, v := range withEdges {
+		switch v {
+		}
+	}
+	return iq
+}
+
 // InventoryGroupBy is the group-by builder for Inventory entities.
 type InventoryGroupBy struct {
 	selector

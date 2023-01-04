@@ -819,6 +819,34 @@ func (saq *SubscribeAlterQuery) Modify(modifiers ...func(s *sql.Selector)) *Subs
 	return saq.Select()
 }
 
+type SubscribeAlterQueryWith string
+
+var (
+	SubscribeAlterQueryWithRider      SubscribeAlterQueryWith = "Rider"
+	SubscribeAlterQueryWithManager    SubscribeAlterQueryWith = "Manager"
+	SubscribeAlterQueryWithEnterprise SubscribeAlterQueryWith = "Enterprise"
+	SubscribeAlterQueryWithAgent      SubscribeAlterQueryWith = "Agent"
+	SubscribeAlterQueryWithSubscribe  SubscribeAlterQueryWith = "Subscribe"
+)
+
+func (saq *SubscribeAlterQuery) With(withEdges ...SubscribeAlterQueryWith) *SubscribeAlterQuery {
+	for _, v := range withEdges {
+		switch v {
+		case SubscribeAlterQueryWithRider:
+			saq.WithRider()
+		case SubscribeAlterQueryWithManager:
+			saq.WithManager()
+		case SubscribeAlterQueryWithEnterprise:
+			saq.WithEnterprise()
+		case SubscribeAlterQueryWithAgent:
+			saq.WithAgent()
+		case SubscribeAlterQueryWithSubscribe:
+			saq.WithSubscribe()
+		}
+	}
+	return saq
+}
+
 // SubscribeAlterGroupBy is the group-by builder for SubscribeAlter entities.
 type SubscribeAlterGroupBy struct {
 	selector

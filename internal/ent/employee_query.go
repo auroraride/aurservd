@@ -973,6 +973,40 @@ func (eq *EmployeeQuery) Modify(modifiers ...func(s *sql.Selector)) *EmployeeSel
 	return eq.Select()
 }
 
+type EmployeeQueryWith string
+
+var (
+	EmployeeQueryWithCity        EmployeeQueryWith = "City"
+	EmployeeQueryWithStore       EmployeeQueryWith = "Store"
+	EmployeeQueryWithAttendances EmployeeQueryWith = "Attendances"
+	EmployeeQueryWithStocks      EmployeeQueryWith = "Stocks"
+	EmployeeQueryWithExchanges   EmployeeQueryWith = "Exchanges"
+	EmployeeQueryWithCommissions EmployeeQueryWith = "Commissions"
+	EmployeeQueryWithAssistances EmployeeQueryWith = "Assistances"
+)
+
+func (eq *EmployeeQuery) With(withEdges ...EmployeeQueryWith) *EmployeeQuery {
+	for _, v := range withEdges {
+		switch v {
+		case EmployeeQueryWithCity:
+			eq.WithCity()
+		case EmployeeQueryWithStore:
+			eq.WithStore()
+		case EmployeeQueryWithAttendances:
+			eq.WithAttendances()
+		case EmployeeQueryWithStocks:
+			eq.WithStocks()
+		case EmployeeQueryWithExchanges:
+			eq.WithExchanges()
+		case EmployeeQueryWithCommissions:
+			eq.WithCommissions()
+		case EmployeeQueryWithAssistances:
+			eq.WithAssistances()
+		}
+	}
+	return eq
+}
+
 // EmployeeGroupBy is the group-by builder for Employee entities.
 type EmployeeGroupBy struct {
 	selector

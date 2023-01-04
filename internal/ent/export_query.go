@@ -534,6 +534,22 @@ func (eq *ExportQuery) Modify(modifiers ...func(s *sql.Selector)) *ExportSelect 
 	return eq.Select()
 }
 
+type ExportQueryWith string
+
+var (
+	ExportQueryWithManager ExportQueryWith = "Manager"
+)
+
+func (eq *ExportQuery) With(withEdges ...ExportQueryWith) *ExportQuery {
+	for _, v := range withEdges {
+		switch v {
+		case ExportQueryWithManager:
+			eq.WithManager()
+		}
+	}
+	return eq
+}
+
 // ExportGroupBy is the group-by builder for Export entities.
 type ExportGroupBy struct {
 	selector

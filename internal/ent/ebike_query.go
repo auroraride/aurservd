@@ -678,6 +678,28 @@ func (eq *EbikeQuery) Modify(modifiers ...func(s *sql.Selector)) *EbikeSelect {
 	return eq.Select()
 }
 
+type EbikeQueryWith string
+
+var (
+	EbikeQueryWithBrand EbikeQueryWith = "Brand"
+	EbikeQueryWithRider EbikeQueryWith = "Rider"
+	EbikeQueryWithStore EbikeQueryWith = "Store"
+)
+
+func (eq *EbikeQuery) With(withEdges ...EbikeQueryWith) *EbikeQuery {
+	for _, v := range withEdges {
+		switch v {
+		case EbikeQueryWithBrand:
+			eq.WithBrand()
+		case EbikeQueryWithRider:
+			eq.WithRider()
+		case EbikeQueryWithStore:
+			eq.WithStore()
+		}
+	}
+	return eq
+}
+
 // EbikeGroupBy is the group-by builder for Ebike entities.
 type EbikeGroupBy struct {
 	selector

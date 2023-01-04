@@ -822,6 +822,34 @@ func (bq *BranchQuery) Modify(modifiers ...func(s *sql.Selector)) *BranchSelect 
 	return bq.Select()
 }
 
+type BranchQueryWith string
+
+var (
+	BranchQueryWithCity      BranchQueryWith = "City"
+	BranchQueryWithContracts BranchQueryWith = "Contracts"
+	BranchQueryWithCabinets  BranchQueryWith = "Cabinets"
+	BranchQueryWithFaults    BranchQueryWith = "Faults"
+	BranchQueryWithStores    BranchQueryWith = "Stores"
+)
+
+func (bq *BranchQuery) With(withEdges ...BranchQueryWith) *BranchQuery {
+	for _, v := range withEdges {
+		switch v {
+		case BranchQueryWithCity:
+			bq.WithCity()
+		case BranchQueryWithContracts:
+			bq.WithContracts()
+		case BranchQueryWithCabinets:
+			bq.WithCabinets()
+		case BranchQueryWithFaults:
+			bq.WithFaults()
+		case BranchQueryWithStores:
+			bq.WithStores()
+		}
+	}
+	return bq
+}
+
 // BranchGroupBy is the group-by builder for Branch entities.
 type BranchGroupBy struct {
 	selector

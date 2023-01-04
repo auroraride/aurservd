@@ -534,6 +534,22 @@ func (ecq *EnterpriseContractQuery) Modify(modifiers ...func(s *sql.Selector)) *
 	return ecq.Select()
 }
 
+type EnterpriseContractQueryWith string
+
+var (
+	EnterpriseContractQueryWithEnterprise EnterpriseContractQueryWith = "Enterprise"
+)
+
+func (ecq *EnterpriseContractQuery) With(withEdges ...EnterpriseContractQueryWith) *EnterpriseContractQuery {
+	for _, v := range withEdges {
+		switch v {
+		case EnterpriseContractQueryWithEnterprise:
+			ecq.WithEnterprise()
+		}
+	}
+	return ecq
+}
+
 // EnterpriseContractGroupBy is the group-by builder for EnterpriseContract entities.
 type EnterpriseContractGroupBy struct {
 	selector

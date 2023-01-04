@@ -537,6 +537,22 @@ func (ctq *CouponTemplateQuery) Modify(modifiers ...func(s *sql.Selector)) *Coup
 	return ctq.Select()
 }
 
+type CouponTemplateQueryWith string
+
+var (
+	CouponTemplateQueryWithCoupons CouponTemplateQueryWith = "Coupons"
+)
+
+func (ctq *CouponTemplateQuery) With(withEdges ...CouponTemplateQueryWith) *CouponTemplateQuery {
+	for _, v := range withEdges {
+		switch v {
+		case CouponTemplateQueryWithCoupons:
+			ctq.WithCoupons()
+		}
+	}
+	return ctq
+}
+
 // CouponTemplateGroupBy is the group-by builder for CouponTemplate entities.
 type CouponTemplateGroupBy struct {
 	selector

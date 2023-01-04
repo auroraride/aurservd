@@ -882,6 +882,37 @@ func (ebq *EnterpriseBillQuery) Modify(modifiers ...func(s *sql.Selector)) *Ente
 	return ebq.Select()
 }
 
+type EnterpriseBillQueryWith string
+
+var (
+	EnterpriseBillQueryWithRider      EnterpriseBillQueryWith = "Rider"
+	EnterpriseBillQueryWithCity       EnterpriseBillQueryWith = "City"
+	EnterpriseBillQueryWithStation    EnterpriseBillQueryWith = "Station"
+	EnterpriseBillQueryWithEnterprise EnterpriseBillQueryWith = "Enterprise"
+	EnterpriseBillQueryWithStatement  EnterpriseBillQueryWith = "Statement"
+	EnterpriseBillQueryWithSubscribe  EnterpriseBillQueryWith = "Subscribe"
+)
+
+func (ebq *EnterpriseBillQuery) With(withEdges ...EnterpriseBillQueryWith) *EnterpriseBillQuery {
+	for _, v := range withEdges {
+		switch v {
+		case EnterpriseBillQueryWithRider:
+			ebq.WithRider()
+		case EnterpriseBillQueryWithCity:
+			ebq.WithCity()
+		case EnterpriseBillQueryWithStation:
+			ebq.WithStation()
+		case EnterpriseBillQueryWithEnterprise:
+			ebq.WithEnterprise()
+		case EnterpriseBillQueryWithStatement:
+			ebq.WithStatement()
+		case EnterpriseBillQueryWithSubscribe:
+			ebq.WithSubscribe()
+		}
+	}
+	return ebq
+}
+
 // EnterpriseBillGroupBy is the group-by builder for EnterpriseBill entities.
 type EnterpriseBillGroupBy struct {
 	selector

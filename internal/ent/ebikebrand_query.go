@@ -461,6 +461,18 @@ func (ebq *EbikeBrandQuery) Modify(modifiers ...func(s *sql.Selector)) *EbikeBra
 	return ebq.Select()
 }
 
+type EbikeBrandQueryWith string
+
+var ()
+
+func (ebq *EbikeBrandQuery) With(withEdges ...EbikeBrandQueryWith) *EbikeBrandQuery {
+	for _, v := range withEdges {
+		switch v {
+		}
+	}
+	return ebq
+}
+
 // EbikeBrandGroupBy is the group-by builder for EbikeBrand entities.
 type EbikeBrandGroupBy struct {
 	selector

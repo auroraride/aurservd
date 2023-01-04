@@ -819,6 +819,34 @@ func (cq *CouponQuery) Modify(modifiers ...func(s *sql.Selector)) *CouponSelect 
 	return cq.Select()
 }
 
+type CouponQueryWith string
+
+var (
+	CouponQueryWithRider    CouponQueryWith = "Rider"
+	CouponQueryWithAssembly CouponQueryWith = "Assembly"
+	CouponQueryWithPlan     CouponQueryWith = "Plan"
+	CouponQueryWithTemplate CouponQueryWith = "Template"
+	CouponQueryWithOrder    CouponQueryWith = "Order"
+)
+
+func (cq *CouponQuery) With(withEdges ...CouponQueryWith) *CouponQuery {
+	for _, v := range withEdges {
+		switch v {
+		case CouponQueryWithRider:
+			cq.WithRider()
+		case CouponQueryWithAssembly:
+			cq.WithAssembly()
+		case CouponQueryWithPlan:
+			cq.WithPlan()
+		case CouponQueryWithTemplate:
+			cq.WithTemplate()
+		case CouponQueryWithOrder:
+			cq.WithOrder()
+		}
+	}
+	return cq
+}
+
 // CouponGroupBy is the group-by builder for Coupon entities.
 type CouponGroupBy struct {
 	selector

@@ -2729,6 +2729,47 @@
                 }
             }
         },
+        "/manager/v1/battery/bind": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M4008 绑定骑手",
+                "operationId": "ManagerBatteryBind",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "绑定参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BatteryBind"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/battery/model": {
             "get": {
                 "consumes": [
@@ -9265,6 +9306,48 @@
                 }
             }
         },
+        "/manager/v1/selection/battery/serial": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MB016 按流水号搜索电池",
+                "operationId": "ManagerSelectionBatterySerial",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "流水号",
+                        "name": "serial",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Battery"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/selection/branch": {
             "get": {
                 "consumes": [
@@ -15021,11 +15104,43 @@
                 }
             }
         },
+        "model.Battery": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "model": {
+                    "description": "型号",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "编号",
+                    "type": "string"
+                }
+            }
+        },
+        "model.BatteryBind": {
+            "type": "object",
+            "required": [
+                "batteryId",
+                "riderId"
+            ],
+            "properties": {
+                "batteryId": {
+                    "description": "电池ID",
+                    "type": "integer"
+                },
+                "riderId": {
+                    "description": "骑手ID",
+                    "type": "integer"
+                }
+            }
+        },
         "model.BatteryCreateReq": {
             "type": "object",
             "required": [
                 "cityId",
-                "model",
                 "sn"
             ],
             "properties": {
@@ -15036,10 +15151,6 @@
                 "enable": {
                     "description": "是否启用, 需默认为`true`",
                     "type": "boolean"
-                },
-                "model": {
-                    "description": "电池型号 ",
-                    "type": "string"
                 },
                 "sn": {
                     "description": "电池编号 ",

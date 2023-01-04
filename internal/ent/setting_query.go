@@ -461,6 +461,18 @@ func (sq *SettingQuery) Modify(modifiers ...func(s *sql.Selector)) *SettingSelec
 	return sq.Select()
 }
 
+type SettingQueryWith string
+
+var ()
+
+func (sq *SettingQuery) With(withEdges ...SettingQueryWith) *SettingQuery {
+	for _, v := range withEdges {
+		switch v {
+		}
+	}
+	return sq
+}
+
 // SettingGroupBy is the group-by builder for Setting entities.
 type SettingGroupBy struct {
 	selector

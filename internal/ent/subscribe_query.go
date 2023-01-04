@@ -1675,6 +1675,70 @@ func (sq *SubscribeQuery) Modify(modifiers ...func(s *sql.Selector)) *SubscribeS
 	return sq.Select()
 }
 
+type SubscribeQueryWith string
+
+var (
+	SubscribeQueryWithPlan         SubscribeQueryWith = "Plan"
+	SubscribeQueryWithEmployee     SubscribeQueryWith = "Employee"
+	SubscribeQueryWithCity         SubscribeQueryWith = "City"
+	SubscribeQueryWithStation      SubscribeQueryWith = "Station"
+	SubscribeQueryWithStore        SubscribeQueryWith = "Store"
+	SubscribeQueryWithCabinet      SubscribeQueryWith = "Cabinet"
+	SubscribeQueryWithBrand        SubscribeQueryWith = "Brand"
+	SubscribeQueryWithEbike        SubscribeQueryWith = "Ebike"
+	SubscribeQueryWithBattery      SubscribeQueryWith = "Battery"
+	SubscribeQueryWithRider        SubscribeQueryWith = "Rider"
+	SubscribeQueryWithEnterprise   SubscribeQueryWith = "Enterprise"
+	SubscribeQueryWithPauses       SubscribeQueryWith = "Pauses"
+	SubscribeQueryWithSuspends     SubscribeQueryWith = "Suspends"
+	SubscribeQueryWithAlters       SubscribeQueryWith = "Alters"
+	SubscribeQueryWithOrders       SubscribeQueryWith = "Orders"
+	SubscribeQueryWithInitialOrder SubscribeQueryWith = "InitialOrder"
+	SubscribeQueryWithBills        SubscribeQueryWith = "Bills"
+)
+
+func (sq *SubscribeQuery) With(withEdges ...SubscribeQueryWith) *SubscribeQuery {
+	for _, v := range withEdges {
+		switch v {
+		case SubscribeQueryWithPlan:
+			sq.WithPlan()
+		case SubscribeQueryWithEmployee:
+			sq.WithEmployee()
+		case SubscribeQueryWithCity:
+			sq.WithCity()
+		case SubscribeQueryWithStation:
+			sq.WithStation()
+		case SubscribeQueryWithStore:
+			sq.WithStore()
+		case SubscribeQueryWithCabinet:
+			sq.WithCabinet()
+		case SubscribeQueryWithBrand:
+			sq.WithBrand()
+		case SubscribeQueryWithEbike:
+			sq.WithEbike()
+		case SubscribeQueryWithBattery:
+			sq.WithBattery()
+		case SubscribeQueryWithRider:
+			sq.WithRider()
+		case SubscribeQueryWithEnterprise:
+			sq.WithEnterprise()
+		case SubscribeQueryWithPauses:
+			sq.WithPauses()
+		case SubscribeQueryWithSuspends:
+			sq.WithSuspends()
+		case SubscribeQueryWithAlters:
+			sq.WithAlters()
+		case SubscribeQueryWithOrders:
+			sq.WithOrders()
+		case SubscribeQueryWithInitialOrder:
+			sq.WithInitialOrder()
+		case SubscribeQueryWithBills:
+			sq.WithBills()
+		}
+	}
+	return sq
+}
+
 // SubscribeGroupBy is the group-by builder for Subscribe entities.
 type SubscribeGroupBy struct {
 	selector

@@ -1183,6 +1183,49 @@ func (rq *RiderQuery) Modify(modifiers ...func(s *sql.Selector)) *RiderSelect {
 	return rq.Select()
 }
 
+type RiderQueryWith string
+
+var (
+	RiderQueryWithStation    RiderQueryWith = "Station"
+	RiderQueryWithPerson     RiderQueryWith = "Person"
+	RiderQueryWithEnterprise RiderQueryWith = "Enterprise"
+	RiderQueryWithContracts  RiderQueryWith = "Contracts"
+	RiderQueryWithFaults     RiderQueryWith = "Faults"
+	RiderQueryWithOrders     RiderQueryWith = "Orders"
+	RiderQueryWithExchanges  RiderQueryWith = "Exchanges"
+	RiderQueryWithSubscribes RiderQueryWith = "Subscribes"
+	RiderQueryWithStocks     RiderQueryWith = "Stocks"
+	RiderQueryWithFollowups  RiderQueryWith = "Followups"
+)
+
+func (rq *RiderQuery) With(withEdges ...RiderQueryWith) *RiderQuery {
+	for _, v := range withEdges {
+		switch v {
+		case RiderQueryWithStation:
+			rq.WithStation()
+		case RiderQueryWithPerson:
+			rq.WithPerson()
+		case RiderQueryWithEnterprise:
+			rq.WithEnterprise()
+		case RiderQueryWithContracts:
+			rq.WithContracts()
+		case RiderQueryWithFaults:
+			rq.WithFaults()
+		case RiderQueryWithOrders:
+			rq.WithOrders()
+		case RiderQueryWithExchanges:
+			rq.WithExchanges()
+		case RiderQueryWithSubscribes:
+			rq.WithSubscribes()
+		case RiderQueryWithStocks:
+			rq.WithStocks()
+		case RiderQueryWithFollowups:
+			rq.WithFollowups()
+		}
+	}
+	return rq
+}
+
 // RiderGroupBy is the group-by builder for Rider entities.
 type RiderGroupBy struct {
 	selector

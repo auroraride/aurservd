@@ -784,6 +784,31 @@ func (pq *PlanQuery) Modify(modifiers ...func(s *sql.Selector)) *PlanSelect {
 	return pq.Select()
 }
 
+type PlanQueryWith string
+
+var (
+	PlanQueryWithBrand     PlanQueryWith = "Brand"
+	PlanQueryWithCities    PlanQueryWith = "Cities"
+	PlanQueryWithParent    PlanQueryWith = "Parent"
+	PlanQueryWithComplexes PlanQueryWith = "Complexes"
+)
+
+func (pq *PlanQuery) With(withEdges ...PlanQueryWith) *PlanQuery {
+	for _, v := range withEdges {
+		switch v {
+		case PlanQueryWithBrand:
+			pq.WithBrand()
+		case PlanQueryWithCities:
+			pq.WithCities()
+		case PlanQueryWithParent:
+			pq.WithParent()
+		case PlanQueryWithComplexes:
+			pq.WithComplexes()
+		}
+	}
+	return pq
+}
+
 // PlanGroupBy is the group-by builder for Plan entities.
 type PlanGroupBy struct {
 	selector

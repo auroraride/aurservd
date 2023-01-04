@@ -540,6 +540,22 @@ func (pq *PersonQuery) Modify(modifiers ...func(s *sql.Selector)) *PersonSelect 
 	return pq.Select()
 }
 
+type PersonQueryWith string
+
+var (
+	PersonQueryWithRider PersonQueryWith = "Rider"
+)
+
+func (pq *PersonQuery) With(withEdges ...PersonQueryWith) *PersonQuery {
+	for _, v := range withEdges {
+		switch v {
+		case PersonQueryWithRider:
+			pq.WithRider()
+		}
+	}
+	return pq
+}
+
 // PersonGroupBy is the group-by builder for Person entities.
 type PersonGroupBy struct {
 	selector

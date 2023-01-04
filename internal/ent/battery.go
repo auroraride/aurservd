@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // Battery is the model entity for the Battery schema.
@@ -39,6 +40,8 @@ type Battery struct {
 	RiderID *uint64 `json:"rider_id,omitempty"`
 	// 电柜ID
 	CabinetID *uint64 `json:"cabinet_id,omitempty"`
+	// SubscribeID holds the value of the "subscribe_id" field.
+	SubscribeID *uint64 `json:"subscribe_id,omitempty"`
 	// 电池编号
 	Sn string `json:"sn,omitempty"`
 	// 是否启用
@@ -58,9 +61,11 @@ type BatteryEdges struct {
 	Rider *Rider `json:"rider,omitempty"`
 	// Cabinet holds the value of the cabinet edge.
 	Cabinet *Cabinet `json:"cabinet,omitempty"`
+	// Subscribe holds the value of the subscribe edge.
+	Subscribe *Subscribe `json:"subscribe,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -102,6 +107,19 @@ func (e BatteryEdges) CabinetOrErr() (*Cabinet, error) {
 	return nil, &NotLoadedError{edge: "cabinet"}
 }
 
+// SubscribeOrErr returns the Subscribe value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e BatteryEdges) SubscribeOrErr() (*Subscribe, error) {
+	if e.loadedTypes[3] {
+		if e.Subscribe == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: subscribe.Label}
+		}
+		return e.Subscribe, nil
+	}
+	return nil, &NotLoadedError{edge: "subscribe"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Battery) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -111,7 +129,7 @@ func (*Battery) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case battery.FieldEnable:
 			values[i] = new(sql.NullBool)
-		case battery.FieldID, battery.FieldCityID, battery.FieldRiderID, battery.FieldCabinetID:
+		case battery.FieldID, battery.FieldCityID, battery.FieldRiderID, battery.FieldCabinetID, battery.FieldSubscribeID:
 			values[i] = new(sql.NullInt64)
 		case battery.FieldRemark, battery.FieldSn, battery.FieldModel:
 			values[i] = new(sql.NullString)
@@ -200,6 +218,13 @@ func (b *Battery) assignValues(columns []string, values []any) error {
 				b.CabinetID = new(uint64)
 				*b.CabinetID = uint64(value.Int64)
 			}
+		case battery.FieldSubscribeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field subscribe_id", values[i])
+			} else if value.Valid {
+				b.SubscribeID = new(uint64)
+				*b.SubscribeID = uint64(value.Int64)
+			}
 		case battery.FieldSn:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field sn", values[i])
@@ -236,6 +261,11 @@ func (b *Battery) QueryRider() *RiderQuery {
 // QueryCabinet queries the "cabinet" edge of the Battery entity.
 func (b *Battery) QueryCabinet() *CabinetQuery {
 	return (&BatteryClient{config: b.config}).QueryCabinet(b)
+}
+
+// QuerySubscribe queries the "subscribe" edge of the Battery entity.
+func (b *Battery) QuerySubscribe() *SubscribeQuery {
+	return (&BatteryClient{config: b.config}).QuerySubscribe(b)
 }
 
 // Update returns a builder for updating this Battery.
@@ -293,6 +323,11 @@ func (b *Battery) String() string {
 	builder.WriteString(", ")
 	if v := b.CabinetID; v != nil {
 		builder.WriteString("cabinet_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := b.SubscribeID; v != nil {
+		builder.WriteString("subscribe_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

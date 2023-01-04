@@ -712,6 +712,28 @@ func (cq *CityQuery) Modify(modifiers ...func(s *sql.Selector)) *CitySelect {
 	return cq.Select()
 }
 
+type CityQueryWith string
+
+var (
+	CityQueryWithParent   CityQueryWith = "Parent"
+	CityQueryWithChildren CityQueryWith = "Children"
+	CityQueryWithPlans    CityQueryWith = "Plans"
+)
+
+func (cq *CityQuery) With(withEdges ...CityQueryWith) *CityQuery {
+	for _, v := range withEdges {
+		switch v {
+		case CityQueryWithParent:
+			cq.WithParent()
+		case CityQueryWithChildren:
+			cq.WithChildren()
+		case CityQueryWithPlans:
+			cq.WithPlans()
+		}
+	}
+	return cq
+}
+
 // CityGroupBy is the group-by builder for City entities.
 type CityGroupBy struct {
 	selector

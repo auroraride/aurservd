@@ -1176,6 +1176,49 @@ func (spq *SubscribePauseQuery) Modify(modifiers ...func(s *sql.Selector)) *Subs
 	return spq.Select()
 }
 
+type SubscribePauseQueryWith string
+
+var (
+	SubscribePauseQueryWithRider       SubscribePauseQueryWith = "Rider"
+	SubscribePauseQueryWithEmployee    SubscribePauseQueryWith = "Employee"
+	SubscribePauseQueryWithCity        SubscribePauseQueryWith = "City"
+	SubscribePauseQueryWithStore       SubscribePauseQueryWith = "Store"
+	SubscribePauseQueryWithEndStore    SubscribePauseQueryWith = "EndStore"
+	SubscribePauseQueryWithCabinet     SubscribePauseQueryWith = "Cabinet"
+	SubscribePauseQueryWithEndCabinet  SubscribePauseQueryWith = "EndCabinet"
+	SubscribePauseQueryWithSubscribe   SubscribePauseQueryWith = "Subscribe"
+	SubscribePauseQueryWithEndEmployee SubscribePauseQueryWith = "EndEmployee"
+	SubscribePauseQueryWithSuspends    SubscribePauseQueryWith = "Suspends"
+)
+
+func (spq *SubscribePauseQuery) With(withEdges ...SubscribePauseQueryWith) *SubscribePauseQuery {
+	for _, v := range withEdges {
+		switch v {
+		case SubscribePauseQueryWithRider:
+			spq.WithRider()
+		case SubscribePauseQueryWithEmployee:
+			spq.WithEmployee()
+		case SubscribePauseQueryWithCity:
+			spq.WithCity()
+		case SubscribePauseQueryWithStore:
+			spq.WithStore()
+		case SubscribePauseQueryWithEndStore:
+			spq.WithEndStore()
+		case SubscribePauseQueryWithCabinet:
+			spq.WithCabinet()
+		case SubscribePauseQueryWithEndCabinet:
+			spq.WithEndCabinet()
+		case SubscribePauseQueryWithSubscribe:
+			spq.WithSubscribe()
+		case SubscribePauseQueryWithEndEmployee:
+			spq.WithEndEmployee()
+		case SubscribePauseQueryWithSuspends:
+			spq.WithSuspends()
+		}
+	}
+	return spq
+}
+
 // SubscribePauseGroupBy is the group-by builder for SubscribePause entities.
 type SubscribePauseGroupBy struct {
 	selector

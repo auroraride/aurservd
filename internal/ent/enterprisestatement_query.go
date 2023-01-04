@@ -606,6 +606,25 @@ func (esq *EnterpriseStatementQuery) Modify(modifiers ...func(s *sql.Selector)) 
 	return esq.Select()
 }
 
+type EnterpriseStatementQueryWith string
+
+var (
+	EnterpriseStatementQueryWithEnterprise EnterpriseStatementQueryWith = "Enterprise"
+	EnterpriseStatementQueryWithBills      EnterpriseStatementQueryWith = "Bills"
+)
+
+func (esq *EnterpriseStatementQuery) With(withEdges ...EnterpriseStatementQueryWith) *EnterpriseStatementQuery {
+	for _, v := range withEdges {
+		switch v {
+		case EnterpriseStatementQueryWithEnterprise:
+			esq.WithEnterprise()
+		case EnterpriseStatementQueryWithBills:
+			esq.WithBills()
+		}
+	}
+	return esq
+}
+
 // EnterpriseStatementGroupBy is the group-by builder for EnterpriseStatement entities.
 type EnterpriseStatementGroupBy struct {
 	selector

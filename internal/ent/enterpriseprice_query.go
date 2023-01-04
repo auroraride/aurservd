@@ -603,6 +603,25 @@ func (epq *EnterprisePriceQuery) Modify(modifiers ...func(s *sql.Selector)) *Ent
 	return epq.Select()
 }
 
+type EnterprisePriceQueryWith string
+
+var (
+	EnterprisePriceQueryWithCity       EnterprisePriceQueryWith = "City"
+	EnterprisePriceQueryWithEnterprise EnterprisePriceQueryWith = "Enterprise"
+)
+
+func (epq *EnterprisePriceQuery) With(withEdges ...EnterprisePriceQueryWith) *EnterprisePriceQuery {
+	for _, v := range withEdges {
+		switch v {
+		case EnterprisePriceQueryWithCity:
+			epq.WithCity()
+		case EnterprisePriceQueryWithEnterprise:
+			epq.WithEnterprise()
+		}
+	}
+	return epq
+}
+
 // EnterprisePriceGroupBy is the group-by builder for EnterprisePrice entities.
 type EnterprisePriceGroupBy struct {
 	selector

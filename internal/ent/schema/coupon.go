@@ -100,6 +100,7 @@ func (Coupon) Indexes() []ent.Index {
             entsql.IndexTypes(map[string]string{
                 dialect.Postgres: "GIN",
             }),
+            entsql.OpClass("gin_trgm_ops"),
         ),
         index.Fields("order_id"),
         index.Fields("template_id"),

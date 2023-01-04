@@ -568,6 +568,22 @@ func (bmq *BatteryModelQuery) Modify(modifiers ...func(s *sql.Selector)) *Batter
 	return bmq.Select()
 }
 
+type BatteryModelQueryWith string
+
+var (
+	BatteryModelQueryWithCabinets BatteryModelQueryWith = "Cabinets"
+)
+
+func (bmq *BatteryModelQuery) With(withEdges ...BatteryModelQueryWith) *BatteryModelQuery {
+	for _, v := range withEdges {
+		switch v {
+		case BatteryModelQueryWithCabinets:
+			bmq.WithCabinets()
+		}
+	}
+	return bmq
+}
+
 // BatteryModelGroupBy is the group-by builder for BatteryModel entities.
 type BatteryModelGroupBy struct {
 	selector

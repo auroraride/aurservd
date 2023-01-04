@@ -603,6 +603,25 @@ func (rfuq *RiderFollowUpQuery) Modify(modifiers ...func(s *sql.Selector)) *Ride
 	return rfuq.Select()
 }
 
+type RiderFollowUpQueryWith string
+
+var (
+	RiderFollowUpQueryWithManager RiderFollowUpQueryWith = "Manager"
+	RiderFollowUpQueryWithRider   RiderFollowUpQueryWith = "Rider"
+)
+
+func (rfuq *RiderFollowUpQuery) With(withEdges ...RiderFollowUpQueryWith) *RiderFollowUpQuery {
+	for _, v := range withEdges {
+		switch v {
+		case RiderFollowUpQueryWithManager:
+			rfuq.WithManager()
+		case RiderFollowUpQueryWithRider:
+			rfuq.WithRider()
+		}
+	}
+	return rfuq
+}
+
 // RiderFollowUpGroupBy is the group-by builder for RiderFollowUp entities.
 type RiderFollowUpGroupBy struct {
 	selector

@@ -534,6 +534,22 @@ func (epq *EnterprisePrepaymentQuery) Modify(modifiers ...func(s *sql.Selector))
 	return epq.Select()
 }
 
+type EnterprisePrepaymentQueryWith string
+
+var (
+	EnterprisePrepaymentQueryWithEnterprise EnterprisePrepaymentQueryWith = "Enterprise"
+)
+
+func (epq *EnterprisePrepaymentQuery) With(withEdges ...EnterprisePrepaymentQueryWith) *EnterprisePrepaymentQuery {
+	for _, v := range withEdges {
+		switch v {
+		case EnterprisePrepaymentQueryWithEnterprise:
+			epq.WithEnterprise()
+		}
+	}
+	return epq
+}
+
 // EnterprisePrepaymentGroupBy is the group-by builder for EnterprisePrepayment entities.
 type EnterprisePrepaymentGroupBy struct {
 	selector

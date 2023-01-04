@@ -534,6 +534,22 @@ func (caq *CouponAssemblyQuery) Modify(modifiers ...func(s *sql.Selector)) *Coup
 	return caq.Select()
 }
 
+type CouponAssemblyQueryWith string
+
+var (
+	CouponAssemblyQueryWithTemplate CouponAssemblyQueryWith = "Template"
+)
+
+func (caq *CouponAssemblyQuery) With(withEdges ...CouponAssemblyQueryWith) *CouponAssemblyQuery {
+	for _, v := range withEdges {
+		switch v {
+		case CouponAssemblyQueryWithTemplate:
+			caq.WithTemplate()
+		}
+	}
+	return caq
+}
+
 // CouponAssemblyGroupBy is the group-by builder for CouponAssembly entities.
 type CouponAssemblyGroupBy struct {
 	selector

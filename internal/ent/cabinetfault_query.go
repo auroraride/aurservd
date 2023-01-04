@@ -741,6 +741,31 @@ func (cfq *CabinetFaultQuery) Modify(modifiers ...func(s *sql.Selector)) *Cabine
 	return cfq.Select()
 }
 
+type CabinetFaultQueryWith string
+
+var (
+	CabinetFaultQueryWithCity    CabinetFaultQueryWith = "City"
+	CabinetFaultQueryWithBranch  CabinetFaultQueryWith = "Branch"
+	CabinetFaultQueryWithCabinet CabinetFaultQueryWith = "Cabinet"
+	CabinetFaultQueryWithRider   CabinetFaultQueryWith = "Rider"
+)
+
+func (cfq *CabinetFaultQuery) With(withEdges ...CabinetFaultQueryWith) *CabinetFaultQuery {
+	for _, v := range withEdges {
+		switch v {
+		case CabinetFaultQueryWithCity:
+			cfq.WithCity()
+		case CabinetFaultQueryWithBranch:
+			cfq.WithBranch()
+		case CabinetFaultQueryWithCabinet:
+			cfq.WithCabinet()
+		case CabinetFaultQueryWithRider:
+			cfq.WithRider()
+		}
+	}
+	return cfq
+}
+
 // CabinetFaultGroupBy is the group-by builder for CabinetFault entities.
 type CabinetFaultGroupBy struct {
 	selector

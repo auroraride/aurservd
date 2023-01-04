@@ -116,6 +116,7 @@ func (Store) Indexes() []ent.Index {
             entsql.IndexTypes(map[string]string{
                 dialect.Postgres: "GIN",
             }),
+            entsql.OpClass("gin_trgm_ops"),
         ),
     }
 }

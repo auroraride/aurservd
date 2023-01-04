@@ -534,6 +534,22 @@ func (aq *AgentQuery) Modify(modifiers ...func(s *sql.Selector)) *AgentSelect {
 	return aq.Select()
 }
 
+type AgentQueryWith string
+
+var (
+	AgentQueryWithEnterprise AgentQueryWith = "Enterprise"
+)
+
+func (aq *AgentQuery) With(withEdges ...AgentQueryWith) *AgentQuery {
+	for _, v := range withEdges {
+		switch v {
+		case AgentQueryWithEnterprise:
+			aq.WithEnterprise()
+		}
+	}
+	return aq
+}
+
 // AgentGroupBy is the group-by builder for Agent entities.
 type AgentGroupBy struct {
 	selector

@@ -76,9 +76,10 @@ func (Battery) Mixin() []ent.Mixin {
         internal.DeleteMixin{},
         internal.Modifier{},
 
-        CityMixin{Optional: true},    // 所在城市
-        RiderMixin{Optional: true},   // 所在骑手
-        CabinetMixin{Optional: true}, // 所在电柜
+        CityMixin{Optional: true},      // 所在城市
+        RiderMixin{Optional: true},     // 所在骑手
+        CabinetMixin{Optional: true},   // 所在电柜
+        SubscribeMixin{Optional: true}, // 所在订阅
     }
 }
 
@@ -90,6 +91,7 @@ func (Battery) Indexes() []ent.Index {
             entsql.IndexTypes(map[string]string{
                 dialect.Postgres: "GIN",
             }),
+            entsql.OpClass("gin_trgm_ops"),
         ),
     }
 }
