@@ -84,7 +84,6 @@ func (Stock) Indexes() []ent.Index {
         index.Fields("cabinet_id"),
         index.Fields("rider_id"),
         index.Fields("employee_id"),
-        index.Fields("name"),
         index.Fields("model"),
         index.Fields("sn"),
         index.Fields("parent_id"),
