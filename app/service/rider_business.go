@@ -99,7 +99,7 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
 
         // 获取仓位信息
         var err error
-        s.response.UUID, s.response.Index, err = NewIntelligentCabinet(s.rider).BusinessUsable(bus, cab.Serial, sub.Model)
+        s.response.UUID, s.response.Index, err = NewIntelligentCabinet(s.rider).BusinessUsable(model.CabinetBrand(cab.Brand), bus, cab.Serial, sub.Model)
         if err != nil {
             snag.Panic(err)
         }
@@ -363,7 +363,7 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
             // 更新分配信息
             _ = allo.Update().SetStatus(model.AllocateStatusSigned.Value()).SetCabinetID(s.cabinet.ID).Exec(s.ctx)
             if s.cabinet.Intelligent {
-                return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessActive, s.subscribe, nil, s.cabinet)
+                return NewIntelligentCabinet(s.rider).DoBusiness(model.CabinetBrand(s.cabinet.Brand), s.response.UUID, adapter.BusinessActive, s.subscribe, nil, s.cabinet)
             }
             return s.putout()
         }).
@@ -386,7 +386,7 @@ func (s *riderBusinessService) Continue(req *model.BusinessCabinetReq) model.Bus
                 SetCabinet(s.cabinet).
                 SetTask(func() (*model.BinInfo, *model.Battery, error) {
                     if s.cabinet.Intelligent {
-                        return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessContinue, s.subscribe, nil, s.cabinet)
+                        return NewIntelligentCabinet(s.rider).DoBusiness(model.CabinetBrand(s.cabinet.Brand), s.response.UUID, adapter.BusinessContinue, s.subscribe, nil, s.cabinet)
                     }
                     return s.putout()
                 }).
@@ -415,7 +415,7 @@ func (s *riderBusinessService) Unsubscribe(req *model.BusinessCabinetReq) model.
                 SetCabinet(s.cabinet).
                 SetTask(func() (*model.BinInfo, *model.Battery, error) {
                     if s.cabinet.Intelligent {
-                        return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessUnsubscribe, s.subscribe, s.battery, s.cabinet)
+                        return NewIntelligentCabinet(s.rider).DoBusiness(model.CabinetBrand(s.cabinet.Brand), s.response.UUID, adapter.BusinessUnsubscribe, s.subscribe, s.battery, s.cabinet)
                     }
                     return s.putin()
                 }).
@@ -441,7 +441,7 @@ func (s *riderBusinessService) Pause(req *model.BusinessCabinetReq) model.Busine
             NewBusinessRider(s.rider).
                 SetTask(func() (*model.BinInfo, *model.Battery, error) {
                     if s.cabinet.Intelligent {
-                        return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessPause, s.subscribe, s.battery, s.cabinet)
+                        return NewIntelligentCabinet(s.rider).DoBusiness(model.CabinetBrand(s.cabinet.Brand), s.response.UUID, adapter.BusinessPause, s.subscribe, s.battery, s.cabinet)
                     }
                     return s.putin()
                 }).

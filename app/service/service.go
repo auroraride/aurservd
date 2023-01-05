@@ -8,7 +8,9 @@ package service
 import (
     "context"
     "fmt"
+    "github.com/auroraride/adapter"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/h2non/filetype"
@@ -169,4 +171,52 @@ func (s *BaseService) GetXlsxRows(c echo.Context, start, columnsNumber int, pkIn
     }
 
     return
+}
+
+func (s *BaseService) GetCabinetAdapterUrl(br model.CabinetBrand, apiurl string) (url string, err error) {
+    switch br {
+    case model.CabinetBrandKaixin:
+        url = ar.Config.Adapter.Kaixin.Api
+    default:
+        return "", adapter.ErrorCabinetBrand
+    }
+
+    return url + apiurl, nil
+}
+
+func (s *BaseService) GetCabinetAdapterUrlX(br model.CabinetBrand, apiurl string) string {
+    url, err := s.GetCabinetAdapterUrl(br, apiurl)
+    if err != nil {
+        snag.Panic(err)
+    }
+    return url
+}
+func (s *BaseService) GetAdapterUser() (user *adapter.User, err error) {
+    switch true {
+    default:
+        return nil, adapter.ErrorUserRequired
+    case s.rider != nil:
+        return &adapter.User{
+            Type: adapter.UserTypeRider,
+            ID:   s.rider.Phone,
+        }, nil
+    case s.employee != nil:
+        return &adapter.User{
+            Type: adapter.UserTypeEmployee,
+            ID:   s.employee.Phone,
+        }, nil
+    case s.modifier != nil:
+        return &adapter.User{
+            Type: adapter.UserTypeManager,
+            ID:   s.modifier.Phone,
+        }, nil
+    }
+}
+
+func (s *BaseService) GetAdapterUserX() *adapter.User {
+    user, err := s.GetAdapterUser()
+    if err != nil {
+        snag.Panic(err)
+    }
+    return user
 }

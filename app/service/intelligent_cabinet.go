@@ -12,14 +12,12 @@ import (
     "github.com/auroraride/adapter/defs/cabdef"
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/go-resty/resty/v2"
     "github.com/google/uuid"
-    jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
     "golang.org/x/exp/slices"
     "time"
@@ -37,43 +35,19 @@ func NewIntelligentCabinet(params ...any) *intelligentCabinetService {
 
 // ExchangeUsable 获取换电信息
 func (s *intelligentCabinetService) ExchangeUsable(bm, serial string, br model.CabinetBrand) (uid string, info *model.RiderCabinetOperateProcess) {
-    var url string
-
-    switch br {
-    case model.CabinetBrandKaixin:
-        url = ar.Config.Adapter.Kaixin.Api
-    default:
-        snag.Panic("电柜错误")
-    }
-
-    r, err := NewAdapter(url, s.rider).Post("/exchange/usable", &cabdef.ExchangeUsableRequest{
+    playload := &cabdef.ExchangeUsableRequest{
         Serial: serial,
         Minsoc: cache.Float64(model.SettingExchangeMinBattery),
         Lock:   10,
         Model:  bm,
-    })
-    if err != nil {
-        log.Errorf("换电信息请求失败: %v", err)
-        snag.Panic("请求失败")
     }
 
-    b := r.Body()
-    log.Printf("换电请求成功: %s", string(b))
+    v, err := adapter.Post[cabdef.CabinetBinUsableResponse](s.GetCabinetAdapterUrlX(br, "/exchange/usable"), s.GetAdapterUserX(), playload)
 
-    // 解析换电信息
-    res := new(adapter.ResponseStuff[cabdef.CabinetBinUsableResponse])
-    err = jsoniter.Unmarshal(b, res)
     if err != nil {
-        log.Errorf("换电信息结果解析失败: %v", err)
-        snag.Panic("请求失败")
+        snag.Panic(err)
     }
 
-    err = res.VerifyResponse()
-    if err != nil {
-        snag.Panic(err.Error())
-    }
-
-    v := res.Data
     info = &model.RiderCabinetOperateProcess{
         EmptyBin: &model.BinInfo{
             Index: v.Empty.Ordinal - 1,
@@ -153,85 +127,77 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 
     }()
 
-    var r *resty.Response
-    r, err = NewAdapter(ar.Config.Adapter.Kaixin.Api, s.rider).Post("/exchange/do", &cabdef.ExchangeRequest{
+    playload := &cabdef.ExchangeRequest{
         UUID:    id,
         Battery: *sub.BatterySn,
         Expires: model.IntelligentBusinessScanExpires,
         Timeout: model.IntelligentBusinessStepTimeout,
         Minsoc:  cache.Float64(model.SettingExchangeMinBattery),
+    }
+
+    var v cabdef.ExchangeResponse
+    v, err = adapter.Post[cabdef.ExchangeResponse](s.GetCabinetAdapterUrlX(model.CabinetBrand(cab.Brand), "/exchange/do"), s.GetAdapterUserX(), playload, func(r *resty.Response) {
+        log.Infof("换电请求完成: %s", string(r.Body()))
     })
 
     if err != nil {
         log.Errorf("换电请求失败: %v", err)
         return
-    } else {
-        b := r.Body()
-        log.Infof("换电请求完成: %s", string(b))
+    }
 
-        // 解析换电结果
-        res := new(adapter.ResponseStuff[cabdef.ExchangeResponse])
-        _ = jsoniter.Unmarshal(b, res)
+    // 查询结果
+    for _, result := range v.Results {
+        after := result.After
+        before := result.Before
 
-        err = res.VerifyResponse()
-        if err != nil {
-            return
-        }
+        duration += result.Duration
+        stopAt = result.StopAt
 
-        // 查询结果
-        for _, result := range res.Data.Results {
-            after := result.After
-            before := result.Before
-
-            duration += result.Duration
-            stopAt = result.StopAt
-
-            if result.Success {
-                // 记录用户放入的电池
-                if ec.ExchangeStepPutInto.EqualInt(result.Step) && after != nil {
-                    putin = after.BatterySN
-                    empty = &model.BinInfo{
-                        Index:       after.Ordinal - 1,
-                        Electricity: model.BatteryElectricity(after.Current),
-                        Voltage:     after.Voltage,
-                    }
-
-                    // 更新电池
-                    bat, _ := bs.LoadOrCreate(putin)
-                    if bat != nil {
-                        _ = NewBattery().UpdateSubscribe(bat, nil)
-                        _ = NewSubscribeWithRider(s.entRider).UpdateBattery(sub, nil)
-                    }
-
-                    go bs.RiderBusiness(true, putin, s.rider, cab, after.Ordinal)
+        if result.Success {
+            // 记录用户放入的电池
+            if ec.ExchangeStepPutInto.EqualInt(result.Step) && after != nil {
+                putin = after.BatterySN
+                empty = &model.BinInfo{
+                    Index:       after.Ordinal - 1,
+                    Electricity: model.BatteryElectricity(after.Current),
+                    Voltage:     after.Voltage,
                 }
 
-                // 记录用户取走的电池
-                if result.Step == ec.ExchangeStepOpenFull.Int() && before != nil {
-                    putout = before.BatterySN
+                // 更新电池
+                bat, _ := bs.LoadOrCreate(putin)
+                if bat != nil {
+                    _ = NewBattery().UpdateSubscribe(bat, nil)
+                    _ = NewSubscribeWithRider(s.entRider).UpdateBattery(sub, nil)
+                }
 
-                    go bs.RiderBusiness(false, putout, s.rider, cab, before.Ordinal)
+                go bs.RiderBusiness(true, putin, s.rider, cab, after.Ordinal)
+            }
 
-                    bat, _ := bs.LoadOrCreate(putout)
-                    if bat != nil {
-                        // 更新订阅
-                        _ = NewSubscribe().UpdateBattery(sub, bat)
-                        // 更新电池
-                        _ = NewBattery().UpdateSubscribe(bat, sub)
-                    }
+            // 记录用户取走的电池
+            if result.Step == ec.ExchangeStepOpenFull.Int() && before != nil {
+                putout = before.BatterySN
+
+                go bs.RiderBusiness(false, putout, s.rider, cab, before.Ordinal)
+
+                bat, _ := bs.LoadOrCreate(putout)
+                if bat != nil {
+                    // 更新订阅
+                    _ = NewSubscribe().UpdateBattery(sub, bat)
+                    // 更新电池
+                    _ = NewBattery().UpdateSubscribe(bat, sub)
                 }
             }
         }
+    }
 
-        // 若换电成功 直接返回
-        if res.Data.Success {
-            success = true
-            return
-        }
+    // 若换电成功 直接返回
+    if v.Success {
+        success = true
+        return
+    }
 
-        if res.Data.Error != "" {
-            err = fmt.Errorf("%s", res.Data.Error)
-        }
+    if v.Error != "" {
+        err = fmt.Errorf("%s", v.Error)
     }
 }
 
@@ -363,36 +329,27 @@ func (s *intelligentCabinetService) BusinessCensorX(bus adapter.Business, sub *e
 }
 
 // BusinessUsable 获取可用的业务仓位信息
-func (s *intelligentCabinetService) BusinessUsable(bus adapter.Business, serial, bm string) (uid string, index int, err error) {
-    var r *resty.Response
-    r, err = NewAdapter(ar.Config.Adapter.Kaixin.Api, s.rider).Post("/business/usable", &cabdef.BusinuessUsableRequest{
+func (s *intelligentCabinetService) BusinessUsable(br model.CabinetBrand, bus adapter.Business, serial, bm string) (uid string, index int, err error) {
+    playload := &cabdef.BusinuessUsableRequest{
         Minsoc:   cache.Float64(model.SettingExchangeMinBattery),
         Business: bus,
         Serial:   serial,
         Model:    bm,
-    })
+    }
+
+    var v cabdef.CabinetBinUsableResponse
+    v, err = adapter.Post[cabdef.CabinetBinUsableResponse](s.GetCabinetAdapterUrlX(br, "/business/usable"), s.GetAdapterUserX(), playload)
     if err != nil {
         return
     }
 
-    res := new(adapter.ResponseStuff[cabdef.CabinetBinUsableResponse])
-    err = jsoniter.Unmarshal(r.Body(), &res)
-    if err != nil {
-        return
-    }
-
-    err = res.VerifyResponse()
-    if err != nil {
-        return
-    }
-
-    uid = res.Data.UUID
-    index = res.Data.BusinessBin.Ordinal - 1
+    uid = v.UUID
+    index = v.BusinessBin.Ordinal - 1
     return
 }
 
 // DoBusiness 请求办理业务
-func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Business, sub *ent.Subscribe, riderBat *ent.Battery, cab *ent.Cabinet) (info *model.BinInfo, batinfo *model.Battery, err error) {
+func (s *intelligentCabinetService) DoBusiness(br model.CabinetBrand, uidstr string, bus adapter.Business, sub *ent.Subscribe, riderBat *ent.Battery, cab *ent.Cabinet) (info *model.BinInfo, batinfo *model.Battery, err error) {
     defer func() {
         // 缓存任务返回
         data := &model.BusinessCabinetStatusRes{
@@ -416,36 +373,31 @@ func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Busine
         batterySN = riderBat.Sn
     }
 
-    var r *resty.Response
-    r, err = NewAdapter(ar.Config.Adapter.Kaixin.Api, s.rider).Post("/business/do", &cabdef.BusinessRequest{
+    playload := &cabdef.BusinessRequest{
         UUID:     uid,
         Business: bus,
         Serial:   cab.Serial,
         Timeout:  model.IntelligentBusinessStepTimeout,
         Battery:  batterySN,
         Model:    sub.Model,
-    })
-
-    res := new(adapter.ResponseStuff[cabdef.BusinessResponse])
-    err = jsoniter.Unmarshal(r.Body(), &res)
-    if err != nil {
-        return
     }
 
-    err = res.VerifyResponse()
+    var v cabdef.BusinessResponse
+    v, err = adapter.Post[cabdef.BusinessResponse](s.GetCabinetAdapterUrlX(br, "/business/do"), s.GetAdapterUserX(), playload)
+
     if err != nil {
         return
     }
 
     // TODO 失败后电池信息是否更新
-    if res.Data.Error != "" {
-        err = errors.New(res.Data.Error)
+    if v.Error != "" {
+        err = errors.New(v.Error)
         return
     }
 
     var sn string
     var putin bool
-    results := res.Data.Results
+    results := v.Results
 
     switch bus {
     case adapter.BusinessActive, adapter.BusinessContinue:
@@ -490,4 +442,17 @@ func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Busine
     }
 
     return
+}
+
+func (s *intelligentCabinetService) Operate(br model.CabinetBrand, op cabdef.Operate, serial string, ordinal int, remark string) bool {
+    playload := &cabdef.OperateBinRequest{
+        Operate: op,
+        Ordinal: silk.Int(ordinal),
+        Serial:  serial,
+        Remark:  remark,
+    }
+
+    _, err := adapter.Post[[]*cabdef.BinOperateResult](s.GetCabinetAdapterUrlX(br, "/business/do"), s.GetAdapterUserX(), playload)
+
+    return err == nil
 }

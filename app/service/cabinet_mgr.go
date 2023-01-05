@@ -10,6 +10,7 @@ import (
     "fmt"
     "github.com/alibabacloud-go/tea/tea"
     sls "github.com/aliyun/aliyun-log-go-sdk"
+    "github.com/auroraride/adapter/defs/cabdef"
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
@@ -94,6 +95,19 @@ func (s *cabinetMgrService) BinOperate(req *model.CabinetDoorOperateReq) bool {
 
     if model.CabinetStatus(cab.Status) != model.CabinetStatusMaintenance {
         snag.Panic("非操作维护中不可操作")
+    }
+
+    if cab.Intelligent {
+        var op cabdef.Operate
+        switch *req.Operation {
+        case model.CabinetDoorOperateOpen:
+            op = cabdef.OperateDoorOpen
+        case model.CabinetDoorOperateLock:
+            op = cabdef.OperateBinDisable
+        case model.CabinetDoorOperateUnlock:
+            op = cabdef.OperateBinEnable
+        }
+        return NewIntelligentCabinet(s.modifier).Operate(model.CabinetBrand(cab.Brand), op, cab.Serial, *req.Index+1, req.Remark)
     }
 
     task := &ec.Task{
